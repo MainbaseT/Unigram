@@ -196,7 +196,7 @@ namespace Telegram.Views.Premium.Popups
                 if (gift.TotalCount > 0 && gift.RemainingCount == 0)
                 {
                     Hide();
-                    await _navigationService.ShowPopupAsync(new Views.Stars.Popups.UserGiftPopup(_clientService, _navigationService, gift));
+                    await _navigationService.ShowPopupAsync(new ReceivedGiftPopup(_clientService, _navigationService, gift));
                     await this.ShowQueuedAsync(XamlRoot);
                 }
                 else
@@ -219,7 +219,7 @@ namespace Telegram.Views.Premium.Popups
             {
                 return;
             }
-            else if (args.ItemContainer.ContentTemplateRoot is UserGiftCell userGiftCell && args.Item is Gift gift)
+            else if (args.ItemContainer.ContentTemplateRoot is ReceivedGiftCell userGiftCell && args.Item is Gift gift)
             {
                 userGiftCell.UpdateGift(_clientService, gift);
             }

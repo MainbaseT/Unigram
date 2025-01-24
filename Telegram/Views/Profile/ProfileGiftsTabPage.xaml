@@ -72,7 +72,7 @@
             </GridView.Footer>
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <cells:UserGiftCell />
+                    <cells:ReceivedGiftCell />
                 </DataTemplate>
             </GridView.ItemTemplate>
             <GridView.ItemsPanel>

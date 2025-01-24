@@ -209,7 +209,7 @@ namespace Telegram.ViewModels.Profile
                 return;
             }
 
-            ShowPopup(new UserGiftPopup(ClientService, NavigationService, receivedGift, _senderId));
+            ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, _senderId));
         }
     }
 }

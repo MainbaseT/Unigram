@@ -636,7 +636,7 @@ namespace Telegram.Common
                 var text = gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText();
                 var receivedGift = new ReceivedGift(string.Empty, null, text, true, false, false, false, false, 0, new SentGiftUpgraded(gift), 0, 0, 0, 0);
 
-                navigation.ShowPopup(new UserGiftPopup(clientService, navigation, receivedGift, null));
+                navigation.ShowPopup(new ReceivedGiftPopup(clientService, navigation, receivedGift, null));
             }
             else
             {

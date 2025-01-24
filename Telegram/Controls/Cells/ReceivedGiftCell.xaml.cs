@@ -11,14 +11,14 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Cells
 {
-    public sealed partial class UserGiftCell : UserControl
+    public sealed partial class ReceivedGiftCell : UserControl
     {
-        public UserGiftCell()
+        public ReceivedGiftCell()
         {
             InitializeComponent();
         }
 
-        public void UpdateUserGift(IClientService clientService, ReceivedGift gift)
+        public void UpdateGift(IClientService clientService, ReceivedGift gift)
         {
             StarCountRoot.Visibility = Visibility.Collapsed;
 
@@ -53,19 +53,7 @@ namespace Telegram.Controls.Cells
 
                     if (RibbonPath.Fill is not LinearGradientBrush)
                     {
-                        RibbonPath.Fill = new LinearGradientBrush(new GradientStopCollection
-                        {
-                            new GradientStop
-                            {
-                                Color = Color.FromArgb(0xFF, 0x6E, 0xD2, 0xFF),
-                                Offset = 0
-                            },
-                            new GradientStop
-                            {
-                                Color = Color.FromArgb(0xFF, 0x35, 0xA5, 0xFC),
-                                Offset = 1
-                            }
-                        }, 0);
+                        RibbonPath.Fill = RibbonGradient;
                     }
                 }
                 else

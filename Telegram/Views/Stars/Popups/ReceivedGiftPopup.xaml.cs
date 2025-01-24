@@ -27,7 +27,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Views.Stars.Popups
 {
-    public sealed partial class UserGiftPopup : ContentPopup
+    public sealed partial class ReceivedGiftPopup : ContentPopup
     {
         private readonly IClientService _clientService;
         private readonly INavigationService _navigationService;
@@ -43,7 +43,7 @@ namespace Telegram.Views.Stars.Popups
         private GiftUpgradePreview _preview;
         private int _index;
 
-        public UserGiftPopup(IClientService clientService, INavigationService navigationService, ReceivedGift gift, MessageSender receiverId)
+        public ReceivedGiftPopup(IClientService clientService, INavigationService navigationService, ReceivedGift gift, MessageSender receiverId)
         {
             InitializeComponent();
 
@@ -333,7 +333,7 @@ namespace Telegram.Views.Stars.Popups
             }
         }
 
-        public UserGiftPopup(IClientService clientService, INavigationService navigationService, Gift gift)
+        public ReceivedGiftPopup(IClientService clientService, INavigationService navigationService, Gift gift)
         {
             InitializeComponent();
 

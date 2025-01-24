@@ -1768,7 +1768,7 @@ namespace Telegram.ViewModels
 
                 var receivedGift = new ReceivedGift(gift.ReceivedGiftId, message.SenderId, gift.Text, gift.IsPrivate, gift.IsSaved, gift.CanBeUpgraded && !gift.WasUpgraded, false, gift.WasRefunded, message.Date, new SentGiftRegular(gift.Gift), gift.SellStarCount, gift.PrepaidUpgradeStarCount, 0, 0);
 
-                ShowPopup(new UserGiftPopup(ClientService, NavigationService, receivedGift, receiverUserId));
+                ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, receiverUserId));
             }
             else if (message.Content is MessageUpgradedGift upgradedGift)
             {
@@ -1779,7 +1779,7 @@ namespace Telegram.ViewModels
                 var text = upgradedGift.Gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText();
                 var receivedGift = new ReceivedGift(upgradedGift.ReceivedGiftId, message.SenderId, text, true, upgradedGift.IsSaved, false, upgradedGift.CanBeTransferred, false, message.Date, new SentGiftUpgraded(upgradedGift.Gift), 0, 0, upgradedGift.TransferStarCount, upgradedGift.ExportDate);
 
-                ShowPopup(new UserGiftPopup(ClientService, NavigationService, receivedGift, receiverUserId));
+                ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, receiverUserId));
             }
             else if (message.Content is MessageGiftedStars giftedStars)
             {

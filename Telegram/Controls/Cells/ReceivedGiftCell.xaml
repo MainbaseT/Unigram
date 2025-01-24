@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Telegram.Controls.Cells.UserGiftCell"
+﻿<UserControl x:Class="Telegram.Controls.Cells.ReceivedGiftCell"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -165,7 +165,7 @@
             <Path x:Name="RibbonPath"
                   Data="M59.6569 31.1569L30.8431 2.34315C29.3429 0.842855 27.308 0 25.1863 0H2.82843C1.04662 0 0.154282 2.15428 1.41421 3.41421L58.5858 60.5858C59.8457 61.8457 62 60.9534 62 59.1716V36.8137C62 34.692 61.1571 32.6571 59.6569 31.1569Z">
                 <Path.Fill>
-                    <LinearGradientBrush>
+                    <LinearGradientBrush x:Name="RibbonGradient">
                         <GradientStop x:Name="RibbonTop"
                                       Color="#6ED2FF"
                                       Offset="0" />

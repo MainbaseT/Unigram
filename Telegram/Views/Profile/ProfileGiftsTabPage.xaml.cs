@@ -35,9 +35,9 @@ namespace Telegram.Views.Profile
             {
                 return;
             }
-            else if (args.ItemContainer.ContentTemplateRoot is UserGiftCell content && args.Item is ReceivedGift gift)
+            else if (args.ItemContainer.ContentTemplateRoot is ReceivedGiftCell content && args.Item is ReceivedGift gift)
             {
-                content.UpdateUserGift(ViewModel.ClientService, gift);
+                content.UpdateGift(ViewModel.ClientService, gift);
             }
 
             args.Handled = true;
