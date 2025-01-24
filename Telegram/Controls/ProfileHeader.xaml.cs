@@ -1413,6 +1413,11 @@ namespace Telegram.Controls
                 {
                     flyout.CreateFlyoutItem(ViewModel.DeleteChat, supergroup.IsChannel ? Strings.LeaveChannelMenu : Strings.LeaveMegaMenu, Icons.Delete, destructive: true);
                 }
+
+                if (fullInfo != null && fullInfo.CanSendGift)
+                {
+                    flyout.CreateFlyoutItem(ViewModel.GiftPremium, Strings.SendAGift, Icons.GiftPremium);
+                }
             }
             else if (chat.Type is ChatTypeBasicGroup basic && basicGroup != null)
             {

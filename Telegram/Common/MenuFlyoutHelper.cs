@@ -26,11 +26,15 @@ namespace Telegram.Common
         {
             try
             {
-                flyout.ShowAt(placementTarget, new FlyoutShowOptions
+                if (flyout is not MenuFlyout || flyout is MenuFlyout { Items.Count: > 0 })
                 {
-                    Placement = placement
-                });
-                return true;
+                    flyout.ShowAt(placementTarget, new FlyoutShowOptions
+                    {
+                        Placement = placement
+                    });
+
+                    return true;
+                }
             }
             catch { }
 

@@ -699,6 +699,9 @@ namespace Telegram.ViewModels
             {
                 ShowPopup(new GiftPopup(ClientService, NavigationService, user, fullInfo));
             }
+            else
+            {
+                ShowPopup(new GiftPopup(ClientService, NavigationService, chat));
             }
         }
 
@@ -1014,6 +1017,10 @@ namespace Telegram.ViewModels
                         return;
                     }
                 }
+            }
+            else if (Chat?.EmojiStatus?.Type is EmojiStatusTypeUpgradedGift emojiStatusTypeUpgradedGift)
+            {
+
             }
 
             if (ClientService.TryGetUser(Chat, out User user) && user.IsPremium)

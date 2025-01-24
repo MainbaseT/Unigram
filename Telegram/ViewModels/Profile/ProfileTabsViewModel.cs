@@ -250,16 +250,16 @@ namespace Telegram.ViewModels.Profile
                         AddTab(new ProfileTabItem(Strings.ProfileBotPreviewTab, typeof(ProfileStoriesTabPage), ChatStoriesType.Pinned));
                     }
 
+                    if (cached != null && cached.GiftCount > 0)
+                    {
+                        AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
+                    }
+
                     await UpdateSharedCountAsync(chat);
 
                     if (cached != null && cached.GroupInCommonCount > 0)
                     {
                         AddTab(new ProfileTabItem(Strings.SharedGroupsTab2, typeof(ProfileGroupsTabPage)));
-                    }
-
-                    if (cached != null && cached.GiftCount > 0)
-                    {
-                        AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
                     }
 
                     if (user.Type is UserTypeBot)
@@ -284,6 +284,11 @@ namespace Telegram.ViewModels.Profile
                 if (cached != null && cached.HasPinnedStories)
                 {
                     AddTab(new ProfileTabItem(Strings.ProfileStories, typeof(ProfileStoriesTabPage)));
+                }
+
+                if (cached != null && cached.GiftCount > 0)
+                {
+                    AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
                 }
 
                 if (typeSupergroup.IsChannel)

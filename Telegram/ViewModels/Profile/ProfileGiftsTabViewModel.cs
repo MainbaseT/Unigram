@@ -19,13 +19,13 @@ namespace Telegram.ViewModels.Profile
 {
     public partial class ProfileGiftsTabViewModel : ViewModelBase, IHandle, IIncrementalCollectionOwner
     {
-        private long _userId;
+        private MessageSender _senderId;
         private string _nextOffsetId = string.Empty;
 
         public ProfileGiftsTabViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
-            Items = new IncrementalCollection<UserGift>(this);
+            Items = new IncrementalCollection<ReceivedGift>(this);
         }
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
@@ -41,10 +41,12 @@ namespace Telegram.ViewModels.Profile
                 var user = ClientService.GetUser(chat);
                 if (user == null)
                 {
-                    return Task.CompletedTask;
+                    _senderId = new MessageSenderChat(chat.Id);
                 }
-
-                _userId = user.Id;
+                else
+                {
+                    _senderId = new MessageSenderUser(user.Id);
+                }
             }
 
             return Task.CompletedTask;
@@ -58,50 +60,128 @@ namespace Telegram.ViewModels.Profile
 
         private void Handle(UpdateGiftIsSaved update)
         {
-            if (_userId == update.SenderUserId)
+            BeginOnUIThread(() =>
             {
-                BeginOnUIThread(() =>
+                var receivedGift = Items.FirstOrDefault(x => x.ReceivedGiftId == update.ReceivedGiftId);
+                if (receivedGift == null)
                 {
-                    var userGift = Items.FirstOrDefault(x => x.MessageId == update.MessageId);
-                    if (userGift == null)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    userGift.IsSaved = update.IsSaved;
+                receivedGift.IsSaved = update.IsSaved;
 
-                    var index = Items.IndexOf(userGift);
-                    Items.Remove(userGift);
-                    Items.Insert(index, userGift);
-                });
-            }
+                var index = Items.IndexOf(receivedGift);
+                Items.Remove(receivedGift);
+                Items.Insert(index, receivedGift);
+            });
         }
 
         private void Handle(UpdateGiftIsSold update)
         {
-            if (_userId == update.SenderUserId)
+            BeginOnUIThread(() =>
             {
-                BeginOnUIThread(() =>
+                var receivedGift = Items.FirstOrDefault(x => x.ReceivedGiftId == update.ReceivedGiftId);
+                if (receivedGift == null)
                 {
-                    var userGift = Items.FirstOrDefault(x => x.MessageId == update.MessageId);
-                    if (userGift == null)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    Items.Remove(userGift);
-                });
+                Items.Remove(receivedGift);
+            });
+        }
+
+        private bool _excludeUnsaved;
+        public bool ExcludeUnsaved
+        {
+            get => _excludeUnsaved;
+            set
+            {
+                if (Set(ref _excludeUnsaved, value))
+                {
+                    HasMoreItems = true;
+                    Items.Clear();
+                }
             }
         }
 
-        public IncrementalCollection<UserGift> Items { get; private set; }
+        private bool _excludeSaved;
+        public bool ExcludeSaved
+        {
+            get => _excludeSaved;
+            set
+            {
+                if (Set(ref _excludeSaved, value))
+                {
+                    HasMoreItems = true;
+                    Items.Clear();
+                }
+            }
+        }
+
+        private bool _excludeUnlimited;
+        public bool ExcludeUnlimited
+        {
+            get => _excludeUnlimited;
+            set
+            {
+                if (Set(ref _excludeUnlimited, value))
+                {
+                    HasMoreItems = true;
+                    Items.Clear();
+                }
+            }
+        }
+
+        private bool _excludeLimited;
+        public bool ExcludeLimited
+        {
+            get => _excludeLimited;
+            set
+            {
+                if (Set(ref _excludeLimited, value))
+                {
+                    HasMoreItems = true;
+                    Items.Clear();
+                }
+            }
+        }
+
+        private bool _excludeUpgraded;
+        public bool ExcludeUpgraded
+        {
+            get => _excludeUpgraded;
+            set
+            {
+                if (Set(ref _excludeUpgraded, value))
+                {
+                    HasMoreItems = true;
+                    Items.Clear();
+                }
+            }
+        }
+
+        private bool _sortByPrice;
+        public bool SortByPrice
+        {
+            get => _sortByPrice;
+            set
+            {
+                if (Set(ref _sortByPrice, value))
+                {
+                    HasMoreItems = true;
+                    Items.Clear();
+                }
+            }
+        }
+
+        public IncrementalCollection<ReceivedGift> Items { get; private set; }
 
         public async Task<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
         {
             var total = 0u;
 
-            var response = await ClientService.SendAsync(new GetUserGifts(_userId, _nextOffsetId, 50));
-            if (response is UserGifts gifts)
+            var response = await ClientService.SendAsync(new GetReceivedGifts(_senderId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, 50));
+            if (response is ReceivedGifts gifts)
             {
                 _nextOffsetId = gifts.NextOffset;
 
@@ -122,14 +202,14 @@ namespace Telegram.ViewModels.Profile
 
         public bool HasMoreItems { get; private set; } = true;
 
-        public void OpenGift(UserGift userGift)
+        public void OpenGift(ReceivedGift receivedGift)
         {
-            if (userGift == null)
+            if (receivedGift == null)
             {
                 return;
             }
 
-            ShowPopup(new UserGiftPopup(ClientService, NavigationService, userGift, _userId));
+            ShowPopup(new UserGiftPopup(ClientService, NavigationService, receivedGift, _senderId));
         }
     }
 }

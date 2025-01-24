@@ -409,7 +409,9 @@ namespace Telegram.Controls
             var sender = d as ContentPopup;
             if (sender?.DismissButton != null)
             {
-                sender.DismissButton.RequestedTheme = (ElementTheme)e.NewValue;
+                sender.DismissButton.Visibility = (bool)e.NewValue
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
         }
 
@@ -441,12 +443,9 @@ namespace Telegram.Controls
                         sender.DismissButton.Click += sender.DismissButton_Click;
                     }
                 }
-
-                if (sender.DismissButton != null)
+                else
                 {
-                    sender.DismissButton.Visibility = (bool)e.NewValue
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
+                    sender.DismissButton.RequestedTheme = (ElementTheme)e.NewValue;
                 }
             }
         }

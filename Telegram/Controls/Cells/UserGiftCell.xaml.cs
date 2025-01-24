@@ -32,6 +32,10 @@ namespace Telegram.Controls.Cells
                 {
                     Photo.SetUser(clientService, user, 24);
                 }
+                else if (clientService.TryGetChat(gift.SenderId, out Chat chat))
+                {
+                    Photo.SetChat(clientService, chat, 24);
+                }
 
                 Photo.Visibility = Visibility.Visible;
                 Pattern.Visibility = Visibility.Collapsed;

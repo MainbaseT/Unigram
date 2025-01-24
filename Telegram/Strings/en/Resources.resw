@@ -6230,6 +6230,27 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2ConvertTitle" xml:space="preserve">
     <value>Convert Gift to Stars</value>
   </data>
+  <data name="Gift2FilterDisplayed" xml:space="preserve">
+    <value>Displayed</value>
+  </data>
+  <data name="Gift2FilterHidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="Gift2FilterLimited" xml:space="preserve">
+    <value>Limited</value>
+  </data>
+  <data name="Gift2FilterSortByDate" xml:space="preserve">
+    <value>Sort By Date</value>
+  </data>
+  <data name="Gift2FilterSortByValue" xml:space="preserve">
+    <value>Sort By Value</value>
+  </data>
+  <data name="Gift2FilterUnique" xml:space="preserve">
+    <value>Unique</value>
+  </data>
+  <data name="Gift2FilterUnlimited" xml:space="preserve">
+    <value>Unlimited</value>
+  </data>
   <data name="Gift2From" xml:space="preserve">
     <value>From</value>
   </data>

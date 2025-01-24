@@ -70,6 +70,25 @@ namespace Telegram.Views.Premium.Popups
             InitializeGifts(clientService, fullInfo.Birthdate?.Day == DateTime.Today.Day
                     && fullInfo.Birthdate?.Month == DateTime.Today.Month);
         }
+
+        public GiftPopup(IClientService clientService, INavigationService navigationService, Chat chat)
+        {
+            InitializeComponent();
+
+            _clientService = clientService;
+            _navigationService = navigationService;
+
+            _senderId = chat.ToMessageSender();
+
+            Photo.SetChat(clientService, chat, 96);
+
+            TextBlockHelper.SetMarkdown(StarsInfo, string.Format(Strings.Gift2StarsInfo, chat.Title));
+
+            AddLink(StarsInfo, Strings.Gift2StarsInfoLink, StarsInfoLink_Click);
+
+            ScrollingHost.ItemsSource = _gifts;
+
+            InitializeGifts(clientService, false);
         }
 
         private void AddLink(TextBlock block, string text, TypedEventHandler<Hyperlink, HyperlinkClickEventArgs> handler)
