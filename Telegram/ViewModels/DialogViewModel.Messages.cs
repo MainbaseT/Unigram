@@ -1760,24 +1760,26 @@ namespace Telegram.ViewModels
             {
                 await LoadMessageSliceAsync(message.Id, giveawayCompleted.GiveawayMessageId);
             }
-            else if (message.Content is MessageGift gift && ClientService.TryGetUser(message.Chat, out User user))
+            else if (message.Content is MessageGift gift)
             {
-                var senderUserId = message.SenderId is MessageSenderUser senderUser ? senderUser.UserId : 0;
-                var receiverUserId = senderUserId == user.Id ? ClientService.Options.MyId : user.Id;
+                var receiverUserId = message.SenderId.IsUser(ClientService.Options.MyId)
+                    ? message.Chat.ToMessageSender()
+                    : ClientService.MyId;
 
-                var userGift = new UserGift(senderUserId, gift.Text, gift.IsPrivate, gift.IsSaved, gift.CanBeUpgraded && !gift.WasUpgraded, false, gift.WasRefunded, message.Date, new SentGiftRegular(gift.Gift), message.Id, gift.SellStarCount, gift.PrepaidUpgradeStarCount, 0, 0);
+                var receivedGift = new ReceivedGift(gift.ReceivedGiftId, message.SenderId, gift.Text, gift.IsPrivate, gift.IsSaved, gift.CanBeUpgraded && !gift.WasUpgraded, false, gift.WasRefunded, message.Date, new SentGiftRegular(gift.Gift), gift.SellStarCount, gift.PrepaidUpgradeStarCount, 0, 0);
 
-                ShowPopup(new UserGiftPopup(ClientService, NavigationService, userGift, receiverUserId));
+                ShowPopup(new UserGiftPopup(ClientService, NavigationService, receivedGift, receiverUserId));
             }
-            else if (message.Content is MessageUpgradedGift upgradedGift && ClientService.TryGetUser(message.Chat, out User upgradedGiftUser))
+            else if (message.Content is MessageUpgradedGift upgradedGift)
             {
-                var senderUserId = message.SenderId is MessageSenderUser senderUser ? senderUser.UserId : 0;
-                var receiverUserId = senderUserId == upgradedGiftUser.Id ? ClientService.Options.MyId : upgradedGiftUser.Id;
+                var receiverUserId = message.SenderId.IsUser(ClientService.Options.MyId)
+                    ? message.Chat.ToMessageSender()
+                    : ClientService.MyId;
 
                 var text = upgradedGift.Gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText();
-                var userGift = new UserGift(senderUserId, text, true, upgradedGift.IsSaved, false, upgradedGift.CanBeTransferred, false, message.Date, new SentGiftUpgraded(upgradedGift.Gift), message.Id, 0, 0, upgradedGift.TransferStarCount, upgradedGift.ExportDate);
+                var receivedGift = new ReceivedGift(upgradedGift.ReceivedGiftId, message.SenderId, text, true, upgradedGift.IsSaved, false, upgradedGift.CanBeTransferred, false, message.Date, new SentGiftUpgraded(upgradedGift.Gift), 0, 0, upgradedGift.TransferStarCount, upgradedGift.ExportDate);
 
-                ShowPopup(new UserGiftPopup(ClientService, NavigationService, userGift, receiverUserId));
+                ShowPopup(new UserGiftPopup(ClientService, NavigationService, receivedGift, receiverUserId));
             }
             else if (message.Content is MessageGiftedStars giftedStars)
             {

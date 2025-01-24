@@ -24,15 +24,15 @@ namespace Telegram.Views.Popups
 
         private readonly TaskCompletionSource<ContentDialogResult> _tsc = new();
 
-        public TransferGiftPopup(IClientService clientService, UserGift gift, Chat chat)
+        public TransferGiftPopup(IClientService clientService, ReceivedGift gift, Chat chat)
         {
             InitializeComponent();
 
             if (gift.Gift is SentGiftUpgraded upgraded)
             {
                 var source = DelayedFileSource.FromSticker(clientService, upgraded.Gift.Symbol.Sticker);
-                var centerColor = upgraded.Gift.Backdrop.CenterColor.ToColor();
-                var edgeColor = upgraded.Gift.Backdrop.EdgeColor.ToColor();
+                var centerColor = upgraded.Gift.Backdrop.Colors.CenterColor.ToColor();
+                var edgeColor = upgraded.Gift.Backdrop.Colors.EdgeColor.ToColor();
 
                 Animated.Source = new DelayedFileSource(clientService, upgraded.Gift.Model.Sticker);
 
@@ -75,7 +75,7 @@ namespace Telegram.Views.Popups
             return _tsc.Task;
         }
 
-        public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, IClientService clientService, UserGift gift, Chat chat)
+        public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, IClientService clientService, ReceivedGift gift, Chat chat)
         {
             if (xamlRoot.Content is not IToastHost host)
             {

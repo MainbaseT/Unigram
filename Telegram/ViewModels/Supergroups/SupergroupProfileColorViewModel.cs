@@ -123,7 +123,7 @@ namespace Telegram.ViewModels.Supergroups
                 changed = true;
             }
 
-            if (SelectedEmojiStatus?.CustomEmojiId != chat.EmojiStatus?.CustomEmojiId || SelectedEmojiStatus?.ExpirationDate != chat.EmojiStatus?.ExpirationDate)
+            if (!SelectedEmojiStatus.AreTheSame(chat.EmojiStatus))
             {
                 changed = true;
             }
@@ -337,7 +337,7 @@ namespace Telegram.ViewModels.Supergroups
                 level = MinProfileBackgroundCustomEmojiBoostLevel;
             }
 
-            if (SelectedEmojiStatus != null && SelectedEmojiStatus?.CustomEmojiId != chat.EmojiStatus?.CustomEmojiId && MinEmojiStatusBoostLevel > level)
+            if (SelectedEmojiStatus != null && !SelectedEmojiStatus.AreTheSame(chat.EmojiStatus) && MinEmojiStatusBoostLevel > level)
             {
                 feature = ChatBoostFeature.EmojiStatus;
                 level = MinEmojiStatusBoostLevel;
@@ -427,7 +427,7 @@ namespace Telegram.ViewModels.Supergroups
                 ClientService.Send(new SetChatProfileAccentColor(chat.Id, profileAccentColorId, SelectedProfileCustomEmojiId));
             }
 
-            if (SelectedEmojiStatus?.CustomEmojiId != chat.EmojiStatus?.CustomEmojiId || SelectedEmojiStatus?.ExpirationDate != chat.EmojiStatus?.ExpirationDate)
+            if (!SelectedEmojiStatus.AreTheSame(chat.EmojiStatus))
             {
                 changed = true;
                 ClientService.Send(new SetChatEmojiStatus(chat.Id, SelectedEmojiStatus));

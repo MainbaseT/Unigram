@@ -118,7 +118,7 @@ namespace Telegram.Services.Factories
             return new InputMessageFactory
             {
                 InputFile = generated,
-                Delegate = (inputFile, caption) => new InputMessageVideo(inputFile, thumbnail, Array.Empty<int>(), duration, videoWidth, videoHeight, true, caption, captionAboveMedia, ttl, spoiler),
+                Delegate = (inputFile, caption) => new InputMessageVideo(inputFile, thumbnail, null, 0, Array.Empty<int>(), duration, videoWidth, videoHeight, true, caption, captionAboveMedia, ttl, spoiler),
                 PaidDelegate = (inputFile) => new InputPaidMedia(new InputPaidMediaTypeVideo(duration, true), inputFile, thumbnail, Array.Empty<int>(), videoWidth, videoHeight)
             };
         }

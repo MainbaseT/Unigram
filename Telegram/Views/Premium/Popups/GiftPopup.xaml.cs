@@ -43,7 +43,7 @@ namespace Telegram.Views.Premium.Popups
         private readonly IClientService _clientService;
         private readonly INavigationService _navigationService;
 
-        private readonly long _userId;
+        private readonly MessageSender _senderId;
 
         private readonly DiffObservableCollection<Gift> _gifts = new(Constants.DiffOptions);
 
@@ -54,7 +54,7 @@ namespace Telegram.Views.Premium.Popups
             _clientService = clientService;
             _navigationService = navigationService;
 
-            _userId = user.Id;
+            _senderId = new MessageSenderUser(user.Id);
 
             Photo.SetUser(clientService, user, 96);
 
@@ -67,7 +67,9 @@ namespace Telegram.Views.Premium.Popups
             ScrollingHost.ItemsSource = _gifts;
 
             InitializeOptions(clientService);
-            InitializeGifts(clientService, fullInfo);
+            InitializeGifts(clientService, fullInfo.Birthdate?.Day == DateTime.Today.Day
+                    && fullInfo.Birthdate?.Month == DateTime.Today.Month);
+        }
         }
 
         private void AddLink(TextBlock block, string text, TypedEventHandler<Hyperlink, HyperlinkClickEventArgs> handler)
@@ -119,7 +121,7 @@ namespace Telegram.Views.Premium.Popups
             }
         }
 
-        private async void InitializeGifts(IClientService clientService, UserFullInfo fullInfo)
+        private async void InitializeGifts(IClientService clientService, bool birthday)
         {
             var response = await clientService.SendAsync(new GetAvailableGifts());
             if (response is Gifts gifts)
@@ -127,11 +129,9 @@ namespace Telegram.Views.Premium.Popups
                 var all = new List<Gift>();
                 var remaining = new List<Gift>();
 
-                var today = fullInfo.Birthdate?.Day == DateTime.Today.Day && fullInfo.Birthdate?.Month == DateTime.Today.Month;
-
                 foreach (var gift in gifts.GiftsValue)
                 {
-                    if (gift.IsForBirthday && today)
+                    if (gift.IsForBirthday && birthday)
                     {
                         all.Add(gift);
                     }
@@ -184,13 +184,13 @@ namespace Telegram.Views.Premium.Popups
                 {
                     Hide();
                     await _clientService.SendAsync(new CreatePrivateChat(_clientService.Options.MyId, false));
-                    await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, gift, _userId));
+                    await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, gift, _senderId));
                 }
             }
-            else if (e.ClickedItem is PremiumGiftCodePaymentOption option)
+            else if (e.ClickedItem is PremiumGiftCodePaymentOption option && _senderId is MessageSenderUser user)
             {
                 Hide();
-                await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, option, _userId));
+                await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, option, user.UserId));
             }
         }
 

@@ -542,7 +542,7 @@ namespace Telegram.Controls.Messages
                 }
                 else if (_mode == EmojiDrawerMode.EmojiStatus && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
                 {
-                    _clientService.Send(new SetEmojiStatus(new EmojiStatus(customEmoji.CustomEmojiId, 0)));
+                    _clientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0)));
                 }
                 else if (_mode == EmojiDrawerMode.Reactions)
                 {
@@ -555,7 +555,7 @@ namespace Telegram.Controls.Messages
         {
             if (_mode == EmojiDrawerMode.EmojiStatus && item.Sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                _clientService.Send(new SetEmojiStatus(new EmojiStatus(customEmoji.CustomEmojiId, item.Duration)));
+                _clientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), item.Duration)));
             }
         }
 
@@ -566,7 +566,7 @@ namespace Telegram.Controls.Messages
             var confirm = await popup.ShowQueuedAsync(XamlRoot);
             if (confirm == ContentDialogResult.Primary && _mode == EmojiDrawerMode.EmojiStatus && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                _clientService.Send(new SetEmojiStatus(new EmojiStatus(customEmoji.CustomEmojiId, popup.Value)));
+                _clientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), popup.Value)));
             }
         }
 

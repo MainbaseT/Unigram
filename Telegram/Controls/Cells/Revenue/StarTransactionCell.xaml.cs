@@ -138,13 +138,19 @@ namespace Telegram.Controls.Cells.Revenue
             }
             else if (transaction.Type is StarTransactionTypeGiftPurchase giftPurchase)
             {
-                var user = clientService.GetUser(giftPurchase.UserId);
+                if (clientService.TryGetUser(giftPurchase.OwnerId, out User user))
+                {
+                    Photo.SetUser(clientService, user, 36);
+                    Title.Text = user.FullName();
+                }
+                else if (clientService.TryGetChat(giftPurchase.OwnerId, out Chat chat))
+                {
+                    Photo.SetChat(clientService, chat, 36);
+                    Title.Text = chat.Title;
+                }
 
                 Subtitle.Visibility = Visibility.Visible;
-                Photo.SetUser(clientService, user, 36);
                 MediaPreview.Visibility = Visibility.Collapsed;
-
-                Title.Text = user.FullName();
                 Subtitle.Text = transaction.StarAmount.IsNegative()
                     ? Strings.Gift2TransactionSent
                     : Strings.Gift2TransactionRefundedSent;

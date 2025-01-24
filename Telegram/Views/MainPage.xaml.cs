@@ -928,7 +928,7 @@ namespace Telegram.Views
             {
                 LogoBasic.Visibility = Visibility.Collapsed;
                 LogoEmoji.Visibility = Visibility.Visible;
-                LogoEmoji.Source = new CustomEmojiFileSource(_clientService, user.EmojiStatus.CustomEmojiId);
+                LogoEmoji.Source = new CustomEmojiFileSource(_clientService, user.EmojiStatus.Type);
             }
             else
             {

@@ -343,9 +343,9 @@ namespace Telegram.ViewModels.Drawers
 
         private async Task<BaseObject> GetDefaultStatusAsync()
         {
-            var themedResponse = await ClientService.SendAsync(new GetThemedEmojiStatuses()) as EmojiStatuses;
-            var recentResponse = await ClientService.SendAsync(new GetRecentEmojiStatuses()) as EmojiStatuses;
-            var defaulResponse = await ClientService.SendAsync(new GetDefaultEmojiStatuses()) as EmojiStatuses;
+            var themedResponse = await ClientService.SendAsync(new GetThemedEmojiStatuses()) as EmojiStatusCustomEmojis;
+            var recentResponse = await ClientService.SendAsync(new GetRecentEmojiStatuses()) as EmojiStatusCustomEmojis;
+            var defaulResponse = await ClientService.SendAsync(new GetDefaultEmojiStatuses()) as EmojiStatusCustomEmojis;
 
             var themed = themedResponse?.CustomEmojiIds ?? Array.Empty<long>();
             var recent = recentResponse?.CustomEmojiIds ?? Array.Empty<long>();
@@ -377,11 +377,11 @@ namespace Telegram.ViewModels.Drawers
 
         private async Task<BaseObject> GetDefaultChatStatusAsync()
         {
-            var themedResponse = await ClientService.SendAsync(new GetThemedChatEmojiStatuses()) as EmojiStatuses;
-            var recentResponse = await ClientService.SendAsync(new GetRecentEmojiStatuses()) as EmojiStatuses;
-            var defaulResponse = await ClientService.SendAsync(new GetDefaultChatEmojiStatuses()) as EmojiStatuses;
+            var themedResponse = await ClientService.SendAsync(new GetThemedChatEmojiStatuses()) as EmojiStatusCustomEmojis;
+            var recentResponse = await ClientService.SendAsync(new GetRecentEmojiStatuses()) as EmojiStatusCustomEmojis;
+            var defaulResponse = await ClientService.SendAsync(new GetDefaultChatEmojiStatuses()) as EmojiStatusCustomEmojis;
 
-            var disallowedResponse = await ClientService.SendAsync(new GetDisallowedChatEmojiStatuses()) as EmojiStatuses;
+            var disallowedResponse = await ClientService.SendAsync(new GetDisallowedChatEmojiStatuses()) as EmojiStatusCustomEmojis;
 
             var themed = themedResponse?.CustomEmojiIds ?? Array.Empty<long>();
             var recent = recentResponse?.CustomEmojiIds ?? Array.Empty<long>();

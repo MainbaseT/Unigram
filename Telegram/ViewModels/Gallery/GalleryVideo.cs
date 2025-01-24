@@ -46,7 +46,7 @@ namespace Telegram.ViewModels.Gallery
 
         public override InputMessageContent ToInput()
         {
-            return new InputMessageVideo(new InputFileId(_video.VideoValue.Id), _video.Thumbnail?.ToInput(), Array.Empty<int>(), _video.Duration, _video.Width, _video.Height, _video.SupportsStreaming, null, false, null, false);
+            return new InputMessageVideo(new InputFileId(_video.VideoValue.Id), _video.Thumbnail?.ToInput(), null, 0, Array.Empty<int>(), _video.Duration, _video.Width, _video.Height, _video.SupportsStreaming, null, false, null, false);
         }
     }
 }

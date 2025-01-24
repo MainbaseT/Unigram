@@ -27,9 +27,9 @@ namespace Telegram.Views.Stars.Popups
 
         private readonly PremiumGiftCodePaymentOption _option;
 
-        private readonly long _userId;
+        private readonly MessageSender _senderId;
 
-        public SendGiftPopup(IClientService clientService, INavigationService navigationService, Gift gift, long userId)
+        public SendGiftPopup(IClientService clientService, INavigationService navigationService, Gift gift, MessageSender senderId)
         {
             InitializeComponent();
 
@@ -37,13 +37,13 @@ namespace Telegram.Views.Stars.Popups
             _navigationService = navigationService;
 
             _gift = gift;
-            _userId = userId;
+            _senderId = senderId;
 
             base.Title = Strings.Gift2Title;
 
             clientService.TryGetChatFromUser(clientService.Options.MyId, out Chat chat);
 
-            var content = new MessageGift(gift, new FormattedText(string.Empty, Array.Empty<TextEntity>()), gift.DefaultSellStarCount, 0, false, false, false, false, false, false, 0);
+            var content = new MessageGift(gift, clientService.MyId, string.Empty, new FormattedText(string.Empty, Array.Empty<TextEntity>()), gift.DefaultSellStarCount, 0, false, false, false, false, false, false, string.Empty);
             var message = new Message(0, new MessageSenderUser(clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, 0, 0, null, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, content, null);
 
             var playback = TypeResolver.Current.Playback;
@@ -70,20 +70,20 @@ namespace Telegram.Views.Stars.Popups
 
             CaptionInfo.Visibility = Visibility.Collapsed;
 
-            if (clientService.Options.MyId == userId)
+            if (senderId.IsUser(clientService.Options.MyId))
             {
                 HideMyName.Content = Strings.Gift2HideSelf;
                 HideMyNameInfo.Text = Strings.Gift2HideSelfInfo;
 
                 UpgradeableRoot.Visibility = Visibility.Collapsed;
             }
-            else if (clientService.TryGetUser(userId, out User user))
+            else
             {
-                HideMyNameInfo.Text = string.Format(Strings.Gift2HideInfo, user.FirstName);
+                HideMyNameInfo.Text = string.Format(Strings.Gift2HideInfo, _clientService.GetTitle(senderId));
 
                 if (gift.UpgradeStarCount > 0)
                 {
-                    UpgradeableInfo.Text = string.Format(Strings.Gift2UpgradeInfo, user.FirstName);
+                    UpgradeableInfo.Text = string.Format(Strings.Gift2UpgradeInfo, _clientService.GetTitle(senderId));
 
                     var text = string.Format(Strings.Gift2Upgrade, gift.UpgradeStarCount);
                     var index = text.IndexOf("\u2B50\uFE0F");
@@ -111,13 +111,13 @@ namespace Telegram.Views.Stars.Popups
             _navigationService = navigationService;
 
             _option = option;
-            _userId = userId;
+            _senderId = new MessageSenderUser(userId);
 
             base.Title = Strings.Gift2Title;
 
             clientService.TryGetChatFromUser(clientService.Options.MyId, out Chat chat);
 
-            var content = new MessageGiftedPremium(_clientService.Options.MyId, _userId, new FormattedText(string.Empty, Array.Empty<TextEntity>()), _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, _option.Sticker);
+            var content = new MessageGiftedPremium(_clientService.Options.MyId, userId, new FormattedText(string.Empty, Array.Empty<TextEntity>()), _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, _option.Sticker);
             var message = new Message(0, new MessageSenderUser(clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, 0, 0, null, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, content, null);
 
             var playback = TypeResolver.Current.Playback;
@@ -160,13 +160,13 @@ namespace Telegram.Views.Stars.Popups
             MessageContent content;
             if (_gift != null)
             {
-                content = new MessageGift(_gift, text, _gift.DefaultSellStarCount, Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0, false, false, false, false, false, false, 0);
+                content = new MessageGift(_gift, _clientService.MyId, string.Empty, text, _gift.DefaultSellStarCount, Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0, false, false, false, false, false, false, string.Empty);
 
                 PurchaseText.Text = Locale.Declension(Strings.R.Gift2Send, _gift.StarCount + (Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0)).Replace("\u2B50", Icons.Premium);
             }
-            else if (_option != null)
+            else if (_option != null && _senderId is MessageSenderUser user)
             {
-                content = new MessageGiftedPremium(_clientService.Options.MyId, _userId, text, _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, _option.Sticker);
+                content = new MessageGiftedPremium(_clientService.Options.MyId, user.UserId, text, _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, _option.Sticker);
 
                 PurchaseText.Text = string.Format(Strings.Gift2SendPremium, Formatter.FormatAmount(_option.Amount, _option.Currency));
             }
@@ -287,8 +287,9 @@ namespace Telegram.Views.Stars.Popups
         public Task<PayResult> SubmitGiftCodeAsync()
         {
             var text = CaptionInput.GetFormattedText();
+            var user = _senderId as MessageSenderUser;
 
-            _navigationService.NavigateToInvoice(new InputInvoiceTelegram(new TelegramPaymentPurposePremiumGiftCodes(0, _option.Currency, _option.Amount, new[] { _userId }, _option.MonthCount, text)));
+            _navigationService.NavigateToInvoice(new InputInvoiceTelegram(new TelegramPaymentPurposePremiumGiftCodes(0, _option.Currency, _option.Amount, new[] { user.UserId }, _option.MonthCount, text)));
             return Task.FromResult(PayResult.Succeeded);
         }
 
@@ -305,7 +306,7 @@ namespace Telegram.Views.Stars.Popups
 
             var text = CaptionInput.GetFormattedText();
 
-            var response = await _clientService.SendAsync(new SendGift(_gift.Id, _userId, text, HideMyName.IsChecked is true, Upgradeable.IsChecked is true));
+            var response = await _clientService.SendAsync(new SendGift(_gift.Id, _senderId, text, HideMyName.IsChecked is true, Upgradeable.IsChecked is true));
             if (response is Ok result)
             {
                 //var user = ClientService.GetUser(PaymentForm.SellerBotUserId);

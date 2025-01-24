@@ -57,7 +57,7 @@ namespace Telegram.Views.Premium.Popups
                 Animated.Visibility = Visibility.Collapsed;
                 Identity.Visibility = Visibility.Visible;
 
-                Identity.Source = new CustomEmojiFileSource(clientService, chat.EmojiStatus.CustomEmojiId);
+                Identity.Source = new CustomEmojiFileSource(clientService, chat.EmojiStatus.Type);
 
                 var player = new CustomEmojiIcon();
                 player.LoopCount = 0;
@@ -99,7 +99,7 @@ namespace Telegram.Views.Premium.Popups
                 Animated.Visibility = Visibility.Collapsed;
                 Identity.Visibility = Visibility.Visible;
 
-                Identity.Source = new CustomEmojiFileSource(clientService, chat.EmojiStatus.CustomEmojiId);
+                Identity.Source = new CustomEmojiFileSource(clientService, chat.EmojiStatus.Type);
 
                 var text = string.Format(Strings.TelegramPremiumUserStatusDefaultDialogTitle, title);
 

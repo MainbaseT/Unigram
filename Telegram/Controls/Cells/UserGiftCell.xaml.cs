@@ -18,7 +18,7 @@ namespace Telegram.Controls.Cells
             InitializeComponent();
         }
 
-        public void UpdateUserGift(IClientService clientService, UserGift gift)
+        public void UpdateUserGift(IClientService clientService, ReceivedGift gift)
         {
             StarCountRoot.Visibility = Visibility.Collapsed;
 
@@ -28,7 +28,7 @@ namespace Telegram.Controls.Cells
                 {
                     Photo.Source = PlaceholderImage.GetGlyph(Icons.AuthorHiddenFilled, 5);
                 }
-                else if (clientService.TryGetUser(gift.SenderUserId, out User user))
+                else if (clientService.TryGetUser(gift.SenderId, out User user))
                 {
                     Photo.SetUser(clientService, user, 24);
                 }
@@ -72,8 +72,8 @@ namespace Telegram.Controls.Cells
             else if (gift.Gift is SentGiftUpgraded upgraded)
             {
                 var source = DelayedFileSource.FromSticker(clientService, upgraded.Gift.Symbol.Sticker);
-                var centerColor = upgraded.Gift.Backdrop.CenterColor.ToColor();
-                var edgeColor = upgraded.Gift.Backdrop.EdgeColor.ToColor();
+                var centerColor = upgraded.Gift.Backdrop.Colors.CenterColor.ToColor();
+                var edgeColor = upgraded.Gift.Backdrop.Colors.EdgeColor.ToColor();
 
                 Pattern.Update(source, centerColor, edgeColor);
 

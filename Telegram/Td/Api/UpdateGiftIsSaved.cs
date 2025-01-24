@@ -2,14 +2,11 @@
 {
     public partial class UpdateGiftIsSold
     {
-        public long SenderUserId { get; set; }
+        public string ReceivedGiftId { get; set; }
 
-        public long MessageId { get; set; }
-
-        public UpdateGiftIsSold(long senderUserId, long messageId)
+        public UpdateGiftIsSold(string receivedGiftId)
         {
-            SenderUserId = senderUserId;
-            MessageId = messageId;
+            ReceivedGiftId = receivedGiftId;
         }
     }
 }

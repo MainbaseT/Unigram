@@ -599,7 +599,7 @@ namespace Telegram.ViewModels
                 foreach (var chat in chats)
                 {
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, null, null, new InputMessageForwarded(shareMessage.ChatId, shareMessage.MessageId, shareMessage.WithMyScore, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
+                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, null, null, new InputMessageForwarded(shareMessage.ChatId, shareMessage.MessageId, shareMessage.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
                 }
             }
             else if (_configuration is ChooseChatsConfigurationShareStory shareStory)
@@ -756,17 +756,17 @@ namespace Telegram.ViewModels
                     }
                 }
             }
-            else if (_configuration is ChooseChatsConfigurationTransferGift transferGift && chats[0].Type is ChatTypePrivate transferGiftPrivate)
+            else if (_configuration is ChooseChatsConfigurationTransferGift transferGift)
             {
                 var confirm = await TransferGiftPopup.ShowAsync(XamlRoot, ClientService, transferGift.Gift, chats[0]);
                 if (confirm == ContentDialogResult.Primary)
                 {
                     NavigationService.Hide(typeof(ChooseChatsPopup));
 
-                    var response = await ClientService.SendAsync(new TransferGift(transferGift.Gift.SenderUserId, transferGift.Gift.MessageId, transferGiftPrivate.UserId, transferGift.Gift.TransferStarCount));
+                    var response = await ClientService.SendAsync(new TransferGift(transferGift.Gift.ReceivedGiftId, chats[0].ToMessageSender(), transferGift.Gift.TransferStarCount));
                     if (response is Ok && transferGift.Gift.Gift is SentGiftUpgraded upgraded)
                     {
-                        Aggregator.Publish(new UpdateGiftIsSold(transferGift.Gift.SenderUserId, transferGift.Gift.MessageId));
+                        Aggregator.Publish(new UpdateGiftIsSold(transferGift.Gift.ReceivedGiftId));
 
                         ShowToast(string.Format(Strings.Gift2TransferredText, upgraded.Gift.ToName(), chats[0].Title));
                     }

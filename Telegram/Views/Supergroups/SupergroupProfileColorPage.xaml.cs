@@ -38,7 +38,7 @@ namespace Telegram.Views.Supergroups
 
             if (ViewModel.Chat.EmojiStatus != null)
             {
-                AnimatedStatus.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.Chat.EmojiStatus.CustomEmojiId);
+                AnimatedStatus.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.Chat.EmojiStatus.Type);
                 EmojiStatus.Badge = string.Empty;
             }
             else
@@ -116,7 +116,7 @@ namespace Telegram.Views.Supergroups
                 return;
             }
 
-            ViewModel.SelectedEmojiStatus = new EmojiStatus(customEmoji.CustomEmojiId, 0);
+            ViewModel.SelectedEmojiStatus = new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0);
 
             if (customEmoji.CustomEmojiId != 0)
             {

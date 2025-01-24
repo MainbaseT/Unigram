@@ -221,11 +221,18 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (transaction.Type is StarTransactionTypeGiftPurchase giftPurchase)
             {
-                var user = clientService.GetUser(giftPurchase.UserId);
+                if (clientService.TryGetUser(giftPurchase.OwnerId, out User user))
+                {
+                    FromPhoto.SetUser(clientService, user, 24);
+                    FromTitle.Text = user.FullName();
+                }
+                else if (clientService.TryGetChat(giftPurchase.OwnerId, out Chat chat))
+                {
+                    FromPhoto.SetChat(clientService, chat, 24);
+                    FromTitle.Text = chat.Title;
+                }
 
-                FromPhoto.SetUser(clientService, user, 24);
                 FromPhoto.Visibility = Visibility.Visible;
-                FromTitle.Text = user.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
 
                 Title.Text = transaction.StarAmount.IsNegative()

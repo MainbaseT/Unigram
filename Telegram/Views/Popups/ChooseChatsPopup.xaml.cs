@@ -452,12 +452,12 @@ namespace Telegram.Views.Popups
 
     public partial class ChooseChatsConfigurationTransferGift : ChooseChatsConfiguration
     {
-        public ChooseChatsConfigurationTransferGift(UserGift gift)
+        public ChooseChatsConfigurationTransferGift(ReceivedGift gift)
         {
             Gift = gift;
         }
 
-        public UserGift Gift { get; }
+        public ReceivedGift Gift { get; }
     }
 
     public partial class ChooseChatsConfigurationGroupCall : ChooseChatsConfiguration

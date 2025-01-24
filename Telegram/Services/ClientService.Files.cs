@@ -1009,6 +1009,12 @@ namespace Telegram.Services
                         ProcessFiles(linkPreviewTypeTheme.Settings);
                     }
                     break;
+                case LinkPreviewTypeUpgradedGift linkPreviewTypeUpgradedGift:
+                    if (linkPreviewTypeUpgradedGift.Gift != null)
+                    {
+                        ProcessFiles(linkPreviewTypeUpgradedGift.Gift);
+                    }
+                    break;
                 case LinkPreviewTypeUser linkPreviewTypeUser:
                     if (linkPreviewTypeUser.Photo != null)
                     {
@@ -1291,6 +1297,10 @@ namespace Telegram.Services
                     foreach (var item in messageVideo.AlternativeVideos)
                     {
                         ProcessFiles(item);
+                    }
+                    if (messageVideo.Cover != null)
+                    {
+                        ProcessFiles(messageVideo.Cover);
                     }
                     if (messageVideo.Video != null)
                     {
@@ -1839,6 +1849,18 @@ namespace Telegram.Services
                     if (quickReplyShortcut.FirstMessage != null)
                     {
                         ProcessFiles(quickReplyShortcut.FirstMessage);
+                    }
+                    break;
+                case ReceivedGift receivedGift:
+                    if (receivedGift.Gift != null)
+                    {
+                        ProcessFiles(receivedGift.Gift);
+                    }
+                    break;
+                case ReceivedGifts receivedGifts:
+                    foreach (var item in receivedGifts.Gifts)
+                    {
+                        ProcessFiles(item);
                     }
                     break;
                 case RichTextAnchorLink richTextAnchorLink:
@@ -2499,18 +2521,6 @@ namespace Telegram.Services
                     if (userFullInfo.PublicPhoto != null)
                     {
                         ProcessFiles(userFullInfo.PublicPhoto);
-                    }
-                    break;
-                case UserGift userGift:
-                    if (userGift.Gift != null)
-                    {
-                        ProcessFiles(userGift.Gift);
-                    }
-                    break;
-                case UserGifts userGifts:
-                    foreach (var item in userGifts.Gifts)
-                    {
-                        ProcessFiles(item);
                     }
                     break;
                 case Video video:

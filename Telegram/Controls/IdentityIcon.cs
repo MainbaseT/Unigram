@@ -98,7 +98,7 @@ namespace Telegram.Controls
                     UnloadObject(ref Icon);
 
                     LoadObject(ref Status, nameof(Status));
-                    Status.Source = new CustomEmojiFileSource(clientService, chat.EmojiStatus.CustomEmojiId);
+                    Status.Source = new CustomEmojiFileSource(clientService, chat.EmojiStatus.Type);
                 }
                 else
                 {
@@ -131,7 +131,7 @@ namespace Telegram.Controls
                 UnloadObject(ref Icon);
 
                 LoadObject(ref Status, nameof(Status));
-                Status.Source = new CustomEmojiFileSource(clientService, user.EmojiStatus.CustomEmojiId);
+                Status.Source = new CustomEmojiFileSource(clientService, user.EmojiStatus.Type);
             }
             else
             {

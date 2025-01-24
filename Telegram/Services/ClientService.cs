@@ -194,6 +194,7 @@ namespace Telegram.Services
         BasicGroup GetBasicGroup(Chat chat);
         bool TryGetBasicGroup(long id, out BasicGroup value);
         bool TryGetBasicGroup(Chat chat, out BasicGroup value);
+        bool TryGetBasicGroup(MessageSender sender, out BasicGroup value);
 
         BasicGroupFullInfo GetBasicGroupFull(long id);
         BasicGroupFullInfo GetBasicGroupFull(Chat chat);
@@ -204,6 +205,7 @@ namespace Telegram.Services
         Supergroup GetSupergroup(Chat chat);
         bool TryGetSupergroup(long id, out Supergroup value);
         bool TryGetSupergroup(Chat chat, out Supergroup value);
+        bool TryGetSupergroup(MessageSender sender, out Supergroup value);
 
         SupergroupFullInfo GetSupergroupFull(long id);
         SupergroupFullInfo GetSupergroupFull(Chat chat);
@@ -1986,6 +1988,17 @@ namespace Telegram.Services
             return false;
         }
 
+        public bool TryGetBasicGroup(MessageSender sender, out BasicGroup value)
+        {
+            if (sender is MessageSenderChat senderChat && TryGetChat(senderChat.ChatId, out Chat chat))
+            {
+                return TryGetBasicGroup(chat, out value);
+            }
+
+            value = null;
+            return false;
+        }
+
 
 
         public BasicGroupFullInfo GetBasicGroupFull(long id)
@@ -2056,6 +2069,17 @@ namespace Telegram.Services
             if (chat?.Type is ChatTypeSupergroup supergroup)
             {
                 return TryGetSupergroup(supergroup.SupergroupId, out value);
+            }
+
+            value = null;
+            return false;
+        }
+
+        public bool TryGetSupergroup(MessageSender sender, out Supergroup value)
+        {
+            if (sender is MessageSenderChat senderChat && TryGetChat(senderChat.ChatId, out Chat chat))
+            {
+                return TryGetSupergroup(chat, out value);
             }
 
             value = null;

@@ -686,7 +686,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public async void GiftPremium()
+        public void GiftPremium()
         {
             var chat = _chat;
             if (chat == null)
@@ -697,7 +697,8 @@ namespace Telegram.ViewModels
             if (ClientService.TryGetUser(chat, out User user) &&
                 ClientService.TryGetUserFull(chat, out UserFullInfo fullInfo))
             {
-                await ShowPopupAsync(new GiftPopup(ClientService, NavigationService, user, fullInfo));
+                ShowPopup(new GiftPopup(ClientService, NavigationService, user, fullInfo));
+            }
             }
         }
 
@@ -1001,9 +1002,9 @@ namespace Telegram.ViewModels
 
         public async void ShowPromo()
         {
-            if (Chat?.EmojiStatus != null)
+            if (Chat?.EmojiStatus?.Type is EmojiStatusTypeCustomEmoji emojiStatusTypeCustomEmoji)
             {
-                var response = await ClientService.SendAsync(new GetCustomEmojiStickers(new[] { Chat.EmojiStatus.CustomEmojiId }));
+                var response = await ClientService.SendAsync(new GetCustomEmojiStickers(new[] { emojiStatusTypeCustomEmoji.CustomEmojiId }));
                 if (response is Stickers stickers)
                 {
                     var second = await ClientService.SendAsync(new GetStickerSet(stickers.StickersValue[0].SetId));

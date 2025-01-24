@@ -35,7 +35,7 @@ namespace Telegram.Views.Profile
             {
                 return;
             }
-            else if (args.ItemContainer.ContentTemplateRoot is UserGiftCell content && args.Item is UserGift gift)
+            else if (args.ItemContainer.ContentTemplateRoot is UserGiftCell content && args.Item is ReceivedGift gift)
             {
                 content.UpdateUserGift(ViewModel.ClientService, gift);
             }
@@ -45,7 +45,7 @@ namespace Telegram.Views.Profile
 
         private void OnItemClick(object sender, ItemClickEventArgs e)
         {
-            ViewModel.GiftsTab.OpenGift(e.ClickedItem as UserGift);
+            ViewModel.GiftsTab.OpenGift(e.ClickedItem as ReceivedGift);
         }
     }
 }

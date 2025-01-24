@@ -1778,7 +1778,7 @@ namespace Telegram.Td.Api
             return years;
         }
 
-        public static Sticker GetSticker(this UserGift gift)
+        public static Sticker GetSticker(this ReceivedGift gift)
         {
             if (gift.Gift is SentGiftRegular regular)
             {
@@ -1815,6 +1815,67 @@ namespace Telegram.Td.Api
             }
 
             return !status.IsFake && !status.IsScam;
+        }
+
+        public static TextEntityType ToTextEntityType(this MessageSender sender)
+        {
+            if (sender is MessageSenderUser user)
+            {
+                return new TextEntityTypeMentionName(user.UserId);
+            }
+            else if (sender is MessageSenderChat chat)
+            {
+                return new TextEntityTypeTextUrl("tg-chat://" + chat.ChatId);
+            }
+
+            return null;
+        }
+
+        public static bool AreTheSame(this EmojiStatus x, EmojiStatus y)
+        {
+            if (x == null || y == null)
+            {
+                return x == y;
+            }
+
+            return x.ExpirationDate == y.ExpirationDate
+                && x.Type.AreTheSame(y.Type);
+        }
+
+        public static bool AreTheSame(this EmojiStatusType x, EmojiStatusType y)
+        {
+            if (x == null || y == null)
+            {
+                return x == y;
+            }
+            else if (x is EmojiStatusTypeCustomEmoji xCustomEmoji && y is EmojiStatusTypeCustomEmoji yCustomEmoji)
+            {
+                return xCustomEmoji.CustomEmojiId == yCustomEmoji.CustomEmojiId;
+            }
+            else if (x is EmojiStatusTypeUpgradedGift xUpgradedGift && y is EmojiStatusTypeUpgradedGift yUpgradedGift)
+            {
+                return xUpgradedGift.GiftName == yUpgradedGift.GiftName
+                    && xUpgradedGift.GiftTitle == yUpgradedGift.GiftTitle
+                    && xUpgradedGift.ModelCustomEmojiId == yUpgradedGift.ModelCustomEmojiId
+                    && xUpgradedGift.SymbolCustomEmojiId == yUpgradedGift.SymbolCustomEmojiId
+                    && xUpgradedGift.UpgradedGiftId == yUpgradedGift.UpgradedGiftId
+                    && xUpgradedGift.BackdropColors.AreTheSame(yUpgradedGift.BackdropColors);
+            }
+
+            return false;
+        }
+
+        public static bool AreTheSame(this UpgradedGiftBackdropColors x, UpgradedGiftBackdropColors y)
+        {
+            if (x == null || y == null)
+            {
+                return x == y;
+            }
+
+            return x.CenterColor == y.CenterColor
+                && x.EdgeColor == y.EdgeColor
+                && x.SymbolColor == y.SymbolColor
+                && x.TextColor == y.TextColor;
         }
 
         public static bool AreTheSame(this ChatFolder x, ChatFolder y)

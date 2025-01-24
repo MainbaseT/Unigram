@@ -124,8 +124,8 @@ namespace Telegram.Controls.Messages
                 var pattern = FindName("Pattern") as PatternBackground;
 
                 var source = DelayedFileSource.FromSticker(message.ClientService, upgradedGift.Gift.Symbol.Sticker);
-                var centerColor = upgradedGift.Gift.Backdrop.CenterColor.ToColor();
-                var edgeColor = upgradedGift.Gift.Backdrop.EdgeColor.ToColor();
+                var centerColor = upgradedGift.Gift.Backdrop.Colors.CenterColor.ToColor();
+                var edgeColor = upgradedGift.Gift.Backdrop.Colors.EdgeColor.ToColor();
 
                 pattern.Update(source, centerColor, edgeColor);
 
@@ -698,9 +698,13 @@ namespace Telegram.Controls.Messages
             var index1 = content.IndexOf("{0}");
             if (index1 != -1)
             {
-                if (emojiStatusChanged.OldEmojiStatus != null)
+                if (emojiStatusChanged.OldEmojiStatus?.Type is EmojiStatusTypeCustomEmoji oldCustomEmoji)
                 {
-                    entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(emojiStatusChanged.OldEmojiStatus.CustomEmojiId)));
+                    entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(oldCustomEmoji.CustomEmojiId)));
+                }
+                else if (emojiStatusChanged.OldEmojiStatus?.Type is EmojiStatusTypeUpgradedGift oldUpgradedGift)
+                {
+                    entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(oldUpgradedGift.ModelCustomEmojiId)));
                 }
                 else
                 {
@@ -712,9 +716,13 @@ namespace Telegram.Controls.Messages
             var index2 = content.IndexOf("{1}");
             if (index2 != -1)
             {
-                if (emojiStatusChanged.NewEmojiStatus != null)
+                if (emojiStatusChanged.NewEmojiStatus?.Type is EmojiStatusTypeCustomEmoji newCustomEmoji)
                 {
-                    entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(emojiStatusChanged.NewEmojiStatus.CustomEmojiId)));
+                    entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(newCustomEmoji.CustomEmojiId)));
+                }
+                else if (emojiStatusChanged.NewEmojiStatus?.Type is EmojiStatusTypeUpgradedGift newUpgradedGift)
+                {
+                    entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(newUpgradedGift.ModelCustomEmojiId)));
                 }
                 else
                 {

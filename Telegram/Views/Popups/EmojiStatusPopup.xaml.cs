@@ -26,8 +26,6 @@ namespace Telegram.Views.Popups
         private readonly long _customEmojiId;
         private readonly int _expirationDate;
 
-        private readonly UserGift _gift;
-
         public EmojiStatusPopup(IClientService clientService, INavigationService navigationService, long sourceUserId, Sticker sticker, int expirationDate)
         {
             InitializeComponent();
@@ -96,7 +94,7 @@ namespace Telegram.Views.Popups
 
             if (_clientService.IsPremium)
             {
-                var result = await _clientService.SendAsync(new SetEmojiStatus(new EmojiStatus(_customEmojiId, _expirationDate)));
+                var result = await _clientService.SendAsync(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(_customEmojiId), _expirationDate)));
                 Hide(result is Ok
                     ? ContentDialogResult.Primary
                     : ContentDialogResult.Secondary);

@@ -2,16 +2,13 @@
 {
     public partial class UpdateGiftIsSaved
     {
-        public long SenderUserId { get; set; }
-
-        public long MessageId { get; set; }
+        public string ReceivedGiftId { get; set; }
 
         public bool IsSaved { get; set; }
 
-        public UpdateGiftIsSaved(long senderUserId, long messageId, bool isSaved)
+        public UpdateGiftIsSaved(string receivedGiftId, bool isSaved)
         {
-            SenderUserId = senderUserId;
-            MessageId = messageId;
+            ReceivedGiftId = receivedGiftId;
             IsSaved = isSaved;
         }
     }

@@ -37,13 +37,13 @@ namespace Telegram.Views.Stars.Popups
 
         private readonly string _transactionId;
 
-        private readonly UserGift _gift;
-        private readonly long _userId;
+        private readonly ReceivedGift _gift;
+        private readonly MessageSender _senderId;
 
         private GiftUpgradePreview _preview;
         private int _index;
 
-        public UserGiftPopup(IClientService clientService, INavigationService navigationService, UserGift gift, long receiverUserId)
+        public UserGiftPopup(IClientService clientService, INavigationService navigationService, ReceivedGift gift, MessageSender receiverId)
         {
             InitializeComponent();
 
@@ -52,35 +52,55 @@ namespace Telegram.Views.Stars.Popups
             _aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
 
             _gift = gift;
-            _userId = receiverUserId;
+            _senderId = receiverId;
 
             if (gift.Gift is SentGiftRegular regular)
             {
-                if (gift.CanBeUpgraded && receiverUserId == clientService.Options.MyId)
+                if (gift.CanBeUpgraded && IsOwned(clientService, receiverId))
                 {
                     InitializeGift();
                 }
 
-                InitializeRegular(clientService, gift, regular.Gift, receiverUserId);
+                InitializeRegular(clientService, gift, regular.Gift, receiverId);
             }
             else if (gift.Gift is SentGiftUpgraded upgraded)
             {
-                InitializeUpgraded(clientService, gift, upgraded.Gift, receiverUserId);
+                InitializeUpgraded(clientService, gift, upgraded.Gift, receiverId);
             }
         }
 
-        private void InitializeRegular(IClientService clientService, UserGift userGift, Gift gift, long receiverUserId)
+        private bool IsOwned(IClientService clientService, MessageSender receiverId)
+        {
+            if (receiverId.IsUser(clientService.Options.MyId))
+            {
+                return true;
+            }
+            else if (clientService.TryGetSupergroup(receiverId, out Supergroup supergroup))
+            {
+                return supergroup.CanPostMessages();
+            }
+
+            return false;
+        }
+
+        private void InitializeRegular(IClientService clientService, ReceivedGift receivedGift, Gift gift, MessageSender receiverId)
         {
             DismissButtonRequestedTheme = ElementTheme.Default;
             UpgradedHeader.Visibility = Visibility.Collapsed;
             UpgradedRoot.Visibility = Visibility.Collapsed;
             MoreButton.Visibility = Visibility.Collapsed;
 
-            if (clientService.TryGetUser(userGift.SenderUserId, out User user))
+            if (clientService.TryGetUser(receivedGift.SenderId, out User user))
             {
                 FromPhoto.SetUser(clientService, user, 24);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
+            }
+            else if (clientService.TryGetChat(receivedGift.SenderId, out Chat chat))
+            {
+                FromPhoto.SetChat(clientService, chat, 24);
+                FromPhoto.Visibility = Visibility.Visible;
+                FromTitle.Text = chat.Title;
             }
             else
             {
@@ -92,32 +112,14 @@ namespace Telegram.Views.Stars.Popups
             From.Header = Strings.Gift2From;
             Title.Text = Strings.Gift2TitleReceived;
 
-            if (receiverUserId != clientService.Options.MyId)
+            if (IsOwned(clientService, receiverId))
             {
-                Subtitle.Visibility = Visibility.Collapsed;
-                Convert.Visibility = Visibility.Collapsed;
-                Status.Visibility = Visibility.Collapsed;
-                Info.Visibility = Visibility.Collapsed;
-
-                PurchaseText.Text = Strings.OK;
-
-                if (userGift.CanBeUpgraded)
+                if (receivedGift.IsSaved)
                 {
-                    TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.Gift2ActionUpgradeOut, user.FullName(true)));
-                }
-                else
-                {
-                    TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.Gift2Info2OutExpired, user.FullName(true)));
-                }
-            }
-            else
-            {
-                if (userGift.IsSaved)
-                {
-                    if (userGift.Date + clientService.Options.GiftSellPeriod > DateTime.Now.ToTimestamp())
+                    if (receivedGift.Date + clientService.Options.GiftSellPeriod > DateTime.Now.ToTimestamp())
                     {
                         TextBlockHelper.SetMarkdown(Subtitle, Strings.Gift2InfoPinned);
-                        Convert.Glyph = Locale.Declension(Strings.R.Gift2ButtonSell, userGift.SellStarCount);
+                        Convert.Glyph = Locale.Declension(Strings.R.Gift2ButtonSell, receivedGift.SellStarCount);
                     }
                     else
                     {
@@ -130,10 +132,10 @@ namespace Telegram.Views.Stars.Popups
                 }
                 else
                 {
-                    if (userGift.SellStarCount > 0 && userGift.Date + clientService.Options.GiftSellPeriod > DateTime.Now.ToTimestamp())
+                    if (receivedGift.SellStarCount > 0 && receivedGift.Date + clientService.Options.GiftSellPeriod > DateTime.Now.ToTimestamp())
                     {
-                        TextBlockHelper.SetMarkdown(Subtitle, Locale.Declension(Strings.R.Gift2Info, userGift.SellStarCount));
-                        Convert.Glyph = Locale.Declension(Strings.R.Gift2ButtonSell, userGift.SellStarCount);
+                        TextBlockHelper.SetMarkdown(Subtitle, Locale.Declension(Strings.R.Gift2Info, receivedGift.SellStarCount));
+                        Convert.Glyph = Locale.Declension(Strings.R.Gift2ButtonSell, receivedGift.SellStarCount);
                     }
                     else
                     {
@@ -145,7 +147,7 @@ namespace Telegram.Views.Stars.Popups
                     PurchaseText.Text = Strings.Gift2ProfileMakeVisible;
                 }
 
-                if (userGift.CanBeUpgraded && userGift.PrepaidUpgradeStarCount > 0)
+                if (receivedGift.CanBeUpgraded && receivedGift.PrepaidUpgradeStarCount > 0)
                 {
                     TextBlockHelper.SetMarkdown(Subtitle, Strings.Gift2InfoInFreeUpgrade);
 
@@ -155,12 +157,30 @@ namespace Telegram.Views.Stars.Popups
                 Info.Visibility = Visibility.Visible;
 
                 VisibilityRoot.Visibility = Visibility.Visible;
-                VisibilityText.Text = userGift.IsSaved
+                VisibilityText.Text = receivedGift.IsSaved
                     ? Strings.Gift2Visible
                     : Strings.Gift2Invisible;
-                Toggle.Glyph = userGift.IsSaved
+                Toggle.Glyph = receivedGift.IsSaved
                     ? Strings.Gift2VisibleHide
                     : Strings.Gift2InvisibleShow;
+            }
+            else
+            {
+                Subtitle.Visibility = Visibility.Collapsed;
+                Convert.Visibility = Visibility.Collapsed;
+                Status.Visibility = Visibility.Collapsed;
+                Info.Visibility = Visibility.Collapsed;
+
+                PurchaseText.Text = Strings.OK;
+
+                if (receivedGift.CanBeUpgraded)
+                {
+                    TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.Gift2ActionUpgradeOut, user.FullName(true)));
+                }
+                else
+                {
+                    TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.Gift2Info2OutExpired, user.FullName(true)));
+                }
             }
 
             AnimatedPhoto.LoopCount = 0;
@@ -175,24 +195,24 @@ namespace Telegram.Views.Stars.Popups
                 Availability.Content = gift.RemainingText();
             }
 
-            if (userGift.CanBeUpgraded && receiverUserId == clientService.Options.MyId)
+            if (receivedGift.CanBeUpgraded && IsOwned(clientService, receiverId))
             {
                 Status.Visibility = Visibility.Visible;
             }
 
-            Date.Content = Formatter.DateAt(userGift.Date);
+            Date.Content = Formatter.DateAt(receivedGift.Date);
 
-            if (userGift.Text?.Text.Length > 0)
+            if (receivedGift.Text?.Text.Length > 0)
             {
                 TableRoot.BorderThickness = new Thickness(1, 1, 1, 0);
                 TableRoot.CornerRadius = new CornerRadius(4, 4, 0, 0);
 
                 CaptionRoot.Visibility = Visibility.Visible;
-                Caption.SetText(clientService, userGift.Text);
+                Caption.SetText(clientService, receivedGift.Text);
             }
         }
 
-        private void InitializeUpgraded(IClientService clientService, UserGift userGift, UpgradedGift gift, long receiverUserId)
+        private void InitializeUpgraded(IClientService clientService, ReceivedGift receivedGift, UpgradedGift gift, MessageSender receiverId)
         {
             DismissButtonRequestedTheme = ElementTheme.Dark;
             Header.Visibility = Visibility.Collapsed;
@@ -200,19 +220,25 @@ namespace Telegram.Views.Stars.Popups
             MoreButton.Visibility = Visibility.Visible;
 
             var source = DelayedFileSource.FromSticker(clientService, gift.Symbol.Sticker);
-            var centerColor = gift.Backdrop.CenterColor.ToColor();
-            var edgeColor = gift.Backdrop.EdgeColor.ToColor();
+            var centerColor = gift.Backdrop.Colors.CenterColor.ToColor();
+            var edgeColor = gift.Backdrop.Colors.EdgeColor.ToColor();
 
             UpgradedHeader.Update(source, centerColor, edgeColor);
             UpgradedAnimatedPhoto.Source = DelayedFileSource.FromSticker(clientService, gift.Model.Sticker);
             UpgradedTitle.Text = gift.Title;
             UpgradedSubtitle.Text = Locale.Declension(Strings.R.Gift2CollectionNumber, gift.Number);
 
-            if (clientService.TryGetUser(gift.OwnerUserId, out User user))
+            if (clientService.TryGetUser(gift.OwnerId, out User user))
             {
                 UpgradedFromPhoto.SetUser(clientService, user, 24);
                 UpgradedFromPhoto.Visibility = Visibility.Visible;
                 UpgradedFromTitle.Text = user.FullName();
+            }
+            else if (clientService.TryGetChat(gift.OwnerId, out Chat chat))
+            {
+                UpgradedFromPhoto.SetChat(clientService, chat, 24);
+                UpgradedFromPhoto.Visibility = Visibility.Visible;
+                UpgradedFromTitle.Text = chat.Title;
             }
             else
             {
@@ -241,17 +267,14 @@ namespace Telegram.Views.Stars.Popups
 
                 UpgradedCaptionRoot.Visibility = Visibility.Visible;
 
-                var sender = clientService.GetUser(gift.OriginalDetails.SenderUserId);
-                var receiver = clientService.GetUser(gift.OriginalDetails.ReceiverUserId);
-
-                var senderName = sender?.FullName();
+                var senderName = clientService.GetTitle(gift.OriginalDetails.SenderId);
                 var senderText = senderName != null
-                    ? new FormattedText(senderName, new[] { new TextEntity(0, senderName.Length, new TextEntityTypeMentionName(sender.Id)) })
+                    ? new FormattedText(senderName, new[] { new TextEntity(0, senderName.Length, gift.OriginalDetails.SenderId.ToTextEntityType()) })
                     : null;
 
-                var receiverName = receiver?.FullName();
+                var receiverName = clientService.GetTitle(gift.OriginalDetails.ReceiverId);
                 var receiverText = receiverName != null
-                    ? new FormattedText(receiverName, new[] { new TextEntity(0, receiverName.Length, new TextEntityTypeMentionName(receiver.Id)) })
+                    ? new FormattedText(receiverName, new[] { new TextEntity(0, receiverName.Length, gift.OriginalDetails.ReceiverId.ToTextEntityType()) })
                     : null;
 
                 var date = Formatter.Date(gift.OriginalDetails.Date);
@@ -261,28 +284,28 @@ namespace Telegram.Views.Stars.Popups
 
                 if (gift.OriginalDetails.Text.Text.Length > 0)
                 {
-                    if (sender != null && receiver != null)
+                    if (senderName.Length > 0 && receiverName.Length > 0)
                     {
                         text = ClientEx.Format(Strings.Gift2AttributeOriginalDetailsComment, senderText, receiverText, dateText, gift.OriginalDetails.Text);
                     }
-                    else if (sender != null)
+                    else if (senderName.Length > 0)
                     {
                         text = ClientEx.Format(Strings.Gift2AttributeOriginalDetailsSelfComment, senderText, dateText, gift.OriginalDetails.Text);
                     }
-                    else if (receiver != null)
+                    else if (receiverName.Length > 0)
                     {
                         text = ClientEx.Format(Strings.Gift2AttributeOriginalDetailsNoSenderComment, receiverText, dateText, gift.OriginalDetails.Text);
                     }
                 }
-                else if (sender != null && receiver != null)
+                else if (senderName.Length > 0 && receiverName.Length > 0)
                 {
                     text = ClientEx.Format(Strings.Gift2AttributeOriginalDetails, senderText, receiverText, dateText);
                 }
-                else if (sender != null)
+                else if (senderName.Length > 0)
                 {
                     text = ClientEx.Format(Strings.Gift2AttributeOriginalDetailsSelf, senderText, dateText);
                 }
-                else if (receiver != null)
+                else if (receiverName.Length > 0)
                 {
                     text = ClientEx.Format(Strings.Gift2AttributeOriginalDetailsNoSender, receiverText, dateText);
                 }
@@ -290,9 +313,9 @@ namespace Telegram.Views.Stars.Popups
                 UpgradedCaption.SetText(clientService, text);
             }
 
-            if (gift.OwnerUserId == clientService.Options.MyId && userGift.MessageId != 0)
+            if (IsOwned(clientService, gift.OwnerId) && receivedGift.ReceivedGiftId.Length > 0)
             {
-                if (userGift.IsSaved)
+                if (receivedGift.IsSaved)
                 {
                     Info.Text = Strings.Gift2ProfileVisible;
                     PurchaseText.Text = Strings.Gift2ProfileMakeInvisible;
@@ -373,6 +396,11 @@ namespace Telegram.Views.Stars.Popups
 
         private async void Upgrade2()
         {
+            if (_gift.Gift is not SentGiftRegular regular)
+            {
+                return;
+            }
+
             PurchaseRing.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
             var visual1 = ElementComposition.GetElementVisual(PurchaseText);
@@ -394,7 +422,7 @@ namespace Telegram.Views.Stars.Popups
 
             //await Task.Delay(2000);
 
-            var response = await _clientService.SendAsync(new UpgradeGift(_gift.SenderUserId, _gift.MessageId, KeepOriginalDetails.IsChecked is true));
+            var response = await _clientService.SendAsync(new UpgradeGift(_gift.ReceivedGiftId, KeepOriginalDetails.IsChecked is true, _gift.PrepaidUpgradeStarCount > 0 ? 0 : regular.Gift.UpgradeStarCount));
             if (response is UpgradeGiftResult result)
             {
                 _gift.ExportDate = result.ExportDate;
@@ -412,7 +440,7 @@ namespace Telegram.Views.Stars.Popups
                 DetailRoot.Visibility = Visibility.Visible;
                 UpgradeRoot.Visibility = Visibility.Collapsed;
 
-                InitializeUpgraded(_clientService, _gift, result.Gift, _userId);
+                InitializeUpgraded(_clientService, _gift, result.Gift, _senderId);
             }
             else if (response is Error error)
             {
@@ -442,22 +470,22 @@ namespace Telegram.Views.Stars.Popups
 
         private async void Convert_Click(object sender, RoutedEventArgs e)
         {
-            if (_gift?.Gift is SentGiftRegular regular && _clientService.TryGetUser(_gift.SenderUserId, out User user))
+            if (_gift?.Gift is SentGiftRegular regular)
             {
                 var expiration = Formatter.ToLocalTime(_gift.Date + _clientService.Options.GiftSellPeriod);
                 var diff = expiration - DateTime.Now;
 
-                var message = Locale.Declension(Strings.R.Gift2ConvertText2, (long)diff.TotalDays, user.FirstName, Locale.Declension(Strings.R.StarsCount, regular.Gift.StarCount));
+                var message = Locale.Declension(Strings.R.Gift2ConvertText2, (long)diff.TotalDays, _clientService.GetTitle(_gift.SenderId), Locale.Declension(Strings.R.StarsCount, regular.Gift.StarCount));
 
                 var confirm = await MessagePopup.ShowAsync(XamlRoot, target: null, message, Strings.Gift2ConvertTitle, Strings.Gift2ConvertButton, Strings.Cancel);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    var response = await _clientService.SendAsync(new SellGift(user.Id, _gift.MessageId));
+                    var response = await _clientService.SendAsync(new SellGift(_gift.ReceivedGiftId));
                     if (response is Ok)
                     {
                         Hide(ContentDialogResult.Secondary);
 
-                        _aggregator.Publish(new UpdateGiftIsSold(_gift.SenderUserId, _gift.MessageId));
+                        _aggregator.Publish(new UpdateGiftIsSold(_gift.ReceivedGiftId));
                         _navigationService.Navigate(typeof(StarsPage));
 
                         ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.Gift2ConvertedTitle, Locale.Declension(Strings.R.Gift2Converted, regular.Gift.StarCount)), ToastPopupIcon.StarsTopup);
@@ -468,15 +496,15 @@ namespace Telegram.Views.Stars.Popups
 
         private async void Toggle_Click(object sender, RoutedEventArgs e)
         {
-            var response = await _clientService.SendAsync(new ToggleGiftIsSaved(_gift.SenderUserId, _gift.MessageId, !_gift.IsSaved));
+            var response = await _clientService.SendAsync(new ToggleGiftIsSaved(_gift.ReceivedGiftId, !_gift.IsSaved));
             if (response is Ok)
             {
                 _gift.IsSaved = !_gift.IsSaved;
-                _aggregator.Publish(new UpdateGiftIsSaved(_gift.SenderUserId, _gift.MessageId, _gift.IsSaved));
+                _aggregator.Publish(new UpdateGiftIsSaved(_gift.ReceivedGiftId, _gift.IsSaved));
 
                 if (_gift.Gift is SentGiftRegular regular)
                 {
-                    InitializeRegular(_clientService, _gift, regular.Gift, _userId);
+                    InitializeRegular(_clientService, _gift, regular.Gift, _senderId);
                 }
 
                 if (_gift.IsSaved)
@@ -601,8 +629,8 @@ namespace Telegram.Views.Stars.Popups
             var backdrop = _preview.Backdrops[random.Next(_preview.Backdrops.Count)];
 
             var pattern = new DelayedFileSource(_clientService, symbol.Sticker);
-            var centerColor = backdrop.CenterColor.ToColor();
-            var edgeColor = backdrop.EdgeColor.ToColor();
+            var centerColor = backdrop.Colors.CenterColor.ToColor();
+            var edgeColor = backdrop.Colors.EdgeColor.ToColor();
 
             UpgradedAnimatedPhoto.Source = new DelayedFileSource(_clientService, model.Sticker);
             UpgradedHeader.Update(pattern, centerColor, edgeColor);
@@ -620,7 +648,7 @@ namespace Telegram.Views.Stars.Popups
 
                 if (_gift.Gift is SentGiftRegular regular)
                 {
-                    InitializeRegular(_clientService, _gift, regular.Gift, _userId);
+                    InitializeRegular(_clientService, _gift, regular.Gift, _senderId);
                 }
             }
         }

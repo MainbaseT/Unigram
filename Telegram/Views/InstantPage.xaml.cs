@@ -1115,7 +1115,7 @@ namespace Telegram.Views
             var galleryItem = new GalleryVideo(ViewModel.ClientService, block.Video, block.Caption.ToFormattedText());
             ViewModel.Gallery.Items.Add(galleryItem);
 
-            var message = CreateMessage(new MessageVideo(block.Video, Array.Empty<AlternativeVideo>(), null, false, false, false));
+            var message = CreateMessage(new MessageVideo(block.Video, Array.Empty<AlternativeVideo>(), null, 0, null, false, false, false));
             var element = new StackPanel { Style = Resources["BlockVideoStyle"] as Style };
 
             var content = new VideoContent(message);
@@ -1261,7 +1261,7 @@ namespace Telegram.Views
                     var galleryItem = new GalleryVideo(ViewModel.ClientService, videoBlock.Video, block.Caption.ToFormattedText());
                     ViewModel.Gallery.Items.Add(galleryItem);
 
-                    var message = CreateMessage(new MessageVideo(videoBlock.Video, Array.Empty<AlternativeVideo>(), null, false, false, false));
+                    var message = CreateMessage(new MessageVideo(videoBlock.Video, Array.Empty<AlternativeVideo>(), null, 0, null, false, false, false));
 
                     var content = new VideoContent(message);
                     content.Tag = galleryItem;

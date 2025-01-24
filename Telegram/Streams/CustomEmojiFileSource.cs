@@ -22,6 +22,21 @@ namespace Telegram.Streams
             DownloadFile(null, null);
         }
 
+        public CustomEmojiFileSource(IClientService clientService, EmojiStatusType type)
+            : base(clientService, null as File)
+        {
+            if (type is EmojiStatusTypeCustomEmoji customEmoji)
+            {
+                _customEmojiId = customEmoji.CustomEmojiId;
+            }
+            else if (type is EmojiStatusTypeUpgradedGift upgradedGift)
+            {
+                _customEmojiId = upgradedGift.ModelCustomEmojiId;
+            }
+
+            DownloadFile(null, null);
+        }
+
         public override long Id => _customEmojiId;
 
         public override async void DownloadFile(object sender, UpdateHandler<File> handler)
