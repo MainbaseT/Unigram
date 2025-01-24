@@ -425,11 +425,16 @@ namespace Telegram.Views.Stars.Popups
             var response = await _clientService.SendAsync(new UpgradeGift(_gift.ReceivedGiftId, KeepOriginalDetails.IsChecked is true, _gift.PrepaidUpgradeStarCount > 0 ? 0 : regular.Gift.UpgradeStarCount));
             if (response is UpgradeGiftResult result)
             {
+                var id = _gift.ReceivedGiftId;
+
+                _gift.ReceivedGiftId = result.ReceivedGiftId;
                 _gift.ExportDate = result.ExportDate;
                 _gift.TransferStarCount = result.TransferStarCount;
                 _gift.CanBeTransferred = result.CanBeTransferred;
                 _gift.IsSaved = result.IsSaved;
                 _gift.Gift = new SentGiftUpgraded(result.Gift);
+
+                _aggregator.Publish(new UpdateGiftUpgraded(id, _gift));
 
                 UpgradedAnimatedPhoto.LoopCompleted -= OnLoopCompleted;
 

@@ -55,7 +55,8 @@ namespace Telegram.ViewModels.Profile
         public override void Subscribe()
         {
             Aggregator.Subscribe<UpdateGiftIsSaved>(this, Handle)
-                .Subscribe<UpdateGiftIsSold>(Handle);
+                .Subscribe<UpdateGiftIsSold>(Handle)
+                .Subscribe<UpdateGiftUpgraded>(Handle);
         }
 
         private void Handle(UpdateGiftIsSaved update)
@@ -87,6 +88,22 @@ namespace Telegram.ViewModels.Profile
                 }
 
                 Items.Remove(receivedGift);
+            });
+        }
+
+        private void Handle(UpdateGiftUpgraded update)
+        {
+            BeginOnUIThread(() =>
+            {
+                var receivedGift = Items.FirstOrDefault(x => x.ReceivedGiftId == update.ReceivedGiftId);
+                if (receivedGift == null)
+                {
+                    return;
+                }
+
+                var index = Items.IndexOf(receivedGift);
+                Items.Remove(receivedGift);
+                Items.Insert(index, update.Gift);
             });
         }
 
