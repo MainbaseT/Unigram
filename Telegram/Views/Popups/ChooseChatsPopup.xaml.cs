@@ -95,6 +95,21 @@ namespace Telegram.Views.Popups
             ShowMessages = false
         };
 
+        public static readonly ChooseChatsOptions UsersAndChannels = new()
+        {
+            AllowChannelChats = true,
+            AllowGroupChats = false,
+            AllowBotChats = false,
+            AllowUserChats = true,
+            AllowSecretChats = false,
+            AllowSelf = true,
+            CanPostMessages = true,
+            CanInviteUsers = false,
+            CanShareContact = false,
+            Mode = ChooseChatsMode.Chats,
+            ShowMessages = false
+        };
+
         public static readonly ChooseChatsOptions Contacts = new()
         {
             AllowChannelChats = false,

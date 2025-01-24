@@ -259,7 +259,7 @@ namespace Telegram.ViewModels
             else if (parameter is ChooseChatsConfigurationTransferGift transferGift)
             {
                 SelectionMode = ListViewSelectionMode.None;
-                Options = ChooseChatsOptions.Users;
+                Options = ChooseChatsOptions.UsersAndChannels;
                 ShouldCloseOnCommit = false;
                 IsCommentEnabled = false;
                 IsChatSelection = false;
