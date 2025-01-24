@@ -2701,7 +2701,7 @@ namespace Telegram.ViewModels
             }
 
             var chat = Chat;
-            if (chat == null)
+            if (chat == null || RestrictsNewChats)
             {
                 return;
             }
