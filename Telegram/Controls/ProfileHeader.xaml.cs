@@ -385,9 +385,21 @@ namespace Telegram.Controls
         {
             _actualTheme = ViewModel.NavigationService.Window.ActualTheme;
 
-            if (ViewModel.ClientService.TryGetProfileColor(chat.ProfileAccentColorId, out ProfileColor color))
+            if (chat.ProfileAccentColorId != -1 || chat.EmojiStatus?.Type is EmojiStatusTypeUpgradedGift)
             {
-                var colors = color.ForTheme(_actualTheme);
+                ProfileColors colors;
+                if (chat.EmojiStatus?.Type is EmojiStatusTypeUpgradedGift upgradedGift)
+                {
+                    colors = new ProfileColors(new ProfileAccentColors(Array.Empty<int>(), new[] { upgradedGift.BackdropColors.EdgeColor, upgradedGift.BackdropColors.CenterColor }, Array.Empty<int>()));
+                }
+                else if (ViewModel.ClientService.TryGetProfileColor(chat.ProfileAccentColorId, out ProfileColor color))
+                {
+                    colors = color.ForTheme(_actualTheme);
+                }
+                else
+                {
+                    return;
+                }
 
                 Identity.Foreground = new SolidColorBrush(Colors.White);
                 BotVerified.ReplacementColor = new SolidColorBrush(Colors.White);
@@ -451,7 +463,11 @@ namespace Telegram.Controls
                 UpdateIcons(chat, false);
             }
 
-            if (chat.ProfileBackgroundCustomEmojiId != 0)
+            if (chat.EmojiStatus?.Type is EmojiStatusTypeUpgradedGift emojiStatusTypeUpgradedGift)
+            {
+                Pattern.Source = new CustomEmojiFileSource(ViewModel.ClientService, emojiStatusTypeUpgradedGift.SymbolCustomEmojiId);
+            }
+            else if (chat.ProfileBackgroundCustomEmojiId != 0)
             {
                 Pattern.Source = new CustomEmojiFileSource(ViewModel.ClientService, chat.ProfileBackgroundCustomEmojiId);
             }
@@ -461,7 +477,7 @@ namespace Telegram.Controls
             }
         }
 
-        private void UpdateProfileBackgroundCustomEmoji(ProfileColors color)
+        private void UpdateProfileBackgroundCustomEmoji(ProfileColors colors)
         {
             var compositor = BootStrapper.Current.Compositor;
 
@@ -479,25 +495,25 @@ namespace Telegram.Controls
             surfaceBrush.Stretch = CompositionStretch.None;
 
             CompositionBrush brush;
-            if (color == null)
+            if (colors == null)
             {
                 brush = compositor.CreateColorBrush(_actualTheme == ElementTheme.Light
                     ? Color.FromArgb(0x80, 0xFF, 0xFF, 0xFF)
                     : Color.FromArgb(0x09, 0xFF, 0xFF, 0xFF));
             }
-            else if (color.BackgroundColors.Count > 1)
+            else if (colors.BackgroundColors.Count > 1)
             {
                 var linear = compositor.CreateLinearGradientBrush();
                 linear.StartPoint = new Vector2();
                 linear.EndPoint = new Vector2(0, 1);
-                linear.ColorStops.Add(compositor.CreateColorGradientStop(0, color.BackgroundColors[1]));
-                linear.ColorStops.Add(compositor.CreateColorGradientStop(1, color.BackgroundColors[0]));
+                linear.ColorStops.Add(compositor.CreateColorGradientStop(0, colors.BackgroundColors[1]));
+                linear.ColorStops.Add(compositor.CreateColorGradientStop(1, colors.BackgroundColors[0]));
 
                 brush = linear;
             }
             else
             {
-                brush = compositor.CreateColorBrush(color.BackgroundColors[0]);
+                brush = compositor.CreateColorBrush(colors.BackgroundColors[0]);
             }
 
             var radial = compositor.CreateRadialGradientBrush();
