@@ -38,6 +38,7 @@ namespace Telegram.ViewModels.Drawers
 
         private readonly StickerSetViewModel _reactionTopSet;
         private readonly StickerSetViewModel _reactionRecentSet;
+        private readonly StickerSetViewModel _reactionUpgradedSet;
 
         public EmojiDrawerViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
@@ -53,6 +54,13 @@ namespace Telegram.ViewModels.Drawers
             });
 
             _reactionRecentSet = new StickerSetViewModel(ClientService, new StickerSetInfo
+            {
+                Title = Strings.RecentStickers,
+                Name = "tg/recentlyUsed",
+                IsInstalled = true
+            });
+
+            _reactionUpgradedSet = new StickerSetViewModel(ClientService, new StickerSetInfo
             {
                 Title = Strings.RecentStickers,
                 Name = "tg/recentlyUsed",
@@ -303,6 +311,31 @@ namespace Telegram.ViewModels.Drawers
 
                         sets.Insert(0, _reactionTopSet);
                         installedSets.Insert(0, _reactionTopSet);
+
+                        //if (_mode == EmojiDrawerMode.EmojiStatus)
+                        //{
+                        //    var response2 = await ClientService.SendAsync(new GetUpgradedGiftEmojiStatuses());
+                        //    if (response2 is EmojiStatuses statuses)
+                        //    {
+                        //        var ids = new HashSet<long>();
+
+                        //        foreach (var status in statuses.EmojiStatusesValue)
+                        //        {
+                        //            if (status.Type is EmojiStatusTypeUpgradedGift upgradedGift)
+                        //            {
+                        //                ids.Add(upgradedGift.ModelCustomEmojiId);
+                        //            }
+                        //        }
+
+                        //        var response3 = await ClientService.SendAsync(new GetCustomEmojiStickers(ids.ToList()));
+                        //        if (response3 is Stickers stickers2)
+                        //        {
+
+                        //        }
+
+                        //        _reactionUpgradedSet.Update(statuses.EmojiStatusesValue.Select(x => new StickerViewModel(ClientService, x)));
+                        //    }
+                        //}
                     }
                 }
             }
