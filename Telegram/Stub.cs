@@ -6690,6 +6690,18 @@ public static class OpusOutput_stub
 }
 public static class AutomationPeer_stub
 {
+    public static string GetName_stub(this Windows.UI.Xaml.Automation.Peers.AutomationPeer sender)
+    {
+        try
+        {
+            return sender.GetName();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static object GetPattern_stub(this Windows.UI.Xaml.Automation.Peers.AutomationPeer sender, Windows.UI.Xaml.Automation.Peers.PatternInterface patternInterface)
     {
         try
