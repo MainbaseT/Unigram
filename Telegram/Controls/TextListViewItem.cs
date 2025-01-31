@@ -49,7 +49,7 @@ namespace Telegram.Controls
             }
 
             var builder = new StringBuilder();
-            var descendants = (_owner.ContentTemplateRoot ?? _owner).Descendants();
+            var descendants = (_owner.ContentTemplateRoot ?? _owner).DescendantsAndSelf();
 
             foreach (UIElement child in descendants.Where(x => x is TextBlock or RichTextBlock))
             {
@@ -96,7 +96,7 @@ namespace Telegram.Controls
         protected override string GetNameCore()
         {
             var builder = new StringBuilder();
-            var descendants = (_owner.ContentTemplateRoot ?? _owner).Descendants();
+            var descendants = (_owner.ContentTemplateRoot ?? _owner).DescendantsAndSelf();
 
             foreach (UIElement child in descendants.Where(x => x is TextBlock or RichTextBlock))
             {
