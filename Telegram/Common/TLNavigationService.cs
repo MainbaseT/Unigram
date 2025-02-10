@@ -429,7 +429,7 @@ namespace Telegram.Common
                     state["access_token"] = accessToken;
                 }
 
-                if (createNewWindow)
+                if (createNewWindow || WindowContext.IsKeyDown(Windows.System.VirtualKey.Control))
                 {
                     Type target;
                     object parameter;
