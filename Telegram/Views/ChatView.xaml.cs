@@ -1078,6 +1078,18 @@ namespace Telegram.Views
                     }
                 }
             }
+            else if (args.Key == VirtualKey.E && args.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift))
+            {
+                ButtonStickers.Show(Services.Settings.StickersTab.Emoji);
+            }
+            else if (args.Key == VirtualKey.G && args.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift))
+            {
+                ButtonStickers.Show(Services.Settings.StickersTab.Animations);
+            }
+            else if (args.Key == VirtualKey.S && args.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift))
+            {
+                ButtonStickers.Show(Services.Settings.StickersTab.Stickers);
+            }
             else if (args.Key == VirtualKey.R && /*args.RepeatCount == 1 &&*/ args.Modifiers == VirtualKeyModifiers.Control)
             {
                 btnVoiceMessage.ToggleRecording();

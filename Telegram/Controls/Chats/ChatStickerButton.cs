@@ -237,6 +237,24 @@ namespace Telegram.Controls.Chats
 
         public StickersPanelMode Mode => _stickersMode;
 
+        public void Show(StickersTab tab)
+        {
+            if (ControlledPanel.Visibility == Visibility.Collapsed || _stickersMode == StickersPanelMode.Collapsed)
+            {
+                SettingsService.Current.Stickers.SelectedTab = tab;
+                Stickers_PointerEntered(null, null);
+            }
+            else if (SettingsService.Current.Stickers.SelectedTab != tab)
+            {
+                SettingsService.Current.Stickers.SelectedTab = tab;
+                ControlledPanel.Activate();
+            }
+            else
+            {
+                Collapse();
+            }
+        }
+
         public void Collapse()
         {
             if (_stickersMode == StickersPanelMode.Overlay)
