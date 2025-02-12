@@ -63,7 +63,7 @@ namespace Telegram.Services.Calls
 
         private int _availableStreamsCount = 0;
 
-        public VoipGroupCall(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, XamlRoot xamlRoot, Chat chat, GroupCall groupCall, MessageSender alias, string inviteHash)
+        public VoipGroupCall(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, XamlRoot xamlRoot, Chat chat, GroupCall groupCall, MessageSender alias, string inviteHash, bool upgrade)
             : base(clientService, settingsService, aggregator)
         {
             Duration = groupCall.Duration;
@@ -116,7 +116,7 @@ namespace Telegram.Services.Calls
             _coordinator?.TryNotifyMutedChanged(_manager.IsMuted);
 
             InitializeSystemCallAsync(chat).Wait();
-            CreateWindow();
+            CreateWindow(upgrade);
 
             if (groupCall.ScheduledStartDate > 0)
             {
@@ -1007,19 +1007,32 @@ namespace Telegram.Services.Calls
 
         public bool IsConnected => _isConnected;
 
-        private void CreateWindow()
+        private void CreateWindow(bool upgrade)
         {
-            var service = TypeResolver.Current.Resolve<IViewService>(int.MaxValue);
-            var options = new ViewServiceOptions
+            if (upgrade)
             {
-                Width = 720,
-                Height = 540,
-                PersistedId = IsRtmpStream ? "LiveStream" : "VideoChat",
-                Content = CreatePresentation,
-            };
+                WindowContext.ForEach(window =>
+                {
+                    if (window.Content is VoipPage)
+                    {
+                        window.Content = CreatePresentation(null);
+                    }
+                });
+            }
+            else
+            {
+                var service = TypeResolver.Current.Resolve<IViewService>(int.MaxValue);
+                var options = new ViewServiceOptions
+                {
+                    Width = 720,
+                    Height = 540,
+                    PersistedId = IsRtmpStream ? "LiveStream" : "VideoChat",
+                    Content = CreatePresentation,
+                };
 
-            Logger.Info("Waiting for window creation");
-            _ = service.OpenAsync(options);
+                Logger.Info("Waiting for window creation");
+                _ = service.OpenAsync(options);
+            }
         }
 
         private UIElement CreatePresentation(ViewLifetimeControl control)

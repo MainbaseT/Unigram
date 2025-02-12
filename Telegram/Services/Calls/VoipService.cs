@@ -3,10 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Native.Calls;
+using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services.Calls;
 using Telegram.Services.Updates;
 using Telegram.Td.Api;
+using Telegram.Views.Calls;
 using Telegram.Views.Calls.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -204,7 +206,7 @@ namespace Telegram.Services
                 return;
             }
 
-            await JoinAsyncInternal(navigation.XamlRoot, chat, chat.VideoChat.GroupCallId, null, inviteHash);
+            await JoinAsyncInternal(navigation.XamlRoot, chat, chat.VideoChat.GroupCallId, null, inviteHash, false);
         }
 
         public async void CreateGroupCall(INavigationService navigation, long chatId)
@@ -277,12 +279,12 @@ namespace Telegram.Services
                 var response = await ClientService.SendAsync(new CreateVideoChat(chat.Id, string.Empty, startDate, popup.IsStartWithSelected));
                 if (response is GroupCallId groupCallId)
                 {
-                    await JoinAsyncInternal(navigation.XamlRoot, chat, groupCallId.Id, alias, string.Empty);
+                    await JoinAsyncInternal(navigation.XamlRoot, chat, groupCallId.Id, alias, string.Empty, false);
                 }
             }
         }
 
-        private async Task JoinAsyncInternal(XamlRoot xamlRoot, Chat chat, int groupCallId, MessageSender alias, string inviteHash)
+        private async Task JoinAsyncInternal(XamlRoot xamlRoot, Chat chat, int groupCallId, MessageSender alias, string inviteHash, bool upgrade)
         {
             alias ??= chat.VideoChat.DefaultParticipantId;
 
@@ -321,7 +323,7 @@ namespace Telegram.Services
 
                     lock (_activeLock)
                     {
-                        _activeCall = new VoipGroupCall(ClientService, Settings, Aggregator, xamlRoot, chat, groupCall, alias, inviteHash);
+                        _activeCall = new VoipGroupCall(ClientService, Settings, Aggregator, xamlRoot, chat, groupCall, alias, inviteHash, upgrade);
                         changed = groupCall.ScheduledStartDate > 0;
                     }
 
@@ -382,6 +384,10 @@ namespace Telegram.Services
                         _activeCall = null;
                         changed = true;
                     }
+                    else if (state is VoipState.Ready && update.Call.GroupCallId != 0)
+                    {
+                        ClientService.Send(new GetGroupCall(update.Call.GroupCallId));
+                    }
                 }
             }
 
@@ -407,6 +413,20 @@ namespace Telegram.Services
                         changed = true;
                     }
                 }
+                else if (_activeCall is VoipCall call && call.GroupCallId == update.GroupCall.Id && !_upgrading)
+                {
+                    _upgrading = true;
+
+                    ClientService.TryGetChatFromUser(call.UserId, out Chat chat);
+
+                    WindowContext.ForEach(window =>
+                    {
+                        if (window.Content is VoipPage page)
+                        {
+                            _ = JoinAsyncInternal(page.XamlRoot, chat, call.GroupCallId, null, string.Empty, true);
+                        }
+                    });
+                }
             }
 
             if (changed)
@@ -414,6 +434,8 @@ namespace Telegram.Services
                 Aggregator.Publish(new UpdateActiveCall());
             }
         }
+
+        private bool _upgrading;
 
         public void Handle(UpdateGroupCallParticipant update)
         {

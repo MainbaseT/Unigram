@@ -35,6 +35,8 @@ namespace Telegram.Services.Calls
         /// </summary>
         public int Id { get; }
 
+        public int GroupCallId { get; private set; }
+
         public CallState State { get; private set; }
 
         public int Duration
@@ -370,6 +372,8 @@ namespace Telegram.Services.Calls
 
         public void Update(Call call, VoipState state)
         {
+            GroupCallId = call.GroupCallId;
+
             if (_state >= state)
             {
                 return;

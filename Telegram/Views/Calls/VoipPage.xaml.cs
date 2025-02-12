@@ -1032,14 +1032,15 @@ namespace Telegram.Views.Calls
 
         private async void Mute_Click(object sender, RoutedEventArgs e)
         {
-            if (Mute.IsChecked == false)
-            {
-                _call.AudioState = VoipAudioState.Muted;
-            }
-            else if (await MediaDevicePermissions.CheckAccessAsync(XamlRoot, MediaDeviceAccess.Audio, PopupTheme))
-            {
-                _call.AudioState = VoipAudioState.Active;
-            }
+            _call.ClientService.Send(new CreateGroupCall(_call.Id));
+            //if (Mute.IsChecked == false)
+            //{
+            //    _call.AudioState = VoipAudioState.Muted;
+            //}
+            //else if (await MediaDevicePermissions.CheckAccessAsync(XamlRoot, MediaDeviceAccess.Audio, PopupTheme))
+            //{
+            //    _call.AudioState = VoipAudioState.Active;
+            //}
         }
 
         private async void Camera_Click(object sender, RoutedEventArgs e)

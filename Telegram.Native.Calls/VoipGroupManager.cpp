@@ -122,7 +122,7 @@ namespace winrt::Telegram::Native::Calls::implementation
 
         if (m_impl)
         {
-            m_impl->stop();
+            m_impl->stop([]() {});
             m_impl.reset();
         }
     }
