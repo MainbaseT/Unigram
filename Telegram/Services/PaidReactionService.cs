@@ -70,8 +70,12 @@ namespace Telegram.Services
                 return null;
             }
 
+            PaidReactionType type = isAnonymous
+                ? new PaidReactionTypeAnonymous()
+                : new PaidReactionTypeRegular();
+
             _pendingCount += starCount;
-            await message.ClientService.SendAsync(new AddPendingPaidMessageReaction(message.ChatId, message.Id, starCount, useDefaultIsAnonymous, isAnonymous));
+            await message.ClientService.SendAsync(new AddPendingPaidMessageReaction(message.ChatId, message.Id, starCount, type));
 
             var title = message.ClientService.Options.IsPaidReactionAnonymous
                 ? Strings.StarsSentAnonymouslyTitle

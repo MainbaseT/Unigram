@@ -502,6 +502,7 @@ namespace Telegram.ViewModels.Payments
 
             if (credentials == null)
             {
+                IsLoading = false;
                 return;
             }
 
@@ -590,7 +591,10 @@ namespace Telegram.ViewModels.Payments
             }
             else if (response is Error error)
             {
-
+                if (error.MessageEquals(ErrorType.PASSWORD_HASH_INVALID))
+                {
+                    return await CreateTemporaryPasswordAsync();
+                }
             }
 
             return new TemporaryPasswordState(false, 0);
