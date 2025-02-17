@@ -221,7 +221,10 @@ namespace Telegram.Controls.Chats
                 return;
             }
 
-            //ViewModel.PlaybackService.Pause();
+            if (ViewModel is DialogViewModel viewModel)
+            {
+                viewModel.PlaybackService.Pause();
+            }
 
             Logger.Debug("Permissions granted, mode: " + Mode);
 
