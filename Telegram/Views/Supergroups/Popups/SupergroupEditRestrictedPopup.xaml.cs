@@ -133,7 +133,7 @@ namespace Telegram.Views.Supergroups.Popups
                         ShouldConstrainToRootBounds = true,
                     };
 
-                    var confirm = await popup.ShowAsync();
+                    var confirm = await popup.ShowAsync(XamlRoot);
                     if (confirm == ContentDialogResult.Primary)
                     {
                         InsertDuration((int)popup.Value.ToTimestamp());

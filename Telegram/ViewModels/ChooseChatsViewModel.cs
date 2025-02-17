@@ -468,6 +468,9 @@ namespace Telegram.ViewModels
             set => Set(ref _removeCaptions, value);
         }
 
+        public bool SendDisableNotifications { get; set; }
+        public MessageSchedulingState SendSchedulingState { get; set; }
+
         private HttpUrl _shareLink;
         public HttpUrl ShareLink
         {
@@ -556,6 +559,8 @@ namespace Telegram.ViewModels
                 return;
             }
 
+            var options = new MessageSendOptions(SendDisableNotifications, false, false, false, false, SendSchedulingState, 0, 0, false);
+
             if (!string.IsNullOrEmpty(SendMessage?.Text))
             {
                 IsCommentEnabled = true;
@@ -567,7 +572,7 @@ namespace Telegram.ViewModels
                 foreach (var chat in chats)
                 {
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    var response = await ClientService.SendAsync(new SendMessage(chat.Id, messageThreadId, null, null, null, new InputMessageText(_caption, null, false)));
+                    var response = await ClientService.SendAsync(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(_caption, null, false)));
                 }
             }
 
@@ -588,7 +593,7 @@ namespace Telegram.ViewModels
                     foreach (var messages in shareMessages.MessageIds.GroupBy(x => x.ChatId))
                     {
                         SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                        ClientService.Send(new ForwardMessages(chat.Id, messageThreadId, messages.Key, messages.Select(x => x.Id).ToList(), null, _sendAsCopy || _removeCaptions, _removeCaptions));
+                        ClientService.Send(new ForwardMessages(chat.Id, messageThreadId, messages.Key, messages.Select(x => x.Id).ToList(), options, _sendAsCopy || _removeCaptions, _removeCaptions));
                     }
                 }
             }
@@ -599,7 +604,7 @@ namespace Telegram.ViewModels
                 foreach (var chat in chats)
                 {
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, null, null, new InputMessageForwarded(shareMessage.ChatId, shareMessage.MessageId, shareMessage.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
+                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageForwarded(shareMessage.ChatId, shareMessage.MessageId, shareMessage.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
                 }
             }
             else if (_configuration is ChooseChatsConfigurationShareStory shareStory)
@@ -609,7 +614,7 @@ namespace Telegram.ViewModels
                 foreach (var chat in chats)
                 {
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, null, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
+                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
                 }
             }
             else if (_configuration is ChooseChatsConfigurationPostMessage postMessage)
@@ -617,7 +622,7 @@ namespace Telegram.ViewModels
                 foreach (var chat in chats)
                 {
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, null, null, postMessage.Content));
+                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, postMessage.Content));
                 }
 
                 //NavigationService.GoBack();
@@ -632,7 +637,7 @@ namespace Telegram.ViewModels
                     foreach (var chat in chats)
                     {
                         SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, null, null, new InputMessageText(formatted, null, false)));
+                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
                     }
                 }
             }
@@ -643,7 +648,7 @@ namespace Telegram.ViewModels
                 foreach (var chat in chats)
                 {
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, null, null, new InputMessageText(formatted, null, false)));
+                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
                 }
 
                 //NavigationService.GoBack();
@@ -677,7 +682,7 @@ namespace Telegram.ViewModels
                     foreach (var chat in chats)
                     {
                         SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                        ClientService.Send(new SendInlineQueryResultMessage(chat.Id, messageThreadId, null, null, switchInline.InlineQueryId, switchInline.Result.GetId(), false));
+                        ClientService.Send(new SendInlineQueryResultMessage(chat.Id, messageThreadId, null, options, switchInline.InlineQueryId, switchInline.Result.GetId(), false));
                     }
                 }
                 else
@@ -701,7 +706,8 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        await ClientService.SendAsync(new SendMessage(chat.Id, 0, null, null, null, new InputMessageText(formatted, null, false)));
+                        SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
+                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
                     }
                 }
             }

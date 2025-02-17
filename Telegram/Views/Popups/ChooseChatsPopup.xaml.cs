@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -850,7 +851,75 @@ namespace Telegram.Views.Popups
                 flyout.CreateFlyoutItem(() => { ViewModel.SendAsCopy = true; Hide(ContentDialogResult.Primary); }, Strings.HideSenderNames, Icons.DocumentCopy);
                 flyout.CreateFlyoutItem(() => { ViewModel.RemoveCaptions = true; Hide(ContentDialogResult.Primary); }, Strings.HideCaption, Icons.Block);
 
+                flyout.CreateFlyoutSeparator();
+
+                flyout.CreateFlyoutItem(() => { ViewModel.SendDisableNotifications = true; Hide(ContentDialogResult.Primary); }, Strings.SendWithoutSound, Icons.AlertOff);
+
+                if (ViewModel.SelectedItems.Count == 1)
+                {
+                    var chat = ViewModel.SelectedItems[0];
+                    var self = ViewModel.ClientService.IsSavedMessages(chat);
+
+                    if (ViewModel.ClientService.TryGetUser(chat, out Td.Api.User user) && user.Type is UserTypeRegular && user.Status is not UserStatusRecently && !self)
+                    {
+                        flyout.CreateFlyoutItem(SchedulingStateSendWhenOnline, Strings.SendWhenOnline, Icons.PersonCircleOnline);
+                    }
+
+                    flyout.CreateFlyoutItem(SchedulingStateSendAtDate, self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
+                }
+                else
+                {
+                    flyout.CreateFlyoutItem(SchedulingStateSendAtDate, Strings.ScheduleMessage, Icons.CalendarClock);
+                }
+
                 flyout.ShowAt(sender as UIElement, FlyoutPlacementMode.TopEdgeAlignedRight);
+            }
+        }
+
+        private void SchedulingStateSendWhenOnline()
+        {
+            ViewModel.SendSchedulingState = new MessageSchedulingStateSendWhenOnline();
+            Hide(ContentDialogResult.Primary);
+        }
+
+        private async void SchedulingStateSendAtDate()
+        {
+            User user = null;
+            bool self = false;
+
+            if (ViewModel.SelectedItems.Count == 1)
+            {
+                var chat = ViewModel.SelectedItems[0];
+
+                self = ViewModel.ClientService.IsSavedMessages(chat);
+                user = ViewModel.ClientService.GetUser(chat);
+            }
+
+            var popup = new ScheduleMessageToast(user, self)
+            {
+                //Title = Strings.ExpireAfter,
+                //Header = Strings.PaidContentPriceTitle,
+                //ActionButtonContent = Strings.OK,
+                ActionButtonStyle = BootStrapper.Current.Resources["AccentButtonStyle"] as Style,
+                //CloseButtonContent = Strings.Cancel,
+                PreferredPlacement = TeachingTipPlacementMode.Center,
+                IsLightDismissEnabled = true,
+                ShouldConstrainToRootBounds = true,
+            };
+
+            var confirm = await popup.ShowAsync(XamlRoot);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                if (popup.IsUntilOnline)
+                {
+                    ViewModel.SendSchedulingState = new MessageSchedulingStateSendWhenOnline();
+                }
+                else
+                {
+                    ViewModel.SendSchedulingState = new MessageSchedulingStateSendAtDate(popup.Value.ToTimestamp());
+                }
+
+                Hide(ContentDialogResult.Primary);
             }
         }
 

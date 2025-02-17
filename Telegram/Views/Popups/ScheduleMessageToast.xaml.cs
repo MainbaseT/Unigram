@@ -8,8 +8,10 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Native;
+using Telegram.Td.Api;
 using Telegram.Views.Host;
 using Windows.System.UserProfile;
 using Windows.UI.Xaml;
@@ -17,11 +19,11 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Popups
 {
-    public sealed partial class ChooseDateTimeToast : TeachingTipEx
+    public sealed partial class ScheduleMessageToast : TeachingTipEx
     {
         private readonly TaskCompletionSource<ContentDialogResult> _tsc = new();
 
-        public ChooseDateTimeToast()
+        public ScheduleMessageToast(User user, bool reminder)
         {
             InitializeComponent();
 
@@ -38,14 +40,21 @@ namespace Telegram.Views.Popups
             Date.MinDate = DateTime.Today;
             Date.MaxDate = DateTime.Today.AddYears(1);
 
+            Title = reminder ? Strings.SetReminder : Strings.ScheduleMessage;
+            ActionButtonContent = Strings.OK;
+            CloseButtonContent = Strings.Cancel;
+
+            if (user != null && user.Type is UserTypeRegular && user.Status is not UserStatusRecently && !reminder)
+            {
+                Online.Content = string.Format(Strings.MessageScheduledUntilOnline, user.FirstName);
+            }
+            else
+            {
+                Online.Visibility = Visibility.Collapsed;
+            }
+
             ActionButtonClick += OnActionButtonClick;
             Closed += OnClosed;
-        }
-
-        private void OnActionButtonClick(TeachingTip sender, object args)
-        {
-            _tsc.TrySetResult(ContentDialogResult.Primary);
-            IsOpen = false;
         }
 
         public DateTime Value
@@ -59,6 +68,38 @@ namespace Telegram.Views.Popups
 
                 return DateTime.MinValue;
             }
+        }
+
+        public bool IsUntilOnline { get; private set; }
+
+        private void OnActionButtonClick(TeachingTip sender, object args)
+        {
+            if (IsUntilOnline)
+            {
+                return;
+            }
+
+            if (Date.Date == null || Date.Date < DateTime.Today)
+            {
+                VisualUtilities.ShakeView(Date);
+                return;
+            }
+            else if (Date.Date == DateTime.Today && Time.Time <= DateTime.Now.TimeOfDay)
+            {
+                VisualUtilities.ShakeView(Time);
+                return;
+            }
+
+            _tsc.TrySetResult(ContentDialogResult.Primary);
+            IsOpen = false;
+        }
+
+        private void Online_Click(object sender, RoutedEventArgs e)
+        {
+            IsUntilOnline = true;
+
+            _tsc.TrySetResult(ContentDialogResult.Primary);
+            IsOpen = false;
         }
 
         private void OnClosed(TeachingTip sender, TeachingTipClosedEventArgs args)

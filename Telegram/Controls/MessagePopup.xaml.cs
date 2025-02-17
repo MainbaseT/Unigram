@@ -245,7 +245,7 @@ namespace Telegram.Controls
         {
             var container = GetTemplateChild("Container") as Border;
 
-            var rootElement = container.Child as FrameworkElement;
+            var rootElement = container?.Child as FrameworkElement;
             if (rootElement != null)
             {
                 rootElement.Loaded += Container_Loaded;

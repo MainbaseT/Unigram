@@ -266,7 +266,7 @@ namespace Telegram.Views.Chats.Popups
                         ShouldConstrainToRootBounds = true,
                     };
 
-                    var confirm = await popup.ShowAsync();
+                    var confirm = await popup.ShowAsync(XamlRoot);
                     if (confirm == ContentDialogResult.Primary)
                     {
                         InsertLimitByPeriod((int)popup.Value.ToTimestamp());
