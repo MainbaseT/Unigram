@@ -665,6 +665,11 @@ namespace Telegram.Views
                         _clientService,
                         _settingsService,
                         _eventAggregator);
+                case "Telegram.ViewModels.Settings.Privacy.SettingsPrivacyAllowUnpaidMessagesViewModel":
+                    return (T)(object)new Telegram.ViewModels.Settings.Privacy.SettingsPrivacyAllowUnpaidMessagesViewModel(
+                        _clientService,
+                        _settingsService,
+                        _eventAggregator);
                 case "Telegram.ViewModels.Settings.Privacy.SettingsPrivacyNewChatViewModel":
                     return (T)(object)new Telegram.ViewModels.Settings.Privacy.SettingsPrivacyNewChatViewModel(
                         _clientService,

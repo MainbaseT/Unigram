@@ -163,6 +163,7 @@ namespace Telegram
                 typeof(SettingsPrivacyShowStatusViewModel),
                 typeof(SettingsPrivacyShowBioViewModel),
                 typeof(SettingsPrivacyShowBirthdateViewModel),
+                typeof(SettingsPrivacyAllowUnpaidMessagesViewModel),
                 typeof(SettingsPrivacyNewChatViewModel),
                 typeof(SettingsAutoDeleteViewModel),
                 typeof(SettingsProfileViewModel),

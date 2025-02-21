@@ -4008,6 +4008,21 @@ Minimum length is 5 characters.</value>
   <data name="CheckPhoneNumberYes" xml:space="preserve">
     <value>Yes</value>
   </data>
+  <data name="CheckPrivacyCallsText" xml:space="preserve">
+    <value>You&apos;ve restricted who can message you, but anyone can still call you. Would you like to review these settings?</value>
+  </data>
+  <data name="CheckPrivacyCallsTitle" xml:space="preserve">
+    <value>Call Settings</value>
+  </data>
+  <data name="CheckPrivacyInviteText" xml:space="preserve">
+    <value>You&apos;ve restricted who can message you, but anyone can still invite you to groups and channels. Would you like to review these settings?</value>
+  </data>
+  <data name="CheckPrivacyInviteTitle" xml:space="preserve">
+    <value>Invitation Settings</value>
+  </data>
+  <data name="CheckPrivacyReview" xml:space="preserve">
+    <value>Review</value>
+  </data>
   <data name="CheckYourEmail" xml:space="preserve">
     <value>Check Your Email</value>
   </data>
@@ -4217,6 +4232,12 @@ Minimum length is 5 characters.</value>
   </data>
   <data name="Contacts" xml:space="preserve">
     <value>Contacts</value>
+  </data>
+  <data name="ContactsAndFee" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="ContactsAndPremium" xml:space="preserve">
+    <value>Contacts &amp; Premium</value>
   </data>
   <data name="ContactsPermissionAlert" xml:space="preserve">
     <value>**Telegram** needs access to your contacts so that you can connect with your friends across all your devices. Your contacts will be continuously synced with Telegram&apos;s heavily encrypted cloud servers.</value>
@@ -9556,6 +9577,27 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   </data>
   <data name="PrivateChats" xml:space="preserve">
     <value>Private Chats</value>
+  </data>
+  <data name="PrivateMessagesChargePrice" xml:space="preserve">
+    <value>Charge for Messages</value>
+  </data>
+  <data name="PrivateMessagesChargePriceInfo" xml:space="preserve">
+    <value>Charge a fee for messages from people outside your contacts or those you haven&apos;t messaged first.</value>
+  </data>
+  <data name="PrivateMessagesExceptions" xml:space="preserve">
+    <value>Remove Fee</value>
+  </data>
+  <data name="PrivateMessagesExceptionsHeader" xml:space="preserve">
+    <value>Exception</value>
+  </data>
+  <data name="PrivateMessagesExceptionsInfo" xml:space="preserve">
+    <value>Add users or entire groups who won&apos;t be charged for sending messages to you.</value>
+  </data>
+  <data name="PrivateMessagesPriceHeader" xml:space="preserve">
+    <value>Set your price per message</value>
+  </data>
+  <data name="PrivateMessagesPriceInfo" xml:space="preserve">
+    <value>You will receive {0}% of the selected fee (~{1}) for each incoming message.</value>
   </data>
   <data name="PrivateShares" xml:space="preserve">
     <value>Private Shares</value>

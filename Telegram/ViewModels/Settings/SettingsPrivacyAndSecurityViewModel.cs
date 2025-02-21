@@ -41,6 +41,7 @@ namespace Telegram.ViewModels.Settings
         private readonly SettingsPrivacyAllowCallsViewModel _allowCallsRules;
         private readonly SettingsPrivacyAllowChatInvitesViewModel _allowChatInvitesRules;
         private readonly SettingsPrivacyAllowPrivateVoiceAndVideoNoteMessagesViewModel _allowPrivateVoiceAndVideoNoteMessages;
+        private readonly SettingsPrivacyNewChatViewModel _newChatRules;
 
         public SettingsPrivacyAndSecurityViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, IPasscodeService passcodeService)
             : base(clientService, settingsService, aggregator)
@@ -57,6 +58,7 @@ namespace Telegram.ViewModels.Settings
             _allowCallsRules = TypeResolver.Current.Resolve<SettingsPrivacyAllowCallsViewModel>(SessionId);
             _allowChatInvitesRules = TypeResolver.Current.Resolve<SettingsPrivacyAllowChatInvitesViewModel>(SessionId);
             _allowPrivateVoiceAndVideoNoteMessages = TypeResolver.Current.Resolve<SettingsPrivacyAllowPrivateVoiceAndVideoNoteMessagesViewModel>(SessionId);
+            _newChatRules = TypeResolver.Current.Resolve<SettingsPrivacyNewChatViewModel>(SessionId);
 
             Children.Add(_showForwardedRules);
             Children.Add(_showPhotoRules);
@@ -68,6 +70,7 @@ namespace Telegram.ViewModels.Settings
             Children.Add(_allowCallsRules);
             Children.Add(_allowChatInvitesRules);
             Children.Add(_allowPrivateVoiceAndVideoNoteMessages);
+            Children.Add(_newChatRules);
         }
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
@@ -132,14 +135,6 @@ namespace Telegram.ViewModels.Settings
                 }
             });
 
-            ClientService.Send(new GetNewChatPrivacySettings(), result =>
-            {
-                if (result is NewChatPrivacySettings settings)
-                {
-                    BeginOnUIThread(() => AllowNewChatsFromUnknownUsers = settings.AllowNewChatsFromUnknownUsers);
-                }
-            });
-
             if (ApiInfo.IsPackagedRelease && ClientService.Options.CanIgnoreSensitiveContentRestrictions)
             {
                 ClientService.Send(new GetOption("ignore_sensitive_content_restrictions"), result =>
@@ -169,13 +164,7 @@ namespace Telegram.ViewModels.Settings
         public SettingsPrivacyAllowCallsViewModel AllowCallsRules => _allowCallsRules;
         public SettingsPrivacyAllowChatInvitesViewModel AllowChatInvitesRules => _allowChatInvitesRules;
         public SettingsPrivacyAllowPrivateVoiceAndVideoNoteMessagesViewModel AllowPrivateVoiceAndVideoNoteMessages => _allowPrivateVoiceAndVideoNoteMessages;
-
-        private bool? _allowNewChatsFromUnknownUsers;
-        public bool? AllowNewChatsFromUnknownUsers
-        {
-            get => _allowNewChatsFromUnknownUsers;
-            set => Set(ref _allowNewChatsFromUnknownUsers, value);
-        }
+        public SettingsPrivacyNewChatViewModel NewChatRules => _newChatRules;
 
         private int _accountTtl;
         public int AccountTtl

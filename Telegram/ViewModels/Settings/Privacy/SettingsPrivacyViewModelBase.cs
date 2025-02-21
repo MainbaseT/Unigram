@@ -407,6 +407,9 @@ namespace Telegram.ViewModels.Settings
                 case UserPrivacySettingShowStatus:
                     popup.ViewModel.Title = Strings.AlwaysShareWithTitle;
                     break;
+                case UserPrivacySettingAllowUnpaidMessages:
+                    popup.ViewModel.Title = Strings.PrivateMessagesExceptions;
+                    break;
             }
 
             var confirm = await popup.PickAsync(XamlRoot, chats, ChooseChatsOptions.Privacy);
