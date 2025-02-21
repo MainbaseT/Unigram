@@ -559,7 +559,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var options = new MessageSendOptions(SendDisableNotifications, false, false, false, false, SendSchedulingState, 0, 0, false);
+            var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
 
             if (!string.IsNullOrEmpty(SendMessage?.Text))
             {

@@ -80,7 +80,7 @@ namespace Telegram.ViewModels.Settings.Privacy
         {
             if (IsPremium)
             {
-                var response = await ClientService.SendAsync(new SetNewChatPrivacySettings(new NewChatPrivacySettings(_selectedItem is PrivacyValue.AllowAll)));
+                var response = await ClientService.SendAsync(new SetNewChatPrivacySettings(new NewChatPrivacySettings(_selectedItem is PrivacyValue.AllowAll, 0)));
                 if (response is Ok)
                 {
                     NavigationService.GoBack();

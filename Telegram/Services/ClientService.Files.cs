@@ -1022,6 +1022,10 @@ namespace Telegram.Services
                     }
                     break;
                 case LinkPreviewTypeVideo linkPreviewTypeVideo:
+                    if (linkPreviewTypeVideo.Cover != null)
+                    {
+                        ProcessFiles(linkPreviewTypeVideo.Cover);
+                    }
                     if (linkPreviewTypeVideo.Video != null)
                     {
                         ProcessFiles(linkPreviewTypeVideo.Video);
@@ -1612,6 +1616,10 @@ namespace Telegram.Services
                     }
                     break;
                 case PaidMediaVideo paidMediaVideo:
+                    if (paidMediaVideo.Cover != null)
+                    {
+                        ProcessFiles(paidMediaVideo.Cover);
+                    }
                     if (paidMediaVideo.Video != null)
                     {
                         ProcessFiles(paidMediaVideo.Video);
