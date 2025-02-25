@@ -1731,18 +1731,6 @@ namespace Telegram.Services
                         ProcessFiles(premiumFeaturePromotionAnimation.Animation);
                     }
                     break;
-                case PremiumGiftCodePaymentOption premiumGiftCodePaymentOption:
-                    if (premiumGiftCodePaymentOption.Sticker != null)
-                    {
-                        ProcessFiles(premiumGiftCodePaymentOption.Sticker);
-                    }
-                    break;
-                case PremiumGiftCodePaymentOptions premiumGiftCodePaymentOptions:
-                    foreach (var item in premiumGiftCodePaymentOptions.Options)
-                    {
-                        ProcessFiles(item);
-                    }
-                    break;
                 case PremiumState premiumState:
                     foreach (var item in premiumState.Animations)
                     {

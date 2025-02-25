@@ -125,16 +125,15 @@ namespace Telegram.Views.Premium.Popups
         {
             PremiumOptions.ItemsSource = new[]
             {
-                new PremiumGiftCodePaymentOption(string.Empty, 0, 0, 0, 0, string.Empty, 0, null),
-                new PremiumGiftCodePaymentOption(string.Empty, 0, 0, 0, 0, string.Empty, 0, null),
-                new PremiumGiftCodePaymentOption(string.Empty, 0, 0, 0, 0, string.Empty, 0, null),
+                new PremiumGiftPaymentOption(string.Empty, 0, 0, 0, 0, string.Empty, null),
+                new PremiumGiftPaymentOption(string.Empty, 0, 0, 0, 0, string.Empty, null),
+                new PremiumGiftPaymentOption(string.Empty, 0, 0, 0, 0, string.Empty, null),
             };
 
-            var response = await clientService.SendAsync(new GetPremiumGiftCodePaymentOptions(0));
-            if (response is PremiumGiftCodePaymentOptions options)
+            var response = await clientService.SendAsync(new GetPremiumGiftPaymentOptions());
+            if (response is PremiumGiftPaymentOptions options)
             {
                 PremiumOptions.ItemsSource = options.Options
-                    .Where(x => x.WinnerCount == 1)
                     .OrderBy(x => x.MonthCount)
                     .ToList();
             }
@@ -206,7 +205,7 @@ namespace Telegram.Views.Premium.Popups
                     await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, gift, _senderId));
                 }
             }
-            else if (e.ClickedItem is PremiumGiftCodePaymentOption option && _senderId is MessageSenderUser user)
+            else if (e.ClickedItem is PremiumGiftPaymentOption option && _senderId is MessageSenderUser user)
             {
                 Hide();
                 await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, option, user.UserId));
@@ -223,7 +222,7 @@ namespace Telegram.Views.Premium.Popups
             {
                 userGiftCell.UpdateGift(_clientService, gift);
             }
-            else if (args.ItemContainer.ContentTemplateRoot is PremiumGiftCell premiumGiftCell && args.Item is PremiumGiftCodePaymentOption option)
+            else if (args.ItemContainer.ContentTemplateRoot is PremiumGiftCell premiumGiftCell && args.Item is PremiumGiftPaymentOption option)
             {
                 premiumGiftCell.UpdatePremiumGift(_clientService, option);
             }

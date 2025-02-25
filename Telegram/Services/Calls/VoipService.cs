@@ -331,7 +331,7 @@ namespace Telegram.Services
 
                     if (changed)
                     {
-                        Aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.Title, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsRtmpStream, true, false, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
+                        Aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.FromCallId, groupCall.Title, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsRtmpStream, true, false, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
                     }
                 });
             }

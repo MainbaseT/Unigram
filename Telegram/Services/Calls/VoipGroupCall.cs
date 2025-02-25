@@ -32,6 +32,7 @@ namespace Telegram.Services.Calls
 
         private readonly Chat _chat;
         private readonly string _inviteHash;
+        private readonly long _keyFingerprint;
 
         private MessageSender _alias;
         private MessageSenders _availableAliases;
@@ -86,6 +87,7 @@ namespace Telegram.Services.Calls
             EnabledStartNotification = groupCall.EnabledStartNotification;
             ScheduledStartDate = groupCall.ScheduledStartDate;
             Title = groupCall.Title;
+            FromCallId = groupCall.FromCallId;
             Id = groupCall.Id;
 
             var unix = ClientService.SendAsync(new GetOption("unix_time")).Result as OptionValueInteger;
@@ -255,7 +257,7 @@ namespace Telegram.Services.Calls
                     Participants ??= new GroupCallParticipantsCollection(this);
                 }
 
-                var response = await ClientService.SendAsync(new JoinGroupCall(Id, alias, ssrc, payload, _manager.IsMuted, _capturer != null, _inviteHash));
+                var response = await ClientService.SendAsync(new JoinGroupCall(Id, alias, ssrc, payload, _manager.IsMuted, _capturer != null, _inviteHash, _keyFingerprint));
                 if (response is Text json && _manager != null)
                 {
                     bool broadcast;
@@ -604,7 +606,7 @@ namespace Telegram.Services.Calls
         {
             if (ScheduledStartDate > 0)
             {
-                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, Title, ScheduledStartDate, EnabledStartNotification, IsActive, IsRtmpStream, false, false, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, RecordDuration, IsVideoRecorded, Duration))));
+                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, FromCallId, Title, ScheduledStartDate, EnabledStartNotification, IsActive, IsRtmpStream, false, false, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, RecordDuration, IsVideoRecorded, Duration))));
             }
             else if (end)
             {
@@ -1001,6 +1003,11 @@ namespace Telegram.Services.Calls
         /// Group call identifier.
         /// </summary>
         public int Id { get; private set; }
+
+        /// <summary>
+        /// Identifier of one-to-one call from which the group call was created; 0 if unknown.
+        /// </summary>
+        public int FromCallId { get; private set; }
 
 
         public int Source => _source;

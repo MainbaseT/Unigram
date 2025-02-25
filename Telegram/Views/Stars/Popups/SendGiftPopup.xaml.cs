@@ -25,7 +25,7 @@ namespace Telegram.Views.Stars.Popups
 
         private readonly Gift _gift;
 
-        private readonly PremiumGiftCodePaymentOption _option;
+        private readonly PremiumGiftPaymentOption _option;
 
         private readonly MessageSender _senderId;
 
@@ -103,7 +103,7 @@ namespace Telegram.Views.Stars.Popups
             PurchaseText.Text = Locale.Declension(Strings.R.Gift2Send, gift.StarCount).Replace("\u2B50", Icons.Premium);
         }
 
-        public SendGiftPopup(IClientService clientService, INavigationService navigationService, PremiumGiftCodePaymentOption option, long userId)
+        public SendGiftPopup(IClientService clientService, INavigationService navigationService, PremiumGiftPaymentOption option, long userId)
         {
             InitializeComponent();
 

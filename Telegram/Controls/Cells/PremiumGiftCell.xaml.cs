@@ -14,7 +14,7 @@ namespace Telegram.Controls.Cells
             InitializeComponent();
         }
 
-        public void UpdatePremiumGift(IClientService clientService, PremiumGiftCodePaymentOption option)
+        public void UpdatePremiumGift(IClientService clientService, PremiumGiftPaymentOption option)
         {
             if (option.Amount > 0)
             {
