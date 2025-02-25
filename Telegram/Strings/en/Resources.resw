@@ -7719,6 +7719,60 @@ Minimum length is 5 characters.</value>
   <data name="MessageLockedPremiumLocked" xml:space="preserve">
     <value>**{0}** only accepts messages from contacts and Premium users.</value>
   </data>
+  <data name="MessageLockedStarsConfirmMessage1_one" xml:space="preserve">
+    <value>**{1}** charges **{0}** Star per message.</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessage1_other" xml:space="preserve">
+    <value>**{1}** charges **{0}** Stars per message.</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessage2Many1_one" xml:space="preserve">
+    <value>Would you like to pay **{0}** Star</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessage2Many1_other" xml:space="preserve">
+    <value>Would you like to pay **{0}** Stars</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessage2Many2_one" xml:space="preserve">
+    <value>to send {0} message?</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessage2Many2_other" xml:space="preserve">
+    <value>to send {0} messages?</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessage2One_one" xml:space="preserve">
+    <value>Would you like to pay **{0}** Star to send one message?</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessage2One_other" xml:space="preserve">
+    <value>Would you like to pay **{0}** Stars to send one message?</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessageDontAsk" xml:space="preserve">
+    <value>Don&apos;t ask me again</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessageMulti1_one" xml:space="preserve">
+    <value>You selected **{0}** chat that charge Stars for messages.</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessageMulti1_other" xml:space="preserve">
+    <value>You selected **{0}** chats that charge Stars for messages.</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessageMulti2_one" xml:space="preserve">
+    <value>Would you like to pay **{0}** Star to send {1}?</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessageMulti2_other" xml:space="preserve">
+    <value>Would you like to pay **{0}** Stars to send {1}?</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessageMulti2Messages_one" xml:space="preserve">
+    <value>**{0}** message</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessageMulti2Messages_other" xml:space="preserve">
+    <value>**{0}** messages</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessagePay_one" xml:space="preserve">
+    <value>Pay for {0} Message</value>
+  </data>
+  <data name="MessageLockedStarsConfirmMessagePay_other" xml:space="preserve">
+    <value>Pay for {0} Messages</value>
+  </data>
+  <data name="MessageLockedStarsConfirmTitle" xml:space="preserve">
+    <value>Confirm Payment</value>
+  </data>
   <data name="MessageOptionsReplySubtitle" xml:space="preserve">
     <value>You can select a specific part to quote</value>
   </data>

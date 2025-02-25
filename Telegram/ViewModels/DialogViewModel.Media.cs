@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Controls;
+using Telegram.Controls.Media;
 using Telegram.Entities;
 using Telegram.Services.Factories;
 using Telegram.Td.Api;
@@ -44,7 +46,49 @@ namespace Telegram.ViewModels
 
         protected override bool CanSchedule => _type is DialogType.History or DialogType.Thread;
 
-        public override async Task<MessageSendOptions> PickMessageSendOptionsAsync(bool? schedule = null, bool? silent = null, bool reorder = false)
+        private async Task<ContentDialogResult> ShowPaidMessageConfirmationAsync(int messageCount, long starCount)
+        {
+            Settings.Chats.TryGet(Chat.Id, 0, Services.ChatSetting.PaidMessageStarCount, out long savedMessageStarCount);
+
+            if (starCount != 0 && starCount != savedMessageStarCount)
+            {
+                var message1 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessage1, starCount, Chat.Title);
+
+                string message2;
+                if (messageCount > 1)
+                {
+                    var message3 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessage2Many1, starCount * messageCount);
+                    var message4 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessage2Many2, messageCount);
+
+                    message2 = string.Format("{0} {1}", message3, message4);
+                }
+                else
+                {
+                    message2 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessage2One, starCount);
+                }
+
+                var popup = new MessagePopup
+                {
+                    Title = Strings.MessageLockedStarsConfirmTitle,
+                    Message = string.Format("{0} {1}", message1, message2),
+                    CheckBoxLabel = Strings.MessageLockedStarsConfirmMessageDontAsk,
+                    PrimaryButtonText = Icons.Premium16 + Icons.Spacing + (starCount * messageCount).ToString("N0"), //Locale.Declension(Strings.R.MessageLockedStarsConfirmMessagePay, messageCount),
+                    SecondaryButtonText = Strings.Cancel
+                };
+
+                var confirm = await ShowPopupAsync(popup);
+                if (confirm == ContentDialogResult.Primary && popup.IsChecked is true)
+                {
+                    Settings.Chats[Chat.Id, 0, Services.ChatSetting.PaidMessageStarCount] = starCount;
+                }
+
+                return confirm;
+            }
+
+            return ContentDialogResult.Primary;
+        }
+
+        public override async Task<MessageSendOptions> PickMessageSendOptionsAsync(int messageCount = 1, SchedulingState schedule = SchedulingState.Auto, bool? disableNotification = null, bool reorder = false)
         {
             var chat = _chat;
             if (chat == null)
@@ -52,7 +96,25 @@ namespace Telegram.ViewModels
                 return null;
             }
 
-            if (schedule == true || (_type == DialogType.ScheduledMessages && schedule == null))
+            var paidMessageStarCount = 0L;
+
+            if (ClientService.TryGetUserFull(Chat, out UserFullInfo userFullInfo))
+            {
+                paidMessageStarCount = userFullInfo.OutgoingPaidMessageStarCount;
+            }
+            else if (ClientService.TryGetSupergroup(Chat, out Supergroup supergroup))
+            {
+                paidMessageStarCount = supergroup.PaidMessageStarCount;
+            }
+
+            var paid = await ShowPaidMessageConfirmationAsync(messageCount, paidMessageStarCount);
+            if (paid != ContentDialogResult.Primary)
+            {
+                return null;
+            }
+
+            MessageSchedulingState schedulingState = null;
+            if (schedule == SchedulingState.Schedule || (_type == DialogType.ScheduledMessages && schedule == SchedulingState.Auto))
             {
                 var user = ClientService.GetUser(chat);
                 var popup = new ScheduleMessagePopup(user, ClientService.IsSavedMessages(chat));
@@ -65,17 +127,19 @@ namespace Telegram.ViewModels
 
                 if (popup.IsUntilOnline)
                 {
-                    return new MessageSendOptions(false, false, false, false, 0, Settings.Stickers.DynamicPackOrder && reorder, new MessageSchedulingStateSendWhenOnline(), 0, 0, false);
+                    schedulingState = new MessageSchedulingStateSendWhenOnline();
                 }
                 else
                 {
-                    return new MessageSendOptions(false, false, false, false, 0, Settings.Stickers.DynamicPackOrder && reorder, new MessageSchedulingStateSendAtDate(popup.Value.ToTimestamp()), 0, 0, false);
+                    schedulingState = new MessageSchedulingStateSendAtDate(popup.Value.ToTimestamp());
                 }
             }
-            else
+            else if (schedule == SchedulingState.WhenOnline)
             {
-                return new MessageSendOptions(silent ?? false, false, false, false, 0, Settings.Stickers.DynamicPackOrder && reorder, null, 0, 0, false);
+                schedulingState = new MessageSchedulingStateSendWhenOnline();
             }
+
+            return new MessageSendOptions(disableNotification ?? false, false, false, false, messageCount * paidMessageStarCount, Settings.Stickers.DynamicPackOrder && reorder, schedulingState, 0, 0, false);
         }
 
         protected override void ContinueSendMessage(MessageSendOptions options)

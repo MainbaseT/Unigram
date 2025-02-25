@@ -10,6 +10,7 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Services.Keyboard;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.ViewModels.Stories;
 using Telegram.Views.Stories.Popups;
 using Windows.Foundation;
@@ -245,7 +246,7 @@ namespace Telegram.Controls.Stories
 
             var viewModel = _viewModel.Items[real];
 
-            viewModel.SendSticker(e.Sticker, null, null, null, e.FromStickerSet);
+            viewModel.SendSticker(e.Sticker, SchedulingState.Auto, null, null, e.FromStickerSet);
             ButtonStickers.Collapse();
 
             //_focusState.Set(FocusState.Programmatic);

@@ -1044,7 +1044,7 @@ namespace Telegram.ViewModels
 
         public async void RescheduleMessage(MessageViewModel message)
         {
-            var options = await PickMessageSendOptionsAsync(true);
+            var options = await PickMessageSendOptionsAsync(1, SchedulingState.Schedule);
             if (options?.SchedulingState == null)
             {
                 return;

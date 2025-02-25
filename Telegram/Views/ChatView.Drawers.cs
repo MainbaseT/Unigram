@@ -8,6 +8,7 @@ using Telegram.Common;
 using Telegram.Controls.Drawers;
 using Telegram.Controls.Media;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -53,8 +54,8 @@ namespace Telegram.Views
                 var self = ViewModel.ClientService.IsSavedMessages(chat);
 
                 flyout.CreateFlyoutSeparator();
-                flyout.CreateFlyoutItem(anim => ViewModel.SendSticker(anim, null, true), sticker, Strings.SendWithoutSound, Icons.AlertOff);
-                flyout.CreateFlyoutItem(anim => ViewModel.SendSticker(anim, true, null), sticker, self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
+                flyout.CreateFlyoutItem(anim => ViewModel.SendSticker(anim, SchedulingState.Auto, true), sticker, Strings.SendWithoutSound, Icons.AlertOff);
+                flyout.CreateFlyoutItem(anim => ViewModel.SendSticker(anim, SchedulingState.Schedule, null), sticker, self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
             }
 
             args.ShowAt(flyout, element);
@@ -92,8 +93,8 @@ namespace Telegram.Views
                 var self = ViewModel.ClientService.IsSavedMessages(chat);
 
                 flyout.CreateFlyoutSeparator();
-                flyout.CreateFlyoutItem(anim => ViewModel.SendAnimation(anim, null, true), animation, Strings.SendWithoutSound, Icons.AlertOff);
-                flyout.CreateFlyoutItem(anim => ViewModel.SendAnimation(anim, true, null), animation, self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
+                flyout.CreateFlyoutItem(anim => ViewModel.SendAnimation(anim, SchedulingState.Auto, true), animation, Strings.SendWithoutSound, Icons.AlertOff);
+                flyout.CreateFlyoutItem(anim => ViewModel.SendAnimation(anim, SchedulingState.Schedule, null), animation, self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
             }
 
             args.ShowAt(flyout, element);

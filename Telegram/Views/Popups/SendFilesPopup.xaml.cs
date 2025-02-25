@@ -211,8 +211,10 @@ namespace Telegram.Views.Popups
         public bool CanSchedule { get; set; }
         public bool IsSavedMessages { get; set; }
 
-        public bool? Schedule { get; private set; }
+        public SchedulingState Schedule { get; private set; }
         public bool? Silent { get; private set; }
+
+        public long PaidMessageStarCount { get; private set; }
 
         public SendFilesPopup(ComposeViewModel viewModel, IEnumerable<StorageMedia> items, bool media, ChatPermissions permissions, bool ttlAllowed, bool schedule, bool savedMessages, bool editing)
         {
@@ -261,6 +263,26 @@ namespace Telegram.Views.Popups
             EmojiPanel.DataContext = EmojiDrawerViewModel.Create(viewModel.SessionId);
             CaptionInput.CustomEmoji = CustomEmoji;
             CaptionInput.ViewModel = viewModel;
+
+            if (viewModel.ClientService.TryGetUserFull(viewModel.Chat, out UserFullInfo userFull))
+            {
+                PaidMessageStarCount = userFull.OutgoingPaidMessageStarCount;
+            }
+            else if (viewModel.ClientService.TryGetSupergroup(viewModel.Chat, out Supergroup supergroup))
+            {
+                PaidMessageStarCount = supergroup.PaidMessageStarCount;
+            }
+
+            if (PaidMessageStarCount > 0)
+            {
+                SendMessage.Visibility = Visibility.Collapsed;
+                PaidMessage.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SendMessage.Visibility = Visibility.Visible;
+                PaidMessage.Visibility = Visibility.Collapsed;
+            }
 
             UpdateView();
             UpdatePanel();
@@ -793,6 +815,11 @@ namespace Telegram.Views.Popups
             ItemsView.CollectionChanged -= ItemsView_CollectionChanged;
             ItemsView.ReplaceDiff(view);
             ItemsView.CollectionChanged += ItemsView_CollectionChanged;
+
+            if (PaidMessageStarCount > 0)
+            {
+                PaidMessage.Content = Icons.Premium16 + Icons.Spacing + Formatter.ShortNumber(PaidMessageStarCount * Items.Count);
+            }
         }
 
         private async void UpdatePanel()
@@ -1104,7 +1131,7 @@ namespace Telegram.Views.Popups
 
         private void SendScheduled()
         {
-            Schedule = true;
+            Schedule = SchedulingState.Schedule;
             Hide(ContentDialogResult.Primary);
         }
 

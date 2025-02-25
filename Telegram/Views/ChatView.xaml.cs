@@ -3632,7 +3632,7 @@ namespace Telegram.Views
 
         public void Stickers_ItemClick(object sender, StickerDrawerItemClickEventArgs e)
         {
-            ViewModel.SendSticker(e.Sticker, null, null, null, e.FromStickerSet);
+            ViewModel.SendSticker(e.Sticker, SchedulingState.Auto, null, null, e.FromStickerSet);
             ButtonStickers.Collapse();
 
             _focusState.Set(FocusState.Programmatic);
@@ -3749,7 +3749,7 @@ namespace Telegram.Views
             else if (e.ClickedItem is Sticker sticker)
             {
                 TextField.SetText(null, null);
-                ViewModel.SendSticker(sticker, null, null, result);
+                ViewModel.SendSticker(sticker, SchedulingState.Auto, null, result);
 
                 ButtonStickers.Collapse();
             }
@@ -4157,7 +4157,7 @@ namespace Telegram.Views
             TextArea.Visibility = Visibility.Collapsed;
         }
 
-        private void ShowArea(bool permanent = true)
+        private void ShowArea(long paidMessageStarCount, bool permanent = true)
         {
             if (_fromPreview)
             {
@@ -4170,6 +4170,27 @@ namespace Telegram.Views
             if (permanent)
             {
                 _replyEnabled = null;
+
+                btnSendMessage.Visibility = paidMessageStarCount > 0
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+
+                btnPaidMessage.Visibility = paidMessageStarCount > 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+
+                if (paidMessageStarCount > 0)
+                {
+                    btnSendMessage.Visibility = Visibility.Collapsed;
+                    btnPaidMessage.Visibility = Visibility.Visible;
+
+                    btnPaidMessage.Content = Icons.Premium16 + Icons.Spacing + Formatter.ShortNumber(paidMessageStarCount);
+                }
+                else
+                {
+                    btnSendMessage.Visibility = Visibility.Visible;
+                    btnPaidMessage.Visibility = Visibility.Collapsed;
+                }
             }
 
             _actionCollapsed = true;
@@ -4843,7 +4864,7 @@ namespace Telegram.Views
             {
                 if (_replyEnabled == true && show)
                 {
-                    ShowArea(false);
+                    ShowArea(0, false);
                 }
                 else
                 {
@@ -5281,7 +5302,7 @@ namespace Telegram.Views
 
             if (!secret && !user.RestrictsNewChats)
             {
-                ShowArea();
+                ShowArea(fullInfo?.OutgoingPaidMessageStarCount ?? user.PaidMessageStarCount);
             }
 
             TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly);
@@ -5309,7 +5330,7 @@ namespace Telegram.Views
             {
                 if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeMyNotes)
                 {
-                    ShowArea();
+                    ShowArea(fullInfo.OutgoingPaidMessageStarCount);
                 }
                 else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeAuthorHidden)
                 {
@@ -5353,7 +5374,7 @@ namespace Telegram.Views
             }
             else if (!secret && !user.RestrictsNewChats)
             {
-                ShowArea();
+                ShowArea(fullInfo.OutgoingPaidMessageStarCount);
             }
 
             if (fullInfo.BotInfo?.MenuButton != null)
@@ -5410,7 +5431,11 @@ namespace Telegram.Views
         {
             if (result is CanSendMessageToUserResultOk)
             {
-                ShowArea();
+                ShowArea(0);
+            }
+            else if (result is CanSendMessageToUserResultUserHasPaidMessages userHasPaidMessages)
+            {
+                ShowArea(userHasPaidMessages.OutgoingPaidMessageStarCount);
             }
             else if (result is CanSendMessageToUserResultUserIsDeleted)
             {
@@ -5464,7 +5489,7 @@ namespace Telegram.Views
         {
             if (secretChat.State is SecretChatStateReady)
             {
-                ShowArea();
+                ShowArea(0);
             }
             else if (secretChat.State is SecretChatStatePending)
             {
@@ -5513,7 +5538,7 @@ namespace Telegram.Views
                 }
                 else
                 {
-                    ShowArea();
+                    ShowArea(0);
                 }
 
                 TextField.PlaceholderText = GetPlaceholder(chat, group, out bool readOnly);
@@ -5585,7 +5610,7 @@ namespace Telegram.Views
                 }
                 else if (group.Status is ChatMemberStatusCreator || group.Status is ChatMemberStatusAdministrator administrator && administrator.Rights.CanPostMessages)
                 {
-                    ShowArea();
+                    ShowArea(0);
                 }
                 else if (group.Status is ChatMemberStatusLeft or ChatMemberStatusBanned)
                 {
@@ -5616,7 +5641,7 @@ namespace Telegram.Views
                         }
                         else
                         {
-                            ShowArea();
+                            ShowArea(group.PaidMessageStarCount);
                         }
                     }
                     else
@@ -5632,7 +5657,7 @@ namespace Telegram.Views
                     }
                     else
                     {
-                        ShowArea();
+                        ShowArea(0);
                     }
                 }
                 else if (group.Status is ChatMemberStatusRestricted restrictedSend)
@@ -5658,7 +5683,7 @@ namespace Telegram.Views
                     }
                     else
                     {
-                        ShowArea();
+                        ShowArea(group.PaidMessageStarCount);
                     }
                 }
                 else if (group.Status is ChatMemberStatusLeft or ChatMemberStatusBanned)
@@ -5675,7 +5700,7 @@ namespace Telegram.Views
                 }
                 else
                 {
-                    ShowArea();
+                    ShowArea(group.PaidMessageStarCount);
                 }
             }
 
@@ -6078,14 +6103,14 @@ namespace Telegram.Views
             {
                 if (fullInfo.BusinessInfo?.StartPage?.Sticker != null)
                 {
-                    ViewModel.SendSticker(fullInfo.BusinessInfo.StartPage.Sticker, false, false);
+                    ViewModel.SendSticker(fullInfo.BusinessInfo.StartPage.Sticker, SchedulingState.None, false);
                     return;
                 }
             }
 
             if (ViewModel.GreetingSticker != null)
             {
-                ViewModel.SendSticker(ViewModel.GreetingSticker, false, false);
+                ViewModel.SendSticker(ViewModel.GreetingSticker, SchedulingState.None, false);
             }
         }
 

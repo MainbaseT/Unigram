@@ -903,7 +903,13 @@ namespace Telegram.Controls.Chats
                 return;
             }
 
-            var options = new MessageSendOptions(disableNotification, false, false, false, 0, false, null, Effect?.Id ?? 0, 0, false);
+            var options = await ViewModel.PickMessageSendOptionsAsync(1, SchedulingState.Auto, disableNotification, false);
+            if (options == null)
+            {
+                return;
+            }
+
+            options.EffectId = Effect?.Id ?? 0;
 
             Sending?.Invoke(this, EventArgs.Empty);
             Effect = null;
@@ -916,21 +922,14 @@ namespace Telegram.Controls.Chats
 
         public async void Schedule(bool whenOnline)
         {
-            Sending?.Invoke(this, EventArgs.Empty);
-
-            MessageSendOptions options;
-
-            if (whenOnline)
-            {
-                options = new MessageSendOptions(false, false, false, false, 0, false, new MessageSchedulingStateSendWhenOnline(), 0, 0, false);
-            }
-            else
-            {
-                options = await ViewModel.PickMessageSendOptionsAsync(true);
-            }
-
+            var options = await ViewModel.PickMessageSendOptionsAsync(1, whenOnline ? SchedulingState.WhenOnline : SchedulingState.Schedule);
             if (options != null)
             {
+                options.EffectId = Effect?.Id ?? 0;
+
+                Sending?.Invoke(this, EventArgs.Empty);
+                Effect = null;
+
                 var linkPreview = ViewModel.GetLinkPreviewOptions();
                 var text = GetFormattedText(true);
 

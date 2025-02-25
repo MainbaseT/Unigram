@@ -191,7 +191,7 @@ namespace Telegram.ViewModels.Stories
             //throw new NotImplementedException();
         }
 
-        public override Task<MessageSendOptions> PickMessageSendOptionsAsync(bool? schedule = null, bool? silent = null, bool reorder = false)
+        public override Task<MessageSendOptions> PickMessageSendOptionsAsync(int messageCount = 1, SchedulingState schedule = SchedulingState.Auto, bool? silent = null, bool reorder = false)
         {
             return Task.FromResult(new MessageSendOptions(silent ?? false, false, false, false, 0, Settings.Stickers.DynamicPackOrder && reorder, null, 0, 0, false));
         }

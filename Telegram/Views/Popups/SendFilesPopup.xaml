@@ -366,7 +366,8 @@
                                   FontSize="24"
                                   Grid.Column="1" />
 
-            <controls:GlyphButton Click="Send_Click"
+            <controls:GlyphButton x:Name="SendMessage"
+                                  Click="Send_Click"
                                   ContextRequested="Send_ContextRequested"
                                   AutomationProperties.Name="{CustomResource Send}"
                                   ToolTipService.ToolTip="{CustomResource Send}"
@@ -376,6 +377,20 @@
                                   Glyph="&#xE919;"
                                   Margin="-8,0,0,0"
                                   Grid.Column="2" />
+            <Button x:Name="PaidMessage"
+                    Click="Send_Click"
+                    ContextRequested="Send_ContextRequested"
+                    Style="{StaticResource AccentButtonStyle}"
+                    FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
+                    BorderBrush="{ThemeResource AccentButtonBackground}"
+                    AutomationProperties.Name="{CustomResource AccDescrBotCommands}"
+                    ToolTipService.ToolTip="{CustomResource AccDescrBotCommands}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Visibility="Collapsed"
+                    CornerRadius="16"
+                    Margin="0,8,8,8"
+                    Grid.Column="2" />
         </Grid>
 
         <ListView x:Name="ScrollingHost"
@@ -396,8 +411,8 @@
                             <Grid>
                                 <local:StorageAlbumPanel ItemTemplate="{StaticResource MediaItemTemplate}"
                                                          ItemClick="Album_ItemClick"
-                                                         Margin="0,0,-2,6"/>
-                                
+                                                         Margin="0,0,-2,6" />
+
                                 <Button x:Name="PaidMediaButton"
                                         Style="{StaticResource InvoiceFileButtonStyle}"
                                         HorizontalAlignment="Center"

@@ -28,6 +28,14 @@ using static Telegram.Services.GenerationService;
 
 namespace Telegram.ViewModels
 {
+    public enum SchedulingState
+    {
+        None,
+        Auto,
+        Schedule,
+        WhenOnline
+    }
+
     public abstract class ComposeViewModel : ViewModelBase
     {
         protected ComposeViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
@@ -51,7 +59,7 @@ namespace Telegram.ViewModels
 
         #region Stickers
 
-        public async void SendSticker(Sticker sticker, bool? schedule, bool? silent, string emoji = null, bool reorder = false)
+        public async void SendSticker(Sticker sticker, SchedulingState schedule, bool? silent, string emoji = null, bool reorder = false)
         {
             HideStickers();
 
@@ -67,7 +75,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var options = await PickMessageSendOptionsAsync(schedule, silent, reorder);
+            var options = await PickMessageSendOptionsAsync(1, schedule, silent, reorder);
             if (options == null)
             {
                 return;
@@ -100,10 +108,10 @@ namespace Telegram.ViewModels
 
         public void SendAnimation(Animation animation)
         {
-            SendAnimation(animation, null, null);
+            SendAnimation(animation, SchedulingState.Auto, null);
         }
 
-        public async void SendAnimation(Animation animation, bool? schedule, bool? silent)
+        public async void SendAnimation(Animation animation, SchedulingState schedule, bool? silent)
         {
             HideStickers();
 
@@ -113,7 +121,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var options = await PickMessageSendOptionsAsync(schedule, silent);
+            var options = await PickMessageSendOptionsAsync(1, schedule, silent);
             if (options == null)
             {
                 return;
@@ -401,7 +409,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var options = await PickMessageSendOptionsAsync(popup.Schedule, popup.Silent);
+            var options = await PickMessageSendOptionsAsync(popup.Items.Count, popup.Schedule, popup.Silent);
             if (options == null)
             {
                 return;
@@ -672,7 +680,7 @@ namespace Telegram.ViewModels
         //    return await SendMessageAsync(replyToMessageId, inputMessageContent, options);
         //}
 
-        public abstract Task<MessageSendOptions> PickMessageSendOptionsAsync(bool? schedule = null, bool? silent = null, bool reorder = false);
+        public abstract Task<MessageSendOptions> PickMessageSendOptionsAsync(int messageCount = 1, SchedulingState schedulingState = SchedulingState.None, bool? disableNotification = null, bool reorder = false);
 
         protected async Task<BaseObject> SendMessageAsync(InputMessageReplyTo replyTo, InputMessageContent inputMessageContent, MessageSendOptions options)
         {

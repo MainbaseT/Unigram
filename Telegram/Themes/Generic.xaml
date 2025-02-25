@@ -3481,6 +3481,7 @@
                                                     Content="{TemplateBinding PrimaryButtonText}"
                                                     IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}"
                                                     Style="{TemplateBinding PrimaryButtonStyle}"
+                                                    FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                                     ElementSoundMode="FocusOnly"
                                                     HorizontalAlignment="Stretch"
                                                     VerticalAlignment="Stretch" />
@@ -3513,6 +3514,7 @@
                                                 Content="{TemplateBinding SecondaryButtonText}"
                                                 IsEnabled="{TemplateBinding IsSecondaryButtonEnabled}"
                                                 Style="{TemplateBinding SecondaryButtonStyle}"
+                                                FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                                 ElementSoundMode="FocusOnly"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"
@@ -3522,6 +3524,7 @@
                                         <Button x:Name="CloseButton"
                                                 Content="{TemplateBinding CloseButtonText}"
                                                 Style="{TemplateBinding CloseButtonStyle}"
+                                                FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                                 ElementSoundMode="FocusOnly"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"

@@ -1295,7 +1295,6 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-
                     <Grid x:Name="ComposerHeader"
                           Visibility="Collapsed"
                           Grid.ColumnSpan="6">
@@ -1539,6 +1538,20 @@
                                 <Grid x:Name="SendEffectInteractions" />
                             </Popup>
                         </Grid>
+
+                        <Button x:Name="btnPaidMessage"
+                                ContextRequested="Send_ContextRequested"
+                                Click="btnSendMessage_Click"
+                                Style="{StaticResource AccentButtonStyle}"
+                                FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
+                                BorderBrush="{ThemeResource AccentButtonBackground}"
+                                AutomationProperties.Name="{CustomResource AccDescrBotCommands}"
+                                ToolTipService.ToolTip="{CustomResource AccDescrBotCommands}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Visibility="Collapsed"
+                                CornerRadius="16"
+                                Margin="0,8,8,8" />
                     </Grid>
 
                     <controls:GlyphButton x:Name="btnEdit"

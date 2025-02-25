@@ -793,6 +793,7 @@ namespace Telegram.Services
         Index,
         Pixel,
         ReadInboxMaxId,
-        IsTranslating
+        IsTranslating,
+        PaidMessageStarCount
     }
 }

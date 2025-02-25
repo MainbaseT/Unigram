@@ -374,10 +374,10 @@ namespace Telegram.Converters
             return string.Format(Strings.formatDateAtTime, Date(value), Time(value));
         }
 
-        public static string ShortNumber(int number)
+        public static string ShortNumber(long number)
         {
             var K = string.Empty;
-            var lastDec = 0;
+            var lastDec = 0L;
 
             while (number / 1000 > 0)
             {
