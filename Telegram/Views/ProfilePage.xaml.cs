@@ -553,7 +553,7 @@ namespace Telegram.Views
                 flyout.Items.Add(photos);
                 flyout.Items.Add(videos);
             }
-            else if (item.Type == typeof(ProfileGiftsTabPage) && ViewModel.ClientService.TryGetSupergroup(ViewModel.Chat, out Supergroup supergroup) && supergroup.CanPostMessages())
+            else if (item.Type == typeof(ProfileGiftsTabPage))
             {
                 var sort = new MenuFlyoutItem
                 {
@@ -580,33 +580,37 @@ namespace Telegram.Views
                     IsChecked = !ViewModel.GiftsTab.ExcludeUpgraded
                 };
 
-                var displayed = new ToggleMenuFlyoutItem
-                {
-                    Text = Strings.Gift2FilterDisplayed,
-                    IsChecked = !ViewModel.GiftsTab.ExcludeSaved
-                };
-
-                var hidden = new ToggleMenuFlyoutItem
-                {
-                    Text = Strings.Gift2FilterHidden,
-                    IsChecked = !ViewModel.GiftsTab.ExcludeUnsaved
-                };
-
                 sort.Click += (s, args) => ViewModel.GiftsTab.SortByPrice = !ViewModel.GiftsTab.SortByPrice;
                 unlimited.Click += (s, args) => ViewModel.GiftsTab.ExcludeUnlimited = !ViewModel.GiftsTab.ExcludeUnlimited;
                 limited.Click += (s, args) => ViewModel.GiftsTab.ExcludeLimited = !ViewModel.GiftsTab.ExcludeLimited;
                 unique.Click += (s, args) => ViewModel.GiftsTab.ExcludeUpgraded = !ViewModel.GiftsTab.ExcludeUpgraded;
-                displayed.Click += (s, args) => ViewModel.GiftsTab.ExcludeSaved = !ViewModel.GiftsTab.ExcludeSaved;
-                hidden.Click += (s, args) => ViewModel.GiftsTab.ExcludeUnsaved = !ViewModel.GiftsTab.ExcludeUnsaved;
 
                 flyout.Items.Add(sort);
                 flyout.CreateFlyoutSeparator();
                 flyout.Items.Add(unlimited);
                 flyout.Items.Add(limited);
                 flyout.Items.Add(unique);
-                flyout.CreateFlyoutSeparator();
-                flyout.Items.Add(displayed);
-                flyout.Items.Add(hidden);
+                if (ViewModel.ClientService.IsSavedMessages(ViewModel.Chat) || ViewModel.ClientService.TryGetSupergroup(ViewModel.Chat, out Supergroup supergroup) && supergroup.CanPostMessages())
+                {
+                    var displayed = new ToggleMenuFlyoutItem
+                    {
+                        Text = Strings.Gift2FilterDisplayed,
+                        IsChecked = !ViewModel.GiftsTab.ExcludeSaved
+                    };
+
+                    var hidden = new ToggleMenuFlyoutItem
+                    {
+                        Text = Strings.Gift2FilterHidden,
+                        IsChecked = !ViewModel.GiftsTab.ExcludeUnsaved
+                    };
+
+                    displayed.Click += (s, args) => ViewModel.GiftsTab.ExcludeSaved = !ViewModel.GiftsTab.ExcludeSaved;
+                    hidden.Click += (s, args) => ViewModel.GiftsTab.ExcludeUnsaved = !ViewModel.GiftsTab.ExcludeUnsaved;
+
+                    flyout.CreateFlyoutSeparator();
+                    flyout.Items.Add(displayed);
+                    flyout.Items.Add(hidden);
+                }
             }
 
             flyout.ShowAt(sender, FlyoutPlacementMode.Bottom);
