@@ -41,6 +41,20 @@
                                  VerticalAlignment="Top"
                                  Margin="4" />
 
+        <Border x:Name="Shadow"
+                Width="24"
+                Height="24"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" />
+
+        <TextBlock x:Name="Pinned"
+                   Text="&#xE9BB;"
+                   FontSize="16"
+                   FontFamily="{StaticResource SymbolThemeFontFamily}"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Margin="4" />
+
         <controls:AnimatedImage x:Name="Animated"
                                 Width="88"
                                 Height="88"

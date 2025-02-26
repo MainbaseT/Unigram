@@ -23,10 +23,10 @@ namespace Telegram.Controls.Media
         public const string Boosters12 = "\uEA6A";
         public const string Boosters212 = "\uEA6B";
 
-        public static string TagFilter = "\uEA63";
-        public static string TagEdit = "\uEA64";
-        public static string TagSearch = "\uEA65";
-        public static string TagOff = "\uEA66";
+        public const string TagFilter = "\uEA63";
+        public const string TagEdit = "\uEA64";
+        public const string TagSearch = "\uEA65";
+        public const string TagOff = "\uEA66";
 
         public const string PictureInPictureEnter = "\uE92C";
         public const string PictureInPictureExit = "\uE92D";
@@ -193,6 +193,8 @@ namespace Telegram.Controls.Media
 
         public const string Pin = "\uE840";
         public const string PinOff = "\uE77A";
+        public const string Eye = "\uE9A7";
+        public const string EyeOff = "\uE9A6";
 
         public const string MarkAsRead = "\uE91D";
         public const string MarkAsUnread = "\uE91C";

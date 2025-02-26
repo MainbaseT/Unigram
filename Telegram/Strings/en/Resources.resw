@@ -6278,6 +6278,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2Hide" xml:space="preserve">
     <value>Hide My Name</value>
   </data>
+  <data name="Gift2HideGift" xml:space="preserve">
+    <value>Hide</value>
+  </data>
   <data name="Gift2HideInfo" xml:space="preserve">
     <value>You can hide your name and message from visitors to {0}`s profile. {0} will still see your name and message.</value>
   </data>
@@ -6368,6 +6371,15 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2OwnerChange" xml:space="preserve">
     <value>transfer</value>
   </data>
+  <data name="Gift2Pin" xml:space="preserve">
+    <value>Pin</value>
+  </data>
+  <data name="Gift2PinnedSubtitle" xml:space="preserve">
+    <value>Now it will always be shown on top.</value>
+  </data>
+  <data name="Gift2PinnedTitle" xml:space="preserve">
+    <value>Gift pinned</value>
+  </data>
   <data name="Gift2Premium" xml:space="preserve">
     <value>Gift Premium</value>
   </data>
@@ -6415,6 +6427,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2SendPremium" xml:space="preserve">
     <value>Send a Gift for {0}</value>
+  </data>
+  <data name="Gift2ShowGift" xml:space="preserve">
+    <value>Show</value>
   </data>
   <data name="Gift2SoldOut" xml:space="preserve">
     <value>sold out</value>
@@ -6535,6 +6550,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2Unpack" xml:space="preserve">
     <value>Unpack</value>
+  </data>
+  <data name="Gift2Unpin" xml:space="preserve">
+    <value>Unpin</value>
   </data>
   <data name="Gift2Upgrade" xml:space="preserve">
     <value>Make Unique for ⭐️{0}</value>

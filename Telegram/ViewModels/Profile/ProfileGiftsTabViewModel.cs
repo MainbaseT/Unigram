@@ -4,13 +4,18 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Collections;
+using Telegram.Common;
+using Telegram.Controls;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
+using Telegram.Streams;
 using Telegram.Td.Api;
+using Telegram.Views.Popups;
 using Telegram.Views.Stars.Popups;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Navigation;
@@ -21,6 +26,8 @@ namespace Telegram.ViewModels.Profile
     {
         private MessageSender _senderId;
         private string _nextOffsetId = string.Empty;
+
+        private List<string> _pinnedGifts = new List<string>();
 
         public ProfileGiftsTabViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
@@ -85,6 +92,11 @@ namespace Telegram.ViewModels.Profile
                 if (receivedGift == null)
                 {
                     return;
+                }
+
+                if (receivedGift.IsPinned)
+                {
+                    _pinnedGifts.Remove(receivedGift.ReceivedGiftId);
                 }
 
                 Items.Remove(receivedGift);
@@ -204,6 +216,11 @@ namespace Telegram.ViewModels.Profile
 
                 foreach (var gift in gifts.Gifts)
                 {
+                    if (gift.IsPinned)
+                    {
+                        _pinnedGifts.Add(gift.ReceivedGiftId);
+                    }
+
                     Items.Add(gift);
                     total++;
                 }
@@ -227,6 +244,87 @@ namespace Telegram.ViewModels.Profile
             }
 
             ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, _senderId));
+        }
+
+        public bool IsOwned()
+        {
+            if (_senderId.IsUser(ClientService.Options.MyId))
+            {
+                return true;
+            }
+            else if (ClientService.TryGetSupergroup(_senderId, out Supergroup supergroup))
+            {
+                return supergroup.CanPostMessages();
+            }
+
+            return false;
+        }
+
+        public async void PinGift(ReceivedGift gift)
+        {
+            if (gift.IsPinned)
+            {
+                _pinnedGifts.Remove(gift.ReceivedGiftId);
+            }
+            else
+            {
+                _pinnedGifts.Insert(0, gift.ReceivedGiftId);
+            }
+
+            var response = await ClientService.SendAsync(new SetPinnedGifts(_senderId, _pinnedGifts));
+            if (response is Ok)
+            {
+                gift.IsPinned = !gift.IsPinned;
+                Aggregator.Publish(new UpdateGiftIsSaved(gift.ReceivedGiftId, gift.IsSaved));
+
+                Items.Remove(gift);
+                Items.Insert(0, gift);
+
+                if (gift.IsPinned)
+                {
+                    ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.Gift2PinnedTitle, Strings.Gift2PinnedSubtitle), ToastPopupIcon.Pin);
+                }
+            }
+        }
+
+        public void CopyGift(ReceivedGift gift)
+        {
+            if (gift.Gift is SentGiftUpgraded upgraded)
+            {
+                MessageHelper.CopyLink(ClientService, XamlRoot, new InternalLinkTypeUpgradedGift(upgraded.Gift.Name));
+            }
+        }
+
+        public void ShareGift(ReceivedGift gift)
+        {
+            if (gift.Gift is SentGiftUpgraded upgraded)
+            {
+                NavigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationPostLink(new InternalLinkTypeUpgradedGift(upgraded.Gift.Name)));
+            }
+        }
+
+        public async void SaveGift(ReceivedGift gift)
+        {
+            var response = await ClientService.SendAsync(new ToggleGiftIsSaved(gift.ReceivedGiftId, !gift.IsSaved));
+            if (response is Ok)
+            {
+                gift.IsSaved = !gift.IsSaved;
+                Aggregator.Publish(new UpdateGiftIsSaved(gift.ReceivedGiftId, gift.IsSaved));
+
+                if (gift.IsSaved)
+                {
+                    ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.Gift2MadePublicTitle, Strings.Gift2MadePublic), new DelayedFileSource(ClientService, gift.GetSticker()));
+                }
+                else
+                {
+                    ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.Gift2MadePrivateTitle, Strings.Gift2MadePrivate), new DelayedFileSource(ClientService, gift.GetSticker()));
+                }
+            }
+        }
+
+        public void TransferGift(ReceivedGift gift)
+        {
+            NavigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationTransferGift(gift));
         }
     }
 }

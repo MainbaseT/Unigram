@@ -24,20 +24,33 @@ namespace Telegram.Controls.Cells
 
             if (gift.Gift is SentGiftRegular regular)
             {
-                if (gift.IsPrivate)
+                if (gift.IsPinned)
                 {
-                    Photo.Source = PlaceholderImage.GetGlyph(Icons.AuthorHiddenFilled, 5);
+                    Photo.Visibility = Visibility.Collapsed;
+                    Pinned.Visibility = Visibility.Visible;
+                    Pinned.RequestedTheme = ElementTheme.Default;
+
+                    VisualUtilities.DropShadow(Pinned, target: Shadow);
                 }
-                else if (clientService.TryGetUser(gift.SenderId, out User user))
+                else
                 {
-                    Photo.SetUser(clientService, user, 24);
-                }
-                else if (clientService.TryGetChat(gift.SenderId, out Chat chat))
-                {
-                    Photo.SetChat(clientService, chat, 24);
+                    Photo.Visibility = Visibility.Visible;
+                    Pinned.Visibility = Visibility.Collapsed;
+
+                    if (gift.IsPrivate)
+                    {
+                        Photo.Source = PlaceholderImage.GetGlyph(Icons.AuthorHiddenFilled, 5);
+                    }
+                    else if (clientService.TryGetUser(gift.SenderId, out User user))
+                    {
+                        Photo.SetUser(clientService, user, 24);
+                    }
+                    else if (clientService.TryGetChat(gift.SenderId, out Chat chat))
+                    {
+                        Photo.SetChat(clientService, chat, 24);
+                    }
                 }
 
-                Photo.Visibility = Visibility.Visible;
                 Pattern.Visibility = Visibility.Collapsed;
 
                 Animated.Source = new DelayedFileSource(clientService, regular.Gift.Sticker);
@@ -68,6 +81,18 @@ namespace Telegram.Controls.Cells
                 var edgeColor = upgraded.Gift.Backdrop.Colors.EdgeColor.ToColor();
 
                 Pattern.Update(source, centerColor, edgeColor);
+
+                if (gift.IsPinned)
+                {
+                    Pinned.Visibility = Visibility.Visible;
+                    Pinned.RequestedTheme = ElementTheme.Dark;
+
+                    VisualUtilities.DropShadow(Pinned, target: Shadow);
+                }
+                else
+                {
+                    Pinned.Visibility = Visibility.Collapsed;
+                }
 
                 Photo.Visibility = Visibility.Collapsed;
                 Pattern.Visibility = Visibility.Visible;
@@ -106,6 +131,7 @@ namespace Telegram.Controls.Cells
         public void UpdateGift(IClientService clientService, Gift gift)
         {
             Photo.Visibility = Visibility.Collapsed;
+            Pinned.Visibility = Visibility.Collapsed;
 
             Animated.Source = new DelayedFileSource(clientService, gift.Sticker);
 

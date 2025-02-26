@@ -467,12 +467,6 @@ namespace Telegram.Views.Stars.Popups
             //ViewModel.Submit();
         }
 
-        private async void ShareLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
-        {
-            Hide();
-            await _navigationService.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationPostLink(new HttpUrl("https://")));
-        }
-
         private async void Convert_Click(object sender, RoutedEventArgs e)
         {
             if (_gift?.Gift is SentGiftRegular regular)
