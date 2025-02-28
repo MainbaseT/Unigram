@@ -484,6 +484,8 @@ namespace Telegram.Views.Popups
         }
 
         public int GroupCallId { get; }
+
+        public override int NumberOfSentMessages => 1;
     }
 
     public partial class ChooseChatsConfigurationDataPackage : ChooseChatsConfiguration
@@ -537,6 +539,8 @@ namespace Telegram.Views.Popups
         }
 
         public FormattedText Text { get; }
+
+        public override int NumberOfSentMessages => 1;
     }
 
     public partial class ChooseChatsConfigurationShareMessage : ChooseChatsConfiguration
@@ -553,6 +557,8 @@ namespace Telegram.Views.Popups
         public long MessageId { get; }
 
         public bool WithMyScore { get; }
+
+        public override int NumberOfSentMessages => 1;
     }
 
     public partial class ChooseChatsConfigurationReplyToMessage : ChooseChatsConfiguration
@@ -579,6 +585,8 @@ namespace Telegram.Views.Popups
         public long ChatId { get; }
 
         public int StoryId { get; }
+
+        public override int NumberOfSentMessages => 1;
     }
 
     public partial class ChooseChatsConfigurationShareMessages : ChooseChatsConfiguration
@@ -589,6 +597,8 @@ namespace Telegram.Views.Popups
         }
 
         public IList<MessageId> MessageIds { get; }
+
+        public override int NumberOfSentMessages => MessageIds.Count;
     }
 
     public partial class ChooseChatsConfigurationPostLink : ChooseChatsConfiguration
@@ -606,6 +616,8 @@ namespace Telegram.Views.Popups
         public HttpUrl Url { get; }
 
         public InternalLinkType InternalLink { get; }
+
+        public override int NumberOfSentMessages => 1;
     }
 
     public partial class ChooseChatsConfigurationPostMessage : ChooseChatsConfiguration
@@ -616,6 +628,8 @@ namespace Telegram.Views.Popups
         }
 
         public InputMessageContent Content { get; }
+
+        public override int NumberOfSentMessages => 1;
     }
 
     public partial class ChooseChatsConfigurationVerifyChat : ChooseChatsConfiguration
@@ -767,7 +781,7 @@ namespace Telegram.Views.Popups
 
     public abstract class ChooseChatsConfiguration
     {
-
+        public virtual int NumberOfSentMessages => 0;
     }
 
     #endregion
@@ -1479,9 +1493,9 @@ namespace Telegram.Views.Popups
             ViewModel.SelectedItems = new MvxObservableCollection<Chat>(selection);
         }
 
-        private void List_ItemClick(object sender, ItemClickEventArgs e)
+        private async void List_ItemClick(object sender, ItemClickEventArgs e)
         {
-            ItemClick(e.ClickedItem as Chat, true);
+            await ItemClick(e.ClickedItem as Chat, true);
         }
 
         private async void ListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -1535,7 +1549,7 @@ namespace Telegram.Views.Popups
             }
 
             var chat = item as Chat;
-            if (chat == null || ItemClick(chat, e.ClickedItem is Chat))
+            if (chat == null || await ItemClick(chat, e.ClickedItem is Chat))
             {
                 return;
             }
@@ -1575,18 +1589,22 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private bool ItemClick(Chat chat, bool origin)
+        private async Task<bool> ItemClick(Chat chat, bool origin)
         {
             if (ViewModel.Options.CanPostMessages && ViewModel.ClientService.IsSavedMessages(chat))
             {
                 if (ViewModel.SelectedItems.Empty())
                 {
                     ViewModel.SelectedItems = new MvxObservableCollection<Chat>(new[] { chat });
-                    ViewModel.SendCommand.Execute();
 
-                    if (ViewModel.ShouldCloseOnCommit)
+                    if (await ViewModel.ConfirmPaidMessagesAsync())
                     {
-                        Hide();
+                        ViewModel.SendCommand.Execute();
+
+                        if (ViewModel.ShouldCloseOnCommit)
+                        {
+                            Hide();
+                        }
                     }
 
                     return true;
@@ -1595,11 +1613,15 @@ namespace Telegram.Views.Popups
             else if (ViewModel.SelectionMode == ListViewSelectionMode.None)
             {
                 ViewModel.SelectedItems = new MvxObservableCollection<Chat>(new[] { chat });
-                ViewModel.SendCommand.Execute();
 
-                if (ViewModel.ShouldCloseOnCommit)
+                if (await ViewModel.ConfirmPaidMessagesAsync())
                 {
-                    Hide();
+                    ViewModel.SendCommand.Execute();
+
+                    if (ViewModel.ShouldCloseOnCommit)
+                    {
+                        Hide();
+                    }
                 }
 
                 return true;
@@ -1717,10 +1739,22 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             ViewModel.Caption = CaptionInput.GetFormattedText();
-            ViewModel.SendCommand.Execute();
+
+            var deferral = args.GetDeferral();
+
+            if (await ViewModel.ConfirmPaidMessagesAsync())
+            {
+                ViewModel.SendCommand.Execute();
+            }
+            else
+            {
+                args.Cancel = true;
+            }
+
+            deferral.Complete();
         }
 
         private void CaptionInput_Accept(FormattedTextBox sender, EventArgs args)

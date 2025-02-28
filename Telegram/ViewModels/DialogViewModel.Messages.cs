@@ -712,9 +712,22 @@ namespace Telegram.ViewModels
 
         #region Resend
 
-        public void ResendMessage(MessageViewModel message)
+        public async void ResendMessage(MessageViewModel message)
         {
-            ClientService.Send(new ResendMessages(message.ChatId, new[] { message.Id }, null));
+            var paidMessageStarCount = 0L;
+
+            if (message.SendingState is MessageSendingStateFailed failed)
+            {
+                paidMessageStarCount = failed.RequiredPaidMessageStarCount;
+            }
+
+            var paid = await ShowPaidMessageConfirmationAsync(1, paidMessageStarCount);
+            if (paid != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            ClientService.Send(new ResendMessages(message.ChatId, new[] { message.Id }, null, paidMessageStarCount));
         }
 
         #endregion

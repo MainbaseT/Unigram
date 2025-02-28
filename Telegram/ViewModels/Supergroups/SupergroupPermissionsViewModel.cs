@@ -295,6 +295,20 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        private bool _chargePerMessage;
+        public bool ChargePerMessage
+        {
+            get => _chargePerMessage;
+            set => Set(ref _chargePerMessage, value);
+        }
+
+        private int _paidMessageStarCount;
+        public int PaidMessageStarCount
+        {
+            get => _paidMessageStarCount;
+            set => Set(ref _paidMessageStarCount, value);
+        }
+
         private int _unrestrictBoostCount;
         public int UnrestrictBoostCount
         {
@@ -386,6 +400,15 @@ namespace Telegram.ViewModels.Supergroups
             if (supergroup == null)
             {
                 return;
+            }
+
+            if (supergroup.PaidMessageStarCount != _paidMessageStarCount)
+            {
+                var paidMessageStarCount = await ClientService.SendAsync(new SetChatPaidMessageStarCount(chat.Id, _paidMessageStarCount));
+                if (paidMessageStarCount is Error)
+                {
+                    return;
+                }
             }
 
             var fullInfo = ClientService.GetSupergroupFull(chat);

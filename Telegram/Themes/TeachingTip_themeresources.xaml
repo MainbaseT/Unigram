@@ -556,6 +556,7 @@
                                                     </Grid.ColumnDefinitions>
                                                     <Button x:Name="ActionButton"
                                                             HorizontalAlignment="Stretch"
+                                                            FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
                                                             Style="{TemplateBinding ActionButtonStyle}"
                                                             Command="{TemplateBinding ActionButtonCommand}"
                                                             CommandParameter="{TemplateBinding ActionButtonCommandParameter}">
@@ -564,6 +565,7 @@
                                                     </Button>
                                                     <Button x:Name="CloseButton"
                                                             HorizontalAlignment="Stretch"
+                                                            FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
                                                             Style="{TemplateBinding CloseButtonStyle}"
                                                             Command="{TemplateBinding CloseButtonCommand}"
                                                             CommandParameter="{TemplateBinding CloseButtonCommandParameter}"

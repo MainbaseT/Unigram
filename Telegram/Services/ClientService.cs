@@ -147,6 +147,9 @@ namespace Telegram.Services
 
         bool IsForum(Chat chat);
 
+        bool IsPaid(Chat chat);
+        long PaidMessageStarCount(Chat chat);
+
         bool IsChatAccessible(Chat chat);
 
         bool IsBotAddedToAttachmentMenu(long userId);
@@ -1583,6 +1586,42 @@ namespace Telegram.Services
             }
 
             return false;
+        }
+
+        public bool IsPaid(Chat chat)
+        {
+            if (TryGetUserFull(chat, out UserFullInfo userFullInfo))
+            {
+                return userFullInfo.OutgoingPaidMessageStarCount > 0;
+            }
+            else if (TryGetUser(chat, out User user))
+            {
+                return user.PaidMessageStarCount > 0;
+            }
+            else if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                return supergroup.PaidMessageStarCount > 0;
+            }
+
+            return false;
+        }
+
+        public long PaidMessageStarCount(Chat chat)
+        {
+            if (TryGetUserFull(chat, out UserFullInfo userFullInfo))
+            {
+                return userFullInfo.OutgoingPaidMessageStarCount;
+            }
+            else if (TryGetUser(chat, out User user))
+            {
+                return user.PaidMessageStarCount;
+            }
+            else if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                return supergroup.PaidMessageStarCount;
+            }
+
+            return 0;
         }
 
         public bool IsChatAccessible(Chat chat)

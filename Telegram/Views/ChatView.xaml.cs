@@ -2225,12 +2225,15 @@ namespace Telegram.Views
 
             flyout.CreateFlyoutItem(() => TextField.Send(true), Strings.SendWithoutSound, Icons.AlertOff);
 
-            if (ViewModel.ClientService.TryGetUser(chat, out Td.Api.User user) && user.Type is UserTypeRegular && user.Status is not UserStatusRecently && !self)
+            if (!ViewModel.ClientService.IsPaid(chat))
             {
-                flyout.CreateFlyoutItem(() => TextField.Schedule(true), Strings.SendWhenOnline, Icons.PersonCircleOnline);
-            }
+                if (ViewModel.ClientService.TryGetUser(chat, out Td.Api.User user) && user.Type is UserTypeRegular && user.Status is not UserStatusRecently && !self)
+                {
+                    flyout.CreateFlyoutItem(() => TextField.Schedule(true), Strings.SendWhenOnline, Icons.PersonCircleOnline);
+                }
 
-            flyout.CreateFlyoutItem(() => TextField.Schedule(false), self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
+                flyout.CreateFlyoutItem(() => TextField.Schedule(false), self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
+            }
 
             if (chat.Type is ChatTypePrivate)
             {

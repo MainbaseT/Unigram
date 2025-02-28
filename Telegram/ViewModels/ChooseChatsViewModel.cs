@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Controls.Media;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -550,6 +551,65 @@ namespace Telegram.ViewModels
         //    return results;
         //}
 
+        public async Task<bool> ConfirmPaidMessagesAsync()
+        {
+            if (_configuration.NumberOfSentMessages > 0)
+            {
+                var confirm = await ShowPaidMessageConfirmationAsync(SelectedItems, _configuration.NumberOfSentMessages);
+                return confirm == ContentDialogResult.Primary;
+            }
+
+            return true;
+        }
+
+        private Task<ContentDialogResult> ShowPaidMessageConfirmationAsync(IList<Chat> chats, int messageCount)
+        {
+            int chatCount = 0;
+            long starCount = 0;
+
+            foreach (var chat in chats)
+            {
+                var paidMessageStarCount = 0L;
+
+                if (ClientService.TryGetUserFull(chat, out UserFullInfo userFullInfo))
+                {
+                    paidMessageStarCount = userFullInfo.OutgoingPaidMessageStarCount;
+                }
+                else if (ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
+                {
+                    paidMessageStarCount = supergroup.PaidMessageStarCount;
+                }
+
+                if (paidMessageStarCount > 0)
+                {
+                    chatCount++;
+                    starCount += paidMessageStarCount;
+                }
+            }
+
+            if (starCount != 0)
+            {
+                if (!string.IsNullOrEmpty(SendMessage?.Text) || !string.IsNullOrEmpty(Caption?.Text))
+                {
+                    messageCount++;
+                }
+
+                var message1 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessageMulti1, chatCount);
+                var message3 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessageMulti2Messages, chatCount * messageCount);
+                var message2 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessageMulti2, starCount * messageCount, message3);
+
+                var title = Strings.MessageLockedStarsConfirmTitle;
+                var message = string.Format("{0} {1}", message1, message2);
+                var primaryButtonText = Icons.Premium16 + Icons.Spacing + (starCount * messageCount).ToString("N0"); //Locale.Declension(Strings.R.MessageLockedStarsConfirmMessagePay, messageCount),
+                var secondaryButtonText = Strings.Cancel;
+
+                return ShowPopupAsync(message, title, primaryButtonText, secondaryButtonText);
+            }
+
+            return Task.FromResult(ContentDialogResult.Primary);
+        }
+
+
         public RelayCommand SendCommand { get; }
         private async void SendExecute()
         {
@@ -558,8 +618,6 @@ namespace Telegram.ViewModels
             {
                 return;
             }
-
-            var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
 
             if (!string.IsNullOrEmpty(SendMessage?.Text))
             {
@@ -571,6 +629,9 @@ namespace Telegram.ViewModels
             {
                 foreach (var chat in chats)
                 {
+                    var starCount = ClientService.PaidMessageStarCount(chat);
+                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                     var response = await ClientService.SendAsync(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(_caption, null, false)));
                 }
@@ -592,6 +653,9 @@ namespace Telegram.ViewModels
                 {
                     foreach (var messages in shareMessages.MessageIds.GroupBy(x => x.ChatId))
                     {
+                        var starCount = ClientService.PaidMessageStarCount(chat);
+                        var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                         SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                         ClientService.Send(new ForwardMessages(chat.Id, messageThreadId, messages.Key, messages.Select(x => x.Id).ToList(), options, _sendAsCopy || _removeCaptions, _removeCaptions));
                     }
@@ -603,6 +667,9 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
+                    var starCount = ClientService.PaidMessageStarCount(chat);
+                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                     ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageForwarded(shareMessage.ChatId, shareMessage.MessageId, shareMessage.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
                 }
@@ -613,6 +680,9 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
+                    var starCount = ClientService.PaidMessageStarCount(chat);
+                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                     ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
                 }
@@ -621,6 +691,9 @@ namespace Telegram.ViewModels
             {
                 foreach (var chat in chats)
                 {
+                    var starCount = ClientService.PaidMessageStarCount(chat);
+                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                     ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, postMessage.Content));
                 }
@@ -636,6 +709,9 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
+                        var starCount = ClientService.PaidMessageStarCount(chat);
+                        var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                         SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                         ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
                     }
@@ -647,6 +723,9 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
+                    var starCount = ClientService.PaidMessageStarCount(chat);
+                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                     SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                     ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
                 }
@@ -681,6 +760,9 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
+                        var starCount = ClientService.PaidMessageStarCount(chat);
+                        var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                         SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                         ClientService.Send(new SendInlineQueryResultMessage(chat.Id, messageThreadId, null, options, switchInline.InlineQueryId, switchInline.Result.GetId(), false));
                     }
@@ -706,6 +788,9 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
+                        var starCount = ClientService.PaidMessageStarCount(chat);
+                        var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
                         SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
                         ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
                     }

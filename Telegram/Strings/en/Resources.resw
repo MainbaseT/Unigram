@@ -6735,6 +6735,18 @@ about Telegram?</value>
   <data name="GroupMembersChartTitle" xml:space="preserve">
     <value>Group members</value>
   </data>
+  <data name="GroupMessagesChargePrice" xml:space="preserve">
+    <value>Charge Stars for Messages</value>
+  </data>
+  <data name="GroupMessagesChargePriceInfo" xml:space="preserve">
+    <value>If you turn this on, regular members of the group will have to pay Stars to send messages.</value>
+  </data>
+  <data name="GroupMessagesPriceHeader" xml:space="preserve">
+    <value>Set price per message</value>
+  </data>
+  <data name="GroupMessagesPriceInfo" xml:space="preserve">
+    <value>Your group will receive {0}% of the selected fee (~{1}) for each incoming message.</value>
+  </data>
   <data name="GroupName" xml:space="preserve">
     <value>Group name</value>
   </data>

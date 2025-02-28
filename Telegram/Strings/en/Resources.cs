@@ -10043,6 +10043,26 @@ namespace Telegram
         public static string GroupMembersChartTitle => Resource.GetString("GroupMembersChartTitle");
         
         /// <summary>
+        /// Localized resource similar to "Charge Stars for Messages"
+        /// </summary>
+        public static string GroupMessagesChargePrice => Resource.GetString("GroupMessagesChargePrice");
+        
+        /// <summary>
+        /// Localized resource similar to "If you turn this on, regular members of the group will have to pay Stars to send messages."
+        /// </summary>
+        public static string GroupMessagesChargePriceInfo => Resource.GetString("GroupMessagesChargePriceInfo");
+        
+        /// <summary>
+        /// Localized resource similar to "Set price per message"
+        /// </summary>
+        public static string GroupMessagesPriceHeader => Resource.GetString("GroupMessagesPriceHeader");
+        
+        /// <summary>
+        /// Localized resource similar to "Your group will receive {0}% of the selected fee (~{1}) for each incoming message."
+        /// </summary>
+        public static string GroupMessagesPriceInfo => Resource.GetString("GroupMessagesPriceInfo");
+        
+        /// <summary>
         /// Localized resource similar to "Group name"
         /// </summary>
         public static string GroupName => Resource.GetString("GroupName");
