@@ -267,6 +267,12 @@
     <Compile Include="Controls\Cells\PremiumGiftCell.xaml.cs">
       <DependentUpon>PremiumGiftCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Chats\ChatAccountInfo.xaml.cs">
+      <DependentUpon>ChatAccountInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chats\ChatAccountInfoHeader.xaml.cs">
+      <DependentUpon>ChatAccountInfoHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Chats\ChatSponsoredHeader.xaml.cs">
       <DependentUpon>ChatSponsoredHeader.xaml</DependentUpon>
     </Compile>
@@ -2512,6 +2518,14 @@
     <Page Include="Controls\ChatStatisticsOverview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Chats\ChatAccountInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Chats\ChatAccountInfoHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Chats\ChatSponsoredHeader.xaml">
       <Generator>MSBuild:Compile</Generator>

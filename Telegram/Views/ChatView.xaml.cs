@@ -212,6 +212,7 @@ namespace Telegram.Views
             ActionBar.InitializeParent(ClipperActionBar);
             ConnectedBot.InitializeParent(ClipperConnected);
             PinnedMessage.InitializeParent(ClipperPinned);
+            AccountInfoHeader.InitializeParent(ClipperAccountInfo);
             Sponsored.InitializeParent(Clipper);
         }
 
@@ -5300,6 +5301,8 @@ namespace Telegram.Views
 
         public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
+            AccountInfoHeader.UpdateUser(_viewModel.ClientService, chat, user, fullInfo);
+
             btnSendMessage.SlowModeDelay = 0;
             btnSendMessage.SlowModeDelayExpiresIn = 0;
 
@@ -5473,17 +5476,26 @@ namespace Telegram.Views
                 if (result is CanSendMessageToUserResultUserRestrictsNewChats)
                 {
                     ShowHideRestrictsNewChats(true, user);
+                    ShowHideAccountInfo(null, null);
                     ShowHideEmptyChat(false, null, null);
                 }
                 else
                 {
                     ShowHideRestrictsNewChats(false, null);
+                    ShowHideAccountInfo(null, null);
                     ShowHideEmptyChat(true, user, fullInfo);
                 }
+            }
+            else if (ViewModel.Type == DialogType.History && chat.ActionBar is ChatActionBarReportAddBlock reportAddBlock && reportAddBlock.AccountInfo != null)
+            {
+                ShowHideRestrictsNewChats(false, null);
+                ShowHideAccountInfo(user, reportAddBlock.AccountInfo);
+                ShowHideEmptyChat(false, null, null);
             }
             else
             {
                 ShowHideRestrictsNewChats(false, null);
+                ShowHideAccountInfo(null, null);
                 ShowHideEmptyChat(false, null, null);
             }
         }
@@ -5513,6 +5525,8 @@ namespace Telegram.Views
 
         public void UpdateBasicGroupFullInfo(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
         {
+            AccountInfoHeader.UpdateUser(_viewModel.ClientService, null, null, null);
+
             if (group.UpgradedToSupergroupId != 0)
             {
                 ShowAction(Strings.OpenSupergroup, true);
@@ -5588,6 +5602,8 @@ namespace Telegram.Views
 
         public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
+            AccountInfoHeader.UpdateUser(_viewModel.ClientService, null, null, null);
+
             if (ViewModel.Type == DialogType.EventLog)
             {
                 ShowAction(Strings.Settings, true);
@@ -6018,6 +6034,33 @@ namespace Telegram.Views
         private void RestrictsNewChats_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.NavigationService.ShowPromo();
+        }
+
+        private long _accountInfoCollapsed = 0;
+
+        private void ShowHideAccountInfo(User user, AccountInfo info)
+        {
+            if (_accountInfoCollapsed == (user?.Id ?? 0))
+            {
+                return;
+            }
+
+            _accountInfoCollapsed = user?.Id ?? 0;
+            AccountInfo ??= FindName(nameof(AccountInfo)) as ChatAccountInfo;
+
+            if (user != null)
+            {
+                if (info != null)
+                {
+                    AccountInfo.Update(_viewModel.ClientService, user, _viewModel.ClientService.GetUserFull(user.Id), info);
+                }
+
+                AccountInfo.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                AccountInfo.Visibility = Visibility.Collapsed;
+            }
         }
 
         private bool _restrictsNewChatsCollapsed = true;

@@ -1,0 +1,109 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Telegram.Common;
+using Telegram.Converters;
+using Telegram.Entities;
+using Telegram.Services;
+using Telegram.Streams;
+using Telegram.Td.Api;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+
+namespace Telegram.Controls.Chats
+{
+    public sealed partial class ChatAccountInfo : UserControl
+    {
+        public ChatAccountInfo()
+        {
+            InitializeComponent();
+        }
+
+        public void Update(IClientService clientService, User user, UserFullInfo fullInfo, AccountInfo info)
+        {
+            Title.Text = user.FullName();
+            Status.Text = user.IsContact
+                ? Strings.ContactInfoIsContact
+                : Strings.ContactInfoIsNotContact;
+
+            if (Country.Codes.TryGetValue(info.PhoneNumberCountryCode, out Country country))
+            {
+                Phone.Text = string.Format("{0} {1}", country.Emoji, country.DisplayName);
+                Phone.Visibility = Visibility.Visible;
+                PhoneInfo.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Phone.Visibility = Visibility.Collapsed;
+                PhoneInfo.Visibility = Visibility.Collapsed;
+            }
+
+            if (info.RegistrationYear != 0 && info.RegistrationMonth != 0)
+            {
+                var date = new DateTime(info.RegistrationYear, info.RegistrationMonth, 1);
+                var format = Formatter.Date(date, Strings.formatterMonthYear);
+
+                Registration.Text = format;
+                Registration.Visibility = Visibility.Visible;
+                RegistrationInfo.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Registration.Visibility = Visibility.Collapsed;
+                RegistrationInfo.Visibility = Visibility.Collapsed;
+            }
+
+            if (info.LastNameChangeDate != 0)
+            {
+                FullNameInfo.Visibility = Visibility.Visible;
+                FullName.Text = string.Format(Strings.ContactInfoUserUpdatedName, Formatter.RelativeDate(DateTime.Now.ToTimestamp() - info.LastNameChangeDate));
+            }
+            else
+            {
+                FullNameInfo.Visibility = Visibility.Collapsed;
+            }
+
+            if (info.LastPhotoChangeDate != 0)
+            {
+                PhotoInfo.Visibility = Visibility.Visible;
+                Photo.Text = string.Format(Strings.ContactInfoUserUpdatedPhoto, Formatter.RelativeDate(DateTime.Now.ToTimestamp() - info.LastPhotoChangeDate));
+            }
+            else
+            {
+                PhotoInfo.Visibility = Visibility.Collapsed;
+            }
+
+            if (fullInfo.BotVerification != null && clientService.TryGetUser(fullInfo.BotVerification.BotUserId, out User verifierBotUser))
+            {
+                var emoji = new CustomEmojiFileSource(clientService, fullInfo.BotVerification.IconCustomEmojiId);
+                var text = fullInfo.BotVerification.CustomDescription.Text.Length > 0
+                    ? fullInfo.BotVerification.CustomDescription
+                    : Strings.BotVerifierRepresentatives.AsFormattedText();
+
+                TextBlockHelper.SetFormattedText(BotVerifiedText, text);
+
+                BotVerifiedInfo.Source = emoji;
+                BotVerifiedInfo.Visibility = Visibility.Visible;
+
+                BotVerifiedRoot.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BotVerifiedText.Inlines.Clear();
+                BotVerifiedText.Inlines.Add(Strings.ContactInfoNotVerified);
+
+                BotVerifiedInfo.Source = null;
+                BotVerifiedInfo.Visibility = Visibility.Collapsed;
+            }
+        }
+    }
+}

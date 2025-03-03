@@ -37,6 +37,11 @@ namespace Telegram.Views
 
         private void OnViewSizeChanged(object sender, SizeChangedEventArgs e)
         {
+            MessagesHeaderRoot.MinHeight = Math.Max(0, Math.Truncate(Messages.ActualHeight - e.NewSize.Height));
+            //MessagesHeaderRoot.Padding = new Thickness(0, ClipperOuter.ActualHeight - DateHeaderRelative.ActualHeight, 0, 0);
+
+            //Logger.Info(MessagesHeaderRoot.Padding.Top);
+
             if (Messages.ScrollingHost.ScrollableHeight > 0)
             {
                 return;

@@ -353,6 +353,11 @@ namespace Telegram.Converters
             return NativeUtils.FormatDate(value, "DATE_SHORTDATE");
         }
 
+        public static string Date(DateTime value, string format)
+        {
+            return NativeUtils.FormatDate(value, format);
+        }
+
         public static DateTime ToLocalTime(long value)
         {
             // From UTC0 UnixTime to local DateTime
@@ -372,6 +377,36 @@ namespace Telegram.Converters
         public static string DateAt(DateTime value)
         {
             return string.Format(Strings.formatDateAtTime, Date(value), Time(value));
+        }
+
+        public static string RelativeDate(long value)
+        {
+            long j2 = value / 60;
+            long j3 = j2 / 60;
+            long j4 = j3 / 24;
+            long j5 = j4 / 30;
+            long j6 = j4 / 365;
+            return j6 >= 1
+                ? j6 == 1
+                ? Strings.YearAgo
+                : Locale.Declension(Strings.R.YearsAgo, (int)j6)
+                : j5 >= 1
+                ? j5 == 1
+                ? Strings.MonthAgo
+                : Locale.Declension(Strings.R.MonthsAgo, (int)j5)
+                : j4 >= 1
+                ? j4 == 1
+                ? Strings.DayAgo
+                : Locale.Declension(Strings.R.DaysAgo, (int)j4)
+                : j3 >= 1
+                ? j3 == 1
+                ? Strings.HourAgo
+                : Locale.Declension(Strings.R.HoursAgo, (int)j3)
+                : j2 >= 1
+                ? j2 == 1
+                ? Strings.MinuteAgo
+                : Locale.Declension(Strings.R.MinutesAgo, (int)j2)
+                : Strings.LessMinuteAgo;
         }
 
         public static string ShortNumber(long number)
