@@ -84,6 +84,10 @@ namespace Telegram.Views.Users
                     ResetPhotoPhoto.Visibility = Visibility.Collapsed;
                     ResetPhoto.Visibility = Visibility.Collapsed;
                 }
+
+                SuggestPhoto.Visibility = fullInfo.OutgoingPaidMessageStarCount > 0
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
             }
 
             if (fullInfo.NeedPhoneNumberPrivacyException)

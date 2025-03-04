@@ -190,7 +190,7 @@ namespace Telegram.ViewModels.Settings
             return _firstName.Length > 0
                 && _firstName.Length <= 64
                 && _lastName.Length <= 64
-                && _bio.Length <= ClientService.Options.BioLengthMax;
+                && _bio?.Length <= ClientService.Options.BioLengthMax;
         }
 
         public async void SetPhoto()

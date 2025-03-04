@@ -29,7 +29,7 @@ namespace Telegram.ViewModels
         {
             var items = new List<GalleryMedia>();
 
-            var response = await clientService.SendAsync(new GetWebPageInstantView(linkPreview.Url, false));
+            var response = await clientService.SendAsync(new GetWebPageInstantView(linkPreview.Url, true));
             if (response is WebPageInstantView instantView && instantView.IsFull)
             {
                 foreach (var block in instantView.PageBlocks)

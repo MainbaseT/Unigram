@@ -4631,7 +4631,14 @@ namespace Telegram.Views
         {
             readOnly = false;
 
-            if (ViewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
+            if (ViewModel.ClientService.TryGetUserFull(chat, out UserFullInfo userFull))
+            {
+                if (userFull.OutgoingPaidMessageStarCount > 0)
+                {
+                    return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), userFull.OutgoingPaidMessageStarCount.ToString("N0"));
+                }
+            }
+            else if (ViewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 return GetPlaceholder(chat, supergroup, out readOnly);
             }
@@ -4661,6 +4668,10 @@ namespace Telegram.Views
             else if (supergroup.Status is ChatMemberStatusCreator { IsAnonymous: true } || supergroup.Status is ChatMemberStatusAdministrator { Rights.IsAnonymous: true })
             {
                 return Strings.SendAnonymously;
+            }
+            else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator)
+            {
+                return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
             }
 
             return Strings.TypeMessage;

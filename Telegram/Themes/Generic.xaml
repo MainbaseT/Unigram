@@ -4870,6 +4870,7 @@
                                                     IsHitTestVisible="False"
                                                     Margin="-2,11,-2,-2" />
                         <ContentControl x:Name="PlaceholderTextContentPresenter"
+                                        FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                         Foreground="{ThemeResource TextControlPlaceholderForeground}"
                                         Margin="{TemplateBinding BorderThickness}"
                                         Padding="0,4,0,6"

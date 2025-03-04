@@ -160,7 +160,8 @@
                                           x:Load="False">
                     <controls:BadgeButton x:Name="SuggestPhoto"
                                           Style="{StaticResource GlyphBadgeButtonStyle}"
-                                          Glyph="&#xE9FE;">
+                                          Glyph="&#xE9FE;"
+                                          Visibility="Collapsed">
                         <Button.Flyout>
                             <MenuFlyout Placement="BottomEdgeAlignedLeft">
                                 <MenuFlyoutItem Text="{CustomResource ChoosePhotoOrVideo}"

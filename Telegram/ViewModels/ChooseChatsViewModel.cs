@@ -553,7 +553,7 @@ namespace Telegram.ViewModels
 
         public async Task<bool> ConfirmPaidMessagesAsync()
         {
-            if (_configuration.NumberOfSentMessages > 0)
+            if (_configuration?.NumberOfSentMessages > 0)
             {
                 var confirm = await ShowPaidMessageConfirmationAsync(SelectedItems, _configuration.NumberOfSentMessages);
                 return confirm == ContentDialogResult.Primary;

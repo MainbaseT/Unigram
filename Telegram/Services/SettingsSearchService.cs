@@ -101,7 +101,7 @@ namespace Telegram.Services
             };
 
             // FAQ indexing is done asyncronously
-            var response = await _clientService.SendAsync(new GetWebPageInstantView(Strings.TelegramFaqUrl, true));
+            var response = await _clientService.SendAsync(new GetWebPageInstantView(Strings.TelegramFaqUrl, false));
             if (response is WebPageInstantView linkPreview)
             {
                 var title = string.Empty;

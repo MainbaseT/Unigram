@@ -100,7 +100,7 @@ namespace Telegram.Common
 
         public async void NavigateToInstant(string url, string fallbackUrl = null)
         {
-            var response = await ClientService.SendAsync(new GetWebPageInstantView(url, true));
+            var response = await ClientService.SendAsync(new GetWebPageInstantView(url, false));
             if (response is WebPageInstantView instantView)
             {
                 TabViewItem CreateTabViewItem(WindowContext window)
@@ -429,7 +429,9 @@ namespace Telegram.Common
                     state["access_token"] = accessToken;
                 }
 
-                if (createNewWindow || WindowContext.IsKeyDown(Windows.System.VirtualKey.Control))
+                var modifiers = WindowContext.KeyModifiers();
+
+                if (createNewWindow || modifiers == Windows.System.VirtualKeyModifiers.Control)
                 {
                     Type target;
                     object parameter;

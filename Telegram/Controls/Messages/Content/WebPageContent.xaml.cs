@@ -589,7 +589,7 @@ namespace Telegram.Controls.Messages.Content
         {
             if (linkPreview.Type is LinkPreviewTypeAlbum)
             {
-                var response = await _message.ClientService.SendAsync(new GetWebPageInstantView(linkPreview.Url, false));
+                var response = await _message.ClientService.SendAsync(new GetWebPageInstantView(linkPreview.Url, true));
                 if (response is WebPageInstantView instantView && instantView.IsFull && !token.IsCancellationRequested)
                 {
                     var count = CountWebPageMedia(instantView);
