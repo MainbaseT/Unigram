@@ -48,6 +48,16 @@ namespace Telegram.Services.Settings
             return chat.NotificationSettings.MuteFor;
         }
 
+        public long GetSoundId(Chat chat)
+        {
+            if (chat.NotificationSettings.UseDefaultSound && TryGetScope(chat, out var scope))
+            {
+                return scope.SoundId;
+            }
+
+            return chat.NotificationSettings.SoundId;
+        }
+
         public bool GetShowPreview(Chat chat)
         {
             if (chat.NotificationSettings.UseDefaultShowPreview && TryGetScope(chat, out var scope))
