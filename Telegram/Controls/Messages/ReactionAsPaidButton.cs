@@ -19,7 +19,7 @@ namespace Telegram.Controls.Messages
 
         protected override async void OnClick(MessageViewModel message, MessageReaction chosen)
         {
-            var added = await PaidReactionService.AddPendingAsync(XamlRoot, message, 1, true, true);
+            var added = await PaidReactionService.AddPendingAsync(XamlRoot, message, 1, null);
             if (added is Ok)
             {
                 Animate();

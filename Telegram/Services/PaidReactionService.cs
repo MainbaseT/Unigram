@@ -36,14 +36,14 @@ namespace Telegram.Services
         [ThreadStatic]
         private static PaidReactionService _toast;
 
-        public static Task<BaseObject> AddPendingAsync(XamlRoot xamlRoot, MessageViewModel message, int starCount, bool useDefaultIsAnonymous, bool isAnonymous)
+        public static Task<BaseObject> AddPendingAsync(XamlRoot xamlRoot, MessageViewModel message, int starCount, PaidReactionType type)
         {
             if (_toast == null || !_toast.IsValid || !_toast.Equals(message))
             {
                 _toast = new PaidReactionService(message);
             }
 
-            return _toast.AddPendingImpl(xamlRoot, message, starCount, useDefaultIsAnonymous, isAnonymous);
+            return _toast.AddPendingImpl(xamlRoot, message, starCount, type);
         }
 
         public bool IsValid => _pendingToast?.IsOpen is true;
@@ -62,17 +62,13 @@ namespace Telegram.Services
             _messageId = message.Id;
         }
 
-        private async Task<BaseObject> AddPendingImpl(XamlRoot xamlRoot, MessageViewModel message, int starCount, bool useDefaultIsAnonymous, bool isAnonymous)
+        private async Task<BaseObject> AddPendingImpl(XamlRoot xamlRoot, MessageViewModel message, int starCount, PaidReactionType type)
         {
             if (message.ClientService.OwnedStarCount.StarCount < _pendingCount + starCount)
             {
                 _ = message.Delegate.NavigationService.ShowPopupAsync(new BuyPopup(), BuyStarsArgs.ForChannel(starCount, message.ChatId));
                 return null;
             }
-
-            PaidReactionType type = isAnonymous
-                ? new PaidReactionTypeAnonymous()
-                : new PaidReactionTypeRegular();
 
             _pendingCount += starCount;
             await message.ClientService.SendAsync(new AddPendingPaidMessageReaction(message.ChatId, message.Id, starCount, type));

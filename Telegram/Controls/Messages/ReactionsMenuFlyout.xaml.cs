@@ -774,8 +774,8 @@ namespace Telegram.Controls.Messages
                         return;
                     }
 
-                    _message.ClientService.Options.IsPaidReactionAnonymous = popup.IsAnonymous;
-                    added = await PaidReactionService.AddPendingAsync(XamlRoot, _message, popup.StarCount, false, popup.IsAnonymous);
+                    _message.ClientService.Send(new SetPaidMessageReactionType(_message.ChatId, _message.Id, popup.Type));
+                    added = await PaidReactionService.AddPendingAsync(XamlRoot, _message, popup.StarCount, popup.Type);
                 }
                 else
                 {

@@ -6398,6 +6398,12 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2MessagePremiumInfo" xml:space="preserve">
     <value>Only {0} will see your message.</value>
   </data>
+  <data name="Gift2MessageStarsInfo" xml:space="preserve">
+    <value>Your balance is ⭐️{0}.</value>
+  </data>
+  <data name="Gift2MessageStarsInfoLink" xml:space="preserve">
+    <value>**Get More Stars &gt;**</value>
+  </data>
   <data name="Gift2Months_one" xml:space="preserve">
     <value>{0}-month</value>
   </data>

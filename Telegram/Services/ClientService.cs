@@ -66,6 +66,8 @@ namespace Telegram.Services
         bool IsPremium { get; }
         bool IsPremiumAvailable { get; }
 
+        PaidReactionType DefaultPaidReactionType { get; }
+
         StarAmount OwnedStarCount { get; }
 
         UnconfirmedSession UnconfirmedSession { get; }
@@ -1150,6 +1152,8 @@ namespace Telegram.Services
                 return _ownedStarCount;
             }
         }
+
+        public PaidReactionType DefaultPaidReactionType { get; private set; } = new PaidReactionTypeRegular();
 
         public MessageSender MyId => new MessageSenderUser(_options.MyId);
 
@@ -3081,6 +3085,10 @@ namespace Telegram.Services
             else if (update is UpdateOwnedStarCount updateOwnedStarCount)
             {
                 _ownedStarCount = updateOwnedStarCount.StarAmount;
+            }
+            else if (update is UpdateDefaultPaidReactionType updateDefaultPaidReactionType)
+            {
+                DefaultPaidReactionType = updateDefaultPaidReactionType.Type;
             }
 
             _aggregator.Publish(update);
