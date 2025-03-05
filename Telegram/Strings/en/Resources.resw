@@ -2084,6 +2084,18 @@ Once deleted, the Giveaway Announcement cannot be restored.</value>
     <value>**{0}** Telegram Premium
 Subscription for {1}.</value>
   </data>
+  <data name="BoostingGiveawayMsgInfoPlural1_one" xml:space="preserve">
+    <value>**{0}** Telegram Premium</value>
+  </data>
+  <data name="BoostingGiveawayMsgInfoPlural1_other" xml:space="preserve">
+    <value>**{0}** Telegram Premium</value>
+  </data>
+  <data name="BoostingGiveawayMsgInfoPlural2_one" xml:space="preserve">
+    <value>Subscription for {1}.</value>
+  </data>
+  <data name="BoostingGiveawayMsgInfoPlural2_other" xml:space="preserve">
+    <value>Subscriptions for {1}.</value>
+  </data>
   <data name="BoostingGiveawayMsgNewSubsPlural_one" xml:space="preserve">
     <value>All users who joined the channel
 below after this announcement:</value>

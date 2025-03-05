@@ -90,10 +90,10 @@ namespace Telegram.Controls.Messages.Content
 
             if (giveaway.Prize is GiveawayPrizePremium prizePremium)
             {
-                var months = Locale.Declension(Strings.R.Months, prizePremium.MonthCount, false);
-                var duration = string.Format(Strings.BoostingGiveawayMsgInfo, giveaway.WinnerCount.ToString("N0"), string.Format(months, $"**{prizePremium.MonthCount}**"));
+                var duration1 = Locale.Declension(Strings.R.BoostingGiveawayMsgInfoPlural1, giveaway.WinnerCount);
+                var duration2 = Locale.Declension(Strings.R.BoostingGiveawayMsgInfoPlural2, giveaway.WinnerCount, Locale.Declension(Strings.R.BoldMonths, prizePremium.MonthCount));
 
-                TextBlockHelper.SetMarkdown(PrizesLabel, duration);
+                TextBlockHelper.SetMarkdown(PrizesLabel, string.Format("{0}\n{1}", duration1, duration2));
             }
             else if (giveaway.Prize is GiveawayPrizeStars prizeStars)
             {
@@ -168,10 +168,10 @@ namespace Telegram.Controls.Messages.Content
 
             if (giveaway.Prize is GiveawayPrizePremium prizePremium)
             {
-                var months = Locale.Declension(Strings.R.Months, prizePremium.MonthCount, false);
-                var duration = string.Format(Strings.BoostingGiveawayMsgInfo, giveaway.WinnerCount.ToString("N0"), string.Format(months, $"**{prizePremium.MonthCount}**"));
+                var duration1 = Locale.Declension(Strings.R.BoostingGiveawayMsgInfoPlural1, giveaway.WinnerCount);
+                var duration2 = Locale.Declension(Strings.R.BoostingGiveawayMsgInfoPlural2, giveaway.WinnerCount, Locale.Declension(Strings.R.BoldMonths, prizePremium.MonthCount));
 
-                TextBlockHelper.SetMarkdown(PrizesLabel, duration);
+                TextBlockHelper.SetMarkdown(PrizesLabel, string.Format("{0}\n{1}", duration1, duration2));
             }
             else if (giveaway.Prize is GiveawayPrizeStars prizeStars)
             {
