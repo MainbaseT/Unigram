@@ -45,7 +45,7 @@ namespace Telegram.Controls.Chats
         {
             _clientService = clientService;
 
-            if ((chat?.ActionBar == null && user?.EmojiStatus == null) || fullInfo?.IncomingPaidMessageStarCount == 0)
+            if ((chat?.ActionBar == null && user?.EmojiStatus == null) || (fullInfo == null || fullInfo.IncomingPaidMessageStarCount == 0))
             {
                 ShowHide(false);
                 return;
@@ -181,10 +181,14 @@ namespace Telegram.Controls.Chats
             {
                 Title = Strings.RemoveMessageFeeTitle,
                 Message = string.Format(Strings.RemoveMessageFeeMessage, ViewModel.Chat.Title),
-                CheckBoxLabel = Locale.Declension(Strings.R.RemoveMessageFeeRefund, starCount.StarCountValue),
                 PrimaryButtonText = Strings.Confirm,
                 SecondaryButtonText = Strings.Cancel
             };
+
+            if (starCount.StarCountValue > 0)
+            {
+                popup.CheckBoxLabel = Locale.Declension(Strings.R.RemoveMessageFeeRefund, starCount.StarCountValue);
+            }
 
             var confirm = await ViewModel.ShowPopupAsync(popup);
             if (confirm == ContentDialogResult.Primary)

@@ -409,8 +409,21 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == _chat?.Id && _type == DialogType.History)
             {
-                BeginOnUIThread(() => Delegate?.UpdateChatActionBar(_chat));
+                BeginOnUIThread(() => UpdateChatActionBar(_chat));
             }
+        }
+
+        private void UpdateChatActionBar(Chat chat)
+        {
+            if (ClientService.TryGetUser(chat, out User user) && chat.ActionBar is ChatActionBarReportAddBlock { AccountInfo: not null })
+            {
+                ClientService.Send(new GetGroupsInCommon(user.Id, 0, 3), result =>
+                {
+                    BeginOnUIThread(() => GroupsInCommon = result as Td.Api.Chats);
+                });
+            }
+
+            Delegate?.UpdateChatActionBar(chat);
         }
 
         public void Handle(UpdateChatIsTranslatable update)

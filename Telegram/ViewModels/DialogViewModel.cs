@@ -401,6 +401,13 @@ namespace Telegram.ViewModels
         public MessageViewModel LastPinnedMessage { get; private set; }
         public IList<MessageViewModel> PinnedMessages { get; } = new List<MessageViewModel>();
 
+        private Td.Api.Chats _groupsInCommon;
+        public Td.Api.Chats GroupsInCommon
+        {
+            get => _groupsInCommon;
+            set => Set(ref _groupsInCommon, value);
+        }
+
         private SponsoredMessage _sponsoredMessage;
         public SponsoredMessage SponsoredMessage
         {
@@ -2300,6 +2307,8 @@ namespace Telegram.ViewModels
 
             Delegate?.UpdateChat(chat);
             Delegate?.UpdateChatActions(chat, ClientService.GetChatActions(chat.Id));
+
+            UpdateChatActionBar(chat);
 
             if (chat.Type is ChatTypePrivate privata)
             {

@@ -29,6 +29,7 @@
                 Height="32">
             <RichTextBlock x:Name="PremiumUser"
                            FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                           Style="{StaticResource CaptionRichTextBlockStyle}"
                            IsTextSelectionEnabled="False"
                            TextAlignment="Center"
                            HorizontalAlignment="Center"
@@ -41,6 +42,7 @@
 
         <RichTextBlock x:Name="PayingUser"
                        FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                       Style="{StaticResource CaptionRichTextBlockStyle}"
                        IsTextSelectionEnabled="False"
                        TextAlignment="Center"
                        HorizontalAlignment="Center"

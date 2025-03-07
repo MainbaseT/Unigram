@@ -4229,8 +4229,6 @@ namespace Telegram.Views
 
             UpdateChatActiveStories(chat);
 
-            UpdateChatActionBar(chat);
-
             UpdateChatUnreadMentionCount(chat, chat.UnreadMentionCount);
             UpdateChatUnreadReactionCount(chat, chat.UnreadReactionCount);
             UpdateChatDefaultDisableNotification(chat, chat.DefaultDisableNotification);

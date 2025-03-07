@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -9,6 +10,7 @@ using Telegram.Entities;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -23,9 +25,51 @@ namespace Telegram.Controls.Chats
 {
     public sealed partial class ChatAccountInfo : UserControl
     {
+        private DialogViewModel _viewModel;
+
         public ChatAccountInfo()
         {
             InitializeComponent();
+
+            DataContextChanged += OnDataContextChanged;
+        }
+
+        private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.PropertyChanged -= OnPropertyChanged;
+            }
+
+            _viewModel = args.NewValue as DialogViewModel;
+
+            if (_viewModel != null)
+            {
+                _viewModel.PropertyChanged += OnPropertyChanged;
+            }
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_viewModel.GroupsInCommon))
+            {
+                UpdateGroupsInCommon();
+            }
+        }
+
+        private void UpdateGroupsInCommon()
+        {
+            if (_viewModel?.GroupsInCommon?.TotalCount > 0)
+            {
+                GroupsInfo.Visibility = Visibility.Visible;
+                Groups.Visibility = Visibility.Visible;
+                Groups.Text = Locale.Declension(Strings.R.Groups, _viewModel.GroupsInCommon.TotalCount);
+            }
+            else
+            {
+                GroupsInfo.Visibility = Visibility.Collapsed;
+                Groups.Visibility = Visibility.Collapsed;
+            }
         }
 
         public void Update(IClientService clientService, User user, UserFullInfo fullInfo, AccountInfo info)
@@ -103,6 +147,8 @@ namespace Telegram.Controls.Chats
 
                 BotVerifiedInfo.Source = null;
                 BotVerifiedInfo.Visibility = Visibility.Collapsed;
+
+                BotVerifiedRoot.Visibility = Visibility.Visible;
             }
         }
     }
