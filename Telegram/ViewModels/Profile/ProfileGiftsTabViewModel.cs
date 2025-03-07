@@ -303,7 +303,7 @@ namespace Telegram.ViewModels.Profile
             }
         }
 
-        public async void SaveGift(ReceivedGift gift)
+        public async void ToggleGift(ReceivedGift gift)
         {
             var response = await ClientService.SendAsync(new ToggleGiftIsSaved(gift.ReceivedGiftId, !gift.IsSaved));
             if (response is Ok)

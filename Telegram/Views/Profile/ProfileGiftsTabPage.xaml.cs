@@ -41,20 +41,20 @@ namespace Telegram.Views.Profile
 
             var flyout = new MenuFlyout();
 
-            if (ViewModel.GiftsTab.IsOwned())
-            {
-                flyout.CreateFlyoutItem(ViewModel.GiftsTab.PinGift, gift, gift.IsPinned ? Strings.Gift2Unpin : Strings.Gift2Pin, gift.IsPinned ? Icons.PinOff : Icons.Pin);
-            }
-
             if (gift.Gift is SentGiftUpgraded)
             {
+                if (ViewModel.GiftsTab.IsOwned())
+                {
+                    flyout.CreateFlyoutItem(ViewModel.GiftsTab.PinGift, gift, gift.IsPinned ? Strings.Gift2Unpin : Strings.Gift2Pin, gift.IsPinned ? Icons.PinOff : Icons.Pin);
+                }
+
                 flyout.CreateFlyoutItem(ViewModel.GiftsTab.CopyGift, gift, Strings.CopyLink, Icons.Link);
                 flyout.CreateFlyoutItem(ViewModel.GiftsTab.ShareGift, gift, Strings.ShareFile, Icons.Share);
             }
 
             if (ViewModel.GiftsTab.IsOwned())
             {
-                flyout.CreateFlyoutItem(ViewModel.GiftsTab.SaveGift, gift, gift.IsSaved ? Strings.Gift2HideGift : Strings.Gift2ShowGift, gift.IsSaved ? Icons.EyeOff : Icons.Eye);
+                flyout.CreateFlyoutItem(ViewModel.GiftsTab.ToggleGift, gift, gift.IsSaved ? Strings.Gift2HideGift : Strings.Gift2ShowGift, gift.IsSaved ? Icons.EyeOff : Icons.Eye);
             }
 
             if (gift.CanBeTransferred)
