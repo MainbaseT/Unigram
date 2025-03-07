@@ -972,7 +972,7 @@ Your prize is **{0} Stars**.</value>
     <value>We will review this ad to ensure it matches our **Ad Policies and Guidelines**.</value>
   </data>
   <data name="AffiliateLinkExpiredText" xml:space="preserve">
-    <value>This link was part of an affiliate program, that has been terminated by the app owner.</value>
+    <value>This link was part of an affiliate program that has been terminated by the app owner.</value>
   </data>
   <data name="AffiliateLinkExpiredTitle" xml:space="preserve">
     <value>Link expired</value>
@@ -1023,7 +1023,7 @@ Your prize is **{0} Stars**.</value>
     <value>Start</value>
   </data>
   <data name="AffiliateProgramStartAlertText" xml:space="preserve">
-    <value>Once you start the affiliated program, you won&apos;t be able to decrease its commission or duration. You can only increase these parameters or end the program, which will disable all previously distributed referral links.</value>
+    <value>Once you start the affiliate program, you won&apos;t be able to decrease its commission or duration. You can only increase these parameters or end the program, which will disable all previously distributed referral links.</value>
   </data>
   <data name="AffiliateProgramStartAvailableIn" xml:space="preserve">
     <value>Available in {0}</value>
@@ -1038,7 +1038,7 @@ Your prize is **{0} Stars**.</value>
     <value>By creating an affiliate program, you agree to the **Terms and Conditions** of Affiliate Programs.</value>
   </data>
   <data name="AffiliateProgramStartInfoLink" xml:space="preserve">
-    <value>https://telegram.org/privacy</value>
+    <value>https://telegram.org/tos/affiliate-program</value>
   </data>
   <data name="AffiliateProgramStop" xml:space="preserve">
     <value>End Affiliate Program</value>
@@ -1056,7 +1056,7 @@ Your prize is **{0} Stars**.</value>
     <value>All participants affiliates will be notified.</value>
   </data>
   <data name="AffiliateProgramStopText3" xml:space="preserve">
-    <value>You will be able to start a new affiliate program only in **24** hours.</value>
+    <value>You will have to wait **24** hours until you can start a new affiliate program.</value>
   </data>
   <data name="AffiliateProgramUpdate" xml:space="preserve">
     <value>Update Affiliate Program</value>
@@ -1071,7 +1071,7 @@ Your prize is **{0} Stars**.</value>
     <value>By updating an affiliate program, you agree to the **Terms and Conditions** of Affiliate Programs.</value>
   </data>
   <data name="AffiliateProgramUpdateInfoLink" xml:space="preserve">
-    <value>https://telegram.org/privacy</value>
+    <value>https://telegram.org/tos/affiliate-program</value>
   </data>
   <data name="Agree" xml:space="preserve">
     <value>Agree</value>
@@ -2542,7 +2542,7 @@ Do you want to revoke verification?</value>
     <value>Share Message</value>
   </data>
   <data name="BotShareMessageInfo" xml:space="preserve">
-    <value>{0} mini app suggests you to send this message to a chat you select.</value>
+    <value>{0} offers you to send this message to a chat you select.</value>
   </data>
   <data name="BotShareMessagePreview" xml:space="preserve">
     <value>Message preview</value>
@@ -2593,7 +2593,7 @@ Do you want to revoke verification?</value>
     <value>You can collect rewards for Stars using Fragment, or use Stars to advertise your bot. You cannot withdraw less than 1000 stars. **Learn more &gt;**</value>
   </data>
   <data name="BotStarsWithdrawInfoLink" xml:space="preserve">
-    <value>https://telegram.org/privacy</value>
+    <value>https://telegram.org/tos/affiliate-program</value>
   </data>
   <data name="BotStarsWithdrawMinLimit_one" xml:space="preserve">
     <value>You cannot withdraw less than **{0} star**.</value>
@@ -3387,13 +3387,13 @@ Note: if you forget your passcode, you&apos;ll need to log out or reinstall the 
     <value>Join Program</value>
   </data>
   <data name="ChannelAffiliateProgramJoinButtonInfo" xml:space="preserve">
-    <value>By joining this program, you agree to the **Terms and Services** of Affiliate Programs.</value>
+    <value>By joining this program, you agree to the **Terms and Conditions** of Affiliate Programs.</value>
   </data>
   <data name="ChannelAffiliateProgramJoinButtonInfoLink" xml:space="preserve">
-    <value>https://telegram.org/privacy</value>
+    <value>https://telegram.org/tos/affiliate-program</value>
   </data>
   <data name="ChannelAffiliateProgramJoinDailyRevenue" xml:space="preserve">
-    <value>Their average daily
+    <value>App&apos;s average daily
 revenue per user</value>
   </data>
   <data name="ChannelAffiliateProgramJoinMonthlyUsers" xml:space="preserve">
@@ -6173,10 +6173,10 @@ Duration: {1}</value>
     <value>You converted this gift to {0} Stars.</value>
   </data>
   <data name="Gift2ActionInfo_one" xml:space="preserve">
-    <value>Display this gift on your page or convert it to {0} Star.</value>
+    <value>Add this gift to your profile or convert it to {0} Star.</value>
   </data>
   <data name="Gift2ActionInfo_other" xml:space="preserve">
-    <value>Display this gift on your page or convert it to {0} Stars.</value>
+    <value>Add this gift to your profile or convert it to {0} Stars.</value>
   </data>
   <data name="Gift2ActionOutInfo_one" xml:space="preserve">
     <value>**{1}** can display this gift on their page or convert it to {0} Star.</value>
@@ -6185,7 +6185,7 @@ Duration: {1}</value>
     <value>**{1}** can display this gift on their page or convert it to {0} Stars.</value>
   </data>
   <data name="Gift2ActionSavedInfo" xml:space="preserve">
-    <value>You kept this gift on your page.</value>
+    <value>You added this gift to your profile.</value>
   </data>
   <data name="Gift2ActionTitle" xml:space="preserve">
     <value>Gift from {0}</value>
@@ -6197,7 +6197,7 @@ Duration: {1}</value>
     <value>{0} received a gift!</value>
   </data>
   <data name="Gift2ActionUpgrade" xml:space="preserve">
-    <value>Tap “Unpack” to turn this gift to a unique collectible.</value>
+    <value>Tap “Unpack” to turn this gift into a unique collectible.</value>
   </data>
   <data name="Gift2ActionUpgradeOut" xml:space="preserve">
     <value>{0} can turn this gift to a unique collectible.</value>
@@ -6333,7 +6333,7 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>Hide</value>
   </data>
   <data name="Gift2HideInfo" xml:space="preserve">
-    <value>You can hide your name and message from visitors to {0}`s profile. {0} will still see your name and message.</value>
+    <value>You can hide your name and message from visitors to {0}&apos;s profile. {0} will still see your name and message.</value>
   </data>
   <data name="Gift2HideSelf" xml:space="preserve">
     <value>Hide My Name</value>
@@ -6348,10 +6348,10 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>You can keep this gift in your Profile or convert it to **{0}** Stars.</value>
   </data>
   <data name="Gift2Info2Expired_one" xml:space="preserve">
-    <value>You can keep this {0} Star gift in your Profile.</value>
+    <value>You can add this gift of {0} Star to your profile.</value>
   </data>
   <data name="Gift2Info2Expired_other" xml:space="preserve">
-    <value>You can keep this {0} Stars gift in your Profile.</value>
+    <value>You can add this gift of {0} Stars to your profile.</value>
   </data>
   <data name="Gift2Info2OutExpired" xml:space="preserve">
     <value>{0} can keep this gift in their Profile.</value>
@@ -6363,7 +6363,7 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>You converted this gift to **{0}** Stars.</value>
   </data>
   <data name="Gift2InfoFreeUpgrade" xml:space="preserve">
-    <value>{0} can turn this gift to a unique collectible.</value>
+    <value>{0} can turn this gift into a unique collectible.</value>
   </data>
   <data name="Gift2InfoInFreeUpgrade" xml:space="preserve">
     <value>Upgrade this gift for free to turn it into a unique collectible.</value>
@@ -6375,10 +6375,10 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>{1} can keep this gift in profile or convert it to **{0}** Stars.</value>
   </data>
   <data name="Gift2InfoPinned" xml:space="preserve">
-    <value>You kept this gift in your Profile.</value>
+    <value>You added this gift to your profile.</value>
   </data>
   <data name="Gift2Invisible" xml:space="preserve">
-    <value>Not visible on your page</value>
+    <value>Not visible on your profile</value>
   </data>
   <data name="Gift2InvisibleShow" xml:space="preserve">
     <value>show</value>
@@ -6396,7 +6396,7 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>Gift Hidden</value>
   </data>
   <data name="Gift2MadePublic" xml:space="preserve">
-    <value>Gift is now visible in **your profile**.</value>
+    <value>This gift is now visible on **your profile**.</value>
   </data>
   <data name="Gift2MadePublicTitle" xml:space="preserve">
     <value>Gift Shown</value>
@@ -6426,7 +6426,7 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>Owner</value>
   </data>
   <data name="Gift2OwnerChange" xml:space="preserve">
-    <value>transfer</value>
+    <value>change</value>
   </data>
   <data name="Gift2Pin" xml:space="preserve">
     <value>Pin</value>
@@ -6450,13 +6450,13 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>This gift is hidden. Only you can see it.</value>
   </data>
   <data name="Gift2ProfileMakeInvisible" xml:space="preserve">
-    <value>Hide from my Page</value>
+    <value>Hide from my profile</value>
   </data>
   <data name="Gift2ProfileMakeVisible" xml:space="preserve">
-    <value>Display on my Page</value>
+    <value>Add to my profile</value>
   </data>
   <data name="Gift2ProfileVisible" xml:space="preserve">
-    <value>This gift is visible to visitors of your page.</value>
+    <value>This gift is visible on your profile.</value>
   </data>
   <data name="Gift2Quantity" xml:space="preserve">
     <value>Quantity</value>
@@ -6666,7 +6666,7 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>Visibility</value>
   </data>
   <data name="Gift2Visible" xml:space="preserve">
-    <value>Visible on your page</value>
+    <value>Visible on your profile</value>
   </data>
   <data name="Gift2VisibleHide" xml:space="preserve">
     <value>hide</value>
@@ -7367,13 +7367,13 @@ You can change your language back at any time in Settings.</value>
     <value>You are a member of **{0}** groups and channels. Please leave some before joining a new one.</value>
   </data>
   <data name="LimitReachedFileSize" xml:space="preserve">
-    <value>The document cant’t be sent, because it is larger than **{0}**. You can double this limit to **{1}** per document by subscribing to **Telegram Premium**.</value>
+    <value>The document can&apos;t be sent, because it is larger than **{0}**. You can double this limit to **{1}** per document by subscribing to **Telegram Premium**.</value>
   </data>
   <data name="LimitReachedFileSizeLocked" xml:space="preserve">
-    <value>The document cant’t be sent, because it is larger than **{0}**. We are working to let you increase this limit in the future.</value>
+    <value>The document can&apos;t be sent, because it is larger than **{0}**. We are working to let you increase this limit in the future.</value>
   </data>
   <data name="LimitReachedFileSizePremium" xml:space="preserve">
-    <value>The document cant’t be sent, because it is larger than **{0}**.</value>
+    <value>The document can&apos;t be sent, because it is larger than **{0}**.</value>
   </data>
   <data name="LimitReachedFolderLinks" xml:space="preserve">
     <value>You can only create {0} invite links.
@@ -12828,7 +12828,9 @@ However, it is currently available for purchase. **Learn more…**</value>
     <value>Verification Code</value>
   </data>
   <data name="VerifyChatInfo" xml:space="preserve">
-    <value>This chat is used to receive verification codes from third-party services.</value>
+    <value>Third-party services, like websites and stores, can send verification codes to your phone number via Telegram instead of SMS. Such codes will appear in this chat.
+
+If you didn&apos;t request any codes — don&apos;t worry! Most likely, someone made a mistake when entering their number.</value>
   </data>
   <data name="VerifyCodesNotifications" xml:space="preserve">
     <value>Verification Codes</value>
