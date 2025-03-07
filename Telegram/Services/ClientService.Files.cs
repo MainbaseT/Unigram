@@ -1731,6 +1731,18 @@ namespace Telegram.Services
                         ProcessFiles(premiumFeaturePromotionAnimation.Animation);
                     }
                     break;
+                case PremiumGiftPaymentOption premiumGiftPaymentOption:
+                    if (premiumGiftPaymentOption.Sticker != null)
+                    {
+                        ProcessFiles(premiumGiftPaymentOption.Sticker);
+                    }
+                    break;
+                case PremiumGiftPaymentOptions premiumGiftPaymentOptions:
+                    foreach (var item in premiumGiftPaymentOptions.Options)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
                 case PremiumState premiumState:
                     foreach (var item in premiumState.Animations)
                     {
@@ -2095,6 +2107,12 @@ namespace Telegram.Services
                     if (starTransactionTypeGiftUpgrade.Gift != null)
                     {
                         ProcessFiles(starTransactionTypeGiftUpgrade.Gift);
+                    }
+                    break;
+                case StarTransactionTypePremiumPurchase starTransactionTypePremiumPurchase:
+                    if (starTransactionTypePremiumPurchase.Sticker != null)
+                    {
+                        ProcessFiles(starTransactionTypePremiumPurchase.Sticker);
                     }
                     break;
                 case StarTransactionTypeUserDeposit starTransactionTypeUserDeposit:
