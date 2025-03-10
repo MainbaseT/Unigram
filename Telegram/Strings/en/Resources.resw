@@ -6704,6 +6704,12 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="GiftPremiumUseGiftBtn" xml:space="preserve">
     <value>Use Gift</value>
   </data>
+  <data name="GiftsPinLimit_one" xml:space="preserve">
+    <value>You can&apos;t pin more than {0} gift.</value>
+  </data>
+  <data name="GiftsPinLimit_other" xml:space="preserve">
+    <value>You can&apos;t pin more than {0} gifts.</value>
+  </data>
   <data name="GiftStarsSubtitle" xml:space="preserve">
     <value>With Stars, **{0}** will be able to unlock content and services on Telegram.</value>
   </data>

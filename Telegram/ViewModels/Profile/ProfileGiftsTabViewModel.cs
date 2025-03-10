@@ -268,6 +268,12 @@ namespace Telegram.ViewModels.Profile
             }
             else
             {
+                if (_pinnedGifts.Count == ClientService.Options.PinnedGiftCountMax)
+                {
+                    ShowToast(Locale.Declension(Strings.R.GiftsPinLimit, ClientService.Options.PinnedGiftCountMax), ToastPopupIcon.Info);
+                    return;
+                }
+
                 _pinnedGifts.Insert(0, gift.ReceivedGiftId);
             }
 
@@ -275,15 +281,70 @@ namespace Telegram.ViewModels.Profile
             if (response is Ok)
             {
                 gift.IsPinned = !gift.IsPinned;
-                Aggregator.Publish(new UpdateGiftIsSaved(gift.ReceivedGiftId, gift.IsSaved));
-
-                Items.Remove(gift);
-                Items.Insert(0, gift);
 
                 if (gift.IsPinned)
                 {
-                    ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.Gift2PinnedTitle, Strings.Gift2PinnedSubtitle), ToastPopupIcon.Pin);
+                    Items.Remove(gift);
+                    Items.Insert(0, gift);
                 }
+                else
+                {
+                    var index = Items.BinarySearch(gift, (x, y) => _pinnedGifts.Contains(y.ReceivedGiftId) ? 1 : y.Date.CompareTo(x.Date));
+                    if (index < 0 && (~index < Items.Count || !HasMoreItems))
+                    {
+                        Items.Remove(gift);
+                        Items.Insert(~index, gift);
+                    }
+                }
+
+                if (gift.IsPinned)
+                {
+                    ShowToast(string.Format("**{0}**\n{1}", Strings.Gift2PinnedTitle, Strings.Gift2PinnedSubtitle), ToastPopupIcon.Pin);
+                }
+            }
+        }
+
+        private int UnpinGiftComparison(ReceivedGift x, ReceivedGift y)
+        {
+            if (y.IsPinned)
+            {
+                return 1;
+            }
+
+            return y.Date.CompareTo(x.Date);
+        }
+
+        public void SetPinnedItems()
+        {
+            var receivedGiftIds = new List<string>();
+
+            foreach (var item in Items)
+            {
+                if (item.IsPinned)
+                {
+                    receivedGiftIds.Add(item.ReceivedGiftId);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (receivedGiftIds.Count != _pinnedGifts.Count)
+            {
+                return;
+            }
+
+            ClientService.Send(new SetPinnedGifts(_senderId, receivedGiftIds));
+        }
+
+        public void SetPinnedItem(ReceivedGift gift)
+        {
+            var index = _pinnedGifts.IndexOf(gift.ReceivedGiftId);
+            if (index >= 0 && index < Items.Count)
+            {
+                Items.Remove(gift);
+                Items.Insert(index, gift);
             }
         }
 

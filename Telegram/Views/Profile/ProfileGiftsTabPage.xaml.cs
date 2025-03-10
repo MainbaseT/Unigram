@@ -8,6 +8,7 @@ using Telegram.Common;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Td.Api;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -77,6 +78,53 @@ namespace Telegram.Views.Profile
             }
 
             args.Handled = true;
+        }
+
+        private void OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            try
+            {
+                if (e.Items[0] is ReceivedGift gift && gift.IsPinned)
+                {
+                    ScrollingHost.CanReorderItems = true;
+                }
+                else
+                {
+                    ScrollingHost.CanReorderItems = false;
+                    e.Cancel = true;
+                }
+            }
+            catch
+            {
+                ScrollingHost.CanReorderItems = false;
+                e.Cancel = true;
+            }
+        }
+
+        private void OnDragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+            ScrollingHost.CanReorderItems = false;
+
+            if (args.DropResult == DataPackageOperation.Move && args.Items.Count == 1 && args.Items[0] is ReceivedGift gift)
+            {
+                var items = ViewModel.GiftsTab.Items;
+                if (items.Count == 1)
+                {
+                    return;
+                }
+
+                var index = items.IndexOf(gift);
+                var compare = items[index > 0 ? index - 1 : index + 1];
+
+                if (compare.IsPinned)
+                {
+                    ViewModel.GiftsTab.SetPinnedItems();
+                }
+                else
+                {
+                    ViewModel.GiftsTab.SetPinnedItem(gift);
+                }
+            }
         }
 
         private void OnItemClick(object sender, ItemClickEventArgs e)

@@ -3558,6 +3558,7 @@ namespace Telegram.Views
             }
             catch
             {
+                ChatsList.CanReorderItems = false;
                 e.Cancel = true;
             }
         }
