@@ -6,6 +6,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Telegram.Services;
 using Telegram.Td.Api;
 
@@ -28,6 +29,13 @@ namespace Telegram.ViewModels.Gallery
             }
 
             File = _message.GetFile();
+            Constraint = _message.Content;
+
+            if (_message.Content is MessageDocument document)
+            {
+                Constraint = null;
+                IsMedia = document.IsPhoto();
+            }
 
             var thumbnail = _message.GetThumbnail();
             if (thumbnail == null)
@@ -48,6 +56,8 @@ namespace Telegram.ViewModels.Gallery
             : this(clientService, message.Get())
         {
         }
+
+        public MessageContent Content => _message.Content;
 
         public long ChatId => _message.ChatId;
         public long Id => _message.Id;
@@ -74,8 +84,6 @@ namespace Telegram.ViewModels.Gallery
                 return Array.Empty<AlternativeVideo>();
             }
         }
-
-        public override object Constraint => _message.Content;
 
         public override object From
         {

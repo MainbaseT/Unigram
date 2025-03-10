@@ -450,6 +450,7 @@ namespace Telegram.ViewModels
                                 MessagePhoto photo => photo.IsSecret,
                                 MessageVideo video => video.IsSecret,
                                 MessageVideoNote videoNote => videoNote.IsSecret,
+                                MessageDocument => false,
                                 _ => true
                             };
                         }

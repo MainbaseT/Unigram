@@ -12,6 +12,7 @@ using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Gallery;
+using Telegram.Views;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -161,6 +162,9 @@ namespace Telegram.Controls.Gallery
             RotationAngle = item?.RotationAngle ?? RotationAngle.Angle0;
             Background = null;
             Texture.Source = null;
+            Texture.Stretch = item?.Constraint != null
+                ? Stretch.UniformToFill
+                : Stretch.Uniform;
 
             //ScrollingHost.ChangeView(0, 0, 1, true);
 
@@ -189,8 +193,17 @@ namespace Telegram.Controls.Gallery
                 Constraint = item.Constraint;
             }
 
+            if (item is GalleryMessage message && message.Content is MessageDocument document && !message.IsMedia)
+            {
+                DocumentName.Text = document.Document.FileName;
+            }
+            else
+            {
+                DocumentName.Text = string.Empty;
+            }
+
             var thumbnail = item.Thumbnail;
-            if (thumbnail != null && (item.IsVideo || (item.IsPhoto && !file.Local.IsDownloadingCompleted)))
+            if (thumbnail != null && item.IsMedia && (item.IsVideo || (item.IsPhoto && !file.Local.IsDownloadingCompleted)))
             {
                 UpdateThumbnail(item, thumbnail, null, true);
             }
@@ -231,7 +244,7 @@ namespace Telegram.Controls.Gallery
                 Button.Progress = 0;
                 Button.Opacity = 1;
 
-                if (item.IsPhoto)
+                if (item.IsPhoto && item.IsMedia)
                 {
                     item.ClientService.DownloadFile(file.Id, 1);
                 }
@@ -244,12 +257,18 @@ namespace Telegram.Controls.Gallery
                     Button.Progress = 1;
                     Button.Opacity = 1;
                 }
-                else if (item.IsPhoto)
+                else if (item.IsPhoto && item.IsMedia)
                 {
                     Button.SetGlyph(file.Id, MessageContentState.Photo);
                     Button.Opacity = 0;
 
                     Texture.Source = UriEx.ToBitmap(file.Local.Path, 0, 0);
+                }
+                else
+                {
+                    Button.SetGlyph(file.Id, MessageContentState.Document);
+                    Button.Progress = 1;
+                    Button.Opacity = 1;
                 }
             }
 
@@ -350,6 +369,14 @@ namespace Telegram.Controls.Gallery
             else if (item.IsVideo)
             {
                 _delegate?.OpenFile(item, file);
+            }
+            else if (item is GalleryMessage message && !item.IsMedia)
+            {
+                var service = TypeResolver.Current.Resolve<IStorageService>(_delegate.ClientService.SessionId);
+                if (service != null)
+                {
+                    _ = service.OpenFileAsync(file);
+                }
             }
         }
 

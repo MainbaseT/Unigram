@@ -311,6 +311,10 @@ namespace Telegram.Controls.Messages.Content
                     _message.ClientService.DownloadFile(file.Id, 30);
                 }
             }
+            else if (document.IsPhoto())
+            {
+                _message.Delegate.OpenMedia(_message, Texture);
+            }
             else
             {
                 _message.Delegate.OpenFile(file);

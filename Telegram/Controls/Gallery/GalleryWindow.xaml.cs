@@ -151,6 +151,15 @@ namespace Telegram.Controls.Gallery
                     return;
                 }
 
+                if (e.OriginalSource is FrameworkElement element)
+                {
+                    var button = element.GetParentOrSelf<ButtonBase>();
+                    if (button is FileButton)
+                    {
+                        return;
+                    }
+                }
+
                 OnBackRequested(new BackRequestedRoutedEventArgs());
             }
         }

@@ -41,6 +41,16 @@ namespace Telegram.Td.Api
             };
         }
 
+        public static bool IsPhoto(this MessageDocument document)
+        {
+            return Constants.PhotoTypes.Contains(System.IO.Path.GetExtension(document.Document.FileName.ToLower()));
+        }
+
+        public static bool IsPhoto(this Document document)
+        {
+            return Constants.PhotoTypes.Contains(System.IO.Path.GetExtension(document.FileName.ToLower()));
+        }
+
         public static bool Is24x7(this BusinessOpeningHours hours)
         {
             if (hours == null || hours.OpeningHours.Empty())
