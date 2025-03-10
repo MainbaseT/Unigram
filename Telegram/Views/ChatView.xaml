@@ -888,6 +888,7 @@
 
             <Grid x:Name="Options"
                   SizeChanged="Options_SizeChanged"
+                  Background="Transparent"
                   HorizontalAlignment="Right">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
