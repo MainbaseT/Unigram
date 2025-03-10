@@ -11,6 +11,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Telegram.Composition;
 using Telegram.Controls.Cells;
+using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Streams;
@@ -303,6 +304,11 @@ namespace Telegram.Controls.Messages
             else if (message.Date > 0)
             {
                 _dateLabel = Formatter.Time(message.Date);
+
+                if (message.PaidMessageStarCount > 0)
+                {
+                    _dateLabel = string.Format("{1} {2}, {0}", _dateLabel, Icons.Premium, Formatter.ShortNumber(message.PaidMessageStarCount));
+                }
             }
             else
             {

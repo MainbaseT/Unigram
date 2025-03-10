@@ -305,6 +305,7 @@ namespace Telegram.ViewModels
             _message.SenderBoostCount = message.SenderBoostCount;
             _message.SenderBusinessBotUserId = message.SenderBusinessBotUserId;
             _message.EffectId = message.EffectId;
+            _message.PaidMessageStarCount = message.PaidMessageStarCount;
 
             _isSaved = null;
 
@@ -406,6 +407,7 @@ namespace Telegram.ViewModels
         public long SenderBusinessBotUserId => _message.SenderBusinessBotUserId;
         public long Id => _message.Id;
         public long EffectId => _message.EffectId;
+        public long PaidMessageStarCount => _message.PaidMessageStarCount;
 
         public MessageEffect Effect { get; set; }
 
