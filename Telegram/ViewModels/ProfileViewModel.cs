@@ -1013,7 +1013,7 @@ namespace Telegram.ViewModels
                     var second = await ClientService.SendAsync(new GetStickerSet(stickers.StickersValue[0].SetId));
                     if (second is StickerSet stickerSet)
                     {
-                        NavigationService.ShowPopup(new PromoPopup(ClientService, Chat, stickerSet));
+                        NavigationService.ShowPopup(new PromoPopup(ClientService, Chat, stickerSet), new PremiumSourceFeature(new PremiumFeatureEmojiStatus()));
                         return;
                     }
                 }
@@ -1025,7 +1025,7 @@ namespace Telegram.ViewModels
 
             if (ClientService.TryGetUser(Chat, out User user) && user.IsPremium)
             {
-                NavigationService.ShowPopup(new PromoPopup(ClientService, Chat, null));
+                NavigationService.ShowPopup(new PromoPopup(ClientService, Chat, null), new PremiumSourceFeature(new PremiumFeatureEmojiStatus()));
             }
         }
 

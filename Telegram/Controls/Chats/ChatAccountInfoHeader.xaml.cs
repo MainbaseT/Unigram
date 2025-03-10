@@ -12,6 +12,7 @@ using Telegram.Streams;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.Views.Premium.Popups;
 using Windows.Foundation;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
@@ -159,9 +160,30 @@ namespace Telegram.Controls.Chats
             }
         }
 
-        private void Premium_Click(Hyperlink sender, HyperlinkClickEventArgs args)
+        private async void Premium_Click(Hyperlink sender, HyperlinkClickEventArgs args)
         {
-            ViewModel.NavigationService.ShowPromo(new PremiumSourceFeature(new PremiumFeatureEmojiStatus()));
+            if (ViewModel.Chat?.EmojiStatus?.Type is EmojiStatusTypeCustomEmoji emojiStatusTypeCustomEmoji)
+            {
+                var response = await ViewModel.ClientService.SendAsync(new GetCustomEmojiStickers(new[] { emojiStatusTypeCustomEmoji.CustomEmojiId }));
+                if (response is Stickers stickers)
+                {
+                    var second = await ViewModel.ClientService.SendAsync(new GetStickerSet(stickers.StickersValue[0].SetId));
+                    if (second is StickerSet stickerSet)
+                    {
+                        ViewModel.NavigationService.ShowPopup(new PromoPopup(ViewModel.ClientService, ViewModel.Chat, stickerSet), new PremiumSourceFeature(new PremiumFeatureEmojiStatus()));
+                        return;
+                    }
+                }
+            }
+            else if (ViewModel.Chat?.EmojiStatus?.Type is EmojiStatusTypeUpgradedGift emojiStatusTypeUpgradedGift)
+            {
+
+            }
+
+            if (ViewModel.ClientService.TryGetUser(ViewModel.Chat, out User user) && user.IsPremium)
+            {
+                ViewModel.NavigationService.ShowPopup(new PromoPopup(ViewModel.ClientService, ViewModel.Chat, null), new PremiumSourceFeature(new PremiumFeatureEmojiStatus()));
+            }
         }
 
         private async void RemoveFee_Click(Hyperlink sender, HyperlinkClickEventArgs args)
