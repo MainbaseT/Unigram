@@ -292,5 +292,39 @@ namespace Telegram.ViewModels.Chats
         {
             return _pinnedStoryIds != null && _pinnedStoryIds.Contains(story.StoryId);
         }
+
+        public void SetPinnedItems()
+        {
+            var storyIds = new List<int>();
+
+            foreach (var item in Items)
+            {
+                if (IsPinned(item))
+                {
+                    storyIds.Add(item.StoryId);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (storyIds.Count != _pinnedStoryIds.Count)
+            {
+                return;
+            }
+
+            ClientService.Send(new SetChatPinnedStories(_chatId, storyIds));
+        }
+
+        public void SetPinnedItem(StoryViewModel story)
+        {
+            var index = _pinnedStoryIds.IndexOf(story.StoryId);
+            if (index >= 0 && index < Items.Count)
+            {
+                Items.Remove(story);
+                Items.Insert(index, story);
+            }
+        }
     }
 }
