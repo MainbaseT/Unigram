@@ -337,6 +337,45 @@
   <data name="AccountAlreadyLoggedIn" xml:space="preserve">
     <value>This account is already logged in from this app.</value>
   </data>
+  <data name="AccountFrozen1Text" xml:space="preserve">
+    <value>Your account was frozen for breaking Telegram’s Terms and Conditions.</value>
+  </data>
+  <data name="AccountFrozen1Title" xml:space="preserve">
+    <value>Violation of Terms</value>
+  </data>
+  <data name="AccountFrozen2Text" xml:space="preserve">
+    <value>You can access your account but can’t send messages or take actions.</value>
+  </data>
+  <data name="AccountFrozen2Title" xml:space="preserve">
+    <value>Read-Only Mode</value>
+  </data>
+  <data name="AccountFrozen3Text" xml:space="preserve">
+    <value>Appeal via **@SpamBot** before {0}, or your account will be deleted</value>
+  </data>
+  <data name="AccountFrozen3Title" xml:space="preserve">
+    <value>Appeal Before Deactivation</value>
+  </data>
+  <data name="AccountFrozenAlertSubtitle" xml:space="preserve">
+    <value>Tap to view details and submit an appeal.</value>
+  </data>
+  <data name="AccountFrozenAlertTitle" xml:space="preserve">
+    <value>Your account is frozen!</value>
+  </data>
+  <data name="AccountFrozenBottomSubtitle" xml:space="preserve">
+    <value>Tap to view details</value>
+  </data>
+  <data name="AccountFrozenBottomTitle" xml:space="preserve">
+    <value>Your account is frozen</value>
+  </data>
+  <data name="AccountFrozenButtonAppeal" xml:space="preserve">
+    <value>Submit an Appeal</value>
+  </data>
+  <data name="AccountFrozenButtonUnderstood" xml:space="preserve">
+    <value>Understood</value>
+  </data>
+  <data name="AccountFrozenTitle" xml:space="preserve">
+    <value>Your Account is Frozen</value>
+  </data>
   <data name="AccountSwitch" xml:space="preserve">
     <value>Switch</value>
   </data>

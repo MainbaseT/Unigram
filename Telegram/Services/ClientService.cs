@@ -66,6 +66,8 @@ namespace Telegram.Services
         bool IsPremium { get; }
         bool IsPremiumAvailable { get; }
 
+        bool IsFrozen { get; }
+
         PaidReactionType DefaultPaidReactionType { get; }
 
         StarAmount OwnedStarCount { get; }
@@ -1138,6 +1140,8 @@ namespace Telegram.Services
         public bool IsPremium => _options.IsPremium;
 
         public bool IsPremiumAvailable => _options.IsPremium || _options.IsPremiumAvailable;
+
+        public bool IsFrozen => Constants.DEBUG;
 
         public StarAmount OwnedStarCount
         {

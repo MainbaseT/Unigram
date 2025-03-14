@@ -2795,7 +2795,7 @@ namespace Telegram.Views
                 if (Constants.DEBUG)
                 {
                     var file = message.GetFile();
-                    if (file != null && (file.Local.IsDownloadingActive || file.Local.IsDownloadingCompleted))
+                    if (file != null && (file.Local.IsDownloadingActive || file.Local.IsDownloadingCompleted || message.Content is MessageVideo { AlternativeVideos.Count: > 0 }))
                     {
                         flyout.CreateFlyoutItem(x =>
                         {
@@ -2807,6 +2807,19 @@ namespace Telegram.Views
 
                             ViewModel.ClientService.CancelDownloadFile(file);
                             ViewModel.ClientService.Send(new DeleteFileW(file.Id));
+
+                            if (x.Content is MessageVideo video)
+                            {
+                                foreach (var vid in video.AlternativeVideos)
+                                {
+                                    ViewModel.ClientService.CancelDownloadFile(vid.HlsFile);
+                                    ViewModel.ClientService.Send(new DeleteFileW(vid.HlsFile.Id));
+
+                                    ViewModel.ClientService.CancelDownloadFile(vid.Video);
+                                    ViewModel.ClientService.Send(new DeleteFileW(vid.Video.Id));
+                                }
+                            }
+
                         }, message, "Delete from disk", Icons.Delete);
                     }
                 }
@@ -4140,6 +4153,11 @@ namespace Telegram.Views
                 TextArea.Visibility = Visibility.Collapsed;
                 return;
             }
+            else if (ViewModel.ClientService.IsFrozen)
+            {
+                ShowFrozen();
+                return;
+            }
 
             if (content != null && (ButtonAction.Content is not TextBlock || (ButtonAction.Content is TextBlock block && !string.Equals(block.Text, content))))
             {
@@ -4161,6 +4179,36 @@ namespace Telegram.Views
             TextArea.Visibility = Visibility.Collapsed;
         }
 
+        private void ShowFrozen()
+        {
+            var block = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center,
+                Style = BootStrapper.Current.Resources["BodyTextBlockStyle"] as Style
+            };
+
+            block.Inlines.Add(new Run
+            {
+                Text = Strings.AccountFrozenBottomTitle,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = BootStrapper.Current.Resources["SystemFillColorCriticalBrush"] as Brush
+            });
+
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add(Strings.AccountFrozenBottomSubtitle);
+
+            ButtonAction.Content = block;
+
+            _replyEnabled = false;
+            ButtonAction.IsEnabled = true;
+
+            _actionCollapsed = false;
+            ButtonAction.Visibility = Visibility.Visible;
+            ChatFooter.Visibility = Visibility.Visible;
+            TextArea.Visibility = Visibility.Collapsed;
+        }
+
         private void ShowArea(long paidMessageStarCount, bool permanent = true)
         {
             if (_fromPreview)
@@ -4168,6 +4216,11 @@ namespace Telegram.Views
                 ButtonAction.Visibility = Visibility.Collapsed;
                 ChatFooter.Visibility = Visibility.Collapsed;
                 TextArea.Visibility = Visibility.Collapsed;
+                return;
+            }
+            else if (ViewModel.ClientService.IsFrozen)
+            {
+                ShowFrozen();
                 return;
             }
 

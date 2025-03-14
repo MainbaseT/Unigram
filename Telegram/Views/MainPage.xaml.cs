@@ -3495,10 +3495,17 @@ namespace Telegram.Views
 
         private void ComposeButton_Click(object sender, RoutedEventArgs e)
         {
-            _ = ViewModel.NavigationService.ShowPopupAsync(new ContactsPopup
+            if (ViewModel.ClientService.IsFrozen)
             {
-                Title = Strings.NewMessageTitle
-            });
+                ViewModel.NavigationService.ShowPopup(new FrozenPopup());
+            }
+            else
+            {
+                ViewModel.NavigationService.ShowPopup(new ContactsPopup
+                {
+                    Title = Strings.NewMessageTitle
+                });
+            }
         }
 
         private void ChatCell_StoryClick(object sender, Chat chat)

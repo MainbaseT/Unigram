@@ -1188,6 +1188,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\FrozenPopup.xaml.cs">
+      <DependentUpon>FrozenPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\ChooseCapturePopup.xaml.cs">
       <DependentUpon>ChooseCapturePopup.xaml</DependentUpon>
     </Compile>
@@ -3088,6 +3091,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\BackgroundPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\FrozenPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

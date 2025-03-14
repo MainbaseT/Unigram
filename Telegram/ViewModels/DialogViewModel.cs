@@ -4118,7 +4118,11 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (Search?.SavedMessagesTag != null)
+            if (ClientService.IsFrozen)
+            {
+                ShowPopup(new FrozenPopup());
+            }
+            else if (Search?.SavedMessagesTag != null)
             {
                 Search.FilterByTag = !Search.FilterByTag;
             }
