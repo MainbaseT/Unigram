@@ -411,6 +411,11 @@ namespace Telegram.Converters
 
         public static string ShortNumber(long number)
         {
+            return ShortNumber(number, false);
+        }
+
+        public static string ShortNumber(long number, bool round)
+        {
             var K = string.Empty;
             var lastDec = 0L;
 
@@ -421,7 +426,7 @@ namespace Telegram.Converters
                 number /= 1000;
             }
 
-            if (lastDec != 0 && K.Length > 0)
+            if (lastDec != 0 && K.Length > 0 && !round)
             {
                 if (K.Length == 2)
                 {

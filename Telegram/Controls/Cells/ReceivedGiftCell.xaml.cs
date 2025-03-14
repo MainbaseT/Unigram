@@ -1,5 +1,6 @@
 ﻿using Telegram.Common;
 using Telegram.Controls.Media;
+using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
@@ -62,7 +63,7 @@ namespace Telegram.Controls.Cells
                 if (regular.Gift.TotalCount > 0)
                 {
                     RibbonRoot.Visibility = Visibility.Visible;
-                    Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, regular.Gift.TotalText());
+                    Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, Formatter.ShortNumber(regular.Gift.TotalCount, true));
 
                     if (RibbonPath.Fill is not LinearGradientBrush)
                     {
@@ -100,7 +101,7 @@ namespace Telegram.Controls.Cells
                 Animated.Source = new DelayedFileSource(clientService, upgraded.Gift.Model.Sticker);
 
                 RibbonRoot.Visibility = Visibility.Visible;
-                Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, upgraded.Gift.MaxUpgradedCount.ToString("N0"));
+                Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, Formatter.ShortNumber(upgraded.Gift.MaxUpgradedCount, true));
 
                 if (RibbonPath.Fill is LinearGradientBrush)
                 {
