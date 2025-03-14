@@ -225,7 +225,7 @@ namespace Telegram.Views.Stars.Popups
                 {
                     return new PaidReactionTypeAnonymous();
                 }
-                else if (_self.SenderId is MessageSenderChat messageSenderChat)
+                else if (_self?.SenderId is MessageSenderChat messageSenderChat)
                 {
                     return new PaidReactionTypeChat(messageSenderChat.ChatId);
                 }

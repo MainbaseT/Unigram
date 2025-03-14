@@ -21,7 +21,7 @@ namespace Telegram.Views
             var element = sender as FrameworkElement;
             var sticker = args.Item;
 
-            if (sticker == null)
+            if (sticker?.StickerValue == null)
             {
                 return;
             }
@@ -43,7 +43,7 @@ namespace Telegram.Views
                 flyout.CreateFlyoutItem(ViewModel.RemoveRecentSticker, sticker, Strings.DeleteFromRecent, Icons.Delete, destructive: true);
             }
 
-            if (ViewModel.Type == ViewModels.DialogType.History)
+            if (ViewModel.Type == ViewModels.DialogType.History && !ViewModel.ClientService.IsPaid(ViewModel.Chat))
             {
                 var chat = ViewModel.Chat;
                 if (chat == null)
@@ -82,7 +82,7 @@ namespace Telegram.Views
                 flyout.CreateFlyoutItem(ViewModel.SaveAnimation, animation, Strings.SaveToGIFs, Icons.Gif);
             }
 
-            if (ViewModel.Type == ViewModels.DialogType.History)
+            if (ViewModel.Type == ViewModels.DialogType.History && !ViewModel.ClientService.IsPaid(ViewModel.Chat))
             {
                 var chat = ViewModel.Chat;
                 if (chat == null)
