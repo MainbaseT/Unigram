@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Telegram.Collections;
@@ -56,11 +57,248 @@ namespace Telegram.ViewModels.Business
 
         public SearchCollection<User, BotsCollection> Results { get; private set; }
 
+        #region Manage messages
+
+        private bool? _canManageMessages;
+        public bool? CanManageMessages
+        {
+            get => _canManageMessages;
+            set
+            {
+                Set(ref _canManageMessages, value);
+
+                if (value.HasValue)
+                {
+                    CanReadMessages = value.Value;
+                    CanReply = value.Value;
+                    CanMarkAsRead = value.Value;
+                    CanDeleteSentMessages = value.Value;
+                    CanDeleteReceivedMessages = value.Value;
+                }
+            }
+        }
+
+        private bool _canReadMessages = true;
+        public bool CanReadMessages
+        {
+            get => _canReadMessages;
+            set => InvalidateManageMessages(ref _canReadMessages, value);
+        }
+
         private bool _canReply = true;
         public bool CanReply
         {
             get => _canReply;
-            set => Invalidate(ref _canReply, value);
+            set => InvalidateManageMessages(ref _canReply, value);
+        }
+
+        private bool _canMarkAsRead = true;
+        public bool CanMarkAsRead
+        {
+            get => _canMarkAsRead;
+            set => InvalidateManageMessages(ref _canMarkAsRead, value);
+        }
+
+        private bool _canDeleteSentMessages = true;
+        public bool CanDeleteSentMessages
+        {
+            get => _canDeleteSentMessages;
+            set => InvalidateManageMessages(ref _canDeleteSentMessages, value);
+        }
+
+        private bool _canDeleteReceivedMessages = true;
+        public bool CanDeleteReceivedMessages
+        {
+            get => _canDeleteReceivedMessages;
+            set => InvalidateManageMessages(ref _canDeleteReceivedMessages, value);
+        }
+
+        private void InvalidateManageMessages<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (Invalidate(ref storage, value, propertyName))
+            {
+                var values = new[]
+                {
+                    CanReadMessages,
+                    CanReply,
+                    CanMarkAsRead,
+                    CanDeleteSentMessages,
+                    CanDeleteReceivedMessages
+                };
+
+                var count = values.Count(x => x);
+
+                Set(ref _canManageMessages, count == 0 ? false : count == 5 ? true : null, nameof(CanManageMessages));
+                Set(ref _manageMessagesCount, $"{count}/5", nameof(ManageMessagesCount));
+            }
+        }
+
+        private string _manageMessagesCount;
+        public string ManageMessagesCount => _manageMessagesCount;
+
+        #endregion
+
+        #region Manage profile
+
+        private bool? _canManageProfile;
+        public bool? CanManageProfile
+        {
+            get => _canManageProfile;
+            set
+            {
+                Set(ref _canManageProfile, value);
+
+                if (value.HasValue)
+                {
+                    CanEditName = value.Value;
+                    CanEditBio = value.Value;
+                    CanEditProfilePicture = value.Value;
+                    CanEditUsername = value.Value;
+                }
+            }
+        }
+
+        private bool _canEditName = true;
+        public bool CanEditName
+        {
+            get => _canEditName;
+            set
+            {
+                InvalidateManageProfile(ref _canEditName, value);
+            }
+        }
+
+        private bool _canEditBio = true;
+        public bool CanEditBio
+        {
+            get => _canEditBio;
+            set => InvalidateManageProfile(ref _canEditBio, value);
+        }
+
+        private bool _canEditProfilePicture = true;
+        public bool CanEditProfilePicture
+        {
+            get => _canEditProfilePicture;
+            set => InvalidateManageProfile(ref _canEditProfilePicture, value);
+        }
+
+        private bool _canEditUsername = true;
+        public bool CanEditUsername
+        {
+            get => _canEditUsername;
+            set => InvalidateManageProfile(ref _canEditUsername, value);
+        }
+
+        private void InvalidateManageProfile<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (Invalidate(ref storage, value, propertyName))
+            {
+                var values = new[]
+                {
+                    CanEditName,
+                    CanEditBio,
+                    CanEditProfilePicture,
+                    CanEditUsername
+                };
+
+                var count = values.Count(x => x);
+
+                Set(ref _canManageProfile, count == 0 ? false : count == 4 ? true : null, nameof(CanManageProfile));
+                Set(ref _manageProfileCount, $"{count}/4", nameof(ManageProfileCount));
+            }
+        }
+
+        private string _manageProfileCount;
+        public string ManageProfileCount => _manageProfileCount;
+
+        #endregion
+
+        #region Manage gifts
+
+        private bool? _canManageGifts;
+        public bool? CanManageGifts
+        {
+            get => _canManageGifts;
+            set
+            {
+                Set(ref _canManageGifts, value);
+
+                if (value.HasValue)
+                {
+                    CanViewGifts = value.Value;
+                    CanSellGifts = value.Value;
+                    CanChangeGiftSettings = value.Value;
+                    CanTransferGifts = value.Value;
+                    CanTransferStars = value.Value;
+                }
+            }
+        }
+
+        private bool _canViewGifts = true;
+        public bool CanViewGifts
+        {
+            get => _canViewGifts;
+            set => InvalidateManageGifts(ref _canViewGifts, value);
+        }
+
+        private bool _canSellGifts = true;
+        public bool CanSellGifts
+        {
+            get => _canSellGifts;
+            set => InvalidateManageGifts(ref _canSellGifts, value);
+        }
+
+        private bool _canChangeGiftSettings = true;
+        public bool CanChangeGiftSettings
+        {
+            get => _canChangeGiftSettings;
+            set => InvalidateManageGifts(ref _canChangeGiftSettings, value);
+        }
+
+        private bool _canTransferGifts = true;
+        public bool CanTransferGifts
+        {
+            get => _canTransferGifts;
+            set => InvalidateManageGifts(ref _canTransferGifts, value);
+        }
+
+        private bool _canTransferStars = true;
+        public bool CanTransferStars
+        {
+            get => _canTransferStars;
+            set => InvalidateManageGifts(ref _canTransferStars, value);
+        }
+
+        private void InvalidateManageGifts<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (Invalidate(ref storage, value, propertyName))
+            {
+                var values = new[]
+                {
+                    CanViewGifts,
+                    CanSellGifts,
+                    CanChangeGiftSettings,
+                    CanTransferGifts,
+                    CanTransferStars
+                };
+
+                var count = values.Count(x => x);
+
+                Set(ref _canManageGifts, count == 0 ? false : count == 5 ? true : null, nameof(CanManageGifts));
+                Set(ref _manageGiftsCount, $"{count}/5", nameof(ManageGiftsCount));
+            }
+        }
+
+        private string _manageGiftsCount;
+        public string ManageGiftsCount => _manageGiftsCount;
+
+        #endregion
+
+        private bool _canManageStories = true;
+        public bool CanManageStories
+        {
+            get => _canManageStories;
+            set => Set(ref _canManageStories, value);
         }
 
         protected override async Task OnNavigatedToAsync(UserFullInfo cached, NavigationMode mode, NavigationState state)
@@ -119,8 +357,6 @@ namespace Telegram.ViewModels.Business
                 RaisePropertyChanged(nameof(IsInclude));
             }
         }
-
-
 
         public MvxObservableCollection<ChatFolderElement> ExcludedChats { get; } = new();
         public MvxObservableCollection<ChatFolderElement> IncludedChats { get; } = new();

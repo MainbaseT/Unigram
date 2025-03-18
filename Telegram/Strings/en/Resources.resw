@@ -2841,11 +2841,65 @@ Do you want to revoke verification?</value>
   <data name="BusinessBotPermissions" xml:space="preserve">
     <value>Bot permissions</value>
   </data>
+  <data name="BusinessBotPermissionsGiftsSection" xml:space="preserve">
+    <value>Manage Gifts and Stars</value>
+  </data>
+  <data name="BusinessBotPermissionsGiftsSell" xml:space="preserve">
+    <value>Sell Gifts</value>
+  </data>
+  <data name="BusinessBotPermissionsGiftsSettings" xml:space="preserve">
+    <value>Change Gift Settings</value>
+  </data>
+  <data name="BusinessBotPermissionsGiftsTransfer" xml:space="preserve">
+    <value>Transfer and Upgrade Gifts</value>
+  </data>
+  <data name="BusinessBotPermissionsGiftsTransferStars" xml:space="preserve">
+    <value>Transfer Stars</value>
+  </data>
+  <data name="BusinessBotPermissionsGiftsView" xml:space="preserve">
+    <value>View Gifts</value>
+  </data>
   <data name="BusinessBotPermissionsInfo" xml:space="preserve">
     <value>The bot can only reply on your behalf in chats that were active during the last 24h.</value>
   </data>
+  <data name="BusinessBotPermissionsMessagesDeleteReceived" xml:space="preserve">
+    <value>Delete Received Messages</value>
+  </data>
+  <data name="BusinessBotPermissionsMessagesDeleteSent" xml:space="preserve">
+    <value>Delete Sent Messages</value>
+  </data>
+  <data name="BusinessBotPermissionsMessagesMarkAsRead" xml:space="preserve">
+    <value>Mark Messages As Read</value>
+  </data>
+  <data name="BusinessBotPermissionsMessagesRead" xml:space="preserve">
+    <value>Read Messages</value>
+  </data>
+  <data name="BusinessBotPermissionsMessagesReply" xml:space="preserve">
+    <value>Reply to Messages</value>
+  </data>
+  <data name="BusinessBotPermissionsMessagesSection" xml:space="preserve">
+    <value>Manage Messages</value>
+  </data>
+  <data name="BusinessBotPermissionsProfileBio" xml:space="preserve">
+    <value>Edit Bio</value>
+  </data>
+  <data name="BusinessBotPermissionsProfileName" xml:space="preserve">
+    <value>Edit Name</value>
+  </data>
+  <data name="BusinessBotPermissionsProfilePicture" xml:space="preserve">
+    <value>Edit Profile Picture</value>
+  </data>
+  <data name="BusinessBotPermissionsProfileSection" xml:space="preserve">
+    <value>Manage Profile</value>
+  </data>
+  <data name="BusinessBotPermissionsProfileUsername" xml:space="preserve">
+    <value>Edit Username</value>
+  </data>
   <data name="BusinessBotPermissionsReply" xml:space="preserve">
     <value>Reply to Messages</value>
+  </data>
+  <data name="BusinessBotPermissionsStories" xml:space="preserve">
+    <value>Manage Stories</value>
   </data>
   <data name="BusinessBotRemove" xml:space="preserve">
     <value>Remove Bot</value>
