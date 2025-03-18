@@ -14422,9 +14422,49 @@ namespace Telegram
         public static string PrivacyGiftsInfo => Resource.GetString("PrivacyGiftsInfo");
         
         /// <summary>
+        /// Localized resource similar to "Show Gift Icon in Chats"
+        /// </summary>
+        public static string PrivacyGiftsShowIcon => Resource.GetString("PrivacyGiftsShowIcon");
+        
+        /// <summary>
+        /// Localized resource similar to "Display the {0} Gift in the message input field for both participants in all chats."
+        /// </summary>
+        public static string PrivacyGiftsShowIconInfo => Resource.GetString("PrivacyGiftsShowIconInfo");
+        
+        /// <summary>
         /// Localized resource similar to "Who can display gifts on my profile"
         /// </summary>
         public static string PrivacyGiftsTitle => Resource.GetString("PrivacyGiftsTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Accepted gift types"
+        /// </summary>
+        public static string PrivacyGiftsTypeHeader => Resource.GetString("PrivacyGiftsTypeHeader");
+        
+        /// <summary>
+        /// Localized resource similar to "Choose the types of gifts that you allow others to send you."
+        /// </summary>
+        public static string PrivacyGiftsTypeInfo => Resource.GetString("PrivacyGiftsTypeInfo");
+        
+        /// <summary>
+        /// Localized resource similar to "Limited-Edition"
+        /// </summary>
+        public static string PrivacyGiftsTypeLimited => Resource.GetString("PrivacyGiftsTypeLimited");
+        
+        /// <summary>
+        /// Localized resource similar to "Premium Subscription"
+        /// </summary>
+        public static string PrivacyGiftsTypePremium => Resource.GetString("PrivacyGiftsTypePremium");
+        
+        /// <summary>
+        /// Localized resource similar to "Unique"
+        /// </summary>
+        public static string PrivacyGiftsTypeUnique => Resource.GetString("PrivacyGiftsTypeUnique");
+        
+        /// <summary>
+        /// Localized resource similar to "Unlimited"
+        /// </summary>
+        public static string PrivacyGiftsTypeUnlimited => Resource.GetString("PrivacyGiftsTypeUnlimited");
         
         /// <summary>
         /// Localized resource similar to "Invites"

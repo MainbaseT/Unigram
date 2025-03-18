@@ -2581,6 +2581,7 @@
                                    Text="{TemplateBinding Header}"
                                    Margin="0,0,0,8"
                                    Style="{StaticResource BaseTextBlockStyle}"
+                                   FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                    Visibility="{Binding Header, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource NullToVisibilityConverter}}" />
 
                         <!--<Border x:Name="ContentPanel"
@@ -2628,6 +2629,7 @@
                                common:TextBlockHelper.Markdown="{TemplateBinding Text}"
                                TextAlignment="{TemplateBinding TextAlignment}"
                                Style="{StaticResource InfoCaptionTextBlockStyle}"
+                               FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                AutomationProperties.AccessibilityView="Raw" />
                 </ControlTemplate>
             </Setter.Value>

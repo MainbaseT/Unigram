@@ -9650,8 +9650,32 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PrivacyGiftsInfo" xml:space="preserve">
     <value>Choose whether gifts from specific senders need your approval before they’re visible to others on your profile.</value>
   </data>
+  <data name="PrivacyGiftsShowIcon" xml:space="preserve">
+    <value>Show Gift Icon in Chats</value>
+  </data>
+  <data name="PrivacyGiftsShowIconInfo" xml:space="preserve">
+    <value>Display the {0} Gift in the message input field for both participants in all chats.</value>
+  </data>
   <data name="PrivacyGiftsTitle" xml:space="preserve">
     <value>Who can display gifts on my profile</value>
+  </data>
+  <data name="PrivacyGiftsTypeHeader" xml:space="preserve">
+    <value>Accepted gift types</value>
+  </data>
+  <data name="PrivacyGiftsTypeInfo" xml:space="preserve">
+    <value>Choose the types of gifts that you allow others to send you.</value>
+  </data>
+  <data name="PrivacyGiftsTypeLimited" xml:space="preserve">
+    <value>Limited-Edition</value>
+  </data>
+  <data name="PrivacyGiftsTypePremium" xml:space="preserve">
+    <value>Premium Subscription</value>
+  </data>
+  <data name="PrivacyGiftsTypeUnique" xml:space="preserve">
+    <value>Unique</value>
+  </data>
+  <data name="PrivacyGiftsTypeUnlimited" xml:space="preserve">
+    <value>Unlimited</value>
   </data>
   <data name="PrivacyInvites" xml:space="preserve">
     <value>Invites</value>
