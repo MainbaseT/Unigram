@@ -381,14 +381,18 @@ namespace Telegram.Views.Stars.Popups
 
             _submitted = true;
 
-            if (_gift.Gift is SentGiftRegular && (_gift.PrepaidUpgradeStarCount > 0 || !_upgradeCollapsed))
+            if (_gift?.Gift is SentGiftRegular && (_gift.PrepaidUpgradeStarCount > 0 || !_upgradeCollapsed))
             {
                 Upgrade2();
             }
             else
             {
                 Hide(ContentDialogResult.Primary);
-                Toggle_Click(sender, e);
+
+                if (_gift != null)
+                {
+                    Toggle_Click(sender, e);
+                }
             }
         }
 
