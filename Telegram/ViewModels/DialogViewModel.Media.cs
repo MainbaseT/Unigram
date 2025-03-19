@@ -91,9 +91,9 @@ namespace Telegram.ViewModels
         public override async Task<MessageSendOptions> PickMessageSendOptionsAsync(int messageCount = 1, SchedulingState schedule = SchedulingState.Auto, bool? disableNotification = null, bool reorder = false)
         {
             var chat = _chat;
-            if (chat == null)
+            if (chat == null || ComposerHeader?.EditingMessage != null)
             {
-                return null;
+                return new MessageSendOptions(false, false, false, false, 0, false, null, 0, 0, false);
             }
 
             var paidMessageStarCount = 0L;
