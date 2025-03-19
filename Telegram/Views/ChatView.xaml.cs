@@ -150,6 +150,8 @@ namespace Telegram.Views
                 _dateHeader = ElementComposition.GetElementVisual(DateHeader);
 
                 _dateHeaderPanel.Clip = _dateHeaderPanel.Compositor.CreateInsetClip();
+
+                ElementCompositionPreview.SetIsTranslationEnabled(DateHeader, true);
             }
 
             _debouncer = new DispatcherTimer();

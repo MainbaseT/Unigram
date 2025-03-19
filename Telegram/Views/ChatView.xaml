@@ -1007,10 +1007,10 @@
                                                 Grid.Row="1">
                                             <Border x:Name="DateHeaderPanel"
                                                     Visibility="Collapsed"
-                                                    HorizontalAlignment="Center">
+                                                    HorizontalAlignment="Center"
+                                                    Padding="0,4,0,0">
                                                 <messages:MessageService x:Name="DateHeader"
-                                                                         Click="Date_Click"
-                                                                         BorderThickness="0,4,0,0">
+                                                                         Click="Date_Click">
                                                     <TextBlock x:Name="DateHeaderLabel"
                                                                Text="31 dicembre 2017"
                                                                Foreground="White"

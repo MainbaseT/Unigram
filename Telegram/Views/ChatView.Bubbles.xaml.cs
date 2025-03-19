@@ -182,7 +182,7 @@ namespace Telegram.Views
                 {
                     var transform = container.TransformToVisual(DateHeaderRelative);
                     var point = transform.TransformPoint(new Point());
-                    var height = DateHeader.ActualSize.Y;
+                    var height = DateHeader.ActualSize.Y + 4;
                     var offset = (float)point.Y + height;
 
                     minDate = false;
@@ -200,11 +200,11 @@ namespace Telegram.Views
 
                     if (offset >= height && offset < height * 2)
                     {
-                        _dateHeader.Offset = new Vector3(0, -height * 2 + offset, 0);
+                        _dateHeader.Properties.InsertVector3("Translation", new Vector3(0, -height * 2 + offset, 0));
                     }
                     else
                     {
-                        _dateHeader.Offset = Vector3.Zero;
+                        _dateHeader.Properties.InsertVector3("Translation", Vector3.Zero);
                     }
                 }
                 else
@@ -256,7 +256,7 @@ namespace Telegram.Views
 
             if (minDate)
             {
-                _dateHeader.Offset = Vector3.Zero;
+                _dateHeader.Properties.InsertVector3("Translation", Vector3.Zero);
             }
 
             _dateHeaderTimer.Stop();
