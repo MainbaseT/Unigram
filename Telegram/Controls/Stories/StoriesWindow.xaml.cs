@@ -267,11 +267,6 @@ namespace Telegram.Controls.Stories
 
         #endregion
 
-        private void _nextTimer_Tick(object sender, object e)
-        {
-            Move(Direction.Forward);
-        }
-
         private StoryListViewModel _viewModel;
         public StoryListViewModel ViewModel => _viewModel ??= DataContext as StoryListViewModel;
 

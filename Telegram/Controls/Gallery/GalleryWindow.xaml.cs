@@ -20,6 +20,7 @@ using Telegram.ViewModels.Chats;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Gallery;
 using Telegram.ViewModels.Users;
+using Telegram.Views;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Composition;
@@ -338,6 +339,9 @@ namespace Telegram.Controls.Gallery
 
         public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, GalleryViewModelBase parameter, FrameworkElement closing = null, long timestamp = 0, VideoPlayerBase player = null)
         {
+            var payback = TypeResolver.Current.Resolve<IPlaybackService>(parameter.SessionId);
+            payback?.Pause();
+
             var popup = new GalleryWindow
             {
                 InitialPosition = timestamp
