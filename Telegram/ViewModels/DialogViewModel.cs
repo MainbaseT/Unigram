@@ -1103,14 +1103,17 @@ namespace Telegram.ViewModels
                     Delegate?.UpdatePinnedMessage(chat, false);
                 }
 
-                var pinned = await ClientService.SendAsync(new GetChatPinnedMessage(chat.Id)) as Message;
+                var pinned = await ClientService.SendAsync(new SearchChatMessages(chat.Id, string.Empty, null, 0, 0, 1, new SearchMessagesFilterPinned(), ThreadId, SavedMessagesTopicId)) as FoundChatMessages;
                 //if (pinned == null)
                 //{
                 //    Delegate?.UpdatePinnedMessage(chat, false);
                 //    return;
                 //}
 
-                LastPinnedMessage = CreateMessage(pinned);
+                if (pinned?.Messages.Count > 0)
+                {
+                    LastPinnedMessage = CreateMessage(pinned.Messages[0]);
+                }
                 //Delegate?.UpdatePinnedMessage(chat, LastPinnedMessage);
             }
 
@@ -1123,7 +1126,7 @@ namespace Telegram.ViewModels
                 limit = 100;
             }
 
-            var func = new SearchChatMessages(chat.Id, string.Empty, null, maxId, offset, limit, new SearchMessagesFilterPinned(), 0, 0);
+            var func = new SearchChatMessages(chat.Id, string.Empty, null, maxId, offset, limit, new SearchMessagesFilterPinned(), ThreadId, SavedMessagesTopicId);
 
             var tsc = new TaskCompletionSource<List<MessageViewModel>>();
             void handler(BaseObject result)
