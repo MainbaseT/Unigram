@@ -2008,8 +2008,26 @@ namespace Telegram.Td.Api
             }
 
             return x.BotUserId == y.BotUserId
-                && x.CanReply == y.CanReply
+                && x.Rights.AreTheSame(y.Rights)
                 && x.Recipients.AreTheSame(y.Recipients);
+        }
+
+        private static bool AreTheSame(this BusinessBotRights x, BusinessBotRights y)
+        {
+            return x.CanChangeGiftSettings == y.CanChangeGiftSettings
+                && x.CanDeleteIncomingMessages == y.CanDeleteIncomingMessages
+                && x.CanDeleteOutgoingMessages == y.CanDeleteOutgoingMessages
+                && x.CanEditBio == y.CanEditBio
+                && x.CanEditName == y.CanEditName
+                && x.CanEditProfilePhoto == y.CanEditProfilePhoto
+                && x.CanEditUsername == y.CanEditUsername
+                && x.CanManageStories == y.CanManageStories
+                && x.CanReadMessages == y.CanReadMessages
+                && x.CanReply == y.CanReply
+                && x.CanSellGifts == y.CanSellGifts
+                && x.CanTransferAndUpgradeGifts == y.CanTransferAndUpgradeGifts
+                && x.CanTransferStars == y.CanTransferStars
+                && x.CanViewGifts == y.CanViewGifts;
         }
 
         public static bool AreTheSame(this BusinessAwayMessageSchedule x, BusinessAwayMessageSchedule y)

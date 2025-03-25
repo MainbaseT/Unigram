@@ -163,7 +163,8 @@
                                 </CheckBox>
                             </controls:SettingsExpander.Header>
                             <StackPanel>
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanReadMessages, Mode=TwoWay}"
+                                <CheckBox IsChecked="True"
+                                          IsEnabled="False"
                                           Content="{CustomResource BusinessBotPermissionsMessagesRead}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
@@ -177,21 +178,21 @@
                                           BorderThickness="0,0,0,1"
                                           CornerRadius="0" />
 
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanMarkAsRead, Mode=TwoWay}"
+                                <CheckBox IsChecked="{x:Bind ViewModel.CanReadMessages, Mode=TwoWay}"
                                           Content="{CustomResource BusinessBotPermissionsMessagesMarkAsRead}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
                                           BorderThickness="0,0,0,1"
                                           CornerRadius="0" />
 
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanDeleteSentMessages, Mode=TwoWay}"
+                                <CheckBox IsChecked="{x:Bind ViewModel.CanDeleteOutgoingMessages, Mode=TwoWay}"
                                           Content="{CustomResource BusinessBotPermissionsMessagesDeleteSent}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
                                           BorderThickness="0,0,0,1"
                                           CornerRadius="0" />
 
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanDeleteReceivedMessages, Mode=TwoWay}"
+                                <CheckBox IsChecked="{x:Bind ViewModel.CanDeleteIncomingMessages, Mode=TwoWay}"
                                           Content="{CustomResource BusinessBotPermissionsMessagesDeleteReceived}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
@@ -227,7 +228,7 @@
                                           BorderThickness="0,0,0,1"
                                           CornerRadius="0" />
 
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanEditProfilePicture, Mode=TwoWay}"
+                                <CheckBox IsChecked="{x:Bind ViewModel.CanEditProfilePhoto, Mode=TwoWay}"
                                           Content="{CustomResource BusinessBotPermissionsProfilePicture}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"

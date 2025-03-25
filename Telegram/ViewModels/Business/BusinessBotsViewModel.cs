@@ -69,20 +69,12 @@ namespace Telegram.ViewModels.Business
 
                 if (value.HasValue)
                 {
-                    CanReadMessages = value.Value;
                     CanReply = value.Value;
-                    CanMarkAsRead = value.Value;
-                    CanDeleteSentMessages = value.Value;
-                    CanDeleteReceivedMessages = value.Value;
+                    CanReadMessages = value.Value;
+                    CanDeleteOutgoingMessages = value.Value;
+                    CanDeleteIncomingMessages = value.Value;
                 }
             }
-        }
-
-        private bool _canReadMessages = true;
-        public bool CanReadMessages
-        {
-            get => _canReadMessages;
-            set => InvalidateManageMessages(ref _canReadMessages, value);
         }
 
         private bool _canReply = true;
@@ -92,22 +84,22 @@ namespace Telegram.ViewModels.Business
             set => InvalidateManageMessages(ref _canReply, value);
         }
 
-        private bool _canMarkAsRead = true;
-        public bool CanMarkAsRead
+        private bool _canReadMessages = true;
+        public bool CanReadMessages
         {
-            get => _canMarkAsRead;
-            set => InvalidateManageMessages(ref _canMarkAsRead, value);
+            get => _canReadMessages;
+            set => InvalidateManageMessages(ref _canReadMessages, value);
         }
 
         private bool _canDeleteSentMessages = true;
-        public bool CanDeleteSentMessages
+        public bool CanDeleteOutgoingMessages
         {
             get => _canDeleteSentMessages;
             set => InvalidateManageMessages(ref _canDeleteSentMessages, value);
         }
 
         private bool _canDeleteReceivedMessages = true;
-        public bool CanDeleteReceivedMessages
+        public bool CanDeleteIncomingMessages
         {
             get => _canDeleteReceivedMessages;
             set => InvalidateManageMessages(ref _canDeleteReceivedMessages, value);
@@ -119,17 +111,16 @@ namespace Telegram.ViewModels.Business
             {
                 var values = new[]
                 {
-                    CanReadMessages,
                     CanReply,
-                    CanMarkAsRead,
-                    CanDeleteSentMessages,
-                    CanDeleteReceivedMessages
+                    CanReadMessages,
+                    CanDeleteOutgoingMessages,
+                    CanDeleteIncomingMessages
                 };
 
                 var count = values.Count(x => x);
 
-                Set(ref _canManageMessages, count == 0 ? false : count == 5 ? true : null, nameof(CanManageMessages));
-                Set(ref _manageMessagesCount, $"{count}/5", nameof(ManageMessagesCount));
+                Set(ref _canManageMessages, count == 0 ? false : count == 4 ? true : null, nameof(CanManageMessages));
+                Set(ref _manageMessagesCount, $"{count + 1}/5", nameof(ManageMessagesCount));
             }
         }
 
@@ -152,7 +143,7 @@ namespace Telegram.ViewModels.Business
                 {
                     CanEditName = value.Value;
                     CanEditBio = value.Value;
-                    CanEditProfilePicture = value.Value;
+                    CanEditProfilePhoto = value.Value;
                     CanEditUsername = value.Value;
                 }
             }
@@ -176,7 +167,7 @@ namespace Telegram.ViewModels.Business
         }
 
         private bool _canEditProfilePicture = true;
-        public bool CanEditProfilePicture
+        public bool CanEditProfilePhoto
         {
             get => _canEditProfilePicture;
             set => InvalidateManageProfile(ref _canEditProfilePicture, value);
@@ -197,7 +188,7 @@ namespace Telegram.ViewModels.Business
                 {
                     CanEditName,
                     CanEditBio,
-                    CanEditProfilePicture,
+                    CanEditProfilePhoto,
                     CanEditUsername
                 };
 
@@ -309,7 +300,22 @@ namespace Telegram.ViewModels.Business
                 _cached = connectedBot;
 
                 BotUserId = connectedBot.BotUserId;
-                CanReply = connectedBot.CanReply;
+
+                CanReply = connectedBot.Rights.CanReply;
+                CanReadMessages = connectedBot.Rights.CanReadMessages;
+                CanDeleteOutgoingMessages = connectedBot.Rights.CanDeleteOutgoingMessages;
+                CanDeleteIncomingMessages = connectedBot.Rights.CanDeleteIncomingMessages;
+
+                CanEditName = connectedBot.Rights.CanEditName;
+                CanEditBio = connectedBot.Rights.CanEditBio;
+                CanEditProfilePhoto = connectedBot.Rights.CanEditProfilePhoto;
+                CanEditUsername = connectedBot.Rights.CanEditUsername;
+
+                CanViewGifts = connectedBot.Rights.CanViewGifts;
+                CanSellGifts = connectedBot.Rights.CanSellGifts;
+                CanChangeGiftSettings = connectedBot.Rights.CanChangeGiftSettings;
+                CanTransferGifts = connectedBot.Rights.CanTransferAndUpgradeGifts;
+                CanTransferStars = connectedBot.Rights.CanTransferStars;
 
                 UpdateRecipients(connectedBot.Recipients);
             }
@@ -460,6 +466,28 @@ namespace Telegram.ViewModels.Business
             RaisePropertyChanged(nameof(HasChanged));
         }
 
+        protected BusinessBotRights GetRights()
+        {
+            return new BusinessBotRights
+            {
+                CanReply = CanReply,
+                CanReadMessages = CanReadMessages,
+                CanDeleteOutgoingMessages = CanDeleteOutgoingMessages,
+                CanDeleteIncomingMessages = CanDeleteIncomingMessages,
+
+                CanEditName = CanEditName,
+                CanEditBio = CanEditBio,
+                CanEditProfilePhoto = CanEditProfilePhoto,
+                CanEditUsername = CanEditUsername,
+
+                CanViewGifts = CanViewGifts,
+                CanSellGifts = CanSellGifts,
+                CanChangeGiftSettings = CanChangeGiftSettings,
+                CanTransferAndUpgradeGifts = CanTransferGifts,
+                CanTransferStars = CanTransferStars,
+            };
+        }
+
         protected BusinessRecipients GetRecipients()
         {
             var recipients = new BusinessRecipients
@@ -540,7 +568,7 @@ namespace Telegram.ViewModels.Business
             return new BusinessConnectedBot
             {
                 BotUserId = BotUserId,
-                CanReply = CanReply,
+                Rights = GetRights(),
                 Recipients = GetRecipients()
             };
         }
