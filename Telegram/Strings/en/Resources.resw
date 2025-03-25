@@ -8864,6 +8864,30 @@ messages from multiple devices.</value>
   <data name="PaidMediaPriceButton" xml:space="preserve">
     <value>Edit Price</value>
   </data>
+  <data name="PaidMessagesPriceUpdated_one" xml:space="preserve">
+    <value>un1 changed price to {0} Star per message</value>
+  </data>
+  <data name="PaidMessagesPriceUpdated_other" xml:space="preserve">
+    <value>un1 changed price to {0} Stars per message</value>
+  </data>
+  <data name="PaidMessagesPriceUpdatedOut_one" xml:space="preserve">
+    <value>You changed price to {0} Star per message</value>
+  </data>
+  <data name="PaidMessagesPriceUpdatedOut_other" xml:space="preserve">
+    <value>You changed price to {0} Stars per message</value>
+  </data>
+  <data name="PaidMessagesRefunded_one" xml:space="preserve">
+    <value>un1 refunded {0} Star to you</value>
+  </data>
+  <data name="PaidMessagesRefunded_other" xml:space="preserve">
+    <value>un1 refunded {0} Stars to you</value>
+  </data>
+  <data name="PaidMessagesRefundedOut_one" xml:space="preserve">
+    <value>You refunded {0} Star to un1</value>
+  </data>
+  <data name="PaidMessagesRefundedOut_other" xml:space="preserve">
+    <value>You refunded {0} Stars to un1</value>
+  </data>
   <data name="Participants_one" xml:space="preserve">
     <value>{0} participant</value>
   </data>
