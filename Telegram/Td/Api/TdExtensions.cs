@@ -2030,6 +2030,15 @@ namespace Telegram.Td.Api
                 && x.CanViewGifts == y.CanViewGifts;
         }
 
+        public static bool AreTheSame(this GiftSettings x, GiftSettings y)
+        {
+            return x.AcceptedGiftTypes.LimitedGifts == y.AcceptedGiftTypes.LimitedGifts
+                && x.AcceptedGiftTypes.PremiumSubscription == y.AcceptedGiftTypes.PremiumSubscription
+                && x.AcceptedGiftTypes.UnlimitedGifts == y.AcceptedGiftTypes.UnlimitedGifts
+                && x.AcceptedGiftTypes.UpgradedGifts == y.AcceptedGiftTypes.UpgradedGifts
+                && x.ShowGiftButton == y.ShowGiftButton;
+        }
+
         public static bool AreTheSame(this BusinessAwayMessageSchedule x, BusinessAwayMessageSchedule y)
         {
             if (x is BusinessAwayMessageScheduleAlways)

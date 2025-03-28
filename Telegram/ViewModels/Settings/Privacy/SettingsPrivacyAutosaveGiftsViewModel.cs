@@ -104,5 +104,35 @@ namespace Telegram.ViewModels.Settings.Privacy
         {
             ToastPopup.ShowFeaturePromo(NavigationService, new PremiumFeatureRealTimeChatTranslation());
         }
+
+        public override async void Save()
+        {
+            if (ClientService.TryGetUserFull(ClientService.Options.MyId, out UserFullInfo fullInfo))
+            {
+                var settings = new GiftSettings
+                {
+                    AcceptedGiftTypes = new AcceptedGiftTypes
+                    {
+                        LimitedGifts = AllowLimited,
+                        UnlimitedGifts = AllowLimited,
+                        UpgradedGifts = AllowUnique,
+                        PremiumSubscription = AllowPremium,
+                    },
+                    ShowGiftButton = ShowIcon
+                };
+
+                if (!fullInfo.GiftSettings.AreTheSame(settings))
+                {
+                    var response = await ClientService.SendAsync(new SetGiftSettings(settings));
+                    if (response is Error error)
+                    {
+                        ToastPopup.ShowError(XamlRoot, error);
+                        return;
+                    }
+                }
+            }
+
+            base.Save();
+        }
     }
 }
