@@ -4,9 +4,12 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System.Threading.Tasks;
 using Telegram.Controls;
+using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels.Settings.Privacy
 {
@@ -15,6 +18,20 @@ namespace Telegram.ViewModels.Settings.Privacy
         public SettingsPrivacyAutosaveGiftsViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator, new UserPrivacySettingAutosaveGifts())
         {
+        }
+
+        protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
+        {
+            if (ClientService.TryGetUserFull(ClientService.Options.MyId, out UserFullInfo fullInfo))
+            {
+                AllowLimited = fullInfo.GiftSettings.AcceptedGiftTypes.LimitedGifts;
+                AllowUnlimited = fullInfo.GiftSettings.AcceptedGiftTypes.UnlimitedGifts;
+                AllowUnique = fullInfo.GiftSettings.AcceptedGiftTypes.UpgradedGifts;
+                AllowPremium = fullInfo.GiftSettings.AcceptedGiftTypes.PremiumSubscription;
+                ShowIcon = fullInfo.GiftSettings.ShowGiftButton;
+            }
+
+            return base.OnNavigatedToAsync(parameter, mode, state);
         }
 
         private bool _showIcon;
@@ -102,7 +119,7 @@ namespace Telegram.ViewModels.Settings.Privacy
 
         private void ShowFeaturePromo()
         {
-            ToastPopup.ShowFeaturePromo(NavigationService, new PremiumFeatureRealTimeChatTranslation());
+            ToastPopup.ShowFeaturePromo(NavigationService, null);
         }
 
         public override async void Save()
@@ -114,7 +131,7 @@ namespace Telegram.ViewModels.Settings.Privacy
                     AcceptedGiftTypes = new AcceptedGiftTypes
                     {
                         LimitedGifts = AllowLimited,
-                        UnlimitedGifts = AllowLimited,
+                        UnlimitedGifts = AllowUnlimited,
                         UpgradedGifts = AllowUnique,
                         PremiumSubscription = AllowPremium,
                     },
