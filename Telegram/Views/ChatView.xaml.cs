@@ -4155,7 +4155,7 @@ namespace Telegram.Views
                 TextArea.Visibility = Visibility.Collapsed;
                 return;
             }
-            else if (ViewModel.ClientService.IsFrozen)
+            else if (ViewModel.ClientService.FreezeState.IsFrozen)
             {
                 ShowFrozen();
                 return;
@@ -4220,7 +4220,7 @@ namespace Telegram.Views
                 TextArea.Visibility = Visibility.Collapsed;
                 return;
             }
-            else if (ViewModel.ClientService.IsFrozen)
+            else if (ViewModel.ClientService.FreezeState.IsFrozen)
             {
                 ShowFrozen();
                 return;

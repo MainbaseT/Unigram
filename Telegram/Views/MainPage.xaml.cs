@@ -501,6 +501,41 @@ namespace Telegram.Views
             });
         }
 
+        public void Handle(UpdateFreezeState update)
+        {
+            this.BeginOnUIThread(() =>
+            {
+                if (update.IsFrozen)
+                {
+                    FindName(nameof(FrozenCard));
+
+                    if (SetBirthdateCard != null)
+                    {
+                        SetBirthdateCard.Visibility = Visibility.Collapsed;
+                    }
+
+                    if (UnconfirmedCard != null)
+                    {
+                        UnconfirmedCard.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    UnloadObject(FrozenCard);
+
+                    if (SetBirthdateCard != null)
+                    {
+                        SetBirthdateCard.Visibility = Visibility.Visible;
+                    }
+
+                    if (UnconfirmedCard != null)
+                    {
+                        UnconfirmedCard.Visibility = Visibility.Visible;
+                    }
+                }
+            });
+        }
+
         public void Handle(UpdateConnectionState update)
         {
             this.BeginOnUIThread(() =>
@@ -965,6 +1000,7 @@ namespace Telegram.Views
             }
 
             Handle(new UpdateUnconfirmedSession(ViewModel.ClientService.UnconfirmedSession));
+            Handle(ViewModel.ClientService.FreezeState);
             UpdateChatFolders();
 
             if (_clientService.HasSuggestedAction(new SuggestedActionSetBirthdate()))
@@ -1021,6 +1057,7 @@ namespace Telegram.Views
                 .Subscribe<UpdateChatNotificationSettings>(Handle)
                 .Subscribe<UpdatePasscodeLock>(Handle)
                 .Subscribe<UpdateUnconfirmedSession>(Handle)
+                .Subscribe<UpdateFreezeState>(Handle)
                 .Subscribe<UpdateConnectionState>(Handle)
                 .Subscribe<UpdateOption>(Handle)
                 .Subscribe<UpdateSuggestedActions>(Handle)
@@ -3495,9 +3532,9 @@ namespace Telegram.Views
 
         private void ComposeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.ClientService.IsFrozen)
+            if (ViewModel.ClientService.FreezeState.IsFrozen)
             {
-                ViewModel.NavigationService.ShowPopup(new FrozenPopup());
+                ViewModel.NavigationService.ShowPopup(new FrozenPopup(ViewModel.ClientService.FreezeState));
             }
             else
             {

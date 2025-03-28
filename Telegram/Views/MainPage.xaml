@@ -602,6 +602,9 @@
                                                                              x:Load="False"
                                                                              ConfirmClick="{x:Bind ViewModel.ConfirmSession}"
                                                                              DenyClick="{x:Bind ViewModel.DenySession}" />
+                                            <controls:FrozenAccountCard x:Name="FrozenCard"
+                                                                        x:Load="False"
+                                                                        Click="{x:Bind ViewModel.UnfreezeAccount}" />
                                         </Grid>
 
                                         <Grid x:Name="ArchivedChatsPresenter">

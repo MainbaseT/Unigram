@@ -66,8 +66,6 @@ namespace Telegram.Services
         bool IsPremium { get; }
         bool IsPremiumAvailable { get; }
 
-        bool IsFrozen { get; }
-
         PaidReactionType DefaultPaidReactionType { get; }
 
         StarAmount OwnedStarCount { get; }
@@ -113,6 +111,7 @@ namespace Telegram.Services
         Task<AuthorizationState> GetAuthorizationStateAsync();
         AuthorizationState AuthorizationState { get; }
         ConnectionState ConnectionState { get; }
+        UpdateFreezeState FreezeState { get; }
 
         string GetTitle(Chat chat, bool tiny = false);
         string GetTitle(long chatId, bool tiny = false);
@@ -346,6 +345,7 @@ namespace Telegram.Services
         private TaskCompletionSource<bool> _authorizationStateTask = new();
         private AuthorizationState _authorizationState;
         private ConnectionState _connectionState;
+        private UpdateFreezeState _freezeState = new();
 
         private StarAmount _ownedStarCount;
 
@@ -1135,13 +1135,13 @@ namespace Telegram.Services
 
         public ConnectionState ConnectionState => _connectionState;
 
+        public UpdateFreezeState FreezeState => _freezeState;
+
         public Settings.NotificationsSettings Notifications => _settings.Notifications;
 
         public bool IsPremium => _options.IsPremium;
 
         public bool IsPremiumAvailable => _options.IsPremium || _options.IsPremiumAvailable;
-
-        public bool IsFrozen => Constants.DEBUG;
 
         public StarAmount OwnedStarCount
         {
@@ -3093,6 +3093,10 @@ namespace Telegram.Services
             else if (update is UpdateDefaultPaidReactionType updateDefaultPaidReactionType)
             {
                 DefaultPaidReactionType = updateDefaultPaidReactionType.Type;
+            }
+            else if (update is UpdateFreezeState freezeState)
+            {
+                _freezeState = freezeState;
             }
 
             _aggregator.Publish(update);

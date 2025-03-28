@@ -321,6 +321,9 @@
     <Compile Include="Controls\PremiumStarHeader.cs" />
     <Compile Include="Controls\SlideTextBlock.cs" />
     <Compile Include="Controls\TableView.cs" />
+    <Compile Include="Controls\FrozenAccountCard.xaml.cs">
+      <DependentUpon>FrozenAccountCard.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\VideoPlayerBase.cs" />
     <Compile Include="Controls\WebVideoPlayer.xaml.cs">
       <DependentUpon>WebVideoPlayer.xaml</DependentUpon>
@@ -2833,6 +2836,10 @@
     <Page Include="Controls\TabbedPageHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FrozenAccountCard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\UnconfirmedSessionCard.xaml">
       <SubType>Designer</SubType>
