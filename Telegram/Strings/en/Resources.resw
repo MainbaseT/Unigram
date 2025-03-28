@@ -6094,6 +6094,9 @@ Duration: {1}</value>
   <data name="FollowersChartTitle" xml:space="preserve">
     <value>Followers</value>
   </data>
+  <data name="FontFamily" xml:space="preserve">
+    <value>Font family</value>
+  </data>
   <data name="FontSize" xml:space="preserve">
     <value>Font Size</value>
   </data>
