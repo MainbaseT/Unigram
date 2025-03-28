@@ -3940,13 +3940,6 @@
     <PackageReference Include="Win2D.uwp">
       <Version>1.28.2</Version>
     </PackageReference>
-    <!-- Used by AppCenter -->
-    <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3">
-      <Version>2.1.11</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection.Metadata">
-      <Version>9.0.3</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Telegram.Native.Calls\Telegram.Native.Calls.vcxproj">
@@ -3959,18 +3952,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AppCenter, Version=0.0.0.0, Culture=neutral, PublicKeyToken=8a600e2fee7ba272, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\AppCenter\Microsoft.AppCenter.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AppCenter.Analytics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=8a600e2fee7ba272, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\AppCenter\Microsoft.AppCenter.Analytics.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AppCenter.Crashes, Version=0.0.0.0, Culture=neutral, PublicKeyToken=8a600e2fee7ba272, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\AppCenter\Microsoft.AppCenter.Crashes.dll</HintPath>
-    </Reference>
     <Reference Include="RLottie">
       <HintPath>$(ProjectDir)\..\Libraries\rlottie\$(Platform)\RLottie.winmd</HintPath>
       <Implementation>RLottie.dll</Implementation>
