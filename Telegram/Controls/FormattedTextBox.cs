@@ -214,26 +214,24 @@ namespace Telegram.Controls
             Blocks = GetTemplateChild(nameof(Blocks)) as Grid;
             ContentElement = GetTemplateChild(nameof(ContentElement)) as ScrollViewer;
 
-            if (Blocks == null)
-            {
-                return;
-            }
-
-            ElementCompositionPreview.SetIsTranslationEnabled(Blocks, true);
+            ContentElement.ViewChanged += ContentElement_ViewChanged;
 
             var props = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ContentElement);
-            var visual = ElementComposition.GetElementVisual(Blocks);
-            //var wrap = ElementComposition.GetElementVisual(Wrap);
-
-            //wrap.Clip = visual.Compositor.CreateInsetClip();
-
-            var translation = visual.Compositor.CreateExpressionAnimation("scrollViewer.Translation.Y");
+            var translation = props.Compositor.CreateExpressionAnimation("scrollViewer.Translation.Y");
             translation.SetReferenceParameter("scrollViewer", props);
-            visual.StartAnimation("Translation.Y", translation);
 
-            if (ContentElement.Content is FrameworkElement element)
+            if (Blocks != null)
             {
-                element.SizeChanged += Element_SizeChanged;
+                ElementCompositionPreview.SetIsTranslationEnabled(Blocks, true);
+                var visual = ElementComposition.GetElementVisual(Blocks);
+                visual.StartAnimation("Translation.Y", translation);
+            }
+
+            if (CustomEmoji != null)
+            {
+                ElementCompositionPreview.SetIsTranslationEnabled(CustomEmoji, true);
+                var visual = ElementComposition.GetElementVisual(CustomEmoji);
+                visual.StartAnimation("Translation.Y", translation);
             }
         }
 
@@ -1644,7 +1642,7 @@ namespace Telegram.Controls
                         {
                             CustomEmojiId = customEmojiId,
                             X = (int)rect.X + 2,
-                            Y = (int)rect.Y + 3
+                            Y = (int)rect.Y + (range.CharacterFormat.Size == 9 ? -5 : 3)
                         });
                     }
                 }
@@ -1741,7 +1739,7 @@ namespace Telegram.Controls
                     //ContentElement.Padding = new Thickness(48, range.ParagraphFormat.SpaceAfter == 0 ? 13 : 7, 0, 15);
                     ContentElement.Padding = new Thickness(0, 13, 0, 15);
                     ContentElement.Margin = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : -6, 0, 0);
-                    Blocks.Margin = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : -6, 0, 0);
+                    Blocks.Padding = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 6 : 0, 0, 0);
                 }
 
                 if (range.ParagraphFormat.SpaceAfter != 0)
@@ -1782,9 +1780,10 @@ namespace Telegram.Controls
             };
         }
 
-        private void Element_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void ContentElement_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            Blocks.Height = e.NewSize.Height;
+            Blocks.Height = ContentElement.ExtentHeight;
+            Blocks.Margin = new Thickness(0, -6, 0, Math.Min(0, ActualHeight - ContentElement.ExtentHeight));
         }
 
         private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs e)
