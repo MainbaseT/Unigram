@@ -1486,6 +1486,14 @@ namespace Telegram.Views.Popups
                 }
             }
 
+            foreach (var newItem in e.AddedItems.OfType<Chat>())
+            {
+                if (ViewModel.ClientService.IsForum(newItem) && !ViewModel.SelectedTopics.ContainsKey(newItem.Id))
+                {
+                    ChatsPanel.SelectedItems.Remove(newItem);
+                }
+            }
+
             var selection = ChatsPanel.SelectedItems
                 .OfType<Chat>()
                 .Where(x => ViewModel.ClientService.IsForum(x) ? ViewModel.SelectedTopics.ContainsKey(x.Id) : true);
@@ -1493,9 +1501,9 @@ namespace Telegram.Views.Popups
             ViewModel.SelectedItems = new MvxObservableCollection<Chat>(selection);
         }
 
-        private async void List_ItemClick(object sender, ItemClickEventArgs e)
+        private void List_ItemClick(object sender, ItemClickEventArgs e)
         {
-            await ItemClick(e.ClickedItem as Chat, true);
+            ItemClick(e.ClickedItem as Chat, true);
         }
 
         private async void ListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -1549,7 +1557,7 @@ namespace Telegram.Views.Popups
             }
 
             var chat = item as Chat;
-            if (chat == null || await ItemClick(chat, e.ClickedItem is Chat))
+            if (chat == null || ItemClick(chat, e.ClickedItem is Chat))
             {
                 return;
             }
@@ -1589,7 +1597,7 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private async Task<bool> ItemClick(Chat chat, bool origin)
+        private bool ItemClick(Chat chat, bool origin)
         {
             if (ViewModel.Options.CanPostMessages && ViewModel.ClientService.IsSavedMessages(chat))
             {
@@ -1597,16 +1605,7 @@ namespace Telegram.Views.Popups
                 {
                     ViewModel.SelectedItems = new MvxObservableCollection<Chat>(new[] { chat });
 
-                    if (await ViewModel.ConfirmPaidMessagesAsync())
-                    {
-                        ViewModel.SendCommand.Execute();
-
-                        if (ViewModel.ShouldCloseOnCommit)
-                        {
-                            Hide();
-                        }
-                    }
-
+                    ConfirmPaidMessages();
                     return true;
                 }
             }
@@ -1614,16 +1613,7 @@ namespace Telegram.Views.Popups
             {
                 ViewModel.SelectedItems = new MvxObservableCollection<Chat>(new[] { chat });
 
-                if (await ViewModel.ConfirmPaidMessagesAsync())
-                {
-                    ViewModel.SendCommand.Execute();
-
-                    if (ViewModel.ShouldCloseOnCommit)
-                    {
-                        Hide();
-                    }
-                }
-
+                ConfirmPaidMessages();
                 return true;
             }
             else if (ViewModel.Options.CanPostMessages && origin && ViewModel.ClientService.IsForum(chat))
@@ -1642,6 +1632,19 @@ namespace Telegram.Views.Popups
             }
 
             return false;
+        }
+
+        private async void ConfirmPaidMessages()
+        {
+            if (await ViewModel.ConfirmPaidMessagesAsync())
+            {
+                ViewModel.SendCommand.Execute();
+
+                if (ViewModel.ShouldCloseOnCommit)
+                {
+                    Hide();
+                }
+            }
         }
 
         private void OnLoaded(object sender, RoutedEventArgs args)
