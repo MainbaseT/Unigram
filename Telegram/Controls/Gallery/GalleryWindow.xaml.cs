@@ -428,12 +428,13 @@ namespace Telegram.Controls.Gallery
                 Controls.IsFullScreen = fullScreen;
                 Padding = new Thickness(0, fullScreen ? 0 : 40, 0, 0);
 
-                if (LayoutRoot.CurrentElement is GalleryContent container)
-                {
-                    container.Stretch = fullScreen
-                        ? Stretch.UniformToFill
-                        : Stretch.Uniform;
-                }
+                var stretch = fullScreen
+                    ? Stretch.UniformToFill
+                    : Stretch.Uniform;
+
+                Element2.Stretch = stretch;
+                Element0.Stretch = stretch;
+                Element1.Stretch = stretch;
 
                 var anim = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
                 anim.InsertKeyFrame(0, fullScreen ? 0 : 1);
