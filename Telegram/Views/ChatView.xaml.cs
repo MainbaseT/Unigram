@@ -5232,7 +5232,10 @@ namespace Telegram.Views
             var list = ElementComposition.GetElementVisual(ListAutocomplete);
             list.StopAnimation("Translation");
 
-            await ListAutocomplete.UpdateLayoutAsync();
+            if (show)
+            {
+                await ListAutocomplete.UpdateLayoutAsync();
+            }
 
             var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
