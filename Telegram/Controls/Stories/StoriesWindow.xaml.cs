@@ -15,6 +15,7 @@ using Telegram.ViewModels.Stories;
 using Telegram.Views.Stories.Popups;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Composition;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -437,7 +438,7 @@ namespace Telegram.Controls.Stories
 
             Viewport.Width = x + 48;
             Composer.Width = x + 24;
-            Composer.Margin = new Thickness(0, 0, 0, (ActualHeight - y) / 2 - Composer.ActualHeight + 8);
+            Composer.Margin = new Thickness(0, 0, 0, (ActualHeight - y) / 2 - 48 - 4);
 
             StickersPanel.Width = x + 24;
         }
@@ -618,9 +619,12 @@ namespace Telegram.Controls.Stories
 
         }
 
-        private void TextField_TextChanged(object sender, RoutedEventArgs e)
+        private void TextField_TextChanging(RichEditBox sender, RichEditBoxTextChangingEventArgs args)
         {
-
+            if (args.IsContentChanging)
+            {
+                CheckButtonsVisibility();
+            }
         }
 
         private void TextField_Tapped(object sender, TappedRoutedEventArgs e)
@@ -695,7 +699,30 @@ namespace Telegram.Controls.Stories
 
         private void btnSendMessage_Click(object sender, RoutedEventArgs e)
         {
+            Send();
+        }
 
+        private void TextField_Accept(FormattedTextBox sender, EventArgs args)
+        {
+            Send();
+        }
+
+        private async void Send()
+        {
+            var text = TextField.GetFormattedText(true);
+
+            var index = _indexes[_synchronizedIndex];
+            var real = _index + index - 3;
+
+            var viewModel = _viewModel.Items[real];
+
+            var chat = viewModel.Chat;
+            if (chat == null)
+            {
+                return;
+            }
+
+            await viewModel.SendMessageAsync(text);
         }
 
         private void Send_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
@@ -1205,6 +1232,85 @@ namespace Telegram.Controls.Stories
             {
                 _backGesture = true;
             }
+        }
+
+        private bool _oldEmpty = true;
+
+        private void CheckButtonsVisibility()
+        {
+            var empty = TextField.IsEmpty;
+            if (empty != _oldEmpty)
+            {
+                ButtonStickers.Source = empty
+                    ? SettingsService.Current.Stickers.SelectedTab
+                    : Services.Settings.StickersTab.Emoji;
+            }
+
+            FrameworkElement elementHide = null;
+            FrameworkElement elementShow = null;
+
+            if (empty != _oldEmpty)
+            {
+                if (empty)
+                {
+                    elementHide = btnSendMessage;
+                    elementShow = ButtonRecord;
+                }
+                else
+                {
+                    elementHide = ButtonRecord;
+                    elementShow = btnSendMessage;
+                }
+            }
+
+            if (elementHide == null || elementShow == null)
+            {
+                return;
+            }
+
+            var visualHide = ElementComposition.GetElementVisual(elementHide);
+            var visualShow = ElementComposition.GetElementVisual(elementShow);
+
+            visualHide.CenterPoint = new Vector3(24);
+            visualShow.CenterPoint = new Vector3(24);
+
+            var batch = visualShow.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            batch.Completed += (s, args) =>
+            {
+                elementHide.Visibility = Visibility.Collapsed;
+                elementShow.Visibility = Visibility.Visible;
+
+                visualHide.Scale = visualShow.Scale = new Vector3(1);
+                visualHide.Opacity = visualShow.Opacity = 1;
+            };
+
+            var hide1 = visualShow.Compositor.CreateVector3KeyFrameAnimation();
+            hide1.InsertKeyFrame(0, new Vector3(1));
+            hide1.InsertKeyFrame(1, new Vector3(0));
+
+            var hide2 = visualShow.Compositor.CreateScalarKeyFrameAnimation();
+            hide2.InsertKeyFrame(0, 1);
+            hide2.InsertKeyFrame(1, 0);
+
+            visualHide.StartAnimation("Scale", hide1);
+            visualHide.StartAnimation("Opacity", hide2);
+
+            elementShow.Visibility = Visibility.Visible;
+
+            var show1 = visualShow.Compositor.CreateVector3KeyFrameAnimation();
+            show1.InsertKeyFrame(1, new Vector3(1));
+            show1.InsertKeyFrame(0, new Vector3(0));
+
+            var show2 = visualShow.Compositor.CreateScalarKeyFrameAnimation();
+            show2.InsertKeyFrame(1, 1);
+            show2.InsertKeyFrame(0, 0);
+
+            visualShow.StartAnimation("Scale", show1);
+            visualShow.StartAnimation("Opacity", show2);
+
+            batch.End();
+
+            _oldEmpty = empty;
         }
     }
 

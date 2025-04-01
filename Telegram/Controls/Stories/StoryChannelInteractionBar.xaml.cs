@@ -114,8 +114,6 @@ namespace Telegram.Controls.Stories
                         }
                     }
                 }
-
-                ShareButton.CornerRadius = new CornerRadius(4);
             }
             else
             {
@@ -125,8 +123,6 @@ namespace Telegram.Controls.Stories
                 ViewersCount.Visibility = Visibility.Collapsed;
 
                 ReactButton.Visibility = Visibility.Collapsed;
-
-                ShareButton.CornerRadius = new CornerRadius(4, 4, 13, 4);
             }
         }
 
