@@ -1797,11 +1797,15 @@ namespace Telegram.Views
             {
                 ViewModel.Chats.SelectedItem = message.ChatId;
 
+                var modifiers = WindowContext.KeyModifiers();
+                var createNewWindow = modifiers == Windows.System.VirtualKeyModifiers.Control;
+
                 MasterDetail.NavigationService.NavigateToChat(
                     message.ChatId,
                     message: message.Id,
                     thread: message.IsTopicMessage ? message.MessageThreadId : 0,
-                    force: false);
+                    force: false,
+                    createNewWindow: createNewWindow);
             }
             else
             {
@@ -1872,7 +1876,10 @@ namespace Telegram.Views
                     }
                     else
                     {
-                        MasterDetail.NavigationService.NavigateToChat(chat, force: false, clearBackStack: true);
+                        var modifiers = WindowContext.KeyModifiers();
+                        var createNewWindow = modifiers == Windows.System.VirtualKeyModifiers.Control;
+
+                        MasterDetail.NavigationService.NavigateToChat(chat, force: false, createNewWindow: createNewWindow, clearBackStack: true);
                     }
 
                     HideTopicList();

@@ -429,9 +429,7 @@ namespace Telegram.Common
                     state["access_token"] = accessToken;
                 }
 
-                var modifiers = WindowContext.KeyModifiers();
-
-                if (createNewWindow || modifiers == Windows.System.VirtualKeyModifiers.Control)
+                if (createNewWindow)
                 {
                     Type target;
                     object parameter;
