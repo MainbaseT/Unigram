@@ -1058,7 +1058,7 @@ namespace Telegram.ViewModels
             await Task.Yield();
 
             var chat = _chat;
-            if (chat == null || _type != DialogType.History)
+            if (chat == null || (_type != DialogType.History && (_type == DialogType.Thread && Topic == null)))
             {
                 return;
             }
@@ -1086,14 +1086,24 @@ namespace Telegram.ViewModels
             }
 
             var filter = new SearchMessagesFilterPinned();
+            var threadId = 0L;
 
-            if (!_hasLoadedLastPinnedMessage)
+            if (_topic is ForumTopic topic)
+            {
+                threadId = topic.Info.MessageThreadId;
+            }
+            else if (_thread is MessageThreadInfo thread)
+            {
+                threadId = thread.MessageThreadId;
+            }
+
+            if (!_hasLoadedLastPinnedMessage && _type == DialogType.History)
             {
                 _hasLoadedLastPinnedMessage = true;
                 //Delegate?.UpdatePinnedMessage(chat, null, chat.PinnedMessageId != 0);
                 //Delegate?.UpdatePinnedMessage(chat, true);
 
-                var count = await ClientService.SendAsync(new GetChatMessageCount(chat.Id, filter, 0, true)) as Count;
+                var count = await ClientService.SendAsync(new GetChatMessageCount(chat.Id, filter, SavedMessagesTopicId, true)) as Count;
                 if (count != null)
                 {
                     Delegate?.UpdatePinnedMessage(chat, count.CountValue > 0);
@@ -1102,19 +1112,6 @@ namespace Telegram.ViewModels
                 {
                     Delegate?.UpdatePinnedMessage(chat, false);
                 }
-
-                var pinned = await ClientService.SendAsync(new SearchChatMessages(chat.Id, string.Empty, null, 0, 0, 1, new SearchMessagesFilterPinned(), ThreadId, SavedMessagesTopicId)) as FoundChatMessages;
-                //if (pinned == null)
-                //{
-                //    Delegate?.UpdatePinnedMessage(chat, false);
-                //    return;
-                //}
-
-                if (pinned?.Messages.Count > 0)
-                {
-                    LastPinnedMessage = CreateMessage(pinned.Messages[0]);
-                }
-                //Delegate?.UpdatePinnedMessage(chat, LastPinnedMessage);
             }
 
             var offset = direction == PanelScrollingDirection.Backward ? 0 : direction == PanelScrollingDirection.Forward ? -49 : -25;
@@ -1126,7 +1123,7 @@ namespace Telegram.ViewModels
                 limit = 100;
             }
 
-            var func = new SearchChatMessages(chat.Id, string.Empty, null, maxId, offset, limit, new SearchMessagesFilterPinned(), ThreadId, SavedMessagesTopicId);
+            var func = new SearchChatMessages(chat.Id, string.Empty, null, maxId, offset, limit, filter, threadId, SavedMessagesTopicId);
 
             var tsc = new TaskCompletionSource<List<MessageViewModel>>();
             void handler(BaseObject result)
@@ -1144,7 +1141,7 @@ namespace Telegram.ViewModels
             ClientService.Send(func, handler);
 
             var response = await tsc.Task;
-            if (response is List<MessageViewModel> messages)
+            if (response is List<MessageViewModel> messages && messages.Count > 0)
             {
                 if (direction == PanelScrollingDirection.None)
                 {
@@ -1165,7 +1162,7 @@ namespace Telegram.ViewModels
 
                 Delegate?.ViewVisibleMessages();
             }
-            else
+            else if (PinnedMessages.Empty())
             {
                 Delegate?.UpdatePinnedMessage(chat, false);
             }

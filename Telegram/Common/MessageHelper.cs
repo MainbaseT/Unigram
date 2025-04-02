@@ -962,13 +962,16 @@ namespace Telegram.Common
                 {
                     if (info.MessageThreadId != 0)
                     {
-                        // TODO: should thread be info.MessageThreadId?
-                        navigation.NavigateToChat(info.ChatId, info.Message.Id, thread: info.Message.Id);
+                        navigation.NavigateToChat(info.ChatId, info.Message.Id, thread: info.MessageThreadId);
                     }
                     else
                     {
                         navigation.NavigateToChat(info.ChatId, info.Message.Id);
                     }
+                }
+                else if (info.MessageThreadId != 0)
+                {
+                    navigation.NavigateToChat(info.ChatId, thread: info.MessageThreadId);
                 }
                 else
                 {

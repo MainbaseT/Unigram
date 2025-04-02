@@ -294,8 +294,7 @@ namespace Telegram.Views
                 ViewModel.LockedPinnedMessageId = 0;
             }
 
-            var thread = ViewModel.Thread;
-            if (thread != null)
+            if (ViewModel.Thread is MessageThreadInfo thread && ViewModel.Topic == null)
             {
                 var message = thread.Messages.LastOrDefault();
                 if (message == null || (firstVisibleId <= message.Id && lastVisibleId >= message.Id) || Messages.ScrollingHost.ScrollableHeight == 0)

@@ -1888,7 +1888,7 @@ namespace Telegram.Views
             else if (item is ForumTopic topic)
             {
                 ViewModel.Chats.SelectedItem = ViewModel.Topics.Chat?.Id;
-                MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, thread: topic.Info.MessageThreadId);
+                MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, thread: topic.Info.MessageThreadId, force: false, clearBackStack: true);
             }
         }
 
