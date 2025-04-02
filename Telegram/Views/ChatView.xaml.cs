@@ -4491,11 +4491,35 @@ namespace Telegram.Views
         {
             if (ViewModel.Type == DialogType.Thread)
             {
-                if (ViewModel.Topic != null)
+                if (ViewModel.Topic is ForumTopic topic)
                 {
                     LoadObject(ref Icon, nameof(Icon));
-                    Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.Topic.Info.Icon.CustomEmojiId);
                     Photo.Clear();
+
+                    if (topic.Info.IsGeneral)
+                    {
+                        Icon.Source = null;
+                        TopicIconRoot.Visibility = Visibility.Collapsed;
+                        TopicIconGeneral.Visibility = Visibility.Visible;
+                    }
+                    else if (topic.Info.Icon.CustomEmojiId != 0)
+                    {
+                        Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, topic.Info.Icon.CustomEmojiId);
+                        TopicIconRoot.Visibility = Visibility.Collapsed;
+                        TopicIconGeneral.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        Icon.Source = null;
+                        TopicIconRoot.Visibility = Visibility.Visible;
+                        TopicIconGeneral.Visibility = Visibility.Collapsed;
+
+                        var brush = ForumTopicCell.GetIconGradient(topic);
+
+                        TopicIconPath.Fill = brush;
+                        TopicIconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);
+                        TopicIconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
+                    }
                 }
                 else
                 {
@@ -4506,6 +4530,8 @@ namespace Telegram.Views
             else if (ViewModel.Type == DialogType.SavedMessagesTopic)
             {
                 UnloadObject(Icon);
+                TopicIconRoot.Visibility = Visibility.Collapsed;
+                TopicIconGeneral.Visibility = Visibility.Collapsed;
 
                 if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeMyNotes)
                 {
@@ -4525,6 +4551,9 @@ namespace Telegram.Views
             else
             {
                 UnloadObject(Icon);
+                TopicIconRoot.Visibility = Visibility.Collapsed;
+                TopicIconGeneral.Visibility = Visibility.Collapsed;
+
                 Photo.SetChat(ViewModel.ClientService, chat, 36);
             }
         }

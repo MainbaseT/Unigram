@@ -1,6 +1,9 @@
-﻿using Telegram.Services;
+﻿using Telegram.Converters;
+using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Cells
 {
@@ -13,13 +16,29 @@ namespace Telegram.Controls.Cells
 
         public void UpdateCell(IClientService clientService, ForumTopic topic)
         {
-            if (topic.Info.Icon.CustomEmojiId != 0)
+            if (topic.Info.IsGeneral)
+            {
+                Animated.Source = null;
+                IconRoot.Visibility = Visibility.Collapsed;
+                General.Visibility = Visibility.Visible;
+            }
+            else if (topic.Info.Icon.CustomEmojiId != 0)
             {
                 Animated.Source = new CustomEmojiFileSource(clientService, topic.Info.Icon.CustomEmojiId);
+                IconRoot.Visibility = Visibility.Collapsed;
+                General.Visibility = Visibility.Collapsed;
             }
             else
             {
                 Animated.Source = null;
+                IconRoot.Visibility = Visibility.Visible;
+                General.Visibility = Visibility.Collapsed;
+
+                var brush = ForumTopicCell.GetIconGradient(topic);
+
+                IconPath.Fill = brush;
+                IconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);
+                IconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
             }
 
             TitleLabel.Text = topic.Info.Name;

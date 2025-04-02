@@ -22,6 +22,7 @@ using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.Views;
 using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
@@ -93,6 +94,9 @@ namespace Telegram.Controls.Cells
         private RichTextBlock BriefText;
         private Span BriefLabel;
         private ImageBrush Minithumbnail;
+        private Grid IconRoot;
+        private Path IconPath;
+        private TextBlock IconText;
 
         private bool _templateApplied;
 
@@ -116,6 +120,9 @@ namespace Telegram.Controls.Cells
             BriefText = GetTemplateChild(nameof(BriefText)) as RichTextBlock;
             BriefLabel = GetTemplateChild(nameof(BriefLabel)) as Span;
             Minithumbnail = GetTemplateChild(nameof(Minithumbnail)) as ImageBrush;
+            IconRoot = GetTemplateChild(nameof(IconRoot)) as Grid;
+            IconPath = GetTemplateChild(nameof(IconPath)) as Path;
+            IconText = GetTemplateChild(nameof(IconText)) as TextBlock;
 
             _templateApplied = true;
 
@@ -347,6 +354,83 @@ namespace Telegram.Controls.Cells
             TitleLabel.Text = topic.Info.Name;
         }
 
+        private static Color[] _serverSupportedColors = new Color[6]
+        {
+            Color.FromArgb(0xFF, 0x6F, 0xB9, 0xF0), // blue
+            Color.FromArgb(0xFF, 0xFF, 0xD6, 0x7E), // yellow
+            Color.FromArgb(0xFF, 0xCB, 0x86, 0xDB), // violet
+            Color.FromArgb(0xFF, 0x8E, 0xEE, 0x98), // green
+            Color.FromArgb(0xFF, 0xFF, 0x93, 0xB2), // rose
+            Color.FromArgb(0xFF, 0xFB, 0x6F, 0x5F), // orange
+        };
+
+        private static readonly Color[] _colorsTop = new Color[6]
+        {
+            Color.FromArgb(0xFF, 0x8A, 0xD3, 0xF9), // blue
+            Color.FromArgb(0xFF, 0xF7, 0xCE, 0x79), // yellow
+            Color.FromArgb(0xFF, 0x8C, 0xAF, 0xF9), // violet
+            Color.FromArgb(0xFF, 0xAC, 0xDC, 0x89), // green
+            Color.FromArgb(0xFF, 0xFF, 0xAF, 0xC7), // rose
+            Color.FromArgb(0xFF, 0xEF, 0x8E, 0x67), // orange
+        };
+
+        private static readonly Color[] _colors = new Color[6]
+        {
+            Color.FromArgb(0xFF, 0x51, 0x9D, 0xEA), // blue
+            Color.FromArgb(0xFF, 0xF2, 0xAC, 0x6A), // yellow
+            Color.FromArgb(0xFF, 0x65, 0x60, 0xF6), // violet
+            Color.FromArgb(0xFF, 0x75, 0xC8, 0x73), // green
+            Color.FromArgb(0xFF, 0xF2, 0x74, 0x9A), // rose
+            Color.FromArgb(0xFF, 0xEC, 0x5F, 0x6D), // orange
+        };
+
+        private static int FindIconColorIndex(int color)
+        {
+            static int Distance(Color a, Color b)
+            {
+                return Math.Abs(a.R - b.R) + Math.Abs(a.G - b.G) + Math.Abs(a.B - b.B);
+            }
+
+            var value = color.ToColor();
+
+            int distance = Distance(_serverSupportedColors[0], value);
+            var index = 0;
+
+            for (int i = 0; i < _serverSupportedColors.Length; i++)
+            {
+                int distanceLocal = Distance(_serverSupportedColors[i], value);
+                if (distanceLocal < distance)
+                {
+                    distance = distanceLocal;
+                    index = i;
+                }
+            }
+
+            return index;
+        }
+
+        public static LinearGradientBrush GetIconGradient(ForumTopic topic)
+        {
+            var index = FindIconColorIndex(topic.Info.Icon.Color);
+
+            var top = _colorsTop[index];
+            var bottom = _colors[index];
+
+            return new LinearGradientBrush(new GradientStopCollection
+            {
+                new GradientStop
+                {
+                    Color = top,
+                    Offset = 0
+                },
+                new GradientStop
+                {
+                    Color = bottom,
+                    Offset = 1
+                }
+            }, 90);
+        }
+
         public void UpdateForumTopicIcon(ForumTopic topic)
         {
             if (_clientService == null || !_templateApplied)
@@ -354,7 +438,22 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            TypeIcon.SetStatus(_clientService, topic.Info.Icon);
+            if (topic.Info.IsGeneral || topic.Info.Icon.CustomEmojiId != 0)
+            {
+                TypeIcon.SetStatus(_clientService, topic.Info.Icon);
+                IconRoot.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                TypeIcon.ClearStatus();
+                IconRoot.Visibility = Visibility.Visible;
+
+                var brush = GetIconGradient(topic);
+
+                IconPath.Fill = brush;
+                IconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);
+                IconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
+            }
         }
 
         public void UpdateForumTopicActions(ForumTopic topic, IDictionary<MessageSender, ChatAction> actions)

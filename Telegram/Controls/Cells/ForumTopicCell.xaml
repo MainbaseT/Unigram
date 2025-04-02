@@ -68,7 +68,7 @@
                                   VerticalAlignment="Bottom"
                                   Margin="0,0,0,2">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="24" />
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
@@ -78,6 +78,18 @@
                                                        VerticalAlignment="Bottom"
                                                        FontSize="16"
                                                        Margin="0,0,4,0" />
+                                <Grid x:Name="IconRoot">
+                                    <Path x:Name="IconPath"
+                                          Data="M18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10L2.00738 10.3463L2.03275 10.7283C2.12433 11.7422 2.4066 12.7186 2.86169 13.6153L2.925 13.735L2.01493 17.3787L2.00114 17.4624L2.00131 17.5438C2.02622 17.8369 2.31127 18.0625 2.62109 17.9851L6.266 17.075L6.38669 17.1393C7.49591 17.7018 8.72679 18 10 18C14.4183 18 18 14.4183 18 10Z" />
+                                    <TextBlock x:Name="IconText"
+                                               TextAlignment="Center"
+                                               Foreground="#FFFFFF"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Left"
+                                               Margin="2,2,0,0"
+                                               Width="16" />
+                                </Grid>
                                 <TextBlock x:Name="TitleLabel"
                                            MaxLines="1"
                                            TextWrapping="NoWrap"
