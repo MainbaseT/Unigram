@@ -292,7 +292,7 @@ namespace Telegram.Controls.Cells
 
                 TimeLabel.Text = _stateLabel + "\u00A0" + _dateLabel;
 
-                UpdateBriefLabel(null, UpdateBriefLabel(null, message.Content, message.IsOutgoing, false, false, out MinithumbnailId thumbnail));
+                UpdateBriefLabel(null, UpdateBriefLabel(message.Content, message.IsOutgoing, null, false, out MinithumbnailId thumbnail));
                 UpdateMinithumbnail(thumbnail);
             }
         }
@@ -329,7 +329,7 @@ namespace Telegram.Controls.Cells
 
             TimeLabel.Text = _stateLabel + "\u00A0" + _dateLabel;
 
-            UpdateBriefLabel(chat, UpdateBriefLabel(chat, message.Content, message.IsOutgoing, false, false, out MinithumbnailId thumbnail));
+            UpdateBriefLabel(chat, UpdateBriefLabel(message.Content, message.IsOutgoing, null, false, out MinithumbnailId thumbnail));
             UpdateMinithumbnail(thumbnail);
         }
 
@@ -1403,7 +1403,7 @@ namespace Telegram.Controls.Cells
             var topMessage = chat.LastMessage;
             if (topMessage != null)
             {
-                return UpdateBriefLabel(chat, topMessage.Content, topMessage.IsOutgoing, true, false, out thumbnail);
+                return UpdateBriefLabel(topMessage.Content, topMessage.IsOutgoing, chat.DraftMessage, false, out thumbnail);
             }
             else if (chat.Type is ChatTypeSecret secretType)
             {
@@ -1428,11 +1428,11 @@ namespace Telegram.Controls.Cells
             return new FormattedText(string.Empty, Array.Empty<TextEntity>());
         }
 
-        public static FormattedText UpdateBriefLabel(Chat chat, MessageContent content, bool outgoing, bool draft, bool forceEmoji, out MinithumbnailId thumbnail)
+        public static FormattedText UpdateBriefLabel(MessageContent content, bool outgoing, DraftMessage draft, bool forceEmoji, out MinithumbnailId thumbnail)
         {
             thumbnail = null;
 
-            if (draft && chat?.DraftMessage?.InputMessageText is InputMessageText draftText)
+            if (draft?.InputMessageText is InputMessageText draftText)
             {
                 return draftText.Text;
             }
