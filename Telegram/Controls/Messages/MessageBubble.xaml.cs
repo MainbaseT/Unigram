@@ -3467,8 +3467,8 @@ namespace Telegram.Controls.Messages
             {
                 // We actually don't have to calculate bubble width for video notes,
                 // As it might be wider due to reply/forward
-                //width = 200;
-                //height = 200;
+                //width = 224;
+                //height = 224;
 
                 //goto Calculate;
             }
