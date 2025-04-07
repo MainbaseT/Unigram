@@ -687,6 +687,16 @@
                                                                   SelectionStroke="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
+                                    <ListView.ItemContainerTransitions>
+                                        <TransitionCollection>
+                                            <!-- Reordering items for some reason requires AddDeleteThemeTransition. -->
+                                            <!-- https://github.com/microsoft/microsoft-ui-xaml/issues/3543 -->
+                                            <!--<AddDeleteThemeTransition />
+                                                <ContentThemeTransition />
+                                                <ReorderThemeTransition />
+                                                <EntranceThemeTransition IsStaggeringEnabled="False" />-->
+                                        </TransitionCollection>
+                                    </ListView.ItemContainerTransitions>
                                 </controls:TopNavView>
                             </Grid>
 

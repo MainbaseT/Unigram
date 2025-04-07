@@ -668,13 +668,17 @@ namespace Telegram.Controls.Cells
 
             position ??= chat.GetPosition(_chatList);
 
-            PinnedIcon.Visibility = chat.UnreadCount == 0 && !chat.IsMarkedAsUnread && (position?.IsPinned ?? false) ? Visibility.Visible : Visibility.Collapsed;
+            var unreadCount = chat.ViewAsTopics
+                ? _clientService.UnreadTopicCount(chat.Id)
+                : chat.UnreadCount;
 
-            var unread = (chat.UnreadCount > 0 || chat.IsMarkedAsUnread) ? chat.UnreadMentionCount == 1 && chat.UnreadCount == 1 ? Visibility.Collapsed : Visibility.Visible : Visibility.Collapsed;
+            PinnedIcon.Visibility = unreadCount == 0 && !chat.IsMarkedAsUnread && (position?.IsPinned ?? false) ? Visibility.Visible : Visibility.Collapsed;
+
+            var unread = (unreadCount > 0 || chat.IsMarkedAsUnread) ? chat.UnreadMentionCount == 1 && unreadCount == 1 ? Visibility.Collapsed : Visibility.Visible : Visibility.Collapsed;
             if (unread == Visibility.Visible)
             {
                 UnreadBadge.Visibility = Visibility.Visible;
-                UnreadBadge.Text = chat.UnreadCount > 0 ? chat.UnreadCount.ToString() : string.Empty;
+                UnreadBadge.Text = unreadCount > 0 ? unreadCount.ToString() : string.Empty;
             }
             else
             {

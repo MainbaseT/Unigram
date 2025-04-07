@@ -14,19 +14,19 @@ namespace Telegram.Controls.Cells
             InitializeComponent();
         }
 
-        public void UpdateCell(IClientService clientService, ForumTopic topic)
+        public void UpdateCell(IClientService clientService, ForuminoTopicino topic)
         {
-            if (topic.Info.IsGeneral)
-            {
-                Animated.Source = null;
-                IconRoot.Visibility = Visibility.Collapsed;
-                General.Visibility = Visibility.Visible;
-            }
-            else if (topic.Info.Icon.CustomEmojiId != 0)
+            if (topic.Info.Icon.CustomEmojiId != 0)
             {
                 Animated.Source = new CustomEmojiFileSource(clientService, topic.Info.Icon.CustomEmojiId);
                 IconRoot.Visibility = Visibility.Collapsed;
                 General.Visibility = Visibility.Collapsed;
+            }
+            else if(topic.Info.IsGeneral)
+            {
+                Animated.Source = null;
+                IconRoot.Visibility = Visibility.Collapsed;
+                General.Visibility = Visibility.Visible;
             }
             else
             {

@@ -275,7 +275,18 @@ namespace Telegram.Views
                     _ => new MessageSourceChatHistory()
                 };
 
-                ViewModel.ClientService.Send(new ViewMessages(chat.Id, messages, source, false));
+                // This is needed because we don't keep all topics messages in memory as TDLib would do
+                long messageThreadId = 0;
+                if (ViewModel.Topic != null)
+                {
+                    messageThreadId = ViewModel.Topic.Info.MessageThreadId;
+                }
+                else if (ViewModel.Thread != null)
+                {
+                    messageThreadId = ViewModel.Thread.MessageThreadId;
+                }
+
+                ViewModel.ClientService.ViewMessages(chat.Id, messageThreadId, messages, source, false);
             }
 
             if (animations.Count > 0 && !intermediate && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated)

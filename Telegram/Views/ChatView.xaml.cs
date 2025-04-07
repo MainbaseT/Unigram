@@ -4491,22 +4491,22 @@ namespace Telegram.Views
         {
             if (ViewModel.Type == DialogType.Thread)
             {
-                if (ViewModel.Topic is ForumTopic topic)
+                if (ViewModel.Topic is ForuminoTopicino topic)
                 {
                     LoadObject(ref Icon, nameof(Icon));
                     Photo.Clear();
 
-                    if (topic.Info.IsGeneral)
-                    {
-                        Icon.Source = null;
-                        TopicIconRoot.Visibility = Visibility.Collapsed;
-                        TopicIconGeneral.Visibility = Visibility.Visible;
-                    }
-                    else if (topic.Info.Icon.CustomEmojiId != 0)
+                    if (topic.Info.Icon.CustomEmojiId != 0)
                     {
                         Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, topic.Info.Icon.CustomEmojiId);
                         TopicIconRoot.Visibility = Visibility.Collapsed;
                         TopicIconGeneral.Visibility = Visibility.Collapsed;
+                    }
+                    else if (topic.Info.IsGeneral)
+                    {
+                        Icon.Source = null;
+                        TopicIconRoot.Visibility = Visibility.Collapsed;
+                        TopicIconGeneral.Visibility = Visibility.Visible;
                     }
                     else
                     {

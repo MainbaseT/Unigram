@@ -1247,7 +1247,7 @@ namespace Telegram.Views.Popups
             }
             else if (args.ItemContainer.ContentTemplateRoot is ForumTopicShareCell topicCell)
             {
-                topicCell.UpdateCell(ViewModel.ClientService, args.Item as ForumTopic);
+                topicCell.UpdateCell(ViewModel.ClientService, args.Item as ForuminoTopicino);
                 args.Handled = true;
             }
         }
@@ -1530,7 +1530,7 @@ namespace Telegram.Views.Popups
                     item = response as Chat;
                 }
             }
-            else if (item is ForumTopic topic && ForumList.ItemsSource is TopicListViewModel.ItemsCollection collection)
+            else if (item is ForuminoTopicino topic && ForumList.ItemsSource is TopicListViewModel.ItemsCollection collection)
             {
                 item = collection.Chat;
                 ViewModel.SelectedTopics[collection.Chat.Id] = topic.Info.MessageThreadId;

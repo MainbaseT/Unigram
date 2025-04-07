@@ -188,8 +188,8 @@ namespace Telegram.ViewModels
             set => Set(ref _thread, value);
         }
 
-        protected ForumTopic _topic;
-        public ForumTopic Topic
+        protected ForuminoTopicino _topic;
+        public ForuminoTopicino Topic
         {
             get => _topic;
             set => Set(ref _topic, value);
@@ -965,7 +965,7 @@ namespace Telegram.ViewModels
                 lastReadMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                 lastMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
             }
-            else if (_topic is ForumTopic topic)
+            else if (_topic is ForuminoTopicino topic)
             {
                 lastReadMessageId = topic.LastReadInboxMessageId;
                 lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
@@ -1088,7 +1088,7 @@ namespace Telegram.ViewModels
             var filter = new SearchMessagesFilterPinned();
             var threadId = 0L;
 
-            if (_topic is ForumTopic topic)
+            if (_topic is ForuminoTopicino topic)
             {
                 threadId = topic.Info.MessageThreadId;
             }
@@ -1184,6 +1184,10 @@ namespace Telegram.ViewModels
                 NotifyMessageSliceLoaded();
                 return;
             }
+            else if (_type is DialogType.Thread)
+            {
+                NotifyMessageSliceLoaded();
+            }
 
             var chat = _chat;
             if (chat == null)
@@ -1207,7 +1211,7 @@ namespace Telegram.ViewModels
                 if (alignment == VerticalAlignment.Top && !onlyRemote)
                 {
                     long lastMessageId;
-                    if (_topic is ForumTopic topic)
+                    if (_topic is ForuminoTopicino topic)
                     {
                         lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
                     }
@@ -1475,7 +1479,7 @@ namespace Telegram.ViewModels
                         lastReadMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                         lastMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                     }
-                    else if (_topic is ForumTopic topic)
+                    else if (_topic is ForuminoTopicino topic)
                     {
                         lastReadMessageId = topic.LastReadInboxMessageId;
                         lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
@@ -2113,7 +2117,20 @@ namespace Telegram.ViewModels
             }
             else if (parameter is ChatMessageIdNavigationArgs messageIdArgs)
             {
-                Topic = await ClientService.SendAsync(new GetForumTopic(messageIdArgs.ChatId, messageIdArgs.MessageId)) as ForumTopic;
+                var topic = ClientService.GetTopic(messageIdArgs.ChatId, messageIdArgs.MessageId);
+                if (topic != null)
+                {
+                    Topic = topic;
+                }
+                else
+                {
+                    var response = await ClientService.SendAsync(new GetForumTopic(messageIdArgs.ChatId, messageIdArgs.MessageId)) as ForumTopic;
+                    if (response != null)
+                    {
+                        Topic = new ForuminoTopicino(response);
+                    }
+                }
+
                 Thread = await ClientService.SendAsync(new GetMessageThread(messageIdArgs.ChatId, messageIdArgs.MessageId)) as MessageThreadInfo;
 
                 if (Topic != null)
@@ -2205,7 +2222,7 @@ namespace Telegram.ViewModels
                     lastMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                     secondaryId = savedMessagesTopic.Id;
                 }
-                else if (_topic is ForumTopic topic)
+                else if (_topic is ForuminoTopicino topic)
                 {
                     lastReadMessageId = topic.LastReadInboxMessageId;
                     lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
@@ -2429,7 +2446,7 @@ namespace Telegram.ViewModels
                 lastReadMessageId = 0;
                 secondaryId = savedMessagesTopic.Id;
             }
-            else if (_topic is ForumTopic topic)
+            else if (_topic is ForuminoTopicino topic)
             {
                 lastReadMessageId = topic.LastReadInboxMessageId;
                 secondaryId = ThreadId; // topic.Info.MessageThreadId;

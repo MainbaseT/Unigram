@@ -40,7 +40,7 @@ namespace Telegram.Controls.Cells
     {
         private bool _selected;
 
-        private ForumTopic _topic;
+        private ForuminoTopicino _topic;
         private Chat _chat;
 
         private int _thumbnailId;
@@ -134,7 +134,7 @@ namespace Telegram.Controls.Cells
 
         #endregion
 
-        public void UpdateForumTopic(IClientService clientService, ForumTopic topic, Chat chat)
+        public void UpdateForumTopic(IClientService clientService, ForuminoTopicino topic, Chat chat)
         {
             _clientService = clientService;
 
@@ -156,7 +156,7 @@ namespace Telegram.Controls.Cells
             return null;
         }
 
-        private string UpdateAutomation(IClientService clientService, ForumTopic topic, Chat chat, Message message)
+        private string UpdateAutomation(IClientService clientService, ForuminoTopicino topic, Chat chat, Message message)
         {
             var builder = new StringBuilder();
 
@@ -224,7 +224,7 @@ namespace Telegram.Controls.Cells
 
         #region Updates
 
-        public void UpdateForumTopicLastMessage(ForumTopic topic)
+        public void UpdateForumTopicLastMessage(ForuminoTopicino topic)
         {
             if (topic == null || _chat == null || !_templateApplied)
             {
@@ -261,7 +261,7 @@ namespace Telegram.Controls.Cells
             UpdateMinithumbnail(thumbnail);
         }
 
-        public void UpdateForumTopicReadInbox(ForumTopic topic)
+        public void UpdateForumTopicReadInbox(ForuminoTopicino topic)
         {
             if (_clientService == null || !_templateApplied)
             {
@@ -274,7 +274,7 @@ namespace Telegram.Controls.Cells
             if (unread == Visibility.Visible)
             {
                 UnreadBadge.Visibility = Visibility.Visible;
-                UnreadBadge.Text = topic.UnreadCount > 0 ? topic.UnreadCount.ToString() : string.Empty;
+                //UnreadBadge.Text = topic.UnreadCount > 0 ? topic.UnreadCount.ToString() : string.Empty;
             }
             else
             {
@@ -284,7 +284,7 @@ namespace Telegram.Controls.Cells
             //UpdateAutomation(_clientService, chat, chat.LastMessage);
         }
 
-        public void UpdateForumTopicReadOutbox(ForumTopic topic)
+        public void UpdateForumTopicReadOutbox(ForuminoTopicino topic)
         {
             if (_clientService == null || !_templateApplied)
             {
@@ -300,7 +300,7 @@ namespace Telegram.Controls.Cells
 
         }
 
-        public void UpdateForumTopicUnreadMentionCount(ForumTopic topic)
+        public void UpdateForumTopicUnreadMentionCount(ForuminoTopicino topic)
         {
             if (_clientService == null || !_templateApplied)
             {
@@ -321,7 +321,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public void UpdateNotificationSettings(ForumTopic topic)
+        public void UpdateNotificationSettings(ForuminoTopicino topic)
         {
             if (_clientService == null || !_templateApplied)
             {
@@ -333,7 +333,7 @@ namespace Telegram.Controls.Cells
             UnreadBadge.IsUnmuted = !muted;
         }
 
-        public void UpdateForumTopicInfo(ForumTopic topic)
+        public void UpdateForumTopicInfo(ForuminoTopicino topic)
         {
             if (!_templateApplied)
             {
@@ -344,7 +344,7 @@ namespace Telegram.Controls.Cells
             UpdateForumTopicIcon(topic);
         }
 
-        public void UpdateForumTopicName(ForumTopic topic)
+        public void UpdateForumTopicName(ForuminoTopicino topic)
         {
             if (_clientService == null || !_templateApplied)
             {
@@ -409,6 +409,28 @@ namespace Telegram.Controls.Cells
             return index;
         }
 
+        public static LinearGradientBrush GetIconGradient(ForuminoTopicino topic)
+        {
+            var index = FindIconColorIndex(topic.Info.Icon.Color);
+
+            var top = _colorsTop[index];
+            var bottom = _colors[index];
+
+            return new LinearGradientBrush(new GradientStopCollection
+            {
+                new GradientStop
+                {
+                    Color = top,
+                    Offset = 0
+                },
+                new GradientStop
+                {
+                    Color = bottom,
+                    Offset = 1
+                }
+            }, 90);
+        }
+
         public static LinearGradientBrush GetIconGradient(ForumTopic topic)
         {
             var index = FindIconColorIndex(topic.Info.Icon.Color);
@@ -431,7 +453,7 @@ namespace Telegram.Controls.Cells
             }, 90);
         }
 
-        public void UpdateForumTopicIcon(ForumTopic topic)
+        public void UpdateForumTopicIcon(ForuminoTopicino topic)
         {
             if (_clientService == null || !_templateApplied)
             {
@@ -456,7 +478,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public void UpdateForumTopicActions(ForumTopic topic, IDictionary<MessageSender, ChatAction> actions)
+        public void UpdateForumTopicActions(ForuminoTopicino topic, IDictionary<MessageSender, ChatAction> actions)
         {
             if (_clientService == null || !_templateApplied)
             {
@@ -480,7 +502,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private void Update(ForumTopic topic, Chat chat)
+        private void Update(ForuminoTopicino topic, Chat chat)
         {
             _topic = topic;
             _chat = chat;
@@ -608,7 +630,7 @@ namespace Telegram.Controls.Cells
         }
 
 
-        private FormattedText UpdateBriefLabel(ForumTopic topic, out MinithumbnailId thumbnail)
+        private FormattedText UpdateBriefLabel(ForuminoTopicino topic, out MinithumbnailId thumbnail)
         {
             thumbnail = null;
 
@@ -621,7 +643,7 @@ namespace Telegram.Controls.Cells
             return new FormattedText(string.Empty, Array.Empty<TextEntity>());
         }
 
-        private string UpdateFromLabel(Chat chat, ForumTopic topic, out bool draft)
+        private string UpdateFromLabel(Chat chat, ForuminoTopicino topic, out bool draft)
         {
             if (topic.DraftMessage is not null)
             {
@@ -646,7 +668,7 @@ namespace Telegram.Controls.Cells
             return ChatCell.UpdateFromLabel(_clientService, chat, message);
         }
 
-        private string UpdateStateIcon(long maxId, ForumTopic topic, DraftMessage draft, Message message, MessageSendingState state)
+        private string UpdateStateIcon(long maxId, ForuminoTopicino topic, DraftMessage draft, Message message, MessageSendingState state)
         {
             if (draft != null || message == null)
             {
@@ -694,7 +716,7 @@ namespace Telegram.Controls.Cells
             return string.Empty;
         }
 
-        private string UpdateTimeLabel(ForumTopic topic)
+        private string UpdateTimeLabel(ForuminoTopicino topic)
         {
             var lastMessage = topic.LastMessage;
             if (lastMessage != null)

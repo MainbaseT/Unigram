@@ -73,6 +73,7 @@ namespace Telegram.Views
             _clientService = ViewModel.ClientService;
 
             ViewModel.Chats.Delegate = this;
+            ViewModel.Topics.Delegate = this;
             ViewModel.PlaybackService.SourceChanged += OnPlaybackSourceChanged;
 
             InitializeLock();
@@ -153,6 +154,7 @@ namespace Telegram.Views
 
                     viewModel.Settings.Delegate = null;
                     viewModel.Chats.Delegate = null;
+                    viewModel.Topics.Delegate = null;
 
                     viewModel.Aggregator.Unsubscribe(this);
                     viewModel.Dispose();
@@ -230,21 +232,15 @@ namespace Telegram.Views
                 chatView.UpdateChatReadInbox(chat);
                 chatView.UpdateChatLastMessage(chat);
             });
+        }
 
-            if (chat.LastMessage != null
-                && chat.Id == _viewModel.Topics.Chat?.Id
-                && _viewModel.Topics.Items.TryGetValue(chat.LastMessage.MessageThreadId, out ForumTopic topic))
+        public void UpdateForumTopicLastMessage(ForuminoTopicino topic)
+        {
+            Handle2(topic, (chatView, chat) =>
             {
-                topic.LastMessage = chat.LastMessage;
-
-                this.BeginOnUIThread(() =>
-                {
-                    var container = TopicList.ContainerFromItem(topic) as ListViewItem;
-                    var topicView = container?.ContentTemplateRoot as ForumTopicCell;
-
-                    topicView?.UpdateForumTopicLastMessage(topic);
-                });
-            }
+                chatView.UpdateForumTopicReadInbox(chat);
+                chatView.UpdateForumTopicLastMessage(chat);
+            });
         }
 
         public void Handle(UpdateChatActiveStories update)
@@ -280,6 +276,11 @@ namespace Telegram.Views
         }
 
         public void Handle(UpdateChatReadInbox update)
+        {
+            Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatReadInbox(chat));
+        }
+
+        public void Handle(UpdateChatUnreadTopicCount update)
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatReadInbox(chat));
         }
@@ -349,17 +350,9 @@ namespace Telegram.Views
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatActions(chat, ViewModel.ClientService.GetChatActions(chat.Id)));
 
-            if (update.ChatId == _viewModel.Topics.Chat?.Id
-                && update.MessageThreadId != 0
-                && _viewModel.Topics.Items.TryGetValue(update.ChatId, out ForumTopic topic))
+            if (update.ChatId == _viewModel.Topics.Chat?.Id && update.MessageThreadId != 0)
             {
-                this.BeginOnUIThread(() =>
-                {
-                    var container = TopicList.ContainerFromItem(topic) as ListViewItem;
-                    var topicView = container?.ContentTemplateRoot as ForumTopicCell;
-
-                    topicView?.UpdateForumTopicActions(topic, ViewModel.ClientService.GetChatActions(update.ChatId, update.MessageThreadId));
-                });
+                Handle2(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicActions(chat, ViewModel.ClientService.GetChatActions(update.ChatId, update.MessageThreadId)));
             }
         }
 
@@ -402,18 +395,17 @@ namespace Telegram.Views
 
         public void Handle(UpdateForumTopicInfo update)
         {
-            if (_viewModel.Topics.Chat?.Id == update.ChatId
-                && _viewModel.Topics.Items.TryGetValue(update.Info.MessageThreadId, out ForumTopic topic))
+            if (_viewModel.Topics.Chat?.Id == update.ChatId)
             {
-                topic.Info = update.Info;
+                Handle2(update.Info.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicInfo(chat));
+            }
+        }
 
-                this.BeginOnUIThread(() =>
-                {
-                    var container = TopicList.ContainerFromItem(topic) as ListViewItem;
-                    var topicView = container?.ContentTemplateRoot as ForumTopicCell;
-
-                    topicView?.UpdateForumTopicInfo(topic);
-                });
+        public void Handle(UpdateForumTopicReadInbox update)
+        {
+            if (_viewModel.Topics.Chat?.Id == update.ChatId)
+            {
+                Handle2(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadInbox(chat));
             }
         }
 
@@ -456,6 +448,54 @@ namespace Telegram.Views
                     action(chatView, chat);
                 }
             });
+        }
+
+        private void Handle2(long chatId, Action<ForumTopicCell, ForuminoTopicino> action)
+        {
+            this.BeginOnUIThread(() =>
+            {
+                if (TopicListTryGetChatAndCell(chatId, out ForuminoTopicino chat, out ForumTopicCell chatView))
+                {
+                    action(chatView, chat);
+                }
+            });
+        }
+
+        private void Handle2(ForuminoTopicino topic, Action<ForumTopicCell, ForuminoTopicino> action)
+        {
+            this.BeginOnUIThread(() =>
+            {
+                if (TopicListTryGetCell(topic, out ForumTopicCell chatView))
+                {
+                    action(chatView, topic);
+                }
+            });
+        }
+
+        public bool TopicListTryGetChatAndCell(long chatId, out ForuminoTopicino chat, out ForumTopicCell cell)
+        {
+            if (_itemToSelector.TryGetValue(chatId, out SelectorItem container))
+            {
+                chat = TopicList.ItemFromContainer(container) as ForuminoTopicino;
+                cell = container.ContentTemplateRoot as ForumTopicCell;
+                return chat != null && cell != null;
+            }
+
+            chat = null;
+            cell = null;
+            return false;
+        }
+
+        public bool TopicListTryGetCell(ForuminoTopicino chat, out ForumTopicCell cell)
+        {
+            if (_itemToSelector.TryGetValue(chat.Id, out SelectorItem container))
+            {
+                cell = container.ContentTemplateRoot as ForumTopicCell;
+                return cell != null;
+            }
+
+            cell = null;
+            return false;
         }
 
         public void Handle(UpdatePasscodeLock update)
@@ -1052,6 +1092,8 @@ namespace Telegram.Views
                 .Subscribe<UpdateMessageUnreadReactions>(Handle)
                 .Subscribe<UpdateUnreadChatCount>(Handle)
                 .Subscribe<UpdateForumTopicInfo>(Handle)
+                .Subscribe<UpdateForumTopicReadInbox>(Handle)
+                .Subscribe<UpdateChatUnreadTopicCount>(Handle)
                 //.Subscribe<UpdateMessageContent>(Handle)
                 .Subscribe<UpdateSecretChat>(Handle)
                 .Subscribe<UpdateChatNotificationSettings>(Handle)
@@ -1885,7 +1927,7 @@ namespace Telegram.Views
                     HideTopicList();
                 }
             }
-            else if (item is ForumTopic topic)
+            else if (item is ForuminoTopicino topic)
             {
                 ViewModel.Chats.SelectedItem = ViewModel.Topics.Chat?.Id;
                 MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, thread: topic.Info.MessageThreadId, force: false, clearBackStack: true);
@@ -3300,7 +3342,7 @@ namespace Telegram.Views
             }
 
             var flyout = new MenuFlyout();
-            var topic = TopicList.ItemFromContainer(sender) as ForumTopic;
+            var topic = TopicList.ItemFromContainer(sender) as ForuminoTopicino;
 
             var canManage = CanCreateTopics(chat, supergroup, topic);
 
@@ -3343,7 +3385,7 @@ namespace Telegram.Views
             flyout.ShowAt(sender, args);
         }
 
-        private bool CanCreateTopics(Chat chat, Supergroup supergroup, ForumTopic topic)
+        private bool CanCreateTopics(Chat chat, Supergroup supergroup, ForuminoTopicino topic)
         {
             if (supergroup.Status is ChatMemberStatusCreator || (supergroup.Status is ChatMemberStatusAdministrator admin && (admin.Rights.CanPinMessages || supergroup.IsChannel && admin.Rights.CanEditMessages)))
             {
@@ -3360,14 +3402,23 @@ namespace Telegram.Views
         #endregion
 
 
+        private readonly Dictionary<long, SelectorItem> _itemToSelector = new();
+
         private void TopicList_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.InRecycleQueue)
+            if (args.Item is not ForuminoTopicino topic)
             {
                 return;
             }
 
-            var topic = args.Item as ForumTopic;
+            if (args.InRecycleQueue)
+            {
+                _itemToSelector.Remove(topic.Id);
+                return;
+            }
+
+            _itemToSelector[topic.Id] = args.ItemContainer;
+
             var cell = args.ItemContainer.ContentTemplateRoot as ForumTopicCell;
 
             cell.UpdateForumTopic(_clientService, topic, ViewModel.Topics.Chat);
