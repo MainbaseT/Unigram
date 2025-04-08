@@ -94,7 +94,10 @@ namespace Telegram.Services
             {
                 if (supergroup.IsForum && !_forums.ContainsKey(chat.Id))
                 {
-                    GetForumTopicsAsync(chat.Id, 0, 20);
+                    var manager = new Test(_clientService, _aggregator, chat.Id);
+                    _forums[chat.Id] = manager;
+
+                    manager.GetForumTopicsAsync(0, 20);
                 }
             }
         }
@@ -495,11 +498,14 @@ namespace Telegram.Services
         private void UpdateNewTopic(BaseObject response)
         {
             ForuminoTopicino topic;
-            if (response is not ForumTopic newTopic)
+            ForumTopic newTopic = response as ForumTopic;
+
+            if (newTopic == null)
             {
-                topic = _topics[_generalThreadId];
+                return;
             }
-            else if (_topics.TryGetValue(newTopic.Info.MessageThreadId, out topic))
+
+            if (_topics.TryGetValue(newTopic.Info.MessageThreadId, out topic))
             {
                 topic.DraftMessage = newTopic.DraftMessage;
                 topic.NotificationSettings = newTopic.NotificationSettings;
@@ -511,14 +517,26 @@ namespace Telegram.Services
                 topic.IsPinned = newTopic.IsPinned;
                 topic.LastMessage = newTopic.LastMessage;
                 topic.Info = newTopic.Info;
+
+                UpdateReadInbox(topic, newTopic.LastReadInboxMessageId);
+                UpdateLastMessage(topic, newTopic.LastMessage);
             }
             else
             {
                 topic = new ForuminoTopicino(newTopic);
             }
 
+            if (topic.Info.IsGeneral)
+            {
+                _generalThreadId = topic.Info.MessageThreadId;
+            }
+
             _topics[topic.Info.MessageThreadId] = topic;
-            _messages[topic.LastMessage.Id] = topic;
+
+            if (topic.LastMessage != null)
+            {
+                _messages[topic.LastMessage.Id] = topic;
+            }
 
             UpdateTopicOrder(topic, false);
         }
@@ -543,22 +561,7 @@ namespace Telegram.Services
 
             if (_topics.TryGetValue(messageThreadId, out ForuminoTopicino topic))
             {
-                if (topic.LastMessage == null || topic.LastMessage?.Id < message.Id)
-                {
-                    // Update last message
-                    // Deliver update UpdateForumTopicLastMessage;
-                    if (topic.LastMessage != null)
-                    {
-                        _messages.Remove(topic.LastMessage.Id);
-                    }
-
-                    _messages[message.Id] = topic;
-
-                    topic.LastMessage = message;
-
-                    UpdateTopicOrder(topic, true);
-                    UpdateUnreadCount(topic);
-                }
+                UpdateLastMessage(topic, message);
             }
             else
             {
@@ -574,6 +577,26 @@ namespace Telegram.Services
             //        UpdateNewTopic(result);
             //    });
             //}
+        }
+
+        private void UpdateLastMessage(ForuminoTopicino topic, Message message)
+        {
+            if (topic.LastMessage == null || topic.LastMessage?.Id < message.Id)
+            {
+                // Update last message
+                // Deliver update UpdateForumTopicLastMessage;
+                if (topic.LastMessage != null)
+                {
+                    _messages.Remove(topic.LastMessage.Id);
+                }
+
+                _messages[message.Id] = topic;
+
+                topic.LastMessage = message;
+
+                UpdateTopicOrder(topic, true);
+                UpdateUnreadCount(topic);
+            }
         }
 
         public void UpdateDeleteMessages(IList<long> messageIds, bool isPermanent, bool fromCache)
