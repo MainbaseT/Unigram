@@ -699,6 +699,11 @@ namespace Telegram.Services
                 launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;msg_id={1}", launch, message.Id);
             }
 
+            if (message.IsTopicMessage)
+            {
+                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;thread_id={1}", launch, message.MessageThreadId);
+            }
+
             return launch;
         }
 

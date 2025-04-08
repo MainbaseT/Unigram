@@ -1566,9 +1566,22 @@ namespace Telegram.Views
             }
             else
             {
-                if (data.ContainsKey("chat_id") && long.TryParse(data["chat_id"], out long chatId))
+                data.TryGetValue("chat_id", out string chat_id);
+                data.TryGetValue("thread_id", out string thread_id);
+
+                long.TryParse(chat_id, out long chatId);
+                long.TryParse(thread_id, out long threadId);
+
+                if (_clientService.TryGetChat(chatId, out Chat chat))
                 {
-                    MasterDetail.NavigationService.NavigateToChat(chatId, force: false);
+                    if (chat.ViewAsTopics)
+                    {
+                        MasterDetail.NavigationService.NavigateToChat(chat.Id, thread: threadId, force: false);
+                    }
+                    else
+                    {
+                        MasterDetail.NavigationService.NavigateToChat(chat.Id, force: false);
+                    }
                 }
             }
 
