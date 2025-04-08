@@ -932,6 +932,8 @@ namespace Telegram.Controls
             var hidden = 0;
             var flags = default(TextStyle);
 
+            // TODO: reimplement using the same logic as UpdateFormat
+
             for (int i = 0; i < value.Length; i++)
             {
                 flags = default;
@@ -942,31 +944,7 @@ namespace Telegram.Controls
                     flags = TextStyle.Quote;
                 }
 
-                if (range.Text == "\uEA4F")
-                {
-                    range.Move(TextRangeUnit.Hidden, -1);
-                    range.Expand(TextRangeUnit.Hidden);
-
-                    if (IsCustomEmoji(range, out string emoji, out long customEmojiId))
-                    {
-                        if (last != null)
-                        {
-                            runs ??= new();
-                            runs.Add(last);
-                            last = null;
-                        }
-
-                        runs ??= new();
-                        runs.Add(new TextStyleRun { Start = i - hidden, End = i - hidden + emoji.Length, Flags = TextStyle.Emoji, Type = new TextEntityTypeCustomEmoji(customEmojiId) });
-                        type = null;
-
-                        builder.Remove(i - hidden, 1);
-                        builder.Insert(i - hidden, emoji);
-
-                        hidden -= emoji.Length - 1;
-                    }
-                }
-                else if (string.Equals(range.CharacterFormat.Name, "Consolas", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(range.CharacterFormat.Name, "Consolas", StringComparison.OrdinalIgnoreCase))
                 {
                     flags |= TextStyle.Monospace;
                 }
@@ -1016,12 +994,13 @@ namespace Telegram.Controls
 
                 if (last != null && last.Flags == flags)
                 {
-                    last.End++;
+                    last.End = i - hidden + 1;
                 }
                 else
                 {
                     if (last != null)
                     {
+                        last.End = i - hidden;
                         runs ??= new();
                         runs.Add(last);
                         last = null;
@@ -1033,10 +1012,29 @@ namespace Telegram.Controls
                         type = null;
                     }
                 }
+
+                if (range.Text == "\uEA4F")
+                {
+                    range.Move(TextRangeUnit.Hidden, -1);
+                    range.Expand(TextRangeUnit.Hidden);
+
+                    if (IsCustomEmoji(range, out string emoji, out long customEmojiId))
+                    {
+                        runs ??= new();
+                        runs.Add(new TextStyleRun { Start = i - hidden, End = i - hidden + emoji.Length, Flags = TextStyle.Emoji, Type = new TextEntityTypeCustomEmoji(customEmojiId) });
+                        type = null;
+
+                        builder.Remove(i - hidden, 1);
+                        builder.Insert(i - hidden, emoji);
+
+                        hidden -= (emoji.Length - 1);
+                    }
+                }
             }
 
             if (last != null)
             {
+                last.End = value.Length - hidden;
                 runs ??= new();
                 runs.Add(last);
             }
@@ -1232,6 +1230,7 @@ namespace Telegram.Controls
                 try
                 {
                     Document.Selection.CharacterFormat = Document.GetDefaultCharacterFormat();
+                    Document.Selection.ParagraphFormat = Document.GetDefaultParagraphFormat();
                 }
                 catch
                 {
@@ -1738,8 +1737,8 @@ namespace Telegram.Controls
                 {
                     //ContentElement.Padding = new Thickness(48, range.ParagraphFormat.SpaceAfter == 0 ? 13 : 7, 0, 15);
                     ContentElement.Padding = new Thickness(0, 13, 0, 15);
-                    ContentElement.Margin = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : -6, 0, 0);
-                    Blocks.Padding = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 6 : 0, 0, 0);
+                    ContentElement.Margin = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : 0, 0, 0);
+                    Blocks.Padding = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : 0, 0, 0);
                 }
 
                 if (range.ParagraphFormat.SpaceAfter != 0)
@@ -1794,11 +1793,12 @@ namespace Telegram.Controls
                 //Document.Selection.SetText(TextSetOptions.None, "\v");
                 //Document.Selection.SetRange(Document.Selection.StartPosition + 1, Document.Selection.StartPosition + 1);
             }
-            else if (e.Key == Windows.System.VirtualKey.Down && Document.Selection.ParagraphFormat.SpaceAfter != 0)
+            else if (e.Key is VirtualKey.Down or VirtualKey.Up && Document.Selection.ParagraphFormat.SpaceAfter != 0)
             {
                 var range = Document.Selection.GetClone();
+                var direction = e.Key == VirtualKey.Down ? 1 : -1;
 
-                var start = range.MoveStart(TextRangeUnit.HardParagraph, 1);
+                var start = range.MoveStart(TextRangeUnit.HardParagraph, direction);
                 if (start == 0)
                 {
                     e.Handled = true;
@@ -1806,12 +1806,12 @@ namespace Telegram.Controls
                     BeginUndoGroup();
 
                     range.SetText(TextSetOptions.None, "\r");
-                    range.SetRange(range.StartPosition + 1, range.StartPosition + 1);
+                    range.SetRange(range.StartPosition + direction, range.StartPosition + direction);
                     range.ParagraphFormat = Document.GetDefaultParagraphFormat();
-                    Document.Selection.SetRange(range.StartPosition + 1, range.StartPosition + 1);
+                    Document.Selection.SetRange(range.StartPosition + direction, range.StartPosition + direction);
                 }
             }
-            else if (e.Key == Windows.System.VirtualKey.Back)
+            else if (e.Key == VirtualKey.Back)
             {
                 var range = Document.Selection.GetClone();
 
