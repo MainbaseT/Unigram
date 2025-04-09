@@ -703,6 +703,10 @@ namespace Telegram.Services
             {
                 launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;thread_id={1}", launch, message.MessageThreadId);
             }
+            else if (_clientService.IsForum(chat))
+            {
+                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;thread_id={1}", launch, ForuminoTopicino.GeneralId);
+            }
 
             return launch;
         }
