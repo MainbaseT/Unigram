@@ -424,13 +424,13 @@ namespace Telegram.ViewModels
 
         public Chat Chat => Items.Chat;
 
-        public async void SetFilter(Chat chat)
+        public void SetChat(Chat chat)
         {
             if (chat?.Id != Items.Chat?.Id)
             {
-                await Items.ReloadAsync(chat);
-                //Aggregator.Unsubscribe(Items);
-                //Items = new ItemsCollection(ClientService, Aggregator, this, chatList);
+                _ = Items.ReloadAsync(chat);
+            }
+        }
                 //RaisePropertyChanged(nameof(Items));
             }
         }
@@ -449,7 +449,7 @@ namespace Telegram.ViewModels
 
             private bool _hasMoreItems = true;
 
-            private long _lastChatId;
+            private long _lastTopicId;
             private long _lastOrder;
 
             public Chat Chat => _chat;
@@ -471,13 +471,18 @@ namespace Telegram.ViewModels
 
             public Task ReloadAsync(Chat chat)
             {
+                if (_chat != null)
+                {
+                    _clientService.Send(new CloseChat(_chat.Id));
+                }
+
                 _token?.Cancel();
                 _token = new CancellationTokenSource();
 
                 _aggregator.Unsubscribe(this);
                 _hasMoreItems = false;
 
-                _lastChatId = 0;
+                _lastTopicId = 0;
                 _lastOrder = 0;
 
                 _chat = chat;
@@ -487,6 +492,7 @@ namespace Telegram.ViewModels
 
                 if (_chat != null)
                 {
+                    _clientService.Send(new OpenChat(chat.Id));
                     return LoadMoreItemsAsync();
                 }
 
@@ -543,7 +549,7 @@ namespace Telegram.ViewModels
                                 totalCount++;
                             }
 
-                            _lastChatId = topic.Id;
+                            _lastTopicId = topic.Id;
                             _lastOrder = order;
                         }
                     }
@@ -632,7 +638,7 @@ namespace Telegram.ViewModels
 
             private void UpdateForumTopicOrder(ForuminoTopicino topic, long order, bool lastMessage)
             {
-                if (order > 0 && (order > _lastOrder || (order == _lastOrder && topic.Id >= _lastChatId)))
+                if (order > 0 && (order > _lastOrder || (order == _lastOrder && topic.Id >= _lastTopicId)))
                 {
                     var next = NextIndexOf(topic, order);
                     if (next >= 0)
@@ -650,7 +656,7 @@ namespace Telegram.ViewModels
 
                         if (next == Count - 1)
                         {
-                            _lastChatId = topic.Id;
+                            _lastTopicId = topic.Id;
                             _lastOrder = order;
                         }
 

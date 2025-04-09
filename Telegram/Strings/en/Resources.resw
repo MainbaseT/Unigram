@@ -4270,7 +4270,7 @@ Minimum length is 5 characters.</value>
     <value>Only people from your Close Friends list can view this story</value>
   </data>
   <data name="CloseTopic" xml:space="preserve">
-    <value>Close topic</value>
+    <value>Close Topic</value>
   </data>
   <data name="CloudUpdateInstallingText" xml:space="preserve">
     <value>A new version of Unigram is being installed...</value>
@@ -4470,6 +4470,9 @@ You can always switch back to the default Telegram theme here.</value>
   </data>
   <data name="CreateTheme" xml:space="preserve">
     <value>Create Theme</value>
+  </data>
+  <data name="CreateTopic" xml:space="preserve">
+    <value>Create Topic</value>
   </data>
   <data name="CreateTopicTitle" xml:space="preserve">
     <value>Choose a topic name and icon</value>
@@ -4708,6 +4711,12 @@ You can always switch back to the default Telegram theme here.</value>
   <data name="DeleteSelectedCallsText" xml:space="preserve">
     <value>Do you want to delete selected calls from recent?</value>
   </data>
+  <data name="DeleteSelectedTopic" xml:space="preserve">
+    <value>Are you sure you want to delete {0}?</value>
+  </data>
+  <data name="DeleteSelectedTopics" xml:space="preserve">
+    <value>Are you sure you want to delete these topics?</value>
+  </data>
   <data name="DeleteSingleMessagesTitle" xml:space="preserve">
     <value>Delete message</value>
   </data>
@@ -4746,6 +4755,12 @@ You can always switch back to the default Telegram theme here.</value>
   </data>
   <data name="DeleteToggleRestrictUsers" xml:space="preserve">
     <value>Partially restrict users</value>
+  </data>
+  <data name="DeleteTopics_one" xml:space="preserve">
+    <value>Delete Topic</value>
+  </data>
+  <data name="DeleteTopics_other" xml:space="preserve">
+    <value>Delete Topics</value>
   </data>
   <data name="Deletions_one" xml:space="preserve">
     <value>{0} deletion</value>
@@ -5143,7 +5158,7 @@ If the number above is correct, please wait for the verification code.</value>
     <value>Personal channel</value>
   </data>
   <data name="EditTopic" xml:space="preserve">
-    <value>Edit topic</value>
+    <value>Edit Topic</value>
   </data>
   <data name="EmailAddressInvalid" xml:space="preserve">
     <value>Invalid email address.</value>
@@ -10509,7 +10524,7 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
     <value>Reset Photo</value>
   </data>
   <data name="RestartTopic" xml:space="preserve">
-    <value>Reopen topic</value>
+    <value>Reopen Topic</value>
   </data>
   <data name="Restore" xml:space="preserve">
     <value>Restore</value>
@@ -11552,6 +11567,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="StarsTransactionMedia" xml:space="preserve">
     <value>Media</value>
   </data>
+  <data name="StarsTransactionMessageFee_one" xml:space="preserve">
+    <value>Fee for {0} Message</value>
+  </data>
+  <data name="StarsTransactionMessageFee_other" xml:space="preserve">
+    <value>Fee for {0} Messages</value>
+  </data>
   <data name="StarsTransactionRecipient" xml:space="preserve">
     <value>From</value>
   </data>
@@ -12224,6 +12245,12 @@ Please try again in {0}.</value>
   </data>
   <data name="Topics" xml:space="preserve">
     <value>Topics</value>
+  </data>
+  <data name="TopicViewAsMessages" xml:space="preserve">
+    <value>View as Messages</value>
+  </data>
+  <data name="TopicViewAsTopics" xml:space="preserve">
+    <value>View as Topics</value>
   </data>
   <data name="TopicWasClosedAction" xml:space="preserve">
     <value>{0} closed {1}</value>

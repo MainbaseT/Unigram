@@ -364,7 +364,7 @@ namespace Telegram.ViewModels
                 {
                     Logger.Info();
 
-                    Chats.SetList(value.ChatList);
+                    Chats.SetChatList(value.ChatList);
                     Stories.SetList(value.ChatList is ChatListArchive
                         ? new StoryListArchive()
                         : new StoryListMain());

@@ -284,7 +284,7 @@ namespace Telegram.Services
                 topic.UnreadCount = 0;
                 UpdateUnreadTopicCount(topic, false);
             }
-            else if (topic.LastMessage?.Id > topic.LastReadInboxMessageId && topic.UnreadCount == 0)
+            else if (topic.LastMessage?.Id > topic.LastReadInboxMessageId && topic.UnreadCount == 0 && !topic.LastMessage.IsOutgoing)
             {
                 topic.UnreadCount = 1;
                 UpdateUnreadTopicCount(topic, true);
@@ -447,7 +447,7 @@ namespace Telegram.Services
 
                     _aggregator.Publish(new UpdateChatUnreadTopicCount(_chatId, UnreadCount));
 
-                    if (forumTopics.Topics.Count > 0)
+                    if (forumTopics.Topics.Count > 0 && _order.Count < forumTopics.TotalCount + 1)
                     {
                         tsc.SetResult(new Ok());
                     }
@@ -538,7 +538,7 @@ namespace Telegram.Services
                 _messages[topic.LastMessage.Id] = topic;
             }
 
-            UpdateTopicOrder(topic, false);
+            UpdateTopicOrder(topic, true);
         }
 
         private long _lastProcessedMessageId;

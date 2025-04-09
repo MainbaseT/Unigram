@@ -574,7 +574,7 @@ namespace Telegram.ViewModels
 
         #endregion
 
-        public void SetList(ChatList chatList)
+        public void SetChatList(ChatList chatList)
         {
             _ = Items.ReloadAsync(chatList);
         }
