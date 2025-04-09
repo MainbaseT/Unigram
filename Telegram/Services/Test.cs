@@ -214,8 +214,6 @@ namespace Telegram.Services
 
         private readonly HashSet<long> _pendingNewTopics = new();
 
-        private long _generalThreadId;
-
         private bool _haveFullList;
 
         public Test(IClientService clientService, IEventAggregator aggregator, long chatId)
@@ -432,11 +430,6 @@ namespace Telegram.Services
                             _unreadTopicIds.Add(topic.Info.MessageThreadId);
                         }
 
-                        if (topic.Info.IsGeneral)
-                        {
-                            _generalThreadId = topic.Info.MessageThreadId;
-                        }
-
                         topics.Add(topic);
                     }
 
@@ -526,11 +519,6 @@ namespace Telegram.Services
                 topic = new ForuminoTopicino(newTopic);
             }
 
-            if (topic.Info.IsGeneral)
-            {
-                _generalThreadId = topic.Info.MessageThreadId;
-            }
-
             _topics[topic.Info.MessageThreadId] = topic;
 
             if (topic.LastMessage != null)
@@ -557,7 +545,7 @@ namespace Telegram.Services
 
             var messageThreadId = message.IsTopicMessage
                 ? message.MessageThreadId
-                : _generalThreadId;
+                : ForuminoTopicino.GeneralId;
 
             if (_topics.TryGetValue(messageThreadId, out ForuminoTopicino topic))
             {
@@ -1030,6 +1018,8 @@ namespace Telegram.Td.Api
 
     public sealed class ForuminoTopicino
     {
+        public static readonly long GeneralId = 1 << 20;
+
         public ForuminoTopicino(ForumTopic topic)
         {
             Id = topic.Info.MessageThreadId;
