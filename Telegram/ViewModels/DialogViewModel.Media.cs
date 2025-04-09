@@ -223,17 +223,6 @@ namespace Telegram.ViewModels
                         }
                     }
                 }
-                else if (package.AvailableFormats.Contains(StandardDataFormats.WebLink))
-                {
-                    var field = TextField;
-                    if (field == null)
-                    {
-                        return;
-                    }
-
-                    var link = await package.GetWebLinkAsync();
-                    field.Document.GetRange(field.Document.Selection.EndPosition, field.Document.Selection.EndPosition).SetText(TextSetOptions.None, link.AbsoluteUri);
-                }
                 else if (package.AvailableFormats.Contains(StandardDataFormats.StorageItems))
                 {
                     var items = await package.GetStorageItemsAsync();
@@ -245,6 +234,17 @@ namespace Telegram.ViewModels
                     }
 
                     SendFileExecute(files);
+                }
+                else if (package.AvailableFormats.Contains(StandardDataFormats.WebLink))
+                {
+                    var field = TextField;
+                    if (field == null)
+                    {
+                        return;
+                    }
+
+                    var link = await package.GetWebLinkAsync();
+                    field.Document.GetRange(field.Document.Selection.EndPosition, field.Document.Selection.EndPosition).SetText(TextSetOptions.None, link.AbsoluteUri);
                 }
                 //else if (e.DataView.Contains(StandardDataFormats.WebLink))
                 //{
