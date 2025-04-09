@@ -387,7 +387,18 @@ namespace Telegram.ViewModels
                 _ = Items.ReloadAsync(chat);
             }
         }
-                //RaisePropertyChanged(nameof(Items));
+
+        public async void ViewAsMessages()
+        {
+            if (Chat is not Chat chat)
+            {
+                return;
+            }
+
+            await ClientService.SendAsync(new ToggleChatViewAsTopics(chat.Id, false));
+            NavigationService.NavigateToChat(chat, force: false, clearBackStack: true);
+        }
+
         public async void CreateTopic()
         {
             if (Chat is not Chat chat)

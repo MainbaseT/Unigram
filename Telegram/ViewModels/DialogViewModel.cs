@@ -3325,8 +3325,7 @@ namespace Telegram.ViewModels
 
         public async void ViewAsChats()
         {
-            var chat = _chat;
-            if (chat == null)
+            if (Chat is not Chat chat)
             {
                 return;
             }
@@ -3341,6 +3340,17 @@ namespace Telegram.ViewModels
             NavigationService.Frame.BackStack.Add(new PageStackEntry(target, parameter, null));
             NavigationService.GoBack(infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromLeft });
             NavigationService.Frame.ForwardStack.Clear();
+        }
+
+        public async void ViewAsTopics()
+        {
+            if (Chat is not Chat chat)
+            {
+                return;
+            }
+
+            await ClientService.SendAsync(new ToggleChatViewAsTopics(chat.Id, true));
+            NavigationService.GoBackAt(0);
         }
 
         public void OpenProfile(INavigationService navigationService)

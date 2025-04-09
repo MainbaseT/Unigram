@@ -331,6 +331,20 @@ namespace Telegram.Views
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatVideoChat(chat));
         }
 
+        public void Handle(UpdateChatViewAsTopics update)
+        {
+            // TODO: threading is not great here
+            // TODO: ignore if chatId is saved messages
+            if (update.ChatId == _viewModel.Topics.Chat?.Id && !update.ViewAsTopics)
+            {
+                this.BeginOnUIThread(() => HideTopicList());
+            }
+            else if (update.ChatId == _viewModel.Chats.SelectedItem && update.ViewAsTopics)
+            {
+                this.BeginOnUIThread(() => ShowTopicList(_viewModel.ClientService.GetChat(update.ChatId)));
+            }
+        }
+
         public void Handle(UpdateUser update)
         {
             if (update.User.Id == _clientService.Options.MyId)
@@ -1060,6 +1074,7 @@ namespace Telegram.Views
                 .Subscribe<UpdateChatPhoto>(Handle)
                 .Subscribe<UpdateChatEmojiStatus>(Handle)
                 .Subscribe<UpdateChatVideoChat>(Handle)
+                .Subscribe<UpdateChatViewAsTopics>(Handle)
                 .Subscribe<UpdateUserStatus>(Handle)
                 .Subscribe<UpdateUser>(Handle)
                 .Subscribe<UpdateChatAction>(Handle)
@@ -1729,6 +1744,11 @@ namespace Telegram.Views
 
         private void UpdateListViewsSelectedItem(long chatId, bool fromSelection = false)
         {
+            if (chatId == 0 && ViewModel.Topics.Chat != null)
+            {
+                chatId = ViewModel.Topics.Chat.Id;
+            }
+
             ViewModel.Chats.SelectedItem = chatId;
 
             if (ViewModel.Chats.SelectionMode != ListViewSelectionMode.Multiple)
@@ -3321,6 +3341,7 @@ namespace Telegram.Views
         {
             ViewModel.Topics.SetChat(chat);
             ShowHideTopicList(true);
+            UpdateListViewsSelectedItem(chat.Id);
             TopicListPresenter?.UpdateChat(chat);
         }
 
@@ -3709,7 +3730,6 @@ namespace Telegram.Views
             ChatsList = null;
             TopicListPresenter = null;
             EmptyState = null;
-            TopicList = null;
             ArchivedChatsPresenter = null;
             ArchivedChatsPanel = null;
             ArchivedChats = null;

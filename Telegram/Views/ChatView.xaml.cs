@@ -385,7 +385,7 @@ namespace Telegram.Views
 
             StickersPanel.MaxWidth = SettingsService.Current.IsAdaptiveWideEnabled ? 1024 : double.PositiveInfinity;
 
-            Options.Visibility = ViewModel.Type is DialogType.History or DialogType.SavedMessagesTopic
+            Options.Visibility = ViewModel.Type is DialogType.History or DialogType.Thread or DialogType.SavedMessagesTopic
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
@@ -2100,6 +2100,10 @@ namespace Telegram.Views
             if (supergroup != null && supergroup.Status is not ChatMemberStatusCreator && (supergroup.IsChannel || supergroup.HasActiveUsername()))
             {
                 flyout.CreateFlyoutItem(ViewModel.Report, Strings.ReportChat, Icons.ErrorCircle);
+            }
+            if (supergroup != null && supergroup.IsForum && _viewModel.Type == DialogType.History)
+            {
+                flyout.CreateFlyoutItem(ViewModel.ViewAsTopics, Strings.TopicViewAsTopics, Icons.ChatEmpty);
             }
             if (user != null && user.Type is not UserTypeDeleted && user.Id != ViewModel.ClientService.Options.MyId)
             {
