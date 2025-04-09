@@ -119,7 +119,7 @@ namespace Telegram.Controls.Chats
             {
                 //button.Click -= handler;
                 command();
-            };
+            }
 
             button.Click += handler;
             return button;

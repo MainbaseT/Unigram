@@ -68,7 +68,7 @@ namespace Telegram.Common
                     {
                         _ = ApplicationViewSwitcher.SwitchAsync(WindowContext.Current.Id, oldViewId);
                         found = true;
-                    };
+                    }
                 });
 
                 if (found)

@@ -636,9 +636,7 @@ namespace Telegram.ViewModels
 
             await SendContactAsync(contact, options);
 
-#if !DEBUG
-            Microsoft.AppCenter.Analytics.Analytics.TrackEvent("SendContact");
-#endif
+            WatchDog.TrackEvent("SendContact");
         }
 
         public Task<BaseObject> SendContactAsync(Contact contact, MessageSendOptions options)
@@ -744,9 +742,7 @@ namespace Telegram.ViewModels
 
                 await SendMessageAsync(reply, input, options);
 
-#if !DEBUG
-                Microsoft.AppCenter.Analytics.Analytics.TrackEvent("SendLocation");
-#endif
+                WatchDog.TrackEvent("SendLocation");
             }
         }
 

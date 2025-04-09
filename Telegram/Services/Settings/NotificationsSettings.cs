@@ -22,7 +22,7 @@ namespace Telegram.Services.Settings
         }
 
         public Dictionary<Type, ScopeNotificationSettings> Scope => _scopeNotificationSettings;
-        
+
         public bool IsMuted(Chat chat, ForuminoTopicino topic)
         {
             return GetMuteFor(chat, topic) > 0;

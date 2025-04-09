@@ -32,7 +32,6 @@ using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using static Telegram.Services.GenerationService;
-using User = Telegram.Td.Api.User;
 
 namespace Telegram.ViewModels
 {
@@ -440,7 +439,7 @@ namespace Telegram.ViewModels
                         case MessageVideo video:
                             ClientService.Send(new AddFileToDownloads(video.Video.VideoValue.Id, message.ChatId, message.Id, 32));
                             break;
-                    };
+                    }
                 }
             }
         }

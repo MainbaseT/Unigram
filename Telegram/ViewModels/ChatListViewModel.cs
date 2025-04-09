@@ -360,7 +360,7 @@ namespace Telegram.ViewModels
                             await ClientService.SendAsync(new DeleteChatHistory(chat.Id, true, false));
                         }
                     }
-                };
+                }
             }
         }
 
@@ -409,7 +409,7 @@ namespace Telegram.ViewModels
                             await ClientService.SendAsync(new DeleteChatHistory(chat.Id, true, false));
                         }
                     }
-                };
+                }
             }
 
             Delegate?.SetSelectionMode(false);
