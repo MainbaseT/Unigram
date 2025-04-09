@@ -354,7 +354,7 @@ namespace Telegram.Controls.Cells
             TitleLabel.Text = topic.Info.Name;
         }
 
-        private static Color[] _serverSupportedColors = new Color[6]
+        public static Color[] ServerSupportedColors = new Color[6]
         {
             Color.FromArgb(0xFF, 0x6F, 0xB9, 0xF0), // blue
             Color.FromArgb(0xFF, 0xFF, 0xD6, 0x7E), // yellow
@@ -384,7 +384,7 @@ namespace Telegram.Controls.Cells
             Color.FromArgb(0xFF, 0xEC, 0x5F, 0x6D), // orange
         };
 
-        private static int FindIconColorIndex(int color)
+        public static int FindIconColorIndex(int color)
         {
             static int Distance(Color a, Color b)
             {
@@ -393,12 +393,12 @@ namespace Telegram.Controls.Cells
 
             var value = color.ToColor();
 
-            int distance = Distance(_serverSupportedColors[0], value);
+            int distance = Distance(ServerSupportedColors[0], value);
             var index = 0;
 
-            for (int i = 0; i < _serverSupportedColors.Length; i++)
+            for (int i = 0; i < ServerSupportedColors.Length; i++)
             {
-                int distanceLocal = Distance(_serverSupportedColors[i], value);
+                int distanceLocal = Distance(ServerSupportedColors[i], value);
                 if (distanceLocal < distance)
                 {
                     distance = distanceLocal;
@@ -409,31 +409,9 @@ namespace Telegram.Controls.Cells
             return index;
         }
 
-        public static LinearGradientBrush GetIconGradient(ForuminoTopicino topic)
+        public static LinearGradientBrush GetIconGradient(ForumTopicIcon icon)
         {
-            var index = FindIconColorIndex(topic.Info.Icon.Color);
-
-            var top = _colorsTop[index];
-            var bottom = _colors[index];
-
-            return new LinearGradientBrush(new GradientStopCollection
-            {
-                new GradientStop
-                {
-                    Color = top,
-                    Offset = 0
-                },
-                new GradientStop
-                {
-                    Color = bottom,
-                    Offset = 1
-                }
-            }, 90);
-        }
-
-        public static LinearGradientBrush GetIconGradient(ForumTopic topic)
-        {
-            var index = FindIconColorIndex(topic.Info.Icon.Color);
+            var index = FindIconColorIndex(icon.Color);
 
             var top = _colorsTop[index];
             var bottom = _colors[index];
@@ -470,7 +448,7 @@ namespace Telegram.Controls.Cells
                 TypeIcon.ClearStatus();
                 IconRoot.Visibility = Visibility.Visible;
 
-                var brush = GetIconGradient(topic);
+                var brush = GetIconGradient(topic.Info.Icon);
 
                 IconPath.Fill = brush;
                 IconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);

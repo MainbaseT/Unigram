@@ -959,7 +959,7 @@ namespace Telegram.ViewModels
                 var confirm = await ShowPopupAsync(popup);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    ClientService.Send(new EditForumTopic(chat.Id, _topic.MessageThreadId, popup.Name, true, popup.SelectedEmojiId));
+                    ClientService.Send(new EditForumTopic(chat.Id, _topic.MessageThreadId, popup.Name, true, popup.SelectedIcon.CustomEmojiId));
                 }
             }
             else if (chat.Type is ChatTypeSupergroup or ChatTypeBasicGroup)

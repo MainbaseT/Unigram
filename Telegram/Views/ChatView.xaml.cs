@@ -4514,7 +4514,7 @@ namespace Telegram.Views
                         TopicIconRoot.Visibility = Visibility.Visible;
                         TopicIconGeneral.Visibility = Visibility.Collapsed;
 
-                        var brush = ForumTopicCell.GetIconGradient(topic);
+                        var brush = ForumTopicCell.GetIconGradient(topic.Info.Icon);
 
                         TopicIconPath.Fill = brush;
                         TopicIconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);

@@ -22,7 +22,7 @@ namespace Telegram.Controls.Cells
                 IconRoot.Visibility = Visibility.Collapsed;
                 General.Visibility = Visibility.Collapsed;
             }
-            else if(topic.Info.IsGeneral)
+            else if (topic.Info.IsGeneral)
             {
                 Animated.Source = null;
                 IconRoot.Visibility = Visibility.Collapsed;
@@ -34,7 +34,7 @@ namespace Telegram.Controls.Cells
                 IconRoot.Visibility = Visibility.Visible;
                 General.Visibility = Visibility.Collapsed;
 
-                var brush = ForumTopicCell.GetIconGradient(topic);
+                var brush = ForumTopicCell.GetIconGradient(topic.Info.Icon);
 
                 IconPath.Fill = brush;
                 IconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);

@@ -17,6 +17,7 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
+using Telegram.Views.Supergroups.Popups;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -236,62 +237,17 @@ namespace Telegram.ViewModels
 
         #region Delete
 
-        public async void DeleteTopic(ForuminoTopicino chat)
+        public async void DeleteTopic(ForuminoTopicino topic)
         {
-            //var updated = await ClientService.SendAsync(new GetChat(chat.Id)) as Chat ?? chat;
-            //var dialog = new DeleteChatPopup(ClientService, updated, Items.ChatList, false);
+            var message = string.Format(Strings.DeleteSelectedTopic, topic.Info.Name);
+            var title = Locale.Declension(Strings.R.DeleteTopics, 1);
 
-            //var confirm = await ShowPopupAsync(dialog);
-            //if (confirm == ContentDialogResult.Primary)
-            //{
-            //    var check = dialog.IsChecked == true;
-
-            //    _deletedChats[chat.Id] = true;
-            //    Items.Handle(chat.Id, 0);
-
-            //    Delegate?.ShowChatsUndo(new[] { chat }, UndoType.Delete, items =>
-            //    {
-            //        var undo = items.FirstOrDefault();
-            //        if (undo == null)
-            //        {
-            //            return;
-            //        }
-
-            //        _deletedChats.Remove(undo.Id);
-            //        Items.Handle(undo.Id, undo.Positions);
-            //    }, async items =>
-            //    {
-            //        var delete = items.FirstOrDefault();
-            //        if (delete == null)
-            //        {
-            //            return;
-            //        }
-
-            //        if (delete.Type is ChatTypeSecret secret)
-            //        {
-            //            await ClientService.SendAsync(new CloseSecretChat(secret.SecretChatId));
-            //        }
-            //        else if (delete.Type is ChatTypeBasicGroup or ChatTypeSupergroup)
-            //        {
-            //            await ClientService.SendAsync(new LeaveChat(delete.Id));
-            //        }
-
-            //        var user = ClientService.GetUser(delete);
-            //        if (user != null && user.Type is UserTypeRegular)
-            //        {
-            //            ClientService.Send(new DeleteChatHistory(delete.Id, true, check));
-            //        }
-            //        else
-            //        {
-            //            if (delete.Type is ChatTypePrivate privata && check)
-            //            {
-            //                await ClientService.SendAsync(new ToggleMessageSenderIsBlocked(new MessageSenderUser(privata.UserId), true));
-            //            }
-
-            //            ClientService.Send(new DeleteChatHistory(delete.Id, true, false));
-            //        }
-            //    });
-            //}
+            var confirm = await ShowPopupAsync(message, title, Strings.Delete, Strings.Cancel, destructive: true);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                // TODO: Handle the case where topics can't be deleted because user isn't admin
+                ClientService.Send(new DeleteForumTopic(Chat.Id, topic.Id));
+            }
         }
 
         #endregion
@@ -432,6 +388,23 @@ namespace Telegram.ViewModels
             }
         }
                 //RaisePropertyChanged(nameof(Items));
+        public async void CreateTopic()
+        {
+            if (Chat is not Chat chat)
+            {
+                return;
+            }
+
+            var popup = new SupergroupTopicPopup(ClientService, null);
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                var response = await ClientService.SendAsync(new CreateForumTopic(chat.Id, popup.SelectedName, popup.SelectedIcon));
+                if (response is ForumTopicInfo info)
+                {
+                    NavigationService.NavigateToChat(chat, thread: info.MessageThreadId, force: false, clearBackStack: true);
+                }
             }
         }
 
