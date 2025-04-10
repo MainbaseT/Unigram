@@ -681,6 +681,11 @@ namespace Telegram.Controls.Messages
                 {
                     _owner.ViewModel.ForwardMessage(Message);
                 }
+                else if (sender.Position.X <= -72)
+                {
+                    var master = this.GetParent<MasterDetailView>();
+                    master?.NavigationService.GoBack();
+                }
             }
         }
 
@@ -702,6 +707,9 @@ namespace Telegram.Controls.Messages
         {
             _interacting = true;
             ConfigureAnimations(_visual);
+
+            var master = this.GetParent<MasterDetailView>();
+            master?.ConfigureAnimations(_tracker);
         }
 
         #endregion

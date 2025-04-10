@@ -161,6 +161,7 @@
     <Compile Include="Assets\Icons\StickerToGif.cs" />
     <Compile Include="Assets\Icons\Sun.cs" />
     <Compile Include="Assets\Icons\Unlock.cs" />
+    <Compile Include="Assets\Icons\UserAvatarMask.cs" />
     <Compile Include="Assets\Icons\Username.cs" />
     <Compile Include="Assets\Icons\Profile.cs" />
     <Compile Include="Assets\Icons\VoiceRecognition.cs" />
