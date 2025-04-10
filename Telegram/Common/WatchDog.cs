@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using Microsoft.AppCenter.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,9 +17,11 @@ using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using Windows.System;
+using Windows.System.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -100,55 +106,62 @@ namespace Telegram
 
             TaskScheduler.UnobservedTaskException += (s, args) =>
             {
-                //Crashes.TrackCrash(args.Exception);
+                Crashes.TrackCrash(args.Exception);
                 args.SetObserved();
             };
 
-            //Crashes.CreatingErrorReport += (s, args) =>
+            //Crashes.UnhandledExceptionOccurring += (s, args) =>
             //{
-            //    Track(args.ReportId, args.Exception);
+            //    args.Frames = NativeUtils.GetStowedException()
+            //        .Select(x => new NativeStackFrame(x.NativeIP, x.NativeImageBase))
+            //        .ToList();
             //};
 
-            //Crashes.SentErrorReport += (s, args) =>
-            //{
-            //    if (File.Exists(GetErrorReportPath(args.Report.Id)))
-            //    {
-            //        try
-            //        {
-            //            File.Delete(GetErrorReportPath(args.Report.Id));
-            //        }
-            //        catch
-            //        {
-            //            // Somehow AppCenter messes up and the file might still be open
-            //        }
-            //    }
-            //};
+            Crashes.CreatingErrorReport += (s, args) =>
+            {
+                Track(args.ReportId, args.Exception);
+            };
 
-            //Crashes.ShouldProcessErrorReport = report =>
-            //{
-            //    return report.Id == _lastSessionErrorReportId;
-            //};
+            Crashes.SentErrorReport += (s, args) =>
+            {
+                if (File.Exists(GetErrorReportPath(args.Report.Id)))
+                {
+                    try
+                    {
+                        File.Delete(GetErrorReportPath(args.Report.Id));
+                    }
+                    catch
+                    {
+                        // Somehow AppCenter messes up and the file might still be open
+                    }
+                }
+            };
 
-            //Crashes.GetErrorAttachments = report =>
-            //{
-            //    var path = GetErrorReportPath(report.Id);
-            //    if (path.Length > 0 && File.Exists(path))
-            //    {
-            //        var data = File.ReadAllText(path);
-            //        return new[] { ErrorAttachmentLog.AttachmentWithText(data, "crash.txt") };
-            //    }
+            Crashes.ShouldProcessErrorReport = report =>
+            {
+                return report.Id == _lastSessionErrorReportId;
+            };
 
-            //    return Array.Empty<ErrorAttachmentLog>();
-            //};
+            Crashes.GetErrorAttachments = report =>
+            {
+                var path = GetErrorReportPath(report.Id);
+                if (path.Length > 0 && File.Exists(path))
+                {
+                    var data = File.ReadAllText(path);
+                    return new[] { ErrorAttachmentLog.AttachmentWithText(data, "crash.txt") };
+                }
 
-            //AppCenter.Start(Constants.AppCenterId, typeof(Analytics), typeof(Crashes));
-            //Analytics.TrackEvent("Windows",
-            //    new Dictionary<string, string>
-            //    {
-            //        { "DeviceFamily", AnalyticsInfo.VersionInfo.DeviceFamily },
-            //        { "Architecture", Package.Current.Id.Architecture.ToString() },
-            //        { "Processor", OSArchitecture().ToString() }
-            //    });
+                return Array.Empty<ErrorAttachmentLog>();
+            };
+
+            AppCenter.Start(Constants.AppCenterId, typeof(Analytics), typeof(Crashes));
+            Analytics.TrackEvent("Windows",
+                new Dictionary<string, string>
+                {
+                    { "DeviceFamily", AnalyticsInfo.VersionInfo.DeviceFamily },
+                    { "Architecture", Package.Current.Id.Architecture.ToString() },
+                    { "Processor", OSArchitecture().ToString() }
+                });
         }
 
         [HandleProcessCorruptedStateExceptions, SecurityCritical]
@@ -208,7 +221,7 @@ namespace Telegram
                 return;
             }
 
-            //Analytics.TrackEvent(name, properties?.ToDictionary(x => x.Key, y => y.Value.ToString()));
+            Analytics.TrackEvent(name, properties?.ToDictionary(x => x.Key, y => y.Value.ToString()));
         }
 
         private static void Read()
@@ -230,12 +243,12 @@ namespace Telegram
 
         public static void FatalErrorCallback(FatalError error)
         {
-            //var exception = ToException(error);
-            //var frames = error.Frames
-            //    .Select(x => new NativeStackFrame(x.NativeIP, x.NativeImageBase))
-            //    .ToList();
+            var exception = ToException(error);
+            var frames = error.Frames
+                .Select(x => new NativeStackFrame(x.NativeIP, x.NativeImageBase))
+                .ToList();
 
-            //Crashes.TrackCrash(exception, frames);
+            Crashes.TrackCrash(exception, frames);
         }
 
         private static Exception ToException(FatalError error)
@@ -263,7 +276,7 @@ namespace Telegram
             var exception = TdException.FromMessage(message);
             if (exception.IsUnhandled)
             {
-                //Crashes.TrackCrash(exception);
+                Crashes.TrackCrash(exception);
             }
         }
 
