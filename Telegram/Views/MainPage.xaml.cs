@@ -1773,7 +1773,13 @@ namespace Telegram.Views
             {
                 if (ViewModel.ClientService.TryGetChat(chatId, out Chat chat) && ViewModel.Chats.Items.Contains(chat))
                 {
-                    if (ChatsList.SelectedItem != chat)
+                    if (fromSelection)
+                    {
+                        // If we come from selection we need to delay this as ItemClick comes before SelectionChanged,
+                        // hence, if we unselect here, the ListView internal code will re-select the item right away.
+                        VisualUtilities.QueueCallbackForCompositionRendered(() => ChatsList.SelectedItem = chat);
+                    }
+                    else if (ChatsList.SelectedItem != chat)
                     {
                         ChatsList.SelectedItem = chat;
                     }
@@ -3371,7 +3377,7 @@ namespace Telegram.Views
 
             if (ViewModel.Chats.SelectedItem == chatId)
             {
-                UpdateListViewsSelectedItem(0, fromSelection);
+                UpdateListViewsSelectedItem(MasterDetail.NavigationService.GetChatFromBackStack(), fromSelection);
             }
         }
 
