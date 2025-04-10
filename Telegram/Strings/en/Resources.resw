@@ -6465,7 +6465,7 @@ This action cannot be undone. This will permanently destroy the gift.</value>
     <value>You can add this gift of {0} Stars to your profile.</value>
   </data>
   <data name="Gift2Info2OutExpired" xml:space="preserve">
-    <value>{0} can keep this gift in their Profile.</value>
+    <value>{0} can add this gift to their Profile.</value>
   </data>
   <data name="Gift2InfoConverted_one" xml:space="preserve">
     <value>You converted this gift to **{0}** Star.</value>
@@ -8237,7 +8237,7 @@ Minimum length is 5 characters.</value>
     <value>{0} months</value>
   </data>
   <data name="MonthsAgo_one" xml:space="preserve">
-    <value>{0} months ago</value>
+    <value>{0} month ago</value>
   </data>
   <data name="MonthsAgo_other" xml:space="preserve">
     <value>{0} months ago</value>
@@ -9482,7 +9482,7 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
     <value>Message Privacy</value>
   </data>
   <data name="PremiumPreviewMessagePrivacyDescription" xml:space="preserve">
-    <value>Restrict people you don&apos;t know from sending you messages.</value>
+    <value>Limit messages from strangers or charge for incoming messages.</value>
   </data>
   <data name="PremiumPreviewNoAds" xml:space="preserve">
     <value>No Ads</value>
@@ -9928,7 +9928,7 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
     <value>Remove Fee</value>
   </data>
   <data name="PrivateMessagesExceptionsHeader" xml:space="preserve">
-    <value>Exception</value>
+    <value>Exceptions</value>
   </data>
   <data name="PrivateMessagesExceptionsInfo" xml:space="preserve">
     <value>Add users or entire groups who won&apos;t be charged for sending messages to you.</value>
@@ -10234,10 +10234,10 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
     <value>Are you sure you want to allow **{0}** to message you for free?</value>
   </data>
   <data name="RemoveMessageFeeRefund_one" xml:space="preserve">
-    <value>Refund already paid {0} Star</value>
+    <value>Refund the already paid {0} Star</value>
   </data>
   <data name="RemoveMessageFeeRefund_other" xml:space="preserve">
-    <value>Refund already paid {0} Stars</value>
+    <value>Refund the already paid {0} Stars</value>
   </data>
   <data name="RemoveMessageFeeTitle" xml:space="preserve">
     <value>Remove Fee</value>
@@ -13608,7 +13608,7 @@ in your streaming app.</value>
     <value>{0} years</value>
   </data>
   <data name="YearsAgo_one" xml:space="preserve">
-    <value>{0} years ago</value>
+    <value>{0} year ago</value>
   </data>
   <data name="YearsAgo_other" xml:space="preserve">
     <value>{0} years ago</value>

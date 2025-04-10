@@ -934,6 +934,7 @@ namespace Telegram.ViewModels
         Contacts,
         PublicChats,
 
+        Ads,
         RecentWebApps,
         WebApps,
         ChatMembers,
