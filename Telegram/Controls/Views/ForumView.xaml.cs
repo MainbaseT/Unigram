@@ -15,6 +15,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
+using VirtualKey = Windows.System.VirtualKey;
 
 namespace Telegram.Controls.Views
 {
@@ -31,6 +32,7 @@ namespace Telegram.Controls.Views
         {
             UpdateChatTitle(chat);
             UpdateChatPhoto(chat);
+            UpdateChatEmojiStatus(chat);
 
             if (ViewModel.ClientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
             {
@@ -44,12 +46,26 @@ namespace Telegram.Controls.Views
 
         public void UpdateChatTitle(Chat chat)
         {
-            Title.Text = ViewModel.ClientService.GetTitle(chat);
+            if (chat != null)
+            {
+                Title.Text = ViewModel.ClientService.GetTitle(chat);
+            }
         }
 
         public void UpdateChatPhoto(Chat chat)
         {
-            Photo.SetChat(ViewModel.ClientService, chat, 36);
+            if (chat != null)
+            {
+                Photo.SetChat(ViewModel.ClientService, chat, 36);
+            }
+        }
+
+        public void UpdateChatEmojiStatus(Chat chat)
+        {
+            if (chat != null)
+            {
+                Identity.SetStatus(ViewModel.ClientService, chat, BotVerified);
+            }
         }
 
         private void Segments_Click(object sender, RoutedEventArgs e)
@@ -64,7 +80,7 @@ namespace Telegram.Controls.Views
 
         private void Options_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-
+            Profile.Padding = new Thickness(60, 0, e.NewSize.Width, 0);
         }
 
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)
@@ -76,6 +92,9 @@ namespace Telegram.Controls.Views
             }
 
             var flyout = new MenuFlyout();
+            flyout.CreateFlyoutItem(Search, Strings.Search, Icons.Search, VirtualKey.E);
+            flyout.CreateFlyoutSeparator();
+
             flyout.CreateFlyoutItem(ViewModel.ViewAsMessages, Strings.TopicViewAsMessages, Icons.ChatEmpty);
 
             if (supergroup.CanCreateTopics(ViewModel.Chat))
@@ -84,6 +103,12 @@ namespace Telegram.Controls.Views
             }
 
             flyout.ShowAt(sender as UIElement, FlyoutPlacementMode.BottomEdgeAlignedRight);
+        }
+
+        private void Search()
+        {
+            // TODO: Use event instead
+            this.GetParent<MainPage>()?.Search();
         }
 
         private void Search_Click(object sender, RoutedEventArgs e)

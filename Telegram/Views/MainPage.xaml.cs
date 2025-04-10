@@ -314,16 +314,34 @@ namespace Telegram.Views
         public void Handle(UpdateChatTitle update)
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatTitle(chat));
+
+            // TODO: threading is not great here
+            if (update.ChatId == _viewModel.Topics.Chat?.Id)
+            {
+                this.BeginOnUIThread(() => TopicListPresenter?.UpdateChatTitle(_viewModel.Topics.Chat));
+            }
         }
 
         public void Handle(UpdateChatPhoto update)
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatPhoto(chat));
+
+            // TODO: threading is not great here
+            if (update.ChatId == _viewModel.Topics.Chat?.Id)
+            {
+                this.BeginOnUIThread(() => TopicListPresenter?.UpdateChatPhoto(_viewModel.Topics.Chat));
+            }
         }
 
         public void Handle(UpdateChatEmojiStatus update)
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatEmojiStatus(chat));
+
+            // TODO: threading is not great here
+            if (update.ChatId == _viewModel.Topics.Chat?.Id)
+            {
+                this.BeginOnUIThread(() => TopicListPresenter?.UpdateChatEmojiStatus(_viewModel.Topics.Chat));
+            }
         }
 
         public void Handle(UpdateChatVideoChat update)
