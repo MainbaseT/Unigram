@@ -271,10 +271,6 @@ namespace Telegram.Navigation.Services
                 {
                     cleanup.Deactivate(e.SourcePageType != page.GetType());
                 }
-                else
-                {
-                    page.DataContext = null;
-                }
             }
         }
 

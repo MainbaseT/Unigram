@@ -781,7 +781,7 @@ namespace Telegram.Controls
 
         private void InitializeGoBack()
         {
-            var visual = GetVisual(Window.Current.Compositor, out var source, out _props);
+            var visual = GetVisual(BootStrapper.Current.Compositor, out var source, out _props);
             var container = visual.RootVisual.Compositor.CreateContainerVisual();
 
             _source = source;
