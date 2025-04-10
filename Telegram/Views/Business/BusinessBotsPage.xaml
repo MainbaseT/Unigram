@@ -151,7 +151,8 @@
                                               Footer="{CustomResource BusinessBotPermissionsInfo}">
                         <controls:SettingsExpander>
                             <controls:SettingsExpander.Header>
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanManageMessages, Mode=TwoWay}"
+                                <CheckBox IsThreeState="True"
+                                          IsChecked="{x:Bind ViewModel.CanManageMessages, Mode=TwoWay}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
                                           CornerRadius="0">
