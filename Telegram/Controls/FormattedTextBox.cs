@@ -128,7 +128,7 @@ namespace Telegram.Controls
 
             if (Document.Selection.Length != 0)
             {
-                MessageHelper.CopyText(null, GetFormattedText(Document.Selection));
+                MessageHelper.CopyText(null, GetFormattedText(Document.Selection, false, false));
             }
         }
 
@@ -138,7 +138,7 @@ namespace Telegram.Controls
 
             if (Document.Selection.Length != 0)
             {
-                MessageHelper.CopyText(null, GetFormattedText(Document.Selection, true));
+                MessageHelper.CopyText(null, GetFormattedText(Document.Selection, true, false));
             }
         }
 
@@ -907,7 +907,7 @@ namespace Telegram.Controls
             }
         }
 
-        public FormattedText GetFormattedText(bool clear = false)
+        public FormattedText GetFormattedText(bool clear = false, bool parseMarkdown = true)
         {
             OnGettingFormattedText();
 
@@ -1053,10 +1053,16 @@ namespace Telegram.Controls
             var entities = TextStyleRun.GetEntities(text, runs);
 
             text = text.Replace('\v', '\n').Replace('\r', '\n');
-            return ClientEx.ParseMarkdown(text, entities);
+
+            if (parseMarkdown)
+            {
+                return ClientEx.ParseMarkdown(text, entities);
+            }
+
+            return new FormattedText(text, entities);
         }
 
-        public FormattedText GetFormattedText(ITextRange selection, bool clear = false)
+        public FormattedText GetFormattedText(ITextRange selection, bool clear = false, bool parseMarkdown = true)
         {
             OnGettingFormattedText();
 
@@ -1202,7 +1208,13 @@ namespace Telegram.Controls
             var entities = TextStyleRun.GetEntities(text, runs);
 
             text = text.Replace('\v', '\n').Replace('\r', '\n');
-            return ClientEx.ParseMarkdown(text, entities);
+
+            if (parseMarkdown)
+            {
+                return ClientEx.ParseMarkdown(text, entities);
+            }
+
+            return new FormattedText(text, entities);
         }
 
         protected virtual void OnGettingFormattedText()

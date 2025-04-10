@@ -49,7 +49,7 @@ namespace Telegram.ViewModels
 
         protected abstract InputMessageReplyTo GetReply(bool clear, bool notify = true);
 
-        public abstract FormattedText GetFormattedText(bool clear);
+        public abstract FormattedText GetFormattedText(bool clear, bool parseMarkdown);
 
         protected abstract void SetFormattedText(FormattedText text);
 
@@ -381,7 +381,7 @@ namespace Telegram.ViewModels
             FormattedText formattedText = null;
             if (caption == null)
             {
-                formattedText = GetFormattedText(true);
+                formattedText = GetFormattedText(true, true);
                 caption = formattedText.Substring(0, ClientService.Options.MessageCaptionLengthMax);
             }
 

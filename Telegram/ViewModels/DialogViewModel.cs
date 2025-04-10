@@ -593,7 +593,7 @@ namespace Telegram.ViewModels
             field.SetScrollingMode(mode, force);
         }
 
-        public override FormattedText GetFormattedText(bool clear = false)
+        public override FormattedText GetFormattedText(bool clear = false, bool parseMarkdown = true)
         {
             var field = TextField;
             if (field == null)
@@ -601,7 +601,7 @@ namespace Telegram.ViewModels
                 return new FormattedText(string.Empty, Array.Empty<TextEntity>());
             }
 
-            return field.GetFormattedText(clear);
+            return field.GetFormattedText(clear, parseMarkdown);
         }
 
         public bool IsEndReached()
@@ -2741,7 +2741,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            var formattedText = GetFormattedText(clear);
+            var formattedText = GetFormattedText(clear, false);
             if (formattedText == null)
             {
                 return;
