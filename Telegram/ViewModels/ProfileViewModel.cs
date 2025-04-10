@@ -1023,7 +1023,7 @@ namespace Telegram.ViewModels
 
             }
 
-            if (ClientService.TryGetUser(Chat, out User user) && user.IsPremium)
+            if (ClientService.TryGetUser(Chat, out User user) && user.IsPremium && user.VerificationStatus?.IsScam is not true && user.VerificationStatus?.IsFake is not true)
             {
                 NavigationService.ShowPopup(new PromoPopup(ClientService, Chat, null), new PremiumSourceFeature(new PremiumFeatureEmojiStatus()));
             }
