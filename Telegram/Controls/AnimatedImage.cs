@@ -1173,7 +1173,7 @@ namespace Telegram.Controls
             if (!_renderingSubscribed)
             {
                 _renderingSubscribed = true;
-                AnimatedImageLoader.Current.Rendering += OnRendering;
+                AnimatedImageLoader.Current.Rendering(this);
             }
         }
 
@@ -1295,7 +1295,7 @@ namespace Telegram.Controls
         protected TimeSpan _interval;
         protected TimeSpan _elapsed;
 
-        private void OnRendering(object sender, object e)
+        public bool OnRendering(object sender, object e)
         {
             //Logger.Debug();
 
@@ -1308,8 +1308,10 @@ namespace Telegram.Controls
             {
                 //Logger.Debug("-=");
                 _renderingSubscribed = false;
-                AnimatedImageLoader.Current.Rendering -= OnRendering;
+                return true;
             }
+
+            return false;
         }
 
         private void OnRendering(object e)
@@ -1609,7 +1611,7 @@ namespace Telegram.Controls
 
         public static void Release()
         {
-            if (_current?._rendering != null)
+            if (_current?._rendering.Count > 0)
             {
                 _current._closed = true;
             }
@@ -1619,32 +1621,16 @@ namespace Telegram.Controls
             }
         }
 
-        private event EventHandler<object> _rendering;
-        public event EventHandler<object> Rendering
+        private readonly List<AnimatedImagePresenter> _rendering = new();
+
+        public void Rendering(AnimatedImagePresenter presenter)
         {
-            add
+            if (_rendering.Count == 0)
             {
-                if (_rendering == null)
-                {
-                    Windows.UI.Xaml.Media.CompositionTarget.Rendering += OnRendering;
-                }
-
-                _rendering += value;
+                Windows.UI.Xaml.Media.CompositionTarget.Rendering += OnRendering;
             }
-            remove
-            {
-                _rendering -= value;
 
-                if (_rendering == null)
-                {
-                    Windows.UI.Xaml.Media.CompositionTarget.Rendering -= OnRendering;
-
-                    if (_closed)
-                    {
-                        _current = null;
-                    }
-                }
-            }
+            _rendering.Add(presenter);
         }
 
         public event EventHandler<WindowActivatedEventArgs> Activated
@@ -1655,7 +1641,23 @@ namespace Telegram.Controls
 
         private void OnRendering(object sender, object e)
         {
-            _rendering?.Invoke(sender, e);
+            for (int i = 0; i < _rendering.Count; i++)
+            {
+                if (_rendering[i].OnRendering(sender, e))
+                {
+                    _rendering.RemoveAt(i--);
+                }
+            }
+
+            if (_rendering.Count == 0)
+            {
+                Windows.UI.Xaml.Media.CompositionTarget.Rendering -= OnRendering;
+
+                if (_closed)
+                {
+                    _current = null;
+                }
+            }
         }
 
         private bool _workStarted;
