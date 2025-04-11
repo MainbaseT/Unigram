@@ -399,11 +399,6 @@ namespace Telegram.Views
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatUnreadMentionCount(chat));
         }
 
-        public void Handle(UpdateMessageContent update)
-        {
-            Handle(update.ChatId, update.MessageId, chat => chat.LastMessage.Content = update.NewContent, (chatView, chat) => chatView.UpdateChatLastMessage(chat));
-        }
-
         public async void Handle(UpdateSecretChat update)
         {
             var response = await _clientService.SendAsync(new CreateSecretChat(update.SecretChat.Id));
@@ -1102,7 +1097,6 @@ namespace Telegram.Views
                 .Subscribe<UpdateForumTopicInfo>(Handle)
                 .Subscribe<UpdateForumTopicReadInbox>(Handle)
                 .Subscribe<UpdateChatUnreadTopicCount>(Handle)
-                //.Subscribe<UpdateMessageContent>(Handle)
                 .Subscribe<UpdateSecretChat>(Handle)
                 .Subscribe<UpdateChatNotificationSettings>(Handle)
                 .Subscribe<UpdatePasscodeLock>(Handle)
