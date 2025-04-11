@@ -220,6 +220,8 @@ namespace Telegram.Controls.Messages.Content
                 Button.Progress = (double)file.Local.DownloadedSize / size;
 
                 Button.Opacity = 1;
+
+                UpdateTexture(message, null);
             }
             else if (file.Remote.IsUploadingActive || message.SendingState is MessageSendingStateFailed || (message.SendingState is MessageSendingStatePending && !file.Remote.IsUploadingCompleted))
             {
@@ -243,6 +245,8 @@ namespace Telegram.Controls.Messages.Content
                 Button.Progress = 0;
 
                 Button.Opacity = 1;
+
+                UpdateTexture(message, null);
             }
             else
             {
