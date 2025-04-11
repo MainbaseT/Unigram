@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Telegram.Common;
+using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Windows.UI.Text;
@@ -137,6 +138,10 @@ namespace Telegram.Controls.Chats
 
             if (e.ClickedItem is EmojiData emoji)
             {
+                SettingsService.Current.Emoji.AddRecentEmoji(emoji.Value);
+                SettingsService.Current.Emoji.SortRecentEmoji();
+                SettingsService.Current.Emoji.SaveRecentEmoji();
+
                 InsertText($"{emoji.Value}");
             }
             else if (e.ClickedItem is Sticker sticker && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
