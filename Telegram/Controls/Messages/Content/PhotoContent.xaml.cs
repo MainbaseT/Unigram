@@ -286,7 +286,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateTexture(MessageViewModel message, PhotoSize photoSize)
         {
-            if (_textureId == photoSize.Photo.Id)
+            if (_textureId == (photoSize?.Photo.Id ?? 0))
             {
                 return;
             }
