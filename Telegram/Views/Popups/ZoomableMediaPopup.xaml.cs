@@ -79,8 +79,8 @@ namespace Telegram.Views.Popups
             _lastItem = sticker;
 
             Title.Text = sticker.Emoji;
-            Aspect.MaxWidth = 180;
-            Aspect.MaxHeight = 180;
+            Aspect.MaxWidth = 224;
+            Aspect.MaxHeight = 224;
             Aspect.Constraint = sticker;
 
             if (sticker.Thumbnail != null)
@@ -141,7 +141,7 @@ namespace Telegram.Views.Popups
                 Container.Child = new AnimatedImage
                 {
                     AutoPlay = true,
-                    FrameSize = new Size(180, 180),
+                    FrameSize = new Size(224, 224),
                     DecodeFrameType = DecodePixelType.Logical,
                     IsCachingEnabled = true,
                     Source = new LocalFileSource(sticker.StickerValue)
