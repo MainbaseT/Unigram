@@ -708,8 +708,8 @@ namespace Telegram.Controls.Messages
             _interacting = true;
             ConfigureAnimations(_visual);
 
-            var master = this.GetParent<MasterDetailView>();
-            master?.ConfigureAnimations(_tracker);
+            //var master = this.GetParent<MasterDetailView>();
+            //master?.ConfigureAnimations(_tracker);
         }
 
         #endregion
