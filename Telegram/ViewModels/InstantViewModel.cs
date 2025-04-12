@@ -10,7 +10,6 @@ using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
-using Telegram.Services.Factories;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
 using Telegram.Views;
@@ -21,15 +20,15 @@ namespace Telegram.ViewModels
     public partial class InstantViewModel : MultiViewModelBase
     {
         private readonly ITranslateService _translateService;
-        private readonly IMessageFactory _messageFactory;
+        private readonly IPlaybackService _playbackService;
 
         private readonly IMessageDelegate _messageDelegate;
 
-        public InstantViewModel(IClientService clientService, ISettingsService settingsService, IStorageService storageService, ITranslateService translateService, IMessageFactory messageFactory, IEventAggregator aggregator)
+        public InstantViewModel(IClientService clientService, ISettingsService settingsService, IStorageService storageService, ITranslateService translateService, IPlaybackService playbackService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
             _translateService = translateService;
-            _messageFactory = messageFactory;
+            _playbackService = playbackService;
             _gallery = new InstantGalleryViewModel(clientService, storageService, aggregator);
 
             _messageDelegate = new InstantMessageDelegate(this);
@@ -56,7 +55,12 @@ namespace Telegram.ViewModels
 
         public MessageViewModel CreateMessage(Message message)
         {
-            return _messageFactory.Create(_messageDelegate, null, message, false);
+            if (message == null)
+            {
+                return null;
+            }
+
+            return new MessageViewModel(ClientService, _playbackService, _messageDelegate, null, null, message, false);
         }
 
         private InstantGalleryViewModel _gallery;

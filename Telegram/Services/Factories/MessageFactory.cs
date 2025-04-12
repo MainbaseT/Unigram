@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Entities;
 using Telegram.Td.Api;
-using Telegram.ViewModels;
-using Telegram.ViewModels.Delegates;
 using Windows.Media.Effects;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
@@ -20,34 +18,8 @@ using static Telegram.Services.GenerationService;
 
 namespace Telegram.Services.Factories
 {
-    public interface IMessageFactory
+    public static class MessageFactory
     {
-        MessageViewModel Create(IMessageDelegate delegato, Chat chat, Message message, bool processText);
-    }
-
-    public partial class MessageFactory : IMessageFactory
-    {
-        private readonly IClientService _clientService;
-        private readonly IPlaybackService _playbackService;
-
-        public MessageFactory(IClientService clientService, IPlaybackService playbackService)
-        {
-            _clientService = clientService;
-            _playbackService = playbackService;
-        }
-
-        public MessageViewModel Create(IMessageDelegate delegato, Chat chat, Message message, bool processText)
-        {
-            if (message == null)
-            {
-                return null;
-            }
-
-            return new MessageViewModel(_clientService, _playbackService, delegato, chat, message, processText);
-        }
-
-
-
         public static async Task<InputMessageFactory> CreatePhotoAsync(StoragePhoto photo, bool captionAboveMedia = false, bool spoiler = false, MessageSelfDestructType ttl = null, BitmapEditState editState = null)
         {
             var conversionType = ConversionType.Compress;

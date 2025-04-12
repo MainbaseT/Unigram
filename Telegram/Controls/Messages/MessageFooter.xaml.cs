@@ -439,10 +439,13 @@ namespace Telegram.Controls.Messages
                 var maxId = 0L;
                 var messageHash = message.ChatId ^ message.Id;
 
-                var chat = message.Chat;
-                if (chat != null)
+                if (message.Topic != null)
                 {
-                    maxId = chat.LastReadOutboxMessageId;
+                    maxId = message.Topic.LastReadOutboxMessageId;
+                }
+                else if (message.Chat != null)
+                {
+                    maxId = message.Chat.LastReadOutboxMessageId;
                 }
 
                 if (message.SendingState is MessageSendingStateFailed)

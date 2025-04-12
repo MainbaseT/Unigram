@@ -7,206 +7,17 @@ using Telegram.Td.Api;
 
 namespace Telegram.Services
 {
-    internal class Test2
+    internal class ForumTopicService
     {
-        private readonly IClientService _clientService;
-        private readonly IEventAggregator _aggregator;
+        public static readonly long GeneralId = 1 << 20;
 
-        private readonly Dictionary<long, Test> _forums = new();
-
-        public Test2(IClientService clientService, IEventAggregator aggregator)
-        {
-            _clientService = clientService;
-            _aggregator = aggregator;
-        }
-
-        public void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds)
-        {
-            if (_forums.TryGetValue(chatId, out Test manager))
-            {
-                manager.ViewMessages(messageThreadId, messageIds);
-            }
-        }
-
-        public Task<ForuminoTopicinos> GetForumTopicsAsync(long chatId, int offset, int limit)
-        {
-            _forums.TryGetValue(chatId, out Test manager);
-
-            if (manager == null)
-            {
-                manager = new Test(_clientService, _aggregator, chatId);
-                _forums[chatId] = manager;
-            }
-
-            return manager.GetForumTopicsAsync(offset, limit);
-        }
-
-        public ForuminoTopicino GetTopic(long chatId, long id)
-        {
-            if (_forums.TryGetValue(chatId, out Test manager))
-            {
-                return manager.GetTopic(id);
-            }
-
-            return null;
-        }
-
-        public IEnumerable<ForuminoTopicino> GetTopics(long chatId, IEnumerable<long> ids)
-        {
-            if (_forums.TryGetValue(chatId, out Test manager))
-            {
-                return manager.GetTopics(ids);
-            }
-
-            return Array.Empty<ForuminoTopicino>();
-        }
-
-        public int UnreadCount(long chatId)
-        {
-            if (_forums.TryGetValue(chatId, out Test manager))
-            {
-                return manager.UnreadCount;
-            }
-
-            return 0;
-        }
-
-        private void UpdateForumTopic(long chatId, Action<Test> update)
-        {
-            if (_forums.TryGetValue(chatId, out Test manager))
-            {
-                update(manager);
-            }
-            else
-            {
-
-            }
-        }
-
-        public void UpdateForumTopicInfo(long chatId, ForumTopicInfo info)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateForumTopicInfo(info));
-        }
-
-        public void UpdateNewChat(Chat chat)
-        {
-            if (chat.Type is ChatTypeSupergroup && _clientService.TryGetSupergroup(chat, out Supergroup supergroup))
-            {
-                if (supergroup.IsForum && !_forums.ContainsKey(chat.Id))
-                {
-                    var manager = new Test(_clientService, _aggregator, chat.Id);
-                    _forums[chat.Id] = manager;
-
-                    manager.GetForumTopicsAsync(0, 20);
-                }
-            }
-        }
-
-        public void UpdateNewMessage(Message message)
-        {
-            UpdateForumTopic(message.ChatId, manager => manager.UpdateNewMessage(message));
-        }
-
-        public void UpdateDeleteMessages(long chatId, IList<long> messageIds, bool isPermanent, bool fromCache)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateDeleteMessages(messageIds, isPermanent, fromCache));
-        }
-
-        public void UpdateMessageSendSucceeded(Message message, long oldMessageId)
-        {
-            UpdateForumTopic(message.ChatId, manager => manager.UpdateMessageSendSucceeded(message, oldMessageId));
-        }
-
-        public void UpdateMessageSendFailed(Message message, long oldMessageId, Error error)
-        {
-            UpdateForumTopic(message.ChatId, manager => manager.UpdateMessageSendFailed(message, oldMessageId, error));
-        }
-
-        public void UpdateMessageContent(long chatId, long messageId, MessageContent newContent)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateMessageContent(messageId, newContent));
-        }
-
-        public void UpdateMessageEdited(long chatId, long messageId, int editDate, ReplyMarkup replyMarkup)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateMessageEdited(messageId, editDate, replyMarkup));
-        }
-
-        public void UpdateMessageIsPinned(long chatId, long messageId, bool isPinned)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateMessageIsPinned(messageId, isPinned));
-        }
-
-        public void UpdateMessageInteractionInfo(long chatId, long messageId, MessageInteractionInfo interactionInfo)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateMessageInteractionInfo(messageId, interactionInfo));
-        }
-
-        public void UpdateMessageContentOpened(long chatId, long messageId)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateMessageContentOpened(messageId));
-        }
-
-        public void UpdateMessageMentionRead(long chatId, long messageId, int unreadMentionCount)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateMessageMentionRead(messageId, unreadMentionCount));
-        }
-
-        public void UpdateMessageUnreadReactions(long chatId, long messageId, IList<UnreadReaction> unreadReactions, int unreadReactionCount)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateMessageUnreadReactions(messageId, unreadReactions, unreadReactionCount));
-        }
-
-        public void UpdateMessageFactCheck(long chatId, long messageId, FactCheck factCheck)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateMessageFactCheck(messageId, factCheck));
-        }
-
-        public void UpdateChatDraftMessage(long chatId, DraftMessage draftMessage)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateChatDraftMessage(draftMessage));
-        }
-
-        public void UpdateChatNotificationSettings(long chatId, ChatNotificationSettings notificationSettings)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateChatNotificationSettings(notificationSettings));
-        }
-
-        public void UpdateChatLastMessage(long chatId, Message lastMessage)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateChatLastMessage(lastMessage));
-        }
-
-        public void UpdateChatReadInbox(long chatId, long lastReadInboxMessageId, int unreadCount)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateChatReadInbox(lastReadInboxMessageId, unreadCount));
-        }
-
-        public void UpdateChatReadOutbox(long chatId, long lastReadOutboxMessageId)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateChatReadOutbox(lastReadOutboxMessageId));
-        }
-
-        public void UpdateChatUnreadMentionCount(long chatId, long unreadMentionCount)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateChatUnreadMentionCount(unreadMentionCount));
-        }
-
-        public void UpdateChatUnreadReactionCount(long chatId, long unreadReactionCount)
-        {
-            UpdateForumTopic(chatId, manager => manager.UpdateChatUnreadReactionCount(unreadReactionCount));
-        }
-    }
-
-    internal class Test
-    {
         private readonly IClientService _clientService;
         private readonly IEventAggregator _aggregator;
 
         private readonly long _chatId;
 
-        private readonly Dictionary<long, ForuminoTopicino> _topics = new();
-        private readonly Dictionary<long, ForuminoTopicino> _messages = new();
+        private readonly Dictionary<long, ForumTopic> _topics = new();
+        private readonly Dictionary<long, ForumTopic> _messages = new();
 
         private readonly SortedSet<OrderedForumTopic> _order = new();
         private readonly List<long> _pinnedTopicIds = new();
@@ -216,7 +27,7 @@ namespace Telegram.Services
 
         private bool _haveFullList;
 
-        public Test(IClientService clientService, IEventAggregator aggregator, long chatId)
+        public ForumTopicService(IClientService clientService, IEventAggregator aggregator, long chatId)
         {
             _clientService = clientService;
             _aggregator = aggregator;
@@ -235,7 +46,7 @@ namespace Telegram.Services
             }
         }
 
-        private void UpdateTopicOrder(ForuminoTopicino topic, bool publish)
+        private void UpdateTopicOrder(ForumTopic topic, bool publish)
         {
             var order = Order(topic);
 
@@ -260,13 +71,13 @@ namespace Telegram.Services
 
         public void ViewMessages(long messageThreadId, IList<long> messageIds)
         {
-            if (_topics.TryGetValue(messageThreadId, out ForuminoTopicino topic))
+            if (_topics.TryGetValue(messageThreadId, out ForumTopic topic))
             {
                 UpdateReadInbox(topic, messageIds.Max());
             }
         }
 
-        private void UpdateReadInbox(ForuminoTopicino topic, long lastReadInboxMessageId)
+        private void UpdateReadInbox(ForumTopic topic, long lastReadInboxMessageId)
         {
             if (lastReadInboxMessageId > topic.LastReadInboxMessageId)
             {
@@ -275,7 +86,7 @@ namespace Telegram.Services
             }
         }
 
-        private void UpdateUnreadCount(ForuminoTopicino topic)
+        private void UpdateUnreadCount(ForumTopic topic)
         {
             if (topic.LastMessage?.Id <= topic.LastReadInboxMessageId && topic.UnreadCount > 0)
             {
@@ -289,26 +100,35 @@ namespace Telegram.Services
             }
         }
 
-        private void UpdateUnreadTopicCount(ForuminoTopicino topic, bool unread)
+        private void UpdateUnreadTopicCount(ForumTopic topic, bool unread)
         {
             bool update;
+            int count;
             lock (_unreadTopicIds)
             {
                 update = unread
                     ? _unreadTopicIds.Add(topic.Info.MessageThreadId)
                     : _unreadTopicIds.Remove(topic.Info.MessageThreadId);
+
+                count = _unreadTopicIds.Count;
             }
 
             if (update)
             {
+                // This is done to update unread counts for folders
+                if (count == 0 && _clientService.TryGetChat(_chatId, out Chat chat))
+                {
+                    _clientService.Send(new ViewMessages(_chatId, new[] { chat.LastMessage?.Id ?? 0 }, new MessageSourceOther(), true));
+                }
+
                 _aggregator.Publish(new UpdateChatUnreadTopicCount(_chatId, UnreadCount));
                 _aggregator.Publish(new UpdateForumTopicReadInbox(_chatId, topic.Info.MessageThreadId, topic.LastReadInboxMessageId, topic.UnreadCount));
             }
         }
 
-        public ForuminoTopicino GetTopic(long id)
+        public ForumTopic GetTopic(long id)
         {
-            if (_topics.TryGetValue(id, out ForuminoTopicino value))
+            if (_topics.TryGetValue(id, out ForumTopic value))
             {
                 return value;
             }
@@ -316,7 +136,7 @@ namespace Telegram.Services
             return null;
         }
 
-        public IEnumerable<ForuminoTopicino> GetTopics(IEnumerable<long> ids)
+        public IEnumerable<ForumTopic> GetTopics(IEnumerable<long> ids)
         {
             foreach (var id in ids)
             {
@@ -411,12 +231,10 @@ namespace Telegram.Services
                     _nextOffsetMessageId = forumTopics.NextOffsetMessageId;
                     _nextOffsetMessageThreadId = forumTopics.NextOffsetMessageThreadId;
 
-                    var topics = new List<ForuminoTopicino>(forumTopics.Topics.Count);
+                    var topics = new List<ForumTopic>(forumTopics.Topics.Count);
 
-                    foreach (var item in forumTopics.Topics)
+                    foreach (var topic in forumTopics.Topics)
                     {
-                        var topic = new ForuminoTopicino(item);
-
                         _topics[topic.Info.MessageThreadId] = topic;
                         _messages[topic.LastMessage.Id] = topic;
 
@@ -460,13 +278,8 @@ namespace Telegram.Services
             return tsc.Task;
         }
 
-        private long Order(ForuminoTopicino topic)
+        private long Order(ForumTopic topic)
         {
-            if (topic.IsDeleted)
-            {
-                return 0;
-            }
-
             var index = _pinnedTopicIds.IndexOf(topic.Info.MessageThreadId);
             if (index != -1)
             {
@@ -480,9 +293,38 @@ namespace Telegram.Services
             return topic.Info.MessageThreadId;
         }
 
+        public void UpdateForumTopic(UpdateForumTopic update)
+        {
+            if (_topics.TryGetValue(update.MessageThreadId, out ForumTopic topic))
+            {
+                if (topic.LastReadOutboxMessageId != update.LastReadOutboxMessageId)
+                {
+                    topic.LastReadOutboxMessageId = update.LastReadOutboxMessageId;
+                    _aggregator.Publish(new UpdateForumTopicReadOutbox(_chatId, update.MessageThreadId, update.LastReadOutboxMessageId));
+                }
+
+                if (topic.IsPinned != update.IsPinned)
+                {
+                    topic.IsPinned = update.IsPinned;
+
+                    if (topic.IsPinned)
+                    {
+                        _pinnedTopicIds.Insert(0, update.MessageThreadId);
+                    }
+                    else
+                    {
+                        _pinnedTopicIds.Remove(update.MessageThreadId);
+                        UpdateTopicOrder(topic, true);
+                    }
+
+                    UpdatePinnedTopics();
+                }
+            }
+        }
+
         public void UpdateForumTopicInfo(ForumTopicInfo info)
         {
-            if (_topics.TryGetValue(info.MessageThreadId, out ForuminoTopicino topic))
+            if (_topics.TryGetValue(info.MessageThreadId, out ForumTopic topic))
             {
                 topic.Info = info;
             }
@@ -490,7 +332,7 @@ namespace Telegram.Services
 
         private void UpdateNewTopic(BaseObject response)
         {
-            ForuminoTopicino topic;
+            ForumTopic topic;
             ForumTopic newTopic = response as ForumTopic;
 
             if (newTopic == null)
@@ -516,7 +358,7 @@ namespace Telegram.Services
             }
             else
             {
-                topic = new ForuminoTopicino(newTopic);
+                topic = newTopic;
             }
 
             _topics[topic.Info.MessageThreadId] = topic;
@@ -545,9 +387,9 @@ namespace Telegram.Services
 
             var messageThreadId = message.IsTopicMessage
                 ? message.MessageThreadId
-                : ForuminoTopicino.GeneralId;
+                : GeneralId;
 
-            if (_topics.TryGetValue(messageThreadId, out ForuminoTopicino topic))
+            if (_topics.TryGetValue(messageThreadId, out ForumTopic topic))
             {
                 UpdateLastMessage(topic, message);
             }
@@ -567,7 +409,7 @@ namespace Telegram.Services
             //}
         }
 
-        private void UpdateLastMessage(ForuminoTopicino topic, Message message)
+        private void UpdateLastMessage(ForumTopic topic, Message message)
         {
             if (topic.LastMessage == null || topic.LastMessage?.Id < message.Id)
             {
@@ -599,7 +441,7 @@ namespace Telegram.Services
 
             foreach (long messageId in messageIds)
             {
-                if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+                if (_messages.TryGetValue(messageId, out ForumTopic topic))
                 {
                     if (topic.LastMessage?.Id == messageId)
                     {
@@ -630,7 +472,6 @@ namespace Telegram.Services
 
                                 topic.LastMessage = null;
                                 topic.IsPinned = false;
-                                topic.IsDeleted = true;
                             }
 
                             if (topic.LastMessage != null)
@@ -640,7 +481,7 @@ namespace Telegram.Services
 
                             UpdateTopicOrder(topic, true);
 
-                            if (topic.LastMessage == null && !topic.IsDeleted)
+                            if (topic.LastMessage == null && topic.Order != 0)
                             {
                                 _clientService.Send(new GetForumTopic(_chatId, topic.Info.MessageThreadId), UpdateNewTopic);
                             }
@@ -678,7 +519,7 @@ namespace Telegram.Services
             // Important
             // Maybe update last message
 
-            if (_messages.TryGetValue(oldMessageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(oldMessageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == oldMessageId)
                 {
@@ -700,7 +541,7 @@ namespace Telegram.Services
             // Important
             // Maybe update last message
 
-            if (_messages.TryGetValue(oldMessageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(oldMessageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == oldMessageId)
                 {
@@ -715,7 +556,7 @@ namespace Telegram.Services
             // Important
             // Maybe update last message
 
-            if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(messageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == messageId)
                 {
@@ -733,7 +574,7 @@ namespace Telegram.Services
         {
             // Maybe update last message
 
-            if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(messageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == messageId)
                 {
@@ -747,7 +588,7 @@ namespace Telegram.Services
         {
             // Maybe update last message
 
-            if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(messageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == messageId)
                 {
@@ -761,7 +602,7 @@ namespace Telegram.Services
         {
             // Maybe update last message
 
-            if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(messageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == messageId)
                 {
@@ -775,7 +616,7 @@ namespace Telegram.Services
         {
             // Maybe update last message
 
-            if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(messageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == messageId)
                 {
@@ -790,7 +631,7 @@ namespace Telegram.Services
             // Important
             // Update UnreadMentionCount
 
-            if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(messageId, out ForumTopic topic))
             {
                 // Update topic unreadMentionCount
                 // Deliver update UpdateForumTopicMentionRead;
@@ -804,7 +645,7 @@ namespace Telegram.Services
 
             // Maybe update last message
 
-            if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(messageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == messageId)
                 {
@@ -821,7 +662,7 @@ namespace Telegram.Services
         {
             // Maybe update last message
 
-            if (_messages.TryGetValue(messageId, out ForuminoTopicino topic))
+            if (_messages.TryGetValue(messageId, out ForumTopic topic))
             {
                 if (topic.LastMessage?.Id == messageId)
                 {
@@ -831,44 +672,12 @@ namespace Telegram.Services
             }
         }
 
-        public void UpdateChatDraftMessage(DraftMessage draftMessage)
-        {
-            // Not supported
-            // Update draft message
-            // Deliver UpdateForumTopicDraftMessage, UpdateForumTopicPosition
-        }
-
-        public void UpdateChatNotificationSettings(ChatNotificationSettings notificationSettings)
-        {
-            // Not supported
-        }
-
         public void UpdateChatLastMessage(Message message)
         {
             if (message != null)
             {
                 UpdateNewMessage(message);
             }
-        }
-
-        public void UpdateChatReadInbox(long lastReadInboxMessageId, int unreadCount)
-        {
-            // Not supported
-        }
-
-        public void UpdateChatReadOutbox(long lastReadOutboxMessageId)
-        {
-            // Not supported
-        }
-
-        public void UpdateChatUnreadMentionCount(long unreadMentionCount)
-        {
-            // Not supported
-        }
-
-        public void UpdateChatUnreadReactionCount(long unreadReactionCount)
-        {
-            // Not supported
         }
 
         private readonly struct OrderedForumTopic : IComparable<OrderedForumTopic>
@@ -923,7 +732,7 @@ namespace Telegram.Td.Api
             LastMessage = lastMessage;
         }
 
-        public UpdateForumTopicLastMessage(long chatId, ForuminoTopicino topic)
+        public UpdateForumTopicLastMessage(long chatId, ForumTopic topic)
         {
             ChatId = chatId;
             MessageThreadId = topic.Info.MessageThreadId;
@@ -1014,83 +823,5 @@ namespace Telegram.Td.Api
         public int TotalCount { get; set; }
 
         public IList<long> TopicIds { get; set; }
-    }
-
-    public sealed class ForuminoTopicino
-    {
-        public static readonly long GeneralId = 1 << 20;
-
-        public ForuminoTopicino(ForumTopic topic)
-        {
-            Id = topic.Info.MessageThreadId;
-            Order = -1;
-
-            DraftMessage = topic.DraftMessage;
-            NotificationSettings = topic.NotificationSettings;
-            UnreadReactionCount = topic.UnreadReactionCount;
-            UnreadMentionCount = topic.UnreadMentionCount;
-            LastReadInboxMessageId = topic.LastReadInboxMessageId;
-            LastReadOutboxMessageId = topic.LastReadOutboxMessageId;
-            UnreadCount = topic.UnreadCount;
-            IsPinned = topic.IsPinned;
-            LastMessage = topic.LastMessage;
-            Info = topic.Info;
-        }
-
-        public long Id { get; set; }
-
-        public long Order { get; set; }
-
-        public bool IsDeleted { get; set; }
-
-        /// <summary>
-        /// A draft of a message in the topic; may be null if none.
-        /// </summary>
-        public DraftMessage DraftMessage { get; set; }
-
-        /// <summary>
-        /// Notification settings for the topic.
-        /// </summary>
-        public ChatNotificationSettings NotificationSettings { get; set; }
-
-        /// <summary>
-        /// Number of messages with unread reactions in the topic.
-        /// </summary>
-        public int UnreadReactionCount { get; set; }
-
-        /// <summary>
-        /// Number of unread messages with a mention/reply in the topic.
-        /// </summary>
-        public int UnreadMentionCount { get; set; }
-
-        /// <summary>
-        /// Identifier of the last read outgoing message.
-        /// </summary>
-        public long LastReadOutboxMessageId { get; set; }
-
-        /// <summary>
-        /// Identifier of the last read incoming message.
-        /// </summary>
-        public long LastReadInboxMessageId { get; set; }
-
-        /// <summary>
-        /// Number of unread messages in the topic.
-        /// </summary>
-        public int UnreadCount { get; set; }
-
-        /// <summary>
-        /// True, if the topic is pinned in the topic list.
-        /// </summary>
-        public bool IsPinned { get; set; }
-
-        /// <summary>
-        /// Last message in the topic; may be null if unknown.
-        /// </summary>
-        public Message LastMessage { get; set; }
-
-        /// <summary>
-        /// Basic information about the topic.
-        /// </summary>
-        public ForumTopicInfo Info { get; set; }
     }
 }

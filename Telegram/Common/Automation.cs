@@ -214,7 +214,7 @@ namespace Telegram.Common
         {
             if (message.IsService() && clientService.TryGetChat(message.ChatId, out Chat chat))
             {
-                return MessageService.GetText(new MessageViewModel(clientService, null, null, chat, message)) + ", ";
+                return MessageService.GetText(new MessageViewModel(clientService, null, null, chat, null, message)) + ", ";
             }
 
             if (message.Content is MessageAlbum album)

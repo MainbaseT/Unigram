@@ -648,7 +648,7 @@ namespace Telegram.Controls
             }
             else if (ViewModel.Topic != null)
             {
-                Title.Text = ViewModel.Topic.Name;
+                Title.Text = ViewModel.Topic.Info.Name;
             }
             else if (chat.Id == ViewModel.ClientService.Options.MyId)
             {
@@ -669,7 +669,7 @@ namespace Telegram.Controls
             else if (ViewModel.Topic != null)
             {
                 FindName(nameof(Icon));
-                Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.Topic.Icon.CustomEmojiId);
+                Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.Topic.Info.Icon.CustomEmojiId);
                 Photo.Clear();
             }
             else

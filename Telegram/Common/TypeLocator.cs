@@ -25,7 +25,6 @@ namespace Telegram.Views
         private Telegram.Services.IShortcutsService _shortcutsService;
         private Telegram.Services.ILocationService _locationService;
         private Telegram.Services.IThemeService _themeService;
-        private Telegram.Services.Factories.IMessageFactory _messageFactory;
         private Telegram.Services.IViewService _viewService;
         private Telegram.Services.IStorageService _storageService;
         private Telegram.Services.ITranslateService _translateService;
@@ -179,10 +178,7 @@ namespace Telegram.Views
                         _translateService ??= new Telegram.Services.TranslateService(
                             _clientService,
                             _settingsService,
-                            _eventAggregator),
-                        _messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                            _clientService,
-                            _playbackService));
+                            _eventAggregator));
                 case "Telegram.ViewModels.DialogThreadViewModel":
                     return (T)(object)new Telegram.ViewModels.DialogThreadViewModel(
                         _clientService,
@@ -197,10 +193,7 @@ namespace Telegram.Views
                         _translateService ??= new Telegram.Services.TranslateService(
                             _clientService,
                             _settingsService,
-                            _eventAggregator),
-                        _messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                            _clientService,
-                            _playbackService));
+                            _eventAggregator));
                 case "Telegram.ViewModels.DialogBusinessRepliesViewModel":
                     return (T)(object)new Telegram.ViewModels.DialogBusinessRepliesViewModel(
                         _clientService,
@@ -215,10 +208,7 @@ namespace Telegram.Views
                         _translateService ??= new Telegram.Services.TranslateService(
                             _clientService,
                             _settingsService,
-                            _eventAggregator),
-                        _messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                            _clientService,
-                            _playbackService));
+                            _eventAggregator));
                 case "Telegram.ViewModels.DialogSavedViewModel":
                     return (T)(object)new Telegram.ViewModels.DialogSavedViewModel(
                         _clientService,
@@ -233,10 +223,7 @@ namespace Telegram.Views
                         _translateService ??= new Telegram.Services.TranslateService(
                             _clientService,
                             _settingsService,
-                            _eventAggregator),
-                        _messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                            _clientService,
-                            _playbackService));
+                            _eventAggregator));
                 case "Telegram.ViewModels.DialogPinnedViewModel":
                     return (T)(object)new Telegram.ViewModels.DialogPinnedViewModel(
                         _clientService,
@@ -251,10 +238,7 @@ namespace Telegram.Views
                         _translateService ??= new Telegram.Services.TranslateService(
                             _clientService,
                             _settingsService,
-                            _eventAggregator),
-                        _messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                            _clientService,
-                            _playbackService));
+                            _eventAggregator));
                 case "Telegram.ViewModels.DialogScheduledViewModel":
                     return (T)(object)new Telegram.ViewModels.DialogScheduledViewModel(
                         _clientService,
@@ -269,10 +253,7 @@ namespace Telegram.Views
                         _translateService ??= new Telegram.Services.TranslateService(
                             _clientService,
                             _settingsService,
-                            _eventAggregator),
-                        _messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                            _clientService,
-                            _playbackService));
+                            _eventAggregator));
                 case "Telegram.ViewModels.DialogEventLogViewModel":
                     return (T)(object)new Telegram.ViewModels.DialogEventLogViewModel(
                         _clientService,
@@ -287,10 +268,7 @@ namespace Telegram.Views
                         _translateService ??= new Telegram.Services.TranslateService(
                             _clientService,
                             _settingsService,
-                            _eventAggregator),
-                        _messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                            _clientService,
-                            _playbackService));
+                            _eventAggregator));
                 case "Telegram.ViewModels.Drawers.AnimationDrawerViewModel":
                     return (T)(object)new Telegram.ViewModels.Drawers.AnimationDrawerViewModel(
                         _clientService,
@@ -497,9 +475,7 @@ namespace Telegram.Views
                             _clientService,
                             _settingsService,
                             _eventAggregator),
-                        _messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                            _clientService,
-                            _playbackService),
+                        _playbackService,
                         _eventAggregator);
                 case "Telegram.ViewModels.LogOutViewModel":
                     return (T)(object)new Telegram.ViewModels.LogOutViewModel(
@@ -954,10 +930,6 @@ namespace Telegram.Views
                         _clientService,
                         _settingsService,
                         _eventAggregator));
-                case "Telegram.Services.Factories.IMessageFactory":
-                    return (T)(_messageFactory ??= new Telegram.Services.Factories.MessageFactory(
-                        _clientService,
-                        _playbackService));
                 case "Telegram.Services.IViewService":
                     return (T)(_viewService ??= new Telegram.Services.ViewService());
                 case "Telegram.Services.IStorageService":

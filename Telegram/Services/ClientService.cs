@@ -53,8 +53,9 @@ namespace Telegram.Services
         Task<Chats> GetStoryListAsync(StoryList storyList, int offset, int limit);
         Task<ForuminoTopicinos> GetForumTopicsAsync(long chatId, int offset, int limit);
 
-        ForuminoTopicino GetTopic(long chatId, long id);
-        IEnumerable<ForuminoTopicino> GetTopics(long chatId, IEnumerable<long> ids);
+        ForumTopic GetTopic(long chatId, long id);
+        bool TryGetTopic(long chatId, long id, out ForumTopic topic);
+        IEnumerable<ForumTopic> GetTopics(long chatId, IEnumerable<long> ids);
         int UnreadTopicCount(long chatId);
 
         void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
@@ -225,9 +226,6 @@ namespace Telegram.Services
         bool TryGetSupergroupFull(long id, out SupergroupFullInfo value);
         bool TryGetSupergroupFull(Chat chat, out SupergroupFullInfo value);
 
-        ForumTopicInfo GetTopicInfo(long chatId, long messageThreadId);
-        bool TryGetTopicInfo(long chatId, long messageThreadId, out ForumTopicInfo value);
-
         MessageTag GetSavedMessagesTag(ReactionType reaction);
         bool TryGetSavedMessagesTag(ReactionType reaction, out MessageTag value);
 
@@ -305,7 +303,7 @@ namespace Telegram.Services
         private readonly Dictionary<long, Supergroup> _supergroups = new();
         private readonly ConcurrentDictionary<long, SupergroupFullInfo> _supergroupsFull = new();
 
-        private readonly Dictionary<ChatMessageId, ForumTopicInfo> _topics = new();
+        private readonly Dictionary<long, ForumTopicService> _forums = new();
 
         private readonly ConcurrentDictionary<int, ChatListUnreadCount> _unreadCounts = new();
 
@@ -366,8 +364,6 @@ namespace Telegram.Services
         private static volatile Task _longRunningTask;
         private static readonly object _longRunningLock = new();
 
-        private readonly Test2 _test;
-
         public ClientService(int session, bool online, IDeviceInfoService deviceInfoService, ISettingsService settings, ILocaleService locale, IEventAggregator aggregator)
         {
             _session = session;
@@ -377,8 +373,6 @@ namespace Telegram.Services
             _options = new OptionsService(this);
             _aggregator = aggregator;
 
-            _test = new Test2(this, aggregator);
-
             _processFilesDelegate = new Action<BaseObject>(ProcessFiles);
 
             Initialize(online);
@@ -386,31 +380,92 @@ namespace Telegram.Services
 
         public Task<ForuminoTopicinos> GetForumTopicsAsync(long chatId, int offset, int limit)
         {
-            return _test.GetForumTopicsAsync(chatId, offset, limit);
+            _forums.TryGetValue(chatId, out ForumTopicService manager);
+
+            if (manager == null)
+            {
+                manager = new ForumTopicService(this, _aggregator, chatId);
+                _forums[chatId] = manager;
+            }
+
+            return manager.GetForumTopicsAsync(offset, limit);
         }
 
-        public ForuminoTopicino GetTopic(long chatId, long id)
+        public bool TryGetTopic(long chatId, long id, out ForumTopic topic)
         {
-            return _test.GetTopic(chatId, id);
+            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
+            {
+                topic = manager.GetTopic(id);
+                return topic != null;
+            }
+
+            topic = null;
+            return false;
         }
 
-        public IEnumerable<ForuminoTopicino> GetTopics(long chatId, IEnumerable<long> ids)
+        public ForumTopic GetTopic(long chatId, long id)
         {
-            return _test.GetTopics(chatId, ids);
+            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
+            {
+                return manager.GetTopic(id);
+            }
+
+            return null;
+        }
+
+        public IEnumerable<ForumTopic> GetTopics(long chatId, IEnumerable<long> ids)
+        {
+            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
+            {
+                return manager.GetTopics(ids);
+            }
+
+            return Array.Empty<ForumTopic>();
+        }
+
+        private void UpdateForumTopic(long chatId, Action<ForumTopicService> update)
+        {
+            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
+            {
+                update(manager);
+            }
+            else
+            {
+
+            }
+        }
+
+        public void UpdateForumTopicNewChat(Chat chat)
+        {
+            if (chat.Type is ChatTypeSupergroup && TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                if (supergroup.IsForum && !_forums.ContainsKey(chat.Id))
+                {
+                    var manager = new ForumTopicService(this, _aggregator, chat.Id);
+                    _forums[chat.Id] = manager;
+
+                    manager.GetForumTopicsAsync(0, 20);
+                }
+            }
         }
 
         public int UnreadTopicCount(long chatId)
         {
-            return _test.UnreadCount(chatId);
+            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
+            {
+                return manager.UnreadCount;
+            }
+
+            return 0;
         }
 
         public void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead)
         {
             Send(new ViewMessages(chatId, messageIds, source, forceRead));
 
-            if (source is MessageSourceForumTopicHistory)
+            if (source is MessageSourceForumTopicHistory && _forums.TryGetValue(chatId, out ForumTopicService manager))
             {
-                _test.ViewMessages(chatId, messageThreadId, messageIds);
+                manager.ViewMessages(messageThreadId, messageIds);
             }
         }
 
@@ -1813,7 +1868,7 @@ namespace Telegram.Services
                 var chat = GetChat(id);
                 if (chat != null)
                 {
-                    _test.UpdateNewChat(chat);
+                    UpdateForumTopicNewChat(chat);
                     yield return chat;
                 }
             }
@@ -2215,23 +2270,6 @@ namespace Telegram.Services
 
 
 
-        public ForumTopicInfo GetTopicInfo(long chatId, long messageThreadId)
-        {
-            if (_topics.TryGetValue(new ChatMessageId(chatId, messageThreadId), out ForumTopicInfo value))
-            {
-                return value;
-            }
-
-            return null;
-        }
-
-        public bool TryGetTopicInfo(long chatId, long messageThreadId, out ForumTopicInfo value)
-        {
-            return _topics.TryGetValue(new ChatMessageId(chatId, messageThreadId), out value);
-        }
-
-
-
         public MessageTag GetSavedMessagesTag(ReactionType reaction)
         {
             lock (_savedMessagesTags)
@@ -2503,7 +2541,7 @@ namespace Telegram.Services
                             Monitor.Exit(value);
                         }
 
-                        _test.UpdateChatLastMessage(updateChatLastMessage.ChatId, updateChatLastMessage.LastMessage);
+                        UpdateForumTopic(updateChatLastMessage.ChatId, manager => manager.UpdateChatLastMessage(updateChatLastMessage.LastMessage));
                         break;
                     }
 
@@ -2748,8 +2786,6 @@ namespace Telegram.Services
 
                             Monitor.Exit(value);
                         }
-
-                        _test.UpdateChatDraftMessage(updateChatDraftMessage.ChatId, updateChatDraftMessage.DraftMessage);
                         break;
                     }
 
@@ -2826,7 +2862,6 @@ namespace Telegram.Services
                             value.NotificationSettings = updateNotificationSettings.NotificationSettings;
                         }
 
-                        _test.UpdateChatNotificationSettings(updateNotificationSettings.ChatId, updateNotificationSettings.NotificationSettings);
                         break;
                     }
 
@@ -2868,7 +2903,6 @@ namespace Telegram.Services
                             value.LastReadInboxMessageId = updateChatReadInbox.LastReadInboxMessageId;
                         }
 
-                        _test.UpdateChatReadInbox(updateChatReadInbox.ChatId, updateChatReadInbox.LastReadInboxMessageId, updateChatReadInbox.UnreadCount);
                         break;
                     }
 
@@ -2879,7 +2913,6 @@ namespace Telegram.Services
                             value.LastReadOutboxMessageId = updateChatReadOutbox.LastReadOutboxMessageId;
                         }
 
-                        _test.UpdateChatReadOutbox(updateChatReadOutbox.ChatId, updateChatReadOutbox.LastReadOutboxMessageId);
                         break;
                     }
 
@@ -2933,7 +2966,6 @@ namespace Telegram.Services
                             value.UnreadMentionCount = updateChatUnreadMentionCount.UnreadMentionCount;
                         }
 
-                        _test.UpdateChatUnreadMentionCount(updateChatUnreadMentionCount.ChatId, updateChatUnreadMentionCount.UnreadMentionCount);
                         break;
                     }
 
@@ -2944,7 +2976,6 @@ namespace Telegram.Services
                             value.UnreadReactionCount = updateChatUnreadReactionCount.UnreadReactionCount;
                         }
 
-                        _test.UpdateChatUnreadReactionCount(updateChatUnreadReactionCount.ChatId, updateChatUnreadReactionCount.UnreadReactionCount);
                         break;
                     }
 
@@ -2990,10 +3021,11 @@ namespace Telegram.Services
                 case UpdateFavoriteStickers updateFavoriteStickers:
                     _favoriteStickers = updateFavoriteStickers.StickerIds;
                     break;
+                case UpdateForumTopic updateForumTopic:
+                    UpdateForumTopic(updateForumTopic.ChatId, manager => manager.UpdateForumTopic(updateForumTopic));
+                    break;
                 case UpdateForumTopicInfo updateForumTopicInfo:
-                    _topics[new ChatMessageId(updateForumTopicInfo.Info.ChatId, updateForumTopicInfo.Info.MessageThreadId)] = updateForumTopicInfo.Info;
-
-                    _test.UpdateForumTopicInfo(updateForumTopicInfo.Info.ChatId, updateForumTopicInfo.Info);
+                    UpdateForumTopic(updateForumTopicInfo.Info.ChatId, manager => manager.UpdateForumTopicInfo(updateForumTopicInfo.Info));
                     break;
                 case UpdateInstalledStickerSets updateInstalledStickerSets:
                     switch (updateInstalledStickerSets.StickerType)
@@ -3014,7 +3046,7 @@ namespace Telegram.Services
                     break;
                 case UpdateMessageIsPinned updateMessageIsPinned:
                     _settings.SetChatPinnedMessage(updateMessageIsPinned.ChatId, 0);
-                    _test.UpdateMessageIsPinned(updateMessageIsPinned.ChatId, updateMessageIsPinned.ChatId, updateMessageIsPinned.IsPinned);
+                    UpdateForumTopic(updateMessageIsPinned.ChatId, manager => manager.UpdateMessageIsPinned(updateMessageIsPinned.MessageId, updateMessageIsPinned.IsPinned));
                     break;
                 case UpdateMessageMentionRead updateMessageMentionRead:
                     {
@@ -3023,7 +3055,7 @@ namespace Telegram.Services
                             value.UnreadMentionCount = updateMessageMentionRead.UnreadMentionCount;
                         }
 
-                        _test.UpdateMessageMentionRead(updateMessageMentionRead.ChatId, updateMessageMentionRead.MessageId, updateMessageMentionRead.UnreadMentionCount);
+                        UpdateForumTopic(updateMessageMentionRead.ChatId, manager => manager.UpdateMessageMentionRead(updateMessageMentionRead.MessageId, updateMessageMentionRead.UnreadMentionCount));
                         break;
                     }
 
@@ -3034,7 +3066,7 @@ namespace Telegram.Services
                             value.UnreadReactionCount = updateMessageUnreadReactions.UnreadReactionCount;
                         }
 
-                        _test.UpdateMessageUnreadReactions(updateMessageUnreadReactions.ChatId, updateMessageUnreadReactions.MessageId, updateMessageUnreadReactions.UnreadReactions, updateMessageUnreadReactions.UnreadReactionCount);
+                        UpdateForumTopic(updateMessageUnreadReactions.ChatId, manager => manager.UpdateMessageUnreadReactions(updateMessageUnreadReactions.MessageId, updateMessageUnreadReactions.UnreadReactions, updateMessageUnreadReactions.UnreadReactionCount));
                         break;
                     }
 
@@ -3261,31 +3293,31 @@ namespace Telegram.Services
                     _freezeState = updateFreezeState;
                     break;
                 case UpdateNewMessage updateNewMessage:
-                    _test.UpdateNewMessage(updateNewMessage.Message);
+                    UpdateForumTopic(updateNewMessage.Message.ChatId, manager => manager.UpdateNewMessage(updateNewMessage.Message));
                     break;
                 case UpdateDeleteMessages updateDeleteMessages:
-                    _test.UpdateDeleteMessages(updateDeleteMessages.ChatId, updateDeleteMessages.MessageIds, updateDeleteMessages.IsPermanent, updateDeleteMessages.FromCache);
+                    UpdateForumTopic(updateDeleteMessages.ChatId, manager => manager.UpdateDeleteMessages(updateDeleteMessages.MessageIds, updateDeleteMessages.IsPermanent, updateDeleteMessages.FromCache));
                     break;
                 case UpdateMessageSendSucceeded updateMessageSendSucceeded:
-                    _test.UpdateMessageSendSucceeded(updateMessageSendSucceeded.Message, updateMessageSendSucceeded.OldMessageId);
+                    UpdateForumTopic(updateMessageSendSucceeded.Message.ChatId, manager => manager.UpdateMessageSendSucceeded(updateMessageSendSucceeded.Message, updateMessageSendSucceeded.OldMessageId));
                     break;
                 case UpdateMessageSendFailed updateMessageSendFailed:
-                    _test.UpdateMessageSendFailed(updateMessageSendFailed.Message, updateMessageSendFailed.OldMessageId, updateMessageSendFailed.Error);
+                    UpdateForumTopic(updateMessageSendFailed.Message.ChatId, manager => manager.UpdateMessageSendFailed(updateMessageSendFailed.Message, updateMessageSendFailed.OldMessageId, updateMessageSendFailed.Error));
                     break;
                 case UpdateMessageContent updateMessageContent:
-                    _test.UpdateMessageContent(updateMessageContent.ChatId, updateMessageContent.MessageId, updateMessageContent.NewContent);
+                    UpdateForumTopic(updateMessageContent.ChatId, manager => manager.UpdateMessageContent(updateMessageContent.MessageId, updateMessageContent.NewContent));
                     break;
                 case UpdateMessageEdited updateMessageEdited:
-                    _test.UpdateMessageEdited(updateMessageEdited.ChatId, updateMessageEdited.MessageId, updateMessageEdited.EditDate, updateMessageEdited.ReplyMarkup);
+                    UpdateForumTopic(updateMessageEdited.ChatId, manager => manager.UpdateMessageEdited(updateMessageEdited.MessageId, updateMessageEdited.EditDate, updateMessageEdited.ReplyMarkup));
                     break;
                 case UpdateMessageInteractionInfo updateMessageInteractionInfo:
-                    _test.UpdateMessageInteractionInfo(updateMessageInteractionInfo.ChatId, updateMessageInteractionInfo.MessageId, updateMessageInteractionInfo.InteractionInfo);
+                    UpdateForumTopic(updateMessageInteractionInfo.ChatId, manager => manager.UpdateMessageInteractionInfo(updateMessageInteractionInfo.MessageId, updateMessageInteractionInfo.InteractionInfo));
                     break;
                 case UpdateMessageContentOpened updateMessageContentOpened:
-                    _test.UpdateMessageContentOpened(updateMessageContentOpened.ChatId, updateMessageContentOpened.MessageId);
+                    UpdateForumTopic(updateMessageContentOpened.ChatId, manager => manager.UpdateMessageContentOpened(updateMessageContentOpened.MessageId));
                     break;
                 case UpdateMessageFactCheck updateMessageFactCheck:
-                    _test.UpdateMessageFactCheck(updateMessageFactCheck.ChatId, updateMessageFactCheck.MessageId, updateMessageFactCheck.FactCheck);
+                    UpdateForumTopic(updateMessageFactCheck.ChatId, manager => manager.UpdateMessageFactCheck(updateMessageFactCheck.MessageId, updateMessageFactCheck.FactCheck));
                     break;
             }
 

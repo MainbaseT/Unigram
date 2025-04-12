@@ -13,7 +13,6 @@ using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Converters;
 using Telegram.Services;
-using Telegram.Services.Factories;
 using Telegram.Td.Api;
 using Telegram.Views.Supergroups.Popups;
 using Windows.UI.Xaml;
@@ -23,8 +22,8 @@ namespace Telegram.ViewModels
 {
     public partial class DialogEventLogViewModel : DialogViewModel
     {
-        public DialogEventLogViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ILocationService locationService, INotificationsService pushService, IPlaybackService playbackService, IVoipService voipService, INetworkService networkService, IStorageService storageService, ITranslateService translateService, IMessageFactory messageFactory)
-            : base(clientService, settingsService, aggregator, locationService, pushService, playbackService, voipService, networkService, storageService, translateService, messageFactory)
+        public DialogEventLogViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ILocationService locationService, INotificationsService pushService, IPlaybackService playbackService, IVoipService voipService, INetworkService networkService, IStorageService storageService, ITranslateService translateService)
+            : base(clientService, settingsService, aggregator, locationService, pushService, playbackService, voipService, networkService, storageService, translateService)
         {
         }
 

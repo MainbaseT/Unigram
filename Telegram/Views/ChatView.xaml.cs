@@ -4495,7 +4495,7 @@ namespace Telegram.Views
         {
             if (ViewModel.Type == DialogType.Thread)
             {
-                if (ViewModel.Topic is ForuminoTopicino topic)
+                if (ViewModel.Topic is ForumTopic topic)
                 {
                     LoadObject(ref Icon, nameof(Icon));
                     Photo.Clear();

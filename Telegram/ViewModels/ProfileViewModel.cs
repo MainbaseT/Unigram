@@ -101,9 +101,9 @@ namespace Telegram.ViewModels
             {
                 parameter = args.ChatId;
 
-                if (ClientService.TryGetTopicInfo(args.ChatId, args.MessageId, out ForumTopicInfo info))
+                if (ClientService.TryGetTopic(args.ChatId, args.MessageId, out ForumTopic topic))
                 {
-                    Topic = info;
+                    Topic = topic;
                 }
             }
 
@@ -954,12 +954,12 @@ namespace Telegram.ViewModels
 
             if (_topic != null)
             {
-                var popup = new SupergroupTopicPopup(ClientService, _topic);
+                var popup = new SupergroupTopicPopup(ClientService, _topic.Info);
 
                 var confirm = await ShowPopupAsync(popup);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    ClientService.Send(new EditForumTopic(chat.Id, _topic.MessageThreadId, popup.Name, true, popup.SelectedIcon.CustomEmojiId));
+                    ClientService.Send(new EditForumTopic(chat.Id, _topic.Info.MessageThreadId, popup.Name, true, popup.SelectedIcon.CustomEmojiId));
                 }
             }
             else if (chat.Type is ChatTypeSupergroup or ChatTypeBasicGroup)

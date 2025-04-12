@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Telegram.Services;
-using Telegram.Services.Factories;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Authorization;
 using Telegram.ViewModels.Business;
@@ -66,7 +65,6 @@ namespace Telegram
                 ( typeof(IEventAggregator), typeof(EventAggregator) ),
                 ( typeof(ILocationService), typeof(LocationService) ),
                 ( typeof(IThemeService), typeof(ThemeService) ),
-                ( typeof(IMessageFactory), typeof(MessageFactory) ),
                 ( typeof(IViewService), typeof(ViewService) ),
                 ( typeof(ISessionService), typeof(SessionService) ),
                 ( typeof(IStorageService), typeof(StorageService) ),

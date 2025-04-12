@@ -271,7 +271,7 @@ namespace Telegram.Views.Settings
             var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
 
             var delegato = new ChatMessageDelegate(clientService, settings, null);
-            var viewModel = new MessageViewModel(clientService, playback, delegato, null, message, true);
+            var viewModel = new MessageViewModel(clientService, playback, delegato, null, null, message, true);
 
             Reaction.SetReaction(viewModel, new MessageReaction(reaction, 1, false, senderId, new MessageSender[] { }));
 

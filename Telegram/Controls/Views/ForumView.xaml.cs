@@ -137,18 +137,18 @@ namespace Telegram.Controls.Views
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.Item is not ForuminoTopicino topic)
+            if (args.Item is not ForumTopic topic)
             {
                 return;
             }
 
             if (args.InRecycleQueue)
             {
-                _itemToSelector.Remove(topic.Id);
+                _itemToSelector.Remove(topic.Info.MessageThreadId);
                 return;
             }
 
-            _itemToSelector[topic.Id] = args.ItemContainer;
+            _itemToSelector[topic.Info.MessageThreadId] = args.ItemContainer;
 
             var cell = args.ItemContainer.ContentTemplateRoot as ForumTopicCell;
 
@@ -156,23 +156,23 @@ namespace Telegram.Controls.Views
             args.Handled = true;
         }
 
-        public bool TryGetChatAndCell(long chatId, out ForuminoTopicino chat, out ForumTopicCell cell)
+        public bool TryGetChatAndCell(long messageThreadId, out ForumTopic topic, out ForumTopicCell cell)
         {
-            if (_itemToSelector.TryGetValue(chatId, out SelectorItem container))
+            if (_itemToSelector.TryGetValue(messageThreadId, out SelectorItem container))
             {
-                chat = ScrollingHost.ItemFromContainer(container) as ForuminoTopicino;
+                topic = ScrollingHost.ItemFromContainer(container) as ForumTopic;
                 cell = container.ContentTemplateRoot as ForumTopicCell;
-                return chat != null && cell != null;
+                return topic != null && cell != null;
             }
 
-            chat = null;
+            topic = null;
             cell = null;
             return false;
         }
 
-        public bool TryGetCell(ForuminoTopicino chat, out ForumTopicCell cell)
+        public bool TryGetCell(ForumTopic topic, out ForumTopicCell cell)
         {
-            if (_itemToSelector.TryGetValue(chat.Id, out SelectorItem container))
+            if (_itemToSelector.TryGetValue(topic.Info.MessageThreadId, out SelectorItem container))
             {
                 cell = container.ContentTemplateRoot as ForumTopicCell;
                 return cell != null;
@@ -197,7 +197,7 @@ namespace Telegram.Controls.Views
             }
 
             var flyout = new MenuFlyout();
-            var topic = ScrollingHost.ItemFromContainer(sender) as ForuminoTopicino;
+            var topic = ScrollingHost.ItemFromContainer(sender) as ForumTopic;
 
             var canManage = CanCreateTopics(chat, supergroup, topic);
 
@@ -246,7 +246,7 @@ namespace Telegram.Controls.Views
             flyout.ShowAt(sender, args);
         }
 
-        private bool CanCreateTopics(Chat chat, Supergroup supergroup, ForuminoTopicino topic)
+        private bool CanCreateTopics(Chat chat, Supergroup supergroup, ForumTopic topic)
         {
             if (supergroup.Status is ChatMemberStatusCreator || (supergroup.Status is ChatMemberStatusAdministrator admin && (admin.Rights.CanPinMessages || supergroup.IsChannel && admin.Rights.CanEditMessages)))
             {

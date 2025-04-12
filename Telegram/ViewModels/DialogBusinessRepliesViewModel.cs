@@ -8,7 +8,6 @@ using Rg.DiffUtils;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Services;
-using Telegram.Services.Factories;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
 
@@ -17,7 +16,7 @@ namespace Telegram.ViewModels
     public partial class QuickReplyMessageViewModel : MessageViewModel
     {
         public QuickReplyMessageViewModel(IClientService clientService, IPlaybackService playbackService, IMessageDelegate delegato, Chat chat, Message message, bool processText = false)
-            : base(clientService, playbackService, delegato, chat, message, processText)
+            : base(clientService, playbackService, delegato, chat, null, message, processText)
         {
         }
 
@@ -26,8 +25,8 @@ namespace Telegram.ViewModels
 
     public partial class DialogBusinessRepliesViewModel : DialogViewModel, IDiffHandler<MessageViewModel>
     {
-        public DialogBusinessRepliesViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ILocationService locationService, INotificationsService pushService, IPlaybackService playbackService, IVoipService voipService, INetworkService networkService, IStorageService storageService, ITranslateService translateService, IMessageFactory messageFactory)
-            : base(clientService, settingsService, aggregator, locationService, pushService, playbackService, voipService, networkService, storageService, translateService, messageFactory)
+        public DialogBusinessRepliesViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ILocationService locationService, INotificationsService pushService, IPlaybackService playbackService, IVoipService voipService, INetworkService networkService, IStorageService storageService, ITranslateService translateService)
+            : base(clientService, settingsService, aggregator, locationService, pushService, playbackService, voipService, networkService, storageService, translateService)
         {
         }
 

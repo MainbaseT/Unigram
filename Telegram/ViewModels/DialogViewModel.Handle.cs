@@ -30,6 +30,7 @@ namespace Telegram.ViewModels
                 .Subscribe<UpdateChatUnreadMentionCount>(Handle)
                 .Subscribe<UpdateChatUnreadReactionCount>(Handle)
                 .Subscribe<UpdateChatReadOutbox>(Handle)
+                .Subscribe<UpdateForumTopicReadOutbox>(Handle)
                 .Subscribe<UpdateChatReadInbox>(Handle)
                 .Subscribe<UpdateChatDraftMessage>(Handle)
                 .Subscribe<UpdateChatDefaultDisableNotification>(Handle)
@@ -476,7 +477,17 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateChatReadOutbox update)
         {
-            if (update.ChatId == _chat?.Id)
+            if (update.ChatId == _chat?.Id && _topic == null)
+            {
+                BeginOnUIThread(() =>
+                {
+                    Delegate?.ForEach((bubble, message) => bubble.UpdateMessageState(message));
+                });
+            }
+        }
+        public void Handle(UpdateForumTopicReadOutbox update)
+        {
+            if (update.ChatId == _chat?.Id && update.MessageThreadId == _topic?.Info.MessageThreadId)
             {
                 BeginOnUIThread(() =>
                 {

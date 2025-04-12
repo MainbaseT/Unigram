@@ -960,14 +960,14 @@ namespace Telegram.Common
             {
                 if (info.Message != null && clientService.IsForum(chat))
                 {
-                    if (info.Message.Id == ForuminoTopicino.GeneralId && info.MessageThreadId == 0)
+                    if (info.Message.Id == ForumTopicService.GeneralId && info.MessageThreadId == 0)
                     {
                         info.Message = null;
-                        info.MessageThreadId = ForuminoTopicino.GeneralId;
+                        info.MessageThreadId = ForumTopicService.GeneralId;
                     }
                     else if (info.Message.IsTopicMessage is false)
                     {
-                        info.MessageThreadId = ForuminoTopicino.GeneralId;
+                        info.MessageThreadId = ForumTopicService.GeneralId;
                     }
                 }
 

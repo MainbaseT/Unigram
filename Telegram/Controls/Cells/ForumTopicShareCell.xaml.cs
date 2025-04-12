@@ -14,7 +14,7 @@ namespace Telegram.Controls.Cells
             InitializeComponent();
         }
 
-        public void UpdateCell(IClientService clientService, ForuminoTopicino topic)
+        public void UpdateCell(IClientService clientService, ForumTopic topic)
         {
             if (topic.Info.Icon.CustomEmojiId != 0)
             {

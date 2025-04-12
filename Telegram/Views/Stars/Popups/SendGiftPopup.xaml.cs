@@ -50,7 +50,7 @@ namespace Telegram.Views.Stars.Popups
             var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
 
             var delegato = new ChatMessageDelegate(clientService, settings, chat);
-            var viewModel = new MessageViewModel(clientService, playback, delegato, chat, message, true);
+            var viewModel = new MessageViewModel(clientService, playback, delegato, chat, null, message, true);
 
             BackgroundControl.Update(clientService, null);
             Message.UpdateMessage(viewModel);
@@ -124,7 +124,7 @@ namespace Telegram.Views.Stars.Popups
             var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
 
             var delegato = new ChatMessageDelegate(clientService, settings, chat);
-            var viewModel = new MessageViewModel(clientService, playback, delegato, chat, message, true);
+            var viewModel = new MessageViewModel(clientService, playback, delegato, chat, null, message, true);
 
             BackgroundControl.Update(clientService, null);
             Message.UpdateMessage(viewModel);
@@ -182,7 +182,7 @@ namespace Telegram.Views.Stars.Popups
             var settings = TypeResolver.Current.Resolve<ISettingsService>(_clientService.SessionId);
 
             var delegato = new ChatMessageDelegate(_clientService, settings, chat);
-            var viewModel = new MessageViewModel(_clientService, playback, delegato, chat, message, true);
+            var viewModel = new MessageViewModel(_clientService, playback, delegato, chat, null, message, true);
 
             Message.UpdateMessage(viewModel);
         }

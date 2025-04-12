@@ -705,7 +705,7 @@ namespace Telegram.Services
             }
             else if (_clientService.IsForum(chat))
             {
-                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;thread_id={1}", launch, ForuminoTopicino.GeneralId);
+                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;thread_id={1}", launch, ForumTopicService.GeneralId);
             }
 
             return launch;

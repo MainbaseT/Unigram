@@ -133,8 +133,8 @@ namespace Telegram.ViewModels.Profile
 
         public long ThreadId => Thread?.MessageThreadId ?? 0;
 
-        protected ForumTopicInfo _topic;
-        public ForumTopicInfo Topic
+        protected ForumTopic _topic;
+        public ForumTopic Topic
         {
             get => _topic;
             set => Set(ref _topic, value);

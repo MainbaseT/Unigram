@@ -235,7 +235,7 @@ namespace Telegram.Views
             });
         }
 
-        public void UpdateForumTopicLastMessage(ForuminoTopicino topic)
+        public void UpdateForumTopicLastMessage(ForumTopic topic)
         {
             Handle2(topic, (chatView, chat) =>
             {
@@ -437,6 +437,14 @@ namespace Telegram.Views
             }
         }
 
+        public void Handle(UpdateForumTopicReadOutbox update)
+        {
+            if (_viewModel.Topics.Chat?.Id == update.ChatId)
+            {
+                Handle2(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadOutbox(chat));
+            }
+        }
+
         private void Handle(long chatId, long messageId, Action<Chat> update, Action<ChatCell, Chat> action)
         {
             var chat = _clientService.GetChat(chatId);
@@ -478,18 +486,18 @@ namespace Telegram.Views
             });
         }
 
-        private void Handle2(long chatId, Action<ForumTopicCell, ForuminoTopicino> action)
+        private void Handle2(long messageThreadId, Action<ForumTopicCell, ForumTopic> action)
         {
             this.BeginOnUIThread(() =>
             {
-                if (TopicListPresenter != null && TopicListPresenter.TryGetChatAndCell(chatId, out ForuminoTopicino chat, out ForumTopicCell chatView))
+                if (TopicListPresenter != null && TopicListPresenter.TryGetChatAndCell(messageThreadId, out ForumTopic chat, out ForumTopicCell chatView))
                 {
                     action(chatView, chat);
                 }
             });
         }
 
-        private void Handle2(ForuminoTopicino topic, Action<ForumTopicCell, ForuminoTopicino> action)
+        private void Handle2(ForumTopic topic, Action<ForumTopicCell, ForumTopic> action)
         {
             this.BeginOnUIThread(() =>
             {
@@ -1096,6 +1104,7 @@ namespace Telegram.Views
                 .Subscribe<UpdateUnreadChatCount>(Handle)
                 .Subscribe<UpdateForumTopicInfo>(Handle)
                 .Subscribe<UpdateForumTopicReadInbox>(Handle)
+                .Subscribe<UpdateForumTopicReadOutbox>(Handle)
                 .Subscribe<UpdateChatUnreadTopicCount>(Handle)
                 .Subscribe<UpdateSecretChat>(Handle)
                 .Subscribe<UpdateChatNotificationSettings>(Handle)
@@ -1953,7 +1962,7 @@ namespace Telegram.Views
                     HideTopicList();
                 }
             }
-            else if (item is ForuminoTopicino topic)
+            else if (item is ForumTopic topic)
             {
                 ViewModel.Chats.SelectedItem = ViewModel.Topics.Chat?.Id;
                 MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, thread: topic.Info.MessageThreadId, force: false, clearBackStack: true);

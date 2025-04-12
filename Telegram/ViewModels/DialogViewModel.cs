@@ -102,7 +102,6 @@ namespace Telegram.ViewModels
         protected readonly INetworkService _networkService;
         protected readonly IStorageService _storageService;
         protected readonly ITranslateService _translateService;
-        protected readonly IMessageFactory _messageFactory;
 
         public IPlaybackService PlaybackService => _playbackService;
 
@@ -117,7 +116,7 @@ namespace Telegram.ViewModels
 
         public IDialogDelegate Delegate { get; set; }
 
-        public DialogViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ILocationService locationService, INotificationsService pushService, IPlaybackService playbackService, IVoipService voipService, INetworkService networkService, IStorageService storageService, ITranslateService translateService, IMessageFactory messageFactory)
+        public DialogViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ILocationService locationService, INotificationsService pushService, IPlaybackService playbackService, IVoipService voipService, INetworkService networkService, IStorageService storageService, ITranslateService translateService)
             : base(clientService, settingsService, aggregator)
         {
             _locationService = locationService;
@@ -127,7 +126,6 @@ namespace Telegram.ViewModels
             _networkService = networkService;
             _storageService = storageService;
             _translateService = translateService;
-            _messageFactory = messageFactory;
 
             _messageDelegate = new DialogMessageDelegate(this);
 
@@ -188,8 +186,8 @@ namespace Telegram.ViewModels
             set => Set(ref _thread, value);
         }
 
-        protected ForuminoTopicino _topic;
-        public ForuminoTopicino Topic
+        protected ForumTopic _topic;
+        public ForumTopic Topic
         {
             get => _topic;
             set => Set(ref _topic, value);
@@ -965,7 +963,7 @@ namespace Telegram.ViewModels
                 lastReadMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                 lastMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
             }
-            else if (_topic is ForuminoTopicino topic)
+            else if (_topic is ForumTopic topic)
             {
                 lastReadMessageId = topic.LastReadInboxMessageId;
                 lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
@@ -1088,7 +1086,7 @@ namespace Telegram.ViewModels
             var filter = new SearchMessagesFilterPinned();
             var threadId = 0L;
 
-            if (_topic is ForuminoTopicino topic)
+            if (_topic is ForumTopic topic)
             {
                 threadId = topic.Info.MessageThreadId;
             }
@@ -1211,7 +1209,7 @@ namespace Telegram.ViewModels
                 if (alignment == VerticalAlignment.Top && !onlyRemote)
                 {
                     long lastMessageId;
-                    if (_topic is ForuminoTopicino topic)
+                    if (_topic is ForumTopic topic)
                     {
                         lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
                     }
@@ -1479,7 +1477,7 @@ namespace Telegram.ViewModels
                         lastReadMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                         lastMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                     }
-                    else if (_topic is ForuminoTopicino topic)
+                    else if (_topic is ForumTopic topic)
                     {
                         lastReadMessageId = topic.LastReadInboxMessageId;
                         lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
@@ -1812,7 +1810,7 @@ namespace Telegram.ViewModels
                 return null;
             }
 
-            var model = _messageFactory.Create(_messageDelegate, _chat, message, true);
+            var model = new MessageViewModel(ClientService, _playbackService, _messageDelegate, _chat, _topic, message, true);
 
             if (forLanguageStatistics)
             {
@@ -2124,11 +2122,7 @@ namespace Telegram.ViewModels
                 }
                 else
                 {
-                    var response = await ClientService.SendAsync(new GetForumTopic(messageIdArgs.ChatId, messageIdArgs.MessageId)) as ForumTopic;
-                    if (response != null)
-                    {
-                        Topic = new ForuminoTopicino(response);
-                    }
+                    Topic = await ClientService.SendAsync(new GetForumTopic(messageIdArgs.ChatId, messageIdArgs.MessageId)) as ForumTopic;
                 }
 
                 Thread = await ClientService.SendAsync(new GetMessageThread(messageIdArgs.ChatId, messageIdArgs.MessageId)) as MessageThreadInfo;
@@ -2222,7 +2216,7 @@ namespace Telegram.ViewModels
                     lastMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                     secondaryId = savedMessagesTopic.Id;
                 }
-                else if (_topic is ForuminoTopicino topic)
+                else if (_topic is ForumTopic topic)
                 {
                     lastReadMessageId = topic.LastReadInboxMessageId;
                     lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
@@ -2446,7 +2440,7 @@ namespace Telegram.ViewModels
                 lastReadMessageId = 0;
                 secondaryId = savedMessagesTopic.Id;
             }
-            else if (_topic is ForuminoTopicino topic)
+            else if (_topic is ForumTopic topic)
             {
                 lastReadMessageId = topic.LastReadInboxMessageId;
                 secondaryId = ThreadId; // topic.Info.MessageThreadId;
@@ -4667,7 +4661,7 @@ namespace Telegram.ViewModels
                 var previousDate = Formatter.ToLocalTime(GetMessageDate(next));
                 if (previousDate.Date != itemDate.Date)
                 {
-                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, next.IsTopicMessage, false, next.Date, 0, null, null, null, null, null, null, 0, 0, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
+                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, next.Topic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, next.IsTopicMessage, false, next.Date, 0, null, null, null, null, null, null, 0, 0, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
                 }
             }
 
