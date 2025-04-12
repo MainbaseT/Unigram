@@ -76,8 +76,8 @@ namespace Telegram.ViewModels.Business
                         {
                             CanReply,
                             CanReadMessages,
-                            CanDeleteOutgoingMessages,
-                            CanDeleteIncomingMessages
+                            CanDeleteSentMessages,
+                            CanDeleteAllMessages
                         };
 
                         allowed2 = values.Count(x => x) > 0;
@@ -90,8 +90,8 @@ namespace Telegram.ViewModels.Business
 
                     Invalidate(ref _canReply, allowed1 ? false : !allowed2, nameof(CanReply));
                     Invalidate(ref _canReadMessages, allowed1 ? false : !allowed2, nameof(CanReadMessages));
-                    Invalidate(ref _canDeleteOutgoingMessages, allowed1 ? false : !allowed2, nameof(CanDeleteOutgoingMessages));
-                    Invalidate(ref _canDeleteIncomingMessages, allowed1 ? false : !allowed2, nameof(CanDeleteIncomingMessages));
+                    Invalidate(ref _canDeleteSentMessages, allowed1 ? false : !allowed2, nameof(CanDeleteSentMessages));
+                    Invalidate(ref _canDeleteAllMessages, allowed1 ? false : !allowed2, nameof(CanDeleteAllMessages));
 
                     InvalidateManageMessages(false);
                 }
@@ -116,18 +116,18 @@ namespace Telegram.ViewModels.Business
             set => InvalidateManageMessages(ref _canReadMessages, value);
         }
 
-        private bool _canDeleteOutgoingMessages = true;
-        public bool CanDeleteOutgoingMessages
+        private bool _canDeleteSentMessages = true;
+        public bool CanDeleteSentMessages
         {
-            get => _canDeleteOutgoingMessages;
-            set => InvalidateManageMessages(ref _canDeleteOutgoingMessages, value);
+            get => _canDeleteSentMessages;
+            set => InvalidateManageMessages(ref _canDeleteSentMessages, value);
         }
 
-        private bool _canDeleteIncomingMessages = true;
-        public bool CanDeleteIncomingMessages
+        private bool _canDeleteAllMessages = true;
+        public bool CanDeleteAllMessages
         {
-            get => _canDeleteIncomingMessages;
-            set => InvalidateManageMessages(ref _canDeleteIncomingMessages, value);
+            get => _canDeleteAllMessages;
+            set => InvalidateManageMessages(ref _canDeleteAllMessages, value);
         }
 
         private void InvalidateManageMessages<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
@@ -144,8 +144,8 @@ namespace Telegram.ViewModels.Business
             {
                 CanReply,
                 CanReadMessages,
-                CanDeleteOutgoingMessages,
-                CanDeleteIncomingMessages
+                CanDeleteSentMessages,
+                CanDeleteAllMessages
             };
 
             var count = values.Count(x => x);
@@ -257,7 +257,7 @@ namespace Telegram.ViewModels.Business
 
                 if (value.HasValue)
                 {
-                    Set(ref _canViewGifts, value.Value, nameof(CanViewGifts));
+                    Set(ref _canViewGiftsAndStars, value.Value, nameof(CanViewGiftsAndStars));
                     Set(ref _canSellGifts, value.Value, nameof(CanSellGifts));
                     Set(ref _canChangeGiftSettings, value.Value, nameof(CanChangeGiftSettings));
                     Set(ref _canTransferGifts, value.Value, nameof(CanTransferGifts));
@@ -268,11 +268,11 @@ namespace Telegram.ViewModels.Business
             }
         }
 
-        private bool _canViewGifts = true;
-        public bool CanViewGifts
+        private bool _canViewGiftsAndStars = true;
+        public bool CanViewGiftsAndStars
         {
-            get => _canViewGifts;
-            set => InvalidateManageGifts(ref _canViewGifts, value);
+            get => _canViewGiftsAndStars;
+            set => InvalidateManageGifts(ref _canViewGiftsAndStars, value);
         }
 
         private bool _canSellGifts = true;
@@ -315,7 +315,7 @@ namespace Telegram.ViewModels.Business
         {
             var values = new[]
             {
-                CanViewGifts,
+                CanViewGiftsAndStars,
                 CanSellGifts,
                 CanChangeGiftSettings,
                 CanTransferGifts,
@@ -351,8 +351,8 @@ namespace Telegram.ViewModels.Business
 
                 Set(ref _canReply, connectedBot.Rights.CanReply, nameof(CanReply));
                 Set(ref _canReadMessages, connectedBot.Rights.CanReadMessages, nameof(CanReadMessages));
-                Set(ref _canDeleteOutgoingMessages, connectedBot.Rights.CanDeleteOutgoingMessages, nameof(CanDeleteOutgoingMessages));
-                Set(ref _canDeleteIncomingMessages, connectedBot.Rights.CanDeleteIncomingMessages, nameof(CanDeleteIncomingMessages));
+                Set(ref _canDeleteSentMessages, connectedBot.Rights.CanDeleteSentMessages, nameof(CanDeleteSentMessages));
+                Set(ref _canDeleteAllMessages, connectedBot.Rights.CanDeleteAllMessages, nameof(CanDeleteAllMessages));
 
                 InvalidateManageMessages(true);
 
@@ -363,7 +363,7 @@ namespace Telegram.ViewModels.Business
 
                 InvalidateManageProfile();
 
-                Set(ref _canViewGifts, connectedBot.Rights.CanViewGifts, nameof(CanViewGifts));
+                Set(ref _canViewGiftsAndStars, connectedBot.Rights.CanViewGiftsAndStars, nameof(CanViewGiftsAndStars));
                 Set(ref _canSellGifts, connectedBot.Rights.CanSellGifts, nameof(CanSellGifts));
                 Set(ref _canChangeGiftSettings, connectedBot.Rights.CanChangeGiftSettings, nameof(CanChangeGiftSettings));
                 Set(ref _canTransferGifts, connectedBot.Rights.CanTransferAndUpgradeGifts, nameof(CanTransferGifts));
@@ -528,15 +528,15 @@ namespace Telegram.ViewModels.Business
             {
                 CanReply = CanReply,
                 CanReadMessages = CanReadMessages,
-                CanDeleteOutgoingMessages = CanDeleteOutgoingMessages,
-                CanDeleteIncomingMessages = CanDeleteIncomingMessages,
+                CanDeleteSentMessages = CanDeleteSentMessages,
+                CanDeleteAllMessages = CanDeleteAllMessages,
 
                 CanEditName = CanEditName,
                 CanEditBio = CanEditBio,
                 CanEditProfilePhoto = CanEditProfilePhoto,
                 CanEditUsername = CanEditUsername,
 
-                CanViewGifts = CanViewGifts,
+                CanViewGiftsAndStars = CanViewGiftsAndStars,
                 CanSellGifts = CanSellGifts,
                 CanChangeGiftSettings = CanChangeGiftSettings,
                 CanTransferAndUpgradeGifts = CanTransferGifts,

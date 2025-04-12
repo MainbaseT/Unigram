@@ -2894,9 +2894,9 @@ namespace Telegram.Services
             }
             else if (update is UpdateForumTopicInfo updateForumTopicInfo)
             {
-                _topics[new ChatMessageId(updateForumTopicInfo.ChatId, updateForumTopicInfo.Info.MessageThreadId)] = updateForumTopicInfo.Info;
+                _topics[new ChatMessageId(updateForumTopicInfo.Info.ChatId, updateForumTopicInfo.Info.MessageThreadId)] = updateForumTopicInfo.Info;
 
-                _test.UpdateForumTopicInfo(updateForumTopicInfo.ChatId, updateForumTopicInfo.Info);
+                _test.UpdateForumTopicInfo(updateForumTopicInfo.Info.ChatId, updateForumTopicInfo.Info);
             }
             else if (update is UpdateInstalledStickerSets updateInstalledStickerSets)
             {

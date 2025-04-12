@@ -423,7 +423,7 @@ namespace Telegram.Views
 
         public void Handle(UpdateForumTopicInfo update)
         {
-            if (_viewModel.Topics.Chat?.Id == update.ChatId)
+            if (_viewModel.Topics.Chat?.Id == update.Info.ChatId)
             {
                 Handle2(update.Info.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicInfo(chat));
             }

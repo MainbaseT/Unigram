@@ -2015,8 +2015,8 @@ namespace Telegram.Td.Api
         private static bool AreTheSame(this BusinessBotRights x, BusinessBotRights y)
         {
             return x.CanChangeGiftSettings == y.CanChangeGiftSettings
-                && x.CanDeleteIncomingMessages == y.CanDeleteIncomingMessages
-                && x.CanDeleteOutgoingMessages == y.CanDeleteOutgoingMessages
+                && x.CanDeleteAllMessages == y.CanDeleteAllMessages
+                && x.CanDeleteSentMessages == y.CanDeleteSentMessages
                 && x.CanEditBio == y.CanEditBio
                 && x.CanEditName == y.CanEditName
                 && x.CanEditProfilePhoto == y.CanEditProfilePhoto
@@ -2027,7 +2027,7 @@ namespace Telegram.Td.Api
                 && x.CanSellGifts == y.CanSellGifts
                 && x.CanTransferAndUpgradeGifts == y.CanTransferAndUpgradeGifts
                 && x.CanTransferStars == y.CanTransferStars
-                && x.CanViewGifts == y.CanViewGifts;
+                && x.CanViewGiftsAndStars == y.CanViewGiftsAndStars;
         }
 
         public static bool AreTheSame(this GiftSettings x, GiftSettings y)

@@ -186,14 +186,14 @@
                                           BorderThickness="0,0,0,1"
                                           CornerRadius="0" />
 
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanDeleteOutgoingMessages, Mode=TwoWay}"
+                                <CheckBox IsChecked="{x:Bind ViewModel.CanDeleteSentMessages, Mode=TwoWay}"
                                           Content="{CustomResource BusinessBotPermissionsMessagesDeleteSent}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
                                           BorderThickness="0,0,0,1"
                                           CornerRadius="0" />
 
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanDeleteIncomingMessages, Mode=TwoWay}"
+                                <CheckBox IsChecked="{x:Bind ViewModel.CanDeleteAllMessages, Mode=TwoWay}"
                                           Content="{CustomResource BusinessBotPermissionsMessagesDeleteReceived}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
@@ -259,7 +259,7 @@
                                 </CheckBox>
                             </controls:SettingsExpander.Header>
                             <StackPanel>
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanViewGifts, Mode=TwoWay}"
+                                <CheckBox IsChecked="{x:Bind ViewModel.CanViewGiftsAndStars, Mode=TwoWay}"
                                           Content="{CustomResource BusinessBotPermissionsGiftsView}"
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
