@@ -2438,764 +2438,855 @@ namespace Telegram.Services
         {
             ProcessFiles(update);
 
-            if (update is UpdateFile updateFile)
+            switch (update)
             {
-                // TODO: move the message after track when figured out why WeakAction throws a NRE
-                var token = (SessionId << 16) | updateFile.File.Id;
-                if (updateFile.File.Local.IsDownloadingCompleted)
-                {
-                    EventAggregator.Current.Publish(updateFile.File, token | 0x01000000, true);
-                }
-
-                EventAggregator.Current.Publish(updateFile.File, token, false);
-                TrackDownloadedFile(updateFile.File);
-                return;
-            }
-            else if (update is UpdateChatPosition updateChatPosition)
-            {
-                if (_chats.TryGetValue(updateChatPosition.ChatId, out Chat value))
-                {
-                    Monitor.Enter(value);
-
-                    int i;
-                    for (i = 0; i < value.Positions.Count; i++)
+                case UpdateFile updateFile:
                     {
-                        if (ChatListEqualityComparer.Instance.Equals(value.Positions[i].List, updateChatPosition.Position.List))
+                        // TODO: move the message after track when figured out why WeakAction throws a NRE
+                        var token = SessionId << 16 | updateFile.File.Id;
+                        if (updateFile.File.Local.IsDownloadingCompleted)
                         {
-                            break;
+                            EventAggregator.Current.Publish(updateFile.File, token | 0x01000000, true);
                         }
+
+                        EventAggregator.Current.Publish(updateFile.File, token, false);
+                        TrackDownloadedFile(updateFile.File);
+                        return;
                     }
 
-                    var newPositions = new List<ChatPosition>(value.Positions.Count + (updateChatPosition.Position.Order == 0 ? 0 : 1) - (i < value.Positions.Count ? 1 : 0));
-                    if (updateChatPosition.Position.Order != 0)
+                case UpdateChatPosition updateChatPosition:
                     {
-                        newPositions.Add(updateChatPosition.Position);
-                    }
-
-                    for (int j = 0; j < value.Positions.Count; j++)
-                    {
-                        if (j != i)
+                        if (_chats.TryGetValue(updateChatPosition.ChatId, out Chat value))
                         {
-                            newPositions.Add(value.Positions[j]);
-                        }
-                    }
+                            Monitor.Enter(value);
 
-                    SetChatPositions(value, newPositions);
-
-                    Monitor.Exit(value);
-                }
-            }
-            else if (update is UpdateChatLastMessage updateChatLastMessage)
-            {
-                if (_chats.TryGetValue(updateChatLastMessage.ChatId, out Chat value))
-                {
-                    Monitor.Enter(value);
-
-                    value.LastMessage = updateChatLastMessage.LastMessage;
-                    SetChatPositions(value, updateChatLastMessage.Positions);
-
-                    Monitor.Exit(value);
-                }
-
-                _test.UpdateChatLastMessage(updateChatLastMessage.ChatId, updateChatLastMessage.LastMessage);
-            }
-            else if (update is UpdateUser updateUser)
-            {
-                _users.TryGetValue(updateUser.User.Id, out User value);
-                _users[updateUser.User.Id] = updateUser.User;
-
-                if (value != null && value.IsContact != updateUser.User.IsContact)
-                {
-                    _aggregator.Publish(new UpdateUserIsContact(updateUser.User.Id));
-                }
-            }
-            else if (update is UpdateUnreadMessageCount updateUnreadMessageCount)
-            {
-                SetUnreadCount(updateUnreadMessageCount.ChatList, messageCount: updateUnreadMessageCount);
-            }
-            else if (update is UpdateNewChat updateNewChat)
-            {
-                _chats[updateNewChat.Chat.Id] = updateNewChat.Chat;
-
-                Monitor.Enter(updateNewChat.Chat);
-                SetChatPositions(updateNewChat.Chat, updateNewChat.Chat.Positions);
-                Monitor.Exit(updateNewChat.Chat);
-
-                if (updateNewChat.Chat.Type is ChatTypePrivate privata)
-                {
-                    _usersToChats[privata.UserId] = updateNewChat.Chat.Id;
-                }
-            }
-            else if (update is UpdateSavedMessagesTopic updateSavedMessagesTopic)
-            {
-                if (_savedMessagesTopics.TryGetValue(updateSavedMessagesTopic.Topic.Id, out SavedMessagesTopic topic))
-                {
-                    Monitor.Enter(topic);
-                    SetSavedMessagesTopicOrder(topic, updateSavedMessagesTopic.Topic.Order);
-                    Monitor.Exit(topic);
-
-                    topic.DraftMessage = updateSavedMessagesTopic.Topic.DraftMessage;
-                    topic.LastMessage = updateSavedMessagesTopic.Topic.LastMessage;
-                    topic.IsPinned = updateSavedMessagesTopic.Topic.IsPinned;
-                    topic.Order = updateSavedMessagesTopic.Topic.Order;
-
-                    updateSavedMessagesTopic.Topic = topic;
-                }
-                else
-                {
-                    Monitor.Enter(updateSavedMessagesTopic.Topic);
-                    SetSavedMessagesTopicOrder(updateSavedMessagesTopic.Topic, updateSavedMessagesTopic.Topic.Order);
-                    Monitor.Exit(updateSavedMessagesTopic.Topic);
-
-                    _savedMessagesTopics[updateSavedMessagesTopic.Topic.Id] = updateSavedMessagesTopic.Topic;
-                }
-            }
-            else if (update is UpdateChatAddedToList updateChatAddedToList)
-            {
-                if (_chats.TryGetValue(updateChatAddedToList.ChatId, out Chat value))
-                {
-                    lock (value)
-                    {
-                        value.ChatLists.Add(updateChatAddedToList.ChatList);
-                    }
-                }
-            }
-            else if (update is UpdateChatRemovedFromList updateChatRemovedFromList)
-            {
-                if (_chats.TryGetValue(updateChatRemovedFromList.ChatId, out Chat value))
-                {
-                    lock (value)
-                    {
-                        foreach (var chatList in value.ChatLists)
-                        {
-                            if (chatList.AreTheSame(updateChatRemovedFromList.ChatList))
+                            int i;
+                            for (i = 0; i < value.Positions.Count; i++)
                             {
-                                value.ChatLists.Remove(chatList);
-                                break;
+                                if (ChatListEqualityComparer.Instance.Equals(value.Positions[i].List, updateChatPosition.Position.List))
+                                {
+                                    break;
+                                }
+                            }
+
+                            var newPositions = new List<ChatPosition>(value.Positions.Count + (updateChatPosition.Position.Order == 0 ? 0 : 1) - (i < value.Positions.Count ? 1 : 0));
+                            if (updateChatPosition.Position.Order != 0)
+                            {
+                                newPositions.Add(updateChatPosition.Position);
+                            }
+
+                            for (int j = 0; j < value.Positions.Count; j++)
+                            {
+                                if (j != i)
+                                {
+                                    newPositions.Add(value.Positions[j]);
+                                }
+                            }
+
+                            SetChatPositions(value, newPositions);
+
+                            Monitor.Exit(value);
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatLastMessage updateChatLastMessage:
+                    {
+                        if (_chats.TryGetValue(updateChatLastMessage.ChatId, out Chat value))
+                        {
+                            Monitor.Enter(value);
+
+                            value.LastMessage = updateChatLastMessage.LastMessage;
+                            SetChatPositions(value, updateChatLastMessage.Positions);
+
+                            Monitor.Exit(value);
+                        }
+
+                        _test.UpdateChatLastMessage(updateChatLastMessage.ChatId, updateChatLastMessage.LastMessage);
+                        break;
+                    }
+
+                case UpdateUser updateUser:
+                    {
+                        _users.TryGetValue(updateUser.User.Id, out User value);
+                        _users[updateUser.User.Id] = updateUser.User;
+
+                        if (value != null && value.IsContact != updateUser.User.IsContact)
+                        {
+                            _aggregator.Publish(new UpdateUserIsContact(updateUser.User.Id));
+                        }
+
+                        break;
+                    }
+
+                case UpdateUnreadMessageCount updateUnreadMessageCount:
+                    SetUnreadCount(updateUnreadMessageCount.ChatList, messageCount: updateUnreadMessageCount);
+                    break;
+                case UpdateNewChat updateNewChat:
+                    {
+                        _chats[updateNewChat.Chat.Id] = updateNewChat.Chat;
+
+                        Monitor.Enter(updateNewChat.Chat);
+                        SetChatPositions(updateNewChat.Chat, updateNewChat.Chat.Positions);
+                        Monitor.Exit(updateNewChat.Chat);
+
+                        if (updateNewChat.Chat.Type is ChatTypePrivate privata)
+                        {
+                            _usersToChats[privata.UserId] = updateNewChat.Chat.Id;
+                        }
+
+                        break;
+                    }
+
+                case UpdateSavedMessagesTopic updateSavedMessagesTopic:
+                    {
+                        if (_savedMessagesTopics.TryGetValue(updateSavedMessagesTopic.Topic.Id, out SavedMessagesTopic topic))
+                        {
+                            Monitor.Enter(topic);
+                            SetSavedMessagesTopicOrder(topic, updateSavedMessagesTopic.Topic.Order);
+                            Monitor.Exit(topic);
+
+                            topic.DraftMessage = updateSavedMessagesTopic.Topic.DraftMessage;
+                            topic.LastMessage = updateSavedMessagesTopic.Topic.LastMessage;
+                            topic.IsPinned = updateSavedMessagesTopic.Topic.IsPinned;
+                            topic.Order = updateSavedMessagesTopic.Topic.Order;
+
+                            updateSavedMessagesTopic.Topic = topic;
+                        }
+                        else
+                        {
+                            Monitor.Enter(updateSavedMessagesTopic.Topic);
+                            SetSavedMessagesTopicOrder(updateSavedMessagesTopic.Topic, updateSavedMessagesTopic.Topic.Order);
+                            Monitor.Exit(updateSavedMessagesTopic.Topic);
+
+                            _savedMessagesTopics[updateSavedMessagesTopic.Topic.Id] = updateSavedMessagesTopic.Topic;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatAddedToList updateChatAddedToList:
+                    {
+                        if (_chats.TryGetValue(updateChatAddedToList.ChatId, out Chat value))
+                        {
+                            lock (value)
+                            {
+                                value.ChatLists.Add(updateChatAddedToList.ChatList);
                             }
                         }
+
+                        break;
                     }
-                }
-            }
-            else if (update is UpdateAuthorizationState updateAuthorizationState)
-            {
-                switch (updateAuthorizationState.AuthorizationState)
-                {
-                    case AuthorizationStateLoggingOut:
-                        _settings.Clear();
-                        break;
-                    case AuthorizationStateClosed:
-                        CleanUp();
-                        break;
-                    case AuthorizationStateReady:
-                        InitializeReady();
-                        break;
-                }
 
-                if (updateAuthorizationState.AuthorizationState is not AuthorizationStateWaitTdlibParameters)
-                {
-                    _authorizationStateTask.TrySetResult(true);
-                    _authorizationState = updateAuthorizationState.AuthorizationState;
-                }
-            }
-            else if (update is UpdateChatActiveStories updateActiveStories)
-            {
-                _activeStories.TryGetValue(updateActiveStories.ActiveStories.ChatId, out ChatActiveStories value);
-                _activeStories[updateActiveStories.ActiveStories.ChatId] = updateActiveStories.ActiveStories;
-
-                Monitor.Enter(updateActiveStories.ActiveStories);
-                SetActiveStoriesPositions(updateActiveStories.ActiveStories, value);
-                Monitor.Exit(updateActiveStories.ActiveStories);
-            }
-            else if (update is UpdateAnimationSearchParameters updateAnimationSearchParameters)
-            {
-                _animationSearchParameters = updateAnimationSearchParameters;
-            }
-            else if (update is UpdateBasicGroup updateBasicGroup)
-            {
-                _basicGroups[updateBasicGroup.BasicGroup.Id] = updateBasicGroup.BasicGroup;
-            }
-            else if (update is UpdateBasicGroupFullInfo updateBasicGroupFullInfo)
-            {
-                _basicGroupsFull[updateBasicGroupFullInfo.BasicGroupId] = updateBasicGroupFullInfo.BasicGroupFullInfo;
-            }
-            else if (update is UpdateChatAction updateUserChatAction)
-            {
-                if (updateUserChatAction.MessageThreadId != 0)
-                {
-                    var threadActions = _topicActions.GetOrAdd(new ChatMessageId(updateUserChatAction.ChatId, updateUserChatAction.MessageThreadId), x => new ConcurrentDictionary<MessageSender, ChatAction>(new MessageSenderEqualityComparer()));
-                    if (updateUserChatAction.Action is ChatActionCancel)
+                case UpdateChatRemovedFromList updateChatRemovedFromList:
                     {
-                        threadActions.TryRemove(updateUserChatAction.SenderId, out _);
-                    }
-                    else
-                    {
-                        threadActions[updateUserChatAction.SenderId] = updateUserChatAction.Action;
-                    }
-                }
-
-                var actions = _chatActions.GetOrAdd(updateUserChatAction.ChatId, x => new ConcurrentDictionary<MessageSender, ChatAction>(new MessageSenderEqualityComparer()));
-                if (updateUserChatAction.Action is ChatActionCancel)
-                {
-                    actions.TryRemove(updateUserChatAction.SenderId, out _);
-                }
-                else
-                {
-                    actions[updateUserChatAction.SenderId] = updateUserChatAction.Action;
-                }
-            }
-            else if (update is UpdateChatActionBar updateChatActionBar)
-            {
-                if (_chats.TryGetValue(updateChatActionBar.ChatId, out Chat value))
-                {
-                    value.ActionBar = updateChatActionBar.ActionBar;
-                }
-            }
-            else if (update is UpdateChatAvailableReactions chatAvailableReactions)
-            {
-                if (_chats.TryGetValue(chatAvailableReactions.ChatId, out Chat value))
-                {
-                    value.AvailableReactions = chatAvailableReactions.AvailableReactions;
-                }
-            }
-            else if (update is UpdateChatBackground chatBackground)
-            {
-                if (_chats.TryGetValue(chatBackground.ChatId, out Chat value))
-                {
-                    value.Background = chatBackground.Background;
-                }
-            }
-            else if (update is UpdateChatHasProtectedContent updateChatHasProtectedContent)
-            {
-                if (_chats.TryGetValue(updateChatHasProtectedContent.ChatId, out Chat value))
-                {
-                    value.HasProtectedContent = updateChatHasProtectedContent.HasProtectedContent;
-                }
-            }
-            else if (update is UpdateChatDefaultDisableNotification updateChatDefaultDisableNotification)
-            {
-                if (_chats.TryGetValue(updateChatDefaultDisableNotification.ChatId, out Chat value))
-                {
-                    value.DefaultDisableNotification = updateChatDefaultDisableNotification.DefaultDisableNotification;
-                }
-            }
-            else if (update is UpdateChatEmojiStatus updateChatEmojiStatus)
-            {
-                if (_chats.TryGetValue(updateChatEmojiStatus.ChatId, out Chat value))
-                {
-                    value.EmojiStatus = updateChatEmojiStatus.EmojiStatus;
-                }
-            }
-            else if (update is UpdateChatMessageSender updateChatMessageSender)
-            {
-                if (_chats.TryGetValue(updateChatMessageSender.ChatId, out Chat value))
-                {
-                    value.MessageSenderId = updateChatMessageSender.MessageSenderId;
-                }
-            }
-            else if (update is UpdateChatDraftMessage updateChatDraftMessage)
-            {
-                if (_chats.TryGetValue(updateChatDraftMessage.ChatId, out Chat value))
-                {
-                    Monitor.Enter(value);
-
-                    value.DraftMessage = updateChatDraftMessage.DraftMessage;
-                    SetChatPositions(value, updateChatDraftMessage.Positions);
-
-                    Monitor.Exit(value);
-                }
-
-                _test.UpdateChatDraftMessage(updateChatDraftMessage.ChatId, updateChatDraftMessage.DraftMessage);
-            }
-            else if (update is UpdateChatFolders updateChatFolders)
-            {
-                lock (_chatFoldersLock)
-                {
-                    _chatFolders = updateChatFolders.ChatFolders.ToList();
-                    _chatFolders2 = updateChatFolders.ChatFolders.ToDictionary(x => x.Id);
-                }
-
-                _mainChatListPosition = updateChatFolders.MainChatListPosition;
-                _areTagsEnabled = updateChatFolders.AreTagsEnabled;
-            }
-            else if (update is UpdateChatHasScheduledMessages updateChatHasScheduledMessages)
-            {
-                if (_chats.TryGetValue(updateChatHasScheduledMessages.ChatId, out Chat value))
-                {
-                    value.HasScheduledMessages = updateChatHasScheduledMessages.HasScheduledMessages;
-                }
-            }
-            else if (update is UpdateChatAccentColors updateChatAccentColors)
-            {
-                if (_chats.TryGetValue(updateChatAccentColors.ChatId, out Chat value))
-                {
-                    value.AccentColorId = updateChatAccentColors.AccentColorId;
-                    value.BackgroundCustomEmojiId = updateChatAccentColors.BackgroundCustomEmojiId;
-                    value.ProfileAccentColorId = updateChatAccentColors.ProfileAccentColorId;
-                    value.ProfileBackgroundCustomEmojiId = updateChatAccentColors.ProfileBackgroundCustomEmojiId;
-                }
-            }
-            else if (update is UpdateChatBlockList updateChatBlockList)
-            {
-                if (_chats.TryGetValue(updateChatBlockList.ChatId, out Chat value))
-                {
-                    value.BlockList = updateChatBlockList.BlockList;
-                }
-            }
-            else if (update is UpdateChatIsMarkedAsUnread updateChatIsMarkedAsUnread)
-            {
-                if (_chats.TryGetValue(updateChatIsMarkedAsUnread.ChatId, out Chat value))
-                {
-                    value.IsMarkedAsUnread = updateChatIsMarkedAsUnread.IsMarkedAsUnread;
-                }
-            }
-            else if (update is UpdateChatIsTranslatable updateChatIsTranslatable)
-            {
-                if (_chats.TryGetValue(updateChatIsTranslatable.ChatId, out Chat value))
-                {
-                    value.IsTranslatable = updateChatIsTranslatable.IsTranslatable;
-                }
-            }
-            else if (update is UpdateChatNotificationSettings updateNotificationSettings)
-            {
-                if (_chats.TryGetValue(updateNotificationSettings.ChatId, out Chat value))
-                {
-                    value.NotificationSettings = updateNotificationSettings.NotificationSettings;
-                }
-
-                _test.UpdateChatNotificationSettings(updateNotificationSettings.ChatId, updateNotificationSettings.NotificationSettings);
-            }
-            else if (update is UpdateChatPendingJoinRequests updateChatPendingJoinRequests)
-            {
-                if (_chats.TryGetValue(updateChatPendingJoinRequests.ChatId, out Chat value))
-                {
-                    value.PendingJoinRequests = updateChatPendingJoinRequests.PendingJoinRequests;
-                }
-            }
-            else if (update is UpdateChatPermissions updateChatPermissions)
-            {
-                if (_chats.TryGetValue(updateChatPermissions.ChatId, out Chat value))
-                {
-                    value.Permissions = updateChatPermissions.Permissions;
-                }
-            }
-            else if (update is UpdateChatPhoto updateChatPhoto)
-            {
-                if (_chats.TryGetValue(updateChatPhoto.ChatId, out Chat value))
-                {
-                    value.Photo = updateChatPhoto.Photo;
-                }
-            }
-            else if (update is UpdateChatReadInbox updateChatReadInbox)
-            {
-                if (_chats.TryGetValue(updateChatReadInbox.ChatId, out Chat value))
-                {
-                    value.UnreadCount = updateChatReadInbox.UnreadCount;
-                    value.LastReadInboxMessageId = updateChatReadInbox.LastReadInboxMessageId;
-                }
-
-                _test.UpdateChatReadInbox(updateChatReadInbox.ChatId, updateChatReadInbox.LastReadInboxMessageId, updateChatReadInbox.UnreadCount);
-            }
-            else if (update is UpdateChatReadOutbox updateChatReadOutbox)
-            {
-                if (_chats.TryGetValue(updateChatReadOutbox.ChatId, out Chat value))
-                {
-                    value.LastReadOutboxMessageId = updateChatReadOutbox.LastReadOutboxMessageId;
-                }
-
-                _test.UpdateChatReadOutbox(updateChatReadOutbox.ChatId, updateChatReadOutbox.LastReadOutboxMessageId);
-            }
-            else if (update is UpdateChatReplyMarkup updateChatReplyMarkup)
-            {
-                if (_chats.TryGetValue(updateChatReplyMarkup.ChatId, out Chat value))
-                {
-                    value.ReplyMarkupMessageId = updateChatReplyMarkup.ReplyMarkupMessageId;
-                }
-            }
-            else if (update is UpdateChatTheme updateChatTheme)
-            {
-                if (_chats.TryGetValue(updateChatTheme.ChatId, out Chat value))
-                {
-                    value.ThemeName = updateChatTheme.ThemeName;
-                }
-            }
-            else if (update is UpdateChatThemes updateChatThemes)
-            {
-                _chatThemes = updateChatThemes;
-            }
-            else if (update is UpdateChatTitle updateChatTitle)
-            {
-                if (_chats.TryGetValue(updateChatTitle.ChatId, out Chat value))
-                {
-                    value.Title = updateChatTitle.Title;
-                }
-            }
-            else if (update is UpdateChatMessageAutoDeleteTime updateChatMessageAutoDeleteTime)
-            {
-                if (_chats.TryGetValue(updateChatMessageAutoDeleteTime.ChatId, out Chat value))
-                {
-                    value.MessageAutoDeleteTime = updateChatMessageAutoDeleteTime.MessageAutoDeleteTime;
-                }
-            }
-            else if (update is UpdateChatUnreadMentionCount updateChatUnreadMentionCount)
-            {
-                if (_chats.TryGetValue(updateChatUnreadMentionCount.ChatId, out Chat value))
-                {
-                    value.UnreadMentionCount = updateChatUnreadMentionCount.UnreadMentionCount;
-                }
-
-                _test.UpdateChatUnreadMentionCount(updateChatUnreadMentionCount.ChatId, updateChatUnreadMentionCount.UnreadMentionCount);
-            }
-            else if (update is UpdateChatUnreadReactionCount updateChatUnreadReactionCount)
-            {
-                if (_chats.TryGetValue(updateChatUnreadReactionCount.ChatId, out Chat value))
-                {
-                    value.UnreadReactionCount = updateChatUnreadReactionCount.UnreadReactionCount;
-                }
-
-                _test.UpdateChatUnreadReactionCount(updateChatUnreadReactionCount.ChatId, updateChatUnreadReactionCount.UnreadReactionCount);
-            }
-            else if (update is UpdateChatVideoChat updateChatVideoChat)
-            {
-                if (_chats.TryGetValue(updateChatVideoChat.ChatId, out Chat value))
-                {
-                    value.VideoChat = updateChatVideoChat.VideoChat;
-                }
-            }
-            else if (update is UpdateChatViewAsTopics updateChatViewAsTopics)
-            {
-                if (_chats.TryGetValue(updateChatViewAsTopics.ChatId, out Chat value))
-                {
-                    value.ViewAsTopics = updateChatViewAsTopics.ViewAsTopics;
-                }
-            }
-            else if (update is UpdateChatBusinessBotManageBar updateChatBusinessBotManageBar)
-            {
-                if (_chats.TryGetValue(updateChatBusinessBotManageBar.ChatId, out Chat value))
-                {
-                    value.BusinessBotManageBar = updateChatBusinessBotManageBar.BusinessBotManageBar;
-                }
-            }
-            else if (update is UpdateConnectionState updateConnectionState)
-            {
-                _connectionState = updateConnectionState.State;
-            }
-            else if (update is UpdateDefaultReactionType updateDefaultReactionType)
-            {
-                _defaultReaction = updateDefaultReactionType.ReactionType;
-            }
-            else if (update is UpdateDiceEmojis updateDiceEmojis)
-            {
-                _diceEmojis = updateDiceEmojis.Emojis.ToArray();
-            }
-            else if (update is UpdateFavoriteStickers updateFavoriteStickers)
-            {
-                _favoriteStickers = updateFavoriteStickers.StickerIds;
-            }
-            else if (update is UpdateForumTopicInfo updateForumTopicInfo)
-            {
-                _topics[new ChatMessageId(updateForumTopicInfo.Info.ChatId, updateForumTopicInfo.Info.MessageThreadId)] = updateForumTopicInfo.Info;
-
-                _test.UpdateForumTopicInfo(updateForumTopicInfo.Info.ChatId, updateForumTopicInfo.Info);
-            }
-            else if (update is UpdateInstalledStickerSets updateInstalledStickerSets)
-            {
-                switch (updateInstalledStickerSets.StickerType)
-                {
-                    case StickerTypeRegular:
-                        _installedStickerSets = updateInstalledStickerSets.StickerSetIds;
-                        break;
-                    case StickerTypeMask:
-                        _installedMaskSets = updateInstalledStickerSets.StickerSetIds;
-                        break;
-                    case StickerTypeCustomEmoji:
-                        _installedEmojiSets = updateInstalledStickerSets.StickerSetIds;
-                        break;
-                }
-            }
-            else if (update is UpdateLanguagePackStrings updateLanguagePackStrings)
-            {
-                _locale.Handle(updateLanguagePackStrings);
-            }
-            else if (update is UpdateMessageIsPinned updateMessageIsPinned)
-            {
-                _settings.SetChatPinnedMessage(updateMessageIsPinned.ChatId, 0);
-                _test.UpdateMessageIsPinned(updateMessageIsPinned.ChatId, updateMessageIsPinned.ChatId, updateMessageIsPinned.IsPinned);
-            }
-            else if (update is UpdateMessageMentionRead updateMessageMentionRead)
-            {
-                if (_chats.TryGetValue(updateMessageMentionRead.ChatId, out Chat value))
-                {
-                    value.UnreadMentionCount = updateMessageMentionRead.UnreadMentionCount;
-                }
-
-                _test.UpdateMessageMentionRead(updateMessageMentionRead.ChatId, updateMessageMentionRead.MessageId, updateMessageMentionRead.UnreadMentionCount);
-            }
-            else if (update is UpdateMessageUnreadReactions updateMessageUnreadReactions)
-            {
-                if (_chats.TryGetValue(updateMessageUnreadReactions.ChatId, out Chat value))
-                {
-                    value.UnreadReactionCount = updateMessageUnreadReactions.UnreadReactionCount;
-                }
-
-                _test.UpdateMessageUnreadReactions(updateMessageUnreadReactions.ChatId, updateMessageUnreadReactions.MessageId, updateMessageUnreadReactions.UnreadReactions, updateMessageUnreadReactions.UnreadReactionCount);
-            }
-            else if (update is UpdateOption updateOption)
-            {
-                _options.Update(updateOption.Name, updateOption.Value);
-
-                if (updateOption.Name == OptionsService.R.MyId && updateOption.Value is OptionValueInteger myId)
-                {
-                    _settings.UserId = myId.Value;
-                }
-                else if (updateOption.Name == OptionsService.R.IsPremium || updateOption.Name == OptionsService.R.IsPremiumAvailable)
-                {
-                    _aggregator.Publish(new UpdatePremiumState(IsPremium, IsPremiumAvailable));
-                }
-            }
-            else if (update is UpdateActiveEmojiReactions updateReactions)
-            {
-                _activeReactions = updateReactions.Emojis;
-            }
-            else if (update is UpdateRecentStickers updateRecentStickers)
-            {
-                if (updateRecentStickers.IsAttached)
-                {
-
-                }
-                else
-                {
-                    _recentStickers = updateRecentStickers.StickerIds;
-                }
-            }
-            else if (update is UpdateSavedAnimations updateSavedAnimations)
-            {
-                _savedAnimations = updateSavedAnimations.AnimationIds;
-            }
-            else if (update is UpdateScopeNotificationSettings updateScopeNotificationSettings)
-            {
-                _settings.Notifications.Scope[updateScopeNotificationSettings.Scope.GetType()] = updateScopeNotificationSettings.NotificationSettings;
-            }
-            else if (update is UpdateSecretChat updateSecretChat)
-            {
-                _secretChats[updateSecretChat.SecretChat.Id] = updateSecretChat.SecretChat;
-            }
-            else if (update is UpdateDefaultBackground updateDefaultBackground)
-            {
-                if (updateDefaultBackground.ForDarkTheme)
-                {
-                    _selectedBackgroundDark = updateDefaultBackground.Background;
-                }
-                else
-                {
-                    _selectedBackground = updateDefaultBackground.Background;
-                }
-            }
-            else if (update is UpdateSpeechRecognitionTrial updateSpeechRecognitionTrial)
-            {
-                _speechRecognitionTrial = updateSpeechRecognitionTrial;
-            }
-            else if (update is UpdateStoryStealthMode updateStoryStealthMode)
-            {
-                _storyStealthMode = updateStoryStealthMode;
-            }
-            else if (update is UpdateSupergroup updateSupergroup)
-            {
-                _supergroups[updateSupergroup.Supergroup.Id] = updateSupergroup.Supergroup;
-            }
-            else if (update is UpdateSupergroupFullInfo updateSupergroupFullInfo)
-            {
-                _supergroupsFull[updateSupergroupFullInfo.SupergroupId] = updateSupergroupFullInfo.SupergroupFullInfo;
-            }
-            else if (update is UpdateUnreadChatCount updateUnreadChatCount)
-            {
-                SetUnreadCount(updateUnreadChatCount.ChatList, chatCount: updateUnreadChatCount);
-            }
-            else if (update is UpdateUserFullInfo updateUserFullInfo)
-            {
-                _usersFull[updateUserFullInfo.UserId] = updateUserFullInfo.UserFullInfo;
-            }
-            else if (update is UpdateUserStatus updateUserStatus)
-            {
-                if (_users.TryGetValue(updateUserStatus.UserId, out User value))
-                {
-                    value.Status = updateUserStatus.Status;
-                }
-            }
-            else if (update is UpdateUnconfirmedSession updateUnconfirmedSession)
-            {
-                _unconfirmedSession = updateUnconfirmedSession.Session;
-            }
-            else if (update is UpdateAttachmentMenuBots updateAttachmentMenuBots)
-            {
-                _attachmentMenuBots = updateAttachmentMenuBots.Bots;
-            }
-            else if (update is UpdateAccentColors updateAccentColors)
-            {
-                var colors = new Dictionary<int, NameColor>();
-
-                for (int i = 0; i < 7; i++)
-                {
-                    colors[i] = new NameColor(i);
-                }
-
-                foreach (var color in updateAccentColors.Colors)
-                {
-                    colors[color.Id] = new NameColor(color);
-                }
-
-                AvailableAccentColors = updateAccentColors.AvailableAccentColorIds.ToList();
-                AccentColors = colors;
-            }
-            else if (update is UpdateProfileAccentColors updateProfileAccentColors)
-            {
-                var colors = new Dictionary<int, ProfileColor>();
-
-                foreach (var color in updateProfileAccentColors.Colors)
-                {
-                    colors[color.Id] = new ProfileColor(color);
-                }
-
-                AvailableProfileColors = updateProfileAccentColors.AvailableAccentColorIds.ToList();
-                ProfileColors = colors;
-            }
-            else if (update is UpdateSavedMessagesTags updateSavedMessagesTags)
-            {
-                lock (_savedMessagesTags)
-                {
-                    if (updateSavedMessagesTags.SavedMessagesTopicId == 0)
-                    {
-                        var temp = new List<MessageTag>(updateSavedMessagesTags.Tags.Tags.Count);
-
-                        foreach (var tag in updateSavedMessagesTags.Tags.Tags)
+                        if (_chats.TryGetValue(updateChatRemovedFromList.ChatId, out Chat value))
                         {
-                            if (_savedMessagesTags.TryGetValue(tag.Tag, out MessageTag cache))
+                            lock (value)
                             {
-                                cache.Count = tag.Count;
-                                cache.Label = tag.Label;
-                                temp.Add(cache);
+                                foreach (var chatList in value.ChatLists)
+                                {
+                                    if (chatList.AreTheSame(updateChatRemovedFromList.ChatList))
+                                    {
+                                        value.ChatLists.Remove(chatList);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+
+                case UpdateAuthorizationState updateAuthorizationState:
+                    switch (updateAuthorizationState.AuthorizationState)
+                    {
+                        case AuthorizationStateLoggingOut:
+                            _settings.Clear();
+                            break;
+                        case AuthorizationStateClosed:
+                            CleanUp();
+                            break;
+                        case AuthorizationStateReady:
+                            InitializeReady();
+                            break;
+                    }
+
+                    if (updateAuthorizationState.AuthorizationState is not AuthorizationStateWaitTdlibParameters)
+                    {
+                        _authorizationStateTask.TrySetResult(true);
+                        _authorizationState = updateAuthorizationState.AuthorizationState;
+                    }
+                    break;
+                case UpdateChatActiveStories updateActiveStories:
+                    {
+                        _activeStories.TryGetValue(updateActiveStories.ActiveStories.ChatId, out ChatActiveStories value);
+                        _activeStories[updateActiveStories.ActiveStories.ChatId] = updateActiveStories.ActiveStories;
+
+                        Monitor.Enter(updateActiveStories.ActiveStories);
+                        SetActiveStoriesPositions(updateActiveStories.ActiveStories, value);
+                        Monitor.Exit(updateActiveStories.ActiveStories);
+                        break;
+                    }
+
+                case UpdateAnimationSearchParameters updateAnimationSearchParameters:
+                    _animationSearchParameters = updateAnimationSearchParameters;
+                    break;
+                case UpdateBasicGroup updateBasicGroup:
+                    _basicGroups[updateBasicGroup.BasicGroup.Id] = updateBasicGroup.BasicGroup;
+                    break;
+                case UpdateBasicGroupFullInfo updateBasicGroupFullInfo:
+                    _basicGroupsFull[updateBasicGroupFullInfo.BasicGroupId] = updateBasicGroupFullInfo.BasicGroupFullInfo;
+                    break;
+                case UpdateChatAction updateUserChatAction:
+                    {
+                        if (updateUserChatAction.MessageThreadId != 0)
+                        {
+                            var threadActions = _topicActions.GetOrAdd(new ChatMessageId(updateUserChatAction.ChatId, updateUserChatAction.MessageThreadId), x => new ConcurrentDictionary<MessageSender, ChatAction>(new MessageSenderEqualityComparer()));
+                            if (updateUserChatAction.Action is ChatActionCancel)
+                            {
+                                threadActions.TryRemove(updateUserChatAction.SenderId, out _);
                             }
                             else
                             {
-                                temp.Add(new MessageTag(tag));
+                                threadActions[updateUserChatAction.SenderId] = updateUserChatAction.Action;
                             }
                         }
 
-                        _savedMessagesTags.Clear();
-
-                        foreach (var tag in temp)
+                        var actions = _chatActions.GetOrAdd(updateUserChatAction.ChatId, x => new ConcurrentDictionary<MessageSender, ChatAction>(new MessageSenderEqualityComparer()));
+                        if (updateUserChatAction.Action is ChatActionCancel)
                         {
-                            _savedMessagesTags[tag.Tag] = tag;
+                            actions.TryRemove(updateUserChatAction.SenderId, out _);
                         }
-                    }
-                }
-            }
-            else if (update is UpdateSuggestedActions updateSuggestedActions)
-            {
-                lock (_suggestedActions)
-                {
-                    foreach (var action in updateSuggestedActions.RemovedActions)
-                    {
-                        _suggestedActions.Remove(action);
+                        else
+                        {
+                            actions[updateUserChatAction.SenderId] = updateUserChatAction.Action;
+                        }
+
+                        break;
                     }
 
-                    foreach (var action in updateSuggestedActions.AddedActions)
+                case UpdateChatActionBar updateChatActionBar:
                     {
-                        _suggestedActions.Add(action);
+                        if (_chats.TryGetValue(updateChatActionBar.ChatId, out Chat value))
+                        {
+                            value.ActionBar = updateChatActionBar.ActionBar;
+                        }
+
+                        break;
                     }
-                }
-            }
-            else if (update is UpdateQuickReplyShortcut updateQuickReplyShortcut)
-            {
-                if (_quickReplyShortcuts.TryGetValue(updateQuickReplyShortcut.Shortcut.Id, out var value))
-                {
-                    value.Shortcut = updateQuickReplyShortcut.Shortcut;
-                }
-                else
-                {
-                    _quickReplyShortcuts[updateQuickReplyShortcut.Shortcut.Id] = new QuickReplyShortcutInfo
+
+                case UpdateChatAvailableReactions chatAvailableReactions:
                     {
-                        Shortcut = updateQuickReplyShortcut.Shortcut
-                    };
-                }
-            }
-            else if (update is UpdateQuickReplyShortcutDeleted updateQuickReplyShortcutDeleted)
-            {
-                _quickReplyShortcuts.Remove(updateQuickReplyShortcutDeleted.ShortcutId);
-            }
-            else if (update is UpdateQuickReplyShortcutMessages updateQuickReplyShortcutMessages)
-            {
-                if (_quickReplyShortcuts.TryGetValue(updateQuickReplyShortcutMessages.ShortcutId, out var value))
-                {
-                    value.Messages = updateQuickReplyShortcutMessages.Messages;
-                }
-                else
-                {
-                    _quickReplyShortcuts[updateQuickReplyShortcutMessages.ShortcutId] = new QuickReplyShortcutInfo
+                        if (_chats.TryGetValue(chatAvailableReactions.ChatId, out Chat value))
+                        {
+                            value.AvailableReactions = chatAvailableReactions.AvailableReactions;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatBackground chatBackground:
                     {
-                        Messages = updateQuickReplyShortcutMessages.Messages
-                    };
-                }
-            }
-            else if (update is UpdateQuickReplyShortcuts updateQuickReplyShortcuts)
-            {
-                _quickReplyShortcutIds = updateQuickReplyShortcuts.ShortcutIds.ToList();
-            }
-            else if (update is UpdateContactCloseBirthdays updateContactCloseBirthdays)
-            {
-                _contactCloseBirthdays = updateContactCloseBirthdays;
-            }
-            else if (update is UpdateAvailableMessageEffects updateAvailableMessageEffects)
-            {
-                _availableMessageEffects = updateAvailableMessageEffects;
-            }
-            else if (update is UpdateOwnedStarCount updateOwnedStarCount)
-            {
-                _ownedStarCount = updateOwnedStarCount.StarAmount;
-            }
-            else if (update is UpdateDefaultPaidReactionType updateDefaultPaidReactionType)
-            {
-                DefaultPaidReactionType = updateDefaultPaidReactionType.Type;
-            }
-            else if (update is UpdateFreezeState updateFreezeState)
-            {
-                _freezeState = updateFreezeState;
-            }
-            else if (update is UpdateNewMessage updateNewMessage)
-            {
-                _test.UpdateNewMessage(updateNewMessage.Message);
-            }
-            else if (update is UpdateDeleteMessages updateDeleteMessages)
-            {
-                _test.UpdateDeleteMessages(updateDeleteMessages.ChatId, updateDeleteMessages.MessageIds, updateDeleteMessages.IsPermanent, updateDeleteMessages.FromCache);
-            }
-            else if (update is UpdateMessageSendSucceeded updateMessageSendSucceeded)
-            {
-                _test.UpdateMessageSendSucceeded(updateMessageSendSucceeded.Message, updateMessageSendSucceeded.OldMessageId);
-            }
-            else if (update is UpdateMessageSendFailed updateMessageSendFailed)
-            {
-                _test.UpdateMessageSendFailed(updateMessageSendFailed.Message, updateMessageSendFailed.OldMessageId, updateMessageSendFailed.Error);
-            }
-            else if (update is UpdateMessageContent updateMessageContent)
-            {
-                _test.UpdateMessageContent(updateMessageContent.ChatId, updateMessageContent.MessageId, updateMessageContent.NewContent);
-            }
-            else if (update is UpdateMessageEdited updateMessageEdited)
-            {
-                _test.UpdateMessageEdited(updateMessageEdited.ChatId, updateMessageEdited.MessageId, updateMessageEdited.EditDate, updateMessageEdited.ReplyMarkup);
-            }
-            else if (update is UpdateMessageInteractionInfo updateMessageInteractionInfo)
-            {
-                _test.UpdateMessageInteractionInfo(updateMessageInteractionInfo.ChatId, updateMessageInteractionInfo.MessageId, updateMessageInteractionInfo.InteractionInfo);
-            }
-            else if (update is UpdateMessageContentOpened updateMessageContentOpened)
-            {
-                _test.UpdateMessageContentOpened(updateMessageContentOpened.ChatId, updateMessageContentOpened.MessageId);
-            }
-            else if (update is UpdateMessageFactCheck updateMessageFactCheck)
-            {
-                _test.UpdateMessageFactCheck(updateMessageFactCheck.ChatId, updateMessageFactCheck.MessageId, updateMessageFactCheck.FactCheck);
+                        if (_chats.TryGetValue(chatBackground.ChatId, out Chat value))
+                        {
+                            value.Background = chatBackground.Background;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatHasProtectedContent updateChatHasProtectedContent:
+                    {
+                        if (_chats.TryGetValue(updateChatHasProtectedContent.ChatId, out Chat value))
+                        {
+                            value.HasProtectedContent = updateChatHasProtectedContent.HasProtectedContent;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatDefaultDisableNotification updateChatDefaultDisableNotification:
+                    {
+                        if (_chats.TryGetValue(updateChatDefaultDisableNotification.ChatId, out Chat value))
+                        {
+                            value.DefaultDisableNotification = updateChatDefaultDisableNotification.DefaultDisableNotification;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatEmojiStatus updateChatEmojiStatus:
+                    {
+                        if (_chats.TryGetValue(updateChatEmojiStatus.ChatId, out Chat value))
+                        {
+                            value.EmojiStatus = updateChatEmojiStatus.EmojiStatus;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatMessageSender updateChatMessageSender:
+                    {
+                        if (_chats.TryGetValue(updateChatMessageSender.ChatId, out Chat value))
+                        {
+                            value.MessageSenderId = updateChatMessageSender.MessageSenderId;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatDraftMessage updateChatDraftMessage:
+                    {
+                        if (_chats.TryGetValue(updateChatDraftMessage.ChatId, out Chat value))
+                        {
+                            Monitor.Enter(value);
+
+                            value.DraftMessage = updateChatDraftMessage.DraftMessage;
+                            SetChatPositions(value, updateChatDraftMessage.Positions);
+
+                            Monitor.Exit(value);
+                        }
+
+                        _test.UpdateChatDraftMessage(updateChatDraftMessage.ChatId, updateChatDraftMessage.DraftMessage);
+                        break;
+                    }
+
+                case UpdateChatFolders updateChatFolders:
+                    {
+                        lock (_chatFoldersLock)
+                        {
+                            _chatFolders = updateChatFolders.ChatFolders.ToList();
+                            _chatFolders2 = updateChatFolders.ChatFolders.ToDictionary(x => x.Id);
+                        }
+
+                        _mainChatListPosition = updateChatFolders.MainChatListPosition;
+                        _areTagsEnabled = updateChatFolders.AreTagsEnabled;
+                        break;
+                    }
+
+                case UpdateChatHasScheduledMessages updateChatHasScheduledMessages:
+                    {
+                        if (_chats.TryGetValue(updateChatHasScheduledMessages.ChatId, out Chat value))
+                        {
+                            value.HasScheduledMessages = updateChatHasScheduledMessages.HasScheduledMessages;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatAccentColors updateChatAccentColors:
+                    {
+                        if (_chats.TryGetValue(updateChatAccentColors.ChatId, out Chat value))
+                        {
+                            value.AccentColorId = updateChatAccentColors.AccentColorId;
+                            value.BackgroundCustomEmojiId = updateChatAccentColors.BackgroundCustomEmojiId;
+                            value.ProfileAccentColorId = updateChatAccentColors.ProfileAccentColorId;
+                            value.ProfileBackgroundCustomEmojiId = updateChatAccentColors.ProfileBackgroundCustomEmojiId;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatBlockList updateChatBlockList:
+                    {
+                        if (_chats.TryGetValue(updateChatBlockList.ChatId, out Chat value))
+                        {
+                            value.BlockList = updateChatBlockList.BlockList;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatIsMarkedAsUnread updateChatIsMarkedAsUnread:
+                    {
+                        if (_chats.TryGetValue(updateChatIsMarkedAsUnread.ChatId, out Chat value))
+                        {
+                            value.IsMarkedAsUnread = updateChatIsMarkedAsUnread.IsMarkedAsUnread;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatIsTranslatable updateChatIsTranslatable:
+                    {
+                        if (_chats.TryGetValue(updateChatIsTranslatable.ChatId, out Chat value))
+                        {
+                            value.IsTranslatable = updateChatIsTranslatable.IsTranslatable;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatNotificationSettings updateNotificationSettings:
+                    {
+                        if (_chats.TryGetValue(updateNotificationSettings.ChatId, out Chat value))
+                        {
+                            value.NotificationSettings = updateNotificationSettings.NotificationSettings;
+                        }
+
+                        _test.UpdateChatNotificationSettings(updateNotificationSettings.ChatId, updateNotificationSettings.NotificationSettings);
+                        break;
+                    }
+
+                case UpdateChatPendingJoinRequests updateChatPendingJoinRequests:
+                    {
+                        if (_chats.TryGetValue(updateChatPendingJoinRequests.ChatId, out Chat value))
+                        {
+                            value.PendingJoinRequests = updateChatPendingJoinRequests.PendingJoinRequests;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatPermissions updateChatPermissions:
+                    {
+                        if (_chats.TryGetValue(updateChatPermissions.ChatId, out Chat value))
+                        {
+                            value.Permissions = updateChatPermissions.Permissions;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatPhoto updateChatPhoto:
+                    {
+                        if (_chats.TryGetValue(updateChatPhoto.ChatId, out Chat value))
+                        {
+                            value.Photo = updateChatPhoto.Photo;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatReadInbox updateChatReadInbox:
+                    {
+                        if (_chats.TryGetValue(updateChatReadInbox.ChatId, out Chat value))
+                        {
+                            value.UnreadCount = updateChatReadInbox.UnreadCount;
+                            value.LastReadInboxMessageId = updateChatReadInbox.LastReadInboxMessageId;
+                        }
+
+                        _test.UpdateChatReadInbox(updateChatReadInbox.ChatId, updateChatReadInbox.LastReadInboxMessageId, updateChatReadInbox.UnreadCount);
+                        break;
+                    }
+
+                case UpdateChatReadOutbox updateChatReadOutbox:
+                    {
+                        if (_chats.TryGetValue(updateChatReadOutbox.ChatId, out Chat value))
+                        {
+                            value.LastReadOutboxMessageId = updateChatReadOutbox.LastReadOutboxMessageId;
+                        }
+
+                        _test.UpdateChatReadOutbox(updateChatReadOutbox.ChatId, updateChatReadOutbox.LastReadOutboxMessageId);
+                        break;
+                    }
+
+                case UpdateChatReplyMarkup updateChatReplyMarkup:
+                    {
+                        if (_chats.TryGetValue(updateChatReplyMarkup.ChatId, out Chat value))
+                        {
+                            value.ReplyMarkupMessageId = updateChatReplyMarkup.ReplyMarkupMessageId;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatTheme updateChatTheme:
+                    {
+                        if (_chats.TryGetValue(updateChatTheme.ChatId, out Chat value))
+                        {
+                            value.ThemeName = updateChatTheme.ThemeName;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatThemes updateChatThemes:
+                    _chatThemes = updateChatThemes;
+                    break;
+                case UpdateChatTitle updateChatTitle:
+                    {
+                        if (_chats.TryGetValue(updateChatTitle.ChatId, out Chat value))
+                        {
+                            value.Title = updateChatTitle.Title;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatMessageAutoDeleteTime updateChatMessageAutoDeleteTime:
+                    {
+                        if (_chats.TryGetValue(updateChatMessageAutoDeleteTime.ChatId, out Chat value))
+                        {
+                            value.MessageAutoDeleteTime = updateChatMessageAutoDeleteTime.MessageAutoDeleteTime;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatUnreadMentionCount updateChatUnreadMentionCount:
+                    {
+                        if (_chats.TryGetValue(updateChatUnreadMentionCount.ChatId, out Chat value))
+                        {
+                            value.UnreadMentionCount = updateChatUnreadMentionCount.UnreadMentionCount;
+                        }
+
+                        _test.UpdateChatUnreadMentionCount(updateChatUnreadMentionCount.ChatId, updateChatUnreadMentionCount.UnreadMentionCount);
+                        break;
+                    }
+
+                case UpdateChatUnreadReactionCount updateChatUnreadReactionCount:
+                    {
+                        if (_chats.TryGetValue(updateChatUnreadReactionCount.ChatId, out Chat value))
+                        {
+                            value.UnreadReactionCount = updateChatUnreadReactionCount.UnreadReactionCount;
+                        }
+
+                        _test.UpdateChatUnreadReactionCount(updateChatUnreadReactionCount.ChatId, updateChatUnreadReactionCount.UnreadReactionCount);
+                        break;
+                    }
+
+                case UpdateChatVideoChat updateChatVideoChat:
+                    {
+                        if (_chats.TryGetValue(updateChatVideoChat.ChatId, out Chat value))
+                        {
+                            value.VideoChat = updateChatVideoChat.VideoChat;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatViewAsTopics updateChatViewAsTopics:
+                    {
+                        if (_chats.TryGetValue(updateChatViewAsTopics.ChatId, out Chat value))
+                        {
+                            value.ViewAsTopics = updateChatViewAsTopics.ViewAsTopics;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatBusinessBotManageBar updateChatBusinessBotManageBar:
+                    {
+                        if (_chats.TryGetValue(updateChatBusinessBotManageBar.ChatId, out Chat value))
+                        {
+                            value.BusinessBotManageBar = updateChatBusinessBotManageBar.BusinessBotManageBar;
+                        }
+
+                        break;
+                    }
+
+                case UpdateConnectionState updateConnectionState:
+                    _connectionState = updateConnectionState.State;
+                    break;
+                case UpdateDefaultReactionType updateDefaultReactionType:
+                    _defaultReaction = updateDefaultReactionType.ReactionType;
+                    break;
+                case UpdateDiceEmojis updateDiceEmojis:
+                    _diceEmojis = updateDiceEmojis.Emojis.ToArray();
+                    break;
+                case UpdateFavoriteStickers updateFavoriteStickers:
+                    _favoriteStickers = updateFavoriteStickers.StickerIds;
+                    break;
+                case UpdateForumTopicInfo updateForumTopicInfo:
+                    _topics[new ChatMessageId(updateForumTopicInfo.Info.ChatId, updateForumTopicInfo.Info.MessageThreadId)] = updateForumTopicInfo.Info;
+
+                    _test.UpdateForumTopicInfo(updateForumTopicInfo.Info.ChatId, updateForumTopicInfo.Info);
+                    break;
+                case UpdateInstalledStickerSets updateInstalledStickerSets:
+                    switch (updateInstalledStickerSets.StickerType)
+                    {
+                        case StickerTypeRegular:
+                            _installedStickerSets = updateInstalledStickerSets.StickerSetIds;
+                            break;
+                        case StickerTypeMask:
+                            _installedMaskSets = updateInstalledStickerSets.StickerSetIds;
+                            break;
+                        case StickerTypeCustomEmoji:
+                            _installedEmojiSets = updateInstalledStickerSets.StickerSetIds;
+                            break;
+                    }
+                    break;
+                case UpdateLanguagePackStrings updateLanguagePackStrings:
+                    _locale.Handle(updateLanguagePackStrings);
+                    break;
+                case UpdateMessageIsPinned updateMessageIsPinned:
+                    _settings.SetChatPinnedMessage(updateMessageIsPinned.ChatId, 0);
+                    _test.UpdateMessageIsPinned(updateMessageIsPinned.ChatId, updateMessageIsPinned.ChatId, updateMessageIsPinned.IsPinned);
+                    break;
+                case UpdateMessageMentionRead updateMessageMentionRead:
+                    {
+                        if (_chats.TryGetValue(updateMessageMentionRead.ChatId, out Chat value))
+                        {
+                            value.UnreadMentionCount = updateMessageMentionRead.UnreadMentionCount;
+                        }
+
+                        _test.UpdateMessageMentionRead(updateMessageMentionRead.ChatId, updateMessageMentionRead.MessageId, updateMessageMentionRead.UnreadMentionCount);
+                        break;
+                    }
+
+                case UpdateMessageUnreadReactions updateMessageUnreadReactions:
+                    {
+                        if (_chats.TryGetValue(updateMessageUnreadReactions.ChatId, out Chat value))
+                        {
+                            value.UnreadReactionCount = updateMessageUnreadReactions.UnreadReactionCount;
+                        }
+
+                        _test.UpdateMessageUnreadReactions(updateMessageUnreadReactions.ChatId, updateMessageUnreadReactions.MessageId, updateMessageUnreadReactions.UnreadReactions, updateMessageUnreadReactions.UnreadReactionCount);
+                        break;
+                    }
+
+                case UpdateOption updateOption:
+                    {
+                        _options.Update(updateOption.Name, updateOption.Value);
+
+                        if (updateOption.Name == OptionsService.R.MyId && updateOption.Value is OptionValueInteger myId)
+                        {
+                            _settings.UserId = myId.Value;
+                        }
+                        else if (updateOption.Name == OptionsService.R.IsPremium || updateOption.Name == OptionsService.R.IsPremiumAvailable)
+                        {
+                            _aggregator.Publish(new UpdatePremiumState(IsPremium, IsPremiumAvailable));
+                        }
+
+                        break;
+                    }
+
+                case UpdateActiveEmojiReactions updateReactions:
+                    _activeReactions = updateReactions.Emojis;
+                    break;
+                case UpdateRecentStickers updateRecentStickers:
+                    if (updateRecentStickers.IsAttached)
+                    {
+
+                    }
+                    else
+                    {
+                        _recentStickers = updateRecentStickers.StickerIds;
+                    }
+                    break;
+                case UpdateSavedAnimations updateSavedAnimations:
+                    _savedAnimations = updateSavedAnimations.AnimationIds;
+                    break;
+                case UpdateScopeNotificationSettings updateScopeNotificationSettings:
+                    _settings.Notifications.Scope[updateScopeNotificationSettings.Scope.GetType()] = updateScopeNotificationSettings.NotificationSettings;
+                    break;
+                case UpdateSecretChat updateSecretChat:
+                    _secretChats[updateSecretChat.SecretChat.Id] = updateSecretChat.SecretChat;
+                    break;
+                case UpdateDefaultBackground updateDefaultBackground:
+                    if (updateDefaultBackground.ForDarkTheme)
+                    {
+                        _selectedBackgroundDark = updateDefaultBackground.Background;
+                    }
+                    else
+                    {
+                        _selectedBackground = updateDefaultBackground.Background;
+                    }
+                    break;
+                case UpdateSpeechRecognitionTrial updateSpeechRecognitionTrial:
+                    _speechRecognitionTrial = updateSpeechRecognitionTrial;
+                    break;
+                case UpdateStoryStealthMode updateStoryStealthMode:
+                    _storyStealthMode = updateStoryStealthMode;
+                    break;
+                case UpdateSupergroup updateSupergroup:
+                    _supergroups[updateSupergroup.Supergroup.Id] = updateSupergroup.Supergroup;
+                    break;
+                case UpdateSupergroupFullInfo updateSupergroupFullInfo:
+                    _supergroupsFull[updateSupergroupFullInfo.SupergroupId] = updateSupergroupFullInfo.SupergroupFullInfo;
+                    break;
+                case UpdateUnreadChatCount updateUnreadChatCount:
+                    SetUnreadCount(updateUnreadChatCount.ChatList, chatCount: updateUnreadChatCount);
+                    break;
+                case UpdateUserFullInfo updateUserFullInfo:
+                    _usersFull[updateUserFullInfo.UserId] = updateUserFullInfo.UserFullInfo;
+                    break;
+                case UpdateUserStatus updateUserStatus:
+                    {
+                        if (_users.TryGetValue(updateUserStatus.UserId, out User value))
+                        {
+                            value.Status = updateUserStatus.Status;
+                        }
+
+                        break;
+                    }
+
+                case UpdateUnconfirmedSession updateUnconfirmedSession:
+                    _unconfirmedSession = updateUnconfirmedSession.Session;
+                    break;
+                case UpdateAttachmentMenuBots updateAttachmentMenuBots:
+                    _attachmentMenuBots = updateAttachmentMenuBots.Bots;
+                    break;
+                case UpdateAccentColors updateAccentColors:
+                    {
+                        var colors = new Dictionary<int, NameColor>();
+
+                        for (int i = 0; i < 7; i++)
+                        {
+                            colors[i] = new NameColor(i);
+                        }
+
+                        foreach (var color in updateAccentColors.Colors)
+                        {
+                            colors[color.Id] = new NameColor(color);
+                        }
+
+                        AvailableAccentColors = updateAccentColors.AvailableAccentColorIds.ToList();
+                        AccentColors = colors;
+                        break;
+                    }
+
+                case UpdateProfileAccentColors updateProfileAccentColors:
+                    {
+                        var colors = new Dictionary<int, ProfileColor>();
+
+                        foreach (var color in updateProfileAccentColors.Colors)
+                        {
+                            colors[color.Id] = new ProfileColor(color);
+                        }
+
+                        AvailableProfileColors = updateProfileAccentColors.AvailableAccentColorIds.ToList();
+                        ProfileColors = colors;
+                        break;
+                    }
+
+                case UpdateSavedMessagesTags updateSavedMessagesTags:
+                    {
+                        lock (_savedMessagesTags)
+                        {
+                            if (updateSavedMessagesTags.SavedMessagesTopicId == 0)
+                            {
+                                var temp = new List<MessageTag>(updateSavedMessagesTags.Tags.Tags.Count);
+
+                                foreach (var tag in updateSavedMessagesTags.Tags.Tags)
+                                {
+                                    if (_savedMessagesTags.TryGetValue(tag.Tag, out MessageTag cache))
+                                    {
+                                        cache.Count = tag.Count;
+                                        cache.Label = tag.Label;
+                                        temp.Add(cache);
+                                    }
+                                    else
+                                    {
+                                        temp.Add(new MessageTag(tag));
+                                    }
+                                }
+
+                                _savedMessagesTags.Clear();
+
+                                foreach (var tag in temp)
+                                {
+                                    _savedMessagesTags[tag.Tag] = tag;
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+
+                case UpdateSuggestedActions updateSuggestedActions:
+                    {
+                        lock (_suggestedActions)
+                        {
+                            foreach (var action in updateSuggestedActions.RemovedActions)
+                            {
+                                _suggestedActions.Remove(action);
+                            }
+
+                            foreach (var action in updateSuggestedActions.AddedActions)
+                            {
+                                _suggestedActions.Add(action);
+                            }
+                        }
+
+                        break;
+                    }
+
+                case UpdateQuickReplyShortcut updateQuickReplyShortcut:
+                    {
+                        if (_quickReplyShortcuts.TryGetValue(updateQuickReplyShortcut.Shortcut.Id, out var value))
+                        {
+                            value.Shortcut = updateQuickReplyShortcut.Shortcut;
+                        }
+                        else
+                        {
+                            _quickReplyShortcuts[updateQuickReplyShortcut.Shortcut.Id] = new QuickReplyShortcutInfo
+                            {
+                                Shortcut = updateQuickReplyShortcut.Shortcut
+                            };
+                        }
+
+                        break;
+                    }
+
+                case UpdateQuickReplyShortcutDeleted updateQuickReplyShortcutDeleted:
+                    _quickReplyShortcuts.Remove(updateQuickReplyShortcutDeleted.ShortcutId);
+                    break;
+                case UpdateQuickReplyShortcutMessages updateQuickReplyShortcutMessages:
+                    {
+                        if (_quickReplyShortcuts.TryGetValue(updateQuickReplyShortcutMessages.ShortcutId, out var value))
+                        {
+                            value.Messages = updateQuickReplyShortcutMessages.Messages;
+                        }
+                        else
+                        {
+                            _quickReplyShortcuts[updateQuickReplyShortcutMessages.ShortcutId] = new QuickReplyShortcutInfo
+                            {
+                                Messages = updateQuickReplyShortcutMessages.Messages
+                            };
+                        }
+
+                        break;
+                    }
+
+                case UpdateQuickReplyShortcuts updateQuickReplyShortcuts:
+                    _quickReplyShortcutIds = updateQuickReplyShortcuts.ShortcutIds.ToList();
+                    break;
+                case UpdateContactCloseBirthdays updateContactCloseBirthdays:
+                    _contactCloseBirthdays = updateContactCloseBirthdays;
+                    break;
+                case UpdateAvailableMessageEffects updateAvailableMessageEffects:
+                    _availableMessageEffects = updateAvailableMessageEffects;
+                    break;
+                case UpdateOwnedStarCount updateOwnedStarCount:
+                    _ownedStarCount = updateOwnedStarCount.StarAmount;
+                    break;
+                case UpdateDefaultPaidReactionType updateDefaultPaidReactionType:
+                    DefaultPaidReactionType = updateDefaultPaidReactionType.Type;
+                    break;
+                case UpdateFreezeState updateFreezeState:
+                    _freezeState = updateFreezeState;
+                    break;
+                case UpdateNewMessage updateNewMessage:
+                    _test.UpdateNewMessage(updateNewMessage.Message);
+                    break;
+                case UpdateDeleteMessages updateDeleteMessages:
+                    _test.UpdateDeleteMessages(updateDeleteMessages.ChatId, updateDeleteMessages.MessageIds, updateDeleteMessages.IsPermanent, updateDeleteMessages.FromCache);
+                    break;
+                case UpdateMessageSendSucceeded updateMessageSendSucceeded:
+                    _test.UpdateMessageSendSucceeded(updateMessageSendSucceeded.Message, updateMessageSendSucceeded.OldMessageId);
+                    break;
+                case UpdateMessageSendFailed updateMessageSendFailed:
+                    _test.UpdateMessageSendFailed(updateMessageSendFailed.Message, updateMessageSendFailed.OldMessageId, updateMessageSendFailed.Error);
+                    break;
+                case UpdateMessageContent updateMessageContent:
+                    _test.UpdateMessageContent(updateMessageContent.ChatId, updateMessageContent.MessageId, updateMessageContent.NewContent);
+                    break;
+                case UpdateMessageEdited updateMessageEdited:
+                    _test.UpdateMessageEdited(updateMessageEdited.ChatId, updateMessageEdited.MessageId, updateMessageEdited.EditDate, updateMessageEdited.ReplyMarkup);
+                    break;
+                case UpdateMessageInteractionInfo updateMessageInteractionInfo:
+                    _test.UpdateMessageInteractionInfo(updateMessageInteractionInfo.ChatId, updateMessageInteractionInfo.MessageId, updateMessageInteractionInfo.InteractionInfo);
+                    break;
+                case UpdateMessageContentOpened updateMessageContentOpened:
+                    _test.UpdateMessageContentOpened(updateMessageContentOpened.ChatId, updateMessageContentOpened.MessageId);
+                    break;
+                case UpdateMessageFactCheck updateMessageFactCheck:
+                    _test.UpdateMessageFactCheck(updateMessageFactCheck.ChatId, updateMessageFactCheck.MessageId, updateMessageFactCheck.FactCheck);
+                    break;
             }
 
             _aggregator.Publish(update);
