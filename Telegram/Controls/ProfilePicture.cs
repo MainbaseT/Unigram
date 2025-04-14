@@ -198,6 +198,12 @@ namespace Telegram.Controls
 
                 Initials.Visibility = Visibility.Collapsed;
             }
+            else
+            {
+                LayoutRoot.Background = null;
+
+                Initials.Visibility = Visibility.Collapsed;
+            }
 
             UpdateCornerRadius();
             UpdateFontSize();
