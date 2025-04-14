@@ -372,6 +372,7 @@ namespace Telegram.Views
 
             Sponsored.UpdateSponsoredMessage(ViewModel.ClientService, ViewModel.Chat, ViewModel.SponsoredMessage);
 
+            TextField.IsMenuExpanded = false;
             TextField.IsReplaceEmojiEnabled = ViewModel.Settings.IsReplaceEmojiEnabled;
 
             if (_useSystemSpellChecker != SettingsService.Current.UseSystemSpellChecker)
