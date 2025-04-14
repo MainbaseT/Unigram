@@ -44,7 +44,7 @@
                         </Popup>
 
                         <TextBlock x:Name="Label"
-                                   FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
+                                   FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                    TextWrapping="NoWrap"
                                    TextTrimming="CharacterEllipsis"
                                    Style="{StaticResource CaptionTextBlockStyle}"

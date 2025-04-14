@@ -166,6 +166,7 @@
 
                         <TextBlock x:Name="BubbleRadiusHeader"
                                    Text="{CustomResource BubbleRadius}"
+                                   FontFamily="{ThemeResource EmojiThemeFontFamily}"
                                    VerticalAlignment="Center"
                                    Grid.Column="1" />
                         <Slider x:Name="BubbleRadiusSlider"
@@ -203,6 +204,7 @@
 
                         <TextBlock x:Name="TextSizeHeader"
                                    Text="{CustomResource TextSizeHeader}"
+                                   FontFamily="{ThemeResource EmojiThemeFontFamily}"
                                    VerticalAlignment="Center"
                                    Grid.Column="1" />
                         <Slider x:Name="FontSizeSlider"
