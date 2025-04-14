@@ -1493,7 +1493,7 @@ namespace Telegram.Views
             {
                 if (navigate)
                 {
-                    Navigate(ViewModel.Chats.Items[index]);
+                    Navigate(ViewModel.Chats.Items[index], false);
                 }
             }
             else if (index < 0 && offset == -1 && !navigate)
@@ -1839,11 +1839,11 @@ namespace Telegram.Views
             }
             else
             {
-                Navigate(e.ClickedItem);
+                Navigate(e.ClickedItem, true);
             }
         }
 
-        public async void Navigate(object item)
+        public async void Navigate(object item, bool selectionChanged)
         {
 #if MOCKUP
             if (item is Chat cat)
@@ -1954,7 +1954,7 @@ namespace Telegram.Views
                     else
                     {
                         var modifiers = WindowContext.KeyModifiers();
-                        var createNewWindow = modifiers == Windows.System.VirtualKeyModifiers.Control;
+                        var createNewWindow = selectionChanged && modifiers == Windows.System.VirtualKeyModifiers.Control;
 
                         MasterDetail.NavigationService.NavigateToChat(chat, force: false, createNewWindow: createNewWindow, clearBackStack: true);
                     }

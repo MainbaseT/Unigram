@@ -19,8 +19,6 @@ namespace Telegram.ViewModels.Delegates
 
 
 
-        void Navigate(object item);
-
         void UpdateChatLastMessage(Chat chat);
         void UpdateForumTopicLastMessage(ForumTopic topic);
 
