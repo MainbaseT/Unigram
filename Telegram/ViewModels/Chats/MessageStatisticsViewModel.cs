@@ -130,28 +130,35 @@ namespace Telegram.ViewModels.Chats
             private async Task<LoadMoreItemsResult> LoadMoreItemsAsync()
             {
                 var response = await _clientService.SendAsync(new GetMessagePublicForwards(_chatId, _messageId, _nextOffset, 50));
-                if (response is FoundMessages messages)
+                if (response is PublicForwards forwards)
                 {
-                    foreach (var message in messages.Messages)
+                    foreach (var forward in forwards.Forwards)
                     {
-                        Add(message);
+                        // TODO: Support stories
+                        if (forward is PublicForwardMessage forwardMessage)
+                        {
+                            Add(forwardMessage.Message);
+                        }
                     }
 
-                    if (string.IsNullOrEmpty(messages.NextOffset))
+                    if (string.IsNullOrEmpty(forwards.NextOffset))
                     {
                         _nextOffset = null;
                     }
                     else
                     {
-                        _nextOffset = messages.NextOffset;
+                        _nextOffset = forwards.NextOffset;
                     }
 
-                    if (messages.TotalCount > 0)
+                    if (forwards.TotalCount > 0)
                     {
-                        TotalCount = messages.TotalCount;
+                        TotalCount = forwards.TotalCount;
                     }
 
-                    return new LoadMoreItemsResult { Count = (uint)messages.Messages.Count };
+                    return new LoadMoreItemsResult
+                    {
+                        Count = (uint)forwards.Forwards.Count
+                    };
                 }
 
                 return new LoadMoreItemsResult();
