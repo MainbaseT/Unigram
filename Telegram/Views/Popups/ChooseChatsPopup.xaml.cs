@@ -1490,7 +1490,7 @@ namespace Telegram.Views.Popups
             {
                 if (ViewModel.ClientService.IsForum(newItem) && !ViewModel.SelectedTopics.ContainsKey(newItem.Id))
                 {
-                    ChatsPanel.SelectedItems.Remove(newItem);
+                    VisualUtilities.QueueCallbackForCompositionRendered(() => ChatsPanel.SelectedItems.Remove(newItem));
                 }
             }
 
