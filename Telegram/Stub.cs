@@ -7575,6 +7575,18 @@ public static class CanvasTextFormat_stub
             throw new RuntimeException(ex);
         }
     }
+    public static string[] GetSystemFontFamilies_stub()
+    {
+        try
+        {
+            return Microsoft.Graphics.Canvas.Text.CanvasTextFormat.GetSystemFontFamilies();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
 }
 public static class CanvasTextLayout_stub
 {
