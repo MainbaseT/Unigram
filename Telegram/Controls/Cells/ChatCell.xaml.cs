@@ -618,7 +618,7 @@ namespace Telegram.Controls.Cells
 
         #region Updates
 
-        public void UpdateChatLastMessage(Chat chat, ChatPosition position = null)
+        public void UpdateChatLastMessage(Chat chat, ChatPosition position = null, bool updateChatLists = true)
         {
             if (chat == null || _clientService == null || !_templateApplied)
             {
@@ -656,7 +656,10 @@ namespace Telegram.Controls.Cells
             UpdateBriefLabel(chat, UpdateBriefLabel(chat, position, out MinithumbnailId thumbnail));
             UpdateMinithumbnail(thumbnail);
 
-            UpdateChatChatLists(chat);
+            if (updateChatLists)
+            {
+                UpdateChatChatLists(chat);
+            }
         }
 
         public void UpdateChatReadInbox(Chat chat, ChatPosition position = null, bool updateBotOpen = true)

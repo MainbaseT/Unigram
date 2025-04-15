@@ -691,7 +691,7 @@ namespace Telegram.Controls
         {
             if (chat.Id == ViewModel.LinkedChatId)
             {
-                PersonalChannel.UpdateChatLastMessage(chat);
+                PersonalChannel.UpdateChatLastMessage(chat, updateChatLists: false);
             }
         }
 
