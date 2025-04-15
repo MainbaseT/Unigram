@@ -238,13 +238,22 @@ namespace Telegram.Views
                     }
                 }
 
-                if (message.Content is MessageAlbum album)
+                // This is a workaround for a bug in messages.readDiscussion that causes sent messages
+                // to be marked as read and consequently blocks following updateReadChannelDiscussionOutbox
+                if (ViewModel.Topic == null || !message.IsOutgoing)
                 {
-                    messages.AddRange(album.Messages.Keys);
+                    if (message.Content is MessageAlbum album)
+                    {
+                        messages.AddRange(album.Messages.Keys);
+                    }
+                    else
+                    {
+                        messages.Add(message.Id);
+                    }
                 }
-                else
+
+                if (message.Content is not MessageAlbum)
                 {
-                    messages.Add(message.Id);
                     animations.Add((container, message));
                 }
 
