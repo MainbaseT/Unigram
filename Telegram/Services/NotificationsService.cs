@@ -17,6 +17,7 @@ using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Td;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.Views;
 using Windows.Data.Xml.Dom;
 using Windows.Storage;
@@ -510,7 +511,7 @@ namespace Telegram.Services
                 return;
             }
 
-            if (UpdateAsync(chat))
+            if (UpdateAsync(chat, message))
             {
                 var caption = GetCaption(chat, silent);
                 var content = GetContent(chat, message);
@@ -564,7 +565,7 @@ namespace Telegram.Services
             }
         }
 
-        private bool UpdateAsync(Chat chat)
+        private bool UpdateAsync(Chat chat, Message message)
         {
             try
             {
@@ -580,7 +581,15 @@ namespace Telegram.Services
                     return true;
                 }
 
-                if (service.CurrentPageType == typeof(ChatPage) && (long)service.CurrentPageParam == chat.Id)
+                if (chat.ViewAsTopics && service.CurrentPageType == typeof(ChatThreadPage) && service.CurrentPageParam is ChatMessageIdNavigationArgs args)
+                {
+                    if (args.ChatId == chat.Id && args.MessageId == message.TopicId())
+                    {
+                        Logger.Info("Topic is open");
+                        return false;
+                    }
+                }
+                else if (service.IsChatOpen(chat.Id, true))
                 {
                     Logger.Info("Chat is open");
                     return false;
