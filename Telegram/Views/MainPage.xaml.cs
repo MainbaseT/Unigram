@@ -3364,7 +3364,7 @@ namespace Telegram.Views
             }
         }
 
-        private void ShowTopicList(Chat chat)
+        public void ShowTopicList(Chat chat)
         {
             ViewModel.Topics.SetChat(chat);
             ShowHideTopicList(true);

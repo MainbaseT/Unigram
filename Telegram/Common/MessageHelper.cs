@@ -1318,6 +1318,10 @@ namespace Telegram.Common
                 {
                     navigation.NavigateToChat(chat, state: new NavigationState { { "videoChat", videoChat } });
                 }
+                else if (clientService.IsForum(chat))
+                {
+                    navigation.NavigateToForum(chat);
+                }
                 else
                 {
                     navigation.NavigateToChat(chat);

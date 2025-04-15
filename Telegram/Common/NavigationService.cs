@@ -106,6 +106,26 @@ namespace Telegram.Common
             }
         }
 
+        public static void NavigateToForum(this INavigationService service, long chatId)
+        {
+            if (service is TLNavigationService serviceEx && serviceEx.ClientService.TryGetChat(chatId, out Chat chat))
+            {
+                NavigateToForum(service, chat);
+            }
+        }
+
+        public static void NavigateToForum(this INavigationService service, Chat chat)
+        {
+            if (service.Content is UIElement element)
+            {
+                var mainPage = element.GetParent<MainPage>();
+                if (mainPage != null)
+                {
+                    mainPage.ShowTopicList(chat);
+                }
+            }
+        }
+
         public static void NavigateToChat(this INavigationService service, Chat chat, long? message = null, long thread = 0, long savedMessagesTopicId = 0, string accessToken = null, NavigationState state = null, bool scheduled = false, bool force = true, bool createNewWindow = false, bool clearBackStack = false)
         {
             if (service is TLNavigationService serviceEx)

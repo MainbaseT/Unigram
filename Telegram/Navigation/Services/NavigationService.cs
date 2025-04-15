@@ -153,7 +153,7 @@ namespace Telegram.Navigation.Services
         public WindowContext Window { get; }
         public FrameFacade FrameFacade { get; }
         public Frame Frame => FrameFacade.Frame;
-        public object Content => Frame.Content;
+        public object Content => Frame?.Content;
         public XamlRoot XamlRoot => Window.Content?.XamlRoot;
 
         public IDispatcherContext Dispatcher { get; }
