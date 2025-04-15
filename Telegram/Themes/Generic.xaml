@@ -7268,7 +7268,8 @@
                                    RadiusY="4" />
                         <Grid x:Name="SelectionIndicatorGrid"
                               HorizontalAlignment="Left"
-                              VerticalAlignment="Center">
+                              VerticalAlignment="Top"
+                              Margin="0,14,0,0">
                             <Rectangle x:Name="SelectionIndicator"
                                        Width="3"
                                        Height="36"
