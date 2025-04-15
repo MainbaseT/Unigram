@@ -17,6 +17,7 @@ using Telegram.Common;
 using Telegram.Controls.Chats;
 using Telegram.Converters;
 using Telegram.Native;
+using Telegram.Services;
 using Telegram.Services.Calls;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -39,6 +40,13 @@ namespace Telegram.Td.Api
                 MessagePaidMedia paidMedia => paidMedia.ShowCaptionAboveMedia,
                 _ => false
             };
+        }
+
+        public static long TopicId(this Message message)
+        {
+            return message.IsTopicMessage
+                ? message.MessageThreadId
+                : ForumTopicService.GeneralId;
         }
 
         public static bool IsPhoto(this MessageDocument document)

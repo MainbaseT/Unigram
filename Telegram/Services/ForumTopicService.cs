@@ -24,6 +24,7 @@ namespace Telegram.Services
         private readonly HashSet<long> _unreadTopicIds = new();
 
         private readonly HashSet<long> _pendingNewTopics = new();
+        private readonly HashSet<long> _pendingLastReadInboxMessageId = new();
 
         private bool _haveFullList;
 
@@ -73,16 +74,27 @@ namespace Telegram.Services
         {
             if (_topics.TryGetValue(messageThreadId, out ForumTopic topic))
             {
-                UpdateReadInbox(topic, messageIds.Max());
+                UpdateLastReadInboxMessageId(topic, messageIds.Max());
             }
         }
 
-        private void UpdateReadInbox(ForumTopic topic, long lastReadInboxMessageId)
+        private void UpdateLastReadInboxMessageId(ForumTopic topic, long lastReadInboxMessageId)
         {
+            _pendingLastReadInboxMessageId.Remove(lastReadInboxMessageId);
+
             if (lastReadInboxMessageId > topic.LastReadInboxMessageId)
             {
                 topic.LastReadInboxMessageId = lastReadInboxMessageId;
                 UpdateUnreadCount(topic);
+            }
+        }
+
+        private void UpdateLastReadOutboxMessageId(ForumTopic topic, long lastReadOutboxMessageId)
+        {
+            if (topic.LastReadOutboxMessageId < lastReadOutboxMessageId)
+            {
+                topic.LastReadOutboxMessageId = lastReadOutboxMessageId;
+                _aggregator.Publish(new UpdateForumTopicReadOutbox(_chatId, topic.Info.MessageThreadId, lastReadOutboxMessageId));
             }
         }
 
@@ -236,7 +248,11 @@ namespace Telegram.Services
                     foreach (var topic in forumTopics.Topics)
                     {
                         _topics[topic.Info.MessageThreadId] = topic;
-                        _messages[topic.LastMessage.Id] = topic;
+
+                        if (topic.LastMessage != null)
+                        {
+                            _messages[topic.LastMessage.Id] = topic;
+                        }
 
                         if (topic.IsPinned)
                         {
@@ -297,11 +313,8 @@ namespace Telegram.Services
         {
             if (_topics.TryGetValue(update.MessageThreadId, out ForumTopic topic))
             {
-                if (topic.LastReadOutboxMessageId < update.LastReadOutboxMessageId)
-                {
-                    topic.LastReadOutboxMessageId = update.LastReadOutboxMessageId;
-                    _aggregator.Publish(new UpdateForumTopicReadOutbox(_chatId, update.MessageThreadId, update.LastReadOutboxMessageId));
-                }
+                UpdateLastReadInboxMessageId(topic, update.LastReadInboxMessageId);
+                UpdateLastReadOutboxMessageId(topic, update.LastReadOutboxMessageId);
 
                 if (topic.IsPinned != update.IsPinned)
                 {
@@ -346,14 +359,13 @@ namespace Telegram.Services
                 topic.NotificationSettings = newTopic.NotificationSettings;
                 topic.UnreadReactionCount = newTopic.UnreadReactionCount;
                 topic.UnreadMentionCount = newTopic.UnreadMentionCount;
-                topic.LastReadInboxMessageId = newTopic.LastReadInboxMessageId;
-                topic.LastReadOutboxMessageId = newTopic.LastReadOutboxMessageId;
                 topic.UnreadCount = newTopic.UnreadCount;
                 topic.IsPinned = newTopic.IsPinned;
                 topic.LastMessage = newTopic.LastMessage;
                 topic.Info = newTopic.Info;
 
-                UpdateReadInbox(topic, newTopic.LastReadInboxMessageId);
+                UpdateLastReadInboxMessageId(topic, newTopic.LastReadInboxMessageId);
+                UpdateLastReadOutboxMessageId(topic, newTopic.LastReadOutboxMessageId);
                 UpdateLastMessage(topic, newTopic.LastMessage);
             }
             else
@@ -385,28 +397,19 @@ namespace Telegram.Services
 
             _lastProcessedMessageId = message.Id;
 
-            var messageThreadId = message.IsTopicMessage
-                ? message.MessageThreadId
-                : GeneralId;
-
-            if (_topics.TryGetValue(messageThreadId, out ForumTopic topic))
+            if (_topics.TryGetValue(message.TopicId(), out ForumTopic topic))
             {
                 UpdateLastMessage(topic, message);
             }
             else
             {
-                _clientService.Send(new GetForumTopic(_chatId, message.MessageThreadId), UpdateNewTopic);
+                _clientService.Send(new GetForumTopic(_chatId, message.TopicId()), UpdateNewTopic);
             }
 
-            //else if (!_pendingNewTopics.Contains(message.MessageThreadId))
-            //{
-            //    _pendingNewTopics.Add(message.MessageThreadId);
-            //    _clientService.Send(new GetForumTopic(_chatId, message.MessageThreadId), result =>
-            //    {
-            //        _pendingNewTopics.Remove(message.MessageThreadId);
-            //        UpdateNewTopic(result);
-            //    });
-            //}
+            if (message.SendingState is MessageSendingStatePending)
+            {
+                _pendingLastReadInboxMessageId.Add(message.Id);
+            }
         }
 
         private void UpdateLastMessage(ForumTopic topic, Message message)
@@ -533,6 +536,21 @@ namespace Telegram.Services
 
                     UpdateTopicOrder(topic, true);
                 }
+            }
+
+            if (_pendingLastReadInboxMessageId.Contains(oldMessageId))
+            {
+                _pendingLastReadInboxMessageId.Remove(oldMessageId);
+
+                // There is a bug on backend that causes two distinct issues with topics read state:
+                // When a message is sent, the backend may accidentally consider it as an incoming message for the current user.
+                // When this happens, updateReadChannelDiscussionInbox is not received, and unread counter for the topic is increased by one.
+                // On the other end, invoking messages.readDiscussion with the sent message as read_max_id,
+                // may cause the same issue to occur with the opposite effect, causing updateReadChannelDiscussionOutbox to never be delivered.
+                // _pendingLastReadInboxMessageId tries to workaround this issue by keeping track of currently sent messages and by invoking
+                // messages.readDiscussion only when updateReadChannelDiscussionInbox is not received in messages.sendMessage response.
+                // At the same time, ChatView.Bubbles.cs makes sure not to include outgoing messages when calling ViewMessages from a topic.
+                _clientService.ViewMessages(_chatId, message.TopicId(), new[] { message.Id }, new MessageSourceForumTopicHistory(), false);
             }
         }
 
