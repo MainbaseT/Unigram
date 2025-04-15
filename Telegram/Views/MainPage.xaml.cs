@@ -1763,18 +1763,18 @@ namespace Telegram.Views
             //    : Icons.Hamburger;
         }
 
-        private void UpdateListViewsSelectedItem(long chatId, bool fromSelection = false)
+        private void UpdateListViewsSelectedItem(MessageId openChat, bool fromSelection = false)
         {
-            if (chatId == 0 && ViewModel.Topics.Chat != null)
+            if (openChat.ChatId == 0 && ViewModel.Topics.Chat != null)
             {
-                chatId = ViewModel.Topics.Chat.Id;
+                openChat = new MessageId(ViewModel.Topics.Chat.Id, 0);
             }
 
-            ViewModel.Chats.SelectedItem = chatId;
+            ViewModel.Chats.SelectedItem = openChat.ChatId;
 
             if (ViewModel.Chats.SelectionMode != ListViewSelectionMode.Multiple)
             {
-                if (ViewModel.ClientService.TryGetChat(chatId, out Chat chat) && ViewModel.Chats.Items.Contains(chat))
+                if (ViewModel.ClientService.TryGetChat(openChat.ChatId, out Chat chat) && ViewModel.Chats.Items.Contains(chat))
                 {
                     if (fromSelection)
                     {
@@ -3368,7 +3368,7 @@ namespace Telegram.Views
         {
             ViewModel.Topics.SetChat(chat);
             ShowHideTopicList(true);
-            UpdateListViewsSelectedItem(chat.Id);
+            UpdateListViewsSelectedItem(new MessageId(chat.Id, 0));
             TopicListPresenter?.UpdateChat(chat);
         }
 

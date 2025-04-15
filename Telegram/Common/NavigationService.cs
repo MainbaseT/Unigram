@@ -222,29 +222,29 @@ namespace Telegram.Common
 
         public static bool IsChatOpen(this INavigationService service, long chatId, bool currentPageOnly = false)
         {
-            return chatId == GetChatFromBackStack(service, currentPageOnly);
+            return chatId == GetChatFromBackStack(service, currentPageOnly).ChatId;
         }
 
-        public static long GetChatFromBackStack(this INavigationService service, bool currentPageOnly = false)
+        public static MessageId GetChatFromBackStack(this INavigationService service, bool currentPageOnly = false)
         {
             if (service.CurrentPageType == typeof(ChatPage))
             {
                 if (TryGetChatFromParameter(service, service.CurrentPageParam, out long chatId))
                 {
-                    return chatId;
+                    return new MessageId(chatId, 0);
                 }
             }
 
             if (currentPageOnly)
             {
-                return 0;
+                return default;
             }
 
             if (service.CurrentPageType == typeof(ChatThreadPage))
             {
                 if (service.CurrentPageParam is ChatMessageIdNavigationArgs args)
                 {
-                    return args.ChatId;
+                    return new MessageId(args.ChatId, args.MessageId);
                 }
             }
             //else if (service.CurrentPageType == typeof(ChatSavedPage))
@@ -262,14 +262,14 @@ namespace Telegram.Common
                 {
                     if (TryGetChatFromParameter(service, entry.Parameter, out long chatId))
                     {
-                        return chatId;
+                        return new MessageId(chatId, 0);
                     }
                 }
                 else if (entry.SourcePageType == typeof(ChatThreadPage))
                 {
                     if (entry.Parameter is ChatMessageIdNavigationArgs args)
                     {
-                        return args.ChatId;
+                        return new MessageId(args.ChatId, args.MessageId);
                     }
                 }
                 //else if (entry.SourcePageType == typeof(ChatSavedPage))
@@ -281,7 +281,7 @@ namespace Telegram.Common
                 //}
             }
 
-            return 0;
+            return default;
         }
 
         public static bool TryGetChatFromParameter(this INavigationService service, object parameter, out long chatId)

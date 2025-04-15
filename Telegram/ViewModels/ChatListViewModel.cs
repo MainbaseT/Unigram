@@ -666,7 +666,7 @@ namespace Telegram.ViewModels
                                 _chats.Add(chat.Id);
                                 Insert(Math.Min(Count, next), chat);
 
-                                if (chat.Id == _viewModel._selectedItem)
+                                if (chat.Id == _viewModel.SelectedItem)
                                 {
                                     _viewModel.Delegate?.SetSelectedItem(chat);
                                 }
@@ -816,7 +816,7 @@ namespace Telegram.ViewModels
                             _lastOrder = order;
                         }
 
-                        if (chat.Id == _viewModel._selectedItem)
+                        if (chat.Id == _viewModel.SelectedItem)
                         {
                             _viewModel.Delegate?.SetSelectedItem(chat);
                         }
@@ -837,7 +837,7 @@ namespace Telegram.ViewModels
                     _chats.Remove(chat.Id);
                     Remove(chat);
 
-                    if (chat.Id == _viewModel._selectedItem)
+                    if (chat.Id == _viewModel.SelectedItem)
                     {
                         _viewModel.Delegate?.SetSelectedItem(chat);
                     }

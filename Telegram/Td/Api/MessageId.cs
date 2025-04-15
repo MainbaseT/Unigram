@@ -24,6 +24,13 @@ namespace Telegram.Td.Api
             MediaAlbumId = message.MediaAlbumId;
         }
 
+        public MessageId(long chatId, long messageId)
+        {
+            ChatId = chatId;
+            Id = messageId;
+            MediaAlbumId = 0;
+        }
+
         public long ChatId;
 
         public long Id;
