@@ -81,7 +81,8 @@
       powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -file "$(SolutionDir)UpdateManifest.ps1" -path "$(ProjectDir)\" -config "$(ConfigurationName)" -mode "$(UapAppxPackageBuildMode)"
     </PreBuildEvent>
     <AppxPackageSigningTimestampServerUrl>http://timestamp.digicert.com</AppxPackageSigningTimestampServerUrl>
-    <PackageCertificateKeyFile>Telegram_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Telegram.Msix_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>C3B780C652BF5A704478BB7AA8D0E93E649A233D</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
