@@ -2895,7 +2895,8 @@ namespace Telegram.Views
                 return message.Chat.Type is ChatTypeBasicGroup || message.Chat.Type is ChatTypeSupergroup supergroup && !supergroup.IsChannel;
             }
 
-            if (message.Chat.LastReadOutboxMessageId < message.Id || !properties.CanGetViewers)
+            var maxId = message.Topic?.LastReadOutboxMessageId ?? message.Chat.LastReadOutboxMessageId;
+            if (maxId < message.Id || !properties.CanGetViewers)
             {
                 return false;
             }
@@ -3050,7 +3051,8 @@ namespace Telegram.Views
 
         private static bool CanGetMessageReadDate(MessageViewModel message, MessageProperties properties, bool reactions = true)
         {
-            if (message.Chat.LastReadOutboxMessageId < message.Id || !properties.CanGetReadDate)
+            var maxId = message.Topic?.LastReadOutboxMessageId ?? message.Chat.LastReadOutboxMessageId;
+            if (maxId < message.Id || !properties.CanGetReadDate)
             {
                 return false;
             }

@@ -297,7 +297,7 @@ namespace Telegram.Services
         {
             if (_topics.TryGetValue(update.MessageThreadId, out ForumTopic topic))
             {
-                if (topic.LastReadOutboxMessageId != update.LastReadOutboxMessageId)
+                if (topic.LastReadOutboxMessageId < update.LastReadOutboxMessageId)
                 {
                     topic.LastReadOutboxMessageId = update.LastReadOutboxMessageId;
                     _aggregator.Publish(new UpdateForumTopicReadOutbox(_chatId, update.MessageThreadId, update.LastReadOutboxMessageId));

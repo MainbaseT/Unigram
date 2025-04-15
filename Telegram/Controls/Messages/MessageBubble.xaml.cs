@@ -302,11 +302,7 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            var maxId = 0L;
-            if (chat != null)
-            {
-                maxId = chat.LastReadOutboxMessageId;
-            }
+            var maxId = message.Topic?.LastReadOutboxMessageId ?? message.Chat.LastReadOutboxMessageId;
 
             if (chat.Id != message.ClientService.Options.MyId)
             {
