@@ -3399,6 +3399,8 @@ namespace Telegram.Views
             _topicListCollapsed = !show;
             TopicListPresenter.Visibility = Visibility.Visible;
 
+            Canvas.SetZIndex(ChatsRoot, show ? 1 : 0);
+
             if (TopicListPresenter.ActualWidth == 0)
             {
                 await TopicListPresenter.UpdateLayoutAsync();

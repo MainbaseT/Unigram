@@ -503,8 +503,7 @@
 
                 <Grid x:Name="ChatsRoot"
                       Margin="0,-72,0,0"
-                      Grid.Row="1"
-                      Canvas.ZIndex="1">
+                      Grid.Row="1">
                     <views:SearchChatsView x:Name="DialogsSearchPanel"
                                            x:Load="False"
                                            DataContext="{x:Bind ViewModel.SearchChats}"
