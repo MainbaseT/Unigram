@@ -199,25 +199,19 @@ namespace Telegram.Controls.Views
             var flyout = new MenuFlyout();
             var topic = ScrollingHost.ItemFromContainer(sender) as ForumTopic;
 
-            var canManage = CanCreateTopics(chat, supergroup, topic);
-
-            if (canManage && topic.Info.IsGeneral)
-            {
-                //Telegram.Td.Api.ToggleGeneralForumTopicIsHidden // CanManageTopics
-                flyout.CreateFlyoutItem(viewModel.HideTopic, topic, topic.Info.IsHidden ? Strings.UnhideFromTop : Strings.HideOnTop, topic.IsPinned ? Icons.PinOff : Icons.Pin);
-            }
-
+            var canManage = supergroup.CanManageTopics();
             if (canManage)
             {
                 //Telegram.Td.Api.ToggleForumTopicIsPinned // CanManageTopics
                 flyout.CreateFlyoutItem(viewModel.PinTopic, topic, topic.IsPinned ? Strings.UnpinFromTop : Strings.PinToTop, topic.IsPinned ? Icons.PinOff : Icons.Pin);
             }
 
-            var muted = ViewModel.ClientService.Notifications.GetMuteFor(chat, topic) > 0;
+            var muted = ViewModel.ClientService.Notifications.IsMuted(chat, topic);
             flyout.CreateFlyoutItem(viewModel.NotifyTopic, topic, muted ? Strings.Unmute : Strings.Mute, topic.IsPinned ? Icons.Alert : Icons.AlertOff);
 
             if (canManage)
             {
+                //Telegram.Td.Api.ToggleGeneralForumTopicIsHidden // CanManageTopics
                 //Telegram.Td.Api.ToggleForumTopicIsClosed // CanManageTopics
                 flyout.CreateFlyoutItem(viewModel.CloseTopic, topic, topic.Info.IsClosed ? Strings.RestartTopic : Strings.CloseTopic, topic.Info.IsClosed ? Icons.PlayCircle : Icons.HandRight);
             }

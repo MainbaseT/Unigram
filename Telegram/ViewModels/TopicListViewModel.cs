@@ -86,9 +86,9 @@ namespace Telegram.ViewModels
 
         #region Open
 
-        public void OpenTopic(ForumTopic chat)
+        public void OpenTopic(ForumTopic topic)
         {
-            //NavigationService.NavigateToChat(chat, createNewWindow: true);
+            NavigationService.NavigateToChat(topic.Info.ChatId, thread: topic.Info.MessageThreadId, createNewWindow: true);
         }
 
         #endregion
@@ -107,20 +107,19 @@ namespace Telegram.ViewModels
 
         #region Pin
 
-        public async void PinTopic(ForumTopic chat)
+        public async void PinTopic(ForumTopic topic)
         {
             //var position = chat.GetPosition(Items.ChatList);
             //if (position == null)
             //{
             //    return;
             //}
-
-            //var response = await ClientService.SendAsync(new ToggleChatIsPinned(Items.ChatList, chat.Id, !position.IsPinned));
-            //if (response is Error error && error.Code == 400)
-            //{
-            //    // This is not the right way
-            //    NavigationService.ShowLimitReached(new PremiumLimitTypePinnedChatCount());
-            //}
+            var response = await ClientService.SendAsync(new ToggleForumTopicIsPinned(topic.Info.ChatId, topic.Info.MessageThreadId, !topic.IsPinned));
+            if (response is Error error && error.Code == 400)
+            {
+                // This is not the right way
+                NavigationService.ShowLimitReached(new PremiumLimitTypePinnedChatCount());
+            }
         }
 
         #endregion
@@ -129,21 +128,21 @@ namespace Telegram.ViewModels
 
         public void MarkTopicAsRead(ForumTopic topic)
         {
-            if (Chat is Chat chat && topic.UnreadCount > 0)
+            if (topic.UnreadCount > 0)
             {
                 if (topic.LastMessage != null)
                 {
-                    ClientService.Send(new ViewMessages(chat.Id, new[] { topic.LastMessage.Id }, new MessageSourceChatList(), true));
+                    ClientService.ViewMessages(topic.Info.ChatId, topic.Info.MessageThreadId, new[] { topic.LastMessage.Id }, new MessageSourceForumTopicHistory(), true);
                 }
 
                 if (topic.UnreadMentionCount > 0)
                 {
-                    ClientService.Send(new ReadAllMessageThreadMentions(chat.Id, topic.Info.MessageThreadId));
+                    ClientService.Send(new ReadAllMessageThreadMentions(topic.Info.ChatId, topic.Info.MessageThreadId));
                 }
 
                 if (topic.UnreadReactionCount > 0)
                 {
-                    ClientService.Send(new ReadAllMessageThreadReactions(chat.Id, topic.Info.MessageThreadId));
+                    ClientService.Send(new ReadAllMessageThreadReactions(topic.Info.ChatId, topic.Info.MessageThreadId));
                 }
             }
         }
