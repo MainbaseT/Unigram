@@ -339,8 +339,6 @@ namespace Telegram.Controls.Gallery
 
         public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, GalleryViewModelBase parameter, FrameworkElement closing = null, long timestamp = 0, VideoPlayerBase player = null)
         {
-            TypeResolver.Current.Playback.Pause();
-
             var popup = new GalleryWindow
             {
                 InitialPosition = timestamp
