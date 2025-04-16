@@ -23,6 +23,8 @@ namespace Telegram.Services
         private readonly List<long> _pinnedTopicIds = new();
         private readonly HashSet<long> _unreadTopicIds = new();
 
+        private readonly HashSet<long> _deletedTopicIds = new();
+
         private readonly HashSet<long> _pendingNewTopics = new();
         private readonly HashSet<long> _pendingLastReadInboxMessageId = new();
 
@@ -296,6 +298,11 @@ namespace Telegram.Services
 
         private long Order(ForumTopic topic)
         {
+            if (_deletedTopicIds.Contains(topic.Info.MessageThreadId))
+            {
+                return 0;
+            }
+
             var index = _pinnedTopicIds.IndexOf(topic.Info.MessageThreadId);
             if (index != -1)
             {
@@ -467,6 +474,8 @@ namespace Telegram.Services
                             }
                             else if (response is Error { Code: 404 })
                             {
+                                _deletedTopicIds.Add(topic.Info.MessageThreadId);
+
                                 if (_pinnedTopicIds.Contains(topic.Info.MessageThreadId))
                                 {
                                     _pinnedTopicIds.Remove(topic.Info.MessageThreadId);
