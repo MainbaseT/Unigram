@@ -142,7 +142,8 @@
             </ListView.ItemTemplate>
             <ListView.Footer>
                 <controls:SettingsPanel IsFooter="True">
-                    <controls:HeaderedControl IsFooterLink="True"
+                    <controls:HeaderedControl Visibility="{x:Bind ViewModel.IsPremium, Mode=OneWay}"
+                                              IsFooterLink="True"
                                               Header="{CustomResource ShowAdsTitle}"
                                               Footer="{CustomResource ShowAdsInfo}"
                                               Margin="0,16,0,0">
