@@ -5747,11 +5747,7 @@ namespace Telegram.Views
             {
                 if ((group.Status is ChatMemberStatusLeft && (group.IsPublic() || ViewModel.ClientService.IsChatAccessible(chat))) || group.Status is ChatMemberStatusCreator { IsMember: false })
                 {
-                    if (group.JoinByRequest)
-                    {
-                        ShowAction(Strings.ChannelJoinRequest, true);
-                    }
-                    else if (ViewModel.Type == DialogType.Thread)
+                    if (ViewModel.Type == DialogType.Thread)
                     {
                         if (group.JoinToSendMessages)
                         {
@@ -5765,6 +5761,10 @@ namespace Telegram.Views
                         {
                             ShowArea(group.PaidMessageStarCount);
                         }
+                    }
+                    else if (group.JoinByRequest)
+                    {
+                        ShowAction(Strings.ChannelJoinRequest, true);
                     }
                     else
                     {
