@@ -342,6 +342,9 @@ namespace Telegram.Controls.Cells
 
             UpdateForumTopicName(topic);
             UpdateForumTopicIcon(topic);
+
+            _dateLabel = UpdateTimeLabel(topic);
+            TimeLabel.Text = _stateLabel + "\u00A0" + _dateLabel;
         }
 
         public void UpdateForumTopicName(ForumTopic topic)
@@ -699,6 +702,11 @@ namespace Telegram.Controls.Cells
             var lastMessage = topic.LastMessage;
             if (lastMessage != null)
             {
+                if (topic.Info.IsClosed)
+                {
+                    return Icons.LockClosedFilled12 + "\u00A0" + Formatter.DateExtended(lastMessage.Date);
+                }
+
                 return Formatter.DateExtended(lastMessage.Date);
             }
 
