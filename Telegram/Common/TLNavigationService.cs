@@ -362,8 +362,7 @@ namespace Telegram.Common
                 }
             }
 
-            // TODO: do current page matching for ChatSavedPage and ChatThreadPage as well.
-            if (Frame?.Content is ChatPage page && page.ViewModel != null && chat.Id.Equals((long)CurrentPageParam) && thread == 0 && savedMessagesTopicId == 0 && !scheduled && !createNewWindow)
+            async void UpdateCurrentPage(IChatPage page)
             {
                 var viewModel = page.ViewModel;
                 if (message != null)
@@ -383,7 +382,7 @@ namespace Telegram.Common
                 if (accessToken != null && ClientService.TryGetUser(chat, out User user) && ClientService.TryGetUserFull(chat, out UserFullInfo userFull))
                 {
                     page.ViewModel.AccessToken = accessToken;
-                    page.View.UpdateUserFullInfo(chat, user, userFull, false, true);
+                    page.ViewModel.Delegate.UpdateUserFullInfo(chat, user, userFull, false, true);
                 }
 
                 page.ViewModel.TextField?.Focus(FocusState.Programmatic);
@@ -399,24 +398,14 @@ namespace Telegram.Common
 
                 OverlayWindow.Current?.TryHide(ContentDialogResult.None);
             }
+
+            // TODO: do current page matching for ChatSavedPage and ChatThreadPage as well.
+            if (Frame?.Content is ChatPage page && page.ViewModel != null && chat.Id.Equals((long)CurrentPageParam) && thread == 0 && savedMessagesTopicId == 0 && !scheduled && !createNewWindow)
+            {
+                UpdateCurrentPage(page);
+            }
             else
             {
-                //NavigatedEventHandler handler = null;
-                //handler = async (s, args) =>
-                //{
-                //    Frame.Navigated -= handler;
-
-                //    if (args.Content is DialogPage page1 /*&& chat.Id.Equals((long)args.Parameter)*/)
-                //    {
-                //        if (message.HasValue)
-                //        {
-                //            await page1.ViewModel.LoadMessageSliceAsync(null, message.Value);
-                //        }
-                //    }
-                //};
-
-                //Frame.Navigated += handler;
-
                 state ??= new NavigationState();
 
                 if (message != null)

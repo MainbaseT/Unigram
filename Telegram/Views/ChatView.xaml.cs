@@ -61,6 +61,11 @@ using VirtualKeyModifiers = Windows.System.VirtualKeyModifiers;
 
 namespace Telegram.Views
 {
+    public interface IChatPage : INavigablePage, ISearchablePage, IActivablePage
+    {
+        DialogViewModel ViewModel { get; }
+    }
+
     public sealed partial class ChatView : UserControlEx, INavigablePage, ISearchablePage, IDialogDelegate
     {
         private DialogViewModel _viewModel;

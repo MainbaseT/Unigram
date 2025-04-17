@@ -12,9 +12,9 @@ using Telegram.ViewModels.Delegates;
 
 namespace Telegram.Views
 {
-    public sealed partial class ChatEventLogPage : HostedPage, INavigablePage, ISearchablePage, IActivablePage
+    public sealed partial class ChatEventLogPage : HostedPage, IChatPage
     {
-        public DialogEventLogViewModel ViewModel => DataContext as DialogEventLogViewModel;
+        public DialogViewModel ViewModel => DataContext as DialogViewModel;
 
         public ChatEventLogPage()
         {
