@@ -64,7 +64,7 @@ namespace Telegram
     {
         public static ShareOperation ShareOperation { get; set; }
 
-        public static ConcurrentDictionary<long, DataPackageView> DataPackages { get; } = new ConcurrentDictionary<long, DataPackageView>();
+        public static DataPackageView DataPackage { get; set; }
 
         private static ExtendedExecutionSession _extendedSession;
 

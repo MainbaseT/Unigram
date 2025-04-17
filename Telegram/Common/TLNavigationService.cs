@@ -387,13 +387,9 @@ namespace Telegram.Common
 
                 page.ViewModel.TextField?.Focus(FocusState.Programmatic);
 
-                if (App.DataPackages.TryRemove(chat.Id, out DataPackageView package1))
+                if (state != null && state.TryGet("package", out DataPackageView package))
                 {
-                    await page.ViewModel.HandlePackageAsync(package1);
-                }
-                else if (state != null && state.TryGet("package", out DataPackageView package2))
-                {
-                    await page.ViewModel.HandlePackageAsync(package2);
+                    await page.ViewModel.HandlePackageAsync(package);
                 }
 
                 OverlayWindow.Current?.TryHide(ContentDialogResult.None);

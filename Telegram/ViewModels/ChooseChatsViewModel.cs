@@ -774,7 +774,8 @@ namespace Telegram.ViewModels
             }
             else if (_configuration is ChooseChatsConfigurationDataPackage configurationDataPackage)
             {
-                NavigationService.NavigateToChat(chats[0], state: new NavigationState
+                SelectedTopics.TryGetValue(chats[0].Id, out long messageThreadId);
+                NavigationService.NavigateToChat(chats[0], thread: messageThreadId, state: new NavigationState
                 {
                     { "package", configurationDataPackage.Package }
                 });

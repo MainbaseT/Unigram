@@ -569,7 +569,7 @@ namespace Telegram.Navigation
                 }
                 catch { }
 
-                App.DataPackages[0] = package.GetView();
+                App.DataPackage = package.GetView();
                 App.ShareOperation = args.ShareOperation;
             }
 

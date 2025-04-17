@@ -2388,15 +2388,11 @@ namespace Telegram.ViewModels
             ShowSwitchInline(state);
             ShowReplyTo(state);
 
-            if (_type == DialogType.History && App.DataPackages.TryRemove(chat.Id, out DataPackageView package))
+            if (_type is DialogType.History or DialogType.Thread && state.TryRemove("package", out DataPackageView package))
             {
                 await HandlePackageAsync(package);
             }
-            else if (_type == DialogType.History && state.TryRemove("package", out package))
-            {
-                await HandlePackageAsync(package);
-            }
-            else if (_type == DialogType.History && state.TryRemove("videoChat", out string videoChat))
+            else if (_type is DialogType.History && state.TryRemove("videoChat", out string videoChat))
             {
                 _voipService.JoinGroupCall(NavigationService, chat.Id, videoChat);
             }

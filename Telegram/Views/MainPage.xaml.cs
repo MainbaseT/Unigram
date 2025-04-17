@@ -1617,12 +1617,12 @@ namespace Telegram.Views
 
         public async void Activate(Uri scheme)
         {
-            if (App.DataPackages.TryRemove(0, out DataPackageView package))
+            if (App.DataPackage is DataPackageView package)
             {
-                await MasterDetail.NavigationService.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationDataPackage(package));
+                App.DataPackage = null;
+                MasterDetail.NavigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationDataPackage(package));
             }
-
-            if (MessageHelper.IsTelegramUrl(scheme))
+            else if (MessageHelper.IsTelegramUrl(scheme))
             {
                 MessageHelper.OpenTelegramUrl(ViewModel.ClientService, MasterDetail.NavigationService, scheme);
             }
