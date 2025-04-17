@@ -18,6 +18,7 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.Views.Popups;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -774,11 +775,20 @@ namespace Telegram.ViewModels
             }
             else if (_configuration is ChooseChatsConfigurationDataPackage configurationDataPackage)
             {
+                App.DataPackage = configurationDataPackage.Package;
                 SelectedTopics.TryGetValue(chats[0].Id, out long messageThreadId);
-                NavigationService.NavigateToChat(chats[0], thread: messageThreadId, state: new NavigationState
+
+                try
                 {
-                    { "package", configurationDataPackage.Package }
-                });
+                    var options = new Windows.System.LauncherOptions();
+                    options.TargetApplicationPackageFamilyName = Package.Current.Id.FamilyName;
+
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("tg://toast?chat_id={0}&thread_id={1}", chats[0].Id, messageThreadId)), options);
+                }
+                catch
+                {
+                    // All the remote procedure calls must be wrapped in a try-catch block
+                }
             }
             else if (_configuration is ChooseChatsConfigurationGroupCall groupCall)
             {

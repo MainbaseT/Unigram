@@ -1558,11 +1558,11 @@ namespace Telegram.Views
 
             if (parameter.StartsWith("tg:toast"))
             {
-                parameter = parameter.Substring("tg:toast?".Length);
+                parameter = parameter.Substring("tg:toast?".Length).TrimStart('?');
             }
             else if (parameter.StartsWith("tg://toast"))
             {
-                parameter = parameter.Substring("tg://toast?".Length);
+                parameter = parameter.Substring("tg://toast?".Length).TrimStart('?');
             }
 
             var data = Toast.SplitArguments(parameter);
@@ -1585,13 +1585,23 @@ namespace Telegram.Views
 
                 if (_clientService.TryGetChat(chatId, out Chat chat))
                 {
+                    NavigationState state = null;
+                    if (App.DataPackage is DataPackageView package)
+                    {
+                        App.DataPackage = null;
+                        state = new NavigationState
+                        {
+                            { "package", package }
+                        };
+                    }
+
                     if (chat.ViewAsTopics)
                     {
-                        MasterDetail.NavigationService.NavigateToChat(chat.Id, thread: threadId, force: false);
+                        MasterDetail.NavigationService.NavigateToChat(chat.Id, thread: threadId, state: state, force: false);
                     }
                     else
                     {
-                        MasterDetail.NavigationService.NavigateToChat(chat.Id, force: false);
+                        MasterDetail.NavigationService.NavigateToChat(chat.Id, state: state, force: false);
                     }
                 }
             }

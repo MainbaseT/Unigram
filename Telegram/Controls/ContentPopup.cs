@@ -193,6 +193,10 @@ namespace Telegram.Controls
                         Smoke.Fill = new SolidColorBrush(ActualTheme == ElementTheme.Light
                             ? Color.FromArgb(0x99, 0xFF, 0xFF, 0xFF)
                             : Color.FromArgb(0x99, 0x00, 0x00, 0x00));
+
+                        Smoke.Visibility = IsSmokeEnabled
+                            ? Visibility.Visible
+                            : Visibility.Collapsed;
                     }
                 }
             }
@@ -207,7 +211,9 @@ namespace Telegram.Controls
 
         private void OnOpened(object sender, object e)
         {
-            Smoke.Visibility = Visibility.Visible;
+            Smoke.Visibility = IsSmokeEnabled
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private void OnClosed(object sender, object e)
@@ -378,6 +384,8 @@ namespace Telegram.Controls
 
             Hide();
         }
+
+        public bool IsSmokeEnabled { get; set; } = true;
 
         #region IsPrimaryButtonSplit
 

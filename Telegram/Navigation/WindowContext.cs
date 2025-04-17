@@ -523,9 +523,10 @@ namespace Telegram.Navigation
             catch { }
         }
 
-        public static async void Activate(ShareTargetActivatedEventArgs args, AuthorizationState state)
+        public static async void Activate(ShareTargetActivatedEventArgs args, INavigationService navigationService, AuthorizationState state)
         {
             WatchDog.TrackEvent("ShareTarget");
+            App.ShareOperation = args.ShareOperation;
 
             if (state is AuthorizationStateReady)
             {
@@ -569,20 +570,38 @@ namespace Telegram.Navigation
                 }
                 catch { }
 
-                App.DataPackage = package.GetView();
-                App.ShareOperation = args.ShareOperation;
-            }
+                void handler(object sender, ContentDialogClosedEventArgs args)
+                {
+                    if (sender is ContentPopup popup)
+                    {
+                        popup.Closed -= handler;
+                    }
 
-            var options = new Windows.System.LauncherOptions();
-            options.TargetApplicationPackageFamilyName = Package.Current.Id.FamilyName;
+                    if (args.Result != ContentDialogResult.Primary)
+                    {
+                        App.ShareOperation?.ReportCompleted();
+                    }
+                }
 
-            try
-            {
-                await Windows.System.Launcher.LaunchUriAsync(new Uri("tg://"), options);
+                var popup = new ChooseChatsPopup();
+                popup.IsSmokeEnabled = false;
+                popup.Closed += handler;
+
+                navigationService.ShowPopup(popup, new ChooseChatsConfigurationDataPackage(package.GetView()));
             }
-            catch
+            else
             {
-                // It's too early?
+                try
+                {
+                    var options = new Windows.System.LauncherOptions();
+                    options.TargetApplicationPackageFamilyName = Package.Current.Id.FamilyName;
+
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri("tg://"), options);
+                }
+                catch
+                {
+                    // It's too early?
+                }
             }
         }
 

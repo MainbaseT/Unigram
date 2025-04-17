@@ -5,10 +5,10 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Controls.Chats;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -203,7 +203,7 @@ namespace Telegram
             }
             else
             {
-                WindowContext.Activate(share, state);
+                WindowContext.Activate(share, navService, state);
             }
         }
 
@@ -220,12 +220,26 @@ namespace Telegram
             var navigationFrame = new Frame();
             var navigationService = NavigationServiceFactory(window, BackButton.Ignore, navigationFrame, sessionId, $"{sessionId}", true) as NavigationService;
 
-            return new RootPage(window, navigationService) { FlowDirection = LocaleService.Current.FlowDirection };
+            if (e is ShareTargetActivatedEventArgs)
+            {
+                return new SharePage(navigationService)
+                {
+                    FlowDirection = LocaleService.Current.FlowDirection
+                };
+            }
+
+            return new RootPage(window, navigationService)
+            {
+                FlowDirection = LocaleService.Current.FlowDirection
+            };
         }
 
         public override UIElement CreateRootElement(INavigationService navigationService)
         {
-            return new StandalonePage(navigationService) { FlowDirection = LocaleService.Current.FlowDirection };
+            return new StandalonePage(navigationService)
+            {
+                FlowDirection = LocaleService.Current.FlowDirection
+            };
         }
 
         protected override INavigationService CreateNavigationService(WindowContext window, Frame frame, int session, string id, bool root)

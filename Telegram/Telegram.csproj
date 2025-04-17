@@ -1168,6 +1168,9 @@
     </Compile>
     <Compile Include="Common\MultiValueDictionary.cs" />
     <Compile Include="Views\HostedPage.cs" />
+    <Compile Include="Views\Host\SharePage.xaml.cs">
+      <DependentUpon>SharePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Host\TabbedPage.xaml.cs">
       <DependentUpon>TabbedPage.xaml</DependentUpon>
     </Compile>
@@ -3073,6 +3076,10 @@
     <Page Include="Views\Folders\Popups\ShareFolderPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Host\SharePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Host\TabbedPage.xaml">
       <SubType>Designer</SubType>
