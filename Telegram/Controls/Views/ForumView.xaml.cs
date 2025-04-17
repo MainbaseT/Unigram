@@ -5,12 +5,14 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System.Collections.Generic;
+using System.Linq;
 using Telegram.Common;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -191,6 +193,58 @@ namespace Telegram.Controls.Views
         }
 
         #endregion
+
+        private void OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            try
+            {
+                if (e.Items[0] is ForumTopic topic)
+                {
+                    if (!topic.IsPinned || e.Items.Count > 1 || ScrollingHost.SelectionMode == ListViewSelectionMode.Multiple)
+                    {
+                        ScrollingHost.CanReorderItems = false;
+                        e.Cancel = true;
+                    }
+                    else
+                    {
+                        ScrollingHost.CanReorderItems = true;
+                    }
+                }
+            }
+            catch
+            {
+                ScrollingHost.CanReorderItems = false;
+                e.Cancel = true;
+            }
+        }
+
+        private void OnDragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+            ScrollingHost.CanReorderItems = false;
+
+            if (args.DropResult == DataPackageOperation.Move && args.Items.Count == 1 && args.Items[0] is ForumTopic topic)
+            {
+                var items = ViewModel.Items;
+                if (items.Count == 1)
+                {
+                    return;
+                }
+
+                var index = items.IndexOf(topic);
+                var compare = items[index > 0 ? index - 1 : index + 1];
+
+                if (compare.IsPinned)
+                {
+                    var pinned = items.Where(x => x.IsPinned).Select(x => x.Info.MessageThreadId).ToArray();
+
+                    ViewModel.ClientService.Send(new SetPinnedForumTopics(ViewModel.Chat.Id, pinned));
+                }
+                else
+                {
+                    items.Handle(topic.Info.MessageThreadId, topic.Order);
+                }
+            }
+        }
 
         #region Context menu
 
