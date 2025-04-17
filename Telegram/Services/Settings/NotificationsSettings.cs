@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Telegram.Td.Api;
 using Windows.Storage;
@@ -13,7 +14,7 @@ namespace Telegram.Services.Settings
 {
     public partial class NotificationsSettings : SettingsServiceBase
     {
-        private readonly Dictionary<Type, ScopeNotificationSettings> _scopeNotificationSettings = new();
+        private readonly ConcurrentDictionary<Type, ScopeNotificationSettings> _scopeNotificationSettings = new();
 
         public NotificationsSettings(ApplicationDataContainer container)
             : base(container)
@@ -21,7 +22,7 @@ namespace Telegram.Services.Settings
 
         }
 
-        public Dictionary<Type, ScopeNotificationSettings> Scope => _scopeNotificationSettings;
+        public IDictionary<Type, ScopeNotificationSettings> Scope => _scopeNotificationSettings;
 
         public bool IsMuted(Chat chat, ForumTopic topic)
         {
