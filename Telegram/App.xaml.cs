@@ -8,7 +8,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
-using Telegram.Controls.Chats;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -181,7 +180,7 @@ namespace Telegram
                 }
             }
 
-            var navService = WindowContext.Current.NavigationServices.GetByFrameId($"{TypeResolver.Current.Lifetime.ActiveItem.Id}");
+            var navigation = WindowContext.Current.NavigationServices.GetByFrameId($"{TypeResolver.Current.Lifetime.ActiveItem.Id}");
 
             var update = TypeResolver.Current.Resolve<ICloudUpdateService>();
             var service = TypeResolver.Current.Resolve<IClientService>();
@@ -190,9 +189,9 @@ namespace Telegram
 
             if (args is not ShareTargetActivatedEventArgs share)
             {
-                WindowContext.Current.Activate(args, navService, state);
+                WindowContext.Current.Activate(args, navigation, state);
 
-                _ = Task.Run(() => OnStartSync(startKind, navService, update));
+                _ = Task.Run(() => OnStartSync(startKind, navigation, update));
 
                 if (startKind != StartKind.Launch && WindowContext.Current.IsInMainView)
                 {
@@ -201,9 +200,9 @@ namespace Telegram
                     //view.TryResizeView(WindowContext.Current.Bounds.ToSize());
                 }
             }
-            else
+            else if (WindowContext.Current.Content is SharePage sharePage)
             {
-                WindowContext.Activate(share, navService, state);
+                sharePage.Activate(share, navigation, state);
             }
         }
 
