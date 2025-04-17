@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Collections;
@@ -783,7 +784,7 @@ namespace Telegram.ViewModels
                     var options = new Windows.System.LauncherOptions();
                     options.TargetApplicationPackageFamilyName = Package.Current.Id.FamilyName;
 
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("tg://toast?chat_id={0}&thread_id={1}", chats[0].Id, messageThreadId)), options);
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format(CultureInfo.InvariantCulture, "tg://toast?session={0}&chat_id={1}&thread_id={2}", SessionId, chats[0].Id, messageThreadId)), options);
                 }
                 catch
                 {
