@@ -1964,7 +1964,8 @@ namespace Telegram.Views
             }
             else if (item is ForumTopic topic)
             {
-                ViewModel.Chats.SelectedItem = ViewModel.Topics.Chat?.Id;
+                ViewModel.Chats.SelectedItem = topic.Info.ChatId;
+                ViewModel.Topics.SelectedItem = topic.Info.MessageThreadId;
                 MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, thread: topic.Info.MessageThreadId, force: false, clearBackStack: true);
             }
         }
@@ -2724,6 +2725,11 @@ namespace Telegram.Views
                 return;
             }
 
+            if (show)
+            {
+                HideTopicList();
+            }
+
             _manageCollapsed = !show;
             ManagePanel.Visibility = Visibility.Visible;
 
@@ -2838,6 +2844,55 @@ namespace Telegram.Views
                         if (!chats.Contains(item))
                         {
                             ChatsList.SelectedItems.Remove(item);
+                        }
+                    }
+                }
+                catch
+                {
+                    // SelectedItems likes to throw
+                }
+            }
+        }
+
+        public async void SetSelectedItem(ForumTopic topic)
+        {
+            await System.Threading.Tasks.Task.Delay(100);
+
+            if (ViewModel.Topics.SelectionMode != ListViewSelectionMode.Multiple)
+            {
+                try
+                {
+                    TopicListPresenter.SelectedItem = topic;
+
+                    // TODO: would be great, but doesn't seem to work well enough :(
+                    //VisualUtilities.QueueCallbackForCompositionRendered(() => ChatsList.SelectedItem = chat);
+                }
+                catch
+                {
+                    // All the remote procedure calls must be wrapped in a try-catch block
+                }
+            }
+        }
+
+        public void SetSelectedItems(IList<ForumTopic> topics)
+        {
+            if (ViewModel.Topics.SelectionMode == ListViewSelectionMode.Multiple)
+            {
+                try
+                {
+                    foreach (var item in topics)
+                    {
+                        if (!TopicListPresenter.SelectedItems.Contains(item))
+                        {
+                            TopicListPresenter.SelectedItems.Add(item);
+                        }
+                    }
+
+                    foreach (ForumTopic item in TopicListPresenter.SelectedItems)
+                    {
+                        if (!topics.Contains(item))
+                        {
+                            TopicListPresenter.SelectedItems.Remove(item);
                         }
                     }
                 }

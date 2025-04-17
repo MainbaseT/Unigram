@@ -28,6 +28,14 @@ namespace Telegram.Controls.Views
             InitializeComponent();
         }
 
+        public object SelectedItem
+        {
+            get => ScrollingHost.SelectedItem;
+            set => ScrollingHost.SelectedItem = value;
+        }
+
+        public IList<object> SelectedItems => ScrollingHost.SelectedItems;
+
         public void UpdateChat(Chat chat)
         {
             UpdateChatTitle(chat);

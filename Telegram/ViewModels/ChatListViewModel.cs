@@ -837,10 +837,6 @@ namespace Telegram.ViewModels
                     _chats.Remove(chat.Id);
                     Remove(chat);
 
-                    if (chat.Id == _viewModel.SelectedItem)
-                    {
-                        _viewModel.Delegate?.SetSelectedItem(chat);
-                    }
                     if (_viewModel.SelectedItems.Contains(chat))
                     {
                         _viewModel.SelectedItems.Remove(chat);

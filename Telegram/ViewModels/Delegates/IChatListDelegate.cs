@@ -17,6 +17,9 @@ namespace Telegram.ViewModels.Delegates
         void SetSelectedItem(Chat chat);
         void SetSelectedItems(IList<Chat> chats);
 
+        void SetSelectedItem(ForumTopic topic);
+        void SetSelectedItems(IList<ForumTopic> topics);
+
 
 
         void UpdateChatLastMessage(Chat chat);

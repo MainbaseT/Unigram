@@ -385,6 +385,11 @@ namespace Telegram.ViewModels
             {
                 _ = Items.ReloadAsync(chat);
             }
+            else
+            {
+                SelectedItem = 0;
+                SelectedItems.Clear();
+            }
         }
 
         public async void ViewAsMessages()
@@ -524,9 +529,9 @@ namespace Telegram.ViewModels
                                 _topics.Add(topic.Info.MessageThreadId);
                                 Insert(Math.Min(Count, next), topic);
 
-                                if (topic.Info.MessageThreadId == _viewModel?._selectedItem)
+                                if (topic.Info.MessageThreadId == _viewModel?.SelectedItem)
                                 {
-                                    //_viewModel.Delegate?.SetSelectedItem(topic);
+                                    _viewModel.Delegate?.SetSelectedItem(topic);
                                 }
 
                                 totalCount++;
@@ -544,7 +549,7 @@ namespace Telegram.ViewModels
                     _hasMoreItems = topics.TotalCount >= 0;
                     Subscribe();
 
-                    //_viewModel.Delegate?.SetSelectedItems(_viewModel.SelectedItems);
+                    _viewModel.Delegate?.SetSelectedItems(_viewModel.SelectedItems);
                 }
 
                 return new LoadMoreItemsResult
@@ -643,14 +648,14 @@ namespace Telegram.ViewModels
                             _lastOrder = order;
                         }
 
-                        //if (topic.Id == _viewModel._selectedItem)
-                        //{
-                        //    _viewModel.Delegate?.SetSelectedItem(topic);
-                        //}
-                        //if (_viewModel.SelectedItems.Contains(topic))
-                        //{
-                        //    _viewModel.Delegate?.SetSelectedItems(_viewModel.SelectedItems);
-                        //}
+                        if (topic.Info.MessageThreadId == _viewModel.SelectedItem)
+                        {
+                            _viewModel.Delegate?.SetSelectedItem(topic);
+                        }
+                        if (_viewModel.SelectedItems.Contains(topic))
+                        {
+                            _viewModel.Delegate?.SetSelectedItems(_viewModel.SelectedItems);
+                        }
 
                         IsEmpty = Count == 0;
                     }
@@ -664,15 +669,11 @@ namespace Telegram.ViewModels
                     _topics.Remove(topic.Info.MessageThreadId);
                     Remove(topic);
 
-                    //if (topic.Id == _viewModel._selectedItem)
-                    //{
-                    //    _viewModel.Delegate?.SetSelectedItem(topic);
-                    //}
-                    //if (_viewModel.SelectedItems.Contains(topic))
-                    //{
-                    //    _viewModel.SelectedItems.Remove(topic);
-                    //    _viewModel.Delegate?.SetSelectedItems(_viewModel.SelectedItems);
-                    //}
+                    if (_viewModel.SelectedItems.Contains(topic))
+                    {
+                        _viewModel.SelectedItems.Remove(topic);
+                        _viewModel.Delegate?.SetSelectedItems(_viewModel.SelectedItems);
+                    }
 
                     IsEmpty = Count == 0;
 
