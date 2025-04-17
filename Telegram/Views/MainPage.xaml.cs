@@ -901,11 +901,6 @@ namespace Telegram.Views
                 Search_LostFocus(null, null);
                 args.Handled = true;
             }
-            else if (!_topicListCollapsed)
-            {
-                HideTopicList();
-                args.Handled = true;
-            }
             else if (ViewModel.Chats.SelectionMode == ListViewSelectionMode.Multiple)
             {
                 Manage_Click(null, null);
@@ -922,7 +917,12 @@ namespace Telegram.Views
                 return;
             }
 
-            if (_prevIndex != INDEX_CHATS)
+            if (!_topicListCollapsed)
+            {
+                HideTopicList();
+                args.Handled = true;
+            }
+            else if (_prevIndex != INDEX_CHATS)
             {
                 SetPivotSelectedIndex(INDEX_CHATS);
                 ViewModel.RaisePropertyChanged(nameof(ViewModel.SelectedFolder));
