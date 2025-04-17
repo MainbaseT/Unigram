@@ -651,8 +651,12 @@ namespace Telegram.ViewModels.Drawers
             {
                 return new ReactionTypeCustomEmoji(customEmoji.CustomEmojiId);
             }
+            else if (!string.IsNullOrEmpty(Emoji))
+            {
+                return new ReactionTypeEmoji(Emoji);
+            }
 
-            return new ReactionTypeEmoji(Emoji);
+            return null;
         }
 
         public override string ToString()
