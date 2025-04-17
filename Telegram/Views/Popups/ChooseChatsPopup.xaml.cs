@@ -1473,25 +1473,24 @@ namespace Telegram.Views.Popups
 
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ViewModel.Configuration is ChooseChatsConfigurationRequestUsers requestUsers && e.AddedItems != null)
+            var maxQuantity = ViewModel.Configuration switch
             {
-                if (ChatsPanel.SelectedItems.Count > requestUsers.MaxQuantity)
-                {
-                    foreach (var item in e.AddedItems)
-                    {
-                        ChatsPanel.SelectedItems.Remove(item);
-                    }
-
-                    ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.BotMultiContactsSelectorLimit, requestUsers.MaxQuantity), ToastPopupIcon.Info);
-                }
-            }
+                ChooseChatsConfigurationRequestUsers requestUsers => requestUsers.MaxQuantity,
+                _ => int.MaxValue
+            };
+            var maxExceeded = ChatsPanel.SelectedItems.Count > maxQuantity;
 
             foreach (var newItem in e.AddedItems.OfType<Chat>())
             {
-                if (ViewModel.ClientService.IsForum(newItem) && !ViewModel.SelectedTopics.ContainsKey(newItem.Id))
+                if (maxExceeded || (ViewModel.ClientService.IsForum(newItem) && !ViewModel.SelectedTopics.ContainsKey(newItem.Id)))
                 {
-                    VisualUtilities.QueueCallbackForCompositionRendered(() => ChatsPanel.SelectedItems.Remove(newItem));
+                    ChatsPanel.SelectedItems.Remove(newItem);
                 }
+            }
+
+            if (maxExceeded)
+            {
+                ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.BotMultiContactsSelectorLimit, maxQuantity), ToastPopupIcon.Info);
             }
 
             var selection = ChatsPanel.SelectedItems
@@ -1557,7 +1556,7 @@ namespace Telegram.Views.Popups
             }
 
             var chat = item as Chat;
-            if (chat == null || ItemClick(chat, e.ClickedItem is Chat))
+            if (chat == null || ItemClick(chat, e.ClickedItem is not ForumTopic))
             {
                 return;
             }

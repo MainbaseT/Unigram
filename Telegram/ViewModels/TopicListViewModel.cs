@@ -531,7 +531,7 @@ namespace Telegram.ViewModels
 
                                 if (topic.Info.MessageThreadId == _viewModel?.SelectedItem)
                                 {
-                                    _viewModel.Delegate?.SetSelectedItem(topic);
+                                    _viewModel?.Delegate?.SetSelectedItem(topic);
                                 }
 
                                 totalCount++;
@@ -549,7 +549,7 @@ namespace Telegram.ViewModels
                     _hasMoreItems = topics.TotalCount >= 0;
                     Subscribe();
 
-                    _viewModel.Delegate?.SetSelectedItems(_viewModel.SelectedItems);
+                    _viewModel?.Delegate?.SetSelectedItems(_viewModel.SelectedItems);
                 }
 
                 return new LoadMoreItemsResult
