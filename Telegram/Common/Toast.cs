@@ -120,7 +120,7 @@ namespace Telegram.Common
                     }
                     break;
                 case ProtocolActivatedEventArgs protocol:
-                    var uri = protocol.Uri.ToString();
+                    arguments = protocol.Uri.Query.TrimStart('?');
                     break;
             }
 

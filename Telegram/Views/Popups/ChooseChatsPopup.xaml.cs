@@ -845,6 +845,12 @@ namespace Telegram.Views.Popups
                 SecondaryButtonText = Strings.Cancel;
                 IsDismissButtonVisible = false;
             }
+
+            if (ViewModel.Configuration is ChooseChatsConfigurationDataPackage && ViewModel.ClientService.TryGetUser(ViewModel.ClientService.Options.MyId, out User user))
+            {
+                Alias.Visibility = Visibility.Visible;
+                Photo.SetUser(ViewModel.ClientService, user, 28);
+            }
         }
 
         protected override void OnApplyTemplate()
@@ -1775,5 +1781,48 @@ namespace Telegram.Views.Popups
         {
             Accept();
         }
+
+        private void Alias_Click(object sender, RoutedEventArgs e)
+        {
+            var flyout = new MenuFlyout();
+
+            foreach (var session in TypeResolver.Current.GetSessions())
+            {
+                if (session.ClientService.TryGetUser(session.ClientService.Options.MyId, out User user))
+                {
+                    var photo = new ProfilePicture();
+                    photo.Width = 20;
+                    photo.Height = 20;
+                    photo.SetUser(session.ClientService, user, 20);
+
+                    var item = new ToggleMenuFlyoutItem();
+                    item.Style = BootStrapper.Current.Resources["ProfilePictureToggleMenuFlyoutItemStyle"] as Style;
+                    item.IsChecked = session.Id == ViewModel.SessionId;
+                    item.Icon = new SymbolIcon();
+                    item.Text = user.FullName();
+                    item.Tag = photo;
+                    item.CommandParameter = session.Id;
+                    item.Click += Account_Click;
+
+                    flyout.Items.Add(item);
+                }
+            }
+
+            flyout.ShowAt(Photo, FlyoutPlacementMode.BottomEdgeAlignedRight);
+        }
+
+        private void Account_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuFlyoutItem item && item.CommandParameter is int sessionId)
+            {
+                var session = TypeResolver.Current.Lifetime.Items.FirstOrDefault(x => x.Id == sessionId);
+                if (session != null)
+                {
+                    AccountClick?.Invoke(session, EventArgs.Empty);
+                }
+            }
+        }
+
+        public event EventHandler AccountClick;
     }
 }

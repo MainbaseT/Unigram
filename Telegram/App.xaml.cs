@@ -221,7 +221,7 @@ namespace Telegram
 
             if (e is ShareTargetActivatedEventArgs)
             {
-                return new SharePage(navigationService)
+                return new SharePage(window, sessionId)
                 {
                     FlowDirection = LocaleService.Current.FlowDirection
                 };

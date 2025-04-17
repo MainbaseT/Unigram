@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -9,19 +11,21 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Views.Host
 {
     public sealed partial class SharePage : UserControl
     {
-        public SharePage(NavigationService navigationService)
+        private readonly WindowContext _window;
+
+        public SharePage(WindowContext window, int sessionId)
         {
             InitializeComponent();
 
-            var clientService = TypeResolver.Current.Resolve<IClientService>(navigationService.SessionId);
+            _window = window;
 
-            Background.Update(clientService, null);
-            RootGrid.Children.Add(navigationService.Frame);
+            Background.Update(TypeResolver.Current.Resolve<IClientService>(sessionId));
 
 #if DEBUG && !MOCKUP
             StateLabel.Text = Strings.AppName;
@@ -92,7 +96,8 @@ namespace Telegram.Views.Host
 
                 var popup = new ChooseChatsPopup();
                 popup.IsSmokeEnabled = false;
-                popup.Closed += handler;
+                popup.Closed += OnClosed;
+                popup.AccountClick += OnAccountClick;
 
                 navigationService.ShowPopup(popup, new ChooseChatsConfigurationDataPackage(package.GetView()));
             }
@@ -109,6 +114,43 @@ namespace Telegram.Views.Host
                 {
                     // It's too early?
                 }
+            }
+        }
+
+        private void ShowPopup(ISessionService session, DataPackageView package)
+        {
+            var popup = new ChooseChatsPopup();
+            popup.IsSmokeEnabled = false;
+            popup.Closed += OnClosed;
+            popup.AccountClick += OnAccountClick;
+
+            var clientService = session.ClientService;
+            var service = new TLNavigationService(clientService, null, _window, null, "Share");
+
+            service.ShowPopup(popup, new ChooseChatsConfigurationDataPackage(package));
+        }
+
+        private void OnAccountClick(object sender, EventArgs e)
+        {
+            foreach (var popup in VisualTreeHelper.GetOpenPopupsForXamlRoot(XamlRoot))
+            {
+                if (popup.Child is ChooseChatsPopup chooseChats && chooseChats.ViewModel.Configuration is ChooseChatsConfigurationDataPackage package)
+                {
+                    chooseChats.Closed -= OnClosed;
+                    chooseChats.Hide();
+
+                    ShowPopup(sender as ISessionService, package.Package);
+                }
+            }
+        }
+
+        private void OnClosed(ContentDialog sender, ContentDialogClosedEventArgs args)
+        {
+            sender.Closed -= OnClosed;
+
+            if (args.Result != ContentDialogResult.Primary)
+            {
+                App.ShareOperation?.ReportCompleted();
             }
         }
     }

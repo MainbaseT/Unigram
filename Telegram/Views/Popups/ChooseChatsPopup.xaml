@@ -46,6 +46,46 @@
                               Width="36"
                               Height="32" />
 
+        <Button x:Name="Alias"
+                Click="Alias_Click"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Style="{StaticResource ListEmptyButtonStyle}"
+                CornerRadius="14"
+                Margin="0,-52,-16,0"
+                Visibility="Collapsed">
+            <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                  BorderThickness="1"
+                  CornerRadius="14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <controls:ProfilePicture x:Name="Photo"
+                                         Width="28"
+                                         Height="28"
+                                         Grid.Column="2" />
+
+                <Grid Width="20"
+                      Height="20"
+                      Margin="8,0,4,0">
+
+                    <TextBlock Text="&#xE0E4;"
+                               FontFamily="{StaticResource SymbolThemeFontFamily}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               Grid.Column="2" />
+                    <TextBlock Text="&#xE0E5;"
+                               FontFamily="{StaticResource SymbolThemeFontFamily}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Bottom"
+                               Grid.Column="2" />
+                </Grid>
+            </Grid>
+        </Button>
+
         <Grid x:Name="ForumGrid"
               Margin="-24,0,-24,0"
               Grid.Row="1">
