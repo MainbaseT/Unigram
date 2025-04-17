@@ -124,14 +124,7 @@ namespace Telegram.ViewModels.Profile
 
         public IStorageService StorageService => _storageService;
 
-        protected MessageThreadInfo _thread;
-        public MessageThreadInfo Thread
-        {
-            get => _thread;
-            set => Set(ref _thread, value);
-        }
-
-        public long ThreadId => Thread?.MessageThreadId ?? 0;
+        public long ThreadId => Topic?.Info?.MessageThreadId ?? 0;
 
         protected ForumTopic _topic;
         public ForumTopic Topic
@@ -281,12 +274,12 @@ namespace Telegram.ViewModels.Profile
                 // This should really rarely happen
                 cached ??= await ClientService.SendAsync(new GetSupergroupFullInfo(supergroup.Id)) as SupergroupFullInfo;
 
-                if (cached != null && cached.HasPinnedStories)
+                if (Topic == null && cached?.HasPinnedStories is true)
                 {
                     AddTab(new ProfileTabItem(Strings.ProfileStories, typeof(ProfileStoriesTabPage)));
                 }
 
-                if (cached != null && cached.GiftCount > 0)
+                if (Topic == null && cached?.GiftCount > 0)
                 {
                     AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
                 }
@@ -303,7 +296,11 @@ namespace Telegram.ViewModels.Profile
                 }
                 else
                 {
-                    AddTab(new ProfileTabItem(Strings.ChannelMembers, typeof(ProfileMembersTabPage)));
+                    if (Topic == null)
+                    {
+                        AddTab(new ProfileTabItem(Strings.ChannelMembers, typeof(ProfileMembersTabPage)));
+                    }
+
                     await UpdateSharedCountAsync(chat);
                 }
             }

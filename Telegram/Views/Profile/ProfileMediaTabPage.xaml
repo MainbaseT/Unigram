@@ -65,6 +65,8 @@
                 <DataTemplate>
                     <Grid Background="{ThemeResource SettingsItemBackground}">
                         <controls:ImageView Click="Photo_Click"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
                                             Stretch="UniformToFill" />
 
                         <!--<controls:BadgeControl Text="00:08"
