@@ -1384,9 +1384,6 @@ namespace Telegram.ViewModels
             }
             else if (Topic != null)
             {
-                // TODO: Workaround, should be removed some day
-                await ClientService.SendAsync(new GetMessage(chat.Id, _topic.Info.MessageThreadId));
-
                 func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _topic.Info.MessageThreadId, maxId, -25, 50));
             }
             else if (ThreadId != 0)
@@ -2129,6 +2126,9 @@ namespace Telegram.ViewModels
 
                 if (Topic != null)
                 {
+                    // TODO: Workaround, should be removed some day
+                    await ClientService.SendAsync(new GetMessage(messageIdArgs.ChatId, _topic.Info.MessageThreadId));
+
                     parameter = messageIdArgs.ChatId;
                 }
                 else if (Thread != null)
@@ -4871,7 +4871,18 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                var response = await _viewModel.ClientService.SendAsync(new SearchChatMessages(chat.Id, string.Empty, null, fromMessageId, -9, 10, _filter, _viewModel.ThreadId, 0));
+                var threadId = 0L;
+
+                if (_viewModel.Topic is ForumTopic topic)
+                {
+                    threadId = topic.Info.MessageThreadId;
+                }
+                else if (_viewModel.Thread is MessageThreadInfo thread)
+                {
+                    threadId = thread.MessageThreadId;
+                }
+
+                var response = await _viewModel.ClientService.SendAsync(new SearchChatMessages(chat.Id, string.Empty, null, fromMessageId, -9, 10, _filter, threadId, 0));
                 if (response is FoundChatMessages messages)
                 {
                     List<long> stack = null;
