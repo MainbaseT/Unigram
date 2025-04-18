@@ -235,6 +235,7 @@
             <controls:CaptionTextBox x:Name="CaptionInput"
                                      Accept="CaptionInput_Accept"
                                      InputScope="Chat"
+                                     ViewModel="{x:Bind ViewModel}"
                                      FontFamily="{ThemeResource EmojiThemeFontFamily}"
                                      PlaceholderText="{CustomResource ShareComment}"
                                      Style="{StaticResource DefaultChatTextBoxStyle}"

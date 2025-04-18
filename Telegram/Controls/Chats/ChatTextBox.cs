@@ -118,7 +118,7 @@ namespace Telegram.Controls.Chats
             {
                 _emojiQuery = null;
                 _emojiFlyout?.Hide();
-                Cancel();
+                CancelEmoji();
             }
 
             if (collection != null)
@@ -528,7 +528,7 @@ namespace Telegram.Controls.Chats
         private string _emojiQuery;
         private CancellationTokenSource _emojiToken;
 
-        public CancellationTokenSource Cancel()
+        public CancellationTokenSource CancelEmoji()
         {
             _emojiToken?.Cancel();
             _emojiToken = new();
@@ -542,7 +542,7 @@ namespace Telegram.Controls.Chats
                 return;
             }
 
-            var token = Cancel();
+            var token = CancelEmoji();
             var source = new AutocompleteCollection(collection);
 
             var result = await source.LoadMoreItemsAsync(0);

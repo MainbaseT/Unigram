@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Telegram.Common;
+using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -17,12 +18,14 @@ namespace Telegram.Controls.Chats
 {
     public sealed partial class ChatTextFlyout : GridEx
     {
-        private readonly ChatTextBox _textBox;
+        private readonly FormattedTextBox _textBox;
 
         private readonly ZoomableListHandler _zoomer;
         private readonly AnimatedListHandler _handler;
 
-        public ChatTextFlyout(ChatTextBox textBox, AutocompleteCollection itemsSource)
+        public ViewModelBase ViewModel => _textBox.DataContext as ViewModelBase;
+
+        public ChatTextFlyout(FormattedTextBox textBox, AutocompleteCollection itemsSource)
         {
             InitializeComponent();
 
@@ -32,8 +35,8 @@ namespace Telegram.Controls.Chats
             _zoomer = new ZoomableListHandler(ScrollingHost);
             _zoomer.Opening = _handler.UnloadVisibleItems;
             _zoomer.Closing = _handler.ThrottleVisibleItems;
-            _zoomer.DownloadFile = fileId => _textBox.ViewModel.ClientService.DownloadFile(fileId, 32);
-            _zoomer.SessionId = () => _textBox.ViewModel.ClientService.SessionId;
+            _zoomer.DownloadFile = fileId => ViewModel.ClientService.DownloadFile(fileId, 32);
+            _zoomer.SessionId = () => ViewModel.ClientService.SessionId;
 
             _textBox = textBox;
             ScrollingHost.ItemsSource = itemsSource;
@@ -111,7 +114,7 @@ namespace Telegram.Controls.Chats
                 var content = args.ItemContainer.ContentTemplateRoot as Grid;
 
                 var animated = content.Children[0] as AnimatedImage;
-                animated.Source = new DelayedFileSource(_textBox.ViewModel.ClientService, sticker);
+                animated.Source = new DelayedFileSource(ViewModel.ClientService, sticker);
 
                 AutomationProperties.SetName(args.ItemContainer, sticker.Emoji);
             }

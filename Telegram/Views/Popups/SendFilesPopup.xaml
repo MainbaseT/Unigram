@@ -336,7 +336,7 @@
                                      Loaded="OnLoaded"
                                      Unloaded="OnUnloaded"
                                      View="{x:Bind}"
-                                     Autocomplete="{x:Bind ListAutocomplete}"
+                                     ControlledList="{x:Bind ListAutocomplete}"
                                      DataContext="{x:Bind ViewModel}"
                                      Paste="OnPaste"
                                      InputScope="Chat"
