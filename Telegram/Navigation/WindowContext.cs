@@ -486,6 +486,9 @@ namespace Telegram.Navigation
         {
             try
             {
+                App.ShareOperation?.TryReportCompleted();
+                App.ShareOperation = null;
+
                 switch (state)
                 {
                     case AuthorizationStateReady:
@@ -542,16 +545,6 @@ namespace Telegram.Navigation
                 else
                 {
                     service.NavigateToMain(protocol.Uri.ToString());
-                }
-
-                if (App.ShareOperation != null)
-                {
-                    try
-                    {
-                        App.ShareOperation.ReportCompleted();
-                        App.ShareOperation = null;
-                    }
-                    catch { }
                 }
             }
             else if (args is FileActivatedEventArgs file)

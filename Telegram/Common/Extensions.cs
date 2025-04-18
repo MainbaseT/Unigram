@@ -30,6 +30,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Calls;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -542,6 +543,18 @@ namespace Telegram.Common
             else
             {
                 return duration.ToString("mm\\:ss");
+            }
+        }
+
+        public static void TryReportCompleted(this ShareOperation operation)
+        {
+            try
+            {
+                operation.ReportCompleted();
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
             }
         }
 

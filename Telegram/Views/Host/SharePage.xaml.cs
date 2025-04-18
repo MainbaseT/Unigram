@@ -81,19 +81,6 @@ namespace Telegram.Views.Host
                 }
                 catch { }
 
-                void handler(object sender, ContentDialogClosedEventArgs args)
-                {
-                    if (sender is ContentPopup popup)
-                    {
-                        popup.Closed -= handler;
-                    }
-
-                    if (args.Result != ContentDialogResult.Primary)
-                    {
-                        App.ShareOperation?.ReportCompleted();
-                    }
-                }
-
                 var popup = new ChooseChatsPopup();
                 popup.IsSmokeEnabled = false;
                 popup.Closed += OnClosed;
@@ -150,7 +137,8 @@ namespace Telegram.Views.Host
 
             if (args.Result != ContentDialogResult.Primary)
             {
-                App.ShareOperation?.ReportCompleted();
+                App.ShareOperation?.TryReportCompleted();
+                App.ShareOperation = null;
             }
         }
     }
