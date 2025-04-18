@@ -140,8 +140,6 @@ namespace Telegram.Streams
             Width = sticker.Width;
             Height = sticker.Height;
             NeedsRepainting = sticker.FullType is StickerFullTypeCustomEmoji { NeedsRepainting: true };
-
-            OnOutlineChanged(sticker.StickerValue);
         }
 
         public DelayedFileSource(IClientService clientService, StickerViewModel sticker)
@@ -151,18 +149,18 @@ namespace Telegram.Streams
             Width = sticker.Width;
             Height = sticker.Height;
             NeedsRepainting = sticker.FullType is StickerFullTypeCustomEmoji { NeedsRepainting: true };
-
-            OnOutlineChanged(sticker.StickerValue);
         }
 
-        protected async void OnOutlineChanged(File file)
+        public override void RequestOutline()
         {
-            if (file == null || file.Id == 0)
+            if (_file != null && _file.Id != 0)
             {
-                return;
+                _clientService.Send(new GetStickerOutline(_file.Id, false, false), OutlineRequested);
             }
+        }
 
-            var response = await _clientService.SendAsync(new GetStickerOutline(file.Id, false, false));
+        private void OutlineRequested(BaseObject response)
+        {
             if (response is Outline outline)
             {
                 Outline = outline.Paths;

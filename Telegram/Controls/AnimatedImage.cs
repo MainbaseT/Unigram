@@ -122,7 +122,7 @@ namespace Telegram.Controls
             XamlRoot.Changed += OnRasterizationScaleChanged;
             ReplacementColor?.RegisterColorChangedCallback(OnReplacementColorChanged, ref _replacementColorToken);
 
-            if (Source != null)
+            if (Source != null && IsOutlineEnabled)
             {
                 Source.OutlineChanged += OnOutlineChanged;
             }
@@ -418,7 +418,7 @@ namespace Telegram.Controls
                 oldValue.OutlineChanged -= OnOutlineChanged;
             }
 
-            if (e.NewValue is AnimatedImageSource newValue && IsConnected)
+            if (e.NewValue is AnimatedImageSource newValue && IsConnected && IsOutlineEnabled)
             {
                 newValue.OutlineChanged += OnOutlineChanged;
             }
@@ -475,7 +475,7 @@ namespace Telegram.Controls
 
         private void UpdateShimmer(AnimatedImageSource source)
         {
-            if (_clean is false || !IsConnected)
+            if (_clean is false || !IsConnected || !IsOutlineEnabled)
             {
                 return;
             }
@@ -489,6 +489,8 @@ namespace Telegram.Controls
             {
                 _shimmer = null;
                 ElementCompositionPreview.SetElementChildVisual(LayoutRoot, null);
+
+                source?.RequestOutline();
             }
         }
 
@@ -602,7 +604,7 @@ namespace Telegram.Controls
 
         protected void ReplacementColorChanged(bool fast = false)
         {
-            if (_needsBrushUpdate || _presenter == null)
+            if (_needsBrushUpdate || (_presenter?.Presentation.Source.NeedsRepainting is not true && _effectBrush == null))
             {
                 return;
             }
@@ -719,18 +721,9 @@ namespace Telegram.Controls
 
         #endregion
 
-        #region IsOutlineAnimated
+        public bool IsOutlineEnabled { get; set; } = true;
 
-        public bool IsOutlineAnimated
-        {
-            get { return (bool)GetValue(IsOutlineAnimatedProperty); }
-            set { SetValue(IsOutlineAnimatedProperty, value); }
-        }
-
-        public static readonly DependencyProperty IsOutlineAnimatedProperty =
-            DependencyProperty.Register("IsOutlineAnimated", typeof(bool), typeof(AnimatedImage), new PropertyMetadata(null));
-
-        #endregion
+        public bool IsOutlineAnimated { get; set; } = false;
     }
 
     public partial class AnimatedImagePresenter

@@ -35,6 +35,11 @@ namespace Telegram.Streams
             OutlineChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        public virtual void RequestOutline()
+        {
+
+        }
+
         #endregion
 
         #region Lottie specific

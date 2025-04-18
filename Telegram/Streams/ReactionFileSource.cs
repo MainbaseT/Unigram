@@ -12,13 +12,11 @@ namespace Telegram.Streams
 {
     public partial class ReactionFileSource : DelayedFileSource
     {
-        private readonly IClientService _clientService;
         private readonly ReactionType _reaction;
 
         public ReactionFileSource(IClientService clientService, ReactionType reaction)
             : base(clientService, null as File)
         {
-            _clientService = clientService;
             _reaction = reaction;
 
             DownloadFile(null, null);
@@ -74,8 +72,6 @@ namespace Telegram.Streams
                         Width = sticker.Width;
                         Height = sticker.Height;
                         NeedsRepainting = sticker.FullType is StickerFullTypeCustomEmoji { NeedsRepainting: true };
-
-                        OnOutlineChanged(sticker.StickerValue);
                     }
                 }
 
