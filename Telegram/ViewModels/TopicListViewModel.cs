@@ -55,11 +55,21 @@ namespace Telegram.ViewModels
 
         #region Selection
 
+        public long LastSelectedItem { get; private set; }
+
         private long? _selectedItem;
         public long? SelectedItem
         {
             get => _selectedItem;
-            set => Set(ref _selectedItem, value);
+            set
+            {
+                Set(ref _selectedItem, value);
+
+                if (value.HasValue)
+                {
+                    LastSelectedItem = value.Value;
+                }
+            }
         }
 
         private MvxObservableCollection<ForumTopic> _selectedItems;
@@ -387,6 +397,8 @@ namespace Telegram.ViewModels
             }
             else
             {
+                LastSelectedItem = 0;
+
                 SelectedItem = 0;
                 SelectedItems.Clear();
             }

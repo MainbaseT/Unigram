@@ -571,6 +571,13 @@
                                 </Border>
                             </StackPanel>
 
+                            <views:ForumView x:Name="TopicListPresenter"
+                                             x:Load="False"
+                                             Margin="68,-78,0,0"
+                                             ItemClick="ListView_ItemClick"
+                                             Grid.Row="1"
+                                             Canvas.ZIndex="1" />
+
                             <controls:ChatListListView x:Name="ChatsList"
                                                        ItemClick="ListView_ItemClick"
                                                        IsItemClickEnabled="True"
@@ -656,12 +663,6 @@
                                     </TransitionCollection>
                                 </ListView.ItemContainerTransitions>
                             </controls:ChatListListView>
-
-                            <views:ForumView x:Name="TopicListPresenter"
-                                             x:Load="False"
-                                             Margin="68,-78,0,0"
-                                             Grid.Row="1"
-                                             ItemClick="ListView_ItemClick" />
 
                             <Grid x:Name="EmptyState"
                                   x:Load="{x:Bind ViewModel.Chats.Items.IsEmpty, Mode=OneWay}"

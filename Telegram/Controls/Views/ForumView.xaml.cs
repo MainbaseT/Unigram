@@ -166,6 +166,11 @@ namespace Telegram.Controls.Views
             args.Handled = true;
         }
 
+        public bool TryGetContainer(long messageThreadId, out SelectorItem container)
+        {
+            return _itemToSelector.TryGetValue(messageThreadId, out container);
+        }
+
         public bool TryGetChatAndCell(long messageThreadId, out ForumTopic topic, out ForumTopicCell cell)
         {
             if (_itemToSelector.TryGetValue(messageThreadId, out SelectorItem container))

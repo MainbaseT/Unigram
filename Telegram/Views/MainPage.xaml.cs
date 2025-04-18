@@ -3073,7 +3073,14 @@ namespace Telegram.Views
                 // will move the focus to the last selected item in the chat list if possible.
                 if (args.Direction == FocusNavigationDirection.None && args.OldFocusedElement is not ChatListListViewItem)
                 {
-                    if (ChatsList.TryGetContainer(ViewModel?.Chats.LastSelectedItem ?? 0, out SelectorItem container))
+                    if (!_topicListCollapsed && TopicListPresenter.TryGetContainer(ViewModel?.Topics.LastSelectedItem ?? 0, out SelectorItem container))
+                    {
+                        if (args.TrySetNewFocusedElement(container))
+                        {
+                            args.Handled = true;
+                        }
+                    }
+                    else if (ChatsList.TryGetContainer(ViewModel?.Chats.LastSelectedItem ?? 0, out container))
                     {
                         if (args.TrySetNewFocusedElement(container))
                         {
@@ -3451,7 +3458,7 @@ namespace Telegram.Views
 
         private bool _topicListCollapsed = true;
 
-        private async void ShowHideTopicList(bool show)
+        private void ShowHideTopicList(bool show)
         {
             if (_topicListCollapsed != show)
             {
@@ -3466,14 +3473,10 @@ namespace Telegram.Views
 
             Canvas.SetZIndex(ChatsRoot, show ? 1 : 0);
 
-            if (TopicListPresenter.ActualWidth == 0)
-            {
-                await TopicListPresenter.UpdateLayoutAsync();
-            }
-
             if (show)
             {
                 Stories.Collapse();
+                TopicListPresenter.Focus(FocusState.Programmatic);
             }
             else
             {
