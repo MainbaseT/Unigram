@@ -87,7 +87,7 @@ namespace Telegram.Controls.Gallery
 
             _inactivityTimer = new DispatcherTimer();
             _inactivityTimer.Tick += OnTick;
-            _inactivityTimer.Interval = TimeSpan.FromSeconds(2);
+            _inactivityTimer.Interval = TimeSpan.FromSeconds(1.5);
             _inactivityTimer.Start();
 
             ScrollingHost.AddHandler(PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
