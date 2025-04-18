@@ -83,18 +83,25 @@ namespace Telegram.Controls.Chats
             {
                 _stickersTimer.Stop();
 
-                var popups = VisualTreeHelper.GetOpenPopupsForXamlRoot(XamlRoot);
-
-                foreach (var popup in popups)
+                try
                 {
-                    if (popup.Child is MenuFlyoutPresenter or ZoomableMediaPopup)
-                    {
-                        return;
-                    }
-                }
+                    var popups = VisualTreeHelper.GetOpenPopupsForXamlRoot(XamlRoot);
 
-                Collapse_Click(null, null);
-                Redirect?.Invoke(this, EventArgs.Empty);
+                    foreach (var popup in popups)
+                    {
+                        if (popup.Child is MenuFlyoutPresenter or ZoomableMediaPopup)
+                        {
+                            return;
+                        }
+                    }
+
+                    Collapse_Click(null, null);
+                    Redirect?.Invoke(this, EventArgs.Empty);
+                }
+                catch
+                {
+                    // All the remote procedure calls must be wrapped in a try-catch block
+                }
             };
 
             PointerEntered += Stickers_PointerEntered;
