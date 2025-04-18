@@ -56,6 +56,7 @@ namespace winrt::Telegram::Native::implementation
 
         static HRESULT WriteBytes(IVector<byte> hash, IRandomAccessStream randomAccessStream) noexcept;
         static IBuffer DrawWebP(hstring fileName, int32_t maxWidth, int32_t& pixelWidth, int32_t& pixelHeight) noexcept;
+        static bool IsWebP(hstring fileName, int32_t& pixelWidth, int32_t& pixelHeight) noexcept;
 
         HRESULT Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height);
 

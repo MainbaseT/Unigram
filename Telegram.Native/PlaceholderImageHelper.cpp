@@ -146,18 +146,50 @@ namespace winrt::Telegram::Native::implementation
         pixelWidth = 0;
         pixelHeight = 0;
 
-        FILE* file = _wfopen(fileName.data(), L"rb");
-        if (file == NULL)
+        DWORD desired_access = GENERIC_READ;
+
+        // TODO: share mode
+        DWORD share_mode = FILE_SHARE_READ | FILE_SHARE_DELETE | FILE_SHARE_WRITE;
+
+        DWORD creation_disposition = OPEN_ALWAYS;
+
+        DWORD native_flags = FILE_FLAG_BACKUP_SEMANTICS;
+        //if (flags & Direct) {
+        //	native_flags |= FILE_FLAG_WRITE_THROUGH | FILE_FLAG_NO_BUFFERING;
+        //}
+        //if (flags & WinStat) {
+        //	native_flags |= FILE_FLAG_BACKUP_SEMANTICS;
+        //}
+        CREATEFILE2_EXTENDED_PARAMETERS extended_parameters;
+        std::memset(&extended_parameters, 0, sizeof(extended_parameters));
+        extended_parameters.dwSize = sizeof(extended_parameters);
+        extended_parameters.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
+        extended_parameters.dwFileFlags = native_flags;
+        HANDLE handle = CreateFile2FromAppW(fileName.c_str(), desired_access, share_mode, creation_disposition, &extended_parameters);
+
+        if (handle == INVALID_HANDLE_VALUE)
         {
             return nullptr;
         }
 
-        fseek(file, 0, SEEK_END);
-        size_t length = ftell(file);
-        fseek(file, 0, SEEK_SET);
+        LARGE_INTEGER pFileSize;
+        if (!GetFileSizeEx(handle, &pFileSize))
+        {
+            CloseHandle(handle);
+            return nullptr;
+        }
+
+        size_t length = static_cast<size_t>(pFileSize.QuadPart);
         char* buffer = (char*)malloc(length);
-        fread(buffer, 1, length, file);
-        fclose(file);
+
+        DWORD numberOfBytesRead;
+        if (!ReadFile(handle, buffer, length, &numberOfBytesRead, NULL))
+        {
+            CloseHandle(handle);
+            return nullptr;
+        }
+
+        CloseHandle(handle);
 
         WebPData webPData;
         webPData.bytes = (uint8_t*)buffer;
@@ -247,6 +279,101 @@ namespace winrt::Telegram::Native::implementation
 
         free(buffer);
         return surface;
+    }
+
+    bool PlaceholderImageHelper::IsWebP(hstring fileName, int32_t& pixelWidth, int32_t& pixelHeight) noexcept
+    {
+        pixelWidth = 0;
+        pixelHeight = 0;
+
+        DWORD desired_access = GENERIC_READ;
+
+        // TODO: share mode
+        DWORD share_mode = FILE_SHARE_READ | FILE_SHARE_DELETE | FILE_SHARE_WRITE;
+
+        DWORD creation_disposition = OPEN_ALWAYS;
+
+        DWORD native_flags = FILE_FLAG_BACKUP_SEMANTICS;
+        //if (flags & Direct) {
+        //	native_flags |= FILE_FLAG_WRITE_THROUGH | FILE_FLAG_NO_BUFFERING;
+        //}
+        //if (flags & WinStat) {
+        //	native_flags |= FILE_FLAG_BACKUP_SEMANTICS;
+        //}
+        CREATEFILE2_EXTENDED_PARAMETERS extended_parameters;
+        std::memset(&extended_parameters, 0, sizeof(extended_parameters));
+        extended_parameters.dwSize = sizeof(extended_parameters);
+        extended_parameters.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
+        extended_parameters.dwFileFlags = native_flags;
+        HANDLE handle = CreateFile2FromAppW(fileName.c_str(), desired_access, share_mode, creation_disposition, &extended_parameters);
+
+        if (handle == INVALID_HANDLE_VALUE)
+        {
+            return false;
+        }
+
+        LARGE_INTEGER pFileSize;
+        if (!GetFileSizeEx(handle, &pFileSize))
+        {
+            CloseHandle(handle);
+            return false;
+        }
+
+        size_t length = static_cast<size_t>(pFileSize.QuadPart);
+        char* buffer = (char*)malloc(length);
+
+        DWORD numberOfBytesRead;
+        if (!ReadFile(handle, buffer, length, &numberOfBytesRead, NULL))
+        {
+            CloseHandle(handle);
+            return false;
+        }
+
+        CloseHandle(handle);
+
+        WebPData webPData;
+        webPData.bytes = (uint8_t*)buffer;
+        webPData.size = length;
+
+        auto spDemuxer = std::unique_ptr<WebPDemuxer, decltype(&WebPDemuxDelete)>
+        {
+            WebPDemux(&webPData),
+            WebPDemuxDelete
+        };
+        if (!spDemuxer)
+        {
+            //throw ref new InvalidArgumentException(ref new String(L"Failed to create demuxer"));
+            free(buffer);
+            return false;
+        }
+
+        IBuffer surface;
+        WebPIterator iter;
+        if (WebPDemuxGetFrame(spDemuxer.get(), 1, &iter))
+        {
+            WebPDecoderConfig config;
+            int ret = WebPInitDecoderConfig(&config);
+            if (!ret)
+            {
+                //throw ref new FailureException(ref new String(L"WebPInitDecoderConfig failed"));
+                free(buffer);
+                return false;
+            }
+
+            ret = (WebPGetFeatures(iter.fragment.bytes, iter.fragment.size, &config.input) == VP8_STATUS_OK);
+            if (!ret)
+            {
+                //throw ref new FailureException(ref new String(L"WebPGetFeatures failed"));
+                free(buffer);
+                return false;
+            }
+
+            pixelWidth = iter.width;
+            pixelHeight = iter.height;
+        }
+
+        free(buffer);
+        return true;
     }
 
     winrt::Windows::Foundation::IAsyncAction PlaceholderImageHelper::DrawSvgAsync(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi)

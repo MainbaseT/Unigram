@@ -9,6 +9,7 @@ using System;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Entities;
+using Telegram.Native;
 using Telegram.Td.Api;
 using Windows.Media.Effects;
 using Windows.Media.MediaProperties;
@@ -173,22 +174,16 @@ namespace Telegram.Services.Factories
             {
                 try
                 {
-                    //var buffer = await FileIO.ReadBufferAsync(file);
-                    //var webp = WebPImage.DecodeFromBuffer(buffer);
-
-                    // This isn't supposed to work.
-                    var webp = PlaceholderHelper.GetWebPFrame(file.Path) as Windows.UI.Xaml.Media.Imaging.BitmapImage;
-
-                    var width = webp.PixelWidth;
-                    var height = webp.PixelHeight;
-
-                    if ((width == 512 && height <= width) || (height == 512 && width <= height))
+                    if (PlaceholderImageHelper.IsWebP(file.Path, out int width, out int height))
                     {
-                        return new InputMessageFactory
+                        if ((width == 512 && height <= width) || (height == 512 && width <= height))
                         {
-                            InputFile = generated,
-                            Delegate = (inputFile, caption) => new InputMessageSticker(inputFile, null, width, height, string.Empty)
-                        };
+                            return new InputMessageFactory
+                            {
+                                InputFile = generated,
+                                Delegate = (inputFile, caption) => new InputMessageSticker(inputFile, null, width, height, string.Empty)
+                            };
+                        }
                     }
                 }
                 catch
