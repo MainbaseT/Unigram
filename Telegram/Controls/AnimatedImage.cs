@@ -182,21 +182,14 @@ namespace Telegram.Controls
 
         #region IsViewportAware
 
+        private bool _isViewportAware;
         public bool IsViewportAware
         {
-            get { return (bool)GetValue(IsViewportAwareProperty); }
-            set { SetValue(IsViewportAwareProperty, value); }
+            get => _isViewportAware;
+            set => OnViewportAwareChanged(_isViewportAware, _isViewportAware = value);
         }
 
-        public static readonly DependencyProperty IsViewportAwareProperty =
-            DependencyProperty.Register("IsViewportAware", typeof(bool), typeof(AnimatedImage), new PropertyMetadata(false, OnViewportAwareChanged));
-
-        private static void OnViewportAwareChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((AnimatedImage)d).OnViewportAwareChanged((bool)e.NewValue, (bool)e.OldValue);
-        }
-
-        private void OnViewportAwareChanged(bool newValue, bool oldValue)
+        private void OnViewportAwareChanged(bool oldValue, bool newValue)
         {
             if (newValue)
             {
@@ -1016,21 +1009,6 @@ namespace Telegram.Controls
                     _rendering = true;
 
                     _dispatcherQueue.TryEnqueue(CreateResources);
-                    _createdResourcesLock.Wait();
-
-                    _ticking = (_idle && _presentation.AutoPlay) || (_playing > 0 && (_activated || _presentation.LoopCount > 0));
-                    _idle = false;
-
-                    if (!_timerSubscribed && _ticking)
-                    {
-                        _timerSubscribed = true;
-                        _timer ??= LoopThreadPool.Rent(_task.Interval);
-                        _timer.Tick += OnTick;
-                    }
-                    else
-                    {
-                        OnTick(null);
-                    }
                 }
                 else if (_task != null && tracker == 0)
                 {
@@ -1052,6 +1030,26 @@ namespace Telegram.Controls
             }
         }
 
+        private void CreateResourcesContinuation()
+        {
+            lock (_lock)
+            {
+                _ticking = (_idle && _presentation.AutoPlay) || (_playing > 0 && (_activated || _presentation.LoopCount > 0));
+                _idle = false;
+
+                if (!_timerSubscribed && _ticking)
+                {
+                    _timerSubscribed = true;
+                    _timer ??= LoopThreadPool.Rent(_task.Interval);
+                    _timer.Tick += OnTick;
+                }
+                else
+                {
+                    OnTick(null);
+                }
+            }
+        }
+
         #region Resources
 
         //private IBuffer _foregroundPrev;
@@ -1066,7 +1064,7 @@ namespace Telegram.Controls
 
         private ImageBrush _imageBrush;
 
-        private readonly SemaphoreSlim _createdResourcesLock = new(0, 1);
+        //private readonly SemaphoreSlim _createdResourcesLock = new(0, 1);
         private readonly SemaphoreSlim _pausedLock = new(0, 1);
 
         private void CreateResources()
@@ -1088,7 +1086,7 @@ namespace Telegram.Controls
                 _loader.Activated += OnActivated;
             }
 
-            _createdResourcesLock.Release();
+            _workerQueue.Run(CreateResourcesContinuation);
             RegisterRendering();
         }
 

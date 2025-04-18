@@ -980,7 +980,8 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Grid Margin="0,-4">
-                            <local:CustomEmojiIcon x:Name="Icon" />
+                            <local:CustomEmojiIcon x:Name="Icon"
+                                                   IsOutlineEnabled="False" />
                             <Popup x:Name="Overlay"
                                    IsHitTestVisible="False"
                                    Margin="-32"
@@ -1606,8 +1607,6 @@
            BasedOn="{StaticResource DefaultAnimatedImageStyle}">
         <Setter Property="ReplacementColor"
                 Value="{ThemeResource TelegramForegroundAccentBrush}" />
-        <Setter Property="IsViewportAware"
-                Value="True" />
         <Setter Property="AutoPlay"
                 Value="False" />
         <Setter Property="LoopCount"
