@@ -64,6 +64,8 @@ namespace Telegram.Controls.Drawers
         private bool _isActive;
 
         private readonly AnimatedListHandler _handler;
+        private readonly ZoomableListHandler _zoomer;
+
         private readonly AnimatedListHandler _toolbarHandler;
 
         private readonly EventDebouncer<TextChangedEventArgs> _typing;
@@ -88,6 +90,12 @@ namespace Telegram.Controls.Drawers
 
             _handler = new AnimatedListHandler(List, AnimatedListType.Emoji);
             _toolbarHandler = new AnimatedListHandler(Toolbar2, AnimatedListType.Emoji);
+
+            _zoomer = new ZoomableListHandler(List);
+            _zoomer.Opening = UnloadVisibleItems;
+            _zoomer.Closing = ThrottleVisibleItems;
+            _zoomer.DownloadFile = fileId => ViewModel.ClientService.DownloadFile(fileId, 32);
+            _zoomer.SessionId = () => ViewModel.ClientService.SessionId;
 
             _typeToItemHashSetMapping.Add("EmojiSkinTemplate", new HashSet<SelectorItem>());
             _typeToItemHashSetMapping.Add("EmojiTemplate", new HashSet<SelectorItem>());
@@ -198,6 +206,7 @@ namespace Telegram.Controls.Drawers
 
             // This is called only right before XamlMarkupHelper.UnloadObject
             // so we can safely clean up any kind of anything from here.
+            _zoomer.Release();
             Bindings.StopTracking();
         }
 
@@ -207,6 +216,15 @@ namespace Telegram.Controls.Drawers
             {
                 _handler.LoadVisibleItems();
                 _toolbarHandler.LoadVisibleItems();
+            }
+        }
+
+        public void ThrottleVisibleItems()
+        {
+            if (_isActive)
+            {
+                _handler.ThrottleVisibleItems();
+                _toolbarHandler.ThrottleVisibleItems();
             }
         }
 
@@ -612,6 +630,8 @@ namespace Telegram.Controls.Drawers
                     item.Style = List.ItemContainerStyle;
                     item.ContextRequested += OnContextRequested;
                     args.ItemContainer = item;
+
+                    _zoomer.ElementPrepared(args.ItemContainer);
                 }
             }
 
