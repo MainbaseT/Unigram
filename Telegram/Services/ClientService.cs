@@ -303,7 +303,7 @@ namespace Telegram.Services
         private readonly Dictionary<long, Supergroup> _supergroups = new();
         private readonly ConcurrentDictionary<long, SupergroupFullInfo> _supergroupsFull = new();
 
-        private readonly Dictionary<long, ForumTopicService> _forums = new();
+        private readonly ConcurrentDictionary<long, ForumTopicService> _forums = new();
 
         private readonly ConcurrentDictionary<int, ChatListUnreadCount> _unreadCounts = new();
 
