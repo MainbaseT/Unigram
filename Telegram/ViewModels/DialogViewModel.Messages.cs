@@ -809,7 +809,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var response = await ClientService.SendAsync(new GetMessageLink(chat.Id, message.Id, 0, false, ThreadId != 0));
+            var response = await ClientService.SendAsync(new GetMessageLink(chat.Id, message.Id, 0, false, Topic != null || Thread != null));
             if (response is MessageLink link)
             {
                 MessageHelper.CopyLink(XamlRoot, link.Link, link.IsPublic);
