@@ -784,9 +784,8 @@ namespace Telegram.ViewModels
             var operations = new List<InputMessageContent>();
             var paidOperations = new List<InputPaidMedia>();
 
-            var firstCaption = asFile ? null : caption;
-
             var audio = items.All(x => x is StorageAudio);
+            var firstCaption = asFile || audio ? null : caption;
 
             foreach (var item in items)
             {
