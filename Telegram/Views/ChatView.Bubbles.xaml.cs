@@ -421,7 +421,7 @@ namespace Telegram.Views
 
         private readonly Dictionary<long, WeakReference> _prev = new Dictionary<long, WeakReference>();
 
-        public async void PlayMessage(MessageViewModel message, FrameworkElement target)
+        public void PlayMessage(MessageViewModel message, FrameworkElement target)
         {
             var text = message.Content as MessageText;
 

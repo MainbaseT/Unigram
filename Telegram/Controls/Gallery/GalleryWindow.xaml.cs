@@ -20,7 +20,6 @@ using Telegram.ViewModels.Chats;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Gallery;
 using Telegram.ViewModels.Users;
-using Telegram.Views;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Composition;
