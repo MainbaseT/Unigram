@@ -176,6 +176,7 @@
             <GridView.Header>
                 <StackPanel>
                     <controls:EmojiSearchBox x:Name="SearchField"
+                                             AllowFocusOnInteraction="True"
                                              PlaceholderText="{CustomResource Search}"
                                              CategorySelected="SearchField_CategorySelected"
                                              Margin="12,8,12,8" />
