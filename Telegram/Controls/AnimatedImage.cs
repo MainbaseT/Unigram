@@ -1009,6 +1009,21 @@ namespace Telegram.Controls
                     _rendering = true;
 
                     _dispatcherQueue.TryEnqueue(CreateResources);
+                    _createdResourcesLock.Wait();
+
+                    _ticking = (_idle && _presentation.AutoPlay) || (_playing > 0 && (_activated || _presentation.LoopCount > 0));
+                    _idle = false;
+
+                    if (!_timerSubscribed && _ticking)
+                    {
+                        _timerSubscribed = true;
+                        _timer ??= LoopThreadPool.Rent(_task.Interval);
+                        _timer.Tick += OnTick;
+                    }
+                    else
+                    {
+                        OnTick(null);
+                    }
                 }
                 else if (_task != null && tracker == 0)
                 {
@@ -1030,26 +1045,6 @@ namespace Telegram.Controls
             }
         }
 
-        private void CreateResourcesContinuation()
-        {
-            lock (_lock)
-            {
-                _ticking = (_idle && _presentation.AutoPlay) || (_playing > 0 && (_activated || _presentation.LoopCount > 0));
-                _idle = false;
-
-                if (!_timerSubscribed && _ticking)
-                {
-                    _timerSubscribed = true;
-                    _timer ??= LoopThreadPool.Rent(_task.Interval);
-                    _timer.Tick += OnTick;
-                }
-                else
-                {
-                    OnTick(null);
-                }
-            }
-        }
-
         #region Resources
 
         //private IBuffer _foregroundPrev;
@@ -1064,7 +1059,7 @@ namespace Telegram.Controls
 
         private ImageBrush _imageBrush;
 
-        //private readonly SemaphoreSlim _createdResourcesLock = new(0, 1);
+        private readonly SemaphoreSlim _createdResourcesLock = new(0, 1);
         private readonly SemaphoreSlim _pausedLock = new(0, 1);
 
         private void CreateResources()
@@ -1086,7 +1081,7 @@ namespace Telegram.Controls
                 _loader.Activated += OnActivated;
             }
 
-            _workerQueue.Run(CreateResourcesContinuation);
+            _createdResourcesLock.Release();
             RegisterRendering();
         }
 
