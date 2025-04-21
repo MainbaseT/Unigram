@@ -60,6 +60,10 @@ namespace Telegram.Controls
                 }
 
                 var peer = FrameworkElementAutomationPeer.FromElement(child);
+                if (peer == null)
+                {
+                    continue;
+                }
 
                 if (builder.Length > 0)
                 {
@@ -107,6 +111,10 @@ namespace Telegram.Controls
                 }
 
                 var peer = FrameworkElementAutomationPeer.FromElement(child);
+                if (peer == null)
+                {
+                    continue;
+                }
 
                 if (builder.Length > 0)
                 {
