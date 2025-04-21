@@ -24,7 +24,6 @@ namespace Telegram.Controls
         public CustomEmojiIcon()
         {
             DefaultStyleKey = typeof(CustomEmojiIcon);
-            IsViewportAware = true;
         }
 
         public string Emoji { get; set; }

@@ -182,14 +182,21 @@ namespace Telegram.Controls
 
         #region IsViewportAware
 
-        private bool _isViewportAware;
         public bool IsViewportAware
         {
-            get => _isViewportAware;
-            set => OnViewportAwareChanged(_isViewportAware, _isViewportAware = value);
+            get { return (bool)GetValue(IsViewportAwareProperty); }
+            set { SetValue(IsViewportAwareProperty, value); }
         }
 
-        private void OnViewportAwareChanged(bool oldValue, bool newValue)
+        public static readonly DependencyProperty IsViewportAwareProperty =
+            DependencyProperty.Register("IsViewportAware", typeof(bool), typeof(AnimatedImage), new PropertyMetadata(false, OnViewportAwareChanged));
+
+        private static void OnViewportAwareChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((AnimatedImage)d).OnViewportAwareChanged((bool)e.NewValue, (bool)e.OldValue);
+        }
+
+        private void OnViewportAwareChanged(bool newValue, bool oldValue)
         {
             if (newValue)
             {
