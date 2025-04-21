@@ -94,30 +94,27 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    autocomplete = View.Autocomplete;
+                    autocomplete = View?.Autocomplete;
                     autocompleteList = ControlledList;
                 }
 
                 var modifiers = WindowContext.KeyModifiers();
 
-                if (e.Key is VirtualKey.Up or VirtualKey.Down)
+                if (e.Key is VirtualKey.Up or VirtualKey.Down && modifiers == VirtualKeyModifiers.None)
                 {
-                    if (e.Key is VirtualKey.Up or VirtualKey.Down && modifiers == VirtualKeyModifiers.None)
+                    if (autocompleteList != null && autocompleteList.Items.Count > 0 && autocomplete?.Orientation == Orientation.Vertical)
                     {
-                        if (autocompleteList != null && autocompleteList.Items.Count > 0 && autocomplete?.Orientation == Orientation.Vertical)
+                        autocompleteList.SelectionMode = ListViewSelectionMode.Single;
+
+                        var index = e.Key == VirtualKey.Up ? -1 : 1;
+                        var next = autocompleteList.SelectedIndex + index;
+                        if (next >= 0 && next < autocomplete.Count)
                         {
-                            autocompleteList.SelectionMode = ListViewSelectionMode.Single;
-
-                            var index = e.Key == VirtualKey.Up ? -1 : 1;
-                            var next = autocompleteList.SelectedIndex + index;
-                            if (next >= 0 && next < autocomplete.Count)
-                            {
-                                autocompleteList.SelectedIndex = next;
-                                autocompleteList.ScrollIntoView(autocompleteList.SelectedItem);
-                            }
-
-                            e.Handled = true;
+                            autocompleteList.SelectedIndex = next;
+                            autocompleteList.ScrollIntoView(autocompleteList.SelectedItem);
                         }
+
+                        e.Handled = true;
                     }
                 }
                 else if (e.Key is VirtualKey.Left or VirtualKey.Right && modifiers == VirtualKeyModifiers.None)
