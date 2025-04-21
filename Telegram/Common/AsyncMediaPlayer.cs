@@ -15,6 +15,7 @@ using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Windows.Foundation;
+using Windows.Media.Devices;
 using Windows.Storage;
 
 namespace Telegram.Common
@@ -73,6 +74,16 @@ namespace Telegram.Common
             //_player.LengthChanged += OnLengthChanged;
             _player.EncounteredError += OnEncounteredError;
             //_player.EndReached += OnEndReached;
+
+            MediaDevice.DefaultAudioRenderDeviceChanged += OnDefaultAudioRenderDeviceChanged;
+        }
+
+        private void OnDefaultAudioRenderDeviceChanged(object sender, DefaultAudioRenderDeviceChangedEventArgs args)
+        {
+            if (args.Role == AudioDeviceRole.Default)
+            {
+                Write(() => _player.SetAudioOutput(args.Id));
+            }
         }
 
         public void Play(MediaInput input)
