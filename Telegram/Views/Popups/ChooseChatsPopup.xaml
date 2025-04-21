@@ -50,6 +50,8 @@
                 Click="Alias_Click"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
+                AutomationProperties.Name="{CustomResource SelectAccount}"
+                ToolTipService.ToolTip="{CustomResource SelectAccount}"
                 Style="{StaticResource ListEmptyButtonStyle}"
                 CornerRadius="14"
                 Margin="0,-52,-16,0"

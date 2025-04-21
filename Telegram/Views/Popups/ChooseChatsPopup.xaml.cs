@@ -846,7 +846,9 @@ namespace Telegram.Views.Popups
                 IsDismissButtonVisible = false;
             }
 
-            if (ViewModel.Configuration is ChooseChatsConfigurationDataPackage && ViewModel.ClientService.TryGetUser(ViewModel.ClientService.Options.MyId, out User user))
+            if (ViewModel.Configuration is ChooseChatsConfigurationDataPackage
+                && TypeResolver.Current.Count > 1
+                && ViewModel.ClientService.TryGetUser(ViewModel.ClientService.Options.MyId, out User user))
             {
                 Alias.Visibility = Visibility.Visible;
                 Photo.SetUser(ViewModel.ClientService, user, 28);
