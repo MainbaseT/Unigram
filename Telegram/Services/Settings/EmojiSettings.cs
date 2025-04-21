@@ -5,9 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Telegram.Common;
 
 namespace Telegram.Services.Settings
 {
@@ -24,6 +22,7 @@ namespace Telegram.Services.Settings
 
         private readonly Dictionary<string, int> _emojiUseHistory = new Dictionary<string, int>();
         private readonly List<string> _recentEmoji = new List<string>();
+        private readonly object _recentEmojiLock = new();
         private bool _recentEmojiLoaded;
 
         private const int MAX_RECENT_EMOJI_COUNT = 35;
@@ -37,40 +36,42 @@ namespace Telegram.Services.Settings
         {
             get
             {
-                LoadRecentEmoji();
-                return _recentEmoji;
+                lock (_recentEmojiLock)
+                {
+                    LoadRecentEmoji();
+                    return _recentEmoji;
+                }
             }
-        }
-
-
-        public EmojiData[] GetRecentEmoji()
-        {
-            LoadRecentEmoji();
-            return _recentEmoji.Select(x => new EmojiData(x)).ToArray();
         }
 
         public void AddRecentEmoji(string code)
         {
-            LoadRecentEmoji();
-
-            foreach (var modifier in _modifiers)
+            lock (_recentEmojiLock)
             {
-                code = code.Replace(modifier, string.Empty);
+                LoadRecentEmoji();
+
+                foreach (var modifier in _modifiers)
+                {
+                    code = code.Replace(modifier, string.Empty);
+                }
+
+                _emojiUseHistory.TryGetValue(code, out int count);
+
+                if (count == 0 && _emojiUseHistory.Count >= MAX_RECENT_EMOJI_COUNT)
+                {
+                    var emoji = _recentEmoji[_recentEmoji.Count - 1];
+                    _emojiUseHistory.Remove(emoji);
+                    _recentEmoji[_recentEmoji.Count - 1] = code;
+                }
+
+                _emojiUseHistory[code] = ++count;
+
+                SortRecentEmoji();
+                SaveRecentEmoji();
             }
-
-            _emojiUseHistory.TryGetValue(code, out int count);
-
-            if (count == 0 && _emojiUseHistory.Count >= MAX_RECENT_EMOJI_COUNT)
-            {
-                var emoji = _recentEmoji[_recentEmoji.Count - 1];
-                _emojiUseHistory.Remove(emoji);
-                _recentEmoji[_recentEmoji.Count - 1] = code;
-            }
-
-            _emojiUseHistory[code] = ++count;
         }
 
-        public void SortRecentEmoji()
+        private void SortRecentEmoji()
         {
             _recentEmoji.Clear();
 
@@ -102,7 +103,7 @@ namespace Telegram.Services.Settings
             }
         }
 
-        public void SaveRecentEmoji()
+        private void SaveRecentEmoji()
         {
             var stringBuilder = new StringBuilder();
 
@@ -130,7 +131,7 @@ namespace Telegram.Services.Settings
             SaveRecentEmoji();
         }
 
-        public void LoadRecentEmoji()
+        private void LoadRecentEmoji()
         {
             if (_recentEmojiLoaded)
             {

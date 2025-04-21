@@ -142,13 +142,12 @@ namespace Telegram.Controls.Chats
             if (e.ClickedItem is EmojiData emoji)
             {
                 SettingsService.Current.Emoji.AddRecentEmoji(emoji.Value);
-                SettingsService.Current.Emoji.SortRecentEmoji();
-                SettingsService.Current.Emoji.SaveRecentEmoji();
-
                 InsertText($"{emoji.Value}");
             }
             else if (e.ClickedItem is Sticker sticker && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
+                SettingsService.Current.Emoji.AddRecentEmoji($"{sticker.Emoji};{customEmoji.CustomEmojiId}");
+
                 var range = _textBox.Document.GetRange(index, _textBox.Document.Selection.StartPosition);
 
                 _textBox.InsertEmoji(range, sticker.Emoji, customEmoji.CustomEmojiId);

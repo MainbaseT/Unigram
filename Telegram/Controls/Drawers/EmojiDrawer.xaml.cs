@@ -348,9 +348,6 @@ namespace Telegram.Controls.Drawers
                 _needUpdate = true;
 
                 SettingsService.Current.Emoji.AddRecentEmoji(data.Value);
-                SettingsService.Current.Emoji.SortRecentEmoji();
-                SettingsService.Current.Emoji.SaveRecentEmoji();
-
                 ItemClick?.Invoke(this, e);
             }
             else if (e.ClickedItem is StickerViewModel sticker)
@@ -381,8 +378,6 @@ namespace Telegram.Controls.Drawers
                     if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
                     {
                         SettingsService.Current.Emoji.AddRecentEmoji($"{sticker.Emoji};{customEmoji.CustomEmojiId}");
-                        SettingsService.Current.Emoji.SortRecentEmoji();
-                        SettingsService.Current.Emoji.SaveRecentEmoji();
                     }
 
                     ItemClick?.Invoke(this, e);
