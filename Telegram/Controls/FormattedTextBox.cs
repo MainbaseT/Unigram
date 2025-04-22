@@ -623,11 +623,10 @@ namespace Telegram.Controls
             }
 
             Document.BatchDisplayUpdates();
-            range.SetRange(start, end);
-            range.CharacterFormat = Document.GetDefaultCharacterFormat();
 
             range.SetText(end > start ? TextSetOptions.Unlink : TextSetOptions.None, popup.Text);
             range.SetRange(start, start + popup.Text.Length);
+            range.CharacterFormat = Document.GetDefaultCharacterFormat();
             range.Link = $"\"{popup.Link}\"";
 
             Document.Selection.SetRange(range.EndPosition, range.EndPosition);
