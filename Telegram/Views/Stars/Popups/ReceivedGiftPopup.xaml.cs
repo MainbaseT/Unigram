@@ -21,6 +21,7 @@ using Telegram.Views.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 
@@ -37,7 +38,7 @@ namespace Telegram.Views.Stars.Popups
         private readonly string _transactionId;
 
         private readonly ReceivedGift _gift;
-        private readonly MessageSender _senderId;
+        private readonly MessageSender _receiverId;
 
         private GiftUpgradePreview _preview;
         private int _index;
@@ -51,7 +52,7 @@ namespace Telegram.Views.Stars.Popups
             _aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
 
             _gift = gift;
-            _senderId = receiverId;
+            _receiverId = receiverId;
 
             if (gift.Gift is SentGiftRegular regular)
             {
@@ -126,8 +127,8 @@ namespace Telegram.Views.Stars.Popups
                         Convert.Visibility = Visibility.Collapsed;
                     }
 
-                    Info.Text = Strings.Gift2ProfileVisible;
-                    PurchaseText.Text = Strings.Gift2ProfileMakeInvisible;
+                    Info.Text = Strings.Gift2ProfileVisible3;
+                    PurchaseText.Text = Strings.OK;
                 }
                 else
                 {
@@ -142,8 +143,8 @@ namespace Telegram.Views.Stars.Popups
                         Convert.Visibility = Visibility.Collapsed;
                     }
 
-                    Info.Text = Strings.Gift2ProfileInvisible;
-                    PurchaseText.Text = Strings.Gift2ProfileMakeVisible;
+                    Info.Text = Strings.Gift2ProfileInvisible3;
+                    PurchaseText.Text = Strings.OK;
                 }
 
                 if (receivedGift.CanBeUpgraded && receivedGift.PrepaidUpgradeStarCount > 0)
@@ -154,14 +155,6 @@ namespace Telegram.Views.Stars.Popups
                 }
 
                 Info.Visibility = Visibility.Visible;
-
-                VisibilityRoot.Visibility = Visibility.Visible;
-                VisibilityText.Text = receivedGift.IsSaved
-                    ? Strings.Gift2Visible
-                    : Strings.Gift2Invisible;
-                Toggle.Glyph = receivedGift.IsSaved
-                    ? Strings.Gift2VisibleHide
-                    : Strings.Gift2InvisibleShow;
             }
             else
             {
@@ -316,20 +309,23 @@ namespace Telegram.Views.Stars.Popups
             {
                 if (receivedGift.IsSaved)
                 {
-                    Info.Text = Strings.Gift2ProfileVisible;
-                    PurchaseText.Text = Strings.Gift2ProfileMakeInvisible;
+                    Info.Text = gift.OwnerId is MessageSenderUser
+                        ? Strings.Gift2ProfileVisible3
+                        : Strings.Gift2ChannelProfileVisible3;
                 }
                 else
                 {
-                    Info.Text = Strings.Gift2ProfileInvisible;
-                    PurchaseText.Text = Strings.Gift2ProfileMakeVisible;
+                    Info.Text = gift.OwnerId is MessageSenderUser
+                        ? Strings.Gift2ProfileInvisible3
+                        : Strings.Gift2ChannelProfileInvisible3;
                 }
             }
             else
             {
                 Info.Visibility = Visibility.Collapsed;
-                PurchaseText.Text = Strings.OK;
             }
+
+            PurchaseText.Text = Strings.OK;
         }
 
         public ReceivedGiftPopup(IClientService clientService, INavigationService navigationService, Gift gift)
@@ -390,7 +386,7 @@ namespace Telegram.Views.Stars.Popups
 
                 if (_gift != null)
                 {
-                    Toggle_Click(sender, e);
+                    Visibility_Click(sender, null);
                 }
             }
         }
@@ -448,7 +444,7 @@ namespace Telegram.Views.Stars.Popups
                 DetailRoot.Visibility = Visibility.Visible;
                 UpgradeRoot.Visibility = Visibility.Collapsed;
 
-                InitializeUpgraded(_clientService, _gift, result.Gift, _senderId);
+                InitializeUpgraded(_clientService, _gift, result.Gift, _receiverId);
             }
             else if (response is Error error)
             {
@@ -496,7 +492,7 @@ namespace Telegram.Views.Stars.Popups
             }
         }
 
-        private async void Toggle_Click(object sender, RoutedEventArgs e)
+        private async void Visibility_Click(object sender, TextUrlClickEventArgs e)
         {
             var response = await _clientService.SendAsync(new ToggleGiftIsSaved(_gift.ReceivedGiftId, !_gift.IsSaved));
             if (response is Ok)
@@ -506,7 +502,7 @@ namespace Telegram.Views.Stars.Popups
 
                 if (_gift.Gift is SentGiftRegular regular)
                 {
-                    InitializeRegular(_clientService, _gift, regular.Gift, _senderId);
+                    InitializeRegular(_clientService, _gift, regular.Gift, _receiverId);
                 }
 
                 if (_gift.IsSaved)
@@ -650,7 +646,7 @@ namespace Telegram.Views.Stars.Popups
 
                 if (_gift.Gift is SentGiftRegular regular)
                 {
-                    InitializeRegular(_clientService, _gift, regular.Gift, _senderId);
+                    InitializeRegular(_clientService, _gift, regular.Gift, _receiverId);
                 }
             }
         }
@@ -691,6 +687,18 @@ namespace Telegram.Views.Stars.Popups
         {
             Hide();
             _navigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationTransferGift(_gift));
+        }
+
+        private void From_Click(Hyperlink sender, HyperlinkClickEventArgs args)
+        {
+            Hide();
+            _navigationService.NavigateToSender(_gift.SenderId);
+        }
+
+        private void Owner_Click(Hyperlink sender, HyperlinkClickEventArgs args)
+        {
+            Hide();
+            _navigationService.NavigateToSender(_receiverId);
         }
     }
 }

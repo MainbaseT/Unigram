@@ -6379,6 +6379,12 @@ Duration: {1}</value>
   <data name="Gift2ButtonSell_other" xml:space="preserve">
     <value>sell for {0} Stars</value>
   </data>
+  <data name="Gift2ChannelProfileInvisible3" xml:space="preserve">
+    <value>This gift is hidden from visitors to your channel. **Show &gt;**</value>
+  </data>
+  <data name="Gift2ChannelProfileVisible3" xml:space="preserve">
+    <value>This gift is visible on your channel&apos;s profile. **Hide &gt;**</value>
+  </data>
   <data name="Gift2CollectionNumber_one" xml:space="preserve">
     <value>Collectible #{0}</value>
   </data>
@@ -6566,6 +6572,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2ProfileInvisible" xml:space="preserve">
     <value>This gift is hidden. Only you can see it.</value>
   </data>
+  <data name="Gift2ProfileInvisible3" xml:space="preserve">
+    <value>This gift is hidden from your page. **Show &gt;**</value>
+  </data>
   <data name="Gift2ProfileMakeInvisible" xml:space="preserve">
     <value>Hide from my profile</value>
   </data>
@@ -6574,6 +6583,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2ProfileVisible" xml:space="preserve">
     <value>This gift is visible on your profile.</value>
+  </data>
+  <data name="Gift2ProfileVisible3" xml:space="preserve">
+    <value>This gift is visible on your page. **Hide &gt;**</value>
   </data>
   <data name="Gift2Quantity" xml:space="preserve">
     <value>Quantity</value>

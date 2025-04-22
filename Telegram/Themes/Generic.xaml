@@ -2644,6 +2644,8 @@
     </Style>
 
     <Style TargetType="local:SettingsFooter">
+        <Setter Property="TextStyle"
+                Value="{ThemeResource InfoCaptionTextBlockStyle}" />
         <Setter Property="HorizontalAlignment"
                 Value="Stretch" />
         <Setter Property="VerticalAlignment"
@@ -2658,7 +2660,7 @@
                     <TextBlock common:TextBlockHelper.IsLink="{TemplateBinding IsLink}"
                                common:TextBlockHelper.Markdown="{TemplateBinding Text}"
                                TextAlignment="{TemplateBinding TextAlignment}"
-                               Style="{StaticResource InfoCaptionTextBlockStyle}"
+                               Style="{TemplateBinding TextStyle}"
                                FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                AutomationProperties.AccessibilityView="Raw" />
                 </ControlTemplate>

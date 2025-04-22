@@ -44,6 +44,19 @@ namespace Telegram.Controls
 
         #endregion
 
+        #region TextStyle
+
+        public Style TextStyle
+        {
+            get { return (Style)GetValue(TextStyleProperty); }
+            set { SetValue(TextStyleProperty, value); }
+        }
+
+        public static readonly DependencyProperty TextStyleProperty =
+            DependencyProperty.Register("TextStyle", typeof(Style), typeof(SettingsFooter), new PropertyMetadata(null));
+
+        #endregion
+
         #region IsLink
 
         public bool IsLink

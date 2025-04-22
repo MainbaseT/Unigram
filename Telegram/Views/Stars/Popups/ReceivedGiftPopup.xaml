@@ -120,12 +120,15 @@
                                            Style="{StaticResource BodyTextBlockStyle}"
                                            VerticalAlignment="Top"
                                            Grid.Column="1">
-                                    <Hyperlink UnderlineStyle="None">
+                                    <Hyperlink Click="From_Click"
+                                               UnderlineStyle="None">
                                         <Run x:Name="FromTitle" />
                                     </Hyperlink>
                                 </TextBlock>
                             </Grid>
                         </controls:TableViewItem>
+                        <controls:TableViewItem x:Name="Date"
+                                                Header="{CustomResource StarsTransactionDate}" />
                         <controls:TableViewItem Header="{CustomResource Gift2Value}"
                                                 Padding="0">
                             <Grid>
@@ -143,35 +146,6 @@
 
                                 <controls:BadgeButton x:Name="Convert"
                                                       Click="Convert_Click"
-                                                      Style="{StaticResource SmallButtonStyle}"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="11"
-                                                      Padding="8,0"
-                                                      CornerRadius="8"
-                                                      BorderThickness="0"
-                                                      Height="16"
-                                                      Grid.Column="2" />
-                            </Grid>
-                        </controls:TableViewItem>
-                        <controls:TableViewItem x:Name="Date"
-                                                Header="{CustomResource StarsTransactionDate}" />
-                        <controls:TableViewItem x:Name="VisibilityRoot"
-                                                Header="{CustomResource Gift2Visibility}"
-                                                Padding="0"
-                                                Visibility="Collapsed">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock x:Name="VisibilityText"
-                                           Margin="8,5,8,6"
-                                           Style="{StaticResource BodyTextBlockStyle}"
-                                           VerticalAlignment="Top" />
-
-                                <controls:BadgeButton x:Name="Toggle"
-                                                      Click="Toggle_Click"
-                                                      Glyph="{CustomResource Gift2StatusUpgrade}"
                                                       Style="{StaticResource SmallButtonStyle}"
                                                       VerticalAlignment="Center"
                                                       FontSize="11"
@@ -249,7 +223,8 @@
                                            Style="{StaticResource BodyTextBlockStyle}"
                                            VerticalAlignment="Top"
                                            Grid.Column="1">
-                                    <Hyperlink UnderlineStyle="None">
+                                    <Hyperlink Click="Owner_Click"
+                                               UnderlineStyle="None">
                                         <Run x:Name="UpgradedFromTitle" />
                                     </Hyperlink>
                                 </TextBlock>
@@ -347,11 +322,13 @@
                 <Border Height="8"
                         Grid.Row="1" />
 
-                <TextBlock x:Name="Info"
-                           Style="{StaticResource InfoBodyTextBlockStyle}"
-                           TextAlignment="Center"
-                           Margin="0,4,0,4"
-                           Grid.Row="2" />
+                <controls:SettingsFooter x:Name="Info"
+                                         IsLink="True"
+                                         Click="Visibility_Click"
+                                         TextStyle="{StaticResource InfoBodyTextBlockStyle}"
+                                         TextAlignment="Center"
+                                         Margin="0,4,0,4"
+                                         Grid.Row="2" />
             </Grid>
             <Grid x:Name="UpgradeRoot"
                   Visibility="Collapsed"
