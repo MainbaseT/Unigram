@@ -160,7 +160,7 @@
 
                         <Grid x:Name="PreviewPanel"
                               Background="Transparent"
-                              Margin="0,2,8,0"
+                              Margin="0,0,8,0"
                               Grid.Column="1"
                               Grid.Row="1">
                             <Grid.ColumnDefinitions>

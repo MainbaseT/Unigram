@@ -22,8 +22,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:ForumTopicCell">
-                    <Grid Background="Transparent"
-                          MinHeight="64">
+                    <Grid Background="Transparent">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup>
                                 <VisualState x:Name="Normal" />
@@ -57,7 +56,7 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <Grid Margin="12,10,0,0"
+                        <Grid Margin="12,8,0,0"
                               Grid.Column="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -119,7 +118,7 @@
 
                         <Grid x:Name="PreviewPanel"
                               Background="Transparent"
-                              Margin="12,2,8,0"
+                              Margin="12,0,8,10"
                               Grid.Column="1"
                               Grid.Row="1">
                             <Grid.ColumnDefinitions>

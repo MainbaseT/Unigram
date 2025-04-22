@@ -137,7 +137,7 @@ namespace Telegram.Controls.Views
         {
             if (args.ItemContainer == null)
             {
-                args.ItemContainer = new ChatListListViewItem(null);
+                args.ItemContainer = new ChatListListViewItem(null) { MinHeight = 0 };
                 args.ItemContainer.ContentTemplate = sender.ItemTemplate;
                 args.ItemContainer.ContextRequested += Topic_ContextRequested;
             }
