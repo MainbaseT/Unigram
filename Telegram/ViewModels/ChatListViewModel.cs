@@ -166,9 +166,9 @@ namespace Telegram.ViewModels
 
         public void MarkChatAsRead(Chat chat)
         {
-            if (chat.UnreadCount > 0)
+            if (chat.UnreadCount > 0 || chat.UnreadMentionCount > 0 || chat.UnreadReactionCount > 0)
             {
-                if (chat.LastMessage != null)
+                if (chat.UnreadCount > 0 && chat.LastMessage != null)
                 {
                     ClientService.Send(new ViewMessages(chat.Id, new[] { chat.LastMessage.Id }, new MessageSourceChatList(), true));
                 }
