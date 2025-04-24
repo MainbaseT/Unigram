@@ -128,7 +128,7 @@ namespace Telegram.Controls.Cells
 
             if (_topic != null)
             {
-                UpdateForumTopic(_clientService, _topic, _chat);
+                UpdateForumTopic(_clientService, _topic);
             }
         }
 
@@ -476,11 +476,11 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public void UpdateForumTopic(IClientService clientService, ForumTopic topic, Chat chat)
+        public void UpdateForumTopic(IClientService clientService, ForumTopic topic)
         {
             _clientService = clientService;
             _topic = topic;
-            _chat = chat;
+            _chat = clientService.GetChat(topic.Info.ChatId);
 
             if (!_templateApplied)
             {
@@ -737,7 +737,7 @@ namespace Telegram.Controls.Cells
             var context = WindowContext.ForXamlRoot(this);
 
             var service = new TLNavigationService(_clientService, null, context, frame, "ChatPreview");
-            service.NavigateToChat(_chat);
+            service.NavigateToChat(chat);
 
             var chatPage = frame.Content as ChatPage;
             var chatView = chatPage?.Content as ChatView;
