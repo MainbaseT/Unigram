@@ -134,13 +134,6 @@ namespace Telegram.Controls.Cells
 
         #endregion
 
-        public void UpdateForumTopic(IClientService clientService, ForumTopic topic, Chat chat)
-        {
-            _clientService = clientService;
-
-            Update(topic, chat);
-        }
-
         public string GetAutomationName()
         {
             if (_clientService == null)
@@ -483,8 +476,9 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private void Update(ForumTopic topic, Chat chat)
+        public void UpdateForumTopic(IClientService clientService, ForumTopic topic, Chat chat)
         {
+            _clientService = clientService;
             _topic = topic;
             _chat = chat;
 
@@ -501,7 +495,7 @@ namespace Telegram.Controls.Cells
             //UpdateChatReadInbox(chat);
             UpdateForumTopicUnreadMentionCount(topic);
             UpdateNotificationSettings(topic);
-            UpdateForumTopicActions(topic, _clientService.GetChatActions(chat.Id, topic.Info.MessageThreadId));
+            UpdateForumTopicActions(topic, _clientService.GetChatActions(topic.Info.ChatId, topic.Info.MessageThreadId));
         }
 
         #endregion
@@ -848,7 +842,7 @@ namespace Telegram.Controls.Cells
                 }
 
                 var service = WindowContext.GetNavigationService(this);
-                service?.NavigateToChat(chat, state: new NavigationState
+                service?.NavigateToChat(chat, thread: _topic.Info.MessageThreadId, state: new NavigationState
                 {
                     { "package", e.DataView }
                 });
