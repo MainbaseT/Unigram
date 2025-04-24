@@ -4427,6 +4427,9 @@ Minimum length is 5 characters.</value>
   <data name="Copy" xml:space="preserve">
     <value>Copy</value>
   </data>
+  <data name="CopyEmojiPreview" xml:space="preserve">
+    <value>Copy Emoji</value>
+  </data>
   <data name="CopyImage" xml:space="preserve">
     <value>Copy Image</value>
   </data>
@@ -10916,6 +10919,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SendByEnterKey" xml:space="preserve">
     <value>Enter</value>
   </data>
+  <data name="SendEmojiPreview" xml:space="preserve">
+    <value>Send Emoji</value>
+  </data>
   <data name="SendGiftTo" xml:space="preserve">
     <value>Send Gift to {0}</value>
   </data>
@@ -11005,6 +11011,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="SetAsAdmin" xml:space="preserve">
     <value>Promote to admin</value>
+  </data>
+  <data name="SetAsEmojiStatus" xml:space="preserve">
+    <value>Set as Status</value>
+  </data>
+  <data name="SetAsEmojiStatusInfo" xml:space="preserve">
+    <value>Emoji status set.</value>
   </data>
   <data name="SetAsMain" xml:space="preserve">
     <value>Set as Main</value>

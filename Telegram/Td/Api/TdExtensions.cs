@@ -1509,6 +1509,16 @@ namespace Telegram.Td.Api
             return text;
         }
 
+        public static FormattedText ToFormattedText(this Sticker sticker)
+        {
+            if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
+            {
+                return new FormattedText(sticker.Emoji, new TextEntity[] { new TextEntity(0, sticker.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
+            }
+
+            return new FormattedText(sticker.Emoji, Array.Empty<TextEntity>());
+        }
+
         public static bool HasCaption(this MessageContent content)
         {
             var caption = content.GetCaption();

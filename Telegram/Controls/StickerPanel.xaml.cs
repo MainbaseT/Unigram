@@ -14,6 +14,7 @@ using Telegram.Services.Settings;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Drawers;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
@@ -28,6 +29,7 @@ namespace Telegram.Controls
         public event EventHandler SettingsClick;
 
         public Action<object> EmojiClick { get; set; }
+        public event TypedEventHandler<UIElement, ItemContextRequestedEventArgs<Sticker>> EmojiContextRequested;
 
         public event EventHandler<StickerDrawerItemClickEventArgs> StickerClick;
         public event EventHandler<ItemContextRequestedEventArgs<Sticker>> StickerContextRequested;
@@ -111,6 +113,7 @@ namespace Telegram.Controls
                 {
                     FindName(nameof(EmojisRoot));
                     EmojisRoot.DataContext = EmojiDrawerViewModel.Create(SessionId);
+                    EmojisRoot.ItemContextRequested += EmojiContextRequested;
                 }
                 else
                 {
@@ -226,6 +229,7 @@ namespace Telegram.Controls
             {
                 EmojisRoot.Deactivate();
                 EmojisRoot.DataContext = null;
+                EmojisRoot.ItemContextRequested -= EmojiContextRequested;
                 UnloadObject(EmojisRoot);
 
                 Tab0.Visibility = Visibility.Collapsed;

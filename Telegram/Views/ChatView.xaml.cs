@@ -260,6 +260,7 @@ namespace Telegram.Views
         private void InitializeStickers()
         {
             StickersPanel.EmojiClick = Emojis_ItemClick;
+            StickersPanel.EmojiContextRequested += Emoji_ContextRequested;
 
             StickersPanel.StickerClick += Stickers_ItemClick;
             StickersPanel.StickerContextRequested += Sticker_ContextRequested;

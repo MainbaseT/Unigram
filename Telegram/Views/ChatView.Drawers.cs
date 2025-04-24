@@ -7,6 +7,7 @@
 using Telegram.Common;
 using Telegram.Controls.Drawers;
 using Telegram.Controls.Media;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.UI.Xaml;
@@ -95,6 +96,49 @@ namespace Telegram.Views
                 flyout.CreateFlyoutSeparator();
                 flyout.CreateFlyoutItem(anim => ViewModel.SendAnimation(anim, SchedulingState.Auto, true), animation, Strings.SendWithoutSound, Icons.AlertOff);
                 flyout.CreateFlyoutItem(anim => ViewModel.SendAnimation(anim, SchedulingState.Schedule, null), animation, self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
+            }
+
+            args.ShowAt(flyout, element);
+        }
+
+        private void Emoji_ContextRequested(object sender, ItemContextRequestedEventArgs<Sticker> args)
+        {
+            var element = sender as FrameworkElement;
+            var sticker = args.Item;
+
+            if (sticker?.StickerValue == null || sticker.FullType is not StickerFullTypeCustomEmoji customEmoji)
+            {
+                return;
+            }
+
+            var flyout = new MenuFlyout();
+
+            void Send(Sticker sticker)
+            {
+                ViewModel.SendMessageAsync(sticker.ToFormattedText());
+            }
+
+            void Copy(Sticker sticker)
+            {
+                MessageHelper.CopyText(XamlRoot, sticker.ToFormattedText());
+            }
+
+            void SetAsStatus(Sticker sticker)
+            {
+                ViewModel.ClientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0)));
+                ViewModel.ShowToast(Strings.SetAsEmojiStatusInfo, DelayedFileSource.FromSticker(ViewModel.ClientService, sticker));
+            }
+
+            if (ViewModel.Type is DialogType.History or DialogType.Thread && ViewModel.IsPremium)
+            {
+                flyout.CreateFlyoutItem(Send, sticker, Strings.SendEmojiPreview, Icons.Send);
+            }
+
+            flyout.CreateFlyoutItem(Copy, sticker, Strings.CopyEmojiPreview, Icons.DocumentCopy);
+
+            if (ViewModel.Type is DialogType.History or DialogType.Thread && ViewModel.IsPremium)
+            {
+                flyout.CreateFlyoutItem(SetAsStatus, sticker, Strings.SetAsEmojiStatus, Icons.Emoji);
             }
 
             args.ShowAt(flyout, element);

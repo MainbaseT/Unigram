@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Telegram.Controls;
 using Telegram.Navigation.Services;
 using Telegram.Services;
+using Telegram.Streams;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.Views.Popups;
@@ -177,6 +178,11 @@ namespace Telegram.Navigation
         }
 
         public ToastPopup ShowToast(string text, ToastPopupIcon icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
+        {
+            return ToastPopup.Show(XamlRoot, ClientEx.ParseMarkdown(text), icon, requestedTheme, dismissAfter);
+        }
+
+        public ToastPopup ShowToast(string text, AnimatedImageSource icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
             return ToastPopup.Show(XamlRoot, ClientEx.ParseMarkdown(text), icon, requestedTheme, dismissAfter);
         }
