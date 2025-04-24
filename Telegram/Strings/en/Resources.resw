@@ -4445,6 +4445,9 @@ Minimum length is 5 characters.</value>
   <data name="Create" xml:space="preserve">
     <value>Create</value>
   </data>
+  <data name="CreateGeneralTopicTitle" xml:space="preserve">
+    <value>Choose topic name</value>
+  </data>
   <data name="CreateGroupError" xml:space="preserve">
     <value>Sorry, you can&apos;t create a group with these users because of their privacy settings.</value>
   </data>

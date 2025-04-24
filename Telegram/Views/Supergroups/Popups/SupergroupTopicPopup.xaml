@@ -15,14 +15,16 @@
                        VerticalContentAlignment="Stretch"
                        Padding="24,24,24,0">
 
-    <Grid Margin="0,0,0,-32">
+    <Grid x:Name="RootGrid"
+          Margin="0,0,0,-32">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{CustomResource CreateTopicTitle}"
+        <TextBlock x:Name="Header"
+                   Text="{CustomResource CreateTopicTitle}"
                    Style="{StaticResource BaseTextBlockStyle}"
                    Margin="0,0,0,8" />
 
@@ -34,6 +36,7 @@
 
         <Grid Grid.Row="1">
             <controls:IdentityIcon x:Name="Identity"
+                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
                                    Margin="12,0" />
@@ -60,7 +63,8 @@
         </Grid>
 
 
-        <Grid Margin="-24,8,-24,0"
+        <Grid x:Name="EmojiRoot"
+              Margin="-24,8,-24,0"
               Grid.Row="2">
             <drawers:TopicsEmojiDrawer x:Name="Emoji"
                                        ScrollingHostPadding="8,0,0,56" />

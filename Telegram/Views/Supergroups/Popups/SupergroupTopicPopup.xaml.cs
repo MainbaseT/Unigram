@@ -47,17 +47,31 @@ namespace Telegram.Views.Supergroups.Popups
 
             Title = topic == null ? Strings.NewTopic : Strings.EditTopic;
 
+            Header.Text = topic?.IsGeneral is true ? Strings.CreateGeneralTopicTitle : Strings.CreateTopicTitle;
+
             PrimaryButtonText = topic == null ? Strings.Create : Strings.Done;
             SecondaryButtonText = Strings.Cancel;
 
             NameLabel.Text = topic?.Name ?? string.Empty;
             NameLabel.SelectionStart = NameLabel.Text.Length;
 
-            Emoji.DataContext = EmojiDrawerViewModel.Create(clientService.SessionId, EmojiDrawerMode.Topics);
-            Emoji.ViewModel.Update();
-            Emoji.ItemClick += OnItemClick;
+            if (topic?.IsGeneral is true)
+            {
+                EmojiRoot.Visibility = Visibility.Collapsed;
+                RootGrid.Margin = new Thickness(0);
+                Padding = new Thickness(24);
+                VerticalContentAlignment = VerticalAlignment.Center;
 
-            UpdateTopicIcon();
+                Identity.SetStatus(_clientService, new ForumTopicIcon(0, 0));
+            }
+            else
+            {
+                Emoji.DataContext = EmojiDrawerViewModel.Create(clientService.SessionId, EmojiDrawerMode.Topics);
+                Emoji.ViewModel.Update();
+                Emoji.ItemClick += OnItemClick;
+
+                UpdateTopicIcon();
+            }
         }
 
         private void UpdateTopicIcon()
