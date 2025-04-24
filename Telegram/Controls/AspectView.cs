@@ -36,6 +36,19 @@ namespace Telegram.Controls
         public double Height { get; set; }
     }
 
+    public struct MaximumSize
+    {
+        public MaximumSize(double width, double height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public double Width { get; set; }
+
+        public double Height { get; set; }
+    }
+
     public partial class AspectView : Grid
     {
         #region Constraint
@@ -140,6 +153,11 @@ namespace Telegram.Controls
             {
                 width = size.Width;
                 height = size.Height;
+            }
+            else if (Constraint is MaximumSize maximumSize)
+            {
+                width = maximumSize.Width;
+                height = maximumSize.Height;
             }
 
             #region MessageContent

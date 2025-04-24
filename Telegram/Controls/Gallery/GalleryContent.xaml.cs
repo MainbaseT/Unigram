@@ -462,6 +462,7 @@ namespace Telegram.Controls.Gallery
                 {
                     video.TreeUpdated -= OnTreeUpdated;
                     video.FirstFrameReady -= OnFirstFrameReady;
+                    video.TrackChanged -= OnTrackChanged;
                     video.Closed -= OnClosed;
                 }
 
@@ -469,6 +470,7 @@ namespace Telegram.Controls.Gallery
                 {
                     value.TreeUpdated += OnTreeUpdated;
                     value.FirstFrameReady += OnFirstFrameReady;
+                    value.TrackChanged += OnTrackChanged;
                     value.Closed += OnClosed;
                 }
 
@@ -507,6 +509,14 @@ namespace Telegram.Controls.Gallery
         private void OnFirstFrameReady(VideoPlayerBase sender, EventArgs args)
         {
             MediaOpened();
+        }
+
+        private void OnTrackChanged(VideoPlayerBase sender, VideoPlayerTrackChangedEventArgs args)
+        {
+            if (args.Width != 0 && args.Height != 0)
+            {
+                Constraint = new MaximumSize(args.Width, args.Height);
+            }
         }
 
         private void OnClosed(VideoPlayerBase sender, EventArgs e)

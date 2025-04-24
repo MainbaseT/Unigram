@@ -52,6 +52,7 @@ namespace Telegram.Controls
                 _core.Playing -= OnPlaying;
                 _core.Paused -= OnPaused;
                 _core.VolumeChanged -= OnVolumeChanged;
+                _core.ESSelected -= OnEESelected;
 
                 _core.Close();
                 _core = null;
@@ -225,6 +226,7 @@ namespace Telegram.Controls
             _core.Playing += OnPlaying;
             _core.Paused += OnPaused;
             _core.VolumeChanged += OnVolumeChanged;
+            _core.ESSelected += OnEESelected;
 
             if (_video != null)
             {
@@ -294,6 +296,18 @@ namespace Telegram.Controls
             else
             {
                 OnVolumeChanged(args.Volume / 100d);
+            }
+        }
+
+        private void OnEESelected(AsyncMediaPlayer sender, MediaPlayerESSelectedEventArgs args)
+        {
+            if (args.Type == TrackType.Video && args.Id != -1)
+            {
+                var track = sender.Track;
+                if (track != null)
+                {
+                    OnTrackChanged(track.Width, track.Height);
+                }
             }
         }
     }

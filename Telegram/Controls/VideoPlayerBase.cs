@@ -17,6 +17,19 @@ namespace Telegram.Controls
 
     public record VideoPlayerVolumeChangedEventArgs(double Volume);
 
+    public partial class VideoPlayerTrack
+    {
+        public VideoPlayerTrack(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public int Width { get; }
+
+        public int Height { get; }
+    }
+
     // Record somehow fails to compile in release
     public partial class VideoPlayerLevel
     {
@@ -51,6 +64,8 @@ namespace Telegram.Controls
     }
 
     public record VideoPlayerLevelsChangedEventArgs(IList<VideoPlayerLevel> Levels, VideoPlayerLevel CurrentLevel, bool IsAuto);
+
+    public record VideoPlayerTrackChangedEventArgs(int Width, int Height);
 
     public abstract partial class VideoPlayerBase : UserControlEx
     {
@@ -173,11 +188,20 @@ namespace Telegram.Controls
 
         public IList<VideoPlayerLevel> Levels { get; private set; } = Array.Empty<VideoPlayerLevel>();
 
+        public VideoPlayerTrack Track { get; private set; }
+
         public event TypedEventHandler<VideoPlayerBase, VideoPlayerLevelsChangedEventArgs> LevelsChanged;
         protected void OnLevelsChanged(IList<VideoPlayerLevel> levels, VideoPlayerLevel currentLevel)
         {
             Levels = levels;
             LevelsChanged?.Invoke(this, new VideoPlayerLevelsChangedEventArgs(levels, currentLevel, IsCurrentLevelAuto));
+        }
+
+        public event TypedEventHandler<VideoPlayerBase, VideoPlayerTrackChangedEventArgs> TrackChanged;
+        protected void OnTrackChanged(int width, int height)
+        {
+            Track = new VideoPlayerTrack(width, height);
+            TrackChanged?.Invoke(this, new VideoPlayerTrackChangedEventArgs(width, height));
         }
 
         public event TypedEventHandler<VideoPlayerBase, EventArgs> Closed;

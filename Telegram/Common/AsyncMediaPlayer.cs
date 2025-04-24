@@ -8,6 +8,7 @@ using LibVLCSharp.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Telegram.Navigation;
@@ -20,6 +21,19 @@ using Windows.Storage;
 
 namespace Telegram.Common
 {
+    public class AsyncMediaTrack
+    {
+        public AsyncMediaTrack(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public int Width { get; }
+
+        public int Height { get; }
+    }
+
     public partial class AsyncMediaPlayer
     {
         private readonly IDispatcherContext _dispatcherQueue;
@@ -175,6 +189,11 @@ namespace Telegram.Common
             set => Write(() => _player.Volume = value);
         }
 
+        public AsyncMediaTrack Track
+        {
+            get => Read(GetTrack);
+        }
+
         public void Close()
         {
             _workQueue.Clear();
@@ -220,6 +239,41 @@ namespace Telegram.Common
 
                 //_player.Dispose();
                 //_library.Dispose();
+            }
+        }
+
+        private AsyncMediaTrack GetTrack()
+        {
+            var videoTrack = GetVideoTrack(_player.VideoTrack);
+            if (videoTrack is not VideoTrack track)
+            {
+                return new AsyncMediaTrack(0, 0);
+            }
+
+            return new AsyncMediaTrack((int)track.Width, (int)track.Height);
+        }
+
+        private VideoTrack? GetVideoTrack(int selectedVideoTrack)
+        {
+            if (selectedVideoTrack == -1)
+            {
+                return null;
+            }
+
+            try
+            {
+                var media = _player.Media;
+                MediaTrack? videoTrack = null;
+                if (media != null)
+                {
+                    videoTrack = media.Tracks?.FirstOrDefault(t => t.Id == selectedVideoTrack);
+                    media.Dispose();
+                }
+                return videoTrack == null ? (VideoTrack?)null : ((MediaTrack)videoTrack).Data.Video;
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 
