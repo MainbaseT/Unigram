@@ -41,11 +41,9 @@ namespace Telegram.Views.Host
             //Grid.SetRow(navigationService.Frame, 2);
             //LayoutRoot.Children.Add(navigationService.Frame);
 
-#if DEBUG && !MOCKUP
-            StateLabel.Text = Strings.AppName;
-#else
-            StateLabel.Text = "Unigram";
-#endif
+            StateLabel.Text = Constants.RELEASE
+                ? Strings.AppDisplayName
+                : Strings.AppName;
 
             var clientService = TypeResolver.Current.Resolve<IClientService>(navigationService.SessionId);
             var settingsService = TypeResolver.Current.Resolve<ISettingsService>(navigationService.SessionId);

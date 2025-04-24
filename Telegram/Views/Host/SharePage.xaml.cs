@@ -26,11 +26,9 @@ namespace Telegram.Views.Host
 
             Background.Update(TypeResolver.Current.Resolve<IClientService>(sessionId));
 
-#if DEBUG && !MOCKUP
-            StateLabel.Text = Strings.AppName;
-#else
-            StateLabel.Text = "Unigram";
-#endif
+            StateLabel.Text = Constants.RELEASE
+                ? Strings.AppDisplayName
+                : Strings.AppName;
         }
 
         public async void Activate(ShareTargetActivatedEventArgs args, INavigationService navigationService, AuthorizationState state)

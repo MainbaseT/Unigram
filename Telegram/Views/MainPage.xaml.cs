@@ -678,9 +678,9 @@ namespace Telegram.Views
         private void HideState()
         {
             State.IsIndeterminate = false;
-            StateLabel.Text = Constants.DEBUG
-                ? Strings.AppName
-                : "Unigram";
+            StateLabel.Text = Constants.RELEASE
+                ? Strings.AppDisplayName
+                : Strings.AppName;
 
             try
             {

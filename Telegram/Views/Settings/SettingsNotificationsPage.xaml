@@ -409,7 +409,7 @@
                                         </Border>
 
                                         <TextBlock x:Name="NotificationTitle"
-                                                   Text="Unigram"
+                                                   Text="{CustomResource AppDisplayName}"
                                                    Style="{StaticResource CaptionTextBlockStyle}"
                                                    FontFamily="Segoe UI Variable"
                                                    Margin="8,0,0,4"

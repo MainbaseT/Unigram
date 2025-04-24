@@ -1181,6 +1181,9 @@ Your prize is **{0} Stars**.</value>
   <data name="Answer_other" xml:space="preserve">
     <value>{0} answers</value>
   </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Unigram</value>
+  </data>
   <data name="Appearance" xml:space="preserve">
     <value>Appearance</value>
   </data>

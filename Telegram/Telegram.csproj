@@ -2200,9 +2200,15 @@
       <CustomToolNamespace>Telegram</CustomToolNamespace>
       <SubType>Designer</SubType>
     </PRIResource>
-    <PRIResource Include="Strings\ar\Resources.resw" />
-    <PRIResource Include="Strings\be\Resources.resw" />
-    <PRIResource Include="Strings\ca\Resources.resw" />
+    <PRIResource Include="Strings\ar\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
+    <PRIResource Include="Strings\be\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
+    <PRIResource Include="Strings\ca\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
     <PRIResource Include="Strings\cs\Resources.resw">
       <SubType>Designer</SubType>
     </PRIResource>
