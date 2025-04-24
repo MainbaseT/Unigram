@@ -3501,15 +3501,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var supergroupType = chat.Type as ChatTypeSupergroup;
-            var basicGroupType = chat.Type as ChatTypeBasicGroup;
-
-            var supergroup = supergroupType != null ? ClientService.GetSupergroup(supergroupType.SupergroupId) : null;
-            var basicGroup = basicGroupType != null ? ClientService.GetBasicGroup(basicGroupType.BasicGroupId) : null;
-
-            if (supergroup != null && supergroup.CanPinMessages() ||
-                basicGroup != null && basicGroup.CanPinMessages() ||
-                chat.Type is ChatTypePrivate privata)
+            if (chat.CanPinMessages(ClientService))
             {
                 var confirm = await ShowPopupAsync(Strings.UnpinMessageAlert, Strings.AppName, Strings.OK, Strings.Cancel);
                 if (confirm == ContentDialogResult.Primary)
@@ -4173,15 +4165,7 @@ namespace Telegram.ViewModels
             }
             else if (_type == DialogType.Pinned)
             {
-                var supergroupType = chat.Type as ChatTypeSupergroup;
-                var basicGroupType = chat.Type as ChatTypeBasicGroup;
-
-                var supergroup = supergroupType != null ? ClientService.GetSupergroup(supergroupType.SupergroupId) : null;
-                var basicGroup = basicGroupType != null ? ClientService.GetBasicGroup(basicGroupType.BasicGroupId) : null;
-
-                if (supergroup != null && supergroup.CanPinMessages() ||
-                    basicGroup != null && basicGroup.CanPinMessages() ||
-                    chat.Type is ChatTypePrivate privata)
+                if (chat.CanPinMessages(ClientService))
                 {
                     var confirm = await ShowPopupAsync(Strings.UnpinMessageAlert, Strings.AppName, Strings.OK, Strings.Cancel);
                     if (confirm == ContentDialogResult.Primary)

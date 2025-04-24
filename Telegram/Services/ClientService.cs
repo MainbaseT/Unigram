@@ -121,6 +121,8 @@ namespace Telegram.Services
         ConnectionState ConnectionState { get; }
         UpdateFreezeState FreezeState { get; }
 
+        ChatMemberStatus GetChatMemberStatus(Chat chat, out bool channel);
+
         string GetTitle(Chat chat, bool tiny = false);
         string GetTitle(long chatId, bool tiny = false);
         string GetTitle(SavedMessagesTopic topic);
@@ -1365,6 +1367,23 @@ namespace Telegram.Services
             }
 
             return _selectedBackground;
+        }
+
+        public ChatMemberStatus GetChatMemberStatus(Chat chat, out bool channel)
+        {
+            if (TryGetBasicGroup(chat, out BasicGroup basicGroup))
+            {
+                channel = false;
+                return basicGroup.Status;
+            }
+            else if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                channel = supergroup.IsChannel;
+                return supergroup.Status;
+            }
+
+            channel = false;
+            return new ChatMemberStatusMember();
         }
 
         public string GetTitle(long chatId, bool tiny = false)

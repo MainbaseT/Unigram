@@ -1709,7 +1709,7 @@ namespace Telegram.Td.Api
                 return true;
             }
 
-            return chat.UnreadCount > 0;
+            return chat.UnreadCount > 0 || chat.UnreadMentionCount > 0 || chat.UnreadReactionCount > 0;
         }
 
         public static bool IsForever(this ChatMemberStatusRestricted restricted)
@@ -2616,14 +2616,282 @@ namespace Telegram.Td.Api
             return 13;
         }
 
-        public static bool CanPinMessages(this Supergroup supergroup)
+        public static bool CanCreateTopics(this Chat chat, IClientService clientService)
         {
-            if (supergroup.Status == null)
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanCreateTopics;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
             {
                 return false;
             }
 
-            return supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanPinMessages: true };
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator { Rights.CanManageTopics: true }
+                or ChatMemberStatusRestricted { Permissions.CanCreateTopics: true };
+        }
+
+        public static bool CanPinMessages(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out _);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanPinMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator { Rights.CanPinMessages: true }
+                or ChatMemberStatusRestricted { Permissions.CanPinMessages: true };
+        }
+
+        public static bool CanInviteUsers(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out _);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanInviteUsers;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator { Rights.CanInviteUsers: true }
+                or ChatMemberStatusRestricted { Permissions.CanInviteUsers: true };
+        }
+
+        public static bool CanChangeInfo(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out _);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanChangeInfo;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator { Rights.CanChangeInfo: true }
+                or ChatMemberStatusRestricted { Permissions.CanChangeInfo: true };
+        }
+
+        public static bool CanAddLinkPreviews(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanAddLinkPreviews;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanAddLinkPreviews: true };
+        }
+
+        public static bool CanSendOtherMessages(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendOtherMessages;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendOtherMessages: true };
+        }
+
+        public static bool CanSendPolls(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendPolls;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendPolls: true };
+        }
+
+        public static bool CanSendVoiceNotes(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendVoiceNotes;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendVoiceNotes: true };
+        }
+
+        public static bool CanSendVideoNotes(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendVideoNotes;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendVideoNotes: true };
+        }
+
+        public static bool CanSendVideos(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendVideos;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendVideos: true };
+        }
+
+        public static bool CanSendPhotos(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendPhotos;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendPhotos: true };
+        }
+
+        public static bool CanSendDocuments(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendDocuments;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendDocuments: true };
+        }
+
+        public static bool CanSendAudios(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendAudios;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendAudios: true };
+        }
+
+        public static bool CanSendBasicMessages(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+            else if (status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanSendBasicMessages;
+            }
+            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.Rights.CanPostMessages;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator
+                or ChatMemberStatusRestricted { Permissions.CanSendBasicMessages: true };
         }
 
         public static bool CanDeleteMessages(this Supergroup supergroup)
@@ -2634,16 +2902,6 @@ namespace Telegram.Td.Api
             }
 
             return supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanDeleteMessages: true };
-        }
-
-        public static bool CanPinMessages(this BasicGroup basicGroup)
-        {
-            if (basicGroup.Status == null)
-            {
-                return false;
-            }
-
-            return basicGroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanPinMessages: true };
         }
 
         public static bool CanDeleteMessages(this BasicGroup basicGroup)
@@ -2708,22 +2966,6 @@ namespace Telegram.Td.Api
             return supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanManageTopics: true };
         }
 
-        public static bool CanCreateTopics(this Supergroup supergroup, Chat chat)
-        {
-            if (supergroup.Status == null)
-            {
-                return false;
-            }
-            else if (supergroup.Status is ChatMemberStatusMember)
-            {
-                return chat.Permissions.CanCreateTopics;
-            }
-
-            return supergroup.Status is ChatMemberStatusCreator
-                or ChatMemberStatusAdministrator { Rights.CanManageTopics: true }
-                or ChatMemberStatusRestricted { Permissions.CanCreateTopics: true };
-        }
-
         public static bool CanManageVideoChats(this BasicGroup basicGroup)
         {
             if (basicGroup.Status == null)
@@ -2749,22 +2991,6 @@ namespace Telegram.Td.Api
             {
                 return supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator or ChatMemberStatusMember or ChatMemberStatusRestricted { Permissions.CanSendBasicMessages: true };
             }
-        }
-
-
-        public static bool CanPostStories(this Supergroup supergroup)
-        {
-            if (supergroup.Status == null)
-            {
-                return false;
-            }
-
-            if (supergroup.IsChannel)
-            {
-                return supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanPostStories: true };
-            }
-
-            return false;
         }
 
         public static bool CanEditStories(this Supergroup supergroup)

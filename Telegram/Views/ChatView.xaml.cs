@@ -5653,7 +5653,7 @@ namespace Telegram.Views
             {
                 if (ViewModel.Type == DialogType.Pinned)
                 {
-                    if (group.CanPinMessages())
+                    if (chat.CanPinMessages(_viewModel.ClientService))
                     {
                         ShowAction(Strings.UnpinAllMessages, true);
                     }
@@ -5721,7 +5721,7 @@ namespace Telegram.Views
 
             if (ViewModel.Type == DialogType.Pinned)
             {
-                if (group.CanPinMessages())
+                if (chat.CanPinMessages(_viewModel.ClientService))
                 {
                     ShowAction(Strings.UnpinAllMessages, true);
                 }

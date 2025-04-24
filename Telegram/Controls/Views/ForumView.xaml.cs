@@ -95,19 +95,13 @@ namespace Telegram.Controls.Views
 
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)
         {
-            var supergroup = ViewModel.ClientService.GetSupergroup(ViewModel.Chat);
-            if (supergroup == null)
-            {
-                return;
-            }
-
             var flyout = new MenuFlyout();
             flyout.CreateFlyoutItem(Search, Strings.Search, Icons.Search, VirtualKey.E);
             flyout.CreateFlyoutSeparator();
 
             flyout.CreateFlyoutItem(ViewModel.ViewAsMessages, Strings.TopicViewAsMessages, Icons.ChatEmpty);
 
-            if (supergroup.CanCreateTopics(ViewModel.Chat))
+            if (ViewModel.Chat.CanCreateTopics(ViewModel.ClientService))
             {
                 flyout.CreateFlyoutItem(ViewModel.CreateTopic, Strings.CreateTopic, Icons.Compose);
             }

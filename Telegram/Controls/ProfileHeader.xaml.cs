@@ -1273,10 +1273,8 @@ namespace Telegram.Controls
             }
 
             var user = chat.Type is ChatTypePrivate or ChatTypeSecret ? ViewModel.ClientService.GetUser(chat) : null;
-            var basicGroup = chat.Type is ChatTypeBasicGroup basicGroupType ? ViewModel.ClientService.GetBasicGroup(basicGroupType.BasicGroupId) : null;
-            var supergroup = chat.Type is ChatTypeSupergroup supergroupType ? ViewModel.ClientService.GetSupergroup(supergroupType.SupergroupId) : null;
 
-            if ((user != null && user.Type is not UserTypeBot) || (basicGroup != null && basicGroup.CanChangeInfo(chat)) || (supergroup != null && supergroup.CanChangeInfo(chat)))
+            if (chat.CanChangeInfo(ViewModel.ClientService) || (user != null && user.Id != ViewModel.ClientService.Options.MyId && chat.Id != ViewModel.ClientService.Options.TelegramServiceNotificationsChatId))
             {
                 var icon = chat.MessageAutoDeleteTime switch
                 {
@@ -1401,9 +1399,9 @@ namespace Telegram.Controls
             //        writeButton.setPadding(0, 0, 0, 0);
             //    }
             //}
-            if (chat.Type is ChatTypeSupergroup super && supergroup != null)
+            if (ViewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
-                var fullInfo = ViewModel.ClientService.GetSupergroupFull(super.SupergroupId);
+                var fullInfo = ViewModel.ClientService.GetSupergroupFull(supergroup.Id);
 
                 if (supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator)
                 {
@@ -1427,7 +1425,7 @@ namespace Telegram.Controls
                     flyout.CreateFlyoutItem(ViewModel.OpenArchivedStories, Strings.ArchivedStories, Icons.Archive);
                 }
 
-                if (super.IsChannel && supergroup.HasLinkedChat)
+                if (supergroup.IsChannel && supergroup.HasLinkedChat)
                 {
                     flyout.CreateFlyoutItem(ViewModel.Discuss, Strings.ViewDiscussion, Icons.ChatEmpty);
                 }
@@ -1442,7 +1440,7 @@ namespace Telegram.Controls
                     flyout.CreateFlyoutItem(ViewModel.GiftPremium, Strings.SendAGift, Icons.GiftPremium);
                 }
             }
-            else if (chat.Type is ChatTypeBasicGroup basic && basicGroup != null)
+            else if (ViewModel.ClientService.TryGetBasicGroup(chat, out BasicGroup basicGroup))
             {
                 if (basicGroup.Status is ChatMemberStatusCreator || (basicGroup.Status is ChatMemberStatusAdministrator administrator && administrator.Rights.CanInviteUsers) || chat.Permissions.CanInviteUsers)
                 {

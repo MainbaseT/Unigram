@@ -433,22 +433,14 @@ namespace Telegram.Controls.Chats
 
             if (Emoji.ContainsSingleEmoji(text) && ViewModel.ComposerHeader?.EditingMessage == null)
             {
-                ShowOrUpdateEmojiFlyout(0, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, text, ViewModel.Chat?.Id ?? 0));
-                inline = true;
-
                 var chat = ViewModel.Chat;
-                if (chat?.Permissions.CanSendOtherMessages == false)
+                if (chat == null || !chat.CanSendOtherMessages(ViewModel.ClientService))
                 {
                     return false;
                 }
 
-                if (ViewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
-                {
-                    if (supergroup.Status is ChatMemberStatusRestricted restricted && !restricted.Permissions.CanSendOtherMessages)
-                    {
-                        return false;
-                    }
-                }
+                ShowOrUpdateEmojiFlyout(0, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, text, chat.Id));
+                inline = true;
 
                 if (prev is SearchStickersCollection collection && !collection.IsCustomEmoji && prev.Query.Equals(text.Trim()))
                 {
@@ -456,7 +448,7 @@ namespace Telegram.Controls.Chats
                     return true;
                 }
 
-                autocomplete = new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, false, text.Trim(), ViewModel.Chat.Id);
+                autocomplete = new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, false, text.Trim(), chat.Id);
                 return true;
             }
             else if (AutocompleteEntityFinder.TrySearch(query, out AutocompleteEntity entity, out string result, out int index))
