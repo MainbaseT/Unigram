@@ -39,7 +39,8 @@ namespace Telegram.Controls
 
     public partial class ChatListListView : TopNavView
     {
-        public ChatListViewModel ViewModel => DataContext as ChatListViewModel;
+        private ChatListViewModel _viewModel;
+        public ChatListViewModel ViewModel => _viewModel ??= DataContext as ChatListViewModel;
 
         public MasterDetailState _viewState;
 
@@ -72,7 +73,7 @@ namespace Telegram.Controls
         {
             if (_itemToSelector.TryGetValue(chatId, out SelectorItem container))
             {
-                chat = container.Tag as Chat;
+                chat = ViewModel.ClientService.GetChat(chatId);
                 cell = container.ContentTemplateRoot as ChatCell;
                 return chat != null && cell != null;
             }
@@ -117,7 +118,6 @@ namespace Telegram.Controls
                 _itemToSelector[chat.Id] = args.ItemContainer;
 
                 args.RegisterUpdateCallback(2, OnContainerContentChanging);
-                args.ItemContainer.Tag = args.Item;
                 args.ItemContainer.ContentTemplateRoot.Opacity = 0;
 
                 VisualStateManager.GoToState(args.ItemContainer, "DataPlaceholder", false);

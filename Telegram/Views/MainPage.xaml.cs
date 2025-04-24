@@ -2482,9 +2482,6 @@ namespace Telegram.Views
 
             var flyout = new MenuFlyout();
 
-            var element = sender as FrameworkElement;
-            var chat = element.Tag as Chat;
-
             //if (((TLViewModelBase)ViewModel).Settings.CollapseArchivedChats)
             //{
             //    flyout.CreateFlyoutItem(new RelayCommand(ToggleArchive), Strings.AccDescrExpandPanel, Icons.Expand);
