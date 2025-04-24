@@ -129,7 +129,7 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateChatAction update)
         {
-            if (update.ChatId == _chat?.Id && update.MessageThreadId == ThreadId && (_type == DialogType.History || _type == DialogType.Thread))
+            if (update.ChatId == _chat?.Id && update.MessageThreadId == OutgoingThreadId && _type is DialogType.History or DialogType.Thread)
             {
                 BeginOnUIThread(() => Delegate?.UpdateChatActions(_chat, ClientService.GetChatActions(update.ChatId)));
             }

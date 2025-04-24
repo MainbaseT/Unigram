@@ -57,6 +57,8 @@ namespace Telegram.ViewModels
 
         public abstract long ThreadId { get; }
 
+        public virtual long OutgoingThreadId { get; }
+
         #region Stickers
 
         public async void SendSticker(Sticker sticker, SchedulingState schedule, bool? silent, string emoji = null, bool reorder = false)
@@ -690,7 +692,7 @@ namespace Telegram.ViewModels
             options ??= new MessageSendOptions();
             options.SendingId = Math.Max(options.SendingId, 1);
 
-            var response = await ClientService.SendAsync(CreateSendMessage(chat.Id, ThreadId, replyTo, options, inputMessageContent));
+            var response = await ClientService.SendAsync(CreateSendMessage(chat.Id, OutgoingThreadId, replyTo, options, inputMessageContent));
             if (response is Error error)
             {
                 if (error.MessageEquals(ErrorType.PEER_FLOOD))
@@ -864,7 +866,7 @@ namespace Telegram.ViewModels
                 return await SendMessageAsync(reply, new InputMessagePaidMedia(starCount, paidOperations, caption, captionAboveMedia, string.Empty), options);
             }
 
-            return await ClientService.SendAsync(CreateSendMessageAlbum(chat.Id, ThreadId, reply, options, operations));
+            return await ClientService.SendAsync(CreateSendMessageAlbum(chat.Id, OutgoingThreadId, reply, options, operations));
         }
 
         protected virtual Function CreateSendMessageAlbum(long chatId, long messageThreadId, InputMessageReplyTo replyTo, MessageSendOptions messageSendOptions, IList<InputMessageContent> inputMessageContent)

@@ -168,6 +168,23 @@ namespace Telegram.ViewModels
             {
                 if (_topic != null)
                 {
+                    return _topic.Info.MessageThreadId;
+                }
+                else if (_thread != null)
+                {
+                    return _thread.MessageThreadId;
+                }
+
+                return 0;
+            }
+        }
+
+        public override long OutgoingThreadId
+        {
+            get
+            {
+                if (_topic != null)
+                {
                     return _topic.Info.IsGeneral ? 0 : _topic.Info.MessageThreadId;
                 }
                 else if (_thread != null)
@@ -387,7 +404,7 @@ namespace Telegram.ViewModels
         {
             get
             {
-                return _chatActionManager ??= new OutputChatActionManager(ClientService, _chat, ThreadId);
+                return _chatActionManager ??= new OutputChatActionManager(ClientService, _chat, OutgoingThreadId);
             }
         }
 
@@ -753,9 +770,9 @@ namespace Telegram.ViewModels
                 {
                     func = new GetMessageThreadHistory(chat.Id, _topic.Info.MessageThreadId, fromMessageId, offset, 50);
                 }
-                else if (ThreadId != 0)
+                else if (Thread != null)
                 {
-                    func = new GetMessageThreadHistory(chat.Id, ThreadId, fromMessageId, offset, 50);
+                    func = new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, fromMessageId, offset, 50);
                 }
                 else if (_type == DialogType.Pinned)
                 {
@@ -1386,16 +1403,16 @@ namespace Telegram.ViewModels
             {
                 func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _topic.Info.MessageThreadId, maxId, -25, 50));
             }
-            else if (ThreadId != 0)
+            else if (Thread != null)
             {
                 // MaxId == 0 means that the thread was never opened
                 if (maxId == 0 || Thread.Messages.Any(x => x.Id == maxId))
                 {
-                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, ThreadId, 1, -25, 50));
+                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, 1, -25, 50));
                 }
                 else
                 {
-                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, ThreadId, maxId, -25, 50));
+                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, maxId, -25, 50));
                 }
             }
             else if (_type == DialogType.Pinned)
@@ -2208,31 +2225,31 @@ namespace Telegram.ViewModels
             {
                 long lastReadMessageId;
                 long lastMessageId;
-                long secondaryId;
+                long messageThreadId;
 
                 if (_savedMessagesTopic is SavedMessagesTopic savedMessagesTopic)
                 {
                     lastReadMessageId = 0;
                     lastMessageId = savedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
-                    secondaryId = savedMessagesTopic.Id;
+                    messageThreadId = savedMessagesTopic.Id;
                 }
                 else if (_topic is ForumTopic topic)
                 {
                     lastReadMessageId = topic.LastReadInboxMessageId;
                     lastMessageId = topic.LastMessage?.Id ?? long.MaxValue;
-                    secondaryId = ThreadId; // topic.Info.MessageThreadId;
+                    messageThreadId = topic.Info.MessageThreadId;
                 }
                 else if (_thread is MessageThreadInfo thread)
                 {
                     lastReadMessageId = thread.ReplyInfo?.LastReadInboxMessageId ?? long.MaxValue;
                     lastMessageId = thread.ReplyInfo?.LastMessageId ?? long.MaxValue;
-                    secondaryId = ThreadId; //; thread.MessageThreadId;
+                    messageThreadId = thread.MessageThreadId;
                 }
                 else
                 {
                     lastReadMessageId = chat.LastReadInboxMessageId;
                     lastMessageId = chat.LastMessage?.Id ?? long.MaxValue;
-                    secondaryId = 0;
+                    messageThreadId = 0;
                 }
 
                 // TODO: verify this is valid in all cases
@@ -2243,8 +2260,8 @@ namespace Telegram.ViewModels
 
                 bool TryRemove(long chatId, out long v1, out long v2)
                 {
-                    var a = Settings.Chats.TryRemove(chat.Id, secondaryId, ChatSetting.ReadInboxMaxId, out v1);
-                    var b = Settings.Chats.TryRemove(chat.Id, secondaryId, ChatSetting.Index, out v2);
+                    var a = Settings.Chats.TryRemove(chat.Id, messageThreadId, ChatSetting.ReadInboxMaxId, out v1);
+                    var b = Settings.Chats.TryRemove(chat.Id, messageThreadId, ChatSetting.Index, out v2);
                     return a && b;
                 }
 
@@ -2252,7 +2269,7 @@ namespace Telegram.ViewModels
                     readInboxMaxId == lastReadMessageId &&
                     start <= lastReadMessageId)
                 {
-                    if (Settings.Chats.TryRemove(chat.Id, secondaryId, ChatSetting.Pixel, out double pixel))
+                    if (Settings.Chats.TryRemove(chat.Id, messageThreadId, ChatSetting.Pixel, out double pixel))
                     {
                         Logger.Debug(string.Format("{0} - Loading messages from specific pixel", chat.Id));
                         LoadMessageSliceAsync(null, start, VerticalAlignment.Bottom, pixel);
