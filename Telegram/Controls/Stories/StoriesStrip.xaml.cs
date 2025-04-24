@@ -6,6 +6,7 @@ using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Stories;
+using Telegram.Views.Stories.Popups;
 using Windows.Foundation;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
@@ -176,6 +177,8 @@ namespace Telegram.Controls.Stories
                 flyout.CreateFlyoutItem(ViewModel.MuteProfile, activeStories, muted ? Strings.NotificationsStoryUnmute2 : Strings.NotificationsStoryMute2, muted ? Icons.Alert : Icons.AlertOff);
             }
 
+            flyout.CreateFlyoutItem(OpenAnonymously, activeStories, Strings.ViewAnonymously, Icons.EyeOff);
+
             if (archived)
             {
                 flyout.CreateFlyoutItem(ViewModel.ShowProfile, activeStories, Strings.UnarchiveStories, Icons.Unarchive);
@@ -186,6 +189,34 @@ namespace Telegram.Controls.Stories
             }
 
             flyout.ShowAt(element, args);
+        }
+
+        private async void OpenAnonymously(ActiveStoriesViewModel activeStories)
+        {
+            if (ViewModel.ClientService.StealthMode.ActiveUntilDate > 0)
+            {
+                OpenStory(activeStories);
+            }
+            else if (ViewModel.ClientService.IsPremium)
+            {
+                var popup = new StealthPopup(ViewModel.ClientService, true);
+                await ViewModel.ShowPopupAsync(popup);
+
+                if (popup.Activated)
+                {
+                    OpenStory(activeStories);
+                }
+            }
+            else if (ViewModel.IsPremiumAvailable && !ViewModel.IsPremium)
+            {
+                var popup = new Telegram.Views.Premium.Popups.FeaturesPopup(ViewModel.ClientService, null, new[] { new PremiumFeatureUpgradedStories() }, null, null, null, null, new PremiumFeatureUpgradedStories());
+                await ViewModel.ShowPopupAsync(popup);
+
+                if (popup.ShouldPurchase)
+                {
+                    await ViewModel.NavigationService.ShowPromoAsync(new PremiumSourceStoryFeature(new PremiumStoryFeatureStealthMode()));
+                }
+            }
         }
 
         public void ForEach(CompositionPropertySet tracker, ExpressionAnimation expression)
@@ -232,18 +263,7 @@ namespace Telegram.Controls.Stories
                 }
                 else
                 {
-                    var container = ScrollingHost.ContainerFromItem(e.ClickedItem) as SelectorItem;
-                    if (container == null)
-                    {
-                        return;
-                    }
-
-                    var transform = container.TransformToVisual(null);
-                    var point = transform.TransformPoint(new Point());
-
-                    var origin = new Rect(point.X + 12 + 4, point.Y + 12 + 4, 40, 40);
-
-                    ViewModel.OpenStory(activeStories, origin, GetOrigin);
+                    OpenStory(activeStories);
                 }
             }
 
@@ -252,6 +272,22 @@ namespace Telegram.Controls.Stories
 
             //ScrollingHost.ItemsSource = null;
             //ScrollingHost.ItemsSource = ViewModel.Items;
+        }
+
+        private void OpenStory(ActiveStoriesViewModel activeStories)
+        {
+            var container = ScrollingHost.ContainerFromItem(activeStories) as SelectorItem;
+            if (container == null)
+            {
+                return;
+            }
+
+            var transform = container.TransformToVisual(null);
+            var point = transform.TransformPoint(new Point());
+
+            var origin = new Rect(point.X + 12 + 4, point.Y + 12 + 4, 40, 40);
+
+            ViewModel.OpenStory(activeStories, origin, GetOrigin);
         }
 
         private Rect GetOrigin(ActiveStoriesViewModel activeStories)

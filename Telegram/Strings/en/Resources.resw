@@ -5278,6 +5278,9 @@ You&apos;ll need the password you set up here to log in to your Telegram account
   <data name="EnableStealthMode" xml:space="preserve">
     <value>Enable Stealth Mode</value>
   </data>
+  <data name="EnableStealthModeAndOpenStory" xml:space="preserve">
+    <value>Enable and open the story</value>
+  </data>
   <data name="EnableStreaming" xml:space="preserve">
     <value>Stream Videos and Audio Files</value>
   </data>
@@ -13092,6 +13095,10 @@ If you didn&apos;t request any codes — don&apos;t worry! Most likely, someone
   </data>
   <data name="Videos_other" xml:space="preserve">
     <value>{0} videos</value>
+  </data>
+  <data name="ViewAnonymously" xml:space="preserve">
+    <value>View
+Anonymously</value>
   </data>
   <data name="ViewChannelStats" xml:space="preserve">
     <value>View Channel Stats</value>

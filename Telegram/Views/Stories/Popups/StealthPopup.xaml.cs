@@ -20,17 +20,20 @@ namespace Telegram.Views.Stories.Popups
         private readonly IClientService _clientService;
         private readonly DispatcherTimer _cooldownTimer;
 
+        private readonly bool _opening;
+
         enum StealthModeFeature
         {
             HideRecentViews,
             HideNextViews
         }
 
-        public StealthPopup(IClientService clientService, PremiumPaymentOption option)
+        public StealthPopup(IClientService clientService, bool opening)
         {
             InitializeComponent();
 
             _clientService = clientService;
+            _opening = opening;
 
             _cooldownTimer = new DispatcherTimer();
             _cooldownTimer.Interval = TimeSpan.FromSeconds(1);
@@ -40,8 +43,6 @@ namespace Telegram.Views.Stories.Popups
             {
                 _cooldownTimer.Start();
             }
-
-            RequestedTheme = ElementTheme.Dark;
 
             ScrollingHost.ItemsSource = new StealthModeFeature[]
             {
@@ -78,7 +79,9 @@ namespace Telegram.Views.Stories.Popups
             if (_clientService.StealthMode.CooldownUntilDate == 0)
             {
                 _cooldownTimer.Stop();
-                PurchaseCommand.Content = Strings.EnableStealthMode;
+                PurchaseCommand.Content = _opening
+                    ? Strings.EnableStealthModeAndOpenStory
+                    : Strings.EnableStealthMode;
             }
             else
             {

@@ -774,7 +774,7 @@ namespace Telegram.Controls.Stories
             if (shouldPurchase && ViewModel.IsPremiumAvailable && !ViewModel.IsPremium)
             {
                 var popup = new Telegram.Views.Premium.Popups.FeaturesPopup(ViewModel.ClientService, null, new[] { new PremiumFeatureUpgradedStories() }, null, null, null, null, new PremiumFeatureUpgradedStories());
-                await ViewModel.ShowPopupAsync(popup);
+                await ViewModel.ShowPopupAsync(popup, requestedTheme: ElementTheme.Dark);
 
                 if (popup.ShouldPurchase)
                 {
@@ -1064,8 +1064,8 @@ namespace Telegram.Controls.Stories
             {
                 ActiveCard.Suspend(StoryPauseSource.Popup);
 
-                var popup = new StealthPopup(ViewModel.ClientService, null);
-                await ViewModel.ShowPopupAsync(popup);
+                var popup = new StealthPopup(ViewModel.ClientService, false);
+                await ViewModel.ShowPopupAsync(popup, requestedTheme: ElementTheme.Dark);
 
                 ActiveCard.Resume(StoryPauseSource.Popup);
             }
