@@ -4537,6 +4537,9 @@ namespace Telegram.Views
                 else
                 {
                     UnloadObject(Icon);
+                    TopicIconRoot.Visibility = Visibility.Collapsed;
+                    TopicIconGeneral.Visibility = Visibility.Collapsed;
+
                     Photo.Source = PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
                 }
             }
