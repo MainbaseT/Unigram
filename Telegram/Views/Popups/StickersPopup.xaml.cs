@@ -20,6 +20,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Popups
@@ -139,10 +140,10 @@ namespace Telegram.Views.Popups
         {
             if (args.ItemContainer == null)
             {
-                var item = new GridViewItem();
-                item.ContentTemplate = sender.ItemTemplate;
-                item.Style = sender.ItemContainerStyle;
-                args.ItemContainer = item;
+                args.ItemContainer = new GridViewItem();
+                args.ItemContainer.ContentTemplate = sender.ItemTemplate;
+                args.ItemContainer.Style = sender.ItemContainerStyle;
+                args.ItemContainer.ContextRequested += OnContextRequested;
 
                 _zoomer.ElementPrepared(args.ItemContainer);
             }
@@ -233,7 +234,15 @@ namespace Telegram.Views.Popups
         {
             if (ViewModel.NavigationService?.Content is Page { Content: ChatView view } && e.ClickedItem is ViewModels.Drawers.StickerViewModel sticker)
             {
-                view.Stickers_ItemClick(sticker);
+                if (sticker.FullType is StickerFullTypeCustomEmoji)
+                {
+                    view.Emojis_ItemClick((Sticker)sticker);
+                }
+                else
+                {
+                    view.Stickers_ItemClick((Sticker)sticker);
+                }
+
                 Hide();
             }
         }
@@ -241,6 +250,32 @@ namespace Telegram.Views.Popups
         private void Player_Ready(object sender, EventArgs e)
         {
             _handler.ThrottleVisibleItems();
+        }
+
+        private void OnContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            var sticker = ScrollingHost.ItemFromContainer(sender) as ViewModels.Drawers.StickerViewModel;
+            if (sticker?.FullType is not StickerFullTypeCustomEmoji customEmoji)
+            {
+                return;
+            }
+
+            void Copy(Sticker sticker)
+            {
+                MessageHelper.CopyText(XamlRoot, sticker.ToFormattedText());
+            }
+
+            void SetAsStatus(Sticker sticker)
+            {
+                ViewModel.ClientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0)));
+                ViewModel.ShowToast(Strings.SetAsEmojiStatusInfo, DelayedFileSource.FromSticker(ViewModel.ClientService, sticker));
+            }
+
+            var flyout = new MenuFlyout();
+            flyout.CreateFlyoutItem(Copy, (Sticker)sticker, Strings.CopyEmojiPreview, Icons.DocumentCopy);
+            flyout.CreateFlyoutItem(SetAsStatus, (Sticker)sticker, Strings.SetAsEmojiStatus, Icons.Emoji);
+
+            flyout.ShowAt(sender as UIElement, args);
         }
 
         private void More_ContextRequested(object sender, RoutedEventArgs e)

@@ -3643,7 +3643,7 @@ namespace Telegram.Views
 
         #endregion
 
-        private void Emojis_ItemClick(object emoji)
+        public void Emojis_ItemClick(object emoji)
         {
             if (emoji is string text)
             {
