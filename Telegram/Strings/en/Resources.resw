@@ -1699,6 +1699,9 @@ Please enable Unigram in the Startup Apps Settings.</value>
   <data name="AvailableReactions" xml:space="preserve">
     <value>Available reactions</value>
   </data>
+  <data name="AvatarPreviewSearchMessages" xml:space="preserve">
+    <value>Search Messages</value>
+  </data>
   <data name="AwaitingEncryption" xml:space="preserve">
     <value>Waiting for {0} to come online...</value>
   </data>
@@ -8762,6 +8765,9 @@ Stories</value>
   </data>
   <data name="OpenGroup" xml:space="preserve">
     <value>VIEW GROUP</value>
+  </data>
+  <data name="OpenGroup2" xml:space="preserve">
+    <value>Open Group</value>
   </data>
   <data name="OpenImageUnsupported" xml:space="preserve">
     <value>Sorry, Telegram can&apos;t process that type of image.</value>

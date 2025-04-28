@@ -60,7 +60,7 @@ namespace Telegram.Controls.Chats
             }
 
             Field.Text = viewModel?.Query ?? string.Empty;
-            Field.From = null;
+            Field.From = viewModel?.From;
             Field.Filter = null;
             Field.State = ChatSearchState.Text;
 
@@ -74,6 +74,11 @@ namespace Telegram.Controls.Chats
                 SearchPrevious.Visibility = history ? Visibility.Collapsed : Visibility.Visible;
                 SearchNext.Visibility = history ? Visibility.Collapsed : Visibility.Visible;
                 ToolsPanel.Visibility = history ? Visibility.Collapsed : Visibility.Visible;
+
+                if (viewModel.From != null)
+                {
+                    SetState(ChatSearchState.TextByMember, viewModel.From);
+                }
             }
 
             ShowHide(viewModel != null);

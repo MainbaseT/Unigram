@@ -3838,11 +3838,11 @@ namespace Telegram.ViewModels
 
         #region Search
 
-        public void SearchExecute(string query)
+        public void SearchExecute(string query, MessageSender from = null)
         {
             if (Search == null)
             {
-                Search = new ChatSearchViewModel(ClientService, NavigationService, Settings, Aggregator, this, query);
+                Search = new ChatSearchViewModel(ClientService, NavigationService, Settings, Aggregator, this, query, from);
             }
             else
             {

@@ -2497,6 +2497,13 @@ namespace Telegram.Views
                     return;
                 }
 
+                var profilePicture = children.FirstOrDefault(x => x is ProfilePicture) as ProfilePicture;
+                if (profilePicture != null && profilePicture.Parent is HyperlinkButton)
+                {
+                    ProfilePhoto_ContextRequested(message, profilePicture, args);
+                    return;
+                }
+
                 if (message.Content is MessageAlbum album)
                 {
                     var child = children.FirstOrDefault(x => x is IContent) as IContent;
@@ -2886,6 +2893,116 @@ namespace Telegram.Views
             }
 
             flyout.ShowAt(sender, args, selectionEnd - selectionStart > 0 ? FlyoutShowMode.Transient : FlyoutShowMode.Auto);
+        }
+
+        private void ProfilePhoto_ContextRequested(MessageViewModel message, ProfilePicture profilePicture, ContextRequestedEventArgs args)
+        {
+            var flyout = new MenuFlyout();
+
+            string mention = null;
+            string mentionName = null;
+
+            if (_viewModel.ClientService.TryGetUser(message.SenderId, out User user))
+            {
+                void OpenProfile()
+                {
+                    _viewModel.NavigationService.NavigateToUser(user.Id, false);
+                }
+
+                void SendMessage()
+                {
+                    _viewModel.NavigationService.NavigateToUser(user.Id, true);
+                }
+
+                flyout.CreateFlyoutItem(OpenProfile, Strings.OpenProfile, Icons.PersonCircle);
+                flyout.CreateFlyoutItem(SendMessage, Strings.SendMessage, Icons.ChatEmpty);
+
+                if (user.HasActiveUsername(out string username))
+                {
+                    mention = $"@{username}";
+                    mentionName = null;
+                }
+                else
+                {
+                    mention = $"\"tg-user://{user.Id}\"";
+
+                    if (FormattedTextBox.IsSafe(user.FirstName))
+                    {
+                        mentionName = user.FirstName;
+                    }
+                    else if (FormattedTextBox.IsSafe(user.LastName))
+                    {
+                        mentionName = user.LastName;
+                    }
+                    else
+                    {
+                        mentionName = Strings.Username;
+                    }
+                }
+            }
+            else if (_viewModel.ClientService.TryGetSupergroup(message.SenderId, out Supergroup supergroup))
+            {
+                var senderChat = message.SenderId as MessageSenderChat;
+
+                void OpenProfile()
+                {
+                    _viewModel.NavigationService.Navigate(typeof(ProfilePage), senderChat.ChatId);
+                }
+
+                flyout.CreateFlyoutItem(OpenProfile, Strings.OpenProfile, Icons.PersonCircle);
+
+                if (supergroup.IsChannel)
+                {
+                    void SendMessage()
+                    {
+                        _viewModel.NavigationService.NavigateToChat(senderChat.ChatId);
+                    }
+
+                    flyout.CreateFlyoutItem(SendMessage, Strings.OpenChannel2, Icons.Megaphone);
+                }
+
+                if (supergroup.HasActiveUsername(out string username))
+                {
+                    mention = $"@{username}";
+                    mentionName = null;
+                }
+                else
+                {
+                    mention = null;
+                    mentionName = null;
+                }
+            }
+
+            void Mention()
+            {
+                var range = TextField.Document.Selection.GetClone();
+                range.SetText(TextSetOptions.None, mentionName ?? mention);
+
+                if (mentionName != null)
+                {
+                    range.Link = mention;
+                }
+
+                range = TextField.Document.GetRange(range.EndPosition, range.EndPosition);
+                range.SetText(TextSetOptions.None, " ");
+
+                TextField.Document.Selection.StartPosition = range.EndPosition;
+                TextField.Focus(FocusState.Keyboard);
+            }
+
+            void SearchMessages(MessageSender sender)
+            {
+                _viewModel.SearchExecute(string.Empty, sender);
+            }
+
+            if (mention != null)
+            {
+                flyout.CreateFlyoutItem(Mention, Strings.Mention, Icons.Mention);
+            }
+
+            flyout.CreateFlyoutItem(SearchMessages, message.SenderId, Strings.AvatarPreviewSearchMessages, Icons.Search);
+
+            flyout.ShowAt(profilePicture, args);
         }
 
         private static bool CanGetMessageViewers(MessageViewModel message, MessageProperties properties, bool reactions = true)

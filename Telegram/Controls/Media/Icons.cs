@@ -214,6 +214,7 @@ namespace Telegram.Controls.Media
         public const string Gif24 = "\uE9E1";
 
         public const string Reactions = "\uE980";
+        public const string Mention = "\uE9F2";
         public const string Mention16 = "\uE986";
         public const string HeartFilled16 = "\uE985";
         public const string HeartFilled12 = "\uE998";

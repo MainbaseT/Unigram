@@ -12,6 +12,12 @@ namespace Telegram.Controls.Chats
 {
     public partial class ChatSearchTextBox : SuggestTextBox
     {
+        protected override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            UpdateState(_state);
+        }
+
         private ChatSearchState _state;
         public ChatSearchState State
         {
