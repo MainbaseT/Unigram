@@ -279,7 +279,7 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            if (message.Content is MessageAsyncStory story && message.ClientService.TryGetChat(story.StorySenderChatId, out Chat storyChat))
+            if (message.Content is MessageAsyncStory story && message.ClientService.TryGetChat(story.StoryPosterChatId, out Chat storyChat))
             {
                 if (story.State == MessageStoryState.Expired)
                 {

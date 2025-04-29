@@ -18,19 +18,19 @@ namespace Telegram.Views.Popups
     public sealed partial class ReportStoryPopup : ContentPopup
     {
         private readonly IClientService _clientService;
-        private readonly long _storySenderChatId;
+        private readonly long _storyPosterChatId;
         private readonly int _storyId;
 
         private readonly Stack<ReportStorySelection> _history = new();
         private ReportStorySelection _selection;
 
-        public ReportStoryPopup(IClientService clientService, INavigationService navigationService, long storySenderChatId, int storyId, ReportOption option, string text)
+        public ReportStoryPopup(IClientService clientService, INavigationService navigationService, long storyPosterChatId, int storyId, ReportOption option, string text)
         {
             InitializeComponent();
             XamlRoot = navigationService.XamlRoot;
 
             _clientService = clientService;
-            _storySenderChatId = storySenderChatId;
+            _storyPosterChatId = storyPosterChatId;
             _storyId = storyId;
 
             option ??= new ReportOption(Array.Empty<byte>(), Strings.Report2);
@@ -49,7 +49,7 @@ namespace Telegram.Views.Popups
                 _history.Push(_selection);
             }
 
-            var response = await _clientService.SendAsync(new ReportStory(_storySenderChatId, _storyId, option.Id, text));
+            var response = await _clientService.SendAsync(new ReportStory(_storyPosterChatId, _storyId, option.Id, text));
             if (response is ReportStoryResultTextRequired textRequired)
             {
                 option = new ReportOption(textRequired.OptionId, option.Text);

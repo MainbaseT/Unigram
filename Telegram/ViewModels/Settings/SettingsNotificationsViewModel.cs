@@ -387,7 +387,7 @@ namespace Telegram.ViewModels.Settings
             var settings = await ClientService.SendAsync(new GetScopeNotificationSettings(_scope)) as ScopeNotificationSettings;
             if (settings != null)
             {
-                await ClientService.SendAsync(new SetScopeNotificationSettings(_scope, new ScopeNotificationSettings(_muteFor, _soundId, _preview, settings.UseDefaultMuteStories, settings.MuteStories, settings.StorySoundId, settings.ShowStorySender, _disablePinnedMessage, _disableMention)));
+                await ClientService.SendAsync(new SetScopeNotificationSettings(_scope, new ScopeNotificationSettings(_muteFor, _soundId, _preview, settings.UseDefaultMuteStories, settings.MuteStories, settings.StorySoundId, settings.ShowStoryPoster, _disablePinnedMessage, _disableMention)));
 
                 ReloadSound();
             }
@@ -398,7 +398,7 @@ namespace Telegram.ViewModels.Settings
             var settings = await ClientService.SendAsync(new GetScopeNotificationSettings(_scope)) as ScopeNotificationSettings;
             if (settings != null)
             {
-                await ClientService.SendAsync(new SetScopeNotificationSettings(_scope, new ScopeNotificationSettings(settings.MuteFor, settings.SoundId, settings.ShowPreview, settings.UseDefaultMuteStories, settings.MuteStories, settings.StorySoundId, settings.ShowStorySender, disable, settings.DisableMentionNotifications)));
+                await ClientService.SendAsync(new SetScopeNotificationSettings(_scope, new ScopeNotificationSettings(settings.MuteFor, settings.SoundId, settings.ShowPreview, settings.UseDefaultMuteStories, settings.MuteStories, settings.StorySoundId, settings.ShowStoryPoster, disable, settings.DisableMentionNotifications)));
             }
         }
 

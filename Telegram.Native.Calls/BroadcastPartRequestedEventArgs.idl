@@ -1,6 +1,6 @@
 namespace Telegram.Native.Calls
 {
-    delegate void BroadcastPartRequestedDeferral(Int64 time, Int64 response, Telegram.Td.Api.FilePart filePart);
+    delegate void BroadcastPartRequestedDeferral(Int64 time, Int64 response, Telegram.Td.Api.Data data);
 
     [default_interface]
     runtimeclass BroadcastPartRequestedEventArgs

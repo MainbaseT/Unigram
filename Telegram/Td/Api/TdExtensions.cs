@@ -229,7 +229,7 @@ namespace Telegram.Td.Api
                 settings.UseDefaultShowPreview, settings.ShowPreview,
                 settings.UseDefaultMuteStories, settings.MuteStories,
                 settings.UseDefaultStorySound, settings.StorySoundId,
-                settings.UseDefaultShowStorySender, settings.ShowStorySender,
+                settings.UseDefaultShowStoryPoster, settings.ShowStoryPoster,
                 settings.UseDefaultDisablePinnedMessageNotifications, settings.DisablePinnedMessageNotifications,
                 settings.UseDefaultDisableMentionNotifications, settings.DisableMentionNotifications);
         }

@@ -30,7 +30,7 @@ namespace Telegram.Td.Api
         /// <summary>
         /// Identifier of the chat that posted the story.
         /// </summary>
-        public long StorySenderChatId { get; set; }
+        public long StoryPosterChatId { get; set; }
 
         public MessageStoryState State { get; set; }
 

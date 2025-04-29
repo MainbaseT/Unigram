@@ -35,8 +35,6 @@ namespace Telegram.Services.Calls
         /// </summary>
         public int Id { get; }
 
-        public int GroupCallId { get; private set; }
-
         public CallState State { get; private set; }
 
         public int Duration
@@ -352,7 +350,7 @@ namespace Telegram.Services.Calls
         public override void Discard()
         {
             // TODO: dismiss reason
-            ClientService.Send(new DiscardCall(Id, false, Duration, IsVideo, 0));
+            ClientService.Send(new DiscardCall(Id, false, string.Empty, Duration, IsVideo, 0));
         }
 
         public void ReceiveSignalingData(IList<byte> data)
@@ -372,8 +370,6 @@ namespace Telegram.Services.Calls
 
         public void Update(Call call, VoipState state)
         {
-            GroupCallId = call.GroupCallId;
-
             if (_state >= state)
             {
                 return;

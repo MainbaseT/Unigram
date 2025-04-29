@@ -514,7 +514,7 @@ namespace Telegram.ViewModels
                     }
                     else if (message.ReplyToItem is Story replyToStory)
                     {
-                        if (ClientService.TryGetUser(replyToStory.SenderChatId, out Telegram.Td.Api.User replyUser))
+                        if (ClientService.TryGetUser(replyToStory.PosterChatId, out Telegram.Td.Api.User replyUser))
                         {
                             builder.AppendLine($"[In reply to {replyUser.FullName()}]");
                         }

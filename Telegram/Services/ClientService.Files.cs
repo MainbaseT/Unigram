@@ -2445,16 +2445,16 @@ namespace Telegram.Services
                         ProcessFiles(updateStory.Story);
                     }
                     break;
-                case UpdateStorySendFailed updateStorySendFailed:
-                    if (updateStorySendFailed.Story != null)
+                case UpdateStoryPostFailed updateStoryPostFailed:
+                    if (updateStoryPostFailed.Story != null)
                     {
-                        ProcessFiles(updateStorySendFailed.Story);
+                        ProcessFiles(updateStoryPostFailed.Story);
                     }
                     break;
-                case UpdateStorySendSucceeded updateStorySendSucceeded:
-                    if (updateStorySendSucceeded.Story != null)
+                case UpdateStoryPostSucceeded updateStoryPostSucceeded:
+                    if (updateStoryPostSucceeded.Story != null)
                     {
-                        ProcessFiles(updateStorySendSucceeded.Story);
+                        ProcessFiles(updateStoryPostSucceeded.Story);
                     }
                     break;
                 case UpdateSupergroupFullInfo updateSupergroupFullInfo:

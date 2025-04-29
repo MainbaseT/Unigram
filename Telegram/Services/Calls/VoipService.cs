@@ -166,7 +166,7 @@ namespace Telegram.Services
 
             var protocol = VoipManager.Protocol;
 
-            var response = await ClientService.SendAsync(new CreateCall(user.Id, protocol, video, 0));
+            var response = await ClientService.SendAsync(new CreateCall(user.Id, protocol, video));
             if (response is Error error)
             {
                 if (error.Code == 400 && error.Message.Equals("PARTICIPANT_VERSION_OUTDATED"))
@@ -331,7 +331,7 @@ namespace Telegram.Services
 
                     if (changed)
                     {
-                        Aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.FromCallId, groupCall.Title, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsRtmpStream, true, false, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
+                        Aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.Title, groupCall.InviteLink, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsVideoChat, groupCall.IsRtmpStream, true, false, groupCall.IsOwned, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
                     }
                 });
             }
@@ -367,7 +367,7 @@ namespace Telegram.Services
                     if (_activeCall != null)
                     {
                         // Line is busy
-                        ClientService.Send(new DiscardCall(update.Call.Id, true, 0, false, 0));
+                        ClientService.Send(new DiscardCall(update.Call.Id, true, string.Empty, 0, false, 0));
                     }
                     else
                     {
@@ -384,10 +384,10 @@ namespace Telegram.Services
                         _activeCall = null;
                         changed = true;
                     }
-                    else if (state is VoipState.Ready && update.Call.GroupCallId != 0)
-                    {
-                        ClientService.Send(new GetGroupCall(update.Call.GroupCallId));
-                    }
+                    //else if (state is VoipState.Ready && update.Call.GroupCallId != 0)
+                    //{
+                    //    ClientService.Send(new GetGroupCall(update.Call.GroupCallId));
+                    //}
                 }
             }
 
@@ -413,20 +413,20 @@ namespace Telegram.Services
                         changed = true;
                     }
                 }
-                else if (_activeCall is VoipCall call && call.GroupCallId == update.GroupCall.Id && !_upgrading)
-                {
-                    _upgrading = true;
+                //else if (_activeCall is VoipCall call && call.GroupCallId == update.GroupCall.Id && !_upgrading)
+                //{
+                //    _upgrading = true;
 
-                    ClientService.TryGetChatFromUser(call.UserId, out Chat chat);
+                //    ClientService.TryGetChatFromUser(call.UserId, out Chat chat);
 
-                    WindowContext.ForEach(window =>
-                    {
-                        if (window.Content is VoipPage page)
-                        {
-                            _ = JoinAsyncInternal(page.XamlRoot, chat, call.GroupCallId, null, string.Empty, true);
-                        }
-                    });
-                }
+                //    WindowContext.ForEach(window =>
+                //    {
+                //        if (window.Content is VoipPage page)
+                //        {
+                //            _ = JoinAsyncInternal(page.XamlRoot, chat, call.GroupCallId, null, string.Empty, true);
+                //        }
+                //    });
+                //}
             }
 
             if (changed)

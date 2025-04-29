@@ -335,9 +335,13 @@ namespace Telegram.Controls.Messages
             }
             else if (message.ReplyToItem is Story replyToStory)
             {
-                if (message.ClientService.TryGetUser(replyToStory.SenderChatId, out User replyUser))
+                if (message.ClientService.TryGetUser(replyToStory.PosterId, out User replyUser))
                 {
                     builder.AppendLine($"{Strings.AccDescrReplying} {replyUser.FullName()}. ");
+                }
+                else if (message.ClientService.TryGetChat(replyToStory.PosterId, out Chat replyChat))
+                {
+                    builder.AppendLine($"{Strings.AccDescrReplying} {message.ClientService.GetTitle(replyChat)}. ");
                 }
             }
 
@@ -1187,7 +1191,7 @@ namespace Telegram.Controls.Messages
             }
             else if (message.Content is MessageAsyncStory asyncStory)
             {
-                message.Delegate.OpenChat(asyncStory.StorySenderChatId, true);
+                message.Delegate.OpenChat(asyncStory.StoryPosterChatId, true);
             }
         }
 

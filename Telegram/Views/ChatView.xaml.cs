@@ -4122,7 +4122,7 @@ namespace Telegram.Views
                     var origin = new Rect(point.X + 4, point.Y + 4, 112, 112);
 
                     var item = asyncStory.Story;
-                    item ??= await _viewModel.ClientService.SendAsync(new GetStory(asyncStory.StorySenderChatId, asyncStory.StoryId, true)) as Story;
+                    item ??= await _viewModel.ClientService.SendAsync(new GetStory(asyncStory.StoryPosterChatId, asyncStory.StoryId, true)) as Story;
 
                     if (item != null)
                     {

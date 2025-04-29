@@ -459,7 +459,7 @@ namespace Telegram.Controls.Messages
         {
             SetText(clientService,
                 outgoing,
-                new MessageSenderChat(story.SenderChatId),
+                new MessageSenderChat(story.PosterChatId),
                 GetFromLabel(clientService, story, title),
                 Strings.Story,
                 null,
@@ -954,7 +954,7 @@ namespace Telegram.Controls.Messages
 
             if (replyTo is MessageReplyToStory replyToStory)
             {
-                if (clientService.TryGetChat(replyToStory.StorySenderChatId, out Chat chat))
+                if (clientService.TryGetChat(replyToStory.StoryPosterChatId, out Chat chat))
                 {
                     SetText(null,
                         true,
@@ -1110,7 +1110,7 @@ namespace Telegram.Controls.Messages
                 return title;
             }
 
-            if (clientService.TryGetUser(story.SenderChatId, out User user))
+            if (clientService.TryGetUser(story.PosterChatId, out User user))
             {
                 return user.FullName();
             }

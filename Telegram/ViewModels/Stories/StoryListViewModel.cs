@@ -368,7 +368,7 @@ namespace Telegram.ViewModels.Stories
 
             public void Handle(UpdateStory update)
             {
-                if (_chats.TryGetValue(update.Story.SenderChatId, out var item))
+                if (_chats.TryGetValue(update.Story.PosterChatId, out var item))
                 {
                     item.Handle(update);
                 }
@@ -376,7 +376,7 @@ namespace Telegram.ViewModels.Stories
 
             public void Handle(UpdateStoryDeleted update)
             {
-                if (_chats.TryGetValue(update.StorySenderChatId, out var item))
+                if (_chats.TryGetValue(update.StoryPosterChatId, out var item))
                 {
                     item.Handle(update);
                 }

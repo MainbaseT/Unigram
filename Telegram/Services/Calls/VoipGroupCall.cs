@@ -32,7 +32,6 @@ namespace Telegram.Services.Calls
 
         private readonly Chat _chat;
         private readonly string _inviteHash;
-        private readonly long _keyFingerprint;
 
         private MessageSender _alias;
         private MessageSenders _availableAliases;
@@ -87,7 +86,9 @@ namespace Telegram.Services.Calls
             EnabledStartNotification = groupCall.EnabledStartNotification;
             ScheduledStartDate = groupCall.ScheduledStartDate;
             Title = groupCall.Title;
-            FromCallId = groupCall.FromCallId;
+            IsOwned = groupCall.IsOwned;
+            IsVideoChat = groupCall.IsVideoChat;
+            InviteLink = groupCall.InviteLink;
             Id = groupCall.Id;
 
             var unix = ClientService.SendAsync(new GetOption("unix_time")).Result as OptionValueInteger;
@@ -257,7 +258,9 @@ namespace Telegram.Services.Calls
                     Participants ??= new GroupCallParticipantsCollection(this);
                 }
 
-                var response = await ClientService.SendAsync(new JoinGroupCall(Id, alias, ssrc, payload, _manager.IsMuted, _capturer != null, _inviteHash, _keyFingerprint));
+                var joinParameters = new GroupCallJoinParameters(ssrc, payload, _manager.IsMuted, _capturer != null);
+
+                var response = await ClientService.SendAsync(new JoinVideoChat(Id, alias, joinParameters, _inviteHash));
                 if (response is Text json && _manager != null)
                 {
                     bool broadcast;
@@ -493,7 +496,7 @@ namespace Telegram.Services.Calls
             now = DateTime.Now + _timeDifference;
             stamp = now.ToTimestamp();
 
-            args.Deferral(time, stamp, response as FilePart);
+            args.Deferral(time, stamp, response as Data);
         }
 
         private void OnMediaChannelDescriptionsRequested(VoipGroupManager sender, object args)
@@ -606,7 +609,7 @@ namespace Telegram.Services.Calls
         {
             if (ScheduledStartDate > 0)
             {
-                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, FromCallId, Title, ScheduledStartDate, EnabledStartNotification, IsActive, IsRtmpStream, false, false, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, RecordDuration, IsVideoRecorded, Duration))));
+                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, Title, InviteLink, ScheduledStartDate, EnabledStartNotification, IsActive, IsVideoChat, IsRtmpStream, false, false, IsOwned, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, RecordDuration, IsVideoRecorded, Duration))));
             }
             else if (end)
             {
@@ -1000,15 +1003,26 @@ namespace Telegram.Services.Calls
         public string Title { get; private set; }
 
         /// <summary>
+        /// True, if the user is the owner of the call and can end the call, change volume
+        /// level of other users, or ban users there; for group calls that aren't bound to
+        /// a chat.
+        /// </summary>
+        public bool IsOwned { get; private set; }
+
+        /// <summary>
+        /// True, if the chat is bound to a chat.
+        /// </summary>
+        public bool IsVideoChat { get; private set; }
+
+        /// <summary>
+        /// Invite link for the group call; for group calls that aren't bound to a chat.
+        /// </summary>
+        public string InviteLink { get; private set; }
+
+        /// <summary>
         /// Group call identifier.
         /// </summary>
         public int Id { get; private set; }
-
-        /// <summary>
-        /// Identifier of one-to-one call from which the group call was created; 0 if unknown.
-        /// </summary>
-        public int FromCallId { get; private set; }
-
 
         public int Source => _source;
 

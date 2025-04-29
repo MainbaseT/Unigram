@@ -33,8 +33,8 @@ namespace Telegram.ViewModels.Stories
         {
             ClientService = clientService;
 
-            ChatId = story.SenderChatId;
-            Chat = ClientService.GetChat(story.SenderChatId);
+            ChatId = story.PosterChatId;
+            Chat = ClientService.GetChat(story.PosterChatId);
 
             Date = story.Date;
             StoryId = story.Id;

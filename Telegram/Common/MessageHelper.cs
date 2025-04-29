@@ -581,7 +581,7 @@ namespace Telegram.Common
             }
             else if (internalLink is InternalLinkTypeStory story)
             {
-                NavigateToStory(clientService, navigation, story.StorySenderUsername, story.StoryId);
+                NavigateToStory(clientService, navigation, story.StoryPosterUsername, story.StoryId);
             }
             else if (internalLink is InternalLinkTypeTheme theme)
             {

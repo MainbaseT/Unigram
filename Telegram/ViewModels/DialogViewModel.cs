@@ -1876,7 +1876,7 @@ namespace Telegram.ViewModels
                     {
                         ViaMention = story.ViaMention,
                         StoryId = story.StoryId,
-                        StorySenderChatId = story.StorySenderChatId
+                        StoryPosterChatId = story.StoryPosterChatId
                     };
                 }
                 else if (message.Content is MessageContact contact && contact.Contact.PhoneNumber == "999888777666")
@@ -2084,7 +2084,7 @@ namespace Telegram.ViewModels
             {
                 asyncStory.State = MessageStoryState.Loading;
 
-                ClientService.GetStory(asyncStory.StorySenderChatId, asyncStory.StoryId, response =>
+                ClientService.GetStory(asyncStory.StoryPosterChatId, asyncStory.StoryId, response =>
                 {
                     if (response is Story story)
                     {

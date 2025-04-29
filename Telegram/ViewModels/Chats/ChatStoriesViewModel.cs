@@ -238,7 +238,7 @@ namespace Telegram.ViewModels.Chats
                     .Select((x, i) => new Story
                     {
                         Id = i + 1,
-                        SenderChatId = _chatId,
+                        PosterChatId = _chatId,
                         Date = x.Date,
                         Content = x.Content,
                         CanBeDeleted = canBeEdited

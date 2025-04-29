@@ -118,7 +118,7 @@ namespace winrt::Telegram::Native::Calls::implementation
 
         }
 
-        void done(int64_t time, int64_t response, Telegram::Td::Api::FilePart filePart)
+        void done(int64_t time, int64_t response, Telegram::Td::Api::Data filePart)
         {
             webrtc::MutexLock lock(&_mutex);
 
@@ -128,7 +128,7 @@ namespace winrt::Telegram::Native::Calls::implementation
 
                 if (filePart)
                 {
-                    auto part = filePart.Data();
+                    auto part = filePart.DataValue();
                     std::vector data(begin(part), end(part));
 
                     const auto size = part.Size();
