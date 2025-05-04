@@ -5,7 +5,9 @@
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                        xmlns:controls="using:Telegram.Controls"
                        mc:Ignorable="d"
-                       Padding="0,24,0,0">
+                       Padding="0,24,0,0"
+                       PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+                       SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
 
     <Grid>
         <ScrollViewer x:Name="ScrollingHost"
