@@ -565,6 +565,10 @@ namespace Telegram.Controls.Messages.Content
                     ShowButton(Strings.OpenStickerSet);
                 }
             }
+            else if (linkPreview.Type is LinkPreviewTypeGroupCall)
+            {
+                ShowButton(Strings.JoinCall);
+            }
             else
             {
                 ButtonLine.Visibility = Visibility.Collapsed;

@@ -10,6 +10,7 @@
 #include "GroupNetworkStateChangedEventArgs.h"
 #include "BroadcastPartRequestedEventArgs.h"
 #include "BroadcastTimeRequestedEventArgs.h"
+#include "MediaChannelDescriptionsRequestedEventArgs.h"
 
 #include "StaticThreads.h"
 
@@ -63,13 +64,19 @@ namespace winrt::Telegram::Native::Calls::implementation
             },
             .videoContentType = (tgcalls::VideoContentType)descriptor.VideoContentType(),
             .initialEnableNoiseSuppression = m_isNoiseSuppressionEnabled = descriptor.IsNoiseSuppressionEnabled(),
-            // TODO: missing implementation
-            //.requestMediaChannelDescriptions = [weakThis{ get_weak() }](std::vector<uint32_t> const& ssrcs, std::function<void(std::vector<tgcalls::MediaChannelDescription>&&)> done) {
-            //    if (auto strongThis = weakThis.get())
-            //    {
-            //        return strongThis->OnRequestMediaChannelDescriptions(ssrcs, done);
-            //    }
-            //}
+            .requestMediaChannelDescriptions = [weakThis{ get_weak() }](std::vector<uint32_t> const& ssrcs, std::function<void(std::vector<tgcalls::MediaChannelDescription>&&)> done) {
+                if (auto strongThis = weakThis.get())
+                {
+                    return strongThis->OnRequestMediaChannelDescriptions(ssrcs, done);
+                }
+            },
+            .e2eEncryptDecrypt = [weakThis { get_weak() }](std::vector<uint8_t> const& message, int64_t userId, bool encrypt, int32_t channelId) {
+                if (auto strongThis = weakThis.get())
+                {
+                    return strongThis->OnE2EEncryptDecrypt(message, userId, encrypt, channelId);
+                }
+            },
+            .isConference = descriptor.IsConference()
         };
 
         if (auto videoCapture = descriptor.VideoCapture())
@@ -90,6 +97,8 @@ namespace winrt::Telegram::Native::Calls::implementation
 
         if (VoipVideoContentType::Screencast == descriptor.VideoContentType())
         {
+            m_isScreencast = true;
+
             auto audioProcessId = descriptor.AudioProcessId();
             if (audioProcessId == 0)
             {
@@ -263,8 +272,11 @@ namespace winrt::Telegram::Native::Calls::implementation
 
         for (const VoipVideoChannelInfo& x : descriptions)
         {
+            auto user = x.ParticipantId().try_as<MessageSenderUser>();
+
             tgcalls::VideoChannelDescription item;
             item.audioSsrc = x.AudioSource();
+            item.userId = user.UserId();
             item.endpointId = winrt::to_string(x.EndpointId());
             item.minQuality = (tgcalls::VideoChannelDescription::Quality)x.MinQuality();
             item.maxQuality = (tgcalls::VideoChannelDescription::Quality)x.MaxQuality();
@@ -350,7 +362,7 @@ namespace winrt::Telegram::Native::Calls::implementation
             break;
         }
 
-        auto task = std::make_shared<BroadcastPartTaskImpl>(time, scale, std::move(done));
+        auto task = std::make_shared<BroadcastPartTaskImpl>(std::move(done));
         auto args = winrt::make_self<BroadcastPartRequestedEventArgs>(scale, time, channel, qualityImpl,
             [task](int64_t time, int64_t response, Data data) { task->done(time, response, data); });
 
@@ -370,7 +382,7 @@ namespace winrt::Telegram::Native::Calls::implementation
         case 125: scale = 3; break;
         }
 
-        auto task = std::make_shared<BroadcastPartTaskImpl>(time, scale, std::move(done));
+        auto task = std::make_shared<BroadcastPartTaskImpl>(std::move(done));
         auto args = winrt::make_self<BroadcastPartRequestedEventArgs>(scale, time, 0, nullptr,
             [task](int64_t time, int64_t response, Data data) { task->done(time, response, data); });
 
@@ -380,11 +392,64 @@ namespace winrt::Telegram::Native::Calls::implementation
 
     std::shared_ptr<tgcalls::RequestMediaChannelDescriptionTask> VoipGroupManager::OnRequestMediaChannelDescriptions(const std::vector<uint32_t>& ssrcs, std::function<void(std::vector<tgcalls::MediaChannelDescription>&&)> done)
     {
-        // TODO: missing implementation
-        m_mediaChannelDescriptionsRequested(*this, nullptr);
-        return nullptr;
+        std::lock_guard const guard(m_lock);
+
+        auto audioSourceIds = winrt::single_threaded_vector<uint32_t>(std::vector<uint32_t>(ssrcs));
+
+        auto task = std::make_shared<RequestMediaChannelDescriptionTaskImpl>(std::move(done));
+        auto args = winrt::make_self<MediaChannelDescriptionsRequestedEventArgs>(audioSourceIds, 
+            [task](IVector<GroupCallParticipant> participants) { task->done(participants); });
+
+        m_mediaChannelDescriptionsRequested(*this, *args);
+        return task;
     }
 
+    std::vector<uint8_t> VoipGroupManager::OnE2EEncryptDecrypt(std::vector<uint8_t> const& message, int64_t userId, bool encrypt, int32_t unencryptedPrefixSize)
+    {
+        std::lock_guard const guard(m_lock);
+        auto data = winrt::single_threaded_vector<uint8_t>(std::vector<uint8_t>(message));
+
+        if (encrypt)
+        {
+            if (m_encryptData)
+            {
+                GroupCallDataChannel channel;
+                if (m_isScreencast)
+                {
+                    channel = GroupCallDataChannelScreenSharing();
+                }
+                else
+                {
+                    channel = GroupCallDataChannelMain();
+                }
+
+                data = m_encryptData(channel, data, unencryptedPrefixSize);
+            }
+        }
+        else if (m_decryptData)
+        {
+            data = m_decryptData(MessageSenderUser(userId), data);
+        }
+
+        std::vector<uint8_t> result;
+        result.reserve(data.Size());
+
+        for (auto const& value : data)
+        {
+            result.push_back(value);
+        }
+
+        return result;
+    }
+
+
+
+    void VoipGroupManager::SetEncryptDecrypt(EncryptGroupCallDataDelegate encryptData, DecryptGroupCallDataDelegate decryptData)
+    {
+        std::lock_guard const guard(m_lock);
+        m_encryptData = encryptData;
+        m_decryptData = decryptData;
+    }
 
 
     winrt::event_token VoipGroupManager::NetworkStateUpdated(Windows::Foundation::TypedEventHandler<

@@ -211,6 +211,12 @@
     <Compile Include="Controls\Calls\SignalBars.xaml.cs">
       <DependentUpon>SignalBars.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Calls\VerificationState.xaml.cs">
+      <DependentUpon>VerificationState.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Calls\VerificationStateReel.xaml.cs">
+      <DependentUpon>VerificationStateReel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Cells\Business\BusinessHoursCell.xaml.cs">
       <DependentUpon>BusinessHoursCell.xaml</DependentUpon>
     </Compile>
@@ -335,6 +341,7 @@
     <Compile Include="CsWinRT.cs" />
     <Compile Include="Entities\StorageAlbum.cs" />
     <Compile Include="Services\Calls\VoipCallBase.cs" />
+    <Compile Include="Services\Calls\VoipGroupCallVerificationStateChangedEventArgs.cs" />
     <Compile Include="Services\Calls\VoipGroupCallJoinedStateChangedEventArgs.cs" />
     <Compile Include="Services\Calls\VoipGroupCallParticipants.cs" />
     <Compile Include="Services\Calls\VoipCall.cs" />
@@ -2356,6 +2363,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Calls\SignalBars.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Calls\VerificationState.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Calls\VerificationStateReel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

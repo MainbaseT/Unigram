@@ -848,7 +848,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="52" />
+                            <ColumnDefinition Width="56" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />

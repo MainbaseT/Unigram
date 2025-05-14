@@ -13,6 +13,7 @@ namespace Telegram.Native.Calls
         VoipVideoContentType VideoContentType;
         VoipCaptureBase VideoCapture;
 
+        Boolean IsConference;
         Boolean IsNoiseSuppressionEnabled;
 
         Int64 AudioProcessId;

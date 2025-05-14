@@ -623,6 +623,27 @@ namespace Telegram.Common
             {
                 NavigateToUpgradedGift(clientService, navigation, upgradedGift.Name);
             }
+            else if (internalLink is InternalLinkTypeGroupCall groupCall)
+            {
+                NavigateToGroupCall(clientService, navigation, new InputGroupCallLink(groupCall.InviteLink));
+            }
+        }
+
+        public static async void NavigateToGroupCall(IClientService clientService, INavigationService navigation, InputGroupCall inputGroupCall)
+        {
+            var response = await clientService.SendAsync(new GetGroupCallParticipants(inputGroupCall, 3));
+            if (response is GroupCallParticipants participants)
+            {
+                var confirm = await navigation.ShowPopupAsync(new JoinGroupCallPopup(clientService, participants));
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    TypeResolver.Current.Resolve<IVoipService>(clientService.SessionId).JoinGroupCall(navigation, inputGroupCall);
+                }
+            }
+            else
+            {
+                navigation.ShowToast(Strings.LinkIsNoActive, ToastPopupIcon.Error);
+            }
         }
 
         private static async void NavigateToUpgradedGift(IClientService clientService, INavigationService navigation, string name)

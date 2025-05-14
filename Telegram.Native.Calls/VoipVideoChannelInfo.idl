@@ -10,9 +10,10 @@ namespace Telegram.Native.Calls
     [default_interface]
     runtimeclass VoipVideoChannelInfo
     {
-        VoipVideoChannelInfo(Int32 audioSource, String endpointId, IVector<Telegram.Td.Api.GroupCallVideoSourceGroup> sourceGroups, VoipVideoChannelQuality minQuality, VoipVideoChannelQuality maxQuality);
+        VoipVideoChannelInfo(Int32 audioSource, Telegram.Td.Api.MessageSender participantId, String endpointId, IVector<Telegram.Td.Api.GroupCallVideoSourceGroup> sourceGroups, VoipVideoChannelQuality minQuality, VoipVideoChannelQuality maxQuality);
 
         Int32 AudioSource{ get; };
+        Telegram.Td.Api.MessageSender ParticipantId{ get; };
         String EndpointId{ get; };
         IVector<Telegram.Td.Api.GroupCallVideoSourceGroup> SourceGroups{ get; };
         VoipVideoChannelQuality MinQuality{ get; };

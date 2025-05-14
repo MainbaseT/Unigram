@@ -132,6 +132,7 @@ namespace Telegram.Controls.Media
         public const string TextStrikethrough = "\uE8DE";
         public const string Code = "\uE943";
         public const string Link = "\uE71B";
+        public const string LinkAdd = "\uEA85";
         public const string Spoiler = "\uEAA1";
         public const string SpoilerMedia = "\uEAA2";
 

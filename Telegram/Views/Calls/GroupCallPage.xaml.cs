@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright Fela Ameghino 2015-2025
 //
 // Distributed under the GNU General Public License v3.0. (See accompanying
@@ -96,6 +96,7 @@ namespace Telegram.Views.Calls
             _call = call;
             _call.NetworkStateChanged += OnNetworkStateChanged;
             _call.JoinedStateChanged += OnJoinedStateChanged;
+            _call.VerificationStateChanged += OnVerificationStateChanged;
             _call.AudioLevelsUpdated += OnAudioLevelsUpdated;
             _call.MutedChanged += OnMutedChanged;
             _call.PropertyChanged += OnParticipantsChanged;
@@ -104,12 +105,27 @@ namespace Telegram.Views.Calls
             {
                 _call.Participants.Delegate = this;
                 _call.Participants.LoadVideoInfo();
+
                 ScrollingHost.ItemsSource = _call.Participants;
             }
 
             Window.Current.SetTitleBar(TitleArea);
 
             Update(call, call.CurrentUser);
+
+            var verificationState = _call.VerificationState;
+            if (verificationState != null)
+            {
+                VerificationState.UpdateState(verificationState.Generation, verificationState.Emojis);
+            }
+            else if (_call.IsVideoChat)
+            {
+                VerificationState.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                VerificationState.UpdateState(0, Array.Empty<string>());
+            }
 
             ElementCompositionPreview.SetIsTranslationEnabled(Viewport, true);
             //ElementCompositionPreview.SetIsTranslationEnabled(PinnedInfo, true);
@@ -274,6 +290,7 @@ namespace Telegram.Views.Calls
 
             _call.NetworkStateChanged -= OnNetworkStateChanged;
             _call.JoinedStateChanged -= OnJoinedStateChanged;
+            _call.VerificationStateChanged -= OnVerificationStateChanged;
             _call.AudioLevelsUpdated -= OnAudioLevelsUpdated;
             _call.MutedChanged -= OnMutedChanged;
             _call.PropertyChanged -= OnParticipantsChanged;
@@ -874,6 +891,11 @@ namespace Telegram.Views.Calls
             }
         }
 
+        private void OnVerificationStateChanged(VoipGroupCall sender, VoipGroupCallVerificationStateChangedEventArgs args)
+        {
+            this.BeginOnUIThread(() => VerificationState.UpdateState(args.Generation, args.Emojis));
+        }
+
         private void OnAudioLevelsUpdated(object sender, IList<VoipGroupParticipant> levels)
         {
             var participants = _call?.Participants;
@@ -1009,11 +1031,11 @@ namespace Telegram.Views.Calls
             {
                 if (_call.CanBeManaged)
                 {
-                    _call.ClientService.Send(new StartScheduledGroupCall(_call.Id));
+                    _call.ClientService.Send(new StartScheduledVideoChat(_call.Id));
                 }
                 else
                 {
-                    _call.ClientService.Send(new ToggleGroupCallEnabledStartNotification(_call.Id, !_call.EnabledStartNotification));
+                    _call.ClientService.Send(new ToggleVideoChatEnabledStartNotification(_call.Id, !_call.EnabledStartNotification));
                 }
             }
             //else if (currentUser != null && (currentUser.CanBeMutedForAllUsers || currentUser.CanBeUnmutedForAllUsers))
@@ -1336,7 +1358,7 @@ namespace Telegram.Views.Calls
                 toggleFalse.IsChecked = !_call.MuteNewParticipants;
                 toggleFalse.Click += (s, args) =>
                 {
-                    _call.ClientService.Send(new ToggleGroupCallMuteNewParticipants(_call.Id, false));
+                    _call.ClientService.Send(new ToggleVideoChatMuteNewParticipants(_call.Id, false));
                 };
 
                 var toggleTrue = new ToggleMenuFlyoutItem();
@@ -1344,7 +1366,7 @@ namespace Telegram.Views.Calls
                 toggleTrue.IsChecked = _call.MuteNewParticipants;
                 toggleTrue.Click += (s, args) =>
                 {
-                    _call.ClientService.Send(new ToggleGroupCallMuteNewParticipants(_call.Id, true));
+                    _call.ClientService.Send(new ToggleVideoChatMuteNewParticipants(_call.Id, true));
                 };
 
                 var settings = new MenuFlyoutSubItem();
@@ -1511,7 +1533,7 @@ namespace Telegram.Views.Calls
             var confirm = await input.ShowQueuedAsync(XamlRoot);
             if (confirm == ContentDialogResult.Primary)
             {
-                _call.ClientService.Send(new SetGroupCallTitle(_call.Id, input.Text));
+                _call.ClientService.Send(new SetVideoChatTitle(_call.Id, input.Text));
             }
         }
 
@@ -2095,7 +2117,13 @@ namespace Telegram.Views.Calls
                         else
                         {
                             descriptions[child.EndpointId] =
-                                new VoipVideoChannelInfo(child.Participant.AudioSourceId, child.EndpointId, child.VideoInfo.SourceGroups, child.Quality, child.Quality);
+                                new VoipVideoChannelInfo(
+                                    child.Participant.AudioSourceId,
+                                    child.Participant.ParticipantId,
+                                    child.EndpointId,
+                                    child.VideoInfo.SourceGroups,
+                                    child.Quality,
+                                    child.Quality);
                         }
 
                         if (participant.ScreenSharingVideoInfo?.EndpointId == child.EndpointId && participant.IsCurrentUser && _call.IsScreenSharing)

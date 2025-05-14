@@ -46,6 +46,16 @@ namespace winrt::Telegram::Native::Calls::implementation
         m_videoContentType = value;
     }
 
+    bool VoipGroupDescriptor::IsConference()
+    {
+        return m_isConference;
+    }
+
+    void VoipGroupDescriptor::IsConference(bool value)
+    {
+        m_isConference = value;
+    }
+
     bool VoipGroupDescriptor::IsNoiseSuppressionEnabled()
     {
         return m_isNoiseSuppressionEnabled;

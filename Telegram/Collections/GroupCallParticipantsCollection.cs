@@ -29,6 +29,7 @@ namespace Telegram.Collections
 
         private readonly VoipGroupCall _call;
 
+        private bool _isJoined;
         private bool _loadedAllParticipants;
         private int _participantCount;
 
@@ -41,13 +42,17 @@ namespace Telegram.Collections
             _call = call;
             _call.PropertyChanged += OnPropertyChanged;
 
+            _isJoined = call.IsJoined;
             _loadedAllParticipants = call.LoadedAllParticipants;
             _participantCount = call.ParticipantCount;
         }
 
         public void Load()
         {
-            _clientService.Send(new LoadGroupCallParticipants(_call.Id, 100));
+            if (_call.Id != 0 && _call.IsJoined)
+            {
+                _clientService.Send(new LoadGroupCallParticipants(_call.Id, 100));
+            }
         }
 
         public void Dispose()
@@ -63,15 +68,16 @@ namespace Telegram.Collections
 
         private void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (_call.LoadedAllParticipants && _call.LoadedAllParticipants != _loadedAllParticipants)
-            {
-                Load();
-            }
-            else if (_call.ParticipantCount == Items.Count && _call.ParticipantCount < _participantCount)
+            var needLoad = _call.LoadedAllParticipants && _call.LoadedAllParticipants != _loadedAllParticipants;
+            needLoad |= _call.ParticipantCount == Items.Count && _call.ParticipantCount < _participantCount;
+            needLoad |= _call.IsJoined && !_isJoined;
+
+            if (needLoad)
             {
                 Load();
             }
 
+            _isJoined = _call.IsJoined;
             _loadedAllParticipants = _call.LoadedAllParticipants;
             _participantCount = _call.ParticipantCount;
 
@@ -254,17 +260,23 @@ namespace Telegram.Collections
             {
                 count = (uint)Count;
 
-                var response = await _clientService.SendAsync(new LoadGroupCallParticipants(_call.Id, 100));
-                if (response is Ok)
+                if (_call.Id != 0 && _call.IsJoined)
                 {
-                    count = (uint)Count - count;
-                }
-                else
-                {
-                    count = 0;
+                    var response = await _clientService.SendAsync(new LoadGroupCallParticipants(_call.Id, 100));
+                    if (response is Ok)
+                    {
+                        count = (uint)Count - count;
+                    }
+                    else
+                    {
+                        count = 0;
+                    }
                 }
 
-                return new LoadMoreItemsResult { Count = count };
+                return new LoadMoreItemsResult
+                {
+                    Count = count
+                };
             });
         }
 

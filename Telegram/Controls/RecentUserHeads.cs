@@ -133,7 +133,7 @@ namespace Telegram.Controls
         {
             _layoutRoot.Children.Clear();
 
-            for (int i = 0; i < _items.Count; i++)
+            for (int i = 0; i < Math.Min(_maxCount, _items.Count); i++)
             {
                 var container = CreateContainer(_items[i]);
                 var visual = ElementComposition.GetElementVisual(container);
@@ -276,7 +276,7 @@ namespace Telegram.Controls
             container.VerticalAlignment = VerticalAlignment.Top;
             container.HorizontalAlignment = HorizontalAlignment.Left;
             container.BorderThickness = new Thickness(2);
-            container.CornerRadius = new CornerRadius((_itemSize + 4) / 2);
+            container.CornerRadius = new CornerRadius((_itemSize + 4) / (picture.Shape == ProfilePictureShape.Superellipse ? 4 : 2));
             container.Child = picture;
             container.Tag = item;
             container.SetBinding(Border.BorderBrushProperty, borderBrush);

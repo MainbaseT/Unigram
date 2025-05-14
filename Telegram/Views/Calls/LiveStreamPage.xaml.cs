@@ -495,7 +495,7 @@ namespace Telegram.Views.Calls
             var confirm = await input.ShowQueuedAsync(XamlRoot);
             if (confirm == ContentDialogResult.Primary)
             {
-                _call.ClientService.Send(new SetGroupCallTitle(_call.Id, input.Text));
+                _call.ClientService.Send(new SetVideoChatTitle(_call.Id, input.Text));
             }
         }
 

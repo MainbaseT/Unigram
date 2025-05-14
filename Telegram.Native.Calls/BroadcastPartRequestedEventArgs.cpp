@@ -4,11 +4,11 @@
 namespace winrt::Telegram::Native::Calls::implementation
 {
     BroadcastPartRequestedEventArgs::BroadcastPartRequestedEventArgs(int32_t scale, int64_t time, int32_t channelId, GroupCallVideoQuality videoQuality, BroadcastPartRequestedDeferral deferral)
-        : m_scale(scale),
-        m_time(time),
-        m_channelId(channelId),
-        m_videoQuality(videoQuality),
-        m_deferral(deferral)
+        : m_scale(scale)
+        , m_time(time)
+        , m_channelId(channelId)
+        , m_videoQuality(videoQuality)
+        , m_deferral(deferral)
     {
 
     }

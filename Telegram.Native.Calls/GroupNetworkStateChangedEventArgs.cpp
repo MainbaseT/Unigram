@@ -4,8 +4,8 @@
 namespace winrt::Telegram::Native::Calls::implementation
 {
     GroupNetworkStateChangedEventArgs::GroupNetworkStateChangedEventArgs(bool isConnected, bool isTransitioningFromBroadcastToRtc)
-        : m_isConnected(isConnected),
-        m_isTransitioningFromBroadcastToRtc(isTransitioningFromBroadcastToRtc)
+        : m_isConnected(isConnected)
+        , m_isTransitioningFromBroadcastToRtc(isTransitioningFromBroadcastToRtc)
     {
 
     }

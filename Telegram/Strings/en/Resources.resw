@@ -4317,6 +4317,9 @@ Minimum length is 5 characters.</value>
   <data name="Comments_other" xml:space="preserve">
     <value>{0} Comments</value>
   </data>
+  <data name="ConferenceEncrypted" xml:space="preserve">
+    <value>End-to-End Encrypted</value>
+  </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
@@ -6915,6 +6918,60 @@ about Telegram?</value>
   <data name="GroupAddMembers" xml:space="preserve">
     <value>Add Members</value>
   </data>
+  <data name="GroupCallCreate" xml:space="preserve">
+    <value>Start New Call</value>
+  </data>
+  <data name="GroupCallCreatedLinkCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="GroupCallCreatedLinkJoinOr" xml:space="preserve">
+    <value>or</value>
+  </data>
+  <data name="GroupCallCreatedLinkJoinText" xml:space="preserve">
+    <value>Be the first to join the call and add people from there. **Open Call &gt;**</value>
+  </data>
+  <data name="GroupCallCreatedLinkRevoke" xml:space="preserve">
+    <value>Revoke link</value>
+  </data>
+  <data name="GroupCallCreatedLinkShare" xml:space="preserve">
+    <value>Share</value>
+  </data>
+  <data name="GroupCallCreatedLinkText" xml:space="preserve">
+    <value>Anyone on Telegram can join your call by following the link below.</value>
+  </data>
+  <data name="GroupCallCreatedLinkTitle" xml:space="preserve">
+    <value>Call Link</value>
+  </data>
+  <data name="GroupCallCreateInfo_one" xml:space="preserve">
+    <value>You can add up to {0} participant to a call.</value>
+  </data>
+  <data name="GroupCallCreateInfo_other" xml:space="preserve">
+    <value>You can add up to {0} participants to a call.</value>
+  </data>
+  <data name="GroupCallCreateLink" xml:space="preserve">
+    <value>Create Call Link</value>
+  </data>
+  <data name="GroupCallLinkJoin" xml:space="preserve">
+    <value>Join Group Call</value>
+  </data>
+  <data name="GroupCallLinkText" xml:space="preserve">
+    <value>You are invited to join a Telegram call.</value>
+  </data>
+  <data name="GroupCallLinkText2Many_one" xml:space="preserve">
+    <value>**{1}**, **{2}** and **{0}** more person already joined this call.</value>
+  </data>
+  <data name="GroupCallLinkText2Many_other" xml:space="preserve">
+    <value>**{1}**, **{2}** and **{0}** more people already joined this call.</value>
+  </data>
+  <data name="GroupCallLinkText2One" xml:space="preserve">
+    <value>**{0}** already joined this call.</value>
+  </data>
+  <data name="GroupCallLinkText2Two" xml:space="preserve">
+    <value>**{0}** and **{1}** already joined this call.</value>
+  </data>
+  <data name="GroupCallLinkTitle" xml:space="preserve">
+    <value>Group Call</value>
+  </data>
   <data name="GroupChats" xml:space="preserve">
     <value>Group Chats</value>
   </data>
@@ -7299,6 +7356,9 @@ This setting does not affect group chats.</value>
   <data name="IVInteractionsChartTitle" xml:space="preserve">
     <value>IV Interactions</value>
   </data>
+  <data name="JoinCall" xml:space="preserve">
+    <value>Join Call</value>
+  </data>
   <data name="JoinGroup" xml:space="preserve">
     <value>JOIN GROUP</value>
   </data>
@@ -7604,6 +7664,9 @@ Upgrade to **Telegram Premium** to increase this limit to **{1}**.</value>
   </data>
   <data name="LinkInfo" xml:space="preserve">
     <value>Anyone who has Telegram installed will be able to join your group by following this link.</value>
+  </data>
+  <data name="LinkIsNoActive" xml:space="preserve">
+    <value>This link is no longer active.</value>
   </data>
   <data name="LinkMediaLarger" xml:space="preserve">
     <value>Enlarge Photo</value>
@@ -8353,6 +8416,9 @@ to unlock up to {0} similar channels.</value>
   </data>
   <data name="NeverShareWithTitle" xml:space="preserve">
     <value>Never Share</value>
+  </data>
+  <data name="NewCall" xml:space="preserve">
+    <value>New Call</value>
   </data>
   <data name="NewChannel" xml:space="preserve">
     <value>New Channel</value>

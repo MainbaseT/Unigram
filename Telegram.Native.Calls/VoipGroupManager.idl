@@ -12,6 +12,9 @@ namespace Telegram.Native.Calls
 {
     delegate void EmitJsonPayloadDelegate(Int32 ssrc, String payload);
 
+    delegate Windows.Foundation.Collections.IVector<byte> EncryptGroupCallDataDelegate(Telegram.Td.Api.GroupCallDataChannel dataChannel, Windows.Foundation.Collections.IVector<byte> data, Int32 unencryptedPrefixSize);
+    delegate Windows.Foundation.Collections.IVector<byte> DecryptGroupCallDataDelegate(Telegram.Td.Api.MessageSender participantId, Windows.Foundation.Collections.IVector<byte> data);
+
     [default_interface]
     runtimeclass VoipGroupManager
     {
@@ -36,6 +39,8 @@ namespace Telegram.Native.Calls
 
         void SetVolume(Int32 ssrc, Double volume);
         void SetRequestedVideoChannels(Windows.Foundation.Collections.IVector<VoipVideoChannelInfo> descriptions);
+
+        void SetEncryptDecrypt(EncryptGroupCallDataDelegate encryptData, DecryptGroupCallDataDelegate decryptData);
 
         event Windows.Foundation.TypedEventHandler<VoipGroupManager, GroupNetworkStateChangedEventArgs> NetworkStateUpdated;
         event Windows.Foundation.TypedEventHandler<VoipGroupManager, Windows.Foundation.Collections.IVector<VoipGroupParticipant > > AudioLevelsUpdated;

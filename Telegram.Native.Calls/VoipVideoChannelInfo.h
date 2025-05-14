@@ -9,9 +9,10 @@ namespace winrt::Telegram::Native::Calls::implementation
 {
     struct VoipVideoChannelInfo : VoipVideoChannelInfoT<VoipVideoChannelInfo>
     {
-        VoipVideoChannelInfo(int32_t audioSource, hstring endpointId, IVector<GroupCallVideoSourceGroup> sourceGroups, VoipVideoChannelQuality minQuality, VoipVideoChannelQuality maxQuality);
+        VoipVideoChannelInfo(int32_t audioSource, MessageSender participantId, hstring endpointId, IVector<GroupCallVideoSourceGroup> sourceGroups, VoipVideoChannelQuality minQuality, VoipVideoChannelQuality maxQuality);
 
         int32_t AudioSource();
+        MessageSender ParticipantId();
         hstring EndpointId();
         IVector<GroupCallVideoSourceGroup> SourceGroups();
         VoipVideoChannelQuality MinQuality();
@@ -19,6 +20,7 @@ namespace winrt::Telegram::Native::Calls::implementation
 
     private:
         int32_t m_audioSource;
+        MessageSender m_participantId;
         hstring m_endpointId;
         IVector<GroupCallVideoSourceGroup> m_sourceGroups;
         VoipVideoChannelQuality m_minQuality;

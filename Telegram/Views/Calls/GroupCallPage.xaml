@@ -5,6 +5,7 @@
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                 xmlns:common="using:Telegram.Common"
                 xmlns:controls="using:Telegram.Controls"
+                xmlns:calls="using:Telegram.Controls.Calls"
                 xmlns:local="using:Telegram.Views.Calls"
                 mc:Ignorable="d"
                 d:DesignWidth="320"
@@ -212,6 +213,10 @@
                                     Padding="12,0,12,72">
                 <ListView.Header>
                     <StackPanel x:Name="ListHeader">
+                        <calls:VerificationState x:Name="VerificationState"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center" />
+
                         <Grid x:Name="ViewportAspect"
                               Margin="-2,-2,-2,0"
                               Grid.ColumnSpan="2">
