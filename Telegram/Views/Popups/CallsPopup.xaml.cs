@@ -2,6 +2,7 @@
 using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
+using Telegram.Navigation;
 using Telegram.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -61,6 +62,45 @@ namespace Telegram.Views.Popups
                 Hide();
                 ViewModel.NavigationService.NavigateToChat(call.ChatId, call.Message?.Id);
             }
+        }
+
+        private void NewCall_Click(object sender, RoutedEventArgs e)
+        {
+            var popup = new ChooseChatsPopup();
+            var button = new BadgeButton
+            {
+                Content = Strings.GroupCallCreateLink,
+                Glyph = Icons.LinkAdd,
+                Style = BootStrapper.Current.Resources["GlyphBadgeButtonPopupStyle"] as Style,
+                Margin = new Thickness(12, 0, 12, 0),
+            };
+
+            void handler(object sender, RoutedEventArgs e)
+            {
+                button.Click -= handler;
+                popup.Hide();
+
+                ViewModel.CreateLink();
+            }
+
+            button.Click += handler;
+            popup.Header = button;
+
+            Hide();
+            ViewModel.NavigationService.ShowPopup(popup, new ChooseChatsConfigurationCreateGroupCall());
+        }
+
+        private void ScrollingHeader_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (EmptyState != null)
+            {
+                EmptyState.Margin = new Thickness(0, e.NewSize.Height - 36, 0, 0);
+            }
+        }
+
+        private void EmptyState_Loaded(object sender, RoutedEventArgs e)
+        {
+            EmptyState.Margin = new Thickness(0, ScrollingHeader.ActualHeight - 36, 0, 0);
         }
     }
 }

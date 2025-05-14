@@ -18,6 +18,7 @@ using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
+using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
@@ -271,6 +272,15 @@ namespace Telegram.ViewModels
                 {
                     Title = string.Format(Strings.Gift2Transfer, upgraded.Gift.ToName());
                 }
+            }
+            else if (parameter is ChooseChatsConfigurationCreateGroupCall)
+            {
+                SelectionMode = ListViewSelectionMode.Multiple;
+                Options = ChooseChatsOptions.Users;
+                IsCommentEnabled = false;
+                IsChatSelection = false;
+
+                Title = Strings.NewCall;
             }
 
             #endregion
@@ -793,7 +803,7 @@ namespace Telegram.ViewModels
             }
             else if (_configuration is ChooseChatsConfigurationGroupCall groupCall)
             {
-                var response = await ClientService.SendAsync(new GetGroupCallInviteLink(groupCall.GroupCallId, false));
+                var response = await ClientService.SendAsync(new GetVideoChatInviteLink(groupCall.GroupCallId, false));
                 if (response is HttpUrl httpUrl)
                 {
                     var formatted = new FormattedText(string.Format(Strings.VoipGroupInviteText, httpUrl.Url), Array.Empty<TextEntity>());
@@ -878,6 +888,10 @@ namespace Telegram.ViewModels
                         ToastPopup.ShowError(XamlRoot, error);
                     }
                 }
+            }
+            else if (_configuration is ChooseChatsConfigurationCreateGroupCall)
+            {
+                TypeResolver.Current.Resolve<IVoipService>(SessionId).CreateGroupCall(NavigationService, Array.Empty<long>());
             }
         }
 

@@ -1112,6 +1112,9 @@
     <Compile Include="Views\Calls\LiveStreamPage.xaml.cs">
       <DependentUpon>LiveStreamPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Calls\Popups\ShareGroupCallPopup.xaml.cs">
+      <DependentUpon>ShareGroupCallPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Calls\Popups\VideoChatAliasesPopup.xaml.cs">
       <DependentUpon>VideoChatAliasesPopup.xaml</DependentUpon>
     </Compile>
@@ -1245,6 +1248,9 @@
     </Compile>
     <Compile Include="Views\Popups\FactCheckPopup.xaml.cs">
       <DependentUpon>FactCheckPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\JoinGroupCallPopup.xaml.cs">
+      <DependentUpon>JoinGroupCallPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Popups\ScheduleMessageToast.xaml.cs">
       <DependentUpon>ScheduleMessageToast.xaml</DependentUpon>
@@ -3018,6 +3024,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Calls\Popups\ShareGroupCallPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Calls\Popups\VideoChatAliasesPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -3187,6 +3197,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\FactCheckPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\JoinGroupCallPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

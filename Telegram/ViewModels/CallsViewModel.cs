@@ -16,6 +16,8 @@ using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
+using Telegram.Views.Calls.Popups;
+using Telegram.Views.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
@@ -143,6 +145,20 @@ namespace Telegram.ViewModels
         }
 
         #endregion
+
+        public async void CreateLink()
+        {
+            var response = await ClientService.SendAsync(new CreateGroupCall(null));
+            if (response is GroupCallInfo info)
+            {
+                response = await ClientService.SendAsync(new GetGroupCall(info.GroupCallId));
+
+                if (response is GroupCall groupCall)
+                {
+                    NavigationService.ShowPopup(new ShareGroupCallPopup(ClientService, NavigationService, groupCall));
+                }
+            }
+        }
     }
 
     public partial class TLCallGroup

@@ -476,6 +476,11 @@ namespace Telegram.Views.Popups
         public ReceivedGift Gift { get; }
     }
 
+    public partial class ChooseChatsConfigurationCreateGroupCall : ChooseChatsConfiguration
+    {
+
+    }
+
     public partial class ChooseChatsConfigurationGroupCall : ChooseChatsConfiguration
     {
         public ChooseChatsConfigurationGroupCall(int groupCallId)
@@ -1484,6 +1489,7 @@ namespace Telegram.Views.Popups
             var maxQuantity = ViewModel.Configuration switch
             {
                 ChooseChatsConfigurationRequestUsers requestUsers => requestUsers.MaxQuantity,
+                ChooseChatsConfigurationCreateGroupCall => ViewModel.ClientService.Options.GroupCallParticipantCountMax,
                 _ => int.MaxValue
             };
             var maxExceeded = ChatsPanel.SelectedItems.Count > maxQuantity;
