@@ -81,7 +81,7 @@ namespace Telegram.Controls.Messages.Content
         {
             _message = message;
 
-            var video = GetContent(message, out bool hasSpoiler, out bool isSecret);
+            var video = GetContent(message, out Photo cover, out bool hasSpoiler, out bool isSecret);
             if (video == null || !_templateApplied)
             {
                 return;
@@ -90,7 +90,22 @@ namespace Telegram.Controls.Messages.Content
             LayoutRoot.Constraint = isSecret ? Constants.SecretSize : ((object)_paidMedia ?? video);
             Texture.Source = null;
 
-            UpdateThumbnail(message, video, video.Thumbnail?.File, true, isSecret, hasSpoiler);
+            Thumbnail thumbnail;
+            Minithumbnail minithumbnail;
+
+            var photo = cover?.GetBig();
+            if (photo != null)
+            {
+                thumbnail = photo.ToThumbnail();
+                minithumbnail = cover.Minithumbnail;
+            }
+            else
+            {
+                thumbnail = video.Thumbnail;
+                minithumbnail = video.Minithumbnail;
+            }
+
+            UpdateThumbnail(message, thumbnail, minithumbnail, true, isSecret, hasSpoiler);
 
             UpdateManager.Subscribe(this, message, video.VideoValue, ref _fileToken, UpdateFile);
             UpdateFile(message, video.VideoValue);
@@ -112,7 +127,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateFile(MessageViewModel message, File file)
         {
-            var video = GetContent(message, out bool hasSpoiler, out bool isSecret);
+            var video = GetContent(message, out _, out bool hasSpoiler, out bool isSecret);
             if (video == null || !_templateApplied)
             {
                 return;
@@ -285,22 +300,38 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateThumbnail(object target, File file)
         {
-            var video = GetContent(_message, out bool hasSpoiler, out bool isSecret);
+            var video = GetContent(_message, out Photo cover, out bool hasSpoiler, out bool isSecret);
             if (video == null || !_templateApplied)
             {
                 return;
             }
 
-            UpdateThumbnail(_message, video, file, false, isSecret, hasSpoiler);
+            Thumbnail thumbnail;
+            Minithumbnail minithumbnail;
+
+            var photo = cover?.GetBig();
+            if (photo != null)
+            {
+                thumbnail = photo.ToThumbnail();
+                minithumbnail = cover.Minithumbnail;
+            }
+            else
+            {
+                thumbnail = video.Thumbnail;
+                minithumbnail = video.Minithumbnail;
+            }
+
+            UpdateThumbnail(_message, thumbnail, minithumbnail, false, isSecret, hasSpoiler);
         }
 
-        private void UpdateThumbnail(MessageViewModel message, Video video, File file, bool download, bool isSecret, bool hasSpoiler)
+        private void UpdateThumbnail(MessageViewModel message, Thumbnail thumbnail, Minithumbnail minithumbnail, bool download, bool isSecret, bool hasSpoiler)
         {
             BitmapImage source = null;
             Image brush = Texture;
 
-            if (video.Thumbnail != null && video.Thumbnail.Format is ThumbnailFormatJpeg)
+            if (thumbnail?.Format is ThumbnailFormatJpeg)
             {
+                var file = thumbnail.File;
                 if (file.Local.IsDownloadingCompleted)
                 {
                     if (isSecret || hasSpoiler)
@@ -325,17 +356,17 @@ namespace Telegram.Controls.Messages.Content
                         UpdateManager.Subscribe(this, message, file, ref _thumbnailToken, UpdateThumbnail, true);
                     }
 
-                    if (video.Minithumbnail != null)
+                    if (minithumbnail != null)
                     {
                         source = new BitmapImage();
-                        PlaceholderHelper.GetBlurred(source, video.Minithumbnail.Data, isSecret || hasSpoiler ? 15 : 3);
+                        PlaceholderHelper.GetBlurred(source, minithumbnail.Data, isSecret || hasSpoiler ? 15 : 3);
                     }
                 }
             }
-            else if (video.Minithumbnail != null)
+            else if (minithumbnail != null)
             {
                 source = new BitmapImage();
-                PlaceholderHelper.GetBlurred(source, video.Minithumbnail.Data, isSecret || hasSpoiler ? 15 : 3);
+                PlaceholderHelper.GetBlurred(source, minithumbnail.Data, isSecret || hasSpoiler ? 15 : 3);
             }
 
             brush.Source = source;
@@ -362,7 +393,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void Player_PositionChanged(object sender, AnimatedImagePositionChangedEventArgs e)
         {
-            var video = GetContent(_message, out _, out _);
+            var video = GetContent(_message, out _, out _, out _);
             if (video == null)
             {
                 return;
@@ -410,8 +441,9 @@ namespace Telegram.Controls.Messages.Content
             return false;
         }
 
-        private Video GetContent(MessageViewModel message, out bool hasSpoiler, out bool isSecret)
+        private Video GetContent(MessageViewModel message, out Photo cover, out bool hasSpoiler, out bool isSecret)
         {
+            cover = null;
             hasSpoiler = false;
             isSecret = false;
 
@@ -422,12 +454,14 @@ namespace Telegram.Controls.Messages.Content
 
             if (_paidMedia != null)
             {
+                cover = _paidMedia.Cover;
                 return _paidMedia.Video;
             }
 
             var content = message.GeneratedContent ?? message.Content;
             if (content is MessageVideo video)
             {
+                cover = video.Cover;
                 hasSpoiler = video.HasSpoiler;
                 isSecret = video.IsSecret;
                 return video.Video;
@@ -436,6 +470,7 @@ namespace Telegram.Controls.Messages.Content
             {
                 if (text.LinkPreview?.Type is LinkPreviewTypeVideo previewVideo)
                 {
+                    cover = previewVideo.Cover;
                     return previewVideo.Video;
                 }
                 else if (text.LinkPreview?.Type is LinkPreviewTypeAlbum previewAlbum && previewAlbum.Media[0] is LinkPreviewAlbumMediaVideo albumVideo)
@@ -445,6 +480,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (content is MessageInvoice invoice && invoice.PaidMedia is PaidMediaVideo paidMedia)
             {
+                cover = paidMedia.Cover;
                 return paidMedia.Video;
             }
 
@@ -453,7 +489,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var video = GetContent(_message, out _, out bool isSecret);
+            var video = GetContent(_message, out _, out _, out bool isSecret);
             if (video == null || isSecret)
             {
                 return;
@@ -499,7 +535,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void Play_Click(object sender, RoutedEventArgs e)
         {
-            var video = GetContent(_message, out _, out bool isSecret);
+            var video = GetContent(_message, out _, out _, out bool isSecret);
             if (video == null)
             {
                 return;

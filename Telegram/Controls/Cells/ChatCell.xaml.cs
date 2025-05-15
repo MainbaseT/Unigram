@@ -1496,12 +1496,20 @@ namespace Telegram.Controls.Cells
             }
             else if (content is MessageVideo video)
             {
-                if (video.Video.Minithumbnail == null || video.IsSecret || forceEmoji)
+                if ((video.Cover?.Minithumbnail == null && video.Video.Minithumbnail == null) || video.IsSecret || forceEmoji)
                 {
                     return Text1("\U0001F4F9 ", video.Caption, Strings.AttachVideo);
                 }
 
-                thumbnail = new MinithumbnailId(video.Video.VideoValue.Id, video.Video.Minithumbnail, false);
+                if (video.Cover != null)
+                {
+                    thumbnail = new MinithumbnailId(video.Video.VideoValue.Id, video.Cover.Minithumbnail, false);
+                }
+                else
+                {
+                    thumbnail = new MinithumbnailId(video.Video.VideoValue.Id, video.Video.Minithumbnail, false);
+                }
+
                 return Text1(string.Empty, video.Caption, Strings.AttachVideo);
             }
             else if (content is MessageAnimation animation)

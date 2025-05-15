@@ -1095,7 +1095,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer => embeddedAudioPlayer.Thumbnail?.Minithumbnail,
                 LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail?.Minithumbnail,
                 LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer => embeddedVideoPlayer.Thumbnail?.Minithumbnail,
-                LinkPreviewTypeVideo video => video.Video.Minithumbnail,
+                LinkPreviewTypeVideo video => video.Cover?.Minithumbnail ?? video.Video.Minithumbnail,
                 LinkPreviewTypeVideoNote videoNote => videoNote.VideoNote.Minithumbnail,
                 LinkPreviewTypePhoto photo => photo.Photo.Minithumbnail,
                 LinkPreviewTypeApp app => app.Photo.Minithumbnail,
@@ -1128,7 +1128,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail?.GetThumbnail(),
                 LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer => embeddedVideoPlayer.Thumbnail?.GetThumbnail(),
                 LinkPreviewTypeSticker sticker => sticker.Sticker.Thumbnail,
-                LinkPreviewTypeVideo video => video.Video.Thumbnail,
+                LinkPreviewTypeVideo video => video.Cover?.GetThumbnail() ?? video.Video.Thumbnail,
                 LinkPreviewTypeVideoNote videoNote => videoNote.VideoNote.Thumbnail,
                 LinkPreviewTypePhoto photo => photo.Photo.GetThumbnail(),
                 LinkPreviewTypeApp app => app.Photo.GetThumbnail(),
@@ -1164,6 +1164,7 @@ namespace Telegram.Td.Api
                 || linkPreview.Type is LinkPreviewTypeEmbeddedVideoPlayer { Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeSticker { Sticker.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeStickerSet
+                || linkPreview.Type is LinkPreviewTypeVideo { Cover: not null }
                 || linkPreview.Type is LinkPreviewTypeVideo { Video.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeVideoNote { VideoNote.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypePhoto
@@ -1419,7 +1420,7 @@ namespace Telegram.Td.Api
                 case MessageText text:
                     return text.LinkPreview?.GetMinithumbnail();
                 case MessageVideo video:
-                    return video.IsSecret && !secret ? null : video.Video.Minithumbnail;
+                    return video.IsSecret && !secret ? null : (video.Cover?.Minithumbnail ?? video.Video.Minithumbnail);
                 case MessageVideoNote videoNote:
                     return videoNote.IsSecret && !secret ? null : videoNote.VideoNote.Minithumbnail;
             }

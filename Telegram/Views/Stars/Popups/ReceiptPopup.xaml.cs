@@ -532,7 +532,14 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (media is PaidMediaVideo video)
             {
-                file = video.Video.Thumbnail?.File;
+                if (video.Cover != null)
+                {
+                    file = video.Cover.GetSmall()?.Photo;
+                }
+                else
+                {
+                    file = video.Video.Thumbnail?.File;
+                }
             }
 
             if (file == null)

@@ -47,9 +47,12 @@ namespace Telegram.Views.Profile
                     photo.SetSource(ViewModel.ClientService, small.Photo);
                     panel.Visibility = Visibility.Collapsed;
                 }
-                else if (message.Content is MessageVideo videoMessage && videoMessage.Video.Thumbnail != null)
+                else if (message.Content is MessageVideo videoMessage)
                 {
-                    photo.SetSource(ViewModel.ClientService, videoMessage.Video.Thumbnail.File);
+                    var thumbnail = videoMessage.Cover?.GetThumbnail();
+                    thumbnail ??= videoMessage.Video.Thumbnail;
+
+                    photo.SetSource(ViewModel.ClientService, thumbnail?.File);
                     panel.Visibility = Visibility.Visible;
 
                     duration.Text = videoMessage.Video.GetDuration();

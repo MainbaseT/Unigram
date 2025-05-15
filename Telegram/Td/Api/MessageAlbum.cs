@@ -90,6 +90,10 @@ namespace Telegram.Td.Api
                     {
                         yield return new Size(videoMedia.Video.Thumbnail.Width, videoMedia.Video.Thumbnail.Height);
                     }
+                    else if (videoMedia.Cover != null)
+                    {
+                        yield return GetClosestPhotoSizeWithSize(videoMedia.Cover.Sizes, 1280, false);
+                    }
                     else
                     {
                         // We are returning a random size, it's still better than NaN.

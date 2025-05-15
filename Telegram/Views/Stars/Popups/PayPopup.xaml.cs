@@ -219,7 +219,7 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (media is PaidMediaVideo video)
             {
-                minithumbnail = video.Video.Minithumbnail;
+                minithumbnail = video.Cover?.Minithumbnail ?? video.Video.Minithumbnail;
             }
             else if (media is PaidMediaPreview preview)
             {

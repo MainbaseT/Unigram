@@ -393,7 +393,11 @@ namespace Telegram.Controls
 
         private ImageSource GetSource(IClientService clientService, File file, int width, int height, bool download)
         {
-            if (file.Local.IsDownloadingCompleted)
+            if (file == null)
+            {
+                return null;
+            }
+            else if (file.Local.IsDownloadingCompleted)
             {
                 return UriEx.ToBitmap(file.Local.Path, width, height);
             }

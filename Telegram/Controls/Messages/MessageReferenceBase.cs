@@ -811,7 +811,14 @@ namespace Telegram.Controls.Messages
 
             if (thumbnail)
             {
-                UpdateThumbnail(clientService, video.Video.Thumbnail, video.Video.Minithumbnail);
+                if (video.Cover != null)
+                {
+                    UpdateThumbnail(clientService, video.Cover.GetSmall(), video.Cover.Minithumbnail);
+                }
+                else
+                {
+                    UpdateThumbnail(clientService, video.Video.Thumbnail, video.Video.Minithumbnail);
+                }
             }
             else
             {
