@@ -31,7 +31,8 @@ namespace Telegram.ViewModels.Supergroups
         CustomEmojiStickerSet,
         ChatTheme,
         CustomBackground,
-        DisableSponsoredMessages
+        DisableSponsoredMessages,
+        AutoTranslate
     }
 
     public partial class SupergroupProfileColorViewModel : ViewModelBase

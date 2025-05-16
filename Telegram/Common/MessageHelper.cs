@@ -769,7 +769,7 @@ namespace Telegram.Common
 
                 if (response1 is ChatBoostFeatures features && response2 is ChatBoostSlots slots && response3 is ChatBoostStatus status)
                 {
-                    await new ChatBoostFeaturesPopup(clientService, navigation, chat, status, slots, features, ChatBoostFeature.None, 0).ShowQueuedAsync(navigation.XamlRoot);
+                    navigation.ShowPopup(new ChatBoostFeaturesPopup(clientService, navigation, chat, status, slots, features, ChatBoostFeature.None, 0));
                 }
             }
         }

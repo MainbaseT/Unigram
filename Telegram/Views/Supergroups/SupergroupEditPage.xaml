@@ -117,6 +117,24 @@
                             <controls:ProfileColorBadge x:Name="ProfileColor" />
                         </controls:BadgeButton.Badge>
                     </controls:BadgeButton>
+
+                    <Grid x:Name="ChannelAutoTranslate"
+                          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                        <controls:FauxCheckBox Click="{x:Bind ViewModel.ChangeHasAutomaticTranslation}"
+                                               IsFaux="True"
+                                               IsChevronVisible="{x:Bind ViewModel.IsPremium, Mode=OneWay}"
+                                               IsChecked="{x:Bind ViewModel.HasAutomaticTranslation, Mode=OneWay}"
+                                               Content="{CustomResource ChannelAutotranslation}"
+                                               Style="{StaticResource SettingsCheckBoxStyle}" />
+                        <TextBlock x:Name="ChannelAutoTranslateLock"
+                                   x:Load="{x:Bind ViewModel.HasAutomaticTransationLock, Mode=OneWay}"
+                                   Text="&#xEA25;"
+                                   Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
+                                   FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   FontSize="20"
+                                   Padding="20,12,0,0"
+                                   IsHitTestVisible="False" />
+                    </Grid>
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl x:Name="GroupMembersPanel">

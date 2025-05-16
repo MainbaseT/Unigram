@@ -238,7 +238,15 @@ namespace Telegram.ViewModels
 
             if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.Supergroup.Id)
             {
-                BeginOnUIThread(() => Delegate?.UpdateSupergroupFullInfo(chat, update.Supergroup, ClientService.GetSupergroupFull(update.Supergroup.Id)));
+                BeginOnUIThread(() =>
+                {
+                    if (_hasAutomaticTranslation != update.Supergroup.HasAutomaticTranslation)
+                    {
+                        UpdateChatIsTranslatable();
+                    }
+
+                    Delegate?.UpdateSupergroupFullInfo(chat, update.Supergroup, ClientService.GetSupergroupFull(update.Supergroup.Id));
+                });
             }
         }
 

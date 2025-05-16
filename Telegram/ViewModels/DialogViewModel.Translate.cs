@@ -32,8 +32,25 @@ namespace Telegram.ViewModels
         private bool _isTranslating;
         public bool IsTranslating
         {
-            get => _isTranslating && CanTranslate && ClientService.IsPremium;
+            get => _isTranslating && CanTranslate && HasAutomaticTranslation();
             set => SetTranslating(value);
+        }
+
+        private bool? _hasAutomaticTranslation;
+
+        private bool HasAutomaticTranslation()
+        {
+            if (ClientService.IsPremium || _hasAutomaticTranslation == true)
+            {
+                return true;
+            }
+            else if (_hasAutomaticTranslation == null && ClientService.TryGetSupergroup(Chat, out Supergroup supergroup))
+            {
+                _hasAutomaticTranslation = supergroup.HasAutomaticTranslation;
+                return supergroup.HasAutomaticTranslation;
+            }
+
+            return false;
         }
 
         private void SetTranslating()
@@ -59,7 +76,7 @@ namespace Telegram.ViewModels
 
         private void UpdateLanguageStatistics(MessageViewModel message)
         {
-            if (_languageDetected != null || message.IsOutgoing || message.Text == null || !ClientService.IsPremium)
+            if (_languageDetected != null || message.IsOutgoing || message.Text == null || !HasAutomaticTranslation())
             {
                 return;
             }
@@ -95,7 +112,7 @@ namespace Telegram.ViewModels
 
             lock (_languageLock)
             {
-                if (_languageDetected != null || _languageBuilder == null || !ClientService.IsPremium)
+                if (_languageDetected != null || _languageBuilder == null || !HasAutomaticTranslation())
                 {
                     return;
                 }
@@ -217,7 +234,7 @@ namespace Telegram.ViewModels
 
         public bool TranslateChat()
         {
-            if (ClientService.IsPremium)
+            if (HasAutomaticTranslation())
             {
                 IsTranslating = !_isTranslating;
             }

@@ -510,6 +510,7 @@ namespace Telegram.Controls.Messages
                 // Local types:
                 MessageChatEvent chatEvent => chatEvent.Action switch
                 {
+                    ChatEventAutomaticTranslationToggled automaticTranslationToggled => UpdateAutomaticTranslationToggled(message, automaticTranslationToggled, active),
                     ChatEventAvailableReactionsChanged availableReactionsChanged => UpdateAvailableReactionsChanged(message, availableReactionsChanged, active),
                     ChatEventHasProtectedContentToggled hasProtectedContentToggled => UpdateHasProtectedContentToggled(message, hasProtectedContentToggled, active),
                     ChatEventSignMessagesToggled signMessagesToggled => UpdateSignMessagesToggled(message, signMessagesToggled, active),
@@ -780,6 +781,25 @@ namespace Telegram.Controls.Messages
             else
             {
                 content = ReplaceWithLink(Strings.EventLogToggledSlowmodeOff, "un1", fromUser, entities);
+            }
+
+            return (content, entities);
+        }
+
+        private static (string Text, IList<TextEntity> Entities) UpdateAutomaticTranslationToggled(MessageViewModel message, ChatEventAutomaticTranslationToggled automaticTranslationToggled, bool active)
+        {
+            var content = string.Empty;
+            var entities = active ? new List<TextEntity>() : null;
+
+            var fromUser = message.GetSender();
+
+            if (automaticTranslationToggled.HasAutomaticTranslation)
+            {
+                content = ReplaceWithLink(Strings.EventLogToggledAutotranslationOn, "un1", fromUser, entities);
+            }
+            else
+            {
+                content = ReplaceWithLink(Strings.EventLogToggledAutotranslationOff, "un1", fromUser, entities);
             }
 
             return (content, entities);

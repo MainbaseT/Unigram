@@ -1859,6 +1859,9 @@ from this chat</value>
   <data name="BoostExpireOn" xml:space="preserve">
     <value>boost expires on {0}</value>
   </data>
+  <data name="BoostFeatureAutotranslation" xml:space="preserve">
+    <value>Auto-Translation of Messages</value>
+  </data>
   <data name="BoostFeatureBackground_one" xml:space="preserve">
     <value>{0} Channel Background</value>
   </data>
@@ -3612,6 +3615,9 @@ revenue per user</value>
   <data name="ChannelAppearanceUpdated" xml:space="preserve">
     <value>Channel appearance has been updated</value>
   </data>
+  <data name="ChannelAutotranslation" xml:space="preserve">
+    <value>Auto-Translate Messages</value>
+  </data>
   <data name="ChannelBlacklist" xml:space="preserve">
     <value>Removed Users</value>
   </data>
@@ -3793,6 +3799,11 @@ Ask your Premium subscribers to boost your channel with this link:</value>
   </data>
   <data name="ChannelNeedBoostsDescriptionLevelNext" xml:space="preserve">
     <value>This channel needs {0} to be able to post {1} per day. Help make it possible!</value>
+  </data>
+  <data name="ChannelNeedBoostsForAutotranslationDescription" xml:space="preserve">
+    <value>Your channel needs to reach **Level {0}** to enable auto-translation.
+
+Ask your **Premium** subscribers to boost the channel with this link:</value>
   </data>
   <data name="ChannelNeedBoostsForColorDescription" xml:space="preserve">
     <value>Your channel needs to reach **Level {0}** to change channel color. **Premium** users can boost your channel with this link:</value>
@@ -5700,6 +5711,12 @@ Duration: {1}</value>
   </data>
   <data name="EventLogSwitchToGroup" xml:space="preserve">
     <value>un1 disabled topics</value>
+  </data>
+  <data name="EventLogToggledAutotranslationOff" xml:space="preserve">
+    <value>un1 disabled auto-translation</value>
+  </data>
+  <data name="EventLogToggledAutotranslationOn" xml:space="preserve">
+    <value>un1 enabled auto-translation</value>
   </data>
   <data name="EventLogToggledInvitesHistoryOff" xml:space="preserve">
     <value>un1 made the group history hidden for new members</value>
@@ -12879,6 +12896,9 @@ If you are not comfortable with Telegram&apos;s modest needs, it won&apos;t be p
   </data>
   <data name="Unlock" xml:space="preserve">
     <value>Unlock</value>
+  </data>
+  <data name="UnlockBoostChannelAutotranslation" xml:space="preserve">
+    <value>Auto-translation of messages</value>
   </data>
   <data name="UnlockPaidContent_one" xml:space="preserve">
     <value>Unlock for ⭐️{0}</value>

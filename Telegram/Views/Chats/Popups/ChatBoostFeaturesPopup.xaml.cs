@@ -73,6 +73,7 @@ namespace Telegram.Views.Chats.Popups
                     ChatBoostFeature.CustomBackground => Strings.BoostingEnableWallpaper,
                     ChatBoostFeature.BackgroundCustomEmoji => Strings.BoostingEnableLinkIcon,
                     ChatBoostFeature.ProfileBackgroundCustomEmoji => Strings.BoostingEnableProfileIcon,
+                    ChatBoostFeature.AutoTranslate => Strings.UnlockBoostChannelAutotranslation,
                     _ => _channel ? Strings.BoostChannel : Strings.BoostGroup
                 };
 
@@ -86,6 +87,7 @@ namespace Telegram.Views.Chats.Popups
                     ChatBoostFeature.BackgroundCustomEmoji => _channel ? Strings.ChannelNeedBoostsForReplyIconDescription : Strings.GroupNeedBoostsForReplyIconDescription,
                     ChatBoostFeature.ProfileBackgroundCustomEmoji => _channel ? Strings.ChannelNeedBoostsForProfileIconDescription : Strings.GroupNeedBoostsForProfileIconDescription,
                     ChatBoostFeature.DisableSponsoredMessages => _channel ? Strings.ChannelNeedBoostsForSwitchOffAdsDescription : Strings.ChannelNeedBoostsForSwitchOffAdsDescription,
+                    ChatBoostFeature.AutoTranslate => Strings.ChannelNeedBoostsForAutotranslationDescription,
                     _ => _channel ? Strings.ChannelNeedBoostsDescriptionForNewFeatures : Strings.GroupNeedBoostsDescriptionForNewFeatures
                 };
 

@@ -26,16 +26,17 @@ namespace Telegram.Controls.Cells
             if (channel)
             {
                 UpdateFeature(i++, features.CanDisableSponsoredMessages, DisableSponsoredIcon, DisableSponsoredText, Strings.BoostFeatureSwitchOffAds);
-                UpdateFeature(i++, features.StoryPerDayCount, StoriesIcon, StoriesText, Strings.R.BoostFeatureStoriesPerDay);
-                UpdateFeature(i++, features.CustomEmojiReactionCount, ReactionsIcon, ReactionsText, Strings.R.BoostFeatureCustomReaction);
-                UpdateFeature(i++, features.TitleColorCount, NameColorsIcon, NameColorsText, Strings.R.BoostFeatureNameColor);
-                UpdateFeature(i++, features.AccentColorCount, StylesIcon, StylesText, Strings.R.BoostFeatureReplyColor);
-                UpdateFeature(i++, features.CanSetBackgroundCustomEmoji, NameIconsIcon, NameIconsText, Strings.BoostFeatureReplyIcon);
-                UpdateFeature(i++, features.CanSetEmojiStatus, EmojiStatusIcon, EmojiStatusText, string.Format(Strings.BoostFeatureEmojiStatuses, "**1000+**"));
-                UpdateFeature(i++, features.ProfileAccentColorCount, ProfileColorsIcon, ProfileColorsText, Strings.R.BoostFeatureProfileColor);
-                UpdateFeature(i++, features.CanSetProfileBackgroundCustomEmoji, ProfileIconsIcon, ProfileIconsText, Strings.BoostFeatureProfileIcon);
-                UpdateFeature(i++, features.ChatThemeBackgroundCount, BackgroundsIcon, BackgroundsText, Strings.R.BoostFeatureBackground);
                 UpdateFeature(i++, features.CanSetCustomBackground, CustomBackgroundIcon, CustomBackgroundText, Strings.BoostFeatureCustomBackground);
+                UpdateFeature(i++, features.ChatThemeBackgroundCount, BackgroundsIcon, BackgroundsText, Strings.R.BoostFeatureBackground);
+                UpdateFeature(i++, features.CanSetEmojiStatus, EmojiStatusIcon, EmojiStatusText, string.Format(Strings.BoostFeatureEmojiStatuses, "**1000+**"));
+                UpdateFeature(i++, features.CanSetProfileBackgroundCustomEmoji, ProfileIconsIcon, ProfileIconsText, Strings.BoostFeatureProfileIcon);
+                UpdateFeature(i++, features.ProfileAccentColorCount, ProfileColorsIcon, ProfileColorsText, Strings.R.BoostFeatureProfileColor);
+                UpdateFeature(i++, features.CanSetBackgroundCustomEmoji, NameIconsIcon, NameIconsText, Strings.BoostFeatureReplyIcon);
+                UpdateFeature(i++, features.AccentColorCount, StylesIcon, StylesText, Strings.R.BoostFeatureReplyColor);
+                UpdateFeature(i++, features.TitleColorCount, NameColorsIcon, NameColorsText, Strings.R.BoostFeatureNameColor);
+                UpdateFeature(i++, features.CustomEmojiReactionCount, ReactionsIcon, ReactionsText, Strings.R.BoostFeatureCustomReaction);
+                UpdateFeature(i++, features.StoryPerDayCount, StoriesIcon, StoriesText, Strings.R.BoostFeatureStoriesPerDay);
+                UpdateFeature(i++, features.CanEnableAutomaticTranslation, AutoTranslateIcon, AutoTranslateText, Strings.BoostFeatureAutotranslation);
 
                 Collapse(VoiceToTextIcon, VoiceToTextText);
                 Collapse(CustomEmojiPackIcon, CustomEmojiPackText);
@@ -51,6 +52,7 @@ namespace Telegram.Controls.Cells
                 UpdateFeature(i++, features.ProfileAccentColorCount, ProfileColorsIcon, ProfileColorsText, Strings.R.BoostFeatureProfileColorGroup);
                 UpdateFeature(i++, features.StoryPerDayCount, StoriesIcon, StoriesText, Strings.R.BoostFeatureStoriesPerDay);
 
+                Collapse(AutoTranslateIcon, AutoTranslateText);
                 Collapse(DisableSponsoredIcon, DisableSponsoredText);
                 Collapse(ReactionsIcon, ReactionsText);
                 Collapse(NameColorsIcon, NameColorsText);

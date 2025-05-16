@@ -15,6 +15,7 @@ using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
 using Telegram.Views;
 using Telegram.Views.Chats;
+using Telegram.Views.Chats.Popups;
 using Telegram.Views.Popups;
 using Telegram.Views.Supergroups;
 using Telegram.Views.Supergroups.Popups;
@@ -82,6 +83,45 @@ namespace Telegram.ViewModels.Supergroups
             new SettingsOptionItem<bool>(false, Strings.ChatHistoryHidden)
         };
 
+        private ChatBoostStatus _boostStatus;
+
+        private bool _hasAutomaticTranslation;
+        public bool HasAutomaticTranslation
+        {
+            get => _hasAutomaticTranslation;
+            set => Set(ref _hasAutomaticTranslation, value);
+        }
+
+        private bool _hasAutomaticTransationLock;
+        public bool HasAutomaticTransationLock
+        {
+            get => _hasAutomaticTransationLock;
+            set => Set(ref _hasAutomaticTransationLock, value);
+        }
+
+        public async void ChangeHasAutomaticTranslation()
+        {
+            var response1 = await ClientService.SendAsync(new GetChatBoostFeatures(Chat.Type is ChatTypeSupergroup { IsChannel: true }));
+            if (response1 is not ChatBoostFeatures features)
+            {
+                return;
+            }
+
+            if (_boostStatus?.Level >= features.MinAutomaticTranslationBoostLevel && Chat?.Type is ChatTypeSupergroup supergroup)
+            {
+                HasAutomaticTranslation = !HasAutomaticTranslation;
+                ClientService.Send(new ToggleSupergroupHasAutomaticTranslation(supergroup.SupergroupId, HasAutomaticTranslation));
+            }
+            else if (_boostStatus != null)
+            {
+                var response2 = await ClientService.SendAsync(new GetAvailableChatBoostSlots());
+                if (response2 is ChatBoostSlots slots)
+                {
+                    NavigationService.ShowPopup(new ChatBoostFeaturesPopup(ClientService, NavigationService, Chat, _boostStatus, slots, features, ChatBoostFeature.AutoTranslate, features.MinAutomaticTranslationBoostLevel));
+                }
+            }
+        }
+
         private int _inviteLinksCount;
         public int InviteLinksCount
         {
@@ -91,7 +131,7 @@ namespace Telegram.ViewModels.Supergroups
 
         #region Initialize
 
-        protected override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
+        protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
             var chatId = (long)parameter;
 
@@ -100,7 +140,7 @@ namespace Telegram.ViewModels.Supergroups
             var chat = _chat;
             if (chat == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             Delegate?.UpdateChat(chat);
@@ -138,10 +178,34 @@ namespace Telegram.ViewModels.Supergroups
                 }
             }
 
+            InitializeInviteLinksCount(chatId);
+            InitializeBoostStatus(chatId);
+
+            return Task.CompletedTask;
+        }
+
+        private async void InitializeInviteLinksCount(long chatId)
+        {
             var response = await ClientService.SendAsync(new GetChatInviteLinks(chatId, ClientService.Options.MyId, false, 0, string.Empty, 1));
             if (response is ChatInviteLinks inviteLinks)
             {
                 InviteLinksCount = inviteLinks.TotalCount;
+            }
+        }
+
+        private async void InitializeBoostStatus(long chatId)
+        {
+            var response1 = await ClientService.SendAsync(new GetChatBoostFeatures(Chat.Type is ChatTypeSupergroup { IsChannel: true }));
+            if (response1 is not ChatBoostFeatures features)
+            {
+                return;
+            }
+
+            var response3 = await ClientService.SendAsync(new GetChatBoostStatus(chatId));
+            if (response3 is ChatBoostStatus boostStatus)
+            {
+                _boostStatus = boostStatus;
+                HasAutomaticTransationLock = boostStatus.Level < features.MinAutomaticTranslationBoostLevel;
             }
         }
 

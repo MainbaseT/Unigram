@@ -27,6 +27,11 @@ namespace Telegram.Views.Supergroups
 
         private string ConvertHistory(int available)
         {
+            if (ViewModel.Chat?.Type is ChatTypeSupergroup { IsChannel: true })
+            {
+                return string.Empty;
+            }
+
             return ViewModel.AllHistoryAvailableOptions[available].Value
                 ? Strings.ChatHistoryVisibleInfo
                 : Strings.ChatHistoryHiddenInfo;
@@ -81,6 +86,7 @@ namespace Telegram.Views.Supergroups
             EventLog.Visibility = Visibility.Visible;
 
             ViewModel.Title = chat.Title;
+            ViewModel.HasAutomaticTranslation = group.HasAutomaticTranslation;
 
             var canChangeInfo = group.CanChangeInfo(chat);
             var canInviteUsers = group.CanInviteUsers();
@@ -136,7 +142,7 @@ namespace Telegram.Views.Supergroups
             ChatLinked.Visibility = group.IsChannel ? Visibility.Visible : group.HasLinkedChat ? Visibility.Visible : Visibility.Collapsed;
             ChatLinked.Content = group.IsChannel ? Strings.Discussion : Strings.LinkedChannel;
             ChatLinked.Glyph = group.IsChannel ? Icons.ChatEmpty : Icons.Megaphone;
-            ChatLinked.Badge = group.HasLinkedChat ? string.Empty : Strings.DiscussionInfo;
+            ChatLinked.Badge = group.HasLinkedChat ? string.Empty : Strings.DiscussionInfoShort;
 
             Permissions.Badge = string.Format("{0}/{1}", chat.Permissions.Count(), chat.Permissions.Total());
             Permissions.Visibility = group.IsChannel || !canRestrictMembers ? Visibility.Collapsed : Visibility.Visible;
@@ -150,6 +156,7 @@ namespace Telegram.Views.Supergroups
                     : Visibility.Collapsed;
 
             AffiliatePrograms.Visibility = group.IsChannel && group.CanPostMessages() ? Visibility.Visible : Visibility.Collapsed;
+            ChannelAutoTranslate.Visibility = group.IsChannel && canChangeInfo ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)

@@ -265,7 +265,6 @@ namespace Telegram.ViewModels
                         message = GetMessage(_chat.Id, channel, item);
                         message.Content = new MessageChatAddMembers(new[] { memberInvited.UserId });
                         break;
-                    case ChatEventSlowModeDelayChanged:
                     case ChatEventPermissionsChanged:
                     case ChatEventMemberRestricted:
                     case ChatEventMemberPromoted:
@@ -273,6 +272,8 @@ namespace Telegram.ViewModels
                         //message.Content = new MessageChatEvent(item, true);
                         message.Content = GetMessageContent(item, channel);
                         break;
+                    case ChatEventSlowModeDelayChanged:
+                    case ChatEventAutomaticTranslationToggled:
                     case ChatEventBackgroundChanged:
                     case ChatEventAvailableReactionsChanged:
                     case ChatEventHasProtectedContentToggled:
