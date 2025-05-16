@@ -76,6 +76,11 @@ namespace Telegram.Controls.Cells
                 {
                     RibbonRoot.Visibility = Visibility.Collapsed;
                 }
+
+                if (ResaleStarCountRoot != null)
+                {
+                    ResaleStarCountRoot.Visibility = Visibility.Collapsed;
+                }
             }
             else if (gift.Gift is SentGiftUpgraded upgraded)
             {
@@ -103,10 +108,38 @@ namespace Telegram.Controls.Cells
                 Animated.Source = new DelayedFileSource(clientService, upgraded.Gift.Model.Sticker);
 
                 RibbonRoot.Visibility = Visibility.Visible;
-                Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, Formatter.ShortNumber(upgraded.Gift.MaxUpgradedCount, true));
 
-                RibbonTop.Color = centerColor.WithBrightness(-0.1f);
-                RibbonBottom.Color = edgeColor.WithBrightness(-0.1f);
+                if (upgraded.Gift.ResaleStarCount > 0)
+                {
+                    Ribbon.Text = Strings.Gift2OnSale;
+
+                    RibbonTop.Color = _ribbonResaleTop;
+                    RibbonBottom.Color = _ribbonResaleBottom;
+
+                    if (ResaleStarCountRoot != null)
+                    {
+                        ResaleStarCountRoot.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        FindName(nameof(ResaleStarCountRoot));
+                        Grid.SetRow(ResaleStarCountRoot, 0);
+                    }
+
+                    ResaleStarCount.Text = upgraded.Gift.ResaleStarCount.ToString("N0");
+                }
+                else
+                {
+                    Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, Formatter.ShortNumber(upgraded.Gift.MaxUpgradedCount, true));
+
+                    RibbonTop.Color = centerColor.WithBrightness(-0.1f);
+                    RibbonBottom.Color = edgeColor.WithBrightness(-0.1f);
+
+                    if (ResaleStarCountRoot != null)
+                    {
+                        ResaleStarCountRoot.Visibility = Visibility.Collapsed;
+                    }
+                }
             }
 
             if (gift.IsSaved)
@@ -123,33 +156,75 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private readonly Color _ribbonLimitedTop = Color.FromArgb(0xFF, 0x6E, 0xD2, 0xFF);
-        private readonly Color _ribbonLimitedBottom = Color.FromArgb(0xFF, 0x35, 0xA5, 0xFC);
+        public void UpdateGift(IClientService clientService, GiftForResale gift)
+        {
+            StarCountRoot.Visibility = Visibility.Collapsed;
+
+            var source = DelayedFileSource.FromSticker(clientService, gift.Gift.Symbol.Sticker);
+            var centerColor = gift.Gift.Backdrop.Colors.CenterColor.ToColor();
+            var edgeColor = gift.Gift.Backdrop.Colors.EdgeColor.ToColor();
+
+            Pattern.Update(source, centerColor, edgeColor);
+
+            Pinned.Visibility = Visibility.Collapsed;
+
+            Photo.Visibility = Visibility.Collapsed;
+            Pattern.Visibility = Visibility.Visible;
+
+            Animated.Source = new DelayedFileSource(clientService, gift.Gift.Model.Sticker);
+
+            FindName(nameof(ResaleStarCountRoot));
+            ResaleStarCount.Text = gift.Gift.ResaleStarCount.ToString("N0");
+
+            RibbonRoot.Visibility = Visibility.Visible;
+            Ribbon.Text = string.Format("#{0:N0}", gift.Gift.Number);
+
+            RibbonTop.Color = centerColor.WithBrightness(-0.1f);
+            RibbonBottom.Color = edgeColor.WithBrightness(-0.1f);
+        }
+
+        private readonly Color _ribbonResaleTop = Color.FromArgb(0xFF, 0xAC, 0xDC, 0x89);
+        private readonly Color _ribbonResaleBottom = Color.FromArgb(0xFF, 0x75, 0xC8, 0x73);
+
+        private readonly Color _ribbonLimitedTop = Color.FromArgb(0xFF, 0x8A, 0xD3, 0xF9);
+        private readonly Color _ribbonLimitedBottom = Color.FromArgb(0xFF, 0x51, 0x9D, 0xEA);
 
         private readonly Color _ribbonSoldOutTop = Color.FromArgb(0xFF, 0xFF, 0x5B, 0x54);
         private readonly Color _ribbonSoldOutBottom = Color.FromArgb(0xFF, 0xED, 0x1D, 0x27);
 
-        public void UpdateGift(IClientService clientService, Gift gift)
+        public void UpdateGift(IClientService clientService, AvailableGift gift)
         {
             Photo.Visibility = Visibility.Collapsed;
             Pinned.Visibility = Visibility.Collapsed;
 
-            Animated.Source = new DelayedFileSource(clientService, gift.Sticker);
+            Animated.Source = new DelayedFileSource(clientService, gift.Gift.Sticker);
 
-            StarCount.Text = gift.StarCount.ToString("N0");
-
-            if (gift.TotalCount > 0)
+            if (gift.Gift.TotalCount > 0 && (gift.Gift.RemainingCount > 0 || gift.MinResaleStarCount == 0))
             {
+                StarCount.Text = gift.Gift.StarCount.ToString("N0");
+
                 RibbonRoot.Visibility = Visibility.Visible;
-                Ribbon.Text = gift.RemainingCount > 0
+                Ribbon.Text = gift.Gift.RemainingCount > 0
                     ? Strings.Gift2LimitedRibbon
                     : Strings.Gift2SoldOut;
 
-                RibbonTop.Color = gift.RemainingCount > 0 ? _ribbonLimitedTop : _ribbonSoldOutTop;
-                RibbonBottom.Color = gift.RemainingCount > 0 ? _ribbonLimitedBottom : _ribbonSoldOutBottom;
+                RibbonTop.Color = gift.Gift.RemainingCount > 0 ? _ribbonLimitedTop : _ribbonSoldOutTop;
+                RibbonBottom.Color = gift.Gift.RemainingCount > 0 ? _ribbonLimitedBottom : _ribbonSoldOutBottom;
+            }
+            else if (gift.MinResaleStarCount > 0)
+            {
+                StarCount.Text = gift.MinResaleStarCount.ToString("N0");
+
+                RibbonRoot.Visibility = Visibility.Visible;
+                Ribbon.Text = Strings.Gift2Resale;
+
+                RibbonTop.Color = _ribbonResaleTop;
+                RibbonBottom.Color = _ribbonResaleBottom;
             }
             else
             {
+                StarCount.Text = gift.Gift.StarCount.ToString("N0");
+
                 RibbonRoot.Visibility = Visibility.Collapsed;
             }
 

@@ -383,6 +383,18 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
+                case AvailableGift availableGift:
+                    if (availableGift.Gift != null)
+                    {
+                        ProcessFiles(availableGift.Gift);
+                    }
+                    break;
+                case AvailableGifts availableGifts:
+                    foreach (var item in availableGifts.Gifts)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
                 case Background background:
                     if (background.Document != null)
                     {
@@ -773,8 +785,22 @@ namespace Telegram.Services
                         ProcessFiles(gift.Sticker);
                     }
                     break;
-                case Gifts gifts:
-                    foreach (var item in gifts.GiftsValue)
+                case GiftForResale giftForResale:
+                    if (giftForResale.Gift != null)
+                    {
+                        ProcessFiles(giftForResale.Gift);
+                    }
+                    break;
+                case GiftsForResale giftsForResale:
+                    foreach (var item in giftsForResale.Gifts)
+                    {
+                        ProcessFiles(item);
+                    }
+                    foreach (var item in giftsForResale.Models)
+                    {
+                        ProcessFiles(item);
+                    }
+                    foreach (var item in giftsForResale.Symbols)
                     {
                         ProcessFiles(item);
                     }
@@ -2115,6 +2141,18 @@ namespace Telegram.Services
                         ProcessFiles(starTransactionTypePremiumPurchase.Sticker);
                     }
                     break;
+                case StarTransactionTypeUpgradedGiftPurchase starTransactionTypeUpgradedGiftPurchase:
+                    if (starTransactionTypeUpgradedGiftPurchase.Gift != null)
+                    {
+                        ProcessFiles(starTransactionTypeUpgradedGiftPurchase.Gift);
+                    }
+                    break;
+                case StarTransactionTypeUpgradedGiftSale starTransactionTypeUpgradedGiftSale:
+                    if (starTransactionTypeUpgradedGiftSale.Gift != null)
+                    {
+                        ProcessFiles(starTransactionTypeUpgradedGiftSale.Gift);
+                    }
+                    break;
                 case StarTransactionTypeUserDeposit starTransactionTypeUserDeposit:
                     if (starTransactionTypeUserDeposit.Sticker != null)
                     {
@@ -2497,10 +2535,22 @@ namespace Telegram.Services
                         ProcessFiles(upgradedGiftModel.Sticker);
                     }
                     break;
+                case UpgradedGiftModelCount upgradedGiftModelCount:
+                    if (upgradedGiftModelCount.Model != null)
+                    {
+                        ProcessFiles(upgradedGiftModelCount.Model);
+                    }
+                    break;
                 case UpgradedGiftSymbol upgradedGiftSymbol:
                     if (upgradedGiftSymbol.Sticker != null)
                     {
                         ProcessFiles(upgradedGiftSymbol.Sticker);
+                    }
+                    break;
+                case UpgradedGiftSymbolCount upgradedGiftSymbolCount:
+                    if (upgradedGiftSymbolCount.Symbol != null)
+                    {
+                        ProcessFiles(upgradedGiftSymbolCount.Symbol);
                     }
                     break;
                 case UpgradeGiftResult upgradeGiftResult:

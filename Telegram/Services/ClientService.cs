@@ -30,6 +30,7 @@ namespace Telegram.Services
         //void Send(Function function, ClientResultHandler handler);
         void Send(Function function, Action<BaseObject> handler = null);
         Task<BaseObject> SendAsync(Function function);
+        Task<BaseObject> SendPaymentAsync(long starCount, Function function);
 
         void GetReplyTo(MessageViewModel message, Action<BaseObject> handler);
         void GetStory(long storyPosterChatId, int storyId, Action<BaseObject> handler);
@@ -181,6 +182,8 @@ namespace Telegram.Services
         bool TryGetChatFromUser(long userId, out long value);
         bool TryGetChatFromUser(long userId, out Chat value);
         bool TryGetActiveStoriesFromUser(long userId, out ChatActiveStories activeStories);
+
+        Task<Chat> GetChatFromMessageSenderAsync(MessageSender messageSender);
 
         bool TryGetActiveStories(long chatId, out ChatActiveStories activeStories);
 
@@ -991,6 +994,20 @@ namespace Telegram.Services
         public Task<BaseObject> SendAsync(Function function)
         {
             return _client.SendAsync(function, _processFilesDelegate);
+        }
+
+        public async Task<BaseObject> SendPaymentAsync(long starCount, Function function)
+        {
+            if (OwnedStarCount.StarCount < starCount)
+            {
+                var updated = await GetStarTransactionsAsync(MyId, string.Empty, null, string.Empty, 1) as StarTransactions;
+                if (updated is null || updated.StarAmount.StarCount < starCount)
+                {
+                    return new ErrorStarsNeeded();
+                }
+            }
+
+            return await SendAsync(function);
         }
 
 
@@ -1874,6 +1891,26 @@ namespace Telegram.Services
 
             activeStories = null;
             return false;
+        }
+
+        public async Task<Chat> GetChatFromMessageSenderAsync(MessageSender messageSender)
+        {
+            TryGetChat(messageSender, out Chat chat);
+
+            if (chat == null && messageSender is MessageSenderUser senderUser)
+            {
+                TryGetChatFromUser(senderUser.UserId, out chat);
+
+                if (chat == null)
+                {
+                    var response = await SendAsync(new CreatePrivateChat(senderUser.UserId, false));
+                    chat = response as Chat;
+                }
+
+                return chat;
+            }
+
+            return null;
         }
 
         public IEnumerable<Chat> GetChats(IEnumerable<long> ids)

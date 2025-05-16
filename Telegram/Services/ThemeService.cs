@@ -48,6 +48,11 @@ namespace Telegram.Services
             _aggregator = aggregator;
         }
 
+        public static Dictionary<string, object> GetLookup(ElementTheme flags)
+        {
+            return flags == ElementTheme.Dark ? _defaultDark : _defaultLight;
+        }
+
         public static Dictionary<string, object> GetLookup(TelegramTheme flags)
         {
             return flags == TelegramTheme.Dark ? _defaultDark : _defaultLight;

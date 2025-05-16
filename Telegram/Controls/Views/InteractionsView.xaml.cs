@@ -128,7 +128,7 @@ namespace Telegram.Controls.Views
             var foregroundColor = Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF);
             var backgroundColor = Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF);
 
-            var lookup = ThemeService.GetLookup(ActualTheme == Windows.UI.Xaml.ElementTheme.Dark ? Services.Settings.TelegramTheme.Dark : Services.Settings.TelegramTheme.Light);
+            var lookup = ThemeService.GetLookup(ActualTheme);
             if (lookup.TryGet("MenuFlyoutItemBackgroundPointerOver", out Color color))
             {
                 foregroundColor = color;

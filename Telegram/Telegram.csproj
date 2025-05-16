@@ -365,6 +365,7 @@
     <Compile Include="Services\Calls\VoipGroupCall.cs" />
     <Compile Include="Services\Calls\VoipGroupCallNetworkStateChangedEventArgs.cs" />
     <Compile Include="Services\ForumTopicService.cs" />
+    <Compile Include="Td\Api\ErrorStarsNeeded.cs" />
     <Compile Include="Td\Api\PremiumLimitTypeFileSize.cs" />
     <Compile Include="Td\Api\ReactionTypeEqualityComparer.cs" />
     <Compile Include="Controls\PremiumStarCount.cs" />
@@ -1413,6 +1414,9 @@
     </Compile>
     <Compile Include="Views\Stars\Popups\FoundAffiliateProgramPopup.xaml.cs">
       <DependentUpon>FoundAffiliateProgramPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Stars\Popups\ResoldGiftsPopup.xaml.cs">
+      <DependentUpon>ResoldGiftsPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Stars\Popups\ReceivedGiftPopup.xaml.cs">
       <DependentUpon>ReceivedGiftPopup.xaml</DependentUpon>
@@ -3420,6 +3424,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Stars\Popups\ResoldGiftsPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Stars\Popups\ReceivedGiftPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -3983,7 +3991,7 @@
       <Version>4.6.1</Version>
     </PackageReference>
     <PackageReference Include="Telegram.Td.UWP">
-      <Version>1.8.48</Version>
+      <Version>1.8.49</Version>
     </PackageReference>
     <PackageReference Include="VideoLAN.LibVLC.UWP">
       <Version>3.0.21</Version>

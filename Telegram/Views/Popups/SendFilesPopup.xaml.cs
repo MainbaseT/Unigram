@@ -1322,7 +1322,7 @@ namespace Telegram.Views.Popups
                 return;
             }
 
-            StarCount = (long)popup.Value;
+            StarCount = popup.Value;
             IsFilesSelected = false;
             IsAlbum = true;
 

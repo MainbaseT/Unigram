@@ -22,6 +22,42 @@
                       VerticalScrollMode="Auto"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel>
+                <Grid x:Name="LimitedRoot"
+                      SizeChanged="LimitedRoot_SizeChanged"
+                      Margin="24,0,24,12"
+                      CornerRadius="4"
+                      Visibility="Collapsed"
+                      Grid.Row="1">
+                    <Grid x:Name="PrevLimitRoot"
+                          Background="{ThemeResource ControlFillColorDefaultBrush}"
+                          Padding="8,4">
+                        <TextBlock x:Name="PrevLimit"
+                                   Style="{StaticResource InfoBodyTextBlockStyle}"
+                                   FontWeight="SemiBold"
+                                   TextAlignment="Right" />
+                        <TextBlock x:Name="NextLimitBelow"
+                                   Style="{StaticResource InfoBodyTextBlockStyle}"
+                                   FontWeight="SemiBold"
+                                   TextAlignment="Left" />
+                    </Grid>
+                    <Grid x:Name="NextPanel"
+                          Background="{StaticResource PremiumLinearGradientBrush}"
+                          Padding="8,4">
+                        <TextBlock x:Name="NextLimit"
+                                   Foreground="#FFFFFF"
+                                   FontWeight="SemiBold"
+                                   TextAlignment="Left" />
+                    </Grid>
+                </Grid>
+
+                <Button x:Name="ResaleButton"
+                        Click="Resale_Click"
+                        HorizontalAlignment="Stretch"
+                        Margin="24,0,24,12"
+                        Visibility="Collapsed">
+                    <TextBlock x:Name="Resale" />
+                </Button>
+
                 <Grid>
                     <chats:ChatBackgroundControl x:Name="BackgroundControl" />
 

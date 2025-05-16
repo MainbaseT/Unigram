@@ -428,8 +428,9 @@ namespace Telegram.ViewModels.Payments
             }
 
             var popup = new InputPopup(InputPopupType.Value);
-            popup.Value = Formatter.Amount(_tipAmount, regular.Invoice.Currency);
-            popup.Maximum = Formatter.Amount(regular.Invoice.MaxTipAmount, regular.Invoice.Currency);
+            // TODO: decimal places aren't supported in the new input popup
+            popup.Value = (long)Formatter.Amount(_tipAmount, regular.Invoice.Currency);
+            popup.Maximum = (long)Formatter.Amount(regular.Invoice.MaxTipAmount, regular.Invoice.Currency);
             popup.Formatter = Locale.GetCurrencyFormatter(regular.Invoice.Currency);
 
             popup.Title = Strings.SearchTipToday;

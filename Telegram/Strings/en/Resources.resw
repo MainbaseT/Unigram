@@ -2763,6 +2763,18 @@ Do you want to revoke verification?</value>
   <data name="BotWebViewToSLink" xml:space="preserve">
     <value>https://telegram.org/tos/mini-apps</value>
   </data>
+  <data name="BoughtResoldGiftText" xml:space="preserve">
+    <value>{0} is now yours.</value>
+  </data>
+  <data name="BoughtResoldGiftTitle" xml:space="preserve">
+    <value>Gift acquired</value>
+  </data>
+  <data name="BoughtResoldGiftToText" xml:space="preserve">
+    <value>{0} has been notified about your gift.</value>
+  </data>
+  <data name="BoughtResoldGiftToTitle" xml:space="preserve">
+    <value>Gift sent</value>
+  </data>
   <data name="BubbleRadius" xml:space="preserve">
     <value>Message corners</value>
   </data>
@@ -6319,6 +6331,9 @@ Duration: {1}</value>
   <data name="Gift2ActionOutInfo_other" xml:space="preserve">
     <value>**{1}** can display this gift on their page or convert it to {0} Stars.</value>
   </data>
+  <data name="Gift2ActionResell" xml:space="preserve">
+    <value>Sell</value>
+  </data>
   <data name="Gift2ActionSavedInfo" xml:space="preserve">
     <value>You added this gift to your profile.</value>
   </data>
@@ -6330,6 +6345,12 @@ Duration: {1}</value>
   </data>
   <data name="Gift2ActionTitleInAnonymous" xml:space="preserve">
     <value>{0} received a gift!</value>
+  </data>
+  <data name="Gift2ActionTransfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="Gift2ActionUnlist" xml:space="preserve">
+    <value>Unlist</value>
   </data>
   <data name="Gift2ActionUpgrade" xml:space="preserve">
     <value>Tap “Unpack” to turn this gift into a unique collectible.</value>
@@ -6385,17 +6406,47 @@ Duration: {1}</value>
   <data name="Gift2Availability4Value_other" xml:space="preserve">
     <value>{0} of {1} left</value>
   </data>
+  <data name="Gift2AvailabilityLeft_one" xml:space="preserve">
+    <value>{0} left</value>
+  </data>
+  <data name="Gift2AvailabilityLeft_other" xml:space="preserve">
+    <value>{0} left</value>
+  </data>
+  <data name="Gift2AvailabilitySold_one" xml:space="preserve">
+    <value>{0} sold</value>
+  </data>
+  <data name="Gift2AvailabilitySold_other" xml:space="preserve">
+    <value>{0} sold</value>
+  </data>
   <data name="Gift2AvailabilityValue" xml:space="preserve">
     <value>{0} of {1} left</value>
   </data>
   <data name="Gift2AvailabilityValueNone" xml:space="preserve">
     <value>None of {0} left</value>
   </data>
+  <data name="Gift2AvailableForResale" xml:space="preserve">
+    <value>Available for Resale</value>
+  </data>
   <data name="Gift2ButtonSell_one" xml:space="preserve">
     <value>sell for {0} Star</value>
   </data>
   <data name="Gift2ButtonSell_other" xml:space="preserve">
     <value>sell for {0} Stars</value>
+  </data>
+  <data name="Gift2BuyPriceSelfText_one" xml:space="preserve">
+    <value>Do you want to buy **{1}** for **{0} Star**?</value>
+  </data>
+  <data name="Gift2BuyPriceSelfText_other" xml:space="preserve">
+    <value>Do you want to buy **{1}** for **{0} Stars**?</value>
+  </data>
+  <data name="Gift2BuyPriceText_one" xml:space="preserve">
+    <value>Do you want to buy **{1}** for **{0} Star** and gift it to **{2}**?</value>
+  </data>
+  <data name="Gift2BuyPriceText_other" xml:space="preserve">
+    <value>Do you want to buy **{1}** for **{0} Stars** and gift it to **{2}**?</value>
+  </data>
+  <data name="Gift2ChangePrice" xml:space="preserve">
+    <value>Change Price</value>
   </data>
   <data name="Gift2ChannelProfileInvisible3" xml:space="preserve">
     <value>This gift is hidden from visitors to your channel. **Show &gt;**</value>
@@ -6563,6 +6614,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2Months_other" xml:space="preserve">
     <value>{0}-months</value>
   </data>
+  <data name="Gift2OnSale" xml:space="preserve">
+    <value>on sale</value>
+  </data>
   <data name="Gift2Owner" xml:space="preserve">
     <value>Owner</value>
   </data>
@@ -6622,6 +6676,57 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2RarityHint" xml:space="preserve">
     <value>Only {0} of such collectibles have this attribute</value>
+  </data>
+  <data name="Gift2Resale" xml:space="preserve">
+    <value>resale</value>
+  </data>
+  <data name="Gift2ResaleCount_one" xml:space="preserve">
+    <value>{0} for resale</value>
+  </data>
+  <data name="Gift2ResaleCount_other" xml:space="preserve">
+    <value>{0} for resale</value>
+  </data>
+  <data name="Gift2ResaleFilterBackdrop" xml:space="preserve">
+    <value>Backdrop</value>
+  </data>
+  <data name="Gift2ResaleFilterBackdrops_one" xml:space="preserve">
+    <value>{0} Backdrop</value>
+  </data>
+  <data name="Gift2ResaleFilterBackdrops_other" xml:space="preserve">
+    <value>{0} Backdrops</value>
+  </data>
+  <data name="Gift2ResaleFilterModel" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Gift2ResaleFilterModels_one" xml:space="preserve">
+    <value>{0} Model</value>
+  </data>
+  <data name="Gift2ResaleFilterModels_other" xml:space="preserve">
+    <value>{0} Models</value>
+  </data>
+  <data name="Gift2ResaleFiltersSearch" xml:space="preserve">
+    <value>Search…</value>
+  </data>
+  <data name="Gift2ResaleFilterSymbol" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
+  <data name="Gift2ResaleFilterSymbols_one" xml:space="preserve">
+    <value>{0} Symbol</value>
+  </data>
+  <data name="Gift2ResaleFilterSymbols_other" xml:space="preserve">
+    <value>{0} Symbols</value>
+  </data>
+  <data name="Gift2ResaleNoCount" xml:space="preserve">
+    <value>no results</value>
+  </data>
+  <data name="Gift2ResellTimeout" xml:space="preserve">
+    <value>You will be able to resell this gift in {0}.</value>
+  </data>
+  <data name="Gift2ResellTimeoutDate" xml:space="preserve">
+    <value>You will be able to resell this gift on {0}.</value>
+  </data>
+  <data name="Gift2ResellTimeoutTitle" xml:space="preserve">
+    <value>Try Later</value>
   </data>
   <data name="Gift2Send_one" xml:space="preserve">
     <value>Send a Gift for ⭐️ {0}</value>
@@ -6689,6 +6794,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2TabLimited" xml:space="preserve">
     <value>Limited</value>
   </data>
+  <data name="Gift2TabResale" xml:space="preserve">
+    <value>Resale</value>
+  </data>
   <data name="Gift2Title" xml:space="preserve">
     <value>Send a Gift</value>
   </data>
@@ -6743,6 +6851,15 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2TransferText" xml:space="preserve">
     <value>Do you want to transfer ownership of **{0}** to **{1}**?</value>
   </data>
+  <data name="Gift2TransferTimeout" xml:space="preserve">
+    <value>You will be able to transfer this gift in {0}.</value>
+  </data>
+  <data name="Gift2TransferTimeoutDate" xml:space="preserve">
+    <value>You will be able to transfer this gift on {0}.</value>
+  </data>
+  <data name="Gift2TransferTimeoutTitle" xml:space="preserve">
+    <value>Try Later</value>
+  </data>
   <data name="Gift2UniqueRibbon" xml:space="preserve">
     <value>gift</value>
   </data>
@@ -6752,11 +6869,20 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2UniqueView" xml:space="preserve">
     <value>View</value>
   </data>
+  <data name="Gift2UnlistText" xml:space="preserve">
+    <value>Are you sure you want to unlist your gift?</value>
+  </data>
+  <data name="Gift2UnlistTitle" xml:space="preserve">
+    <value>Unlist {0}</value>
+  </data>
   <data name="Gift2Unpack" xml:space="preserve">
     <value>Unpack</value>
   </data>
   <data name="Gift2Unpin" xml:space="preserve">
     <value>Unpin</value>
+  </data>
+  <data name="Gift2Unwear" xml:space="preserve">
+    <value>Take Off</value>
   </data>
   <data name="Gift2Upgrade" xml:space="preserve">
     <value>Make Unique for ⭐️{0}</value>
@@ -6817,6 +6943,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2VisibleHide" xml:space="preserve">
     <value>hide</value>
+  </data>
+  <data name="Gift2Wear" xml:space="preserve">
+    <value>Wear</value>
   </data>
   <data name="GiftMonths_one" xml:space="preserve">
     <value>{0}-month</value>
@@ -10552,6 +10681,51 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   </data>
   <data name="RequireMonthlyFeePriceHint" xml:space="preserve">
     <value>Star amount per month</value>
+  </data>
+  <data name="ResellGiftButton" xml:space="preserve">
+    <value>List for Sale</value>
+  </data>
+  <data name="ResellGiftBuy_one" xml:space="preserve">
+    <value>Buy for ⭐️{0}</value>
+  </data>
+  <data name="ResellGiftBuy_other" xml:space="preserve">
+    <value>Buy for ⭐️{0}</value>
+  </data>
+  <data name="ResellGiftFilterSortDate" xml:space="preserve">
+    <value>Sort by Date</value>
+  </data>
+  <data name="ResellGiftFilterSortDateShort" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="ResellGiftFilterSortNumber" xml:space="preserve">
+    <value>Sort by Number</value>
+  </data>
+  <data name="ResellGiftFilterSortNumberShort" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="ResellGiftFilterSortPrice" xml:space="preserve">
+    <value>Sort by Price</value>
+  </data>
+  <data name="ResellGiftFilterSortPriceShort" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="ResellGiftInfo_one" xml:space="preserve">
+    <value>You will receive **{0}** Star.</value>
+  </data>
+  <data name="ResellGiftInfo_other" xml:space="preserve">
+    <value>You will receive **{0}** Stars.</value>
+  </data>
+  <data name="ResellGiftInfoMin_one" xml:space="preserve">
+    <value>Minimum price is {0} Star.</value>
+  </data>
+  <data name="ResellGiftInfoMin_other" xml:space="preserve">
+    <value>Minimum price is **{0}** Stars.</value>
+  </data>
+  <data name="ResellGiftPriceTitle" xml:space="preserve">
+    <value>Enter price in Stars</value>
+  </data>
+  <data name="ResellGiftTitle" xml:space="preserve">
+    <value>Price in Stars</value>
   </data>
   <data name="ResendCode" xml:space="preserve">
     <value>Resend Code</value>

@@ -243,7 +243,7 @@ namespace Telegram.ViewModels.Profile
                 return;
             }
 
-            ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, _senderId));
+            ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, _senderId, null));
         }
 
         public bool IsOwned()

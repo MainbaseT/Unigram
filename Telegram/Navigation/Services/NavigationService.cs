@@ -529,6 +529,7 @@ namespace Telegram.Navigation.Services
             if (ContentPopup.IsAnyPopupOpen(XamlRoot))
             {
                 _ = MessagePopup.ShowAsync(XamlRoot, target: null, message, title, primary, secondary ?? tertiary, destructive, requestedTheme);
+                return;
             }
 
             _ = MessagePopup.ShowAsync(XamlRoot, message, title, primary, secondary, tertiary, destructive, requestedTheme);

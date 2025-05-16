@@ -7,6 +7,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Media;
@@ -40,10 +41,12 @@ namespace Telegram.Views.Stars.Popups
         private readonly ReceivedGift _gift;
         private readonly MessageSender _receiverId;
 
+        private readonly MessageSender _sendGiftTo;
+
         private GiftUpgradePreview _preview;
         private int _index;
 
-        public ReceivedGiftPopup(IClientService clientService, INavigationService navigationService, ReceivedGift gift, MessageSender receiverId)
+        public ReceivedGiftPopup(IClientService clientService, INavigationService navigationService, ReceivedGift gift, MessageSender receiverId, MessageSender sendGiftTo)
         {
             InitializeComponent();
 
@@ -53,6 +56,7 @@ namespace Telegram.Views.Stars.Popups
 
             _gift = gift;
             _receiverId = receiverId;
+            _sendGiftTo = sendGiftTo;
 
             if (gift.Gift is SentGiftRegular regular)
             {
@@ -65,7 +69,7 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (gift.Gift is SentGiftUpgraded upgraded)
             {
-                InitializeUpgraded(clientService, gift, upgraded.Gift, receiverId);
+                InitializeUpgraded(clientService, gift, upgraded.Gift);
             }
         }
 
@@ -204,7 +208,7 @@ namespace Telegram.Views.Stars.Popups
             }
         }
 
-        private void InitializeUpgraded(IClientService clientService, ReceivedGift receivedGift, UpgradedGift gift, MessageSender receiverId)
+        private void InitializeUpgraded(IClientService clientService, ReceivedGift receivedGift, UpgradedGift gift)
         {
             DismissButtonRequestedTheme = ElementTheme.Dark;
             Header.Visibility = Visibility.Collapsed;
@@ -319,13 +323,55 @@ namespace Telegram.Views.Stars.Popups
                         ? Strings.Gift2ProfileInvisible3
                         : Strings.Gift2ChannelProfileInvisible3;
                 }
+
+                UpgradedButtons.Visibility = Visibility.Visible;
+
+                if (gift.ResaleStarCount > 0)
+                {
+                    ResaleStarCountRoot.Visibility = Visibility.Visible;
+                    ResaleStarCount.Text = gift.ResaleStarCount.ToString("N0");
+
+                    ResellButton.Glyph = Icons.TagOffFilled;
+                    ResellButton.Content = Strings.Gift2ActionUnlist;
+                }
+                else
+                {
+                    ResellButton.Glyph = Icons.TagFilled;
+                    ResellButton.Content = Strings.Gift2ActionResell;
+                }
+
+                if (user != null)
+                {
+                    if (user.EmojiStatus?.Type is EmojiStatusTypeUpgradedGift upgradedGift && upgradedGift.UpgradedGiftId == gift.Id)
+                    {
+                        WearButton.Glyph = Icons.CrownOffFilled;
+                        WearButton.Content = Strings.Gift2Unwear;
+                    }
+                    else
+                    {
+                        WearButton.Glyph = Icons.CrownFilled;
+                        WearButton.Content = Strings.Gift2Wear;
+                    }
+                }
+
+                PurchaseText.Text = Strings.OK;
             }
             else
             {
                 Info.Visibility = Visibility.Collapsed;
-            }
 
-            PurchaseText.Text = Strings.OK;
+                if (gift.ResaleStarCount > 0)
+                {
+                    ResaleStarCountRoot.Visibility = Visibility.Visible;
+                    ResaleStarCount.Text = gift.ResaleStarCount.ToString("N0");
+
+                    PurchaseText.Text = Locale.Declension(Strings.R.ResellGiftBuy, gift.ResaleStarCount).Replace("\u2B50", Icons.Premium + Icons.Spacing);
+                }
+                else
+                {
+                    PurchaseText.Text = Strings.OK;
+                }
+            }
         }
 
         public ReceivedGiftPopup(IClientService clientService, INavigationService navigationService, Gift gift)
@@ -380,14 +426,13 @@ namespace Telegram.Views.Stars.Popups
             {
                 Upgrade2();
             }
+            else if (_gift?.Gift is SentGiftUpgraded { Gift.ResaleStarCount: > 0 } && !IsOwned(_clientService, _receiverId))
+            {
+                BuyResale();
+            }
             else
             {
                 Hide(ContentDialogResult.Primary);
-
-                if (_gift != null)
-                {
-                    Visibility_Click(sender, null);
-                }
             }
         }
 
@@ -444,7 +489,7 @@ namespace Telegram.Views.Stars.Popups
                 DetailRoot.Visibility = Visibility.Visible;
                 UpgradeRoot.Visibility = Visibility.Collapsed;
 
-                InitializeUpgraded(_clientService, _gift, result.Gift, _receiverId);
+                InitializeUpgraded(_clientService, _gift, result.Gift);
             }
             else if (response is Error error)
             {
@@ -658,9 +703,14 @@ namespace Telegram.Views.Stars.Popups
             flyout.CreateFlyoutItem(CopyLink, Strings.CopyLink, Icons.Link);
             flyout.CreateFlyoutItem(Share, Strings.ShareFile, Icons.Share);
 
+            if (_gift.Gift is SentGiftUpgraded upgraded && upgraded.Gift.ResaleStarCount > 0 && upgraded.Gift.OwnerId.AreTheSame(_clientService.MyId))
+            {
+                flyout.CreateFlyoutItem(ChangePrice, Strings.Gift2ChangePrice, Icons.Tag);
+            }
+
             if (_gift.CanBeTransferred)
             {
-                flyout.CreateFlyoutItem(Transfer, Strings.Gift2TransferOption, Icons.Link);
+                flyout.CreateFlyoutItem(Transfer, Strings.Gift2TransferOption, Icons.Replace);
             }
 
             flyout.ShowAt(sender as UIElement, FlyoutPlacementMode.BottomEdgeAlignedRight);
@@ -683,10 +733,210 @@ namespace Telegram.Views.Stars.Popups
             }
         }
 
+        private async void Resell()
+        {
+            if (_gift.Gift is not SentGiftUpgraded upgraded)
+            {
+                return;
+            }
+
+            var now = DateTime.Now.ToTimestamp();
+            if (now < _gift.NextResaleDate)
+            {
+                var date = Formatter.ToLocalTime(_gift.NextResaleDate);
+                var diff = date - DateTime.Now;
+
+                string message;
+                if (diff.TotalDays >= 1)
+                {
+                    message = Formatter.DateAt(_gift.NextResaleDate);
+                    message = string.Format(Strings.Gift2ResellTimeoutDate, message);
+                }
+                else
+                {
+                    message = Locale.FormatTtl(_gift.NextResaleDate - now);
+                    message = string.Format(Strings.Gift2ResellTimeout, message);
+                }
+
+                _navigationService.ShowPopup(message, Strings.Gift2ResellTimeoutTitle, Strings.OK);
+            }
+            else if (upgraded.Gift.ResaleStarCount > 0)
+            {
+                var confirm = await _navigationService.ShowPopupAsync(Strings.Gift2UnlistText, string.Format(Strings.Gift2UnlistTitle, upgraded.Gift.ToName()), Strings.Gift2ActionUnlist, Strings.Cancel);
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    var response = await _clientService.SendAsync(new SetGiftResalePrice(_gift.ReceivedGiftId, 0));
+                    if (response is Ok)
+                    {
+                        upgraded.Gift.ResaleStarCount = 0;
+
+                        ResaleStarCountRoot.Visibility = Visibility.Collapsed;
+
+                        ResellButton.Glyph = Icons.TagFilled;
+                        ResellButton.Content = Strings.Gift2ActionResell;
+                    }
+                    else if (response is Error error)
+                    {
+                        ToastPopup.ShowError(XamlRoot, error);
+                    }
+                }
+            }
+            else
+            {
+                ChangePrice();
+            }
+        }
+
+        private async void ChangePrice()
+        {
+            if (_gift.Gift is not SentGiftUpgraded upgraded)
+            {
+                return;
+            }
+
+            var popup = new InputTeachingTip(InputPopupType.Stars);
+            popup.Value = Math.Clamp(upgraded.Gift.ResaleStarCount, _clientService.Options.GiftResaleStarCountMin, _clientService.Options.GiftResaleStarCountMax);
+            //popup.Minimum = _clientService.Options.GiftResaleStarCountMin;
+            popup.Maximum = _clientService.Options.GiftResaleStarCountMax;
+
+            popup.Title = Strings.ResellGiftTitle;
+            popup.Header = Strings.ResellGiftPriceTitle;
+            popup.ActionButtonContent = Strings.ResellGiftButton;
+            popup.ActionButtonStyle = BootStrapper.Current.Resources["AccentButtonStyle"] as Style;
+            popup.CloseButtonContent = Strings.Cancel;
+            popup.PreferredPlacement = TeachingTipPlacementMode.Center;
+            popup.IsLightDismissEnabled = false;
+            popup.ShouldConstrainToRootBounds = true;
+
+            popup.ValueChanged += (s, args) =>
+            {
+                if (args.Value < _clientService.Options.GiftResaleStarCountMin)
+                {
+                    args.Footer = Locale.Declension(Strings.R.ResellGiftInfoMin, _clientService.Options.GiftResaleStarCountMin);
+                }
+                else
+                {
+                    string ConvertResaleFee(long value)
+                    {
+                        var xtr = value / 1000d;
+                        var usd = xtr * _clientService.Options.GiftResaleEarningsPerMille;
+
+                        return Formatter.FormatAmount((long)usd, "USD");
+                    }
+
+                    args.Footer = string.Format("{0} ~{1}", Locale.Declension(Strings.R.ResellGiftInfo, args.Value), ConvertResaleFee(args.Value));
+                }
+            };
+
+            popup.Validating += (s, args) =>
+            {
+                if (args.Value < _clientService.Options.GiftResaleStarCountMin)
+                {
+                    _navigationService.ShowToast(Locale.Declension(Strings.R.ResellGiftInfoMin, _clientService.Options.GiftResaleStarCountMin), ToastPopupIcon.Info);
+                    args.Cancel = true;
+                }
+            };
+
+            var confirm = await popup.ShowAsync();
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            var response = await _clientService.SendAsync(new SetGiftResalePrice(_gift.ReceivedGiftId, popup.Value));
+            if (response is Ok)
+            {
+                upgraded.Gift.ResaleStarCount = popup.Value;
+
+                ResaleStarCountRoot.Visibility = Visibility.Visible;
+                ResaleStarCount.Text = upgraded.Gift.ResaleStarCount.ToString("N0");
+
+                ResellButton.Glyph = Icons.TagOffFilled;
+                ResellButton.Content = Strings.Gift2ActionUnlist;
+            }
+            else if (response is Error error)
+            {
+                ToastPopup.ShowError(XamlRoot, error);
+            }
+        }
+
         private void Transfer()
         {
-            Hide();
-            _navigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationTransferGift(_gift));
+            if (_gift.Gift is not SentGiftUpgraded upgraded)
+            {
+                return;
+            }
+
+            var now = DateTime.Now.ToTimestamp();
+            if (now < _gift.NextTransferDate)
+            {
+                var date = Formatter.ToLocalTime(_gift.NextTransferDate);
+                var diff = date - DateTime.Now;
+
+                string message;
+                if (diff.TotalDays >= 1)
+                {
+                    message = Formatter.DateAt(_gift.NextTransferDate);
+                    message = string.Format(Strings.Gift2TransferTimeoutDate, message);
+                }
+                else
+                {
+                    message = Locale.FormatTtl(_gift.NextTransferDate - now);
+                    message = string.Format(Strings.Gift2TransferTimeout, message);
+                }
+
+                _navigationService.ShowPopup(message, Strings.Gift2TransferTimeoutTitle, Strings.OK);
+            }
+            else
+            {
+                Hide();
+                _navigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationTransferGift(_gift));
+            }
+        }
+
+        private async void BuyResale()
+        {
+            if (_gift.Gift is not SentGiftUpgraded upgraded)
+            {
+                return;
+            }
+
+            var chat = await _clientService.GetChatFromMessageSenderAsync(_sendGiftTo);
+
+            var confirm = await TransferGiftPopup.ShowAsync(XamlRoot, _clientService, _gift, chat, true);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                var response = await _clientService.SendPaymentAsync(upgraded.Gift.ResaleStarCount, new SendResoldGift(upgraded.Gift.Name, _sendGiftTo, upgraded.Gift.ResaleStarCount));
+                if (response is Ok)
+                {
+                    _aggregator.Publish(new UpdateGiftIsSold(_gift.ReceivedGiftId));
+                    Hide(ContentDialogResult.Primary);
+
+                    if (chat != null)
+                    {
+                        _navigationService.NavigateToChat(chat.Id);
+                        ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.BoughtResoldGiftToTitle, string.Format(Strings.BoughtResoldGiftToText, chat.Title)), new DelayedFileSource(_clientService, upgraded.Gift.Model.Sticker));
+                    }
+                    else
+                    {
+                        ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.BoughtResoldGiftTitle, string.Format(Strings.BoughtResoldGiftText, upgraded.Gift.ToName())), new DelayedFileSource(_clientService, upgraded.Gift.Model.Sticker));
+                    }
+                }
+                else if (response is Error error)
+                {
+                    _submitted = false;
+                    ToastPopup.ShowError(XamlRoot, error);
+                }
+                else if (response is ErrorStarsNeeded)
+                {
+                    Hide();
+                    await _navigationService.ShowPopupAsync(new BuyPopup(), BuyStarsArgs.ForChannel(upgraded.Gift.ResaleStarCount, 0));
+                }
+            }
+            else
+            {
+                _submitted = false;
+            }
         }
 
         private void From_Click(Hyperlink sender, HyperlinkClickEventArgs args)
@@ -699,6 +949,21 @@ namespace Telegram.Views.Stars.Popups
         {
             Hide();
             _navigationService.NavigateToSender(_receiverId);
+        }
+
+        private void TransferButton_Click(object sender, RoutedEventArgs e)
+        {
+            Transfer();
+        }
+
+        private void WearButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ResellButton_Click(object sender, RoutedEventArgs e)
+        {
+            Resell();
         }
     }
 }

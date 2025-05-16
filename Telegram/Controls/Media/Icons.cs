@@ -20,9 +20,17 @@ namespace Telegram.Controls.Media
         public const string ZWNJ = "\u200C";
         public const string Spacing = "\u2004\u200A";
 
+        public const string DollarArrowUp = "\uEAAE";
+        public const string DollarArrowUp16 = "\uEAAD";
+        public const string CalendarArrowUp = "\uEAB0";
+        public const string CalendarArrowUp16 = "\uEAAF";
+        public const string NumberSymbolArrowUp = "\uEAAC";
+        public const string NumberSymbolArrowUp16 = "\uEAAB";
+
         public const string Boosters12 = "\uEA6A";
         public const string Boosters212 = "\uEA6B";
 
+        public const string Tag = "\uEAB4";
         public const string TagFilter = "\uEA63";
         public const string TagEdit = "\uEA64";
         public const string TagSearch = "\uEA65";
@@ -406,6 +414,9 @@ namespace Telegram.Controls.Media
         public const string ChatLinkFilled = "\uEA83";
         public const string ChatSettingsFilled = "\uEA6E";
         public const string TagFilled = "\uEA68";
+        public const string TagOffFilled = "\uEAB2";
+        public const string CrownFilled = "\uEAB3";
+        public const string CrownOffFilled = "\uEAB1";
         public const string HandOpenHeartFilled = "\uEA69";
         public const string StickerFilled = "\uE9AD";
         public const string HeartFilled = "\uE9B6";

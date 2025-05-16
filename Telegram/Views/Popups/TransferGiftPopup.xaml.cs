@@ -24,7 +24,7 @@ namespace Telegram.Views.Popups
 
         private readonly TaskCompletionSource<ContentDialogResult> _tsc = new();
 
-        public TransferGiftPopup(IClientService clientService, ReceivedGift gift, Chat chat)
+        public TransferGiftPopup(IClientService clientService, ReceivedGift gift, Chat chat, bool resale)
         {
             InitializeComponent();
 
@@ -37,22 +37,44 @@ namespace Telegram.Views.Popups
                 Animated.Source = new DelayedFileSource(clientService, upgraded.Gift.Model.Sticker);
 
                 Photo1.Update(source, centerColor, edgeColor);
-                Photo2.SetChat(clientService, chat, 64);
 
-                if (gift.TransferStarCount > 0)
+                if (chat != null)
+                {
+                    Photo2.SetChat(clientService, chat, 64);
+                }
+                else if (clientService.TryGetUser(clientService.Options.MyId, out User user))
+                {
+                    Photo2.SetUser(clientService, user, 64);
+                }
+
+                if (resale)
+                {
+                    if (chat != null)
+                    {
+                        TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2BuyPriceText, upgraded.Gift.ResaleStarCount, upgraded.Gift.ToName(), chat.Title));
+                    }
+                    else
+                    {
+                        TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2BuyPriceSelfText, upgraded.Gift.ResaleStarCount, upgraded.Gift.ToName()));
+                    }
+
+                    ActionButtonContent = Strings.Gift2TransferDo;
+                }
+                else if (gift.TransferStarCount > 0)
                 {
                     TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2TransferPriceText, gift.TransferStarCount, upgraded.Gift.ToName(), chat.Title));
+                    ActionButtonContent = Strings.Gift2TransferDo;
                 }
                 else
                 {
                     TextBlockHelper.SetMarkdown(MessageLabel, string.Format(Strings.Gift2TransferText, upgraded.Gift.ToName(), chat.Title));
+                    ActionButtonContent = Strings.Gift2TransferDo;
                 }
             }
 
             ActionButtonClick += OnAction;
 
             ActionButtonStyle = BootStrapper.Current.Resources["AccentButtonStyle"] as Style;
-            ActionButtonContent = Strings.Gift2TransferDo;
             CloseButtonContent = Strings.Cancel;
 
             Closed += OnClosed;
@@ -75,14 +97,14 @@ namespace Telegram.Views.Popups
             return _tsc.Task;
         }
 
-        public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, IClientService clientService, ReceivedGift gift, Chat chat)
+        public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, IClientService clientService, ReceivedGift gift, Chat chat, bool resale)
         {
             if (xamlRoot.Content is not IToastHost host)
             {
                 return null;
             }
 
-            var popup = new TransferGiftPopup(clientService, gift, chat)
+            var popup = new TransferGiftPopup(clientService, gift, chat, resale)
             {
                 PreferredPlacement = TeachingTipPlacementMode.Center,
                 Width = 314,

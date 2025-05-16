@@ -15,7 +15,6 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Common
@@ -56,15 +55,8 @@ namespace Telegram.Common
 
         public static void ShakeView(FrameworkElement view, float x = 2)
         {
-            // We use first child inside the control (usually a Grid)
-            // so we don't have to worry about absolute offset
-            var inner = VisualTreeHelper.GetChild(view, 0) as FrameworkElement;
-            if (inner == null)
-            {
-                return;
-            }
-
-            var visual = ElementComposition.GetElementVisual(inner);
+            var visual = ElementComposition.GetElementVisual(view);
+            ElementCompositionPreview.SetIsTranslationEnabled(view, true);
 
             var animation = visual.Compositor.CreateScalarKeyFrameAnimation();
             animation.Duration = TimeSpan.FromMilliseconds(50 * 6);
@@ -78,7 +70,7 @@ namespace Telegram.Common
             animation.InsertKeyFrame(0, 0);
             animation.InsertKeyFrame(1, 0);
 
-            visual.StartAnimation("Offset.X", animation);
+            visual.StartAnimation("Translation.X", animation);
         }
 
         #region IsVisible

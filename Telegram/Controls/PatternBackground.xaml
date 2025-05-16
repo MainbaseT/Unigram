@@ -102,7 +102,7 @@
                                         HorizontalContentAlignment="Stretch"
                                         VerticalContentAlignment="Stretch"
                                         VerticalAlignment="Bottom"
-                                        HorizontalAlignment="Center"
+                                        HorizontalAlignment="Stretch"
                                         Grid.Row="1" />
 
                         <!--<Border VerticalAlignment="Bottom"

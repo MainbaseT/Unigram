@@ -81,16 +81,7 @@ namespace Telegram.ViewModels.Stars
                 return PayResult.Succeeded;
             }
 
-            if (ClientService.OwnedStarCount.StarCount < stars.StarCount)
-            {
-                var updated = await ClientService.GetStarTransactionsAsync(ClientService.MyId, string.Empty, null, string.Empty, 1) as StarTransactions;
-                if (updated is null || updated.StarAmount.StarCount < stars.StarCount)
-                {
-                    return PayResult.StarsNeeded;
-                }
-            }
-
-            var response = await ClientService.SendAsync(new SendPaymentForm(_inputInvoice, PaymentForm.Id, string.Empty, string.Empty, null, 0));
+            var response = await ClientService.SendPaymentAsync(stars.StarCount, new SendPaymentForm(_inputInvoice, PaymentForm.Id, string.Empty, string.Empty, null, 0));
             if (response is PaymentResult result)
             {
                 if (result.Success)
@@ -107,6 +98,10 @@ namespace Telegram.ViewModels.Stars
             else if (response is Error error)
             {
                 ToastPopup.ShowError(XamlRoot, error);
+            }
+            else if (response is ErrorStarsNeeded)
+            {
+                return PayResult.StarsNeeded;
             }
 
             return PayResult.Failed;
