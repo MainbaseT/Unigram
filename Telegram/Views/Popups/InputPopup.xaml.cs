@@ -7,12 +7,15 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Navigation;
 using Telegram.Views.Host;
 using Windows.Globalization.NumberFormatting;
+using Windows.System.UserProfile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -33,9 +36,9 @@ namespace Telegram.Views.Popups
 
         public string Text { get; set; }
 
-        public double Value { get; set; }
+        public long Value { get; set; }
 
-        public InputPopupResult(ContentDialogResult result, string text, double value)
+        public InputPopupResult(ContentDialogResult result, string text, long value)
         {
             Result = result;
             Text = text;
@@ -45,7 +48,7 @@ namespace Telegram.Views.Popups
 
     public partial class InputPopupValidatingEventArgs : CancelEventArgs
     {
-        public InputPopupValidatingEventArgs(string text, double value)
+        public InputPopupValidatingEventArgs(string text, long value)
         {
             Text = text;
             Value = value;
@@ -53,25 +56,40 @@ namespace Telegram.Views.Popups
 
         public string Text { get; }
 
-        public double Value { get; }
+        public long Value { get; }
+    }
 
-        public string Result { get; set; }
+    public partial class InputPopupValueChangedEventArgs
+    {
+        public InputPopupValueChangedEventArgs(string text, long value)
+        {
+            Text = text;
+            Value = value;
+        }
+
+        public string Text { get; }
+
+        public long Value { get; }
+
+        public string Footer { get; set; }
     }
 
     public sealed partial class InputPopup : ContentPopup
     {
         public string Header { get; set; }
 
+        public string Footer { get; set; }
+
         public string Text { get; set; } = string.Empty;
-        public double Value { get; set; }
+        public long Value { get; set; }
 
         public string PlaceholderText { get; set; } = string.Empty;
 
         public int MaxLength { get; set; } = int.MaxValue;
         public int MinLength { get; set; } = 1;
 
-        public double Minimum { get; set; } = 0;
-        public double Maximum { get; set; } = double.MaxValue;
+        public long Minimum { get; set; } = 0;
+        public long Maximum { get; set; } = long.MaxValue;
 
         public InputScopeNameValue InputScope { get; set; }
         public INumberFormatter2 Formatter { get; set; }
@@ -81,52 +99,186 @@ namespace Telegram.Views.Popups
         public InputPopup(InputPopupType type = InputPopupType.Text)
         {
             InitializeComponent();
+            Formatter = GetRegionalSettingsAwareDecimalFormatter();
 
             switch (_type = type)
             {
                 case InputPopupType.Text:
                     FindName(nameof(Label));
+                    Label.TextChanged += OnTextChanged;
                     break;
                 case InputPopupType.Password:
                     FindName(nameof(Password));
+                    Password.PasswordChanged += OnPasswordChanged;
                     break;
                 case InputPopupType.Value:
                 case InputPopupType.Stars:
-                    FindName(nameof(Number));
+                    FindName(nameof(Label));
+                    Label.BeforeTextChanging += OnBeforeTextChanging;
                     break;
             }
         }
 
+        internal const int LOCALE_NAME_MAX_LENGTH = 85;
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        internal static extern int GetUserDefaultLocaleName(StringBuilder buf, int bufferLength);
+
+        // This was largely copied from Calculator's GetRegionalSettingsAwareDecimalFormatter()
+        private DecimalFormatter GetRegionalSettingsAwareDecimalFormatter()
+        {
+            DecimalFormatter formatter = null;
+
+            var sb = new StringBuilder(LOCALE_NAME_MAX_LENGTH);
+            if (GetUserDefaultLocaleName(sb, LOCALE_NAME_MAX_LENGTH) != 0)
+            {
+                // GetUserDefaultLocaleName may return an invalid bcp47 language tag with trailing non-BCP47 friendly characters,
+                // which if present would start with an underscore, for example sort order
+                // (see https://msdn.microsoft.com/en-us/library/windows/desktop/dd373814(v=vs.85).aspx).
+                // Therefore, if there is an underscore in the locale name, trim all characters from the underscore onwards.
+                var currentLocale = sb.ToString();
+
+                var underscore = currentLocale.IndexOf('_');
+                if (underscore != -1)
+                {
+                    currentLocale.Substring(0, underscore);
+                }
+
+                if (Windows.Globalization.Language.IsWellFormed(currentLocale))
+                {
+                    formatter = new DecimalFormatter(new[] { currentLocale }, GlobalizationPreferences.HomeGeographicRegion);
+                }
+            }
+
+            if (formatter == null)
+            {
+                formatter = new DecimalFormatter();
+            }
+
+            formatter.IntegerDigits = 1;
+            formatter.FractionDigits = 0;
+
+            return formatter;
+        }
+
         public event EventHandler<InputPopupValidatingEventArgs> Validating;
+        public event EventHandler<InputPopupValueChangedEventArgs> ValueChanged;
+
+        private void OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            OnValueChanged(Text = Label.Text, 0);
+        }
+
+        private void OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            OnValueChanged(Text = Password.Password, 0);
+        }
+
+        private void OnBeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+        {
+            var parser = Formatter as INumberParser;
+
+            var newValue = parser?.ParseInt(args.NewText);
+            if (newValue >= Minimum && newValue <= Maximum)
+            {
+                OnValueChanged(string.Empty, Value = newValue.Value);
+            }
+            else
+            {
+                if (newValue > Maximum)
+                {
+                    VisualUtilities.QueueCallbackForCompositionRendered(InvalidateToMaximum);
+                }
+
+                args.Cancel = args.NewText.Length > 0;
+            }
+        }
+
+        private void InvalidateToMaximum()
+        {
+            var selectionStart = Label.SelectionStart;
+
+            Label.Text = Formatter.FormatInt(Maximum);
+            Label.SelectionStart = selectionStart + 1;
+
+            VisualUtilities.ShakeView(InputRoot);
+        }
+
+        private void OnValueChanged(string text, long value)
+        {
+            var handler = ValueChanged;
+            if (handler != null)
+            {
+                var args = new InputPopupValueChangedEventArgs(text, value);
+                handler(this, args);
+
+                if (string.IsNullOrEmpty(args.Footer))
+                {
+                    FooterText.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    FooterText.Visibility = Visibility.Visible;
+                    TextBlockHelper.SetMarkdown(FooterText, args.Footer);
+                }
+            }
+        }
 
         public override void OnCreate()
         {
             if (string.IsNullOrEmpty(Header))
             {
-                MessageLabel.Visibility = Visibility.Collapsed;
+                HeaderText.Visibility = Visibility.Collapsed;
             }
             else
             {
-                MessageLabel.Text = Header;
-                MessageLabel.Visibility = Visibility.Visible;
+                HeaderText.Text = Header;
+                HeaderText.Visibility = Visibility.Visible;
+            }
+
+            if (string.IsNullOrEmpty(Footer))
+            {
+                FooterText.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                FooterText.Text = Footer;
+                FooterText.Visibility = Visibility.Visible;
             }
 
             if (Label != null)
             {
                 Label.PlaceholderText = PlaceholderText;
-                Label.Text = Text;
-                Label.MaxLength = MaxLength;
 
                 var scope = new InputScope();
                 var name = new InputScopeName();
 
-                name.NameValue = InputScope;
-                scope.Names.Add(name);
+                if (_type == InputPopupType.Text)
+                {
+                    Label.MaxLength = MaxLength;
+                    Label.Text = Text;
 
+                    name.NameValue = InputScope;
+                }
+                else
+                {
+                    Label.MaxLength = 0;
+                    Label.Text = Formatter.FormatInt(Value);
+
+                    name.NameValue = InputScopeNameValue.Number;
+                }
+
+                scope.Names.Add(name);
                 Label.InputScope = scope;
 
                 Label.Focus(FocusState.Keyboard);
                 Label.SelectionStart = Label.Text.Length;
+
+                if (_type == InputPopupType.Stars)
+                {
+                    Label.Padding = new Thickness(36, Label.Padding.Top, Label.Padding.Right, Label.Padding.Bottom);
+                    FindName(nameof(StarCount));
+                }
             }
             else if (Password != null)
             {
@@ -137,68 +289,48 @@ namespace Telegram.Views.Popups
                 Password.Focus(FocusState.Keyboard);
                 Password.SelectAll();
             }
-            else if (Number != null)
-            {
-                if (Formatter != null)
-                {
-                    Number.NumberFormatter = Formatter;
-                }
-
-                Number.Minimum = Minimum;
-                Number.Maximum = Maximum;
-                Number.Value = Value;
-
-                Number.Focus(FocusState.Keyboard);
-
-                if (_type == InputPopupType.Stars)
-                {
-                    Number.Padding = new Thickness(36, Number.Padding.Top, Number.Padding.Right, Number.Padding.Bottom);
-                    FindName(nameof(StarCount));
-                }
-            }
         }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            FrameworkElement target = null;
             if (Label != null)
             {
-                if (Label.Text.Length < MinLength)
+                if (_type == InputPopupType.Text)
                 {
-                    VisualUtilities.ShakeView(Label);
-                    args.Cancel = true;
-                    return;
-                }
+                    if (Label.Text.Length < MinLength)
+                    {
+                        VisualUtilities.ShakeView(InputRoot);
+                        return;
+                    }
 
-                target = Label;
-                Text = Label.Text;
+                    Text = Label.Text;
+                }
+                else
+                {
+                    var parser = Formatter as INumberParser;
+
+                    var newValue = parser?.ParseInt(Label.Text);
+                    if (newValue < Minimum || newValue > Maximum || newValue == null)
+                    {
+                        VisualUtilities.ShakeView(InputRoot);
+                        return;
+                    }
+
+                    Value = newValue.Value;
+                }
             }
             else if (Password != null)
             {
                 if (Password.Password.Length < MinLength)
                 {
-                    VisualUtilities.ShakeView(Password);
-                    args.Cancel = true;
+                    VisualUtilities.ShakeView(InputRoot);
                     return;
                 }
 
-                target = Password;
                 Text = Password.Password;
             }
-            else if (Number != null)
-            {
-                if (Number.Value < 0 || Number.Value > Maximum)
-                {
-                    VisualUtilities.ShakeView(Number);
-                    args.Cancel = true;
-                    return;
-                }
 
-                target = Number;
-                Value = Number.Value;
-            }
-
-            if (Validating != null && target != null)
+            if (Validating != null)
             {
                 var temp = new InputPopupValidatingEventArgs(Text, Value);
 
@@ -206,7 +338,7 @@ namespace Telegram.Views.Popups
 
                 if (temp.Cancel)
                 {
-                    VisualUtilities.ShakeView(target);
+                    VisualUtilities.ShakeView(InputRoot);
                     args.Cancel = true;
                 }
             }
@@ -234,11 +366,6 @@ namespace Telegram.Views.Popups
         private void Label_PasswordChanged(object sender, RoutedEventArgs e)
         {
             IsPrimaryButtonEnabled = Password.Password.Length >= MinLength;
-        }
-
-        private void Number_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-        {
-            IsPrimaryButtonEnabled = args.NewValue >= Minimum && args.NewValue <= Maximum;
         }
 
         #region Static methods
