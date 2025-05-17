@@ -122,7 +122,7 @@ namespace Telegram.Common
         /// <param name="requestedMinSide">Max width/height of the output image</param>
         /// <param name="quality">JPEG compression quality (0.77 for pictures, 0.87 for thumbnails)</param>
         /// <returns></returns>
-        public static async Task<StorageFile> ScaleAsync(Guid encoderId, StorageFile sourceFile, StorageFile resizedImageFile, int requestedMinSide = 1280, bool bestQuality = false)
+        public static async Task<StorageFile> ScaleAsync(Guid encoderId, StorageFile sourceFile, StorageFile resizedImageFile, int requestedMinSide, bool bestQuality = false)
         {
             using (var source = await sourceFile.OpenReadAsync())
             {
@@ -130,7 +130,7 @@ namespace Telegram.Common
             }
         }
 
-        public static async Task<StorageFile> ScaleAsync(Guid encoderId, IRandomAccessStream source, StorageFile resizedImageFile, int requestedMinSide = 1280, bool bestQuality = false)
+        public static async Task<StorageFile> ScaleAsync(Guid encoderId, IRandomAccessStream source, StorageFile resizedImageFile, int requestedMinSide, bool bestQuality = false)
         {
             var decoder = await BitmapDecoder.CreateAsync(source);
             //if (decoder.FrameCount > 1)

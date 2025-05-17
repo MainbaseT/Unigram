@@ -22,6 +22,7 @@ using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Entities;
 using Telegram.Navigation;
+using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -186,6 +187,20 @@ namespace Telegram.Views.Popups
             }
         }
 
+        private bool _sendHighQuality;
+        public bool SendHighQuality
+        {
+            get => _sendHighQuality;
+            set
+            {
+                if (_sendHighQuality != value)
+                {
+                    _sendHighQuality = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SendHighQuality)));
+                }
+            }
+        }
+
         private long _starCount;
         public long StarCount
         {
@@ -259,6 +274,8 @@ namespace Telegram.Views.Popups
             Items.CollectionChanged += OnCollectionChanged;
             IsMediaSelected = media && IsMediaAllowed;
             IsFilesSelected = !IsMediaSelected;
+
+            SendHighQuality = SettingsService.Current.Diagnostics.SendLargePhotos;
 
             EmojiPanel.DataContext = EmojiDrawerViewModel.Create(viewModel.SessionId);
             CaptionInput.CustomEmoji = CustomEmoji;
@@ -1254,6 +1271,12 @@ namespace Telegram.Views.Popups
 
                 if (IsMediaSelected && Items.All(x => x is StoragePhoto or StorageVideo))
                 {
+                    if (Items.Any(x => x is StoragePhoto && (x.Width > 1280 || x.Height > 1280)))
+                    {
+                        flyout.CreateFlyoutSeparator();
+                        flyout.CreateFlyoutItem(ToggleSendHighQuality, "Send in High Quality", SendHighQuality ? Icons.Checkmark : null);
+                    }
+
                     flyout.CreateFlyoutSeparator();
 
                     flyout.CreateFlyoutItem(ToggleSendWithSpoiler, SendWithSpoiler ? Strings.DisablePhotoSpoiler : Strings.EnablePhotoSpoiler, Icons.SpoilerMedia);
@@ -1284,6 +1307,11 @@ namespace Telegram.Views.Popups
         private void ToggleShowCaptionAboveMedia()
         {
             ShowCaptionAboveMedia = !ShowCaptionAboveMedia;
+        }
+
+        private void ToggleSendHighQuality()
+        {
+            SendHighQuality = !SendHighQuality;
         }
 
         private void ToggleSendWithSpoiler()

@@ -21,17 +21,21 @@ namespace Telegram.Services.Factories
 {
     public static class MessageFactory
     {
-        public static async Task<InputMessageFactory> CreatePhotoAsync(StoragePhoto photo, bool captionAboveMedia = false, bool spoiler = false, MessageSelfDestructType ttl = null, BitmapEditState editState = null)
+        public static async Task<InputMessageFactory> CreatePhotoAsync(StoragePhoto photo, bool captionAboveMedia, bool spoiler, bool highQuality, MessageSelfDestructType ttl, BitmapEditState editState)
         {
             var conversionType = ConversionType.Compress;
             var file = photo.File;
 
-            var size = await ImageHelper.GetScaleAsync(file, editState: editState);
+            var size = await ImageHelper.GetScaleAsync(file, requestedMinSide: highQuality ? 2560 : 1280, editState: editState);
             if (size.Width == 0 || size.Height == 0)
             {
                 // This may happen if the image is a GIF with multiple frames.
                 conversionType = ConversionType.Copy;
                 editState = null;
+            }
+            else if (highQuality)
+            {
+                conversionType = ConversionType.HighQuality;
             }
 
             var generated = await file.ToGeneratedAsync(conversionType, editState != null ? JsonConvert.SerializeObject(editState) : null);

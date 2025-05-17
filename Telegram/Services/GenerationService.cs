@@ -36,6 +36,7 @@ namespace Telegram.Services
     {
         Copy,
         Compress,
+        HighQuality,
         Screenshot,
         Opus,
         Transcode,
@@ -90,9 +91,9 @@ namespace Telegram.Services
                     {
                         await CopyAsync(update, args);
                     }
-                    else if (conversion == ConversionType.Compress)
+                    else if (conversion == ConversionType.Compress || conversion == ConversionType.HighQuality)
                     {
-                        await CompressAsync(update, args);
+                        await CompressAsync(update, conversion == ConversionType.HighQuality, args);
                     }
                     else if (conversion == ConversionType.Screenshot)
                     {
@@ -230,19 +231,16 @@ namespace Telegram.Services
             //StorageApplicationPermissions.FutureAccessList.Remove(args[0]);
         }
 
-        private async Task CompressAsync(UpdateFileGenerationStart update, string[] args)
+        private async Task CompressAsync(UpdateFileGenerationStart update, bool highQuality, string[] args)
         {
             try
             {
                 var file = await StorageApplicationPermissions.FutureAccessList.GetFileAsync(args[0]);
                 var temp = await StorageFile.GetFileFromPathAsync(update.DestinationPath);
 
-                var maxSize = 1280;
-
-                if (SettingsService.Current.Diagnostics.SendLargePhotos)
-                {
-                    maxSize = 2560;
-                }
+                var maxSize = highQuality
+                    ? Constants.ImageHighQuality
+                    : Constants.ImageStandardQuality;
 
                 if (args.Length > 3)
                 {

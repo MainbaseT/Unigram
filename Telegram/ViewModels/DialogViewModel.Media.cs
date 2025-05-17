@@ -416,6 +416,7 @@ namespace Telegram.ViewModels
 
             var captionAboveMedia = popup.ShowCaptionAboveMedia;
             var hasSpoiler = popup.SendWithSpoiler && !popup.IsFilesSelected;
+            var highQuality = popup.SendHighQuality && !popup.IsFilesSelected;
 
             Task<InputMessageFactory> request = null;
             if (popup.IsFilesSelected)
@@ -424,7 +425,7 @@ namespace Telegram.ViewModels
             }
             else if (storage is StoragePhoto photo)
             {
-                request = MessageFactory.CreatePhotoAsync(photo, captionAboveMedia, hasSpoiler, storage.Ttl, storage.IsEdited ? storage.EditState : null);
+                request = MessageFactory.CreatePhotoAsync(photo, captionAboveMedia, hasSpoiler, highQuality, storage.Ttl, storage.IsEdited ? storage.EditState : null);
             }
             else if (storage is StorageVideo video)
             {

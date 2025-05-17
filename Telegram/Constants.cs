@@ -33,6 +33,9 @@ namespace Telegram
         public static readonly string[] PhotoTypes = new[] { ".jpg", ".jpeg", ".png", ".gif" };
         public static readonly string[] VideoTypes = new[] { ".mp4", ".mov", ".m4v" };
 
+        public const int ImageStandardQuality = 1280;
+        public const int ImageHighQuality = 2560;
+
         public const string WallpaperFileName = "wallpaper.jpg";
         public const string WallpaperLocalFileName = "wallpaper.local.jpg";
         public const string WallpaperColorFileName = "wallpaper.color.jpg";
