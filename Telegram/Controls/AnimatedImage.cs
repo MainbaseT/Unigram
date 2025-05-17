@@ -1470,7 +1470,7 @@ namespace Telegram.Controls
             PixelWidth = animation.PixelWidth;
             PixelHeight = animation.PixelHeight;
 
-            var frameRate = Math.Clamp(animation.FrameRate, 1, 30 /*presentation.LimitFps ? 30 : 60*/);
+            var frameRate = Math.Clamp(animation.FrameRate, 1, 60 /*presentation.LimitFps ? 30 : 60*/);
             var interval = TimeSpan.FromMilliseconds(Math.Floor(1000 / frameRate));
 
             Interval = interval;

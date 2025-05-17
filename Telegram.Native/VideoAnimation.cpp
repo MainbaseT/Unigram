@@ -506,7 +506,7 @@ namespace winrt::Telegram::Native::implementation
                 {
                     double nextFrame = frame->best_effort_timestamp * av_q2d(video_stream->time_base);
 
-                    if (nextFrame >= prevFrame + 1.0 / 30 || framerate < 60)
+                    //if (nextFrame >= prevFrame + 1.0 / 30 || framerate < 60)
                     {
                         seconds = static_cast<int32_t>(nextFrame);
                         prevFrame = nextFrame;
