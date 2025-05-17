@@ -642,6 +642,18 @@ public static class VoipGroupManager_stub
             throw new RuntimeException(ex);
         }
     }
+    public static void SetEncryptDecrypt_stub(this Telegram.Native.Calls.VoipGroupManager sender, Telegram.Native.Calls.EncryptGroupCallDataDelegate encryptData, Telegram.Native.Calls.DecryptGroupCallDataDelegate decryptData)
+    {
+        try
+        {
+            sender.SetEncryptDecrypt(encryptData, decryptData);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static void SetJoinResponsePayload_stub(this Telegram.Native.Calls.VoipGroupManager sender, string payload)
     {
         try
@@ -4786,6 +4798,21 @@ public static class GeographicRegion_stub
         }
     }
 }
+public static class Language_stub
+{
+    public static bool IsWellFormed_stub(string languageTag)
+    {
+        try
+        {
+            return Windows.Globalization.Language.IsWellFormed(languageTag);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class ElementCompositionPreview_stub
 {
     public static Windows.UI.Composition.Visual GetElementChildVisual_stub(Windows.UI.Xaml.UIElement element)
@@ -6677,6 +6704,36 @@ public static class CurrencyFormatter_stub
         try
         {
             return sender.ParseUInt(text);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class INumberFormatter2_stub
+{
+    public static string FormatInt_stub(this Windows.Globalization.NumberFormatting.INumberFormatter2 sender, long value)
+    {
+        try
+        {
+            return sender.FormatInt(value);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class INumberParser_stub
+{
+    public static long? ParseInt_stub(this Windows.Globalization.NumberFormatting.INumberParser sender, string text)
+    {
+        try
+        {
+            return sender.ParseInt(text);
         }
         catch (Exception ex)
         {
