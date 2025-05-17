@@ -215,22 +215,25 @@
                     <StackPanel x:Name="ListHeader">
                         <calls:VerificationState x:Name="VerificationState"
                                                  HorizontalAlignment="Center"
-                                                 VerticalAlignment="Center" />
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,0,4" />
 
                         <Grid x:Name="ViewportAspect"
-                              Margin="-2,-2,-2,0"
+                              Margin="-4,-2,-4,0"
                               Grid.ColumnSpan="2">
                             <local:ParticipantsGrid x:Name="Viewport"
                                                     SizeChanged="OnViewportSizeChanged" />
                         </Grid>
                         <StackPanel x:Name="ListViewport"
-                                    Margin="-2,-2,-2,0" />
+                                    Margin="-4,-2,-4,0" />
                     </StackPanel>
                 </ListView.Header>
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsStackPanel Background="#FF1F1F1F"
-                                         VerticalAlignment="Top" />
+                        <ItemsStackPanel SizeChanged="OnItemsPanelSizeChanged"
+                                         Background="#FF1F1F1F"
+                                         VerticalAlignment="Top"
+                                         MaxWidth="320" />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>

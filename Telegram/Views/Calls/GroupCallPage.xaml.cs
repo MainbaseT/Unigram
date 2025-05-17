@@ -312,6 +312,8 @@ namespace Telegram.Views.Calls
             UpdateLayout(prevSize, nextSize, prevSize.X > 0 && prevSize.Y > 0);
         }
 
+        public static int ColumnWidth => 236;
+
         private async void UpdateLayout(Vector2 prevSize, Vector2 nextSize, bool animated)
         {
             var service = _call;
@@ -347,7 +349,7 @@ namespace Telegram.Views.Calls
                 Grid.SetColumn(ScrollingHost, 1);
 
                 Viewport.Mode = mode;
-                ParticipantsPanel.ColumnDefinitions[1].Width = new GridLength(224, GridUnitType.Pixel);
+                ParticipantsPanel.ColumnDefinitions[1].Width = new GridLength(ColumnWidth, GridUnitType.Pixel);
                 ParticipantsPanel.Margin = new Thickness();
                 ScrollingHost.Padding = new Thickness(8, 0, 12, 8);
 
@@ -359,14 +361,16 @@ namespace Telegram.Views.Calls
 
                 if (mode == ParticipantsGridMode.Docked)
                 {
+                    ViewportAspect.MaxWidth = double.PositiveInfinity;
                     ViewportAspect.Margin = new Thickness(10, -2, 0, 8);
                     ScrollingHost.Margin = new Thickness();
-                    BottomPanel.Padding = new Thickness(8, 8, 224, 42);
+                    BottomPanel.Padding = new Thickness(8, 8, ColumnWidth, 42);
                 }
                 else
                 {
+                    ViewportAspect.MaxWidth = double.PositiveInfinity;
                     ViewportAspect.Margin = new Thickness(10, -2, 10, 8);
-                    ScrollingHost.Margin = new Thickness(216, 0, -216, 0);
+                    ScrollingHost.Margin = new Thickness(ColumnWidth - 8, 0, -ColumnWidth + 8, 0);
                     BottomPanel.Padding = new Thickness(8, 8, 8, 42);
                 }
 
@@ -428,7 +432,8 @@ namespace Telegram.Views.Calls
                 Grid.SetColumn(ScrollingHost, 0);
 
                 Viewport.Mode = mode;
-                ViewportAspect.Margin = new Thickness(-2, -2, -2, Viewport.Children.Count > 0 ? 4 : 0);
+                ViewportAspect.MaxWidth = 324;
+                ViewportAspect.Margin = new Thickness(-4, -2, -4, Viewport.Children.Count > 0 ? 4 : 0);
                 ParticipantsPanel.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Auto);
                 ParticipantsPanel.Margin = new Thickness(0, 0, 0, -56);
                 ScrollingHost.Padding = new Thickness(12, 0, 12, 72);
@@ -589,11 +594,11 @@ namespace Telegram.Views.Calls
 
             if (_mode == ParticipantsGridMode.Docked)
             {
-                listOffset.InsertKeyFrame(0, new Vector3(224, 0, 0));
+                listOffset.InsertKeyFrame(0, new Vector3(ColumnWidth, 0, 0));
             }
             else
             {
-                listOffset.InsertKeyFrame(0, new Vector3(-224, 0, 0));
+                listOffset.InsertKeyFrame(0, new Vector3(-ColumnWidth, 0, 0));
             }
 
             listOffset.InsertKeyFrame(1, Vector3.Zero);
@@ -699,11 +704,11 @@ namespace Telegram.Views.Calls
 
             if (next == ParticipantsGridMode.Docked)
             {
-                listOffset.InsertKeyFrame(0, new Vector3(224, 0, 0));
+                listOffset.InsertKeyFrame(0, new Vector3(ColumnWidth, 0, 0));
             }
             else
             {
-                //listOffset.InsertKeyFrame(0, new Vector3(-224, 0, 0));
+                //listOffset.InsertKeyFrame(0, new Vector3(-ColumnWidth, 0, 0));
             }
 
             listOffset.InsertKeyFrame(1, Vector3.Zero);
@@ -974,10 +979,10 @@ namespace Telegram.Views.Calls
             var inner = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
             inner.InsertKeyFrame(1, new Vector3(1f + 0.15f * amplitude));
 
-            wave.CenterPoint = new Vector3(18, 18, 0);
+            wave.CenterPoint = new Vector3(36 / 2);
             wave.StartAnimation("Scale", outer);
 
-            photo.CenterPoint = new Vector3(18, 18, 0);
+            photo.CenterPoint = new Vector3(36 / 2);
             photo.StartAnimation("Scale", inner);
         }
 
@@ -1109,12 +1114,12 @@ namespace Telegram.Views.Calls
                 }
             }
             //else if (currentUser != null && currentUser.CanBeUnmutedForAllUsers)
-            else if (currentUser != null && (_call.IsMuted || (currentUser.IsMutedForAllUsers && currentUser.CanUnmuteSelf)))
+            else if (currentUser != null && currentUser.CanUnmuteSelf && (_call.IsMuted || currentUser.IsMutedForAllUsers))
             {
                 SetButtonState(ButtonState.Mute);
             }
             //else if (currentUser != null && currentUser.CanBeMutedForAllUsers)
-            else if (currentUser != null && !_call.IsMuted)
+            else if (currentUser != null && (!_call.IsMuted || !currentUser.IsMutedForAllUsers))
             {
                 SetButtonState(ButtonState.Unmute);
             }
@@ -1632,6 +1637,7 @@ namespace Telegram.Views.Calls
             if (containerContentChanging)
             {
                 var element = ElementComposition.GetElementVisual(wave);
+                element.CenterPoint = new Vector3(36 / 2);
                 element.Scale = new Vector3(0.9f);
             }
 
@@ -1687,7 +1693,7 @@ namespace Telegram.Views.Calls
             {
                 speaking.Text = Strings.WantsToSpeak;
                 speaking.Foreground = status.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, 0x00, 0x78, 0xff));
-                glyph.Text = Icons.EmojiHand;
+                glyph.Text = Icons.HandRight;
                 glyph.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, 0x00, 0x78, 0xff));
             }
             else if (participant.IsMutedForAllUsers || participant.IsMutedForCurrentUser)
@@ -1774,18 +1780,21 @@ namespace Telegram.Views.Calls
 
             if (_mode == ParticipantsGridMode.Compact)
             {
-                ViewportAspect.Margin = new Thickness(-2, -2, -2, Viewport.Children.Count > 0 ? 4 : 0);
+                ViewportAspect.MaxWidth = 324;
+                ViewportAspect.Margin = new Thickness(-4, -2, -4, Viewport.Children.Count > 0 ? 4 : 0);
             }
             else if (_mode == ParticipantsGridMode.Docked)
             {
+                ViewportAspect.MaxWidth = double.PositiveInfinity;
                 ViewportAspect.Margin = new Thickness(10, -2, 0, 8);
             }
             else
             {
+                ViewportAspect.MaxWidth = double.PositiveInfinity;
                 ViewportAspect.Margin = new Thickness(10, -2, 10, 8);
             }
 
-            ListViewport.Margin = new Thickness(-2, -2, -2, ListViewport.Children.Count > 0 ? 4 : 0);
+            ListViewport.Margin = new Thickness(-4, -2, -4, ListViewport.Children.Count > 0 ? 4 : 0);
 
             UpdateLayout(ActualSize, ActualSize, true);
         }
@@ -1815,18 +1824,21 @@ namespace Telegram.Views.Calls
 
             if (_mode == ParticipantsGridMode.Compact)
             {
-                ViewportAspect.Margin = new Thickness(-2, -2, -2, Viewport.Children.Count > 0 ? 4 : 0);
+                ViewportAspect.MaxWidth = 324;
+                ViewportAspect.Margin = new Thickness(-4, -2, -4, Viewport.Children.Count > 0 ? 4 : 0);
             }
             else if (_mode == ParticipantsGridMode.Docked)
             {
+                ViewportAspect.MaxWidth = double.PositiveInfinity;
                 ViewportAspect.Margin = new Thickness(10, -2, 0, 8);
             }
             else
             {
+                ViewportAspect.MaxWidth = double.PositiveInfinity;
                 ViewportAspect.Margin = new Thickness(10, -2, 10, 8);
             }
 
-            ListViewport.Margin = new Thickness(-2, -2, -2, ListViewport.Children.Count > 0 ? 4 : 0);
+            ListViewport.Margin = new Thickness(-4, -2, -4, ListViewport.Children.Count > 0 ? 4 : 0);
 
             UpdateLayout(ActualSize, ActualSize, true);
         }
@@ -1929,7 +1941,7 @@ namespace Telegram.Views.Calls
             {
                 if (participant.IsHandRaised)
                 {
-                    flyout.CreateFlyoutItem(() => _call.ClientService.Send(new ToggleGroupCallParticipantIsHandRaised(_call.Id, participant.ParticipantId, false)), Strings.VoipGroupCancelRaiseHand, Icons.EmojiHand);
+                    flyout.CreateFlyoutItem(() => _call.ClientService.Send(new ToggleGroupCallParticipantIsHandRaised(_call.Id, participant.ParticipantId, false)), Strings.VoipGroupCancelRaiseHand, Icons.HandRight);
                 }
 
                 if (participant.HasVideoInfo())
@@ -2146,7 +2158,7 @@ namespace Telegram.Views.Calls
         private void Viewport_PointerEntered(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             var point = e.GetCurrentPoint(PointerListener);
-            if (point.Position.X > PointerListener.ActualWidth - 224 && Viewport.Mode == ParticipantsGridMode.Docked)
+            if (point.Position.X > PointerListener.ActualWidth - ColumnWidth && Viewport.Mode == ParticipantsGridMode.Docked)
             {
                 ShowHideInfo(false);
             }
@@ -2254,6 +2266,17 @@ namespace Telegram.Views.Calls
 
             UpdateVisibleParticipants(false);
         }
+
+        private void OnItemsPanelSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var element = sender as UIElement;
+            var geometry = BootStrapper.Current.Compositor.CreateRoundedRectangleGeometry();
+            var visual = ElementComposition.GetElementVisual(element);
+            visual.Clip = BootStrapper.Current.Compositor.CreateGeometricClip(geometry);
+
+            geometry.Size = e.NewSize.ToVector2();
+            geometry.CornerRadius = new Vector2(8);
+        }
     }
 
     public enum ParticipantsGridMode
@@ -2325,7 +2348,7 @@ namespace Telegram.Views.Calls
 
                 if (_mode == ParticipantsGridMode.Docked)
                 {
-                    finalWidth -= 224;
+                    finalWidth -= GroupCallPage.ColumnWidth;
                 }
             }
 
@@ -2407,7 +2430,7 @@ namespace Telegram.Views.Calls
 
                 if (_mode == ParticipantsGridMode.Docked)
                 {
-                    finalWidth -= 224;
+                    finalWidth -= GroupCallPage.ColumnWidth;
                 }
             }
 

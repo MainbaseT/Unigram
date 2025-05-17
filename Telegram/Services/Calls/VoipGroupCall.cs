@@ -1102,12 +1102,17 @@ namespace Telegram.Services.Calls
 
         public string GetTitle()
         {
-            if (string.IsNullOrEmpty(Title))
+            if (_chat != null)
             {
-                return _chat?.Title ?? "TODO";
+                if (string.IsNullOrEmpty(Title))
+                {
+                    return _chat.Title;
+                }
+
+                return Title;
             }
 
-            return Title;
+            return Strings.ConferenceChat;
         }
 
         public Chat Chat => _chat;

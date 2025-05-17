@@ -11,7 +11,7 @@
     <Grid x:Name="RootGrid"
           Background="#FF1F1F1F"
           CornerRadius="16"
-          Padding="6,0">
+          Padding="4,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
@@ -30,7 +30,7 @@
         <TextBlock Text="{CustomResource ConferenceEncrypted}"
                    Style="{StaticResource CaptionTextBlockStyle}"
                    VerticalAlignment="Center"
-                   Margin="8,0"
+                   Margin="4,0"
                    Grid.Column="2" />
     </Grid>
 </UserControl>

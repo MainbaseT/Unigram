@@ -146,12 +146,12 @@ namespace Telegram.Controls.Cells
             if (participant.IsSpeaking)
             {
                 Speaking.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x33, 0xc6, 0x59));
-                Glyph.Text = Icons.MicOn;
+                Glyph.Text = Icons.MicOnFilled;
             }
             else
             {
                 Speaking.BorderBrush = null;
-                Glyph.Text = participant.IsMutedForAllUsers || participant.IsMutedForCurrentUser ? Icons.MicOff : Icons.MicOn;
+                Glyph.Text = participant.IsMutedForAllUsers || participant.IsMutedForCurrentUser ? Icons.MicOffFilled : Icons.MicOnFilled;
             }
         }
 

@@ -315,8 +315,9 @@ namespace Telegram.Controls.Media
         public const string Camera = "\uE722";
         public const string MusicNote = "\uE8D6";
         public const string MicOn = "\uE720";
-        public const string MicOff = "\uE610";
         public const string MicOnFilled = "\uF12E";
+        public const string MicOff = "\uE610";
+        public const string MicOffFilled = "\uEA98";
         public const string DataUsage = "\uE9D9";
         public const string Add = "\uE710";
         public const string ChatStarsFilled = "\uE97C";

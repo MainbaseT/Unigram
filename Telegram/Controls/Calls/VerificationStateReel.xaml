@@ -9,7 +9,7 @@
 
     <Border Width="20"
             Height="24"
-            Margin="2">
+            Margin="0,2">
         <Grid x:Name="RootGrid"
               Margin="0,-48,0,-24">
             <Grid.RowDefinitions>

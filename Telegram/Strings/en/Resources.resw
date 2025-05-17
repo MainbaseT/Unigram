@@ -4340,6 +4340,9 @@ Minimum length is 5 characters.</value>
   <data name="Comments_other" xml:space="preserve">
     <value>{0} Comments</value>
   </data>
+  <data name="ConferenceChat" xml:space="preserve">
+    <value>Group Call</value>
+  </data>
   <data name="ConferenceEncrypted" xml:space="preserve">
     <value>End-to-End Encrypted</value>
   </data>
