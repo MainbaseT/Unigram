@@ -12,6 +12,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid>
             <Grid.RowDefinitions>
@@ -89,5 +91,35 @@
                 </Grid>
             </controls:HeaderedControl>
         </controls:SettingsPanel>
+
+        <Grid Margin="24,0,24,0"
+              Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Border BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                    BorderThickness="0,1,0,0"
+                    Margin="0,0,8,0"
+                    VerticalAlignment="Center" />
+            <TextBlock Text="{CustomResource GroupCallCreatedLinkJoinOr}"
+                       Style="{StaticResource InfoCaptionTextBlockStyle}"
+                       Grid.Column="1" />
+            <Border BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                    BorderThickness="0,1,0,0"
+                    Margin="8,0,0,0"
+                    VerticalAlignment="Center"
+                    Grid.Column="2" />
+        </Grid>
+
+
+        <controls:SettingsFooter IsLink="True"
+                                 Click="Join_Click"
+                                 Text="{CustomResource GroupCallCreatedLinkJoinText}"
+                                 TextStyle="{StaticResource BodyTextBlockStyle}"
+                                 TextAlignment="Center"
+                                 Margin="24,8,24,24"
+                                 Grid.Row="3" />
     </Grid>
 </controls:ContentPopup>

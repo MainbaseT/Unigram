@@ -69,5 +69,11 @@ namespace Telegram.Views.Calls.Popups
             Hide();
             _navigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationPostLink(new InternalLinkTypeGroupCall(_groupCall.InviteLink)));
         }
+
+        private void Join_Click(object sender, TextUrlClickEventArgs e)
+        {
+            Hide();
+            TypeResolver.Current.Resolve<IVoipService>(_clientService.SessionId).JoinGroupCall(_navigationService, new InputGroupCallLink(_groupCall.InviteLink));
+        }
     }
 }
