@@ -5028,15 +5028,15 @@ namespace Telegram.Views
                         case MessageAudio:
                         case MessageDocument:
                         case MessageText:
-                            ButtonAttach.Glyph = Icons.Replace;
+                            ButtonAttach.Glyph = Icons.Replace24;
                             ButtonAttach.IsEnabled = editing.SchedulingState is not MessageSchedulingStateSendWhenVideoProcessed;
                             break;
                         case MessagePhoto photo:
-                            ButtonAttach.Glyph = !photo.IsSecret ? Icons.Replace : Icons.Attach24;
+                            ButtonAttach.Glyph = !photo.IsSecret ? Icons.Replace24 : Icons.Attach24;
                             ButtonAttach.IsEnabled = !photo.IsSecret && editing.SchedulingState is not MessageSchedulingStateSendWhenVideoProcessed;
                             break;
                         case MessageVideo video:
-                            ButtonAttach.Glyph = !video.IsSecret ? Icons.Replace : Icons.Attach24;
+                            ButtonAttach.Glyph = !video.IsSecret ? Icons.Replace24 : Icons.Attach24;
                             ButtonAttach.IsEnabled = !video.IsSecret && editing.SchedulingState is not MessageSchedulingStateSendWhenVideoProcessed;
                             break;
                         default:
@@ -5044,7 +5044,6 @@ namespace Telegram.Views
                             ButtonAttach.IsEnabled = false;
                             break;
                     }
-
 
                     ComposerHeaderGlyph.Glyph = Icons.Edit24;
 

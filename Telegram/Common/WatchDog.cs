@@ -9,7 +9,6 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Converters;
@@ -104,11 +103,11 @@ namespace Telegram
             _launchTime = DateTime.UtcNow;
             Read();
 
-            TaskScheduler.UnobservedTaskException += (s, args) =>
-            {
-                Crashes.TrackCrash(args.Exception);
-                args.SetObserved();
-            };
+            //TaskScheduler.UnobservedTaskException += (s, args) =>
+            //{
+            //    Crashes.TrackCrash(args.Exception);
+            //    args.SetObserved();
+            //};
 
             //Crashes.UnhandledExceptionOccurring += (s, args) =>
             //{
