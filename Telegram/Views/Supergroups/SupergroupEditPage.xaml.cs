@@ -114,7 +114,7 @@ namespace Telegram.Views.Supergroups
                         ? Strings.TypePrivateGroupRestrictedForwards
                         : Strings.TypePrivateGroup;
 
-            ChatHistory.Visibility = canChangeInfo && !hasActiveUsername && !group.IsChannel
+            ChatHistory.Visibility = canChangeInfo && !hasActiveUsername && !group.IsChannel && !group.HasLinkedChat
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 

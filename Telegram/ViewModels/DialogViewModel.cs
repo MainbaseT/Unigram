@@ -1848,6 +1848,20 @@ namespace Telegram.ViewModels
 
                     continue;
                 }
+                else if (message.Content is MessageChatUpgradeFrom upgradeFrom)
+                {
+                    if (ClientService.TryGetBasicGroup(upgradeFrom.BasicGroupId, out BasicGroup basicGroup))
+                    {
+                        // TODO: check if group is accessible
+                    }
+                    else
+                    {
+                        messages.RemoveAt(i);
+                        i--;
+
+                        continue;
+                    }
+                }
 
                 if (_contentOverrides.TryGetValue(message.CombinedId, out MessageContent content))
                 {
