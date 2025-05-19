@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Composition;
 using Telegram.Controls;
@@ -2002,9 +2003,35 @@ namespace Telegram.Views.Calls
                 //        flyout.CreateFlyoutItem(() => _aggregator.Publish(new UpdateSwitchToSender(participant.ParticipantId)), Strings.VoipGroupOpenGroup, Icons.People);
                 //    }
                 //}
+
+                if (_call.ClientService.TryGetSupergroup(_call.Chat, out Supergroup supergroup))
+                {
+                    if (supergroup.CanRestrictMembers())
+                    {
+                        flyout.CreateFlyoutItem(RemoveParticipant, participant, Strings.VoipGroupUserRemove, Icons.Delete, destructive: true);
+                    }
+                }
             }
 
             flyout.ShowAt(element, args);
+        }
+
+        private async void RemoveParticipant(GroupCallParticipant participant)
+        {
+            var title = _call.ClientService.GetTitle(participant.ParticipantId);
+
+            var popup = new MessagePopup();
+            popup.RequestedTheme = ElementTheme.Dark;
+            popup.Title = Strings.VoipGroupRemoveMemberAlertTitle2;
+            popup.Message = string.Format(_call.IsChannel ? Strings.VoipChannelRemoveMemberAlertText2 : Strings.VoipGroupRemoveMemberAlertText2, title, _call.Chat.Title);
+            popup.PrimaryButtonText = Strings.VoipGroupUserRemove;
+            popup.SecondaryButtonText = Strings.Cancel;
+
+            var confirm = await popup.ShowQueuedAsync(XamlRoot);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                _call.ClientService.Send(new SetChatMemberStatus(_call.Chat.Id, participant.ParticipantId, new ChatMemberStatusBanned()));
+            }
         }
 
         private ScrollViewer _scrollingHost;

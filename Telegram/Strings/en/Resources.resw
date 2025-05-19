@@ -13498,6 +13498,9 @@ Anonymously</value>
   <data name="VoipChannelLeaveAlertTitle" xml:space="preserve">
     <value>Leave live stream</value>
   </data>
+  <data name="VoipChannelRemoveMemberAlertText2" xml:space="preserve">
+    <value>Do you want to remove {0} from the live stream and ban them in {1}?</value>
+  </data>
   <data name="VoipChannelScheduledVoiceChat" xml:space="preserve">
     <value>Scheduled Live Stream</value>
   </data>
@@ -13666,6 +13669,12 @@ Anonymously</value>
   <data name="VoipGroupRecordCall" xml:space="preserve">
     <value>Start recording</value>
   </data>
+  <data name="VoipGroupRemoveMemberAlertText2" xml:space="preserve">
+    <value>Do you want to remove {0} from the video chat and ban them in {1}?</value>
+  </data>
+  <data name="VoipGroupRemoveMemberAlertTitle2" xml:space="preserve">
+    <value>Remove participant</value>
+  </data>
   <data name="VoipGroupSaveFileHint" xml:space="preserve">
     <value>Recording Title</value>
   </data>
@@ -13724,6 +13733,9 @@ Participants will see that the chat is being recorded.</value>
   </data>
   <data name="VoipGroupUnmuteForMe" xml:space="preserve">
     <value>Unmute for me</value>
+  </data>
+  <data name="VoipGroupUserRemove" xml:space="preserve">
+    <value>Remove</value>
   </data>
   <data name="VoipGroupVoiceChat" xml:space="preserve">
     <value>Video Chat</value>
