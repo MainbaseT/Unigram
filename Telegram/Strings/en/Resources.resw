@@ -3369,6 +3369,9 @@ Do you want to revoke verification?</value>
   <data name="CancelReset" xml:space="preserve">
     <value>Cancel reset</value>
   </data>
+  <data name="CancelSending" xml:space="preserve">
+    <value>Cancel Sending</value>
+  </data>
   <data name="CanJoin_one" xml:space="preserve">
     <value>{0} can join</value>
   </data>
