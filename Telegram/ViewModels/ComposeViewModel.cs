@@ -424,56 +424,24 @@ namespace Telegram.ViewModels
             var hasSpoiler = popup.SendWithSpoiler && !popup.IsFilesSelected;
             var highQuality = popup.SendHighQuality && !popup.IsFilesSelected;
 
-            if (popup.Items.Count == 1)
+            // If we're sending more than one message, send the caption by itself.
+            if (popup.ItemsView.Count > 1 && captionz != null)
             {
-                await Task.Run(() => SendStorageMediaAsync(popup.Items[0], reply, captionz, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, options, popup.StarCount));
+                await SendMessageAsync(captionz, null, options, reply);
+                captionz = null;
+                reply = null;
             }
-            else if (popup.Items.Count > 1 && popup.IsAlbum)
+
+            foreach (var item in popup.ItemsView)
             {
-                var group = new List<StorageMedia>(Math.Min(popup.Items.Count, 10));
-                var groupType = 0;
-
-                foreach (var item in popup.Items)
+                if (item is StorageAlbum album)
                 {
-                    var type = item switch
-                    {
-                        StoragePhoto or StorageVideo => popup.IsFilesSelected ? 0 : 1,
-                        StorageAudio => 2,
-                        _ => 0
-                    };
-
-                    if (group.Count > 9 || (groupType != type && group.Count > 0))
-                    {
-                        await SendGroupedAsync(group, reply, captionz, options, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, popup.StarCount);
-                        group = new List<StorageMedia>(Math.Min(popup.Items.Count, 10));
-                        reply = null;
-                    }
-
-                    group.Add(item);
-                    groupType = type;
+                    await SendGroupedAsync(album.Media, reply, captionz, options, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, popup.StarCount);
                 }
-
-                if (group.Count > 0)
+                else
                 {
-                    await SendGroupedAsync(group, reply, captionz, options, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, popup.StarCount);
+                    await SendStorageMediaAsync(item, reply, null, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, options, popup.StarCount);
                 }
-            }
-            else if (popup.Items.Count > 0)
-            {
-                if (caption != null)
-                {
-                    await SendMessageAsync(caption, null, options, reply);
-                    reply = null;
-                }
-
-                await Task.Run(async () =>
-                {
-                    foreach (var file in popup.Items)
-                    {
-                        await SendStorageMediaAsync(file, reply, null, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, options, popup.StarCount);
-                        reply = null;
-                    }
-                });
             }
         }
 
