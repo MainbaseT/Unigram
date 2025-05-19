@@ -575,6 +575,10 @@ namespace Telegram.Controls
 
                             direct.AddToCollection(inlines, temp);
                             local = direct.GetXamlDirectObjectProperty(temp, XamlPropertyIndex.Span_Inlines);
+
+                            // ZWNJ is needed because if a spoiler is followed by a custom emoji, the background will leak into it
+                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction));
+                            workaround--;
                         }
                         else if (entity.HasFlag(Common.TextStyle.Mention) || entity.HasFlag(Common.TextStyle.Url))
                         {
@@ -640,6 +644,7 @@ namespace Telegram.Controls
                             }
                         }
 
+                        // TODO: still use a InlineUIContainer for emojis in spoilers to avoid text resizes
                         if (entity.Type is TextEntityTypeCustomEmoji customEmoji && ((_ignoreSpoilers && entity.HasFlag(Common.TextStyle.Spoiler)) || !entity.HasFlag(Common.TextStyle.Spoiler)))
                         {
                             var data = text.Substring(entity.Offset, entity.Length);
@@ -721,8 +726,8 @@ namespace Telegram.Controls
                     direct.AddToCollection(inlines, CreateDirectRun(direct, text.Substring(previous), direction, fontSize: fontSize));
                 }
 
-                // ZWJ is added to workaround a crash caused by emoji ad the end of a paragraph that is being highlighted
-                direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWJ, direction));
+                workaround += part.Padding;
+
                 direct.AddToCollection(blocks, paragraph);
 
                 if (part.Offset == 0)

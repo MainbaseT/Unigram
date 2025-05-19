@@ -876,6 +876,11 @@ namespace Telegram.Td.Api
             return new FormattedText(message, sub ?? Array.Empty<TextEntity>());
         }
 
+        public static bool Intersect(this TextEntity x, TextEntity y)
+        {
+            return TextStyleRun.GetRelativeRange(x.Offset, x.Length, y.Offset, y.Length, out _, out _);
+        }
+
         public static FormattedText ToFormattedText(this PageBlockCaption caption)
         {
             return caption.Text.ToFormattedText();
@@ -1487,7 +1492,7 @@ namespace Telegram.Td.Api
                             rep[entity.Offset + i] = chars[text.Text[entity.Offset + i] % chars.Length];
                         }
 
-                        ent.RemoveAll(x => x.Offset <= entity.Offset + entity.Length && entity.Offset <= x.Offset + x.Length);
+                        ent.RemoveAll(x => x.Intersect(entity));
                     }
                 }
 

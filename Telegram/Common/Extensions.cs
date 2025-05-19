@@ -338,7 +338,7 @@ namespace Telegram.Common
                 }
 
                 // Element end
-                index += paragraph.Padding;
+                //index += paragraph.Padding;
             }
 
             // Adjust the offset if the selection ends on the text block itself
