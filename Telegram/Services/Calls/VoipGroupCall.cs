@@ -33,8 +33,8 @@ namespace Telegram.Services.Calls
         private readonly Chat _chat;
         private readonly string _inviteHash;
 
-        private readonly InputGroupCall _inputGroupCall;
-        private readonly IList<long> _inviteUserIds;
+        private InputGroupCall _inputGroupCall;
+        private IList<long> _inviteUserIds;
 
         private MessageSender _alias;
         private MessageSenders _availableAliases;
@@ -437,6 +437,7 @@ namespace Telegram.Services.Calls
                     var groupCall = await ClientService.SendAsync(new GetGroupCall(info.GroupCallId));
                     if (groupCall is GroupCall call)
                     {
+                        _inputGroupCall ??= new InputGroupCallLink(call.InviteLink);
                         Update(call, out _);
                     }
 
@@ -446,6 +447,8 @@ namespace Telegram.Services.Calls
                         {
                             ClientService.Send(new InviteGroupCallParticipant(info.GroupCallId, userId, false));
                         }
+
+                        _inviteUserIds = null;
                     }
                 }
 
