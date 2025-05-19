@@ -4726,7 +4726,14 @@ namespace Telegram.Views
 
         public void UpdateChatActiveStories(Chat chat)
         {
-            Segments.SetChat(ViewModel.ClientService, chat, 36);
+            if (ViewModel.Type == DialogType.History)
+            {
+                Segments.SetChat(ViewModel.ClientService, chat, 36);
+            }
+            else
+            {
+                Segments.Clear();
+            }
         }
 
         public void UpdateChatHasScheduledMessages(Chat chat)

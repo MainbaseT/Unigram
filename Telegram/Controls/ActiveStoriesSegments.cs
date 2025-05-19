@@ -92,6 +92,21 @@ namespace Telegram.Controls
             SetChat(clientService, chat, side);
         }
 
+        public void Clear()
+        {
+            if (_hasActiveStories && Content is UIElement element)
+            {
+                var visual = ElementComposition.GetElementVisual(element);
+                visual.Scale = Vector3.One;
+
+                ElementCompositionPreview.SetElementChildVisual(this, visual.Compositor.CreateSpriteVisual());
+
+                _hasActiveStories = false;
+                _enabled = false;
+                IsEnabled = false;
+            }
+        }
+
         public void SetUser(IClientService clientService, User user, int side)
         {
             if (user.Id != clientService.Options.MyId && clientService.TryGetChatFromUser(user.Id, out Chat chat))
@@ -154,6 +169,8 @@ namespace Telegram.Controls
                 visual.Scale = Vector3.One;
 
                 ElementCompositionPreview.SetElementChildVisual(this, visual.Compositor.CreateSpriteVisual());
+
+                _hasActiveStories = false;
             }
         }
 
@@ -223,7 +240,6 @@ namespace Telegram.Controls
             }
 
             _hasActiveStories = true;
-
             UpdateSegments(side, closeFriends, 1, unread ? 1 : 0);
         }
 
