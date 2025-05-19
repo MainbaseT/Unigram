@@ -384,7 +384,14 @@ namespace Telegram.Controls.Messages
             var date = string.Format(Strings.TodayAtFormatted, Formatter.Time(message.Date));
             if (message.IsOutgoing)
             {
-                builder.Append(string.Format(Strings.AccDescrSentDate, date));
+                if (message.SendingState is MessageSendingStatePending)
+                {
+                    builder.Append(Strings.AccDescrMsgSending);
+                }
+                else
+                {
+                    builder.Append(string.Format(Strings.AccDescrSentDate, date));
+                }
             }
             else
             {

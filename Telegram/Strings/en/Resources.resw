@@ -208,6 +208,9 @@
   <data name="AccDescrMsgRead" xml:space="preserve">
     <value>Seen</value>
   </data>
+  <data name="AccDescrMsgSending" xml:space="preserve">
+    <value>Sending</value>
+  </data>
   <data name="AccDescrMsgUnread" xml:space="preserve">
     <value>Not seen</value>
   </data>
