@@ -68,54 +68,60 @@ namespace Telegram.Services
             {
                 if (activeCall is VoipCall privateCall && ClientService.TryGetUser(privateCall.UserId, out User activeUser))
                 {
+                    string message;
+                    string title;
+
                     if (source is User newUser && newUser.Id != privateCall.UserId)
                     {
-                        var confirm = await navigation.ShowPopupAsync(string.Format(Strings.VoipOngoingAlert, activeUser.FullName(), newUser.FullName()), Strings.VoipOngoingAlertTitle, Strings.OK, Strings.Cancel);
-                        if (confirm == ContentDialogResult.Primary)
-                        {
-                            privateCall.Discard();
-                            return false;
-                        }
+                        message = string.Format(Strings.VoipOngoingAlert, activeUser.FullName(), newUser.FullName());
+                        title = Strings.VoipOngoingAlertTitle;
                     }
                     else if (source is Chat newChat)
                     {
-                        var confirm = await navigation.ShowPopupAsync(string.Format(Strings.VoipOngoingAlert2, activeUser.FullName(), newChat.Title), Strings.VoipOngoingAlertTitle, Strings.OK, Strings.Cancel);
-                        if (confirm == ContentDialogResult.Primary)
-                        {
-                            privateCall.Discard();
-                            return false;
-                        }
+                        message = string.Format(Strings.VoipOngoingAlert2, activeUser.FullName(), newChat.Title);
+                        title = Strings.VoipOngoingAlertTitle;
                     }
                     else
                     {
                         activeCall.Show();
                         return true;
                     }
+
+                    var confirm = await navigation.ShowPopupAsync(message, title, Strings.OK, Strings.Cancel);
+                    if (confirm == ContentDialogResult.Primary)
+                    {
+                        privateCall.Discard();
+                        return false;
+                    }
                 }
-                else if (activeCall is VoipGroupCall groupCall && ClientService.TryGetChat(groupCall.Chat.Id, out Chat activeChat))
+                else if (activeCall is VoipGroupCall groupCall && groupCall.Chat != null && ClientService.TryGetChat(groupCall.Chat.Id, out Chat activeChat))
                 {
+                    string message;
+                    string title;
+
+                    // TODO: not the right string for conference calls
+
                     if (source is Chat newChat && newChat.Id != activeChat.Id)
                     {
-                        var confirm = await navigation.ShowPopupAsync(string.Format(Strings.VoipOngoingChatAlert, activeChat.Title, newChat.Title), Strings.VoipOngoingChatAlertTitle, Strings.OK, Strings.Cancel);
-                        if (confirm == ContentDialogResult.Primary)
-                        {
-                            groupCall.Discard();
-                            return false;
-                        }
+                        message = string.Format(Strings.VoipOngoingChatAlert, activeChat.Title, newChat.Title);
+                        title = Strings.VoipOngoingChatAlertTitle;                        
                     }
                     else if (source is User newUser)
                     {
-                        var confirm = await navigation.ShowPopupAsync(string.Format(Strings.VoipOngoingChatAlert2, activeChat.Title, newUser.FullName()), Strings.VoipOngoingChatAlertTitle, Strings.OK, Strings.Cancel);
-                        if (confirm == ContentDialogResult.Primary)
-                        {
-                            groupCall.Discard();
-                            return false;
-                        }
+                        message = string.Format(Strings.VoipOngoingChatAlert2, activeChat.Title, newUser.FullName());
+                        title = Strings.VoipOngoingChatAlertTitle;
                     }
                     else
                     {
                         activeCall.Show();
                         return true;
+                    }
+
+                    var confirm = await navigation.ShowPopupAsync(message, title, Strings.OK, Strings.Cancel);
+                    if (confirm == ContentDialogResult.Primary)
+                    {
+                        groupCall.Discard();
+                        return false;
                     }
                 }
             }
