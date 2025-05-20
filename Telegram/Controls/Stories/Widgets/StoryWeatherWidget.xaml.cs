@@ -1,5 +1,6 @@
 ﻿using Telegram.Common;
 using Telegram.Td.Api;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -12,9 +13,14 @@ namespace Telegram.Controls.Stories.Widgets
         {
             InitializeComponent();
 
-            Label.Text = $"{widget.Emoji} {widget.Temperature}°C";
+            var background = widget.BackgroundColor.ToColor(true);
+            var luminance = 0.2126 * (background.R / 255d) + 0.7152 * (background.G / 255d) + 0.0722 * (background.B / 255d);
+            var foreground = luminance > 0.5 ? Colors.Black : Colors.White;
 
-            RootGrid.Background = new SolidColorBrush(widget.BackgroundColor.ToColor(true));
+            Label.Text = $"{widget.Emoji} {widget.Temperature}°C";
+            Label.Foreground = new SolidColorBrush(foreground);
+
+            RootGrid.Background = new SolidColorBrush(background);
             RootGrid.CornerRadius = radius;
         }
     }
