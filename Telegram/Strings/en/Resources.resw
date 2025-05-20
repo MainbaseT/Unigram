@@ -11212,6 +11212,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SendingVideoStatus" xml:space="preserve">
     <value>sending a video...</value>
   </data>
+  <data name="SendInHighQuality" xml:space="preserve">
+    <value>Send in High Quality</value>
+  </data>
   <data name="SendInviteLink" xml:space="preserve">
     <value>Send Invite Link</value>
   </data>

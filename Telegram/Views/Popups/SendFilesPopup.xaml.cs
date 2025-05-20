@@ -1274,7 +1274,7 @@ namespace Telegram.Views.Popups
                     if (Items.Any(x => x is StoragePhoto && (x.Width > 1280 || x.Height > 1280)))
                     {
                         flyout.CreateFlyoutSeparator();
-                        flyout.CreateFlyoutItem(ToggleSendHighQuality, "Send in High Quality", SendHighQuality ? Icons.Checkmark : null);
+                        flyout.CreateFlyoutItem(ToggleSendHighQuality, Strings.SendInHighQuality, SendHighQuality ? Icons.Checkmark : null);
                     }
 
                     flyout.CreateFlyoutSeparator();
