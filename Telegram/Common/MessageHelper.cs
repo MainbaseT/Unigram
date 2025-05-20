@@ -28,6 +28,7 @@ using Telegram.Views.Host;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
 using Telegram.Views.Settings;
+using Telegram.Views.Stars;
 using Telegram.Views.Stars.Popups;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
@@ -626,6 +627,10 @@ namespace Telegram.Common
             else if (internalLink is InternalLinkTypeGroupCall groupCall)
             {
                 NavigateToGroupCall(clientService, navigation, new InputGroupCallLink(groupCall.InviteLink));
+            }
+            else if (internalLink is InternalLinkTypeMyStars)
+            {
+                navigation.Navigate(typeof(StarsPage));
             }
         }
 
