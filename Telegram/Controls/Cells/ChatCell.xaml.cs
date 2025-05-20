@@ -635,7 +635,7 @@ namespace Telegram.Controls.Cells
 
                 if (!_draft)
                 {
-                    FromLabel.Text = Icons.ZWJ;
+                    FromLabel.Text = Icons.ZWNJ;
                 }
             }
             else
@@ -644,7 +644,7 @@ namespace Telegram.Controls.Cells
 
                 if (_draft)
                 {
-                    DraftLabel.Text = Icons.ZWJ;
+                    DraftLabel.Text = Icons.ZWNJ;
                 }
             }
 

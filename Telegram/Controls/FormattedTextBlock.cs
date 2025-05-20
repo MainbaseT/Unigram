@@ -899,7 +899,7 @@ namespace Telegram.Controls
 
                 inlines.Clear();
                 ProcessCodeBlock(inlines, tokens.Children);
-                inlines.Add(Icons.ZWJ);
+                inlines.Add(Icons.ZWNJ);
             }
             catch
             {
