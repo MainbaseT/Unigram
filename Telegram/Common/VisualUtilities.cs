@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Telegram.Navigation;
@@ -150,16 +151,25 @@ namespace Telegram.Common
 
         #endregion
 
-
         static class DelegateKeeper
         {
-            private static ConditionalWeakTable<object, List<Delegate>> cwt = new();
-            public static void KeepAlive(Delegate d) => cwt.GetOrCreateValue(d?.Target ?? throw new ArgumentNullException(nameof(d))).Add(d);
+            private static ConditionalWeakTable<object, HashSet<Delegate>> cwt = new();
+            public static void KeepAlive(object target, Delegate d) => cwt.GetOrCreateValue(target).Add(d);
         }
 
         public static void QueueCallbackForCompositionRendering(Action callback)
         {
-            DelegateKeeper.KeepAlive(callback);
+            if (Constants.DEBUG && callback.GetMethodInfo().IsStatic)
+            {
+                throw new InvalidOperationException();
+            }
+
+            QueueCallbackForCompositionRendering(callback.Target, callback);
+        }
+
+        public static void QueueCallbackForCompositionRendering(object target, Action callback)
+        {
+            DelegateKeeper.KeepAlive(target, callback);
 
             var weak = new WeakReference(callback);
             void handler(object sender, object e)
@@ -205,7 +215,17 @@ namespace Telegram.Common
 
         public static void QueueCallbackForCompositionRendered(Action callback)
         {
-            DelegateKeeper.KeepAlive(callback);
+            if (Constants.DEBUG && callback.GetMethodInfo().IsStatic)
+            {
+                throw new InvalidOperationException();
+            }
+
+            QueueCallbackForCompositionRendered(callback.Target, callback);
+        }
+
+        public static void QueueCallbackForCompositionRendered(object target, Action callback)
+        {
+            DelegateKeeper.KeepAlive(target, callback);
 
             var weak = new WeakReference(callback);
             void handler(object sender, object e)

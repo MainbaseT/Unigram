@@ -198,7 +198,7 @@ namespace Telegram.Controls
 
             var visual = BootStrapper.Current.Compositor.CreateRedirectBrush(child, Vector2.Zero, childSize, true);
 
-            VisualUtilities.QueueCallbackForCompositionRendered(() =>
+            VisualUtilities.QueueCallbackForCompositionRendered(this, () =>
             {
                 Continue(false);
                 ConfigureAnimations(false);

@@ -1790,7 +1790,7 @@ namespace Telegram.Views
                     {
                         // If we come from selection we need to delay this as ItemClick comes before SelectionChanged,
                         // hence, if we unselect here, the ListView internal code will re-select the item right away.
-                        VisualUtilities.QueueCallbackForCompositionRendered(() => ChatsList.SelectedItem = chat);
+                        VisualUtilities.QueueCallbackForCompositionRendered(this, () => ChatsList.SelectedItem = chat);
                     }
                     else if (ChatsList.SelectedItem != chat)
                     {
@@ -1801,7 +1801,7 @@ namespace Telegram.Views
                 {
                     // If we come from selection we need to delay this as ItemClick comes before SelectionChanged,
                     // hence, if we unselect here, the ListView internal code will re-select the item right away.
-                    VisualUtilities.QueueCallbackForCompositionRendered(() => ChatsList.ClearValue(Selector.SelectedItemProperty));
+                    VisualUtilities.QueueCallbackForCompositionRendered(this, () => ChatsList.ClearValue(Selector.SelectedItemProperty));
                 }
                 else
                 {
