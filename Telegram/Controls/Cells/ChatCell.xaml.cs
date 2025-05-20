@@ -1334,7 +1334,8 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private static readonly Regex _verificationCodes = new Regex("\\b\\d{3,8}\\b", RegexOptions.Compiled);
+        private static readonly Regex _verificationCodes = new Regex("\\b\\d{5,8}\\b", RegexOptions.Compiled);
+        private static readonly Regex _gatewayCodes = new Regex("\\b\\d{4,8}\\b", RegexOptions.Compiled);
 
         private void UpdateBriefLabel(Chat chat, FormattedText message)
         {
@@ -1344,7 +1345,11 @@ namespace Telegram.Controls.Cells
             {
                 if (chat?.Id == _clientService.Options.TelegramServiceNotificationsChatId || chat?.Id == _clientService.Options.VerificationCodesBotChatId)
                 {
-                    var match = _verificationCodes.Match(message.Text);
+                    var pattern = chat?.Id == _clientService.Options.TelegramServiceNotificationsChatId
+                        ? _verificationCodes
+                        : _gatewayCodes;
+
+                    var match = pattern.Match(message.Text);
                     if (match.Success)
                     {
                         message = new FormattedText(message.Text, message.Entities.ToList());
