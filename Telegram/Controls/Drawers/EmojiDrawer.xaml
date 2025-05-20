@@ -182,7 +182,8 @@
                                              Margin="12,8,12,8" />
 
                     <Grid x:Name="DefaultIcon"
-                          HorizontalAlignment="Left">
+                          HorizontalAlignment="Left"
+                          Padding="0,0,4,4">
                         <Grid x:Name="TopicIconRoot"
                               HorizontalAlignment="Center"
                               VerticalAlignment="Center"
@@ -198,6 +199,14 @@
                                        Margin="0,2,0,0"
                                        Width="28" />
                         </Grid>
+                        <TextBlock x:Name="EmojiStatusIconRoot"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="&#xEA87;"
+                                   Foreground="{ThemeResource TelegramForegroundAccentBrush}"
+                                   FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                   FontSize="24"
+                                   Visibility="Collapsed" />
                     </Grid>
                 </StackPanel>
             </GridView.Header>

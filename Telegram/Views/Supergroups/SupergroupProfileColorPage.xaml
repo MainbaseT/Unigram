@@ -61,14 +61,14 @@
                                                        Grid.Column="1" />
                             </Grid>
                         </controls:BadgeButton>
-                        <controls:AnimatedImage x:Name="AnimatedStatus"
-                                                FrameSize="20,20"
-                                                DecodeFrameType="Logical"
-                                                Width="20"
-                                                Height="20"
-                                                HorizontalAlignment="Right"
-                                                Margin="0,0,16,0"
-                                                IsHitTestVisible="False" />
+                        <controls:CustomEmojiIcon x:Name="AnimatedStatus"
+                                                  FrameSize="20,20"
+                                                  DecodeFrameType="Logical"
+                                                  Width="20"
+                                                  Height="20"
+                                                  HorizontalAlignment="Right"
+                                                  Margin="0,0,16,0"
+                                                  IsHitTestVisible="False" />
                     </Grid>
                 </controls:HeaderedControl>
 
@@ -96,14 +96,14 @@
                                                        Grid.Column="1" />
                             </Grid>
                         </controls:BadgeButton>
-                        <controls:AnimatedImage x:Name="EmojiPackAnimated"
-                                                FrameSize="20,20"
-                                                DecodeFrameType="Logical"
-                                                Width="20"
-                                                Height="20"
-                                                HorizontalAlignment="Right"
-                                                Margin="0,0,16,0"
-                                                IsHitTestVisible="False" />
+                        <controls:CustomEmojiIcon x:Name="EmojiPackAnimated"
+                                                  FrameSize="20,20"
+                                                  DecodeFrameType="Logical"
+                                                  Width="20"
+                                                  Height="20"
+                                                  HorizontalAlignment="Right"
+                                                  Margin="0,0,16,0"
+                                                  IsHitTestVisible="False" />
                     </Grid>
                 </controls:HeaderedControl>
 

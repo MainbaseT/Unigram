@@ -307,10 +307,9 @@ namespace Telegram.ViewModels.Drawers
                     var response = await GetDefaultStickersAsync(_mode);
                     if (response is Stickers defaultStickers)
                     {
-                        if (_mode == EmojiDrawerMode.Topics)
+                        if (_mode is EmojiDrawerMode.Topics or EmojiDrawerMode.EmojiStatus or EmojiDrawerMode.ChatEmojiStatus)
                         {
                             // This is a placeholder, actual icon is drawn using the list header with negative margins
-                            // TODO: do the same for emoji status
                             defaultStickers.StickersValue.Insert(0, new Sticker(0, 0, 0, 0, string.Empty, null, null, null, null));
                         }
 
@@ -394,9 +393,9 @@ namespace Telegram.ViewModels.Drawers
             var emoji = new List<long>();
             var delay = new List<long>();
 
-            foreach (var status in themed.Union(recent.Union(defaul)))
+            foreach (var status in themed.Take(7).Union(recent.Union(defaul)))
             {
-                if (emoji.Count < 8 * 5 - 1 && !emoji.Contains(status))
+                if (emoji.Count < 8 * 5 - 2 && !emoji.Contains(status))
                 {
                     emoji.Add(status);
                 }

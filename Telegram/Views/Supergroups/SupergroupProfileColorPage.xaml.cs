@@ -111,20 +111,17 @@ namespace Telegram.Views.Supergroups
 
         private void Flyout_EmojiSelected(object sender, EmojiSelectedEventArgs e)
         {
-            if (e.Type is not ReactionTypeCustomEmoji customEmoji)
+            if (e.Type is ReactionTypeCustomEmoji customEmoji)
             {
-                return;
-            }
+                ViewModel.SelectedEmojiStatus = new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0);
 
-            ViewModel.SelectedEmojiStatus = new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0);
-
-            if (customEmoji.CustomEmojiId != 0)
-            {
                 AnimatedStatus.Source = new CustomEmojiFileSource(ViewModel.ClientService, customEmoji.CustomEmojiId);
                 EmojiStatus.Badge = string.Empty;
             }
             else
             {
+                ViewModel.SelectedEmojiStatus = null;
+
                 AnimatedStatus.Source = null;
                 EmojiStatus.Badge = Strings.UserReplyIconOff;
             }

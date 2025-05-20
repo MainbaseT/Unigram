@@ -540,9 +540,16 @@ namespace Telegram.Controls.Messages
                 {
                     MessageToggleReaction(sticker.ToReactionType());
                 }
-                else if (_mode == EmojiDrawerMode.EmojiStatus && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
+                else if (_mode == EmojiDrawerMode.EmojiStatus)
                 {
-                    _clientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0)));
+                    if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
+                    {
+                        _clientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0)));
+                    }
+                    else
+                    {
+                        _clientService.Send(new SetEmojiStatus(null));
+                    }
                 }
                 else if (_mode == EmojiDrawerMode.Reactions)
                 {

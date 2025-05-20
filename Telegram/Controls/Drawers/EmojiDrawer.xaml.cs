@@ -108,6 +108,10 @@ namespace Telegram.Controls.Drawers
             {
                 TopicIconRoot.Visibility = Visibility.Visible;
             }
+            else if (mode is EmojiDrawerMode.EmojiStatus or EmojiDrawerMode.ChatEmojiStatus)
+            {
+                EmojiStatusIconRoot.Visibility = Visibility.Visible;
+            }
 
             if (mode != EmojiDrawerMode.Chat)
             {
