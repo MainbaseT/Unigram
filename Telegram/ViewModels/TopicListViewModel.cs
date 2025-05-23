@@ -24,15 +24,15 @@ using Windows.UI.Xaml.Data;
 
 namespace Telegram.ViewModels
 {
-    public partial class TopicListViewModel : ViewModelBase, IDelegable<IChatListDelegate>
+    public partial class TopicListViewModel : ViewModelBase, IDelegable<ITopicListDelegate>
     {
         private readonly INotificationsService _notificationsService;
 
         private readonly Dictionary<long, bool> _deletedChats = new Dictionary<long, bool>();
 
-        public IChatListDelegate Delegate { get; set; }
+        public ITopicListDelegate Delegate { get; set; }
 
-        public TopicListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService notificationsService, long chatId)
+        public TopicListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService notificationsService)
             : base(clientService, settingsService, aggregator)
         {
             _notificationsService = notificationsService;
@@ -389,18 +389,62 @@ namespace Telegram.ViewModels
 
         public Chat Chat => Items.Chat;
 
-        public void SetChat(Chat chat)
+        public long ChatId => Items.Chat?.Id ?? 0;
+
+        public void SetChat(Chat chat, bool subscribe)
         {
             if (chat?.Id != Items.Chat?.Id)
             {
                 _ = Items.ReloadAsync(chat);
+
+                if (subscribe)
+                {
+                    Aggregator.Subscribe<UpdateForumTopicInfo>(this, Handle)
+                        .Subscribe<UpdateForumTopicReadInbox>(Handle)
+                        .Subscribe<UpdateForumTopicReadOutbox>(Handle)
+                        .Subscribe<UpdateChatAction>(Handle);
+                }
             }
-            else
+            else if (chat == null)
             {
                 LastSelectedItem = 0;
 
                 SelectedItem = 0;
                 SelectedItems.Clear();
+
+                Aggregator.Unsubscribe(this);
+            }
+        }
+
+        private void Handle(UpdateForumTopicInfo update)
+        {
+            if (update.Info.ChatId == Chat?.Id)
+            {
+                BeginOnUIThread(() => Delegate?.Handle(update.Info.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicInfo(chat)));
+            }
+        }
+
+        private void Handle(UpdateForumTopicReadInbox update)
+        {
+            if (update.ChatId == Chat?.Id)
+            {
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadInbox(chat)));
+            }
+        }
+
+        private void Handle(UpdateForumTopicReadOutbox update)
+        {
+            if (update.ChatId == Chat?.Id)
+            {
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadOutbox(chat)));
+            }
+        }
+
+        private void Handle(UpdateChatAction update)
+        {
+            if (update.ChatId == Chat?.Id && update.MessageThreadId != 0)
+            {
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicActions(chat, ClientService.GetChatActions(update.ChatId, update.MessageThreadId))));
             }
         }
 
@@ -515,6 +559,8 @@ namespace Telegram.ViewModels
 
                 if (_chat == null)
                 {
+                    _hasMoreItems = false;
+
                     return new LoadMoreItemsResult
                     {
                         Count = totalCount

@@ -73,7 +73,6 @@ namespace Telegram.Views
             _clientService = ViewModel.ClientService;
 
             ViewModel.Chats.Delegate = this;
-            ViewModel.Topics.Delegate = this;
             ViewModel.PlaybackService.SourceChanged += OnPlaybackSourceChanged;
 
             InitializeLock();
@@ -235,15 +234,6 @@ namespace Telegram.Views
             });
         }
 
-        public void UpdateForumTopicLastMessage(ForumTopic topic)
-        {
-            Handle2(topic, (chatView, chat) =>
-            {
-                chatView.UpdateForumTopicReadInbox(chat);
-                chatView.UpdateForumTopicLastMessage(chat);
-            });
-        }
-
         public void Handle(UpdateChatActiveStories update)
         {
             if (update.ActiveStories.List is StoryListArchive)
@@ -385,7 +375,7 @@ namespace Telegram.Views
 
             if (update.ChatId == _viewModel.Topics.Chat?.Id && update.MessageThreadId != 0)
             {
-                Handle2(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicActions(chat, ViewModel.ClientService.GetChatActions(update.ChatId, update.MessageThreadId)));
+                this.BeginOnUIThread(() => TopicListPresenter?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicActions(chat, ViewModel.ClientService.GetChatActions(update.ChatId, update.MessageThreadId))));
             }
         }
 
@@ -425,7 +415,7 @@ namespace Telegram.Views
         {
             if (_viewModel.Topics.Chat?.Id == update.Info.ChatId)
             {
-                Handle2(update.Info.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicInfo(chat));
+                this.BeginOnUIThread(() => TopicListPresenter?.Handle(update.Info.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicInfo(chat)));
             }
         }
 
@@ -433,7 +423,7 @@ namespace Telegram.Views
         {
             if (_viewModel.Topics.Chat?.Id == update.ChatId)
             {
-                Handle2(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadInbox(chat));
+                this.BeginOnUIThread(() => TopicListPresenter?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadInbox(chat)));
             }
         }
 
@@ -441,7 +431,7 @@ namespace Telegram.Views
         {
             if (_viewModel.Topics.Chat?.Id == update.ChatId)
             {
-                Handle2(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadOutbox(chat));
+                this.BeginOnUIThread(() => TopicListPresenter?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadOutbox(chat)));
             }
         }
 
@@ -482,28 +472,6 @@ namespace Telegram.Views
                 if (ChatsList.TryGetCell(chat, out ChatCell chatView))
                 {
                     action(chatView, chat);
-                }
-            });
-        }
-
-        private void Handle2(long messageThreadId, Action<ForumTopicCell, ForumTopic> action)
-        {
-            this.BeginOnUIThread(() =>
-            {
-                if (TopicListPresenter != null && TopicListPresenter.TryGetChatAndCell(messageThreadId, out ForumTopic chat, out ForumTopicCell chatView))
-                {
-                    action(chatView, chat);
-                }
-            });
-        }
-
-        private void Handle2(ForumTopic topic, Action<ForumTopicCell, ForumTopic> action)
-        {
-            this.BeginOnUIThread(() =>
-            {
-                if (TopicListPresenter != null && TopicListPresenter.TryGetCell(topic, out ForumTopicCell chatView))
-                {
-                    action(chatView, topic);
                 }
             });
         }
@@ -2859,55 +2827,6 @@ namespace Telegram.Views
             }
         }
 
-        public async void SetSelectedItem(ForumTopic topic)
-        {
-            await System.Threading.Tasks.Task.Delay(100);
-
-            if (ViewModel.Topics.SelectionMode != ListViewSelectionMode.Multiple)
-            {
-                try
-                {
-                    TopicListPresenter.SelectedItem = topic;
-
-                    // TODO: would be great, but doesn't seem to work well enough :(
-                    //VisualUtilities.QueueCallbackForCompositionRendered(() => ChatsList.SelectedItem = chat);
-                }
-                catch
-                {
-                    // All the remote procedure calls must be wrapped in a try-catch block
-                }
-            }
-        }
-
-        public void SetSelectedItems(IList<ForumTopic> topics)
-        {
-            if (ViewModel.Topics.SelectionMode == ListViewSelectionMode.Multiple)
-            {
-                try
-                {
-                    foreach (var item in topics)
-                    {
-                        if (!TopicListPresenter.SelectedItems.Contains(item))
-                        {
-                            TopicListPresenter.SelectedItems.Add(item);
-                        }
-                    }
-
-                    foreach (ForumTopic item in TopicListPresenter.SelectedItems)
-                    {
-                        if (!topics.Contains(item))
-                        {
-                            TopicListPresenter.SelectedItems.Remove(item);
-                        }
-                    }
-                }
-                catch
-                {
-                    // SelectedItems likes to throw
-                }
-            }
-        }
-
         #endregion
 
         private void Confetti_Completed(object sender, EventArgs e)
@@ -3433,7 +3352,7 @@ namespace Telegram.Views
 
         public void ShowTopicList(Chat chat)
         {
-            ViewModel.Topics.SetChat(chat);
+            ViewModel.Topics.SetChat(chat, false);
             ShowHideTopicList(true);
             UpdateListViewsSelectedItem(new MessageId(chat.Id, 0));
             TopicListPresenter?.UpdateChat(chat);
@@ -3462,6 +3381,8 @@ namespace Telegram.Views
 
             FindName(nameof(TopicListPresenter));
             TopicListPresenter.DataContext = ViewModel.Topics;
+
+            ViewModel.Topics.Delegate = TopicListPresenter;
 
             _topicListCollapsed = !show;
             TopicListPresenter.Visibility = Visibility.Visible;

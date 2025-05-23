@@ -586,6 +586,7 @@
     <Compile Include="ViewModels\Delegates\IBusinessRepliesDelegate.cs" />
     <Compile Include="ViewModels\Delegates\IReactionsDelegate.cs" />
     <Compile Include="ViewModels\Delegates\ISavedMessagesChatsDelegate.cs" />
+    <Compile Include="ViewModels\Delegates\ITopicListDelegate.cs" />
     <Compile Include="ViewModels\DialogSavedViewModel.cs" />
     <Compile Include="ViewModels\DialogBusinessRepliesViewModel.cs" />
     <Compile Include="ViewModels\DialogViewModel.Translate.cs" />

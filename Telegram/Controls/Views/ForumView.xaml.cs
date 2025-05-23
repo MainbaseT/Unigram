@@ -4,24 +4,29 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Telegram.Common;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
+using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.ViewModels.Delegates;
 using Telegram.Views;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using VirtualKey = Windows.System.VirtualKey;
 
 namespace Telegram.Controls.Views
 {
-    public sealed partial class ForumView : UserControl
+    public sealed partial class ForumView : UserControl, ITopicListDelegate
     {
         public TopicListViewModel ViewModel => DataContext as TopicListViewModel;
 
@@ -165,7 +170,7 @@ namespace Telegram.Controls.Views
             return _itemToSelector.TryGetValue(messageThreadId, out container);
         }
 
-        public bool TryGetChatAndCell(long messageThreadId, out ForumTopic topic, out ForumTopicCell cell)
+        private bool TryGetTopicAndCell(long messageThreadId, out ForumTopic topic, out ForumTopicCell cell)
         {
             if (_itemToSelector.TryGetValue(messageThreadId, out SelectorItem container))
             {
@@ -179,7 +184,7 @@ namespace Telegram.Controls.Views
             return false;
         }
 
-        public bool TryGetCell(ForumTopic topic, out ForumTopicCell cell)
+        private bool TryGetCell(ForumTopic topic, out ForumTopicCell cell)
         {
             if (_itemToSelector.TryGetValue(topic.Info.MessageThreadId, out SelectorItem container))
             {
@@ -189,6 +194,80 @@ namespace Telegram.Controls.Views
 
             cell = null;
             return false;
+        }
+
+        public void UpdateForumTopicLastMessage(ForumTopic topic)
+        {
+            Handle(topic, (chatView, chat) =>
+            {
+                chatView.UpdateForumTopicReadInbox(chat);
+                chatView.UpdateForumTopicLastMessage(chat);
+            });
+        }
+
+        public void Handle(long messageThreadId, Action<ForumTopicCell, ForumTopic> action)
+        {
+            if (TryGetTopicAndCell(messageThreadId, out ForumTopic chat, out ForumTopicCell cell))
+            {
+                action(cell, chat);
+            }
+        }
+
+        public void Handle(ForumTopic topic, Action<ForumTopicCell, ForumTopic> action)
+        {
+            if (TryGetCell(topic, out ForumTopicCell cell))
+            {
+                action(cell, topic);
+            }
+        }
+
+        public async void SetSelectedItem(ForumTopic topic)
+        {
+            await System.Threading.Tasks.Task.Delay(100);
+
+            if (ViewModel.SelectionMode != ListViewSelectionMode.Multiple)
+            {
+                try
+                {
+                    ScrollingHost.SelectedItem = topic;
+
+                    // TODO: would be great, but doesn't seem to work well enough :(
+                    //VisualUtilities.QueueCallbackForCompositionRendered(() => ChatsList.SelectedItem = chat);
+                }
+                catch
+                {
+                    // All the remote procedure calls must be wrapped in a try-catch block
+                }
+            }
+        }
+
+        public void SetSelectedItems(IList<ForumTopic> topics)
+        {
+            if (ViewModel.SelectionMode == ListViewSelectionMode.Multiple)
+            {
+                try
+                {
+                    foreach (var item in topics)
+                    {
+                        if (!ScrollingHost.SelectedItems.Contains(item))
+                        {
+                            ScrollingHost.SelectedItems.Add(item);
+                        }
+                    }
+
+                    foreach (ForumTopic item in ScrollingHost.SelectedItems)
+                    {
+                        if (!topics.Contains(item))
+                        {
+                            ScrollingHost.SelectedItems.Remove(item);
+                        }
+                    }
+                }
+                catch
+                {
+                    // SelectedItems likes to throw
+                }
+            }
         }
 
         #endregion

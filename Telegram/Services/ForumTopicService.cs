@@ -10,6 +10,7 @@ namespace Telegram.Services
     internal class ForumTopicService
     {
         public static readonly long GeneralId = 1 << 20;
+        public static readonly long PinnedMaxOrder = long.MaxValue - 1;
 
         private readonly IClientService _clientService;
         private readonly IEventAggregator _aggregator;
@@ -306,7 +307,7 @@ namespace Telegram.Services
             var index = _pinnedTopicIds.IndexOf(topic.Info.MessageThreadId);
             if (index != -1)
             {
-                return long.MaxValue - index;
+                return PinnedMaxOrder - index;
             }
             else if (topic.LastMessage != null)
             {
