@@ -661,7 +661,12 @@ namespace Telegram.ViewModels
             set => Set(ref _isFirstSliceLoaded, value);
         }
 
-        public bool? IsLastSliceLoaded { get; set; }
+        private bool? _isLastSliceLoaded;
+        public bool? IsLastSliceLoaded
+        {
+            get => _isLastSliceLoaded;
+            set => Set(ref _isLastSliceLoaded, value);
+        }
 
         private bool _isEmpty = true;
         public bool IsEmpty

@@ -6416,6 +6416,17 @@ namespace Telegram.Views
         private void ClipperOuter_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ClipperBackground.Margin = new Thickness(0, -e.NewSize.Height - 48, 0, 0);
+
+            if (ViewModel.IsLastSliceLoaded is true)
+            {
+                MessagesHeaderRoot.Padding = new Thickness(0, e.NewSize.Height - DateHeaderRelative.ActualHeight, 0, 0);
+            }
+            else
+            {
+                MessagesHeaderRoot.Padding = new Thickness(0);
+            }
+        }
+
         private void NavigateToForumTopic(Chat chat, long messageThreadId)
         {
             ViewModel.NavigationService.NavigateToChat(chat, thread: messageThreadId, force: false, clearBackStack: true);
