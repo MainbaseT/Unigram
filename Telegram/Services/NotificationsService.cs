@@ -581,7 +581,7 @@ namespace Telegram.Services
                     return true;
                 }
 
-                if (chat.ViewAsTopics && service.CurrentPageType == typeof(ChatThreadPage) && service.CurrentPageParam is ChatMessageIdNavigationArgs args)
+                if (chat.ViewAsTopics && service.CurrentPageType == typeof(ChatPage) && service.CurrentPageParam is ChatMessageIdNavigationArgs args)
                 {
                     if (args.ChatId == chat.Id && args.MessageId == message.TopicId())
                     {

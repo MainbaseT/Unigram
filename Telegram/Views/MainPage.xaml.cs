@@ -2352,8 +2352,8 @@ namespace Telegram.Views
         private ChatFolderViewModel ConvertFolder(ChatFolderViewModel folder)
         {
             ShowHideArchive(folder?.ChatList is ChatListMain or null && ViewModel.Chats.Items.ChatList is not ChatListArchive, false);
-            ShowHideLeftTabs(ViewModel.Chats.Settings.IsLeftTabsEnabled && ViewModel.Folders.Count > 0);
-            ShowHideTopTabs(!ViewModel.Chats.Settings.IsLeftTabsEnabled && ViewModel.Folders.Count > 0 && folder.ChatList is not ChatListArchive);
+            ShowHideLeftTabs(ViewModel.Chats.Settings.UseLeftTabsForChats && ViewModel.Folders.Count > 0);
+            ShowHideTopTabs(!ViewModel.Chats.Settings.UseLeftTabsForChats && ViewModel.Folders.Count > 0 && folder.ChatList is not ChatListArchive);
 
             UpdatePaneToggleButtonVisibility();
 
@@ -3396,7 +3396,7 @@ namespace Telegram.Views
             }
             else
             {
-                ViewModel.Topics.SetChat(null);
+                ViewModel.Topics.SetChat(null, false);
             }
 
             var padding = ChatTabs != null

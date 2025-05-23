@@ -345,22 +345,24 @@ namespace Telegram.Views.Popups
 
             if (e.ClickedItem is User user && entity == AutocompleteEntity.Username)
             {
-                // TODO: find username
-                var adjust = 0;
                 var username = user.ActiveUsername(result);
 
                 string insert;
                 if (string.IsNullOrEmpty(username))
                 {
                     insert = string.IsNullOrEmpty(user.FirstName) ? user.LastName : user.FirstName;
-                    adjust = 1;
+
+                    if (FormattedTextBox.IsUnsafe(insert))
+                    {
+                        insert = Strings.Username;
+                    }
                 }
                 else
                 {
-                    insert = username;
+                    insert = $"@{username}";
                 }
 
-                var range = CaptionInput.Document.GetRange(CaptionInput.Document.Selection.StartPosition - result.Length - adjust, CaptionInput.Document.Selection.StartPosition);
+                var range = CaptionInput.Document.GetRange(index, CaptionInput.Document.Selection.StartPosition);
                 range.SetText(TextSetOptions.None, insert);
 
                 if (string.IsNullOrEmpty(username))

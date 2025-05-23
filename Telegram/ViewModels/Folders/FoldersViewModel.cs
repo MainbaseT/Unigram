@@ -33,7 +33,7 @@ namespace Telegram.ViewModels.Folders
         public FoldersViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
-            _placement = Settings.IsLeftTabsEnabled
+            _placement = Settings.UseLeftTabsForChats
                 ? FoldersPlacement.Left
                 : FoldersPlacement.Top;
 
@@ -155,7 +155,7 @@ namespace Telegram.ViewModels.Folders
 
                 if (update)
                 {
-                    Settings.IsLeftTabsEnabled = value == FoldersPlacement.Left;
+                    Settings.UseLeftTabsForChats = value == FoldersPlacement.Left;
                     Aggregator.Publish(new UpdateChatFoldersLayout());
                 }
             }

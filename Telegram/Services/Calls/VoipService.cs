@@ -104,7 +104,7 @@ namespace Telegram.Services
                     if (source is Chat newChat && newChat.Id != activeChat.Id)
                     {
                         message = string.Format(Strings.VoipOngoingChatAlert, activeChat.Title, newChat.Title);
-                        title = Strings.VoipOngoingChatAlertTitle;                        
+                        title = Strings.VoipOngoingChatAlertTitle;
                     }
                     else if (source is User newUser)
                     {

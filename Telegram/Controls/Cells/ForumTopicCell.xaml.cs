@@ -232,7 +232,7 @@ namespace Telegram.Controls.Cells
 
                 if (!_draft)
                 {
-                    FromLabel.Text = Icons.ZWNJ;
+                    FromLabel.Text = string.Empty;
                 }
             }
             else
@@ -241,7 +241,7 @@ namespace Telegram.Controls.Cells
 
                 if (_draft)
                 {
-                    DraftLabel.Text = Icons.ZWNJ;
+                    DraftLabel.Text = string.Empty;
                 }
             }
 
