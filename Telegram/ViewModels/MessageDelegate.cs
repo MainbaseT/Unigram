@@ -462,7 +462,7 @@ namespace Telegram.ViewModels
 
         public override void OpenInlineButton(MessageViewModel message, InlineKeyboardButton button) => _viewModel.OpenInlineButton(message, button);
 
-        public override void Call(MessageViewModel message, bool video) => _viewModel.Call(video);
+        public override void Call(MessageViewModel message, bool video) => _viewModel.Call(message, video);
 
         public override void VotePoll(MessageViewModel message, IList<int> options) => _viewModel.VotePoll(message, options);
 

@@ -1584,6 +1584,10 @@ namespace Telegram.Controls.Cells
             {
                 return Text("\u260E " + call.ToOutcomeText(outgoing));
             }
+            else if (content is MessageGroupCall groupCall)
+            {
+                return Text("\u260E " + groupCall.ToOutcomeText(outgoing));
+            }
             else if (content is MessageStory story && !story.ViaMention)
             {
                 return Text(Strings.Story);

@@ -36,6 +36,8 @@ namespace Telegram.Services.Calls
         private InputGroupCall _inputGroupCall;
         private IList<long> _inviteUserIds;
 
+        private TaskCompletionSource<InputGroupCall> _inputGroupCallTask;
+
         private MessageSender _alias;
         private MessageSenders _availableAliases;
         private TaskCompletionSource<MessageSenders> _availableAliasesTask;
@@ -169,6 +171,9 @@ namespace Telegram.Services.Calls
 
             _inputGroupCall = inputGroupCall;
 
+            _inputGroupCallTask = new TaskCompletionSource<InputGroupCall>();
+            _inputGroupCallTask.SetResult(inputGroupCall);
+
             _isScheduled = false;
 
             _devices.Changed += OnDeviceChanged;
@@ -228,7 +233,8 @@ namespace Telegram.Services.Calls
 
             _timeDifference = DateTime.Now - Formatter.ToLocalTime(unix.Value);
 
-            _inviteUserIds = _inviteUserIds;
+            _inviteUserIds = userIds;
+            _inputGroupCallTask = new TaskCompletionSource<InputGroupCall>();
 
             _isScheduled = false;
 
@@ -421,6 +427,11 @@ namespace Telegram.Services.Calls
                     Participants ??= new GroupCallParticipantsCollection(this);
                 }
 
+                if (_inputGroupCallTask != null)
+                {
+                    await _inputGroupCallTask.Task;
+                }
+
                 var joinParameters = new GroupCallJoinParameters(ssrc, payload, _manager.IsMuted, _capturer != null);
                 Function request = _inputGroupCall != null
                     ? new JoinGroupCall(_inputGroupCall, joinParameters)
@@ -438,6 +449,7 @@ namespace Telegram.Services.Calls
                     if (groupCall is GroupCall call)
                     {
                         _inputGroupCall ??= new InputGroupCallLink(call.InviteLink);
+                        _inputGroupCallTask.TrySetResult(_inputGroupCall);
                         Update(call, out _);
                     }
 

@@ -1690,7 +1690,7 @@ namespace Telegram.Controls.Messages
             {
                 Media.Child = new AudioContent(message);
             }
-            else if (content is MessageCall)
+            else if (content is MessageCall or MessageGroupCall)
             {
                 Media.Child = new CallContent(message);
             }

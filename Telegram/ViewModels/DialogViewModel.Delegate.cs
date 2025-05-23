@@ -271,7 +271,14 @@ namespace Telegram.ViewModels
 
         public void Call(MessageViewModel message, bool video)
         {
-            Call(video);
+            if (message.Content is MessageGroupCall groupCall)
+            {
+                _voipService.JoinGroupCall(NavigationService, new InputGroupCallMessage(message.ChatId, message.Id));
+            }
+            else
+            {
+                Call(video);
+            }
         }
 
         public async void VotePoll(MessageViewModel message, IList<int> options)

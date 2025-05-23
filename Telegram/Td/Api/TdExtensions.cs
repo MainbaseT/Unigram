@@ -537,6 +537,22 @@ namespace Telegram.Td.Api
             }
         }
 
+        public static string ToOutcomeText(this MessageGroupCall groupCall, bool outgoing)
+        {
+            if (outgoing)
+            {
+                return Strings.ConferenceCallOutgoing;
+            }
+            else if (groupCall.WasMissed)
+            {
+                return Strings.ConferenceCallMissed;
+            }
+            else
+            {
+                return Strings.ConferenceCallIncoming;
+            }
+        }
+
         public static bool IsMoving(this Background background)
         {
             if (background?.Type is BackgroundTypePattern pattern)
@@ -1622,6 +1638,7 @@ namespace Telegram.Td.Api
                 case MessageAudio:
                 case MessageBigEmoji:
                 case MessageCall:
+                case MessageGroupCall:
                 case MessageContact:
                 case MessageDice:
                 case MessageDocument:

@@ -301,6 +301,9 @@ namespace Telegram.Controls.Messages
                 case MessageCall call:
                     SetCallTemplate(clientService, sender, call, title, outgoing, white);
                     break;
+                case MessageGroupCall groupCall:
+                    SetGroupCallTemplate(clientService, sender, groupCall, title, outgoing, white);
+                    break;
                 case MessageContact contact:
                     SetContactTemplate(clientService, sender, contact, title, outgoing, white);
                     break;
@@ -674,6 +677,20 @@ namespace Telegram.Controls.Messages
         }
 
         private void SetCallTemplate(IClientService clientService, MessageSender sender, MessageCall call, string title, bool outgoing, bool white)
+        {
+            HideThumbnail();
+
+            SetText(clientService,
+                outgoing,
+                sender,
+                title,
+                call.ToOutcomeText(outgoing),
+                null,
+                false,
+                white);
+        }
+
+        private void SetGroupCallTemplate(IClientService clientService, MessageSender sender, MessageGroupCall call, string title, bool outgoing, bool white)
         {
             HideThumbnail();
 

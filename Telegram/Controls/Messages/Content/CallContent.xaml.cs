@@ -62,12 +62,23 @@ namespace Telegram.Controls.Messages.Content
         {
             _message = message;
 
-            var call = message.Content as MessageCall;
-            if (call == null || !_templateApplied)
+            if (!_templateApplied)
             {
                 return;
             }
 
+            if (message.Content is MessageCall call)
+            {
+                UpdateCall(message, call);
+            }
+            else if (message.Content is MessageGroupCall groupCall)
+            {
+                UpdateGroupCall(message, groupCall);
+            }
+        }
+
+        private void UpdateCall(MessageViewModel message, MessageCall call)
+        {
             var outgoing = message.IsOutgoing;
             var missed = call.DiscardReason is CallDiscardReasonMissed or CallDiscardReasonDeclined;
 
@@ -82,6 +93,28 @@ namespace Telegram.Controls.Messages.Content
             if (call.Duration > 0 && !missed)
             {
                 date += ", " + Locale.FormatCallDuration(call.Duration);
+            }
+
+            DateLabel.Text = date;
+            VisualStateManager.GoToState(this, missed ? "Missed" : "Default", false);
+        }
+
+        private void UpdateGroupCall(MessageViewModel message, MessageGroupCall groupCall)
+        {
+            var outgoing = message.IsOutgoing;
+            var missed = groupCall.WasMissed;
+
+            Button.Glyph = groupCall.IsVideo ? Icons.VideoFilled24 : Icons.CallFilled24;
+            //Button.FontSize = call.IsVideo ? 24 : 20;
+
+            TitleLabel.Text = groupCall.ToOutcomeText(message.IsOutgoing);
+            IconLabel.Text = outgoing ? Icons.ArrowUpRight16 : Icons.ArrowDownLeft16;
+
+            var date = Formatter.Time(message.Date);
+
+            if (groupCall.Duration > 0 && !missed)
+            {
+                date += ", " + Locale.FormatCallDuration(groupCall.Duration);
             }
 
             DateLabel.Text = date;
@@ -112,13 +145,14 @@ namespace Telegram.Controls.Messages.Content
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var call = _message?.Content as MessageCall;
-            if (call == null)
+            if (_message?.Content is MessageCall call)
             {
-                return;
+                _message.Delegate.Call(_message, call.IsVideo);
             }
-
-            _message.Delegate.Call(_message, call.IsVideo);
+            else if (_message?.Content is MessageGroupCall groupCall)
+            {
+                _message.Delegate.Call(_message, groupCall.IsVideo);
+            }
         }
     }
 }
