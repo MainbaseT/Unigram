@@ -1,15 +1,12 @@
 ﻿namespace Telegram.Td.Api
 {
-    public partial class UpdateGiftUpgraded
+    public partial class UpdateGiftIsSold
     {
         public string ReceivedGiftId { get; set; }
 
-        public ReceivedGift Gift { get; set; }
-
-        public UpdateGiftUpgraded(string receivedGiftId, ReceivedGift gift)
+        public UpdateGiftIsSold(string receivedGiftId)
         {
             ReceivedGiftId = receivedGiftId;
-            Gift = gift;
         }
     }
 }

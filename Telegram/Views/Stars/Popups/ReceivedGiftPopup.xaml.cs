@@ -847,6 +847,8 @@ namespace Telegram.Views.Stars.Popups
             {
                 upgraded.Gift.ResaleStarCount = popup.Value;
 
+                _aggregator.Publish(new UpdateGiftUpgraded(_gift.ReceivedGiftId, _gift));
+
                 ResaleStarCountRoot.Visibility = Visibility.Visible;
                 ResaleStarCount.Text = upgraded.Gift.ResaleStarCount.ToString("N0");
 
