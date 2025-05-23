@@ -122,6 +122,14 @@ namespace Telegram.Views.Supergroups
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
+            GroupTopics.Visibility = group.Status is ChatMemberStatusCreator && !group.IsChannel && !group.HasLinkedChat
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            GroupTopics.Badge = group.IsForum
+                ? Strings.TopicsEnabled
+                : Strings.TopicsDisabled;
+
             if (canChangeInfo)
             {
                 if (ViewModel.IsPremiumAvailable)
@@ -233,6 +241,8 @@ namespace Telegram.Views.Supergroups
                 : Visibility.Collapsed;
             ChatLinked.Visibility = Visibility.Collapsed;
             ChannelColor.Visibility = Visibility.Collapsed;
+
+            GroupTopics.Badge = Strings.TopicsDisabled;
 
             Permissions.Badge = string.Format("{0}/{1}", chat.Permissions.Count(), chat.Permissions.Total());
             Permissions.Visibility = group.Status is ChatMemberStatusCreator ? Visibility.Visible : Visibility.Collapsed;

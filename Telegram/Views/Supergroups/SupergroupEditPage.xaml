@@ -135,6 +135,13 @@
                                    Padding="20,12,0,0"
                                    IsHitTestVisible="False" />
                     </Grid>
+
+                    <controls:BadgeButton x:Name="GroupTopics"
+                                          Content="{CustomResource Topics}"
+                                          Click="{x:Bind ViewModel.Topics}"
+                                          Style="{StaticResource GlyphBadgeButtonStyle}"
+                                          Glyph="&#xEA67;"
+                                          IsChevronVisible="True" />
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl x:Name="GroupMembersPanel">

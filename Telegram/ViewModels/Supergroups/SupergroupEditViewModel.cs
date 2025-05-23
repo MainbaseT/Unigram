@@ -411,6 +411,14 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        public void Topics()
+        {
+            if (_chat is Chat chat)
+            {
+                NavigationService.Navigate(typeof(SupergroupTopicsPage), chat.Id);
+            }
+        }
+
         public void InviteLinks()
         {
             if (_chat is Chat chat)

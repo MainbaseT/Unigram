@@ -384,6 +384,7 @@ namespace Telegram
                 SupergroupEditPage supergroupEdit => TypeResolver.Current.Resolve<SupergroupEditViewModel, ISupergroupEditDelegate>(supergroupEdit, sessionId),
                 SupergroupMembersPage supergroupMembers => TypeResolver.Current.Resolve<SupergroupMembersViewModel, ISupergroupDelegate>(supergroupMembers, sessionId),
                 SupergroupPermissionsPage supergroupPermissions => TypeResolver.Current.Resolve<SupergroupPermissionsViewModel, ISupergroupDelegate>(supergroupPermissions, sessionId),
+                SupergroupTopicsPage => TypeResolver.Current.Resolve<SupergroupTopicsViewModel>(sessionId),
                 SupergroupReactionsPopup => TypeResolver.Current.Resolve<SupergroupReactionsViewModel>(sessionId),
                 SupergroupProfileColorPage => TypeResolver.Current.Resolve<SupergroupProfileColorViewModel>(sessionId),
                 ChatBoostsPage => TypeResolver.Current.Resolve<ChatBoostsViewModel>(sessionId),
