@@ -1554,7 +1554,8 @@
                                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                               BorderBrush="{TemplateBinding BorderBrush}"
                                               BorderThickness="{TemplateBinding BorderThickness}"
-                                              BackgroundSizing="InnerBorderEdge" />
+                                              BackgroundSizing="InnerBorderEdge"
+                                              Opacity="{TemplateBinding ContentOpacity}" />
                         </Grid>
                         <messages:ReactionsPanel x:Name="Reactions"
                                                  MaxWidth="{StaticResource MessageMaxWidth}"

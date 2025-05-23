@@ -226,6 +226,10 @@ namespace Telegram.ViewModels
 
         public long SavedMessagesTopicId => SavedMessagesTopic?.Id ?? 0;
 
+        public long ChatId => Chat?.Id ?? 0;
+
+        public bool IsForum { get; private set; }
+
         protected Chat _chat;
         public override Chat Chat
         {
@@ -621,7 +625,7 @@ namespace Telegram.ViewModels
 
         public bool IsEndReached()
         {
-            var lastMessage = _savedMessagesTopic?.LastMessage ?? _chat?.LastMessage;
+            var lastMessage = _savedMessagesTopic?.LastMessage ?? _topic?.LastMessage ?? _chat?.LastMessage;
             if (lastMessage == null)
             {
                 return Items.Empty();
@@ -799,7 +803,7 @@ namespace Telegram.ViewModels
                             await AddHeaderAsync(messages.MessagesValue, fromMessage?.Get());
                         }
 
-                        tsc.SetResult(new MessageCollection(Items.Ids, messages.MessagesValue, CreateMessage, endReached));
+                        tsc.SetResult(new MessageCollection(Items.Ids, messages.MessagesValue, CreateMessage, endReached, Type));
                     }
                     else
                     {
@@ -1633,7 +1637,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                var replied = new MessageCollection(null, values, CreateMessage, false);
+                var replied = new MessageCollection(null, values, CreateMessage, false, Type);
                 return new LoadSliceResult(replied, maxId, scrollMode, alignment, pixel);
             }
 
@@ -2194,6 +2198,8 @@ namespace Telegram.ViewModels
             }
 
             Chat = chat;
+            IsForum = Type == DialogType.History && ClientService.IsForum(chat);
+
             SetScrollMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
             SetTranslating();
 
@@ -4352,11 +4358,15 @@ namespace Telegram.ViewModels
             _messages = new();
         }
 
-        public MessageCollection(ICollection<long> exclude, IEnumerable<Message> source, Func<Message, bool, MessageViewModel> create, bool endReached)
+        public MessageCollection(ICollection<long> exclude, IEnumerable<Message> source, Func<Message, bool, MessageViewModel> create, bool endReached, DialogType type)
         {
             foreach (var item in source)
             {
                 if (item.Id != 0 && exclude != null && exclude.Contains(item.Id))
+                {
+                    continue;
+                }
+                else if (item.Content is MessageForumTopicCreated or MessageChatUpgradeFrom && type == DialogType.Thread)
                 {
                     continue;
                 }
@@ -4504,9 +4514,15 @@ namespace Telegram.ViewModels
             {
                 var prev = index > 0 ? this[index - 1] : null;
                 var prevSeparator = UpdateSeparatorOnInsert(prev, item);
+                var prevForumTopic = UpdateForumTopicSeparatorOnInsert(prev, item);
                 var prevHash = AttachHash(prev);
 
-                if (prevSeparator != null)
+                if (prevForumTopic != null)
+                {
+                    UpdateAttach(null, prev);
+                    UpdateAttach(prevForumTopic, item);
+                }
+                else if (prevSeparator != null)
                 {
                     UpdateAttach(null, prev);
                     UpdateAttach(prevSeparator, item);
@@ -4521,6 +4537,11 @@ namespace Telegram.ViewModels
                     base.InsertItem(index++, prevSeparator);
                 }
 
+                if (prevForumTopic != null)
+                {
+                    base.InsertItem(index++, prevForumTopic);
+                }
+
                 base.InsertItem(index, item);
 
                 var prevUpdate = AttachHash(prev);
@@ -4533,9 +4554,15 @@ namespace Telegram.ViewModels
             {
                 var next = index < Count ? this[index] : null;
                 var nextSeparator = UpdateSeparatorOnInsert(item, next);
+                var nextForumTopic = UpdateForumTopicSeparatorOnInsert(item, next);
                 var nextHash = AttachHash(next);
 
-                if (nextSeparator != null)
+                if (nextForumTopic != null)
+                {
+                    UpdateAttach(next, null);
+                    UpdateAttach(item, nextForumTopic);
+                }
+                else if (nextSeparator != null)
                 {
                     UpdateAttach(next, null);
                     UpdateAttach(item, nextSeparator);
@@ -4550,6 +4577,11 @@ namespace Telegram.ViewModels
                 if (nextSeparator != null)
                 {
                     base.InsertItem(++index, nextSeparator);
+                }
+
+                if (nextForumTopic != null)
+                {
+                    base.InsertItem(++index, nextForumTopic);
                 }
 
                 var nextUpdate = AttachHash(next);
@@ -4573,10 +4605,18 @@ namespace Telegram.ViewModels
                 var prevSeparator = UpdateSeparatorOnInsert(prev, item);
                 var nextSeparator = UpdateSeparatorOnInsert(item, next);
 
+                var prevForumTopic = UpdateForumTopicSeparatorOnInsert(prev, item);
+                var nextForumTopic = UpdateForumTopicSeparatorOnInsert(item, next);
+
                 var nextHash = AttachHash(next);
                 var prevHash = AttachHash(prev);
 
-                if (prevSeparator != null)
+                if (prevForumTopic != null)
+                {
+                    UpdateAttach(null, prev);
+                    UpdateAttach(prevForumTopic, item);
+                }
+                else if (prevSeparator != null)
                 {
                     UpdateAttach(null, prev);
                     UpdateAttach(prevSeparator, item);
@@ -4586,7 +4626,12 @@ namespace Telegram.ViewModels
                     UpdateAttach(item, prev);
                 }
 
-                if (nextSeparator != null)
+                if (nextForumTopic != null)
+                {
+                    UpdateAttach(next, null);
+                    UpdateAttach(item, nextForumTopic);
+                }
+                else if (nextSeparator != null)
                 {
                     UpdateAttach(next, null);
                     UpdateAttach(item, nextSeparator);
@@ -4601,11 +4646,21 @@ namespace Telegram.ViewModels
                     base.InsertItem(index++, prevSeparator);
                 }
 
+                if (prevForumTopic != null)
+                {
+                    base.InsertItem(index++, prevForumTopic);
+                }
+
                 base.InsertItem(index, item);
 
                 if (nextSeparator != null)
                 {
                     base.InsertItem(++index, nextSeparator);
+                }
+
+                if (nextForumTopic != null)
+                {
+                    base.InsertItem(++index, nextForumTopic);
                 }
 
                 var nextUpdate = AttachHash(next);
@@ -4672,9 +4727,32 @@ namespace Telegram.ViewModels
             {
                 var itemDate = Formatter.ToLocalTime(GetMessageDate(item));
                 var previousDate = Formatter.ToLocalTime(GetMessageDate(next));
+
                 if (previousDate.Date != itemDate.Date)
                 {
-                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, next.Topic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, next.IsTopicMessage, false, next.Date, 0, null, null, null, null, null, null, 0, 0, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
+                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, next.Topic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, next.IsTopicMessage, false, next.Date, 0, null, null, null, null, null, null, next.MessageThreadId, 0, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
+                }
+            }
+
+            return null;
+        }
+
+        private static MessageViewModel UpdateForumTopicSeparatorOnInsert(MessageViewModel item, MessageViewModel next)
+        {
+            var forum = item?.Delegate?.IsForum;
+            if (forum is not true)
+            {
+                return null;
+            }
+
+            if (item != null && next != null && item.Content is not MessageHeaderForumTopic && next.Content is not MessageHeaderForumTopic)
+            {
+                var itemThreadId = item.IsTopicMessage ? item.MessageThreadId : ForumTopicService.GeneralId;
+                var nextThreadId = next.IsTopicMessage ? next.MessageThreadId : ForumTopicService.GeneralId;
+
+                if (itemThreadId != nextThreadId)
+                {
+                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, next.Topic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, next.IsTopicMessage, false, next.Date, 0, null, null, null, null, null, null, nextThreadId, 0, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderForumTopic(), null));
                 }
             }
 
@@ -4683,16 +4761,37 @@ namespace Telegram.ViewModels
 
         private void UpdateSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
         {
+            UpdateForumTopicSeparatorOnRemove(next, previous, index);
+
             if (next != null && next.Content is MessageHeaderDate && previous != null)
             {
                 var itemDate = Formatter.ToLocalTime(GetMessageDate(next));
                 var previousDate = Formatter.ToLocalTime(GetMessageDate(previous));
+
                 if (previousDate.Date != itemDate.Date)
                 {
                     base.RemoveItem(index - 1);
                 }
             }
             else if (next != null && next.Content is MessageHeaderDate && previous == null)
+            {
+                base.RemoveItem(index - 1);
+            }
+        }
+
+        private void UpdateForumTopicSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
+        {
+            if (next != null && next.Content is MessageHeaderForumTopic forumTopic && previous != null)
+            {
+                var itemThreadId = previous.IsTopicMessage ? previous.MessageThreadId : ForumTopicService.GeneralId;
+                var nextThreadId = next.IsTopicMessage ? next.MessageThreadId : ForumTopicService.GeneralId;
+
+                if (nextThreadId != itemThreadId)
+                {
+                    base.RemoveItem(index - 1);
+                }
+            }
+            else if (next != null && next.Content is MessageHeaderForumTopic && previous == null)
             {
                 base.RemoveItem(index - 1);
             }

@@ -20,6 +20,7 @@ namespace Telegram.Controls.Chats
         Incoming,
         Service,
         ServiceUnread,
+        ServiceForumTopic,
         ServicePhoto,
         ServiceBackground,
         ServiceGift,

@@ -673,6 +673,138 @@
             </messages:MessageService>
         </DataTemplate>
 
+        <DataTemplate x:Name="ServiceMessageForumTopicTemplate">
+            <messages:MessageService Click="ServiceMessage_Click"
+                                     HorizontalAlignment="Stretch"
+                                     Margin="0,4,0,0">
+                <messages:MessageService.Template>
+                    <ControlTemplate TargetType="messages:MessageService">
+                        <Grid>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                                           Storyboard.TargetName="RootGrid">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource SystemControlBackgroundListLowBrush}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                                           Storyboard.TargetName="RootGrid">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource SystemControlBackgroundListMediumBrush}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="CheckedStates">
+                                    <VisualState x:Name="Unchecked" />
+                                    <VisualState x:Name="Checked">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                           Storyboard.TargetName="Indicator">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="1" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <!--<Rectangle StrokeThickness="2"
+                                       Stroke="{TemplateBinding Background}"
+                                       StrokeDashArray="1 2"
+                                       StrokeDashCap="Round"
+                                       VerticalAlignment="Center"
+                                       Height="2" />-->
+                            <messages:DashedLine StrokeThickness="2"
+                                                 StrokeDashArray="1 2"
+                                                 StrokeDashCap="Round"
+                                                 Stroke="{TemplateBinding Background}"
+                                                 VerticalAlignment="Center"
+                                                 Grid.ColumnSpan="3" />
+                            <!--<messages:DashedLine StrokeThickness="2"
+                                                 StrokeDashArray="1 2"
+                                                 StrokeDashCap="Round"
+                                                 Stroke="{TemplateBinding Background}"
+                                                 VerticalAlignment="Center"
+                                                 Grid.Column="2" />-->
+                            <Grid x:Name="RootGrid"
+                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                  Grid.Column="1">
+                                <ContentPresenter x:Name="ContentPresenter"
+                                                  AutomationProperties.AccessibilityView="Raw"
+                                                  Background="{TemplateBinding Background}"
+                                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  ContentTransitions="{TemplateBinding ContentTransitions}"
+                                                  Content="{TemplateBinding Content}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  Padding="{TemplateBinding Padding}"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                                  BackgroundSizing="InnerBorderEdge"
+                                                  Opacity="{TemplateBinding ContentOpacity}" />
+                            </Grid>
+                            <messages:ReactionsPanel x:Name="Reactions"
+                                                     MaxWidth="{StaticResource MessageMaxWidth}"
+                                                     HorizontalAlignment="Stretch"
+                                                     HorizontalContentAlignment="Center"
+                                                     Padding="0,4,0,0"
+                                                     Grid.Row="1" />
+                        </Grid>
+                    </ControlTemplate>
+                </messages:MessageService.Template>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <controls:IdentityIcon x:Name="TypeIcon"
+                                           FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                           Foreground="#FFFFFF"
+                                           VerticalAlignment="Bottom"
+                                           FontSize="16"
+                                           Margin="-4,0,4,0" />
+                    <Grid x:Name="IconRoot"
+                          Margin="-4,-2,4,-2">
+                        <Path x:Name="IconPath"
+                              Data="M18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10L2.00738 10.3463L2.03275 10.7283C2.12433 11.7422 2.4066 12.7186 2.86169 13.6153L2.925 13.735L2.01493 17.3787L2.00114 17.4624L2.00131 17.5438C2.02622 17.8369 2.31127 18.0625 2.62109 17.9851L6.266 17.075L6.38669 17.1393C7.49591 17.7018 8.72679 18 10 18C14.4183 18 18 14.4183 18 10Z" />
+                        <TextBlock x:Name="IconText"
+                                   TextAlignment="Center"
+                                   Foreground="#FFFFFF"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Left"
+                                   Margin="2,2,0,0"
+                                   Width="16" />
+                    </Grid>
+                    <TextBlock x:Name="TitleLabel"
+                               Foreground="#FFFFFF"
+                               MaxLines="1"
+                               TextWrapping="NoWrap"
+                               TextTrimming="CharacterEllipsis"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                               Grid.Column="1" />
+                </Grid>
+            </messages:MessageService>
+        </DataTemplate>
+
         <!-- EndRegion -->
 
         <DataTemplate x:Name="OutgoingMessageTemplate">

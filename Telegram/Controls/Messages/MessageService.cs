@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Telegram.Common;
+using Telegram.Controls.Cells;
 using Telegram.Controls.Chats;
 using Telegram.Controls.Media;
 using Telegram.Converters;
@@ -18,6 +19,7 @@ using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -25,6 +27,7 @@ using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Messages
 {
@@ -38,6 +41,19 @@ namespace Telegram.Controls.Messages
         }
 
         public MessageViewModel Message => _message;
+
+        #region ContentOpacity
+
+        public double ContentOpacity
+        {
+            get { return (double)GetValue(ContentOpacityProperty); }
+            set { SetValue(ContentOpacityProperty, value); }
+        }
+
+        public static readonly DependencyProperty ContentOpacityProperty =
+            DependencyProperty.Register("ContentOpacity", typeof(double), typeof(MessageService), new PropertyMetadata(1));
+
+        #endregion
 
         protected override void OnApplyTemplate()
         {
@@ -87,6 +103,7 @@ namespace Telegram.Controls.Messages
             var content = FindName("Text") as FormattedTextBlock;
             if (content == null)
             {
+                UpdateContent(message);
                 return;
             }
 
@@ -103,7 +120,41 @@ namespace Telegram.Controls.Messages
 
         private void UpdateContent(MessageViewModel message)
         {
-            if (message.Content is MessageGiveawayPrizeStars giveawayPrizeStars)
+            if (message.Content is MessageHeaderForumTopic)
+            {
+                var title = FindName("TitleLabel") as TextBlock;
+                var iconRoot = FindName("IconRoot") as Grid;
+                var iconPath = FindName("IconPath") as Path;
+                var iconText = FindName("IconText") as TextBlock;
+                var typeIcon = FindName("TypeIcon") as IdentityIcon;
+
+                if (message.ClientService.TryGetTopic(message.ChatId, message.MessageThreadId, out ForumTopic topic))
+                {
+                    title.Text = topic.Info.Name;
+
+                    if (topic.Info.IsGeneral || topic.Info.Icon.CustomEmojiId != 0)
+                    {
+                        typeIcon.SetStatus(message.ClientService, topic.Info.Icon);
+                        iconRoot.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        typeIcon.ClearStatus();
+                        iconRoot.Visibility = Visibility.Visible;
+
+                        var brush = ForumTopicCell.GetIconGradient(topic.Info.Icon);
+
+                        iconPath.Fill = brush;
+                        iconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);
+                        iconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
+                    }
+                }
+                else
+                {
+
+                }
+            }
+            else if (message.Content is MessageGiveawayPrizeStars giveawayPrizeStars)
             {
                 var title = FindName("Title") as TextBlock;
                 title.Text = Strings.ActionStarGiveawayPrizeTitle;
@@ -563,18 +614,18 @@ namespace Telegram.Controls.Messages
         {
             if (message.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
             {
-                return (string.Format(Strings.MessageScheduledOn, Formatter.DayGrouping(sendAtDate.SendDate)), null);
+                return (string.Format(Strings.MessageScheduledOn, Formatter.DayGrouping(Formatter.ToLocalTime(sendAtDate.SendDate))), null);
             }
             else if (message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
             {
-                return (string.Format(Strings.MessageScheduledOn, Formatter.DayGrouping(sendWhenVideoProcessed.SendDate)), null);
+                return (string.Format(Strings.MessageScheduledOn, Formatter.DayGrouping(Formatter.ToLocalTime(sendWhenVideoProcessed.SendDate))), null);
             }
             else if (message.SchedulingState is MessageSchedulingStateSendWhenOnline)
             {
                 return (Strings.MessageScheduledUntilOnline, null);
             }
 
-            return (Formatter.DayGrouping(message.Date), null);
+            return (Formatter.DayGrouping(Formatter.ToLocalTime(message.Date)), null);
         }
 
         #endregion
@@ -3156,6 +3207,24 @@ namespace Telegram.Controls.Messages
             {
                 reactions.UpdateMessageReactions(message, animate);
             }
+        }
+    }
+
+    public class DashedLine : Path
+    {
+        private readonly LineGeometry _geometry;
+
+        public DashedLine()
+        {
+            _geometry = new LineGeometry();
+            Data = _geometry;
+        }
+
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            _geometry.StartPoint = new Windows.Foundation.Point(0, 0);
+            _geometry.EndPoint = new Windows.Foundation.Point(finalSize.Width, 0);
+            return base.ArrangeOverride(finalSize);
         }
     }
 }

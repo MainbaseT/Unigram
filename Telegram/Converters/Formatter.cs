@@ -46,22 +46,21 @@ namespace Telegram.Converters
             return string.Format("UTC-{0:hh\\:mm}", span);
         }
 
-        public static string DayGrouping(int value)
+        public static string DayGrouping(DateTime date)
         {
-            var date = ToLocalTime(value);
             var now = DateTime.Now;
 
             var difference = Math.Abs(date.Month - now.Month + 12 * (date.Year - now.Year));
             if (difference >= 12)
             {
-                return Date(value, Strings.chatFullDate);
+                return Date(date, Strings.chatFullDate);
             }
             else if (date.Date == now.Date)
             {
                 return Strings.MessageScheduleToday;
             }
 
-            return Date(value, Strings.chatDate);
+            return Date(date, Strings.chatDate);
         }
 
         public static string Distance(float distance, bool away = true)

@@ -16,6 +16,7 @@ namespace Telegram.ViewModels.Delegates
     public interface IMessageDelegate : IViewModelDelegate
     {
         bool IsDialog { get; }
+        bool IsForum { get; }
         bool IsTranslating { get; }
 
         INavigationService NavigationService { get; }

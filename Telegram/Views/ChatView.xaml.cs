@@ -79,6 +79,8 @@ namespace Telegram.Views
         private readonly DispatcherTimer _dateHeaderTimer;
         private readonly Visual _dateHeaderPanel;
         private readonly Visual _dateHeader;
+        private readonly Visual _forumTopicHeaderPanel;
+        private readonly Visual _forumTopicHeader;
 
         private readonly ZoomableListHandler _autocompleteZoomer;
         private readonly AnimatedListHandler _autocompleteHandler;
@@ -118,6 +120,7 @@ namespace Telegram.Views
             AddStrategy(ChatHistoryViewItemType.Incoming, IncomingMessageTemplate, 20);
             AddStrategy(ChatHistoryViewItemType.Service, ServiceMessageTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceUnread, ServiceMessageUnreadTemplate);
+            AddStrategy(ChatHistoryViewItemType.ServiceForumTopic, ServiceMessageForumTopicTemplate);
             AddStrategy(ChatHistoryViewItemType.ServicePhoto, ServiceMessagePhotoTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceBackground, ServiceMessageBackgroundTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceGiftCode, ServiceMessageGiftCodeTemplate);
@@ -141,23 +144,25 @@ namespace Telegram.Views
 
             _rootVisual = ElementComposition.GetElementVisual(TextArea);
 
-            if (DateHeaderPanel != null)
+            _dateHeaderTimer = new DispatcherTimer();
+            _dateHeaderTimer.Interval = TimeSpan.FromMilliseconds(2000);
+            _dateHeaderTimer.Tick += (s, args) =>
             {
-                _dateHeaderTimer = new DispatcherTimer();
-                _dateHeaderTimer.Interval = TimeSpan.FromMilliseconds(2000);
-                _dateHeaderTimer.Tick += (s, args) =>
-                {
-                    _dateHeaderTimer.Stop();
-                    ShowHideDateHeader(false, true);
-                };
+                _dateHeaderTimer.Stop();
+                ShowHideDateHeader(false, true);
+                ShowHideForumTopicHeader(false, true);
+            };
 
-                _dateHeaderPanel = ElementComposition.GetElementVisual(DateHeaderRelative);
-                _dateHeader = ElementComposition.GetElementVisual(DateHeader);
+            DateHeaderRelative.CreateInsetClip();
 
-                _dateHeaderPanel.Clip = _dateHeaderPanel.Compositor.CreateInsetClip();
+            _dateHeaderPanel = ElementComposition.GetElementVisual(DateHeaderPanel);
+            _dateHeader = ElementComposition.GetElementVisual(DateHeader);
 
-                ElementCompositionPreview.SetIsTranslationEnabled(DateHeader, true);
-            }
+            _forumTopicHeaderPanel = ElementComposition.GetElementVisual(ForumTopicHeaderPanel);
+            _forumTopicHeader = ElementComposition.GetElementVisual(ForumTopicHeader);
+
+            ElementCompositionPreview.SetIsTranslationEnabled(DateHeader, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(ForumTopicHeader, true);
 
             _debouncer = new DispatcherTimer();
             _debouncer.Interval = TimeSpan.FromMilliseconds(Constants.AnimatedThrottle);
@@ -4149,6 +4154,10 @@ namespace Telegram.Views
                     }
                 }
             }
+            else if (message.Content is MessageHeaderForumTopic)
+            {
+                NavigateToForumTopic(message.Chat, message.MessageThreadId);
+            }
             else
             {
                 ViewModel.ExecuteServiceMessage(message);
@@ -4894,6 +4903,10 @@ namespace Telegram.Views
             else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator)
             {
                 return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
+            }
+            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetTopic(chat.Id, ForumTopicService.GeneralId, out ForumTopic forumTopic))
+            {
+                return string.Format(Strings.TypeMessageIn, forumTopic.Info.Name);
             }
 
             return Strings.TypeMessage;
@@ -5905,11 +5918,11 @@ namespace Telegram.Views
                 }
                 else if (group.Status is ChatMemberStatusCreator || group.Status is ChatMemberStatusAdministrator administrator)
                 {
-                    if (ViewModel.Type != DialogType.Thread && group.IsForum)
-                    {
-                        ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
-                    }
-                    else
+                    //if (ViewModel.Type != DialogType.Thread && group.IsForum)
+                    //{
+                    //    ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
+                    //}
+                    //else
                     {
                         ShowArea(0);
                     }
@@ -5931,11 +5944,11 @@ namespace Telegram.Views
                             ShowAction(string.Format(Strings.SendMessageRestricted, Formatter.BannedUntil(restrictedSend.RestrictedUntilDate)), false);
                         }
                     }
-                    else if (ViewModel.Type != DialogType.Thread && group.IsForum)
-                    {
-                        ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
-                    }
-                    else
+                    //else if (ViewModel.Type != DialogType.Thread && group.IsForum)
+                    //{
+                    //    ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
+                    //}
+                    //else
                     {
                         ShowArea(group.PaidMessageStarCount);
                     }
@@ -6403,6 +6416,11 @@ namespace Telegram.Views
         private void ClipperOuter_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ClipperBackground.Margin = new Thickness(0, -e.NewSize.Height - 48, 0, 0);
+        private void NavigateToForumTopic(Chat chat, long messageThreadId)
+        {
+            ViewModel.NavigationService.NavigateToChat(chat, thread: messageThreadId, force: false, clearBackStack: true);
+        }
+
         }
     }
 
