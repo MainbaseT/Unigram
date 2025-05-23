@@ -4346,6 +4346,15 @@ Minimum length is 5 characters.</value>
   <data name="Comments_other" xml:space="preserve">
     <value>{0} Comments</value>
   </data>
+  <data name="ConferenceCallIncoming" xml:space="preserve">
+    <value>Incoming Group Call</value>
+  </data>
+  <data name="ConferenceCallMissed" xml:space="preserve">
+    <value>Missed Group Call</value>
+  </data>
+  <data name="ConferenceCallOutgoing" xml:space="preserve">
+    <value>Outgoing Group Call</value>
+  </data>
   <data name="ConferenceChat" xml:space="preserve">
     <value>Group Call</value>
   </data>
@@ -12563,6 +12572,33 @@ Please try again in {0}.</value>
   <data name="Topics" xml:space="preserve">
     <value>Topics</value>
   </data>
+  <data name="TopicsDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="TopicsEnable" xml:space="preserve">
+    <value>Enable Topics</value>
+  </data>
+  <data name="TopicsEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="TopicsInfo" xml:space="preserve">
+    <value>The group chat will be divided into topics created by admins and users.</value>
+  </data>
+  <data name="TopicsLayout" xml:space="preserve">
+    <value>Topics layout</value>
+  </data>
+  <data name="TopicsLayoutInfo" xml:space="preserve">
+    <value>Choose how topics appear for all members.</value>
+  </data>
+  <data name="TopicsLayoutList" xml:space="preserve">
+    <value>List</value>
+  </data>
+  <data name="TopicsLayoutTabs" xml:space="preserve">
+    <value>Tabs</value>
+  </data>
+  <data name="TopicsTitle" xml:space="preserve">
+    <value>Topics</value>
+  </data>
   <data name="TopicViewAsMessages" xml:space="preserve">
     <value>View as Messages</value>
   </data>
@@ -12815,6 +12851,9 @@ If you are not comfortable with Telegram&apos;s modest needs, it won&apos;t be p
   </data>
   <data name="TypeMessageForStars" xml:space="preserve">
     <value>Message for ⭐️{0}</value>
+  </data>
+  <data name="TypeMessageIn" xml:space="preserve">
+    <value>Message in {0}</value>
   </data>
   <data name="TypePrivate" xml:space="preserve">
     <value>Private</value>
