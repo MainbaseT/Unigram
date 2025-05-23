@@ -673,7 +673,7 @@ namespace Telegram.ViewModels
 
             RaisePropertyChanged(nameof(SelectedCount));
 
-            if (_type is DialogType.BusinessReplies)
+            if (Type is DialogType.BusinessReplies)
             {
                 CanDeleteSelectedMessages = true;
                 CanForwardSelectedMessages = false;

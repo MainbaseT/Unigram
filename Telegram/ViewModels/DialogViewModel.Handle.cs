@@ -129,7 +129,7 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateChatAction update)
         {
-            if (update.ChatId == _chat?.Id && update.MessageThreadId == OutgoingThreadId && _type is DialogType.History or DialogType.Thread)
+            if (update.ChatId == _chat?.Id && update.MessageThreadId == OutgoingThreadId && Type is DialogType.History or DialogType.Thread)
             {
                 BeginOnUIThread(() => Delegate?.UpdateChatActions(_chat, ClientService.GetChatActions(update.ChatId)));
             }
@@ -137,7 +137,7 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateChatBusinessBotManageBar update)
         {
-            if (update.ChatId == _chat?.Id && _type == DialogType.History)
+            if (update.ChatId == _chat?.Id && Type == DialogType.History)
             {
                 BeginOnUIThread(() => Delegate?.UpdateChatBusinessBotManageBar(_chat, update.BusinessBotManageBar));
             }
@@ -416,7 +416,7 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateChatActionBar update)
         {
-            if (update.ChatId == _chat?.Id && _type == DialogType.History)
+            if (update.ChatId == _chat?.Id && Type == DialogType.History)
             {
                 BeginOnUIThread(() => UpdateChatActionBar(_chat));
             }
@@ -506,7 +506,7 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateChatReadInbox update)
         {
-            if (update.ChatId == _chat?.Id && _type == DialogType.History)
+            if (update.ChatId == _chat?.Id && Type == DialogType.History)
             {
                 BeginOnUIThread(() =>
                 {
@@ -626,11 +626,11 @@ namespace Telegram.ViewModels
 
         private bool CheckSchedulingState(Message message)
         {
-            if (_type == DialogType.ScheduledMessages)
+            if (Type == DialogType.ScheduledMessages)
             {
                 return message.SchedulingState != null;
             }
-            else if (_type == DialogType.Thread)
+            else if (Type == DialogType.Thread)
             {
                 if (_topic != null && _topic.Info.IsGeneral)
                 {
@@ -639,16 +639,16 @@ namespace Telegram.ViewModels
 
                 return message.SchedulingState == null && message.MessageThreadId == ThreadId;
             }
-            else if (_type == DialogType.SavedMessagesTopic)
+            else if (Type == DialogType.SavedMessagesTopic)
             {
                 return message.SchedulingState == null && message.SavedMessagesTopicId == SavedMessagesTopicId;
             }
-            else if (_type == DialogType.Pinned)
+            else if (Type == DialogType.Pinned)
             {
                 return message.SchedulingState == null && message.IsPinned;
             }
 
-            return message.SchedulingState == null && _type == DialogType.History;
+            return message.SchedulingState == null && Type == DialogType.History;
         }
 
         public void Handle(UpdateNewMessage update)
@@ -932,7 +932,7 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == _chat?.Id)
             {
-                if (_type == DialogType.Pinned)
+                if (Type == DialogType.Pinned)
                 {
                     if (update.IsPinned)
                     {
@@ -979,7 +979,7 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateMessageSendSucceeded update)
         {
-            if (update.Message.ChatId == _chat?.Id && _type == DialogType.History && update.Message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed)
+            if (update.Message.ChatId == _chat?.Id && Type == DialogType.History && update.Message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed)
             {
                 Handle(new UpdateDeleteMessages(update.Message.ChatId, new[] { update.OldMessageId }, true, false));
                 BeginOnUIThread(() =>

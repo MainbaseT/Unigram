@@ -396,7 +396,7 @@ namespace Telegram.Common
             }
 
             // TODO: do current page matching for ChatSavedPage and ChatThreadPage as well.
-            if (Frame?.Content is ChatPage page && page.ViewModel != null && chat.Id.Equals((long)CurrentPageParam) && thread == 0 && savedMessagesTopicId == 0 && !scheduled && !createNewWindow)
+            if (Frame?.Content is ChatPage page && page.ViewModel?.ChatId == chat.Id && page.ViewModel?.ThreadId == thread && savedMessagesTopicId == 0 && !scheduled && !createNewWindow)
             {
                 UpdateCurrentPage(page);
             }
@@ -421,7 +421,7 @@ namespace Telegram.Common
 
                     if (thread != 0)
                     {
-                        target = typeof(ChatThreadPage);
+                        target = typeof(ChatPage);
                         parameter = new ChatMessageIdNavigationArgs(chat.Id, thread);
                     }
                     else if (savedMessagesTopicId != 0)
@@ -454,17 +454,27 @@ namespace Telegram.Common
                 else
                 {
                     // TODO: do current page matching for ChatSavedPage and ChatThreadPage as well.
-                    if (Frame?.Content is ChatPage chatPage && thread == 0 && savedMessagesTopicId == 0 && !scheduled && !force)
+                    if (Frame?.Content is ChatPage chatPage /*&& thread == 0*/ && savedMessagesTopicId == 0 && !scheduled && !force)
                     {
+                        object parameter;
+                        if (thread != 0)
+                        {
+                            parameter = new ChatMessageIdNavigationArgs(chat.Id, thread);
+                        }
+                        else
+                        {
+                            parameter = chat.Id;
+                        }
+
                         chatPage.ViewModel.NavigatedFrom(null, false);
 
                         chatPage.Deactivate(true);
                         chatPage.Activate(this);
                         chatPage.ViewModel.NavigationService = this;
                         chatPage.ViewModel.Dispatcher = Dispatcher;
-                        await chatPage.ViewModel.NavigatedToAsync(chat.Id, Windows.UI.Xaml.Navigation.NavigationMode.New, state);
+                        await chatPage.ViewModel.NavigatedToAsync(parameter, Windows.UI.Xaml.Navigation.NavigationMode.New, state);
 
-                        FrameFacade.RaiseNavigated(chat.Id);
+                        FrameFacade.RaiseNavigated(parameter);
                         Frame.ForwardStack.Clear();
 
                         if (clearBackStack)
@@ -482,7 +492,7 @@ namespace Telegram.Common
 
                         if (thread != 0)
                         {
-                            target = typeof(ChatThreadPage);
+                            target = typeof(ChatPage);
                             parameter = new ChatMessageIdNavigationArgs(chat.Id, thread);
 
                             if (CurrentPageType == typeof(ChatPage) && chat.Id.Equals((long)CurrentPageParam))
@@ -524,7 +534,7 @@ namespace Telegram.Common
                                 var chatId = (long)parameter;
 
                                 parameter = cacheKey;
-                                CacheKeyToChatId[cacheKey] = chatId;
+                                CacheKeyToParameter[cacheKey] = chatId;
 
                                 GoBackAt(0, false);
 

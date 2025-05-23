@@ -1654,7 +1654,6 @@ namespace Telegram.Views
         {
             var allowed = e.SourcePageType == typeof(ChatPage) ||
                 e.SourcePageType == typeof(ChatPinnedPage) ||
-                e.SourcePageType == typeof(ChatThreadPage) ||
                 e.SourcePageType == typeof(ChatScheduledPage) ||
                 e.SourcePageType == typeof(ChatEventLogPage) ||
                 e.SourcePageType == typeof(ChatSavedPage) ||
@@ -1723,7 +1722,6 @@ namespace Telegram.Views
             var frame = MasterDetail.NavigationService.Frame;
             var allowed = frame.CurrentSourcePageType == typeof(ChatPage) ||
                 frame.CurrentSourcePageType == typeof(ChatPinnedPage) ||
-                frame.CurrentSourcePageType == typeof(ChatThreadPage) ||
                 frame.CurrentSourcePageType == typeof(ChatScheduledPage) ||
                 frame.CurrentSourcePageType == typeof(ChatEventLogPage) ||
                 frame.CurrentSourcePageType == typeof(ChatSavedPage) ||

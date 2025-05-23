@@ -234,14 +234,14 @@ namespace Telegram.ViewModels
         }
 
         private DialogType _type => Type;
-        public virtual DialogType Type => DialogType.History;
+        public virtual DialogType Type { get; private set; } = DialogType.History;
 
         private DispatcherTimer _lastSeenTimer;
 
         private string _lastSeen;
         public string LastSeen
         {
-            get => _type switch
+            get => Type switch
             {
                 DialogType.EventLog => Strings.EventLog,
                 DialogType.SavedMessagesTopic => Strings.SavedMessagesTab,
@@ -503,7 +503,7 @@ namespace Telegram.ViewModels
         {
             get
             {
-                if (_type != DialogType.History)
+                if (Type != DialogType.History)
                 {
                     return 0;
                 }
@@ -704,7 +704,7 @@ namespace Telegram.ViewModels
             // Backward => Going to top, to the past
             // Forward => Going to bottom, to the present
 
-            if (_type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned and not DialogType.SavedMessagesTopic)
+            if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned and not DialogType.SavedMessagesTopic)
             {
                 return;
             }
@@ -774,7 +774,7 @@ namespace Telegram.ViewModels
                 {
                     func = new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, fromMessageId, offset, 50);
                 }
-                else if (_type == DialogType.Pinned)
+                else if (Type == DialogType.Pinned)
                 {
                     func = new SearchChatMessages(chat.Id, string.Empty, null, fromMessageId, offset, 50, new SearchMessagesFilterPinned(), 0, 0);
                 }
@@ -858,7 +858,7 @@ namespace Telegram.ViewModels
             }
 
             var chat = _chat;
-            if (chat == null || _type != DialogType.History)
+            if (chat == null || Type != DialogType.History)
             {
                 goto AddDate;
             }
@@ -948,7 +948,7 @@ namespace Telegram.ViewModels
 
         public async void PreviousSlice()
         {
-            if (_type is DialogType.ScheduledMessages or DialogType.EventLog)
+            if (Type is DialogType.ScheduledMessages or DialogType.EventLog)
             {
                 ScrollToBottom();
             }
@@ -1073,7 +1073,7 @@ namespace Telegram.ViewModels
             await Task.Yield();
 
             var chat = _chat;
-            if (chat == null || (_type != DialogType.History && (_type == DialogType.Thread && Topic == null)))
+            if (chat == null || (Type != DialogType.History && (Type == DialogType.Thread && Topic == null)))
             {
                 return;
             }
@@ -1112,7 +1112,7 @@ namespace Telegram.ViewModels
                 threadId = thread.MessageThreadId;
             }
 
-            if (!_hasLoadedLastPinnedMessage && _type == DialogType.History)
+            if (!_hasLoadedLastPinnedMessage && Type == DialogType.History)
             {
                 _hasLoadedLastPinnedMessage = true;
                 //Delegate?.UpdatePinnedMessage(chat, null, chat.PinnedMessageId != 0);
@@ -1194,12 +1194,12 @@ namespace Telegram.ViewModels
 
         public async Task LoadMessageSliceAsync(long? previousId, long maxId, VerticalAlignment alignment = VerticalAlignment.Center, double? pixel = null, ScrollIntoViewAlignment? direction = null, bool? disableAnimation = null, TextQuote highlight = null, bool onlyRemote = false)
         {
-            if (_type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned and not DialogType.SavedMessagesTopic)
+            if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned and not DialogType.SavedMessagesTopic)
             {
                 NotifyMessageSliceLoaded();
                 return;
             }
-            else if (_type is DialogType.Thread)
+            else if (Type is DialogType.Thread)
             {
                 NotifyMessageSliceLoaded();
             }
@@ -1415,7 +1415,7 @@ namespace Telegram.ViewModels
                     func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, maxId, -25, 50));
                 }
             }
-            else if (_type == DialogType.Pinned)
+            else if (Type == DialogType.Pinned)
             {
                 func = ClientService.SendAsync(new SearchChatMessages(chat.Id, string.Empty, null, maxId, -25, 50, new SearchMessagesFilterPinned(), 0, 0));
             }
@@ -2143,6 +2143,8 @@ namespace Telegram.ViewModels
             }
             else if (parameter is ChatMessageIdNavigationArgs messageIdArgs)
             {
+                Type = DialogType.Thread;
+
                 var topic = ClientService.GetTopic(messageIdArgs.ChatId, messageIdArgs.MessageId);
                 if (topic != null)
                 {
@@ -2206,21 +2208,21 @@ namespace Telegram.ViewModels
             }
 
 #pragma warning disable CS4014
-            if (_type == DialogType.ScheduledMessages)
+            if (Type == DialogType.ScheduledMessages)
             {
                 Logger.Debug(string.Format("{0} - Loading scheduled messages", chat.Id));
 
                 NotifyMessageSliceLoaded();
                 LoadScheduledSliceAsync();
             }
-            else if (_type == DialogType.EventLog)
+            else if (Type == DialogType.EventLog)
             {
                 Logger.Debug(string.Format("{0} - Loading event log", chat.Id));
 
                 NotifyMessageSliceLoaded();
                 LoadEventLogSliceAsync();
             }
-            else if (_type == DialogType.BusinessReplies)
+            else if (Type == DialogType.BusinessReplies)
             {
                 Logger.Debug(string.Format("{0} - Loading business replies", chat.Id));
 
@@ -2419,11 +2421,11 @@ namespace Telegram.ViewModels
             ShowSwitchInline(state);
             ShowReplyTo(state);
 
-            if (_type is DialogType.History or DialogType.Thread && state.TryRemove("package", out DataPackageView package))
+            if (Type is DialogType.History or DialogType.Thread && state.TryRemove("package", out DataPackageView package))
             {
                 await HandlePackageAsync(package);
             }
-            else if (_type is DialogType.History && state.TryRemove("videoChat", out string videoChat))
+            else if (Type is DialogType.History && state.TryRemove("videoChat", out string videoChat))
             {
                 _voipService.JoinGroupCall(NavigationService, chat.Id, videoChat);
             }
@@ -2454,7 +2456,7 @@ namespace Telegram.ViewModels
 
             ClientService.Send(new CloseChat(chat.Id));
 
-            if (_type is not DialogType.History and not DialogType.Thread and not DialogType.SavedMessagesTopic)
+            if (Type is not DialogType.History and not DialogType.Thread and not DialogType.SavedMessagesTopic)
             {
                 return;
             }
@@ -2541,7 +2543,7 @@ namespace Telegram.ViewModels
 
         private void ShowSwitchInline(IDictionary<string, object> state)
         {
-            if (_type == DialogType.History && state.TryGet("switch_query", out string query) && state.TryGet("switch_bot", out long userId))
+            if (Type == DialogType.History && state.TryGet("switch_query", out string query) && state.TryGet("switch_bot", out long userId))
             {
                 state.Remove("switch_query");
                 state.Remove("switch_bot");
@@ -2555,7 +2557,7 @@ namespace Telegram.ViewModels
                 SetText(string.Format("@{0} {1}", username, query), focus: true);
                 ResolveInlineBot(username, query);
             }
-            else if (_type == DialogType.History && state.TryGet("draft", out FormattedText draft))
+            else if (Type == DialogType.History && state.TryGet("draft", out FormattedText draft))
             {
                 state.Remove("draft");
 
@@ -2565,7 +2567,7 @@ namespace Telegram.ViewModels
 
         private void ShowReplyTo(IDictionary<string, object> state)
         {
-            if (_type == DialogType.History && state.TryGet("reply_to", out Message message))
+            if (Type == DialogType.History && state.TryGet("reply_to", out Message message))
             {
                 state.TryGet("reply_to_quote", out InputTextQuote quote);
 
@@ -2584,7 +2586,7 @@ namespace Telegram.ViewModels
 
         private async void ShowReplyMarkup(Chat chat)
         {
-            if (chat.ReplyMarkupMessageId == 0 || _type != DialogType.History)
+            if (chat.ReplyMarkupMessageId == 0 || Type != DialogType.History)
             {
                 Delegate?.UpdateChatReplyMarkup(chat, null);
             }
@@ -2649,7 +2651,7 @@ namespace Telegram.ViewModels
             }
 
             var input = draft?.InputMessageText as InputMessageText;
-            if (input == null || (_type != DialogType.History && _type != DialogType.Thread))
+            if (input == null || Type is not DialogType.History and not DialogType.Thread)
             {
                 _draft = null;
 
@@ -2731,7 +2733,7 @@ namespace Telegram.ViewModels
 
         public void SaveDraft(bool clear = false)
         {
-            if (_type is not DialogType.History and not DialogType.Thread)
+            if (Type is not DialogType.History and not DialogType.Thread)
             {
                 return;
             }
@@ -4166,18 +4168,18 @@ namespace Telegram.ViewModels
             {
                 Search.FilterByTag = !Search.FilterByTag;
             }
-            else if (_type == DialogType.EventLog)
+            else if (Type == DialogType.EventLog)
             {
                 FilterExecute();
             }
-            else if (_type == DialogType.SavedMessagesTopic)
+            else if (Type == DialogType.SavedMessagesTopic)
             {
                 if (SavedMessagesTopic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
                 {
                     NavigationService.NavigateToChat(savedChat);
                 }
             }
-            else if (_type == DialogType.Pinned)
+            else if (Type == DialogType.Pinned)
             {
                 if (chat.CanPinMessages(ClientService))
                 {

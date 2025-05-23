@@ -274,7 +274,7 @@ namespace Telegram.ViewModels
                 .ToList();
 
             IDictionary<MessageId, MessageProperties> properties;
-            if (_type == DialogType.BusinessReplies)
+            if (Type == DialogType.BusinessReplies)
             {
                 properties = items.ToDictionary(x => new MessageId(x), y => new MessageProperties
                 {
@@ -306,7 +306,7 @@ namespace Telegram.ViewModels
 
             IsSelectionEnabled = false;
 
-            if (_type == DialogType.BusinessReplies)
+            if (Type == DialogType.BusinessReplies)
             {
                 ClientService.Send(new DeleteQuickReplyShortcutMessages(QuickReplyShortcut.Id, messages.Select(x => x.Id).ToList()));
                 return;

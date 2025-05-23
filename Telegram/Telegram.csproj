@@ -1030,7 +1030,6 @@
     <Compile Include="ViewModels\Delegates\IGroupCallDelegate.cs" />
     <Compile Include="ViewModels\DialogEventLogViewModel.cs" />
     <Compile Include="ViewModels\DialogPinnedViewModel.cs" />
-    <Compile Include="ViewModels\DialogThreadViewModel.cs" />
     <Compile Include="ViewModels\Chats\MessageStatisticsViewModel.cs" />
     <Compile Include="ViewModels\DownloadsViewModel.cs" />
     <Compile Include="ViewModels\Drawers\EmojiDrawerViewModel.cs" />
@@ -1161,9 +1160,6 @@
     </Compile>
     <Compile Include="Views\Chats\Popups\ChatInviteLinkPopup.xaml.cs">
       <DependentUpon>ChatInviteLinkPopup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ChatThreadPage.xaml.cs">
-      <DependentUpon>ChatThreadPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Chats\MessageStatisticsPage.xaml.cs">
       <DependentUpon>MessageStatisticsPage.xaml</DependentUpon>
@@ -3096,10 +3092,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Chats\Popups\ChatInviteLinkPopup.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ChatThreadPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

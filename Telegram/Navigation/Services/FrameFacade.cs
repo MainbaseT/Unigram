@@ -41,12 +41,12 @@ namespace Telegram.Navigation.Services
             FrameId = id;
         }
 
-        public void RaiseNavigated(long chatId)
+        public void RaiseNavigated(object parameter)
         {
             if (Content is ChatPage)
             {
-                NavigationService.CacheKeyToChatId[CurrentPageCacheKey] = chatId;
-                CurrentPageParam = chatId;
+                NavigationService.CacheKeyToParameter[CurrentPageCacheKey] = parameter;
+                CurrentPageParam = parameter;
 
                 var args = new NavigatedEventArgs
                 {
@@ -291,7 +291,7 @@ namespace Telegram.Navigation.Services
 
             if (e.SourcePageType == typeof(ChatPage) && CurrentPageParam is string cacheKey)
             {
-                CurrentPageParam = NavigationService.CacheKeyToChatId[cacheKey];
+                CurrentPageParam = NavigationService.CacheKeyToParameter[cacheKey];
                 CurrentPageCacheKey = cacheKey;
             }
 
@@ -321,7 +321,7 @@ namespace Telegram.Navigation.Services
             var parameter = e.Parameter;
             if (parameter is string cacheKey && e.SourcePageType == typeof(ChatPage))
             {
-                parameter = NavigationService.CacheKeyToChatId[cacheKey];
+                parameter = NavigationService.CacheKeyToParameter[cacheKey];
             }
 
             var args = new NavigatingEventArgs(e, Content as Page, e.SourcePageType, parameter, e.Parameter);

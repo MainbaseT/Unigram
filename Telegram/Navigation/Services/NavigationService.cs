@@ -46,7 +46,7 @@ namespace Telegram.Navigation.Services
 
         string NavigationState { get; set; }
 
-        IDictionary<string, long> CacheKeyToChatId { get; }
+        IDictionary<string, object> CacheKeyToParameter { get; }
 
         void Refresh();
 
@@ -167,7 +167,7 @@ namespace Telegram.Navigation.Services
 
         public int SessionId { get; private set; }
 
-        public IDictionary<string, long> CacheKeyToChatId { get; } = new Dictionary<string, long>();
+        public IDictionary<string, object> CacheKeyToParameter { get; } = new Dictionary<string, object>();
 
         public List<NavigationStackItem> BackStack { get; } = new();
 
@@ -316,7 +316,7 @@ namespace Telegram.Navigation.Services
             var parameter = e.Parameter;
             if (parameter is string cacheKey && e.SourcePageType == typeof(ChatPage))
             {
-                parameter = CacheKeyToChatId[cacheKey];
+                parameter = CacheKeyToParameter[cacheKey];
             }
 
             Navigated?.Invoke(this, e);
@@ -627,10 +627,10 @@ namespace Telegram.Navigation.Services
             if (page == typeof(ChatPage))
             {
                 var cacheKey = Guid.NewGuid().ToString();
-                var chatId = (long)parameter;
+                var cacheParameter = parameter;
 
                 parameter = cacheKey;
-                CacheKeyToChatId[cacheKey] = chatId;
+                CacheKeyToParameter[cacheKey] = cacheParameter;
             }
 
             return FrameFacade.Navigate(page, parameter, infoOverride, navigationStackEnabled);
@@ -649,7 +649,7 @@ namespace Telegram.Navigation.Services
                     var parameter = entry.Parameter;
                     if (parameter is string cacheKey && entry.SourcePageType == typeof(ChatPage))
                     {
-                        parameter = CacheKeyToChatId[cacheKey];
+                        parameter = CacheKeyToParameter[cacheKey];
                     }
 
                     var pageState = FrameFacade.PageStateSettingsService(entry.SourcePageType, 0, parameter).Values;

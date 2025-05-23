@@ -212,7 +212,7 @@ namespace Telegram.Common
 
         public static void RemoveChatFromStack(this INavigationService service, long target)
         {
-            long peer;
+            MessageId peer;
             bool found = false;
 
             for (int i = 0; i < service.Frame.BackStackDepth; i++)
@@ -220,7 +220,7 @@ namespace Telegram.Common
                 var entry = service.Frame.BackStack[i];
                 if (TryGetChatFromParameter(service, entry.Parameter, out peer))
                 {
-                    found = peer.Equals(target);
+                    found = peer.ChatId == target;
                 }
 
                 if (found)
@@ -232,7 +232,7 @@ namespace Telegram.Common
 
             if (TryGetChatFromParameter(service, service.CurrentPageParam, out peer))
             {
-                if (peer.Equals(target))
+                if (peer.ChatId == target)
                 {
                     service.GoBack();
                     service.Frame.ForwardStack.Clear();
@@ -249,9 +249,9 @@ namespace Telegram.Common
         {
             if (service.CurrentPageType == typeof(ChatPage))
             {
-                if (TryGetChatFromParameter(service, service.CurrentPageParam, out long chatId))
+                if (TryGetChatFromParameter(service, service.CurrentPageParam, out MessageId chatId))
                 {
-                    return new MessageId(chatId, 0);
+                    return chatId;
                 }
             }
 
@@ -260,13 +260,6 @@ namespace Telegram.Common
                 return default;
             }
 
-            if (service.CurrentPageType == typeof(ChatThreadPage))
-            {
-                if (service.CurrentPageParam is ChatMessageIdNavigationArgs args)
-                {
-                    return new MessageId(args.ChatId, args.MessageId);
-                }
-            }
             //else if (service.CurrentPageType == typeof(ChatSavedPage))
             //{
             //    if (service.CurrentPageParam is SavedMessagesTopicSavedFromChat savedFromChat)
@@ -280,16 +273,9 @@ namespace Telegram.Common
                 var entry = service.Frame.BackStack[i];
                 if (entry.SourcePageType == typeof(ChatPage))
                 {
-                    if (TryGetChatFromParameter(service, entry.Parameter, out long chatId))
+                    if (TryGetChatFromParameter(service, entry.Parameter, out MessageId chatId))
                     {
-                        return new MessageId(chatId, 0);
-                    }
-                }
-                else if (entry.SourcePageType == typeof(ChatThreadPage))
-                {
-                    if (entry.Parameter is ChatMessageIdNavigationArgs args)
-                    {
-                        return new MessageId(args.ChatId, args.MessageId);
+                        return chatId;
                     }
                 }
                 //else if (entry.SourcePageType == typeof(ChatSavedPage))
@@ -304,20 +290,25 @@ namespace Telegram.Common
             return default;
         }
 
-        public static bool TryGetChatFromParameter(this INavigationService service, object parameter, out long chatId)
+        public static bool TryGetChatFromParameter(this INavigationService service, object parameter, out MessageId chatId)
         {
+            if (parameter is string cacheKey && service.CacheKeyToParameter.TryGetValue(cacheKey, out object value))
+            {
+                parameter = value;
+            }
+
             if (parameter is long)
             {
-                chatId = (long)parameter;
+                chatId = new MessageId((long)parameter, 0);
                 return true;
             }
-            else if (parameter is string cacheKey && service.CacheKeyToChatId.TryGetValue(cacheKey, out long value))
+            else if (parameter is ChatMessageIdNavigationArgs args)
             {
-                chatId = value;
+                chatId = new MessageId(args.ChatId, args.MessageId);
                 return true;
             }
 
-            chatId = 0;
+            chatId = default;
             return false;
         }
 
@@ -327,13 +318,13 @@ namespace Telegram.Common
             {
                 var item = service.Frame.BackStack[i];
 
-                if (service.TryGetChatFromParameter(item.Parameter, out long chatId))
+                if (service.TryGetChatFromParameter(item.Parameter, out MessageId chatId))
                 {
-                    if (chatId == oldChatId)
+                    if (chatId.ChatId == oldChatId)
                     {
-                        if (item.Parameter is string cacheKey && service.CacheKeyToChatId.ContainsKey(cacheKey))
+                        if (item.Parameter is string cacheKey && service.CacheKeyToParameter.ContainsKey(cacheKey))
                         {
-                            service.CacheKeyToChatId[cacheKey] = newChatId;
+                            service.CacheKeyToParameter[cacheKey] = newChatId;
                         }
                         else
                         {

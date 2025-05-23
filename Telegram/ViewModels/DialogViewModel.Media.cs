@@ -44,7 +44,7 @@ namespace Telegram.ViewModels
             TextField?.SetText(text);
         }
 
-        protected override bool CanSchedule => _type is DialogType.History or DialogType.Thread;
+        protected override bool CanSchedule => Type is DialogType.History or DialogType.Thread;
 
         private async Task<ContentDialogResult> ShowPaidMessageConfirmationAsync(int messageCount, long starCount)
         {
@@ -114,7 +114,7 @@ namespace Telegram.ViewModels
             }
 
             MessageSchedulingState schedulingState = null;
-            if (schedule == SchedulingState.Schedule || (_type == DialogType.ScheduledMessages && schedule == SchedulingState.Auto))
+            if (schedule == SchedulingState.Schedule || (Type == DialogType.ScheduledMessages && schedule == SchedulingState.Auto))
             {
                 var user = ClientService.GetUser(chat);
                 var popup = new ScheduleMessagePopup(user, ClientService.IsSavedMessages(chat));

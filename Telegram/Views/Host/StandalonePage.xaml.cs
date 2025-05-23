@@ -94,7 +94,6 @@ namespace Telegram.Views.Host
         {
             var allowed = e.SourcePageType == typeof(ChatPage) ||
                 e.SourcePageType == typeof(ChatPinnedPage) ||
-                e.SourcePageType == typeof(ChatThreadPage) ||
                 e.SourcePageType == typeof(ChatScheduledPage) ||
                 e.SourcePageType == typeof(ChatEventLogPage) ||
                 e.SourcePageType == typeof(ChatSavedPage) ||
