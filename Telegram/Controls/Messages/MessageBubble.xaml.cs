@@ -2357,7 +2357,6 @@ namespace Telegram.Controls.Messages
 
             var header = ElementComposition.GetElementVisual(Header);
             var text = ElementComposition.GetElementVisual(Message);
-            var media = ElementComposition.GetElementVisual(Media);
             var footer = ElementComposition.GetElementVisual(Footer);
 
             var headerLeft = (float)Header.Margin.Left;
@@ -2374,8 +2373,21 @@ namespace Telegram.Controls.Messages
 
             header.StartAnimation("Scale", factor);
             text.StartAnimation("Scale", factor);
-            media.StartAnimation("Scale", factor);
             footer.StartAnimation("Scale", factor);
+
+            if (Media.Child != null)
+            {
+                var clip = anim.Compositor.CreateScalarKeyFrameAnimation();
+                clip.InsertKeyFrame(0, next.Y - prev.Y);
+                clip.InsertKeyFrame(1, 0);
+
+                var media = ElementComposition.GetElementVisual(Media);
+                media.CenterPoint = new Vector3(-mediaLeft, 0, 0);
+                media.StartAnimation("Scale", factor);
+
+                media.Clip = anim.Compositor.CreateInsetClip();
+                media.Clip.StartAnimation("BottomInset", clip);
+            }
 
             if (Reactions != null)
             {
