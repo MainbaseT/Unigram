@@ -440,7 +440,7 @@ namespace Telegram.ViewModels
                 }
                 else
                 {
-                    await SendStorageMediaAsync(item, reply, null, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, options, popup.StarCount);
+                    await SendStorageMediaAsync(item, reply, captionz, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, options, popup.StarCount);
                 }
             }
         }
