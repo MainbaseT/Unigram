@@ -358,6 +358,8 @@ namespace Telegram.Views
             DataContext = _viewModel = viewModel;
             Messages.ViewModel = viewModel;
 
+            _forumTopicHeaderTopic = 0;
+
             _updateThemeTask = new TaskCompletionSource<bool>();
             ViewModel.MessageSliceLoaded += OnMessageSliceLoaded;
             ViewModel.TextField = TextField;
@@ -4040,6 +4042,15 @@ namespace Telegram.Views
             }
         }
 
+        private void ForumTopic_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            if (button.Tag is long messageThreadId && ViewModel.Type is DialogType.History or DialogType.Thread)
+            {
+                NavigateToForumTopic(ViewModel.Chat, messageThreadId);
+            }
+        }
+
         private bool _compactCollapsed;
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -5961,10 +5972,10 @@ namespace Telegram.Views
                 {
                     ShowAction(Strings.GlobalSendMessageRestricted, fullInfo != null && fullInfo.UnrestrictBoostCount > 0);
                 }
-                else if (ViewModel.Type != DialogType.Thread && group.IsForum)
-                {
-                    ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
-                }
+                //else if (ViewModel.Type != DialogType.Thread && group.IsForum)
+                //{
+                //    ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
+                //}
                 else
                 {
                     ShowArea(group.PaidMessageStarCount);
