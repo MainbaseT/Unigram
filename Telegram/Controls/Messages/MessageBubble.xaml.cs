@@ -2368,7 +2368,6 @@ namespace Telegram.Controls.Messages
 
             header.CenterPoint = new Vector3(-headerLeft, 0, 0);
             text.CenterPoint = new Vector3(-textLeft, 0, 0);
-            media.CenterPoint = new Vector3(-mediaLeft, 0, 0);
             footer.CenterPoint = new Vector3(Footer.ActualSize.X + footerRight, Footer.ActualSize.Y + footerBottom, 0);
 
             header.StartAnimation("Scale", factor);
@@ -2401,6 +2400,17 @@ namespace Telegram.Controls.Messages
                 var factCheck = ElementComposition.GetElementVisual(factChecko);
                 factCheck.CenterPoint = new Vector3(0, 0, 0);
                 factCheck.StartAnimation("Scale", factor);
+            }
+
+            if (Photo != null && _photoId.HasValue)
+            {
+                ElementCompositionPreview.SetIsTranslationEnabled(Photo, true);
+
+                var photo = ElementComposition.GetElementVisual(Photo);
+                var photoOffset = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
+                photoOffset.InsertKeyFrame(0, prev.Y - next.Y);
+                photoOffset.InsertKeyFrame(1, 0);
+                photo.StartAnimation("Translation.Y", photoOffset);
             }
         }
 
