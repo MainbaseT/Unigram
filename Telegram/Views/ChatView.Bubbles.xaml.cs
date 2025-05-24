@@ -188,9 +188,7 @@ namespace Telegram.Views
                     if (minItem == 1 && point.Y + container.ActualHeight + DateHeader.ActualSize.Y + 4 >= 0)
                     {
                         minItem = 0;
-                        minForumTopicValue = message.MessageThreadId;
-
-                        UpdateForumTopicHeader(message.IsTopicMessage ? message.MessageThreadId : ForumTopicService.GeneralId);
+                        UpdateForumTopicHeader(minForumTopicValue = message.IsTopicMessage ? message.MessageThreadId : ForumTopicService.GeneralId);
                     }
                 }
 
@@ -250,9 +248,7 @@ namespace Telegram.Views
                             SetContentOpacity(0);
                             minForumTopicIndex = int.MaxValue; // Force show
 
-                            minForumTopicValue = message.MessageThreadId;
-
-                            UpdateForumTopicHeader(message.IsTopicMessage ? message.MessageThreadId : ForumTopicService.GeneralId);
+                            UpdateForumTopicHeader(minForumTopicValue = message.IsTopicMessage ? message.MessageThreadId : ForumTopicService.GeneralId);
                         }
                         else
                         {
@@ -274,9 +270,6 @@ namespace Telegram.Views
                     else
                     {
                         SetContentOpacity(0);
-
-                        _forumTopicHeader.Scale = Vector3.One;
-                        _forumTopicHeader.Properties.InsertVector3("Translation", Vector3.Zero);
                     }
                 }
                 else
@@ -438,20 +431,16 @@ namespace Telegram.Views
             if (!animate)
             {
                 _dateHeaderPanel.Opacity = show ? 1 : 0;
+                DateHeaderPanel.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
                 return;
             }
 
             var batch = _dateHeaderPanel.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
             {
-                if (show)
-                {
-                    _dateHeaderCollapsed = false;
-                }
-                else
-                {
-                    DateHeaderPanel.Visibility = Visibility.Collapsed;
-                }
+                DateHeaderPanel.Visibility = _dateHeaderCollapsed
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
             };
 
             var opacity = _dateHeaderPanel.Compositor.CreateScalarKeyFrameAnimation();
@@ -511,20 +500,16 @@ namespace Telegram.Views
             if (!animate)
             {
                 _forumTopicHeaderPanel.Opacity = show ? 1 : 0;
+                ForumTopicHeaderPanel.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
                 return;
             }
 
             var batch = _dateHeaderPanel.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
             {
-                if (show)
-                {
-                    _forumTopicHeaderCollapsed = false;
-                }
-                else
-                {
-                    ForumTopicHeaderPanel.Visibility = Visibility.Collapsed;
-                }
+                ForumTopicHeaderPanel.Visibility = _forumTopicHeaderCollapsed
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
             };
 
             var opacity = _forumTopicHeaderPanel.Compositor.CreateScalarKeyFrameAnimation();
