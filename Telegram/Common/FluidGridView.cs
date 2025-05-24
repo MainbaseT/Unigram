@@ -539,4 +539,33 @@ namespace Telegram.Common
             }
         }
     }
+
+    public partial class LengthGridViewTrigger2 : FluidGridViewTriggerBase
+    {
+        #region ItemLength
+        public double ItemLength
+        {
+            get => (double)GetValue(ItemLengthProperty);
+            set => SetValue(ItemLengthProperty, value);
+        }
+
+        public static readonly DependencyProperty ItemLengthProperty =
+            DependencyProperty.Register("ItemLength", typeof(double), typeof(LengthGridViewTrigger2), new PropertyMetadata(0d, OnPropertyChanged));
+        #endregion
+
+        public override double GetItemLength(double parentLength, out int maximumRowsOrColumns)
+        {
+            var parent = ItemLength;
+            var itemsCount = 0;
+
+            while (parent <= parentLength)
+            {
+                parent += ItemLength;
+                itemsCount += 1;
+            }
+
+            maximumRowsOrColumns = itemsCount;
+            return Math.Floor(parentLength / itemsCount);
+        }
+    }
 }

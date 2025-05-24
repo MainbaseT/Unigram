@@ -36,7 +36,7 @@
                   common:FluidGridView.Padding="0,0,10,0"
                   Grid.Row="1">
             <common:FluidGridView.Triggers>
-                <common:LengthGridViewTrigger ItemLength="40" />
+                <common:LengthGridViewTrigger2 ItemLength="40" />
             </common:FluidGridView.Triggers>
             <GridView.ItemTemplate>
                 <DataTemplate>
