@@ -402,17 +402,17 @@ namespace Telegram.Controls.Chats
         {
             if (ItemsPanelRoot == null)
             {
-                Logger.Info("ItemsPanelRoot == null");
-
                 // Some actions cause IsItemsHostInvalid to become true.
                 // If this is the case, ItemsPanelRoot will return null, and scrolling may not work.
                 // The current code should not invalidate the ItemsHost, but if this happens, we try to be prepared.
                 if (_waitItemsPanelRoot.Task.Status == TaskStatus.RanToCompletion)
                 {
+                    Logger.Info("ItemsPanelRoot == null, UpdateLayout");
                     ScrollingHost.UpdateLayout();
                 }
                 else
                 {
+                    Logger.Info("ItemsPanelRoot == null, Await");
                     await _waitItemsPanelRoot.Task;
                 }
             }
