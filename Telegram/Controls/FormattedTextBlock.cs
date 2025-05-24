@@ -66,6 +66,8 @@ namespace Telegram.Controls
         private StyledText _text;
         private double _fontSize;
 
+        private IXamlDirectObject _fastRun;
+
         private string _query;
 
         private bool _isHighlighted;
@@ -396,6 +398,9 @@ namespace Telegram.Controls
 
         public void SetText(IClientService clientService, StyledText styled, double fontSize = 0)
         {
+            var prevPlain = _text?.IsPlain ?? false;
+            var prevDirection = prevPlain ? _text?.Paragraphs[0].Direction : TextDirectionality.Neutral;
+
             _clientService = clientService;
             _text = styled;
             _fontSize = fontSize;
@@ -405,30 +410,17 @@ namespace Telegram.Controls
                 return;
             }
 
-            var locale = LocaleService.Current.FlowDirection;
+            var direct = XamlDirect.GetDefault();
 
             // PERF: fast path if both model and view have one paragraph with one run
-            if (styled != null && styled.IsPlain && !HasCodeBlocks)
+            if (_fastRun != null && styled != null && prevPlain && styled.IsPlain && prevDirection == styled.Paragraphs[0].Direction && !HasCodeBlocks)
             {
-                var direction = styled.Paragraphs[0].Direction switch
-                {
-                    TextDirectionality.LeftToRight => FlowDirection.LeftToRight,
-                    TextDirectionality.RightToLeft => FlowDirection.RightToLeft,
-                    _ => locale
-                };
-
-                if (TextBlock.Blocks.Count == 1
-                    && TextBlock.Blocks[0] is Paragraph paragraph
-                    && paragraph.Inlines.Count == 1
-                    && paragraph.Inlines[0] is Run run
-                    && run.FlowDirection == direction)
-                {
-                    run.Text = styled.Text;
-                    return;
-                }
+                direct.SetStringProperty(_fastRun, XamlPropertyIndex.Run_Text, styled.Text);
+                return;
             }
 
-            var direct = XamlDirect.GetDefault();
+            var locale = LocaleService.Current.FlowDirection;
+
             var directBlock = direct.GetXamlDirectObject(TextBlock);
             var blocks = direct.GetXamlDirectObjectProperty(directBlock, XamlPropertyIndex.RichTextBlock_Blocks);
 
@@ -723,7 +715,7 @@ namespace Telegram.Controls
 
                 if (text.Length > previous)
                 {
-                    direct.AddToCollection(inlines, CreateDirectRun(direct, text.Substring(previous), direction, fontSize: fontSize));
+                    direct.AddToCollection(inlines, _fastRun = CreateDirectRun(direct, text.Substring(previous), direction, fontSize: fontSize));
                 }
 
                 workaround += part.Padding;
