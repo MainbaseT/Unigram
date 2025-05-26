@@ -31,7 +31,6 @@
                                     BorderBrush="{ThemeResource SettingsItemBorderBrush}"
                                     BorderThickness="1"
                                     CornerRadius="4"
-                                    Padding="0"
                                     Grid.RowSpan="2" />
 
         <controls:ProfilePicture x:Name="Photo"
@@ -62,7 +61,8 @@
                                 DecodeFrameType="Logical"
                                 AutoPlay="False"
                                 IsViewportAware="True"
-                                Margin="4,8,4,4" />
+                                Margin="4,12,4,4"
+                                VerticalAlignment="Top" />
 
         <Border x:Name="Hidden"
                 x:Load="False"

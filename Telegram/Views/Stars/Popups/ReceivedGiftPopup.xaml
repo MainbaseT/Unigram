@@ -114,7 +114,7 @@
                                         DecodeFrameType="Logical"
                                         IsViewportAware="True"
                                         LoopCount="1"
-                                        Margin="0,-16,0,8" />
+                                        Margin="0,12,0,8" />
             </controls:PatternBackground>
 
             <Grid x:Name="ResaleStarCountRoot"

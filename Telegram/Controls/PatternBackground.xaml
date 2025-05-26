@@ -3,9 +3,7 @@
                     xmlns:controls="using:Telegram.Controls"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    mc:Ignorable="d"
-                    d:DesignHeight="300"
-                    d:DesignWidth="400">
+                    mc:Ignorable="d">
 
     <Style x:Key="ProfileHeaderPatternStyle"
            TargetType="controls:ProfileHeaderPattern">
@@ -45,8 +43,6 @@
                 Value="Stretch" />
         <Setter Property="VerticalContentAlignment"
                 Value="Stretch" />
-        <Setter Property="Padding"
-                Value="0,16,0,16" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:PatternBackground">
@@ -54,48 +50,43 @@
                           BackgroundSizing="{TemplateBinding BackgroundSizing}"
                           BorderBrush="{TemplateBinding BorderBrush}"
                           BorderThickness="{TemplateBinding BorderThickness}"
-                          CornerRadius="{TemplateBinding CornerRadius}"
-                          Padding="{TemplateBinding Padding}">
+                          CornerRadius="{TemplateBinding CornerRadius}">
                         <Grid.BackgroundTransition>
                             <BrushTransition />
                         </Grid.BackgroundTransition>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
+                        <Border x:Name="HeaderGlow"
+                                Width="1000"
+                                Height="320"
+                                Margin="-500,0,-500,-200"
+                                RenderTransformOrigin="0.5,0.0"
+                                VerticalAlignment="Top"
+                                Grid.RowSpan="2">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="{Binding ScaleXY, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                ScaleY="{Binding ScaleXY, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <controls:ProfileHeaderPattern x:Name="Pattern"
+                                                       IsSmall="True"
+                                                       Margin="-500,0,-500,-200"
+                                                       Width="1000"
+                                                       Height="320"
+                                                       Opacity="0"
+                                                       Style="{StaticResource ProfileHeaderPatternStyle}"
+                                                       Grid.RowSpan="2" />
+
                         <Grid HorizontalAlignment="Center"
-                              VerticalAlignment="Center"
-                              Width="140"
-                              Height="140"
-                              Margin="-70,0,-70,-12">
-
-                            <Border x:Name="HeaderGlow"
-                                    Width="1000"
-                                    Height="320"
-                                    Margin="-430,0,-430,-156"
-                                    RenderTransformOrigin="0.5,0.0">
-                                <Border.RenderTransform>
-                                    <ScaleTransform ScaleX="{Binding ScaleXY, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                    ScaleY="{Binding ScaleXY, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
-                                </Border.RenderTransform>
-                            </Border>
-
-                            <controls:ProfileHeaderPattern x:Name="Pattern"
-                                                           IsSmall="True"
-                                                           Margin="-430,0,-430,-156"
-                                                           Width="1000"
-                                                           Height="320"
-                                                           Opacity="0"
-                                                           Style="{StaticResource ProfileHeaderPatternStyle}" />
-
+                              VerticalAlignment="Center">
                             <ContentPresenter Content="{TemplateBinding Content}"
                                               ContentTemplate="{TemplateBinding ContentTemplate}"
                                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                              Width="120"
-                                              Height="120"
-                                              VerticalAlignment="Bottom" />
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Grid>
 
                         <ContentControl Content="{TemplateBinding Footer}"

@@ -321,6 +321,10 @@ namespace Telegram.Controls.Messages.Content
             {
                 Media.Child = new VoiceNoteContent(message);
             }
+            else if (linkPreview.Type is LinkPreviewTypeUpgradedGift upgradedGift)
+            {
+                Media.Child = new WebPageUpgradedGiftContent(message, upgradedGift);
+            }
             else if (linkPreview.Type is LinkPreviewTypePhoto or
                                          LinkPreviewTypeEmbeddedAudioPlayer or
                                          LinkPreviewTypeEmbeddedAnimationPlayer or
@@ -432,8 +436,15 @@ namespace Telegram.Controls.Messages.Content
             if (linkPreview.Type is LinkPreviewTypeBackground)
             {
                 empty = false;
-                TitleLabel.Text = Strings.ChatBackground;
-                SubtitleLabel.Text = string.Empty;
+                TitleLabel.Text = Strings.AppName;
+                SubtitleLabel.Text = Strings.ChatBackground;
+                ContentLabel.Text = string.Empty;
+            }
+            else if (linkPreview.Type is LinkPreviewTypeUpgradedGift upgradedGift)
+            {
+                empty = false;
+                TitleLabel.Text = Strings.AppName;
+                SubtitleLabel.Text = Environment.NewLine + upgradedGift.Gift.ToName();
                 ContentLabel.Text = string.Empty;
             }
             else
@@ -568,6 +579,10 @@ namespace Telegram.Controls.Messages.Content
             else if (linkPreview.Type is LinkPreviewTypeGroupCall)
             {
                 ShowButton(Strings.JoinCall);
+            }
+            else if (linkPreview.Type is LinkPreviewTypeUpgradedGift)
+            {
+                ShowButton(Strings.OpenUniqueGift);
             }
             else
             {
@@ -738,6 +753,32 @@ namespace Telegram.Controls.Messages.Content
         protected override string GetNameCore()
         {
             return _owner.GetAutomationName();
+        }
+    }
+
+    public partial class WebPageUpgradedGiftContent : PatternBackground
+    {
+        public WebPageUpgradedGiftContent(MessageViewModel message, LinkPreviewTypeUpgradedGift upgradedGift)
+        {
+            Content = new AnimatedImage
+            {
+                Width = 120,
+                Height = 120,
+                FrameSize = new Windows.Foundation.Size(120, 120),
+                DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
+                IsViewportAware = true,
+                LoopCount = 1,
+                Source = DelayedFileSource.FromSticker(message.ClientService, upgradedGift.Gift.Model.Sticker),
+                Padding = new Thickness(12, 2, 12, 0),
+                Margin = new Thickness(0, 0, 0, 12)
+            };
+            Width = 208;
+
+            var source = DelayedFileSource.FromSticker(message.ClientService, upgradedGift.Gift.Symbol.Sticker);
+            var centerColor = upgradedGift.Gift.Backdrop.Colors.CenterColor.ToColor();
+            var edgeColor = upgradedGift.Gift.Backdrop.Colors.EdgeColor.ToColor();
+
+            Update(source, centerColor, edgeColor);
         }
     }
 }

@@ -496,11 +496,10 @@
 
                         <controls:PatternBackground x:Name="Pattern"
                                                     Margin="4,8,4,4"
-                                                    Padding="12,2,12,0"
                                                     CornerRadius="12"
                                                     Width="208">
                             <controls:PatternBackground.Footer>
-                                <Grid>
+                                <Grid HorizontalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
@@ -566,7 +565,7 @@
                                                     DecodeFrameType="Logical"
                                                     IsViewportAware="True"
                                                     LoopCount="1"
-                                                    Margin="0,-20,0,12" />
+                                                    Margin="0,12,0,8" />
                             <!--<StackPanel>
 
                                 <TextBlock x:Name="Title"

@@ -1597,6 +1597,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeDocument or
                 LinkPreviewTypeSticker or
                 LinkPreviewTypeStickerSet or
+                LinkPreviewTypeUpgradedGift or
                 LinkPreviewTypeVideo or
                 LinkPreviewTypeVideoNote or
                 LinkPreviewTypeVoiceNote || linkPreview.HasPhoto();

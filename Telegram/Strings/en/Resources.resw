@@ -9032,6 +9032,9 @@ Stories</value>
   <data name="OpenTelegram" xml:space="preserve">
     <value>Open Telegram</value>
   </data>
+  <data name="OpenUniqueGift" xml:space="preserve">
+    <value>VIEW COLLECTIBLE</value>
+  </data>
   <data name="OpenUrlAlert" xml:space="preserve">
     <value>Open this link: {0}?</value>
   </data>
