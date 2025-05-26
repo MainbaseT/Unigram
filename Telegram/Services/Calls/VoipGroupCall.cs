@@ -712,7 +712,7 @@ namespace Telegram.Services.Calls
         {
             HashSet<int> unknownSources = null;
 
-            var knownSources = Participants.ToDictionary(x => x.AudioSourceId);
+            var knownSources = Participants.ToDictionary();
             var result = new List<GroupCallParticipant>(args.AudioSourceIds.Count);
 
             foreach (var ssrc in args.AudioSourceIds)
@@ -728,19 +728,16 @@ namespace Telegram.Services.Calls
                 }
             }
 
-            if (unknownSources?.Count > 0)
+            if (unknownSources?.Count > 0 && Id != 0)
             {
-                // TODO: replace with new GetGroupCallParticipants by sources
-                if (_inputGroupCall != null)
+                // Currently tgcalls always passes a single ssrc requestMediaChannelDescriptions,
+                // so it's fine to call SetGroupCallParticipantIsSpeaking that will load the participant if missing
+                foreach (var ssrc in unknownSources)
                 {
-                    await ClientService.SendAsync(new GetGroupCallParticipants(_inputGroupCall, 100));
-                }
-                else if (Id != 0)
-                {
-                    await ClientService.SendAsync(new LoadGroupCallParticipants(Id, 100));
+                    await ClientService.SendAsync(new SetGroupCallParticipantIsSpeaking(Id, ssrc, true));
                 }
 
-                knownSources = Participants.ToDictionary(x => x.AudioSourceId);
+                knownSources = Participants.ToDictionary();
 
                 foreach (var ssrc in args.AudioSourceIds)
                 {

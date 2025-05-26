@@ -66,6 +66,23 @@ namespace Telegram.Collections
             return _audioSources.TryGetValue(audioSourceId, out participant);
         }
 
+        public IDictionary<int, GroupCallParticipant> ToDictionary()
+        {
+            var dictionary = new Dictionary<int, GroupCallParticipant>();
+
+            foreach (var participant in this)
+            {
+                dictionary.Add(participant.AudioSourceId, participant);
+
+                if (participant.ScreenSharingAudioSourceId != 0)
+                {
+                    dictionary.Add(participant.ScreenSharingAudioSourceId, participant);
+                }
+            }
+
+            return dictionary;
+        }
+
         private void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             var needLoad = _call.LoadedAllParticipants && _call.LoadedAllParticipants != _loadedAllParticipants;
