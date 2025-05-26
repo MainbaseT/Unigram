@@ -26,7 +26,7 @@ namespace Telegram.Services.Factories
             var conversionType = ConversionType.Compress;
             var file = photo.File;
 
-            var size = await ImageHelper.GetScaleAsync(file, allowMultipleFrames: ttl != null, requestedMinSide: highQuality ? 2560 : 1280, editState: editState);
+            var size = await ImageHelper.GetScaleAsync(file, allowMultipleFrames: ttl != null || starCount > 0, requestedMinSide: highQuality ? 2560 : 1280, editState: editState);
             if (size.Width == 0 || size.Height == 0)
             {
                 // This may happen if the image is a GIF with multiple frames.
