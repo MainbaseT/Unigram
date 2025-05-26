@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Td.Api;
@@ -100,6 +101,17 @@ namespace Telegram.Controls.Chats
             parent.StartAnimation("Translation", offset);
 
             batch.End();
+        }
+
+        public IEnumerable<UIElement> GetAnimatableVisuals()
+        {
+            if (_collapsed)
+            {
+                yield break;
+            }
+
+            yield return ToggleButton;
+            yield return MenuButton;
         }
 
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)

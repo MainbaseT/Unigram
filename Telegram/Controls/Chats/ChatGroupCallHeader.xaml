@@ -99,7 +99,8 @@
                                   Margin="0,0,8,0"
                                   Grid.Column="1" />
 
-        <Grid HorizontalAlignment="Right"
+        <Grid x:Name="JoinButtonRoot"
+              HorizontalAlignment="Right"
               VerticalAlignment="Center"
               Margin="0,0,12,0"
               Grid.Column="2">

@@ -285,6 +285,16 @@ namespace Telegram.Controls.Messages
             batch.End();
         }
 
+        public IEnumerable<UIElement> GetAnimatableVisuals()
+        {
+            if (_collapsed)
+            {
+                yield break;
+            }
+
+            yield return ActionButton.Visibility == Visibility.Visible ? ActionButton : ListButton.Visibility == Visibility.Visible ? ListButton : HideButton;
+        }
+
         public event RoutedEventHandler HideClick
         {
             add => HideButton.Click += value;

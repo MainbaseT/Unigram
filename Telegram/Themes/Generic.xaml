@@ -16,6 +16,7 @@
         <ResourceDictionary Source="ms-appx:///Controls/PatternBackground.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Cells/ChatCell.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Cells/ForumTopicCell.xaml" />
+        <ResourceDictionary Source="ms-appx:///Controls/Cells/ForumTopicVerticalCell.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/AnimationContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/AudioContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/CallContent.xaml" />

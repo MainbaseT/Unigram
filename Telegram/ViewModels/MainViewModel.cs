@@ -74,7 +74,7 @@ namespace Telegram.ViewModels
             Chats = new ChatListViewModel(clientService, settingsService, aggregator, pushService, chatList);
             SearchChats = new SearchChatsViewModel(clientService, settingsService, aggregator);
             Stories = new StoryListViewModel(clientService, settingsService, aggregator, new StoryListMain());
-            Topics = new TopicListViewModel(clientService, settingsService, aggregator, pushService);
+            Topics = new TopicListViewModel(clientService, settingsService, aggregator, pushService, true);
             Settings = new SettingsViewModel(clientService, settingsService, storageService, aggregator, settingsSearchService);
 
             // This must represent pivot tabs

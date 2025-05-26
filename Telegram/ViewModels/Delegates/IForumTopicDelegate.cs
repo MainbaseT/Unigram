@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System.Collections.Generic;
+using Telegram.Services;
 using Telegram.Td.Api;
 
 namespace Telegram.ViewModels.Delegates
@@ -13,6 +14,7 @@ namespace Telegram.ViewModels.Delegates
     {
         void UpdateForumTopicActions(ForumTopic topic, IDictionary<MessageSender, ChatAction> actions);
 
+        void UpdateForumTopic(IClientService clientService, ForumTopic topic);
         void UpdateForumTopicInfo(ForumTopic topic);
         void UpdateForumTopicLastMessage(ForumTopic topic);
         void UpdateForumTopicReadInbox(ForumTopic topic);

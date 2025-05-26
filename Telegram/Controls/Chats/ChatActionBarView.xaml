@@ -24,7 +24,8 @@
 
         </Grid>
 
-        <controls:GlyphButton Click="Remove_Click"
+        <controls:GlyphButton x:Name="RemoveButton"
+                              Click="Remove_Click"
                               Glyph="&#xE711;"
                               Height="32"
                               Grid.Column="1" />

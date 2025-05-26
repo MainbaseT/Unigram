@@ -169,14 +169,14 @@ namespace Telegram.Common
 
         public static void QueueCallbackForCompositionRendering(object target, Action callback)
         {
-            DelegateKeeper.KeepAlive(target, callback);
+            //DelegateKeeper.KeepAlive(target, callback);
 
-            var weak = new WeakReference(callback);
+            //var weak = new WeakReference(callback);
             void handler(object sender, object e)
             {
                 Windows.UI.Xaml.Media.CompositionTarget.Rendering -= handler;
 
-                if (weak.Target is Action callback)
+                //if (weak.Target is Action callback)
                 {
                     callback();
                 }
@@ -225,14 +225,14 @@ namespace Telegram.Common
 
         public static void QueueCallbackForCompositionRendered(object target, Action callback)
         {
-            DelegateKeeper.KeepAlive(target, callback);
+            //DelegateKeeper.KeepAlive(target, callback);
 
-            var weak = new WeakReference(callback);
+            //var weak = new WeakReference(callback);
             void handler(object sender, object e)
             {
                 Windows.UI.Xaml.Media.CompositionTarget.Rendered -= handler;
 
-                if (weak.Target is Action callback)
+                //if (weak.Target is Action callback)
                 {
                     callback();
                 }

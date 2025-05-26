@@ -1937,7 +1937,11 @@ namespace Telegram.Views
                         var modifiers = WindowContext.KeyModifiers();
                         var createNewWindow = selectionChanged && modifiers == Windows.System.VirtualKeyModifiers.Control;
 
-                        MasterDetail.NavigationService.NavigateToChat(chat, force: false, createNewWindow: createNewWindow, clearBackStack: true);
+                        // TODO: new display mode
+                        var messageThreadId = chat.LastMessage != null && ViewModel.ClientService.IsForum(chat) ? chat.LastMessage.TopicId() : 0;
+                        messageThreadId = 0;
+
+                        MasterDetail.NavigationService.NavigateToChat(chat, thread: messageThreadId, force: false, createNewWindow: createNewWindow, clearBackStack: true);
                     }
 
                     HideTopicList();

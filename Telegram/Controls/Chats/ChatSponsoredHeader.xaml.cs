@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Services;
@@ -158,6 +159,23 @@ namespace Telegram.Controls.Chats
             parent.StartAnimation("Translation", offset);
 
             batch.End();
+        }
+
+        public IEnumerable<UIElement> GetAnimatableVisuals()
+        {
+            if (_collapsed)
+            {
+                yield break;
+            }
+
+            if (ThumbRoot.Visibility == Visibility.Visible)
+            {
+                yield return ThumbRoot;
+            }
+            else
+            {
+                yield return RemoveButton;
+            }
         }
     }
 }

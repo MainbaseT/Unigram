@@ -77,6 +77,7 @@ namespace Telegram.Services
         int[] AccountsSelectorOrder { get; set; }
 
         bool UseLeftTabsForChats { get; set; }
+        bool UseLeftTabsForForums { get; set; }
 
         Vector2 Pencil { get; set; }
 
@@ -464,6 +465,13 @@ namespace Telegram.Services
         {
             get => _useLeftTabsForChats ??= GetValueOrDefault(_local, "IsLeftTabsEnabled", false);
             set => AddOrUpdateValue(ref _useLeftTabsForChats, _local, "IsLeftTabsEnabled", value);
+        }
+
+        private bool? _useLeftTabsForForums;
+        public bool UseLeftTabsForForums
+        {
+            get => _useLeftTabsForForums ??= GetValueOrDefault("UseLeftTabsForForums", false);
+            set => AddOrUpdateValue(ref _useLeftTabsForForums, "UseLeftTabsForForums", value);
         }
 
         private static bool? _swipeToShare;

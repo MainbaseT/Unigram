@@ -28,14 +28,18 @@ namespace Telegram.ViewModels
     {
         private readonly INotificationsService _notificationsService;
 
+        private readonly bool _chatList;
+
         private readonly Dictionary<long, bool> _deletedChats = new Dictionary<long, bool>();
 
         public ITopicListDelegate Delegate { get; set; }
 
-        public TopicListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService notificationsService)
+        public TopicListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService notificationsService, bool chatList    )
             : base(clientService, settingsService, aggregator)
         {
             _notificationsService = notificationsService;
+
+            _chatList = chatList;
 
             Items = new ItemsCollection(clientService, aggregator, this, null);
 
@@ -570,6 +574,12 @@ namespace Telegram.ViewModels
                 var response = await _clientService.GetForumTopicsAsync(_chat.Id, Count, 20);
                 if (response is ForuminoTopicinos topics && !token.IsCancellationRequested)
                 {
+                    if (Count == 0 && !_viewModel._chatList)
+                    {
+                        topics.TopicIds = new List<long>(topics.TopicIds);
+                        topics.TopicIds.Insert(0, long.MaxValue);
+                    }
+
                     foreach (var topic in _clientService.GetTopics(_chat.Id, topics.TopicIds))
                     {
                         var order = topic.Order;

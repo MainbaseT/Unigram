@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
@@ -106,6 +107,25 @@ namespace Telegram.Controls.Chats
             parent.StartAnimation("Translation", offset);
 
             batch.End();
+        }
+
+        public IEnumerable<UIElement> GetAnimatableVisuals()
+        {
+            if (_collapsed)
+            {
+                yield break;
+            }
+
+            // TODO: translate button should be animated too
+
+            if (HideButton.Visibility == Visibility.Visible)
+            {
+                yield return HideButton;
+            }
+            else
+            {
+                yield return MenuButton;
+            }
         }
 
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)

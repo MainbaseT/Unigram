@@ -3220,11 +3220,19 @@ namespace Telegram.Controls.Messages
             Data = _geometry;
         }
 
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            var size = base.MeasureOverride(availableSize);
+            return new Size(size.Width, 2);
+        }
+
         protected override Size ArrangeOverride(Size finalSize)
         {
-            _geometry.StartPoint = new Windows.Foundation.Point(0, 0);
-            _geometry.EndPoint = new Windows.Foundation.Point(finalSize.Width, 0);
-            return base.ArrangeOverride(finalSize);
+            _geometry.StartPoint = new Windows.Foundation.Point(0, 1);
+            _geometry.EndPoint = new Windows.Foundation.Point(finalSize.Width, 1);
+            
+            var size = base.ArrangeOverride(finalSize);
+            return new Size(size.Width, 2);
         }
     }
 }

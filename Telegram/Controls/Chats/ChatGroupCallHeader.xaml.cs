@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Telegram.Common;
@@ -192,6 +193,17 @@ namespace Telegram.Controls.Chats
             parent.StartAnimation("Translation", offset);
 
             batch.End();
+        }
+
+        public IEnumerable<UIElement> GetAnimatableVisuals()
+        {
+            if (_collapsed)
+            {
+                yield break;
+            }
+
+            yield return RecentUsers;
+            yield return JoinButtonRoot;
         }
 
         public event RoutedEventHandler JoinClick

@@ -119,7 +119,8 @@
                                      Margin="16,0,0,4"
                                      Grid.Row="1" />
 
-        <controls:GlyphButton Click="Remove_Click"
+        <controls:GlyphButton x:Name="RemoveButton"
+                              Click="Remove_Click"
                               Glyph="&#xE711;"
                               VerticalAlignment="Top"
                               Grid.Column="1"

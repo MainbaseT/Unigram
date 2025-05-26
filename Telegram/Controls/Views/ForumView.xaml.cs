@@ -26,22 +26,102 @@ using VirtualKey = Windows.System.VirtualKey;
 
 namespace Telegram.Controls.Views
 {
+    public enum ForumViewType
+    {
+        List,
+        Vertical,
+        Horizontal
+    }
+
     public sealed partial class ForumView : UserControl, ITopicListDelegate
     {
-        public TopicListViewModel ViewModel => DataContext as TopicListViewModel;
+        public TopicListViewModel ViewModel
+        {
+            get => DataContext as TopicListViewModel;
+            set
+            {
+                DataContext = value;
+                ScrollingHost.ItemsSource = value?.Items;
+
+                if (value?.SelectedItem is long messageThreadId)
+                {
+                    ScrollingHost.SelectedItem = value.Items.FirstOrDefault(x => x.Info.MessageThreadId == messageThreadId);
+                }
+                else
+                {
+                    ScrollingHost.SelectedItem = null;
+                }
+            }
+        }
 
         public ForumView()
         {
             InitializeComponent();
         }
 
-        public object SelectedItem
+        private ForumViewType _type;
+
+        public void UpdateType(ForumViewType type)
         {
-            get => ScrollingHost.SelectedItem;
-            set => ScrollingHost.SelectedItem = value;
+            _type = type;
+
+            ScrollingHost.ItemTemplate = type switch
+            {
+                ForumViewType.Vertical => VerticalTemplate,
+                ForumViewType.Horizontal => HorizontalTemplate,
+                _ => ListTemplate
+            };
+
+            ScrollingHost.ItemsPanel = type switch
+            {
+                ForumViewType.Vertical => VerticalPanelTemplate,
+                ForumViewType.Horizontal => HorizontalPanelTemplate,
+                _ => ListPanelTemplate
+            };
+
+            ScrollingHost.Orientation = type == ForumViewType.Horizontal ? Orientation.Horizontal : Orientation.Vertical;
+
+            if (type == ForumViewType.Vertical)
+            {
+                ScrollingHost.Margin = new Thickness(0, 40, 0, 0);
+
+                // TODO: theming
+                BackgroundRoot.Background = BootStrapper.Current.Resources["PageSubHeaderBackgroundBrush2"] as Brush;
+                BackgroundRoot.CornerRadius = new CornerRadius(0);
+                BackgroundRoot.BorderThickness = new Thickness(0, 0, 1, 0);
+                Header.Visibility = Visibility.Collapsed;
+            }
+            else if (type == ForumViewType.Horizontal)
+            {
+                ScrollingHost.Margin = new Thickness(72, 0, 0, 0);
+
+                BackgroundRoot.Background = null;
+                BackgroundRoot.CornerRadius = new CornerRadius(0);
+                BackgroundRoot.BorderThickness = new Thickness(0, 0, 0, 1);
+                Header.Visibility = Visibility.Collapsed;
+            }
+
+            ScrollViewer.SetHorizontalScrollBarVisibility(ScrollingHost, type == ForumViewType.Horizontal ? ScrollBarVisibility.Hidden : ScrollBarVisibility.Disabled);
+            ScrollViewer.SetHorizontalScrollMode(ScrollingHost, type == ForumViewType.Horizontal ? ScrollMode.Auto : ScrollMode.Disabled);
+            ScrollViewer.SetVerticalScrollBarVisibility(ScrollingHost, type == ForumViewType.Vertical ? ScrollBarVisibility.Hidden : ScrollBarVisibility.Auto);
+            ScrollViewer.SetVerticalScrollMode(ScrollingHost, type == ForumViewType.Horizontal ? ScrollMode.Disabled : ScrollMode.Auto);
         }
 
-        public IList<object> SelectedItems => ScrollingHost.SelectedItems;
+        public void AnimateWidth(bool collapse, TimeSpan duration)
+        {
+            var visual = ElementComposition.GetElementVisual(BackgroundRoot);
+            visual.Clip ??= visual.Compositor.CreateInsetClip();
+
+            var inset = _type == ForumViewType.Horizontal ? 72 : 40;
+            var property = _type == ForumViewType.Horizontal ? "LeftInset" : "TopInset";
+
+            var animation = visual.Compositor.CreateScalarKeyFrameAnimation();
+            animation.InsertKeyFrame(collapse ? 1 : 0, inset);
+            animation.InsertKeyFrame(collapse ? 0 : 1, 0);
+            animation.Duration = duration;
+
+            visual.Clip.StartAnimation(property, animation);
+        }
 
         public void UpdateChat(Chat chat)
         {
@@ -136,7 +216,32 @@ namespace Telegram.Controls.Views
         {
             if (args.ItemContainer == null)
             {
-                args.ItemContainer = new ChatListListViewItem(null) { MinHeight = 0 };
+                if (_type == ForumViewType.Vertical)
+                {
+                    args.ItemContainer = new TopNavViewItem
+                    {
+                        Style = VerticalListViewItemStyle,
+                        MinWidth = 0,
+                        MinHeight = 0
+                    };
+                }
+                else if (_type == ForumViewType.Horizontal)
+                {
+                    args.ItemContainer = new TopNavViewItem
+                    {
+                        MinWidth = 0,
+                        MinHeight = 0
+                    };
+                }
+                else
+                {
+                    args.ItemContainer = new ChatListListViewItem(null)
+                    {
+                        MinWidth = 0,
+                        MinHeight = 0
+                    };
+                }
+
                 args.ItemContainer.ContentTemplate = sender.ItemTemplate;
                 args.ItemContainer.ContextRequested += Topic_ContextRequested;
             }
@@ -159,7 +264,7 @@ namespace Telegram.Controls.Views
 
             _itemToSelector[topic.Info.MessageThreadId] = args.ItemContainer;
 
-            var cell = args.ItemContainer.ContentTemplateRoot as ForumTopicCell;
+            var cell = args.ItemContainer.ContentTemplateRoot as IForumTopicDelegate;
 
             cell.UpdateForumTopic(ViewModel.ClientService, topic);
             args.Handled = true;
