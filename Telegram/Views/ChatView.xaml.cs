@@ -2739,7 +2739,11 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(ViewModel.EditMessage, message, Strings.Edit, Icons.Edit);
                 }
 
-                if (MessageThread_Loaded(message, properties))
+                if (ViewModel.IsForum)
+                {
+                    flyout.CreateFlyoutItem(NavigateToForumTopic, message, Strings.ViewTopic, Icons.ChatMultiple);
+                }
+                else if (MessageThread_Loaded(message, properties))
                 {
                     flyout.CreateFlyoutItem(ViewModel.OpenMessageThread, message, message.InteractionInfo?.ReplyInfo?.ReplyCount > 0 ? Locale.Declension(Strings.R.ViewReplies, message.InteractionInfo.ReplyInfo.ReplyCount) : Strings.ViewThread, Icons.ChatMultiple);
                 }
@@ -6454,6 +6458,14 @@ namespace Telegram.Views
             ViewModel.NavigationService.NavigateToChat(chat, thread: messageThreadId, force: false, clearBackStack: true);
         }
 
+        private void NavigateToForumTopic(MessageViewModel message)
+        {
+            ViewModel.NavigationService.NavigateToChat(message.Chat, thread: message.MessageThreadId, force: false, clearBackStack: true);
+        }
+
+        private void ForumTopic_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            _forumTopicHeader.CenterPoint = new Vector3(ForumTopicHeader.ActualSize / 2, 0);
         }
     }
 
