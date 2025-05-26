@@ -711,6 +711,17 @@ namespace Telegram.Views
             {
                 UpdateArrowVisibility();
             }
+            else if (e.PropertyName.Equals(nameof(ViewModel.IsLastSliceLoaded)))
+            {
+                if (ViewModel.IsLastSliceLoaded is true)
+                {
+                    MessagesHeaderRoot.Padding = new Thickness(0, ClipperOuter.ActualHeight - DateHeaderRelative.ActualHeight, 0, 0);
+                }
+                else
+                {
+                    MessagesHeaderRoot.Padding = new Thickness(0);
+                }
+            }
             else if (e.PropertyName.Equals(nameof(ViewModel.GreetingSticker)))
             {
                 if (EmptyChatAnimated == null)
