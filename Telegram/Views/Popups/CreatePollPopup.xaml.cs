@@ -33,7 +33,7 @@ namespace Telegram.Views.Popups
 
     public sealed partial class CreatePollPopup : ContentPopup
     {
-        private const int MAXIMUM_OPTIONS = 12;
+        private const int MAXIMUM_OPTIONS = 10;
 
         private readonly CreatePollViewModel _viewModel;
 
