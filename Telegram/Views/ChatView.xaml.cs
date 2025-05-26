@@ -72,6 +72,7 @@ namespace Telegram.Views
         public DialogViewModel ViewModel => _viewModel ??= DataContext as DialogViewModel;
 
         private TopicListViewModel _forumViewModel;
+        private long _forumTopicId;
 
         private readonly DispatcherTimer _slowModeTimer;
 
@@ -4771,7 +4772,10 @@ namespace Telegram.Views
 
         public void UpdateChatLastMessage(Chat chat)
         {
-            // Used in ProfilePage
+            if (_forumTopicId != chat.LastMessage.TopicId())
+            {
+                UpdateChatTextPlaceholder(chat);
+            }
         }
 
         public void UpdateChatEmojiStatus(Chat chat)
@@ -4839,13 +4843,20 @@ namespace Telegram.Views
                 Automation.SetToolTip(ButtonSilent, defaultDisableNotification ? Strings.AccDescrChanSilentOn : Strings.AccDescrChanSilentOff);
             }
 
-            TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly);
+            UpdateChatTextPlaceholder(chat);
+        }
+
+        private void UpdateChatTextPlaceholder(Chat chat)
+        {
+            TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly, out long messageThreadId);
 
             if (_isTextReadOnly != readOnly)
             {
                 _isTextReadOnly = readOnly;
                 TextField.IsReadOnly = readOnly;
             }
+
+            _forumTopicId = messageThreadId;
         }
 
         public void UpdateChatActions(Chat chat, IDictionary<MessageSender, ChatAction> actions)
@@ -4927,9 +4938,10 @@ namespace Telegram.Views
             }
         }
 
-        private string GetPlaceholder(Chat chat, out bool readOnly)
+        private string GetPlaceholder(Chat chat, out bool readOnly, out long messageThreadId)
         {
             readOnly = false;
+            messageThreadId = 0;
 
             if (ViewModel.ClientService.TryGetUserFull(chat, out UserFullInfo userFull))
             {
@@ -4940,7 +4952,7 @@ namespace Telegram.Views
             }
             else if (ViewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
-                return GetPlaceholder(chat, supergroup, out readOnly);
+                return GetPlaceholder(chat, supergroup, out readOnly, out messageThreadId);
             }
             else if (ViewModel.ClientService.TryGetBasicGroup(chat, out BasicGroup basicGroup))
             {
@@ -4950,9 +4962,10 @@ namespace Telegram.Views
             return Strings.TypeMessage;
         }
 
-        private string GetPlaceholder(Chat chat, Supergroup supergroup, out bool readOnly)
+        private string GetPlaceholder(Chat chat, Supergroup supergroup, out bool readOnly, out long messageThreadId)
         {
             readOnly = false;
+            messageThreadId = 0;
 
             if (supergroup.IsChannel)
             {
@@ -4973,8 +4986,9 @@ namespace Telegram.Views
             {
                 return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
             }
-            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetTopic(chat.Id, ForumTopicService.GeneralId, out ForumTopic forumTopic))
+            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetTopic(chat.Id, chat.LastMessage.TopicId(), out ForumTopic forumTopic))
             {
+                messageThreadId = forumTopic.Info.MessageThreadId;
                 return string.Format(Strings.TypeMessageIn, forumTopic.Info.Name);
             }
 
@@ -5016,8 +5030,7 @@ namespace Telegram.Views
                 }
                 else
                 {
-                    TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly);
-                    SetReadOnly(readOnly);
+                    UpdateChatTextPlaceholder(chat);
                 }
 
                 ButtonMarkup.Visibility = Visibility.Collapsed;
@@ -5035,8 +5048,7 @@ namespace Telegram.Views
                     }
                     else
                     {
-                        TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly);
-                        SetReadOnly(readOnly);
+                        UpdateChatTextPlaceholder(chat);
                     }
 
                     ButtonMarkup.Visibility = Visibility.Visible;
@@ -5044,8 +5056,7 @@ namespace Telegram.Views
                 }
                 else
                 {
-                    TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly);
-                    SetReadOnly(readOnly);
+                    UpdateChatTextPlaceholder(chat);
 
                     ButtonMarkup.Visibility = Visibility.Collapsed;
                     ShowHideMarkup(false, false);
@@ -5203,10 +5214,11 @@ namespace Telegram.Views
             var textArea = ElementComposition.GetElementVisual(TextArea);
 
             var value = show ? 48 : 0;
+            var width = _textAreaRadius > 0 ? ActualSize.X - 24 : ActualSize.X;
 
             var rect = textArea.Compositor.CreateRoundedRectangleGeometry();
             rect.CornerRadius = new Vector2(SettingsService.Current.Appearance.BubbleRadius);
-            rect.Size = new Vector2(TextArea.ActualSize.X, 192 + 48);
+            rect.Size = new Vector2(width, 192 + 48);
             rect.Offset = new Vector2(0, value);
 
             textArea.Clip = textArea.Compositor.CreateGeometricClip(rect);
@@ -5630,13 +5642,7 @@ namespace Telegram.Views
                 ShowArea(fullInfo?.OutgoingPaidMessageStarCount ?? user.PaidMessageStarCount);
             }
 
-            TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly);
-
-            if (_isTextReadOnly != readOnly)
-            {
-                _isTextReadOnly = readOnly;
-                TextField.IsReadOnly = readOnly;
-            }
+            UpdateChatTextPlaceholder(chat);
 
             UpdateUserStatus(chat, user);
 
@@ -6042,13 +6048,7 @@ namespace Telegram.Views
                 }
             }
 
-            TextField.PlaceholderText = GetPlaceholder(chat, group, out bool readOnly);
-
-            if (_isTextReadOnly != readOnly)
-            {
-                _isTextReadOnly = readOnly;
-                TextField.IsReadOnly = readOnly;
-            }
+            UpdateChatTextPlaceholder(chat);
 
             if (ViewModel.Type == DialogType.History)
             {

@@ -571,6 +571,10 @@ namespace Telegram.ViewModels
                     UpdateEmptyState(user, null, true);
                 }
             }
+            else if (update.ChatId == _chat?.Id && _chat.Type is ChatTypeSupergroup && IsForum)
+            {
+                BeginOnUIThread(() => Delegate?.UpdateChatLastMessage(_chat));
+            }
         }
 
         private void UpdateEmptyState(User user, UserFullInfo fullInfo, bool onlyLocal)

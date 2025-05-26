@@ -191,6 +191,10 @@ namespace Telegram.ViewModels
                 {
                     return _thread.MessageThreadId;
                 }
+                else if (IsForum && _chat.LastMessage != null && _chat.LastMessage.IsTopicMessage)
+                {
+                    return _chat.LastMessage.MessageThreadId;
+                }
 
                 return 0;
             }
@@ -1562,7 +1566,7 @@ namespace Telegram.ViewModels
                         {
                             if (index >= 0 && index < messages.MessagesValue.Count - 1)
                             {
-                                messages.MessagesValue.Insert(index + 1, new Message(0, target.SenderId, target.ChatId, null, null, target.IsOutgoing, false, false, false, false, target.IsChannelPost, target.IsTopicMessage, false, target.Date, 0, null, null, null, null, null, null, 0, 0, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderUnread(), null));
+                                messages.MessagesValue.Insert(index + 1, new Message(0, target.SenderId, target.ChatId, null, null, target.IsOutgoing, false, false, false, false, target.IsChannelPost, target.IsTopicMessage, false, target.Date, 0, null, null, null, null, null, null, target.MessageThreadId, 0, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderUnread(), null));
                                 unread = true;
                             }
                             else if (maxId == lastReadMessageId)
