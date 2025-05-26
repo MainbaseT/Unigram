@@ -303,7 +303,7 @@ namespace Telegram.Common
             }
         }
 
-        public static async Task<StorageFile> CropAsync(StorageFile sourceFile, StorageFile file, Rect cropRectangle, int min = 1280, int max = 0, double quality = 0.77, BitmapRotation rotation = BitmapRotation.None, BitmapFlip flip = BitmapFlip.None, TimeSpan? trimStart = null)
+        public static async Task<StorageFile> CropAsync(StorageFile sourceFile, StorageFile file, Rect cropRectangle, int min = 1280, int max = 0, double quality = 0.77, BitmapRotation rotation = BitmapRotation.None, BitmapFlip flip = BitmapFlip.None, TimeSpan? trimStart = null, bool bestQuality = false)
         {
             file ??= await ApplicationData.Current.TemporaryFolder.CreateFileAsync("crop.jpg", CreationCollisionOption.ReplaceExisting);
 
@@ -314,10 +314,10 @@ namespace Telegram.Common
                 var cropWidth = (double)decoder.PixelWidth;
                 var cropHeight = (double)decoder.PixelHeight;
 
-                if (decoder.PixelWidth > 1280 || decoder.PixelHeight > 1280)
+                if (decoder.PixelWidth > min || decoder.PixelHeight > min)
                 {
-                    double ratioX = 1280d / cropWidth;
-                    double ratioY = 1280d / cropHeight;
+                    double ratioX = (double)min / cropWidth;
+                    double ratioY = (double)min / cropHeight;
                     double ratio = Math.Min(ratioX, ratioY);
 
                     cropWidth *= ratio;
@@ -351,13 +351,17 @@ namespace Telegram.Common
                 bounds.Width = (uint)scaledCrop.Width;
                 bounds.Height = (uint)scaledCrop.Height;
 
-                var transform = new BitmapTransform();
-                transform.ScaledWidth = (uint)scaledSize.Width;
-                transform.ScaledHeight = (uint)scaledSize.Height;
-                transform.Bounds = bounds;
-                transform.InterpolationMode = BitmapInterpolationMode.Linear;
-                transform.Rotation = rotation;
-                transform.Flip = flip;
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = (uint)scaledSize.Width,
+                    ScaledHeight = (uint)scaledSize.Height,
+                    Bounds = bounds,
+                    Rotation = rotation,
+                    Flip = flip,
+                    InterpolationMode = bestQuality
+                            ? BitmapInterpolationMode.Fant
+                            : BitmapInterpolationMode.Linear
+                };
 
                 var pixelData = await decoder.GetSoftwareBitmapAsync(decoder.BitmapPixelFormat, decoder.BitmapAlphaMode, transform, ExifOrientationMode.RespectExifOrientation, ColorManagementMode.DoNotColorManage);
 

@@ -247,7 +247,7 @@ namespace Telegram.Services
                     var editState = JsonConvert.DeserializeObject<BitmapEditState>(args[2]);
                     var rectangle = editState.Rectangle;
 
-                    await ImageHelper.CropAsync(file, temp, rectangle, maxSize, editState.MinimumSize, rotation: editState.Rotation, flip: editState.Flip);
+                    await ImageHelper.CropAsync(file, temp, rectangle, maxSize, editState.MinimumSize, rotation: editState.Rotation, flip: editState.Flip, bestQuality: true);
 
                     var drawing = editState.Strokes;
                     if (drawing != null && drawing.Count > 0)

@@ -938,11 +938,6 @@ namespace Telegram.Controls
             //}
         }
 
-        public async Task<StorageFile> CropAsync(int min = 1280, int max = 0)
-        {
-            return await ImageHelper.CropAsync(m_imageSource, null, m_rectangle, min, max, rotation: _rotation, flip: _flip);
-        }
-
         #endregion
 
         #region Content
