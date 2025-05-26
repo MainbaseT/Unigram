@@ -69,15 +69,19 @@ namespace winrt::Telegram::Native::Calls::implementation
                 {
                     return strongThis->OnRequestMediaChannelDescriptions(ssrcs, done);
                 }
-            },
-            .e2eEncryptDecrypt = [weakThis { get_weak() }](std::vector<uint8_t> const& message, int64_t userId, bool encrypt, int32_t channelId) {
+            }
+        };
+
+        if (descriptor.IsConference())
+        {
+            impl.isConference = true;
+            impl.e2eEncryptDecrypt = [weakThis{ get_weak() }](std::vector<uint8_t> const& message, int64_t userId, bool encrypt, int32_t channelId) {
                 if (auto strongThis = weakThis.get())
                 {
                     return strongThis->OnE2EEncryptDecrypt(message, userId, encrypt, channelId);
                 }
-            },
-            .isConference = descriptor.IsConference()
-        };
+                };
+        }
 
         if (auto videoCapture = descriptor.VideoCapture())
         {
@@ -397,7 +401,7 @@ namespace winrt::Telegram::Native::Calls::implementation
         auto audioSourceIds = winrt::single_threaded_vector<uint32_t>(std::vector<uint32_t>(ssrcs));
 
         auto task = std::make_shared<RequestMediaChannelDescriptionTaskImpl>(std::move(done));
-        auto args = winrt::make_self<MediaChannelDescriptionsRequestedEventArgs>(audioSourceIds, 
+        auto args = winrt::make_self<MediaChannelDescriptionsRequestedEventArgs>(audioSourceIds,
             [task](IVector<GroupCallParticipant> participants) { task->done(participants); });
 
         m_mediaChannelDescriptionsRequested(*this, *args);

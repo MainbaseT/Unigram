@@ -34,7 +34,7 @@ namespace winrt::Telegram::Native::Calls::implementation
         hstring m_audioOutputId{ L"" };
         VoipVideoContentType m_videoContentType{ VoipVideoContentType::Generic };
         VoipCaptureBase m_videoCapture{ nullptr };
-        bool m_isConference{ true };
+        bool m_isConference{ false };
         bool m_isNoiseSuppressionEnabled{ true };
         int64_t m_audioProcessId{ 0 };
     };

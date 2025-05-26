@@ -109,6 +109,7 @@ namespace Telegram.Services.Calls
 
             var descriptor = new VoipGroupDescriptor
             {
+                IsConference = false,
                 //AudioInputId = _inputWatcher.GetAndUpdateAsync().Result,
                 //AudioOutputId = _outputWatcher.GetAndUpdateAsync().Result,
                 IsNoiseSuppressionEnabled = Settings.VoIP.IsNoiseSuppressionEnabled
@@ -180,6 +181,7 @@ namespace Telegram.Services.Calls
 
             var descriptor = new VoipGroupDescriptor
             {
+                IsConference = true,
                 //AudioInputId = _inputWatcher.GetAndUpdateAsync().Result,
                 //AudioOutputId = _outputWatcher.GetAndUpdateAsync().Result,
                 IsNoiseSuppressionEnabled = Settings.VoIP.IsNoiseSuppressionEnabled
@@ -242,6 +244,7 @@ namespace Telegram.Services.Calls
 
             var descriptor = new VoipGroupDescriptor
             {
+                IsConference = true,
                 //AudioInputId = _inputWatcher.GetAndUpdateAsync().Result,
                 //AudioOutputId = _outputWatcher.GetAndUpdateAsync().Result,
                 IsNoiseSuppressionEnabled = Settings.VoIP.IsNoiseSuppressionEnabled
@@ -561,6 +564,7 @@ namespace Telegram.Services.Calls
 
             var descriptor = new VoipGroupDescriptor
             {
+                IsConference = !IsVideoChat,
                 VideoContentType = VoipVideoContentType.Screencast,
                 VideoCapture = _screenCapturer,
                 AudioProcessId = item.ProcessId
@@ -706,16 +710,41 @@ namespace Telegram.Services.Calls
 
         private async void OnMediaChannelDescriptionsRequested(VoipGroupManager sender, MediaChannelDescriptionsRequestedEventArgs args)
         {
+            HashSet<int> unknownSources = null;
+
+            var knownSources = Participants.ToDictionary(x => x.AudioSourceId);
             var result = new List<GroupCallParticipant>(args.AudioSourceIds.Count);
 
-            var response = await ClientService.SendAsync(new GetGroupCallParticipants(_inputGroupCall, 100));
-            if (response is GroupCallParticipants participants)
+            foreach (var ssrc in args.AudioSourceIds)
             {
-                var map = Participants.ToDictionary(x => x.AudioSourceId);
+                if (knownSources.TryGetValue((int)ssrc, out GroupCallParticipant participant))
+                {
+                    result.Add(participant);
+                }
+                else
+                {
+                    unknownSources ??= new HashSet<int>();
+                    unknownSources.Add((int)ssrc);
+                }
+            }
+
+            if (unknownSources?.Count > 0)
+            {
+                // TODO: replace with new GetGroupCallParticipants by sources
+                if (_inputGroupCall != null)
+                {
+                    await ClientService.SendAsync(new GetGroupCallParticipants(_inputGroupCall, 100));
+                }
+                else if (Id != 0)
+                {
+                    await ClientService.SendAsync(new LoadGroupCallParticipants(Id, 100));
+                }
+
+                knownSources = Participants.ToDictionary(x => x.AudioSourceId);
 
                 foreach (var ssrc in args.AudioSourceIds)
                 {
-                    if (map.TryGetValue((int)ssrc, out GroupCallParticipant participant))
+                    if (knownSources.TryGetValue((int)ssrc, out GroupCallParticipant participant))
                     {
                         result.Add(participant);
                     }
