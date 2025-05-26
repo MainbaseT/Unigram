@@ -44,6 +44,11 @@ namespace Telegram.Td.Api
 
         public static long TopicId(this Message message)
         {
+            if (message == null)
+            {
+                return 0;
+            }
+
             return message.IsTopicMessage
                 ? message.MessageThreadId
                 : ForumTopicService.GeneralId;

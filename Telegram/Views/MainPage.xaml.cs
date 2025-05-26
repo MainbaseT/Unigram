@@ -1915,6 +1915,11 @@ namespace Telegram.Views
                     if (ViewModel.Chats.SelectedItem != ViewModel.Topics.Chat?.Id)
                     {
                         ShowTopicList(chat);
+
+                        if (MasterDetail.CurrentState != MasterDetailState.Minimal)
+                        {
+                            MasterDetail.NavigationService.NavigateToChat(chat, thread: chat.LastMessage.TopicId(), force: false, clearBackStack: true);
+                        }
                     }
                     else
                     {
