@@ -2439,10 +2439,10 @@ namespace Telegram.Controls.Messages
             {
                 content = Locale.Declension(Strings.R.PaidMessagesPriceUpdatedOut, paidMessagePriceChanged.PaidMessageStarCount);
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            else
             {
                 content = Locale.Declension(Strings.R.PaidMessagesPriceUpdated, paidMessagePriceChanged.PaidMessageStarCount);
-                content = ReplaceWithLink(content, "un1", senderUser, entities);
+                content = ReplaceWithLink(content, "un1", message.GetSender(), entities);
             }
 
             return (content, entities);
