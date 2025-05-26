@@ -211,6 +211,11 @@ namespace Telegram.Controls
             var container = (item is TopNavViewItem ? item : ContainerFromItem(item)) as TopNavViewItem;
             if (container == null)
             {
+                if (retry)
+                {
+                    ScrollIntoView(item);
+                }
+
                 return null;
             }
 
@@ -334,6 +339,10 @@ namespace Telegram.Controls
                     }
 
                     ResetElementAnimationProperties(indicator, topElement.IsSelected ? 1 : 0);
+                }
+                else if (topElement.IsSelected)
+                {
+                    AnimateSelectionChanged(item);
                 }
             }
         }
