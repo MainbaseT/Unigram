@@ -20,6 +20,7 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
+using Telegram.ViewModels.Delegates;
 using Telegram.Views;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -36,7 +37,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Cells
 {
-    public sealed partial class ForumTopicCell : ControlEx
+    public sealed partial class ForumTopicCell : ControlEx, IForumTopicDelegate
     {
         private bool _selected;
 

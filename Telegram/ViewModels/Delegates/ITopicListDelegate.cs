@@ -18,7 +18,7 @@ namespace Telegram.ViewModels.Delegates
 
         void UpdateForumTopicLastMessage(ForumTopic topic);
 
-        void Handle(long messageThreadId, Action<ForumTopicCell, ForumTopic> action);
-        void Handle(ForumTopic topic, Action<ForumTopicCell, ForumTopic> action);
+        void Handle(long messageThreadId, Action<IForumTopicDelegate, ForumTopic> action);
+        void Handle(ForumTopic topic, Action<IForumTopicDelegate, ForumTopic> action);
     }
 }

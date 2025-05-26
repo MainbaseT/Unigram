@@ -416,6 +416,14 @@ namespace Telegram.ViewModels
             }
         }
 
+        private void Handle(UpdateChatAction update)
+        {
+            if (update.ChatId == Chat?.Id && update.MessageThreadId != 0)
+            {
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicActions(chat, ClientService.GetChatActions(update.ChatId, update.MessageThreadId))));
+            }
+        }
+
         private void Handle(UpdateForumTopicInfo update)
         {
             if (update.Info.ChatId == Chat?.Id)
@@ -437,14 +445,6 @@ namespace Telegram.ViewModels
             if (update.ChatId == Chat?.Id)
             {
                 BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadOutbox(chat)));
-            }
-        }
-
-        private void Handle(UpdateChatAction update)
-        {
-            if (update.ChatId == Chat?.Id && update.MessageThreadId != 0)
-            {
-                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicActions(chat, ClientService.GetChatActions(update.ChatId, update.MessageThreadId))));
             }
         }
 

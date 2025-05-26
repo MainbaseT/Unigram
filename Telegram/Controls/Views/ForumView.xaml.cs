@@ -170,12 +170,12 @@ namespace Telegram.Controls.Views
             return _itemToSelector.TryGetValue(messageThreadId, out container);
         }
 
-        private bool TryGetTopicAndCell(long messageThreadId, out ForumTopic topic, out ForumTopicCell cell)
+        private bool TryGetTopicAndCell(long messageThreadId, out ForumTopic topic, out IForumTopicDelegate cell)
         {
             if (_itemToSelector.TryGetValue(messageThreadId, out SelectorItem container))
             {
                 topic = ScrollingHost.ItemFromContainer(container) as ForumTopic;
-                cell = container.ContentTemplateRoot as ForumTopicCell;
+                cell = container.ContentTemplateRoot as IForumTopicDelegate;
                 return topic != null && cell != null;
             }
 
@@ -184,11 +184,11 @@ namespace Telegram.Controls.Views
             return false;
         }
 
-        private bool TryGetCell(ForumTopic topic, out ForumTopicCell cell)
+        private bool TryGetCell(ForumTopic topic, out IForumTopicDelegate cell)
         {
             if (_itemToSelector.TryGetValue(topic.Info.MessageThreadId, out SelectorItem container))
             {
-                cell = container.ContentTemplateRoot as ForumTopicCell;
+                cell = container.ContentTemplateRoot as IForumTopicDelegate;
                 return cell != null;
             }
 
@@ -205,17 +205,17 @@ namespace Telegram.Controls.Views
             });
         }
 
-        public void Handle(long messageThreadId, Action<ForumTopicCell, ForumTopic> action)
+        public void Handle(long messageThreadId, Action<IForumTopicDelegate, ForumTopic> action)
         {
-            if (TryGetTopicAndCell(messageThreadId, out ForumTopic chat, out ForumTopicCell cell))
+            if (TryGetTopicAndCell(messageThreadId, out ForumTopic chat, out IForumTopicDelegate cell))
             {
                 action(cell, chat);
             }
         }
 
-        public void Handle(ForumTopic topic, Action<ForumTopicCell, ForumTopic> action)
+        public void Handle(ForumTopic topic, Action<IForumTopicDelegate, ForumTopic> action)
         {
-            if (TryGetCell(topic, out ForumTopicCell cell))
+            if (TryGetCell(topic, out IForumTopicDelegate cell))
             {
                 action(cell, topic);
             }
