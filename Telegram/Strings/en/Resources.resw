@@ -1139,6 +1139,9 @@ Your prize is **{0} Stars**.</value>
   <data name="AllReactions" xml:space="preserve">
     <value>All reactions</value>
   </data>
+  <data name="AllTopicsShort" xml:space="preserve">
+    <value>All</value>
+  </data>
   <data name="AllViewers" xml:space="preserve">
     <value>All viewers</value>
   </data>
