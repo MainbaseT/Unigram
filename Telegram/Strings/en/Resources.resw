@@ -97,6 +97,9 @@
   <data name="AccActionPlay" xml:space="preserve">
     <value>Play</value>
   </data>
+  <data name="AccDescrAddFiles" xml:space="preserve">
+    <value>Add files</value>
+  </data>
   <data name="AccDescrAspectRatio" xml:space="preserve">
     <value>Aspect ratio</value>
   </data>
@@ -13485,6 +13488,9 @@ Anonymously</value>
   </data>
   <data name="ViewThread" xml:space="preserve">
     <value>View Thread</value>
+  </data>
+  <data name="ViewTopic" xml:space="preserve">
+    <value>View Topic</value>
   </data>
   <data name="ViewVideoAction" xml:space="preserve">
     <value>View Photo</value>

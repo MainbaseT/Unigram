@@ -488,8 +488,18 @@
                              Click="More_ContextRequested"
                              HorizontalAlignment="Right"
                              VerticalAlignment="Top"
-                             Margin="0,-62,40,0"
+                             Margin="0,-62,80,0"
                              CornerRadius="20" />
+
+        <controls:GlyphButton x:Name="AddButton"
+                              AutomationProperties.Name="{CustomResource AccDescrAddFiles}"
+                              ToolTipService.ToolTip="{CustomResource AccDescrAddFiles}"
+                              Click="Add_Click"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Top"
+                              Margin="0,-62,40,0"
+                              CornerRadius="20"
+                              Glyph="&#xEAB6;" />
     </Grid>
 
 </controls:ContentPopup>

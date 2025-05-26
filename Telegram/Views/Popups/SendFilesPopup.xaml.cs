@@ -30,6 +30,7 @@ using Telegram.ViewModels.Drawers;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Composition;
 using Windows.UI.Core;
@@ -300,6 +301,12 @@ namespace Telegram.Views.Popups
                 SendMessage.Visibility = Visibility.Visible;
                 PaidMessage.Visibility = Visibility.Collapsed;
             }
+
+            AddButton.Visibility = editing
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+
+            MoreButton.Margin = new Thickness(0, -62, editing ? 40 : 80, 0);
 
             UpdateView();
             UpdatePanel();
@@ -1411,6 +1418,30 @@ namespace Telegram.Views.Popups
                     panel.Invalidate();
                 }
             }
+        }
+
+        private async void Add_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var picker = new FileOpenPicker();
+                picker.ViewMode = PickerViewMode.Thumbnail;
+                picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+                picker.FileTypeFilter.Add("*");
+
+                var files = await picker.PickMultipleFilesAsync();
+                if (files != null && files.Count > 0)
+                {
+                    var results = await StorageMedia.CreateAsync(files);
+
+                    Items.AddRange(results);
+
+                    UpdateView();
+                    UpdatePanel();
+                }
+            }
+            catch { }
+
         }
     }
 
