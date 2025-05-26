@@ -436,18 +436,25 @@ namespace Telegram.ViewModels
             {
                 if (item is StorageAlbum album)
                 {
-                    await SendGroupedAsync(album.Media, reply, captionz, options, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, popup.StarCount);
+                    if (album.Media.Count > 1)
+                    {
+                        await SendGroupedAsync(album.Media, reply, captionz, options, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, popup.StarCount);
+                    }
+                    else if (album.Media.Count > 0)
+                    {
+                        await SendStorageMediaAsync(album.Media[0], reply, captionz, options, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, popup.StarCount);
+                    }
                 }
                 else
                 {
-                    await SendStorageMediaAsync(item, reply, captionz, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, options, popup.StarCount);
+                    await SendStorageMediaAsync(item, reply, captionz, options, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, popup.StarCount);
                 }
             }
         }
 
         protected abstract bool CanSchedule { get; }
 
-        private async Task SendStorageMediaAsync(StorageMedia storage, InputMessageReplyTo reply, FormattedText caption, bool asFile, bool captionAboveMedia, bool spoiler, bool highQuality, MessageSendOptions options, long starCount = 0)
+        private async Task SendStorageMediaAsync(StorageMedia storage, InputMessageReplyTo reply, FormattedText caption, MessageSendOptions options, bool asFile, bool captionAboveMedia, bool spoiler, bool highQuality, long starCount = 0)
         {
             if (storage is StorageDocument or StorageAudio || asFile)
             {
@@ -465,59 +472,36 @@ namespace Telegram.ViewModels
 
         private async Task SendDocumentAsync(StorageMedia file, InputMessageReplyTo reply, FormattedText caption, bool asScreenshot, MessageSendOptions options)
         {
-            var factory = await MessageFactory.CreateDocumentAsync(file, false, asScreenshot);
-            if (factory != null)
+            var factory = await MessageFactory.CreateDocumentAsync(file, caption, false, asScreenshot);
+            if (factory is InputMessageContent input)
             {
-                //var reply = GetReply(true);
-                var input = factory.Delegate(factory.InputFile, caption);
-
                 await SendMessageAsync(reply, input, options);
             }
         }
 
         private async Task SendPhotoAsync(StoragePhoto file, InputMessageReplyTo reply, FormattedText caption, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, bool highQuality, BitmapEditState editState, MessageSendOptions options, long starCount = 0)
         {
-            var factory = await MessageFactory.CreatePhotoAsync(file, captionAboveMedia, spoiler, highQuality, starCount > 0 ? new MessageSelfDestructTypeImmediately() : ttl, editState);
-            if (factory != null)
+            var factory = await MessageFactory.CreatePhotoAsync(file, caption, captionAboveMedia, spoiler, highQuality, ttl, starCount, editState);
+            if (factory is InputPaidMedia inputPaidMedia)
             {
-                if (starCount > 0)
-                {
-                    var input = factory.PaidDelegate?.Invoke(factory.InputFile);
-                    if (input != null)
-                    {
-                        await SendMessageAsync(reply, new InputMessagePaidMedia(starCount, new[] { input }, caption, captionAboveMedia, string.Empty), options);
-                    }
-                }
-                else
-                {
-                    //var reply = GetReply(true);
-                    var input = factory.Delegate(factory.InputFile, caption);
-
-                    await SendMessageAsync(reply, input, options);
-                }
+                await SendMessageAsync(reply, new InputMessagePaidMedia(starCount, new[] { inputPaidMedia }, caption, captionAboveMedia, string.Empty), options);
+            }
+            else if (factory is InputMessageContent input)
+            {
+                await SendMessageAsync(reply, input, options);
             }
         }
 
         public async Task SendVideoAsync(StorageVideo video, InputMessageReplyTo reply, FormattedText caption, bool animated, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, VideoConversion conversion, MessageSendOptions options, long starCount = 0)
         {
-            var factory = await MessageFactory.CreateVideoAsync(video, animated, captionAboveMedia, spoiler, starCount > 0 ? new MessageSelfDestructTypeImmediately() : ttl, conversion);
-            if (factory != null)
+            var factory = await MessageFactory.CreateVideoAsync(video, caption, animated, captionAboveMedia, spoiler, ttl, starCount, conversion);
+            if (factory is InputPaidMedia inputPaidMedia)
             {
-                if (starCount > 0)
-                {
-                    var input = factory.PaidDelegate?.Invoke(factory.InputFile);
-                    if (input != null)
-                    {
-                        await SendMessageAsync(reply, new InputMessagePaidMedia(starCount, new[] { input }, caption, captionAboveMedia, string.Empty), options);
-                    }
-                }
-                else
-                {
-                    //var reply = GetReply(true);
-                    var input = factory.Delegate(factory.InputFile, caption);
-
-                    await SendMessageAsync(reply, input, options);
-                }
+                await SendMessageAsync(reply, new InputMessagePaidMedia(starCount, new[] { inputPaidMedia }, caption, captionAboveMedia, string.Empty), options);
+            }
+            else if (factory is InputMessageContent input)
+            {
+                await SendMessageAsync(reply, input, options);
             }
         }
 
@@ -530,10 +514,9 @@ namespace Telegram.ViewModels
             }
 
             var factory = await MessageFactory.CreateVideoNoteAsync(file, profile, transform);
-            if (factory != null)
+            if (factory is InputMessageContent input)
             {
                 var reply = GetReply(true);
-                var input = factory.Delegate(factory.InputFile, null);
 
                 await SendMessageAsync(reply, input, options);
             }
@@ -767,65 +750,37 @@ namespace Telegram.ViewModels
                         firstCaption = caption;
                     }
 
-                    var factory = await MessageFactory.CreateDocumentAsync(item, !audio, item.IsScreenshot);
-                    if (factory != null)
+                    var factory = await MessageFactory.CreateDocumentAsync(item, caption, false, item.IsScreenshot);
+                    if (factory is InputMessageContent input)
                     {
-                        var input = factory.Delegate(factory.InputFile, firstCaption);
-
                         operations.Add(input);
                         firstCaption = null;
                     }
                 }
                 else if (item is StoragePhoto photo)
                 {
-                    var factory = await MessageFactory.CreatePhotoAsync(photo, captionAboveMedia, spoiler, highQuality, photo.Ttl, photo.IsEdited ? photo.EditState : null);
-                    if (factory != null)
+                    var factory = await MessageFactory.CreatePhotoAsync(photo, caption, captionAboveMedia, spoiler, highQuality, photo.Ttl, starCount, photo.IsEdited ? photo.EditState : null);
+                    if (factory is InputPaidMedia inputPaidMedia)
                     {
-                        if (starCount > 0)
-                        {
-                            var input = factory.PaidDelegate?.Invoke(factory.InputFile);
-                            if (input != null)
-                            {
-                                paidOperations.Add(input);
-                            }
-                            else
-                            {
-                                // TODO: error
-                            }
-                        }
-                        else
-                        {
-                            var input = factory.Delegate(factory.InputFile, firstCaption);
-
-                            operations.Add(input);
-                            firstCaption = null;
-                        }
+                        paidOperations.Add(inputPaidMedia);
+                    }
+                    else if (factory is InputMessageContent input)
+                    {
+                        operations.Add(input);
+                        firstCaption = null;
                     }
                 }
                 else if (item is StorageVideo video)
                 {
-                    var factory = await MessageFactory.CreateVideoAsync(video, video.IsMuted, captionAboveMedia, spoiler, video.Ttl, video.GetConversion());
-                    if (factory != null)
+                    var factory = await MessageFactory.CreateVideoAsync(video, caption, video.IsMuted, captionAboveMedia, spoiler, video.Ttl, starCount, video.GetConversion());
+                    if (factory is InputPaidMedia inputPaidMedia)
                     {
-                        if (starCount > 0)
-                        {
-                            var input = factory.PaidDelegate?.Invoke(factory.InputFile);
-                            if (input != null)
-                            {
-                                paidOperations.Add(input);
-                            }
-                            else
-                            {
-                                // TODO: error
-                            }
-                        }
-                        else
-                        {
-                            var input = factory.Delegate(factory.InputFile, firstCaption);
-
-                            operations.Add(input);
-                            firstCaption = null;
-                        }
+                        paidOperations.Add(inputPaidMedia);
+                    }
+                    else if (factory is InputMessageContent input)
+                    {
+                        operations.Add(input);
+                        firstCaption = null;
                     }
                 }
             }

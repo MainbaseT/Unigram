@@ -21,12 +21,12 @@ namespace Telegram.Services.Factories
 {
     public static class MessageFactory
     {
-        public static async Task<InputMessageFactory> CreatePhotoAsync(StoragePhoto photo, bool captionAboveMedia, bool spoiler, bool highQuality, MessageSelfDestructType ttl, BitmapEditState editState)
+        public static async Task<BaseObject> CreatePhotoAsync(StoragePhoto photo, FormattedText caption, bool highQuality, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount, BitmapEditState editState)
         {
             var conversionType = ConversionType.Compress;
             var file = photo.File;
 
-            var size = await ImageHelper.GetScaleAsync(file, requestedMinSide: highQuality ? 2560 : 1280, editState: editState);
+            var size = await ImageHelper.GetScaleAsync(file, allowMultipleFrames: ttl != null, requestedMinSide: highQuality ? 2560 : 1280, editState: editState);
             if (size.Width == 0 || size.Height == 0)
             {
                 // This may happen if the image is a GIF with multiple frames.
@@ -41,24 +41,19 @@ namespace Telegram.Services.Factories
             var generated = await file.ToGeneratedAsync(conversionType, editState != null ? JsonConvert.SerializeObject(editState) : null);
             var thumbnail = default(InputThumbnail);
 
-            if (conversionType == ConversionType.Copy)
+            if (starCount > 0)
             {
-                return new InputMessageFactory
-                {
-                    InputFile = generated,
-                    Delegate = (inputFile, caption) => new InputMessageDocument(inputFile, thumbnail, false, caption)
-                };
+                return new InputPaidMedia(new InputPaidMediaTypePhoto(), generated, thumbnail, Array.Empty<int>(), size.Width, size.Height);
+            }
+            else if (conversionType == ConversionType.Copy)
+            {
+                return new InputMessageDocument(generated, thumbnail, false, caption);
             }
 
-            return new InputMessageFactory
-            {
-                InputFile = generated,
-                Delegate = (inputFile, caption) => new InputMessagePhoto(generated, thumbnail, Array.Empty<int>(), size.Width, size.Height, caption, captionAboveMedia, ttl, spoiler),
-                PaidDelegate = (inputFile) => new InputPaidMedia(new InputPaidMediaTypePhoto(), generated, thumbnail, Array.Empty<int>(), size.Width, size.Height)
-            };
+            return new InputMessagePhoto(generated, thumbnail, Array.Empty<int>(), size.Width, size.Height, caption, captionAboveMedia, ttl, spoiler);
         }
 
-        public static async Task<InputMessageFactory> CreateVideoAsync(StorageVideo video, bool animated, bool captionAboveMedia = false, bool spoiler = false, MessageSelfDestructType ttl = null, VideoConversion conversion = null)
+        public static async Task<BaseObject> CreateVideoAsync(StorageVideo video, FormattedText caption, bool animated, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount, VideoConversion conversion)
         {
             var duration = video.TotalSeconds;
             var videoWidth = video.Width;
@@ -83,24 +78,19 @@ namespace Telegram.Services.Factories
             var generated = await video.File.ToGeneratedAsync(ConversionType.Transcode, JsonConvert.SerializeObject(conversion));
             var thumbnail = await video.ToVideoThumbnailAsync(conversion, ConversionType.TranscodeThumbnail, JsonConvert.SerializeObject(conversion));
 
-            if (animated && ttl == null)
+            if (starCount > 0)
             {
-                return new InputMessageFactory
-                {
-                    InputFile = generated,
-                    Delegate = (inputFile, caption) => new InputMessageAnimation(inputFile, thumbnail, Array.Empty<int>(), duration, videoWidth, videoHeight, caption, captionAboveMedia, spoiler)
-                };
+                return new InputPaidMedia(new InputPaidMediaTypeVideo(null, 0, duration, true), generated, thumbnail, Array.Empty<int>(), videoWidth, videoHeight);
+            }
+            else if (animated && ttl == null)
+            {
+                return new InputMessageAnimation(generated, thumbnail, Array.Empty<int>(), duration, videoWidth, videoHeight, caption, captionAboveMedia, spoiler);
             }
 
-            return new InputMessageFactory
-            {
-                InputFile = generated,
-                Delegate = (inputFile, caption) => new InputMessageVideo(inputFile, thumbnail, null, 0, Array.Empty<int>(), duration, videoWidth, videoHeight, true, caption, captionAboveMedia, ttl, spoiler),
-                PaidDelegate = (inputFile) => new InputPaidMedia(new InputPaidMediaTypeVideo(null, 0, duration, true), inputFile, thumbnail, Array.Empty<int>(), videoWidth, videoHeight)
-            };
+            return new InputMessageVideo(generated, thumbnail, null, 0, Array.Empty<int>(), duration, videoWidth, videoHeight, true, caption, captionAboveMedia, ttl, spoiler);
         }
 
-        public static async Task<InputMessageFactory> CreateVideoNoteAsync(StorageFile file, MediaEncodingProfile profile = null, VideoTransformEffectDefinition transform = null)
+        public static async Task<InputMessageContent> CreateVideoNoteAsync(StorageFile file, MediaEncodingProfile profile = null, VideoTransformEffectDefinition transform = null)
         {
             var basicProps = await file.GetBasicPropertiesAsync();
             var videoProps = await file.Properties.GetVideoPropertiesAsync();
@@ -144,14 +134,10 @@ namespace Telegram.Services.Factories
             var thumbnail = await file.ToVideoThumbnailAsync(conversion, ConversionType.TranscodeThumbnail, JsonConvert.SerializeObject(conversion));
 
             // TODO: 172 selfDestructType
-            return new InputMessageFactory
-            {
-                InputFile = generated,
-                Delegate = (inputFile, caption) => new InputMessageVideoNote(inputFile, thumbnail, duration, Math.Min(videoWidth, videoHeight), null)
-            };
+            return new InputMessageVideoNote(generated, thumbnail, duration, Math.Min(videoWidth, videoHeight), null);
         }
 
-        public static async Task<InputMessageFactory> CreateDocumentAsync(StorageMedia media, bool asFile, bool asScreenshot)
+        public static async Task<BaseObject> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool asFile, bool asScreenshot)
         {
             var file = media.File;
             var generated = await file.ToGeneratedAsync(asScreenshot ? ConversionType.Screenshot : ConversionType.Copy);
@@ -165,11 +151,7 @@ namespace Telegram.Services.Factories
 
                 var albumCover = new InputThumbnail(await file.ToGeneratedAsync(ConversionType.AlbumCover), 0, 0);
 
-                return new InputMessageFactory
-                {
-                    InputFile = generated,
-                    Delegate = (inputFile, caption) => new InputMessageAudio(inputFile, albumCover, duration, title, performer, caption)
-                };
+                return new InputMessageAudio(generated, albumCover, duration, title, performer, caption);
             }
 
             var thumbnail = new InputThumbnail(await file.ToGeneratedAsync(ConversionType.DocumentThumbnail), 0, 0);
@@ -182,11 +164,7 @@ namespace Telegram.Services.Factories
                     {
                         if ((width == 512 && height <= width) || (height == 512 && width <= height))
                         {
-                            return new InputMessageFactory
-                            {
-                                InputFile = generated,
-                                Delegate = (inputFile, caption) => new InputMessageSticker(inputFile, null, width, height, string.Empty)
-                            };
+                            return new InputMessageSticker(generated, null, width, height, string.Empty);
                         }
                     }
                 }
@@ -200,11 +178,7 @@ namespace Telegram.Services.Factories
                 // TODO
             }
 
-            return new InputMessageFactory
-            {
-                InputFile = generated,
-                Delegate = (inputFile, caption) => new InputMessageDocument(inputFile, thumbnail, true, caption)
-            };
+            return new InputMessageDocument(generated, thumbnail, true, caption);
         }
     }
 

@@ -2993,10 +2993,8 @@ namespace Telegram.ViewModels
             var editing = header.EditingMessage;
 
             var factory = header.EditingMessageMedia;
-            if (factory != null)
+            if (factory is InputMessageContent input)
             {
-                var input = factory.Delegate(factory.InputFile, formattedText);
-
                 var response = await ClientService.SendAsync(new SendMessage(editing.ChatId, editing.MessageThreadId, null, Constants.PreviewOnly, null, input));
                 if (response is Message preview)
                 {
@@ -5048,7 +5046,7 @@ namespace Telegram.ViewModels
         public InputTextQuote ReplyToQuote { get; set; }
 
         public MessageViewModel EditingMessage { get; set; }
-        public InputMessageFactory EditingMessageMedia { get; set; }
+        public InputMessageContent EditingMessageMedia { get; set; }
 
         public LinkPreview LinkPreview { get; set; }
         public string LinkPreviewUrl { get; set; }
