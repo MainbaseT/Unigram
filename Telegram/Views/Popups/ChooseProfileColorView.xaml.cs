@@ -50,8 +50,7 @@ namespace Telegram.Views.Popups
             var colors = clientService.GetAvailableProfileColors();
             List.ItemsSource = colors;
 
-            var preview = ElementComposition.GetElementVisual(HeaderRoot);
-            preview.Clip = preview.Compositor.CreateInsetClip();
+            HeaderRoot.CreateInsetClip();
 
             var customEmojiId = 0L;
             var accentColorId = 0;

@@ -6,6 +6,7 @@
 //
 using System;
 using System.Linq;
+using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
 using Telegram.Services;
@@ -41,8 +42,7 @@ namespace Telegram.Views.Popups
             var colors = clientService.GetAvailableAccentColors();
             List.ItemsSource = colors;
 
-            var preview = ElementComposition.GetElementVisual(Preview);
-            preview.Clip = preview.Compositor.CreateInsetClip();
+            Preview.CreateInsetClip();
 
             var customEmojiId = 0L;
             var accentColorId = 0;

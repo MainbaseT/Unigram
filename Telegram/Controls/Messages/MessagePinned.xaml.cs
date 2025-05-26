@@ -47,8 +47,7 @@ namespace Telegram.Controls.Messages
         {
             InitializeComponent();
 
-            var root = ElementComposition.GetElementVisual(this);
-            root.Clip = root.Compositor.CreateInsetClip();
+            this.CreateInsetClip();
 
             _textVisual1 = ElementComposition.GetElementVisual(TextLabel1);
             _textVisual2 = ElementComposition.GetElementVisual(TextLabel2);

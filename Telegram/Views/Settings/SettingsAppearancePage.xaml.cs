@@ -34,8 +34,7 @@ namespace Telegram.Views.Settings
             InitializeComponent();
             Title = Strings.Appearance;
 
-            var preview = ElementComposition.GetElementVisual(Preview);
-            preview.Clip = preview.Compositor.CreateInsetClip();
+            Preview.CreateInsetClip();
 
             _valueChanged = new EventDebouncer<RangeBaseValueChangedEventArgs>(Constants.TypingTimeout,
                 handler => ScalingSlider.ValueChanged += new RangeBaseValueChangedEventHandler(handler),
