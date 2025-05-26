@@ -373,49 +373,9 @@ namespace Telegram.Controls.Messages
 
             var messageShow = _textVisual == _textVisual1 ? MessageLabel2 : MessageLabel1;
             var labelShow = _textVisual == _textVisual1 ? TextLabel2 : TextLabel1;
-            messageShow.Inlines.Clear();
 
-            if (text != null)
-            {
-                var clean = text.ReplaceSpoilers();
-                var previous = 0;
-
-                if (text.Entities != null)
-                {
-                    foreach (var entity in clean.Entities)
-                    {
-                        if (entity.Type is not TextEntityTypeCustomEmoji customEmoji)
-                        {
-                            continue;
-                        }
-
-                        if (entity.Offset > previous)
-                        {
-                            messageShow.Inlines.Add(new Run { Text = clean.Text.Substring(previous, entity.Offset - previous) });
-                        }
-
-                        //MessageLabel.Inlines.Add(new Run { Text = clean.Substring(entity.Offset, entity.Length), FontFamily = BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily });
-
-                        var player = new CustomEmojiIcon();
-                        player.LoopCount = 0;
-                        player.Source = new CustomEmojiFileSource(clientService, customEmoji.CustomEmojiId);
-                        player.Style = BootStrapper.Current.Resources["MessageCustomEmojiStyle"] as Style;
-
-                        var inline = new InlineUIContainer();
-                        inline.Child = new CustomEmojiContainer(labelShow, player, -2);
-
-                        messageShow.Inlines.Add(inline);
-                        messageShow.Inlines.Add(Icons.ZWNJ);
-
-                        previous = entity.Offset + entity.Length;
-                    }
-                }
-
-                if (clean.Text.Length > previous)
-                {
-                    messageShow.Inlines.Add(new Run { Text = clean.Text.Substring(previous) });
-                }
-            }
+            // TODO: no need to add ZWNJ on empty collection here
+            CustomEmojiIcon.Add(labelShow, messageShow.Inlines, clientService, text, "MessageCustomEmojiStyle");
         }
 
         #endregion

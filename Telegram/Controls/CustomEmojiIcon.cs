@@ -37,6 +37,9 @@ namespace Telegram.Controls
                 var clean = message.ReplaceSpoilers();
                 var previous = 0;
 
+                // Always be true here because we only process emojis
+                var endsByEmoji = false;
+
                 // TODO: support more entities
                 if (message.Entities != null)
                 {
@@ -70,19 +73,23 @@ namespace Telegram.Controls
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
                         if (inlines.Empty())
                         {
-                            inlines.Add(Icons.ZWNJ);
+                            inlines.AddZWNJ();
                         }
 
                         inlines.Add(inline);
-                        inlines.Add(Icons.ZWNJ);
 
                         previous = entity.Offset + entity.Length;
+                        endsByEmoji = previous == clean.Text.Length;
                     }
                 }
 
                 if (clean.Text.Length > previous)
                 {
                     inlines.Add(clean.Text.Substring(previous));
+                }
+                else if (endsByEmoji)
+                {
+                    inlines.AddZWNJ();
                 }
             }
         }
@@ -95,6 +102,9 @@ namespace Telegram.Controls
             {
                 var clean = name.Text.ReplaceSpoilers();
                 var previous = 0;
+
+                // Always be true here because we only process emojis
+                var endsByEmoji = false;
 
                 // TODO: support more entities
                 if (name.Text.Entities != null)
@@ -133,19 +143,23 @@ namespace Telegram.Controls
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
                         if (inlines.Empty())
                         {
-                            inlines.Add(Icons.ZWNJ);
+                            inlines.AddZWNJ();
                         }
 
                         inlines.Add(inline);
-                        inlines.Add(Icons.ZWNJ);
 
                         previous = entity.Offset + entity.Length;
+                        endsByEmoji = previous == clean.Text.Length;
                     }
                 }
 
                 if (clean.Text.Length > previous)
                 {
                     inlines.Add(clean.Text.Substring(previous));
+                }
+                else if (endsByEmoji)
+                {
+                    inlines.AddZWNJ();
                 }
             }
         }

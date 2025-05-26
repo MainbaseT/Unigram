@@ -343,47 +343,8 @@ namespace Telegram.Controls.Messages
                 _accent = white ? null : accent;
                 _light = white;
 
-                MessageLabel.Inlines.Clear();
-
-                if (text != null)
-                {
-                    var clean = text.ReplaceSpoilers();
-                    var previous = 0;
-
-                    if (text.Entities != null)
-                    {
-                        foreach (var entity in clean.Entities)
-                        {
-                            if (entity.Type is not TextEntityTypeCustomEmoji customEmoji)
-                            {
-                                continue;
-                            }
-
-                            if (entity.Offset > previous)
-                            {
-                                MessageLabel.Inlines.Add(new Run { Text = clean.Text.Substring(previous, entity.Offset - previous) });
-                            }
-
-                            var player = new CustomEmojiIcon();
-                            player.LoopCount = 0;
-                            player.Source = new CustomEmojiFileSource(clientService, customEmoji.CustomEmojiId);
-                            player.Style = BootStrapper.Current.Resources["MessageCustomEmojiStyle"] as Style;
-
-                            var inline = new InlineUIContainer();
-                            inline.Child = new CustomEmojiContainer(Label, player, 14);
-
-                            MessageLabel.Inlines.Add(inline);
-                            MessageLabel.Inlines.Add(Icons.ZWNJ);
-
-                            previous = entity.Offset + entity.Length;
-                        }
-                    }
-
-                    if (clean.Text.Length > previous)
-                    {
-                        MessageLabel.Inlines.Add(new Run { Text = clean.Text.Substring(previous) });
-                    }
-                }
+                // TODO: no need to add ZWNJ on empty collection here
+                CustomEmojiIcon.Add(Label, MessageLabel.Inlines, clientService, text, "MessageCustomEmojiStyle");
             }
         }
 

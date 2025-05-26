@@ -901,6 +901,17 @@ namespace Telegram.Common
             });
         }
 
+        public static void AddZWNJ(this InlineCollection inline)
+        {
+            inline.Add(new Run
+            {
+                Text = Icons.ZWNJ,
+
+                // TODO: remove once fixed by Microsoft
+                Foreground = null
+            });
+        }
+
         public static void Add(this InlineCollection inline, string text, FontWeight fontWeight)
         {
             inline.Add(new Run

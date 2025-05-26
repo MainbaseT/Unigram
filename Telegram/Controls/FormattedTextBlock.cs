@@ -449,8 +449,10 @@ namespace Telegram.Controls
             var text = styled.Text;
             var workaround = 0;
 
-            foreach (var part in styled.Paragraphs)
+            for (int i = 0; i < styled.Paragraphs.Count; i++)
             {
+                StyledParagraph part = styled.Paragraphs[i];
+
                 // This should not happen, but it does.
                 text = styled.Text.Substring(part.Offset, Math.Min(part.Length, styled.Text.Length - part.Offset));
 
@@ -460,6 +462,8 @@ namespace Telegram.Controls
 
                 var paragraph = direct.CreateInstance(XamlTypeIndex.Paragraph);
                 var inlines = direct.GetXamlDirectObjectProperty(paragraph, XamlPropertyIndex.Paragraph_Inlines);
+
+                var endsByCustomEmoji = false;
 
                 if (AutoFontSize)
                 {
@@ -569,7 +573,7 @@ namespace Telegram.Controls
                             local = direct.GetXamlDirectObjectProperty(temp, XamlPropertyIndex.Span_Inlines);
 
                             // ZWNJ is needed because if a spoiler is followed by a custom emoji, the background will leak into it
-                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction));
+                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction, fontSize: fontSize, transparent: true));
                             workaround--;
                         }
                         else if (entity.HasFlag(Common.TextStyle.Mention) || entity.HasFlag(Common.TextStyle.Url))
@@ -672,11 +676,10 @@ namespace Telegram.Controls
                                 workaround++;
                             }
 
-                            // TODO: see if there's a better way
                             direct.AddToCollection(inlines, direct.GetXamlDirectObject(inline));
-                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction));
 
-                            workaround += data.Length - 1;
+                            workaround += data.Length;
+                            endsByCustomEmoji = entity.End == text.Length;
                         }
                         else
                         {
@@ -716,6 +719,10 @@ namespace Telegram.Controls
                 if (text.Length > previous)
                 {
                     direct.AddToCollection(inlines, _fastRun = CreateDirectRun(direct, text.Substring(previous), direction, fontSize: fontSize));
+                }
+                else if (endsByCustomEmoji && i == styled.Paragraphs.Count - 1)
+                {
+                    direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction, fontSize: fontSize, transparent: true));
                 }
 
                 workaround += part.Padding;
@@ -857,7 +864,7 @@ namespace Telegram.Controls
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IXamlDirectObject CreateDirectRun(XamlDirect direct, string text, FlowDirection direction, FontWeight? fontWeight = null, FontFamily fontFamily = null, double fontSize = 0)
+        private IXamlDirectObject CreateDirectRun(XamlDirect direct, string text, FlowDirection direction, FontWeight? fontWeight = null, FontFamily fontFamily = null, double fontSize = 0, bool transparent = false)
         {
             var run = direct.CreateInstance(XamlTypeIndex.Run);
             direct.SetStringProperty(run, XamlPropertyIndex.Run_Text, text);
@@ -878,6 +885,12 @@ namespace Telegram.Controls
                 direct.SetDoubleProperty(run, XamlPropertyIndex.TextElement_FontSize, fontSize);
             }
 
+            // TODO: removed once fixed by Microsoft
+            if (transparent)
+            {
+                direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_Foreground, null);
+            }
+
             return run;
         }
 
@@ -891,7 +904,6 @@ namespace Telegram.Controls
 
                 inlines.Clear();
                 ProcessCodeBlock(inlines, tokens.Children);
-                inlines.Add(Icons.ZWNJ);
             }
             catch
             {
