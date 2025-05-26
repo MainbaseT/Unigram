@@ -230,7 +230,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            ReplaceDiff(TopChats, temp, cancellationToken);
+            await ReplaceDiffAsync(TopChats, temp, cancellationToken);
         }
 
         private async Task LoadRecentAsync(string query, CancellationToken cancellationToken)
@@ -254,7 +254,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            ReplaceDiff(_recent, temp, cancellationToken);
+            await ReplaceDiffAsync(_recent, temp, cancellationToken);
         }
 
         private Chat LoadSavedMessages(string query, CancellationToken cancellationToken)
@@ -323,7 +323,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            ReplaceDiff(_chatsAndContacts1, temp, cancellationToken);
+            await ReplaceDiffAsync(_chatsAndContacts1, temp, cancellationToken);
         }
 
         private async Task LoadChatsAndContactsPart2Async(string query, CancellationToken cancellationToken)
@@ -341,7 +341,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                ReplaceDiff(_chatsAndContacts2, temp, cancellationToken);
+                await ReplaceDiffAsync(_chatsAndContacts2, temp, cancellationToken);
             }
         }
 
@@ -360,7 +360,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                ReplaceDiff(_globalSearch, temp, cancellationToken);
+                await ReplaceDiffAsync(_globalSearch, temp, cancellationToken);
             }
         }
 
@@ -378,7 +378,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        private async void ReplaceDiff<T>(DiffObservableCollection<T> destination, IEnumerable<T> source, CancellationToken cancellationToken)
+        private async Task ReplaceDiffAsync<T>(DiffObservableCollection<T> destination, IEnumerable<T> source, CancellationToken cancellationToken)
         {
             var diff = await Task.Run(() => DiffUtil.CalculateDiff(destination, source, destination.DefaultDiffHandler, destination.DefaultOptions));
 
