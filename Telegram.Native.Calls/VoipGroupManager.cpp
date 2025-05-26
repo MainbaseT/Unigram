@@ -64,12 +64,6 @@ namespace winrt::Telegram::Native::Calls::implementation
             },
             .videoContentType = (tgcalls::VideoContentType)descriptor.VideoContentType(),
             .initialEnableNoiseSuppression = m_isNoiseSuppressionEnabled = descriptor.IsNoiseSuppressionEnabled(),
-            .requestMediaChannelDescriptions = [weakThis{ get_weak() }](std::vector<uint32_t> const& ssrcs, std::function<void(std::vector<tgcalls::MediaChannelDescription>&&)> done) {
-                if (auto strongThis = weakThis.get())
-                {
-                    return strongThis->OnRequestMediaChannelDescriptions(ssrcs, done);
-                }
-            }
         };
 
         if (descriptor.IsConference())
@@ -81,6 +75,12 @@ namespace winrt::Telegram::Native::Calls::implementation
                     return strongThis->OnE2EEncryptDecrypt(message, userId, encrypt, channelId);
                 }
                 };
+            impl.requestMediaChannelDescriptions = [weakThis{ get_weak() }](std::vector<uint32_t> const& ssrcs, std::function<void(std::vector<tgcalls::MediaChannelDescription>&&)> done) {
+                if (auto strongThis = weakThis.get())
+                {
+                    return strongThis->OnRequestMediaChannelDescriptions(ssrcs, done);
+                }
+            };
         }
 
         if (auto videoCapture = descriptor.VideoCapture())
