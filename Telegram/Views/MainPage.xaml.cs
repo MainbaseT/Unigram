@@ -3120,7 +3120,7 @@ namespace Telegram.Views
                 // Suggest to unarchive only when archive is open
                 if (viewModel.Items.ChatList is ChatListArchive && archived)
                 {
-                    flyout.CreateFlyoutItem(DialogArchive_Loaded, viewModel.ArchiveChat, chat, Strings.Unarchive);
+                    flyout.CreateFlyoutItem(DialogArchive_Loaded, viewModel.ArchiveChat, chat, Strings.Unarchive, Icons.Unarchive);
                 }
                 else if (viewModel.Items.ChatList is not ChatListArchive && !archived)
                 {
