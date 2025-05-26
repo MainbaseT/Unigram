@@ -425,7 +425,7 @@ namespace Telegram.ViewModels
             }
             else if (storage is StoragePhoto photo)
             {
-                request = MessageFactory.CreatePhotoAsync(photo, popup.Caption, captionAboveMedia, hasSpoiler, highQuality, storage.Ttl, 0, storage.IsEdited ? storage.EditState : null);
+                request = MessageFactory.CreatePhotoAsync(photo, popup.Caption, highQuality, captionAboveMedia, hasSpoiler, storage.Ttl, 0, storage.IsEdited ? storage.EditState : null);
             }
             else if (storage is StorageVideo video)
             {
