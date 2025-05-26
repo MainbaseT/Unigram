@@ -305,7 +305,7 @@ namespace Telegram.Views
 
                 // This is a workaround for a bug in messages.readDiscussion that causes sent messages
                 // to be marked as read and consequently blocks following updateReadChannelDiscussionOutbox
-                if (ViewModel.Topic == null || !message.IsOutgoing)
+                if (ViewModel.Topic == null || !message.IsOutgoing || (message.IsOutgoing && message.UnreadReactions?.Count > 0))
                 {
                     if (message.Content is MessageAlbum album)
                     {
