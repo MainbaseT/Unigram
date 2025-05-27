@@ -20,6 +20,7 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Telegram.Views;
 using Windows.Storage.Streams;
@@ -49,7 +50,7 @@ namespace Telegram.Controls.Cells
         private string _dateLabel;
         private string _stateLabel;
 
-        private IClientService _clientService;
+        private TopicListViewModel _viewModel;
 
         private bool _draft;
 
@@ -129,7 +130,7 @@ namespace Telegram.Controls.Cells
 
             if (_topic != null)
             {
-                UpdateForumTopic(_clientService, _topic);
+                UpdateForumTopic(_viewModel, _topic);
             }
         }
 
@@ -137,14 +138,14 @@ namespace Telegram.Controls.Cells
 
         public string GetAutomationName()
         {
-            if (_clientService == null)
+            if (_viewModel == null)
             {
                 return null;
             }
 
             if (_topic != null && _chat != null)
             {
-                return UpdateAutomation(_clientService, _topic, _chat, _topic.LastMessage);
+                return UpdateAutomation(_viewModel.ClientService, _topic, _chat, _topic.LastMessage);
             }
 
             return null;
@@ -257,7 +258,7 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicReadInbox(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
@@ -280,7 +281,7 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicReadOutbox(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
@@ -296,7 +297,7 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicUnreadMentionCount(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
@@ -317,12 +318,12 @@ namespace Telegram.Controls.Cells
 
         public void UpdateNotificationSettings(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
 
-            var muted = _clientService.Notifications.IsMuted(_chat, topic);
+            var muted = _viewModel.ClientService.Notifications.IsMuted(_chat, topic);
             MutedIcon.Visibility = muted ? Visibility.Visible : Visibility.Collapsed;
             UnreadBadge.IsUnmuted = !muted;
         }
@@ -343,7 +344,7 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicName(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
@@ -430,14 +431,14 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicIcon(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
 
             if (topic.Info.IsGeneral || topic.Info.Icon.CustomEmojiId != 0)
             {
-                TypeIcon.SetStatus(_clientService, topic.Info.Icon);
+                TypeIcon.SetStatus(_viewModel.ClientService, topic.Info.Icon);
                 IconRoot.Visibility = Visibility.Collapsed;
             }
             else
@@ -455,14 +456,14 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicActions(ForumTopic topic, IDictionary<MessageSender, ChatAction> actions)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
 
             if (actions != null && actions.Count > 0)
             {
-                TypingLabel.Text = InputChatActionManager.GetTypingString(null, actions, _clientService, out ChatAction commonAction);
+                TypingLabel.Text = InputChatActionManager.GetTypingString(null, actions, _viewModel.ClientService, out ChatAction commonAction);
                 ChatActionIndicator.UpdateAction(commonAction);
                 ChatActionIndicator.Visibility = Visibility.Visible;
                 TypingLabel.Visibility = Visibility.Visible;
@@ -477,11 +478,11 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public void UpdateForumTopic(IClientService clientService, ForumTopic topic)
+        public void UpdateForumTopic(TopicListViewModel viewModel, ForumTopic topic)
         {
-            _clientService = clientService;
+            _viewModel = viewModel;
             _topic = topic;
-            _chat = clientService.GetChat(topic.Info.ChatId);
+            _chat = viewModel.ClientService.GetChat(topic.Info.ChatId);
 
             if (!_templateApplied)
             {
@@ -496,7 +497,7 @@ namespace Telegram.Controls.Cells
             //UpdateChatReadInbox(chat);
             UpdateForumTopicUnreadMentionCount(topic);
             UpdateNotificationSettings(topic);
-            UpdateForumTopicActions(topic, _clientService.GetChatActions(topic.Info.ChatId, topic.Info.MessageThreadId));
+            UpdateForumTopicActions(topic, _viewModel.ClientService.GetChatActions(topic.Info.ChatId, topic.Info.MessageThreadId));
         }
 
         #endregion
@@ -556,7 +557,7 @@ namespace Telegram.Controls.Cells
 
         private void UpdateBriefLabel(FormattedText message)
         {
-            CustomEmojiIcon.Add(BriefText, BriefLabel.Inlines, _clientService, message, "InfoCustomEmojiStyle");
+            CustomEmojiIcon.Add(BriefText, BriefLabel.Inlines, _viewModel.ClientService, message, "InfoCustomEmojiStyle");
         }
 
 
@@ -595,7 +596,7 @@ namespace Telegram.Controls.Cells
             }
 
             draft = false;
-            return ChatCell.UpdateFromLabel(_clientService, chat, message);
+            return ChatCell.UpdateFromLabel(_viewModel.ClientService, chat, message);
         }
 
         private string UpdateStateIcon(long maxId, ForumTopic topic, DraftMessage draft, Message message, MessageSendingState state)
@@ -691,7 +692,7 @@ namespace Telegram.Controls.Cells
 
             var context = WindowContext.ForXamlRoot(this);
 
-            var service = new TLNavigationService(_clientService, null, context, frame, "ChatPreview");
+            var service = new TLNavigationService(_viewModel.ClientService, null, context, frame, "ChatPreview");
             service.NavigateToChat(chat);
 
             var chatPage = frame.Content as ChatPage;
@@ -712,7 +713,7 @@ namespace Telegram.Controls.Cells
             }
 
             var background = new ChatBackgroundControl();
-            background.Update(_clientService, null);
+            background.Update(_viewModel.ClientService, null);
 
             grid.Children.Add(background);
             grid.Children.Add(frame);
@@ -735,7 +736,7 @@ namespace Telegram.Controls.Cells
 
             try
             {
-                if (_clientService.CanPostMessages(chat) && e.DataView.AvailableFormats.Count > 0)
+                if (_viewModel.ClientService.CanPostMessages(chat) && e.DataView.AvailableFormats.Count > 0)
                 {
                     if (DropVisual == null)
                     {

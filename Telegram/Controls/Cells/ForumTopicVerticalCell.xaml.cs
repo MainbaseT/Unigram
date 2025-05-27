@@ -16,6 +16,7 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Telegram.Views;
 using Windows.UI;
@@ -40,7 +41,7 @@ namespace Telegram.Controls.Cells
         private string _dateLabel;
         private string _stateLabel;
 
-        private IClientService _clientService;
+        private TopicListViewModel _viewModel;
 
         private bool _draft;
 
@@ -85,7 +86,7 @@ namespace Telegram.Controls.Cells
 
             if (_topic != null)
             {
-                UpdateForumTopic(_clientService, _topic);
+                UpdateForumTopic(_viewModel, _topic);
             }
         }
 
@@ -93,14 +94,14 @@ namespace Telegram.Controls.Cells
 
         public string GetAutomationName()
         {
-            if (_clientService == null)
+            if (_viewModel == null)
             {
                 return null;
             }
 
             if (_topic != null && _chat != null)
             {
-                return UpdateAutomation(_clientService, _topic, _chat, _topic.LastMessage);
+                return UpdateAutomation(_viewModel.ClientService, _topic, _chat, _topic.LastMessage);
             }
 
             return null;
@@ -181,7 +182,7 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicReadInbox(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
@@ -214,7 +215,7 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicUnreadMentionCount(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
@@ -235,12 +236,12 @@ namespace Telegram.Controls.Cells
 
         public void UpdateNotificationSettings(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
 
-            var muted = _clientService.Notifications.IsMuted(_chat, topic);
+            var muted = _viewModel.ClientService.Notifications.IsMuted(_chat, topic);
             //MutedIcon.Visibility = muted ? Visibility.Visible : Visibility.Collapsed;
             UnreadBadge.IsUnmuted = !muted;
         }
@@ -258,7 +259,7 @@ namespace Telegram.Controls.Cells
 
         public void UpdateForumTopicName(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
@@ -266,93 +267,16 @@ namespace Telegram.Controls.Cells
             TitleLabel.Text = topic.Info.Name;
         }
 
-        public static Color[] ServerSupportedColors = new Color[6]
-        {
-            Color.FromArgb(0xFF, 0x6F, 0xB9, 0xF0), // blue
-            Color.FromArgb(0xFF, 0xFF, 0xD6, 0x7E), // yellow
-            Color.FromArgb(0xFF, 0xCB, 0x86, 0xDB), // violet
-            Color.FromArgb(0xFF, 0x8E, 0xEE, 0x98), // green
-            Color.FromArgb(0xFF, 0xFF, 0x93, 0xB2), // rose
-            Color.FromArgb(0xFF, 0xFB, 0x6F, 0x5F), // orange
-        };
-
-        private static readonly Color[] _colorsTop = new Color[6]
-        {
-            Color.FromArgb(0xFF, 0x8A, 0xD3, 0xF9), // blue
-            Color.FromArgb(0xFF, 0xF7, 0xCE, 0x79), // yellow
-            Color.FromArgb(0xFF, 0x8C, 0xAF, 0xF9), // violet
-            Color.FromArgb(0xFF, 0xAC, 0xDC, 0x89), // green
-            Color.FromArgb(0xFF, 0xFF, 0xAF, 0xC7), // rose
-            Color.FromArgb(0xFF, 0xEF, 0x8E, 0x67), // orange
-        };
-
-        private static readonly Color[] _colors = new Color[6]
-        {
-            Color.FromArgb(0xFF, 0x51, 0x9D, 0xEA), // blue
-            Color.FromArgb(0xFF, 0xF2, 0xAC, 0x6A), // yellow
-            Color.FromArgb(0xFF, 0x65, 0x60, 0xF6), // violet
-            Color.FromArgb(0xFF, 0x75, 0xC8, 0x73), // green
-            Color.FromArgb(0xFF, 0xF2, 0x74, 0x9A), // rose
-            Color.FromArgb(0xFF, 0xEC, 0x5F, 0x6D), // orange
-        };
-
-        public static int FindIconColorIndex(int color)
-        {
-            static int Distance(Color a, Color b)
-            {
-                return Math.Abs(a.R - b.R) + Math.Abs(a.G - b.G) + Math.Abs(a.B - b.B);
-            }
-
-            var value = color.ToColor();
-
-            int distance = Distance(ServerSupportedColors[0], value);
-            var index = 0;
-
-            for (int i = 0; i < ServerSupportedColors.Length; i++)
-            {
-                int distanceLocal = Distance(ServerSupportedColors[i], value);
-                if (distanceLocal < distance)
-                {
-                    distance = distanceLocal;
-                    index = i;
-                }
-            }
-
-            return index;
-        }
-
-        public static LinearGradientBrush GetIconGradient(ForumTopicIcon icon)
-        {
-            var index = FindIconColorIndex(icon.Color);
-
-            var top = _colorsTop[index];
-            var bottom = _colors[index];
-
-            return new LinearGradientBrush(new GradientStopCollection
-            {
-                new GradientStop
-                {
-                    Color = top,
-                    Offset = 0
-                },
-                new GradientStop
-                {
-                    Color = bottom,
-                    Offset = 1
-                }
-            }, 90);
-        }
-
         public void UpdateForumTopicIcon(ForumTopic topic)
         {
-            if (_clientService == null || !_templateApplied)
+            if (_viewModel == null || !_templateApplied)
             {
                 return;
             }
 
             if (topic.Info.Icon.CustomEmojiId != 0)
             {
-                Animated.Source = new CustomEmojiFileSource(_clientService, topic.Info.Icon.CustomEmojiId);
+                Animated.Source = new CustomEmojiFileSource(_viewModel.ClientService, topic.Info.Icon.CustomEmojiId);
                 IconRoot.Visibility = Visibility.Collapsed;
                 General.Visibility = Visibility.Collapsed;
             }
@@ -381,11 +305,11 @@ namespace Telegram.Controls.Cells
             // Not implemented for now
         }
 
-        public void UpdateForumTopic(IClientService clientService, ForumTopic topic)
+        public void UpdateForumTopic(TopicListViewModel viewModel, ForumTopic topic)
         {
-            _clientService = clientService;
+            _viewModel = viewModel;
             _topic = topic;
-            _chat = clientService.GetChat(topic.Info.ChatId);
+            _chat = _viewModel.ClientService.GetChat(topic.Info.ChatId);
 
             if (!_templateApplied)
             {
@@ -432,7 +356,7 @@ namespace Telegram.Controls.Cells
 
             var context = WindowContext.ForXamlRoot(this);
 
-            var service = new TLNavigationService(_clientService, null, context, frame, "ChatPreview");
+            var service = new TLNavigationService(_viewModel.ClientService, null, context, frame, "ChatPreview");
             service.NavigateToChat(chat);
 
             var chatPage = frame.Content as ChatPage;
@@ -453,7 +377,7 @@ namespace Telegram.Controls.Cells
             }
 
             var background = new ChatBackgroundControl();
-            background.Update(_clientService, null);
+            background.Update(_viewModel.ClientService, null);
 
             grid.Children.Add(background);
             grid.Children.Add(frame);
@@ -476,7 +400,7 @@ namespace Telegram.Controls.Cells
 
             try
             {
-                if (_clientService.CanPostMessages(chat) && e.DataView.AvailableFormats.Count > 0)
+                if (_viewModel.ClientService.CanPostMessages(chat) && e.DataView.AvailableFormats.Count > 0)
                 {
                     if (DropVisual == null)
                     {

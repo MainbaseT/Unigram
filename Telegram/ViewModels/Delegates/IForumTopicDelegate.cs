@@ -14,7 +14,7 @@ namespace Telegram.ViewModels.Delegates
     {
         void UpdateForumTopicActions(ForumTopic topic, IDictionary<MessageSender, ChatAction> actions);
 
-        void UpdateForumTopic(IClientService clientService, ForumTopic topic);
+        void UpdateForumTopic(TopicListViewModel viewModel, ForumTopic topic);
         void UpdateForumTopicInfo(ForumTopic topic);
         void UpdateForumTopicLastMessage(ForumTopic topic);
         void UpdateForumTopicReadInbox(ForumTopic topic);

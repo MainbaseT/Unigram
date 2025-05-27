@@ -266,7 +266,7 @@ namespace Telegram.Controls.Views
 
             var cell = args.ItemContainer.ContentTemplateRoot as IForumTopicDelegate;
 
-            cell.UpdateForumTopic(ViewModel.ClientService, topic);
+            cell.UpdateForumTopic(ViewModel, topic);
             args.Handled = true;
         }
 
