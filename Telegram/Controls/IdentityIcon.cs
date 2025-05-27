@@ -305,7 +305,7 @@ namespace Telegram.Controls
             else if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 verification = supergroup.VerificationStatus?.BotVerificationIconCustomEmojiId;
-                SetStatus(supergroup);
+                SetStatus(clientService, chat);
             }
             else
             {
