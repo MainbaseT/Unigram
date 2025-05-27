@@ -4505,7 +4505,7 @@ namespace Telegram.Views
 
         private void UpdateForumTopics(Chat chat)
         {
-            if (false && ViewModel.ClientService.IsForum(chat))
+            if (SettingsService.Current.Diagnostics.ForumTabsDebug && ViewModel.ClientService.IsForum(chat))
             {
                 if (_forumViewModel == null)
                 {
@@ -5214,7 +5214,7 @@ namespace Telegram.Views
             var textArea = ElementComposition.GetElementVisual(TextArea);
 
             var value = show ? 48 : 0;
-            var width = _textAreaRadius > 0 ? ActualSize.X - 24 : ActualSize.X;
+            var width = Math.Max(0, _textAreaRadius > 0 ? ActualSize.X - 24 : ActualSize.X);
 
             var rect = textArea.Compositor.CreateRoundedRectangleGeometry();
             rect.CornerRadius = new Vector2(SettingsService.Current.Appearance.BubbleRadius);

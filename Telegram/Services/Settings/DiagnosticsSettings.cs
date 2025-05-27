@@ -154,6 +154,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _useSpeexResampler, "UseSpeexResampler", value);
         }
 
+        private bool? _forumTabsDebug;
+        public bool ForumTabsDebug
+        {
+            get => _forumTabsDebug ??= GetValueOrDefault("ForumTabsDebug", false);
+            set => AddOrUpdateValue(ref _forumTabsDebug, "ForumTabsDebug", value);
+        }
+
         public bool IsLastErrorDiskFull { get; set; }
     }
 }
