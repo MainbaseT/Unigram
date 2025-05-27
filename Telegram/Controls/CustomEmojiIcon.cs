@@ -28,7 +28,7 @@ namespace Telegram.Controls
 
         public string Emoji { get; set; }
 
-        public static void Add(RichTextBlock parent, InlineCollection inlines, IClientService clientService, FormattedText message, string style = null)
+        public static void Add(RichTextBlock parent, InlineCollection inlines, IClientService clientService, FormattedText message, string style = null, bool first = false)
         {
             inlines.Clear();
 
@@ -65,13 +65,18 @@ namespace Telegram.Controls
                             player.Style = BootStrapper.Current.Resources[style] as Style;
                         }
 
-                        var baseline = parent.FontSize == 11 ? -3 : 0;
+                        var baseline = parent.FontSize switch
+                        {
+                            11 => -3,
+                            12 => -2,
+                            _ => 0
+                        };
 
                         var inline = new InlineUIContainer();
-                        inline.Child = new CustomEmojiContainer(parent, player, baseline: 0);
+                        inline.Child = new CustomEmojiContainer(parent, player, baseline: baseline);
 
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
-                        if (inlines.Empty())
+                        if (first && inlines.Empty())
                         {
                             inlines.AddZWNJ();
                         }

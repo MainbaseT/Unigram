@@ -374,8 +374,7 @@ namespace Telegram.Controls.Messages
             var messageShow = _textVisual == _textVisual1 ? MessageLabel2 : MessageLabel1;
             var labelShow = _textVisual == _textVisual1 ? TextLabel2 : TextLabel1;
 
-            // TODO: no need to add ZWNJ on empty collection here
-            CustomEmojiIcon.Add(labelShow, messageShow.Inlines, clientService, text, "MessageCustomEmojiStyle");
+            CustomEmojiIcon.Add(labelShow, messageShow.Inlines, clientService, text, "MessageCustomEmojiStyle", false);
         }
 
         #endregion

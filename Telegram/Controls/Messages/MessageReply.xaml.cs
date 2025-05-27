@@ -343,8 +343,7 @@ namespace Telegram.Controls.Messages
                 _accent = white ? null : accent;
                 _light = white;
 
-                // TODO: no need to add ZWNJ on empty collection here
-                CustomEmojiIcon.Add(Label, MessageLabel.Inlines, clientService, text, "MessageCustomEmojiStyle");
+                CustomEmojiIcon.Add(Label, MessageLabel.Inlines, clientService, text, "MessageCustomEmojiStyle", false);
             }
         }
 
