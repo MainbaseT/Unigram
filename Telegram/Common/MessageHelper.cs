@@ -651,7 +651,7 @@ namespace Telegram.Common
             }
         }
 
-        private static async void NavigateToUpgradedGift(IClientService clientService, INavigationService navigation, string name)
+        public static async void NavigateToUpgradedGift(IClientService clientService, INavigationService navigation, string name)
         {
             var response = await clientService.SendAsync(new GetUpgradedGift(name));
             if (response is UpgradedGift gift)

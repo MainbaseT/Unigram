@@ -1020,7 +1020,8 @@ namespace Telegram.ViewModels
             }
             else if (Chat?.EmojiStatus?.Type is EmojiStatusTypeUpgradedGift emojiStatusTypeUpgradedGift)
             {
-
+                MessageHelper.NavigateToUpgradedGift(ClientService, NavigationService, emojiStatusTypeUpgradedGift.GiftName);
+                return;
             }
 
             if (ClientService.TryGetUser(Chat, out User user) && user.IsPremium && user.VerificationStatus?.IsScam is not true && user.VerificationStatus?.IsFake is not true)
