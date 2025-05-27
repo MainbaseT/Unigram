@@ -26,6 +26,43 @@
                     <ControlTemplate TargetType="cells:ForumTopicVerticalCell">
                         <Grid Background="Transparent"
                               Height="40">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup>
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver" />
+                                    <VisualState x:Name="Pressed" />
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Target="TitleLabel.Foreground"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                            <Setter Target="General.Fill"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                            <Setter Target="Animated.ReplacementColor"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOverSelected">
+                                        <VisualState.Setters>
+                                            <Setter Target="TitleLabel.Foreground"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                            <Setter Target="General.Fill"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                            <Setter Target="Animated.ReplacementColor"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PressedSelected">
+                                        <VisualState.Setters>
+                                            <Setter Target="TitleLabel.Foreground"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                            <Setter Target="General.Fill"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                            <Setter Target="Animated.ReplacementColor"
+                                                    Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
@@ -50,18 +87,12 @@
 
                             <Grid HorizontalAlignment="Center">
                                 <controls:CustomEmojiIcon x:Name="Animated"
+                                                          ReplacementColor="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                                           Width="20"
                                                           Height="20"
                                                           FrameSize="20,20"
                                                           IsViewportAware="False"
                                                           AutoPlay="False" />
-
-                                <controls:IdentityIcon x:Name="TypeIcon"
-                                                       FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                                                       VerticalAlignment="Bottom"
-                                                       FontSize="16"
-                                                       Margin="0,0,4,0" />
                                 <Grid x:Name="IconRoot"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center">
@@ -185,7 +216,18 @@
                             <Grid.RenderTransform>
                                 <ScaleTransform x:Name="ContentBorderScale" />
                             </Grid.RenderTransform>
+                            <VisualStateManager.CustomVisualStateManager>
+                                <controls:TopNavViewItemManager />
+                            </VisualStateManager.CustomVisualStateManager>
                             <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup>
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver" />
+                                    <VisualState x:Name="Pressed" />
+                                    <VisualState x:Name="Selected" />
+                                    <VisualState x:Name="PointerOverSelected" />
+                                    <VisualState x:Name="PressedSelected" />
+                                </VisualStateGroup>
                                 <VisualStateGroup x:Name="ReorderHintStates">
                                     <VisualState x:Name="NoReorderHint" />
                                     <VisualState x:Name="BottomReorderHint">

@@ -382,7 +382,7 @@ namespace Telegram.Controls
 
         protected override bool GoToStateCore(Control control, FrameworkElement templateRoot, string stateName, VisualStateGroup group, VisualState state, bool useTransitions)
         {
-            if (control is TopNavViewItem selector && selector.ContentTemplateRoot is UserControl element)
+            if (control is TopNavViewItem selector && selector.ContentTemplateRoot is Control element)
             {
                 if (_allowedStates.Contains(stateName))
                 {

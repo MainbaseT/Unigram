@@ -2435,7 +2435,18 @@
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="ContentBorderScale" />
                         </Grid.RenderTransform>
+                        <VisualStateManager.CustomVisualStateManager>
+                            <local:TopNavViewItemManager />
+                        </VisualStateManager.CustomVisualStateManager>
                         <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup>
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver" />
+                                <VisualState x:Name="Pressed" />
+                                <VisualState x:Name="Selected" />
+                                <VisualState x:Name="PointerOverSelected" />
+                                <VisualState x:Name="PressedSelected" />
+                            </VisualStateGroup>
                             <VisualStateGroup x:Name="ReorderHintStates">
                                 <VisualState x:Name="NoReorderHint" />
                                 <VisualState x:Name="BottomReorderHint">
