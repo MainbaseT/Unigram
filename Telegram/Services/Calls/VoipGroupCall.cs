@@ -712,7 +712,13 @@ namespace Telegram.Services.Calls
         {
             HashSet<int> unknownSources = null;
 
-            var knownSources = Participants.ToDictionary();
+            var participants = Participants;
+            if (participants == null)
+            {
+                args.Deferral(Array.Empty<GroupCallParticipant>());
+            }
+
+            var knownSources = participants.ToDictionary();
             var result = new List<GroupCallParticipant>(args.AudioSourceIds.Count);
 
             foreach (var ssrc in args.AudioSourceIds)
@@ -737,7 +743,7 @@ namespace Telegram.Services.Calls
                     await ClientService.SendAsync(new SetGroupCallParticipantIsSpeaking(Id, ssrc, true));
                 }
 
-                knownSources = Participants.ToDictionary();
+                knownSources = participants.ToDictionary();
 
                 foreach (var ssrc in args.AudioSourceIds)
                 {
