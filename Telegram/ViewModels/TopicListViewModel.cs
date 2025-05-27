@@ -574,7 +574,7 @@ namespace Telegram.ViewModels
                 var response = await _clientService.GetForumTopicsAsync(_chat.Id, Count, 20);
                 if (response is ForuminoTopicinos topics && !token.IsCancellationRequested)
                 {
-                    if (Count == 0 && !_viewModel._chatList)
+                    if (_viewModel != null && !_viewModel._chatList && Count == 0)
                     {
                         topics.TopicIds = new List<long>(topics.TopicIds);
                         topics.TopicIds.Insert(0, long.MaxValue);
