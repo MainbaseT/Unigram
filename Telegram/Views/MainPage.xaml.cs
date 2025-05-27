@@ -372,11 +372,6 @@ namespace Telegram.Views
         public void Handle(UpdateChatAction update)
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatActions(chat, ViewModel.ClientService.GetChatActions(chat.Id)));
-
-            if (update.ChatId == _viewModel.Topics.Chat?.Id && update.MessageThreadId != 0)
-            {
-                this.BeginOnUIThread(() => TopicListPresenter?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicActions(chat, ViewModel.ClientService.GetChatActions(update.ChatId, update.MessageThreadId))));
-            }
         }
 
         public void Handle(UpdateMessageMentionRead update)
@@ -408,30 +403,6 @@ namespace Telegram.Views
             if (update.ChatList is ChatListArchive)
             {
                 this.BeginOnUIThread(() => ArchivedChats.UpdateChatList(ViewModel.ClientService, update.ChatList));
-            }
-        }
-
-        public void Handle(UpdateForumTopicInfo update)
-        {
-            if (_viewModel.Topics.Chat?.Id == update.Info.ChatId)
-            {
-                this.BeginOnUIThread(() => TopicListPresenter?.Handle(update.Info.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicInfo(chat)));
-            }
-        }
-
-        public void Handle(UpdateForumTopicReadInbox update)
-        {
-            if (_viewModel.Topics.Chat?.Id == update.ChatId)
-            {
-                this.BeginOnUIThread(() => TopicListPresenter?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadInbox(chat)));
-            }
-        }
-
-        public void Handle(UpdateForumTopicReadOutbox update)
-        {
-            if (_viewModel.Topics.Chat?.Id == update.ChatId)
-            {
-                this.BeginOnUIThread(() => TopicListPresenter?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadOutbox(chat)));
             }
         }
 
@@ -1070,9 +1041,6 @@ namespace Telegram.Views
                 .Subscribe<UpdateMessageMentionRead>(Handle)
                 .Subscribe<UpdateMessageUnreadReactions>(Handle)
                 .Subscribe<UpdateUnreadChatCount>(Handle)
-                .Subscribe<UpdateForumTopicInfo>(Handle)
-                .Subscribe<UpdateForumTopicReadInbox>(Handle)
-                .Subscribe<UpdateForumTopicReadOutbox>(Handle)
                 .Subscribe<UpdateChatUnreadTopicCount>(Handle)
                 .Subscribe<UpdateSecretChat>(Handle)
                 .Subscribe<UpdateChatNotificationSettings>(Handle)
@@ -3361,7 +3329,7 @@ namespace Telegram.Views
 
         public void ShowTopicList(Chat chat)
         {
-            ViewModel.Topics.SetChat(chat, false);
+            ViewModel.Topics.SetChat(chat);
             ShowHideTopicList(true);
             UpdateListViewsSelectedItem(new MessageId(chat.Id, 0));
             TopicListPresenter?.UpdateChat(chat);
@@ -3405,7 +3373,7 @@ namespace Telegram.Views
             }
             else
             {
-                ViewModel.Topics.SetChat(null, false);
+                ViewModel.Topics.SetChat(null);
             }
 
             var padding = ChatTabs != null

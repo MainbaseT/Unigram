@@ -34,7 +34,7 @@ namespace Telegram.ViewModels
 
         public ITopicListDelegate Delegate { get; set; }
 
-        public TopicListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService notificationsService, bool chatList    )
+        public TopicListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService notificationsService, bool chatList)
             : base(clientService, settingsService, aggregator)
         {
             _notificationsService = notificationsService;
@@ -395,19 +395,16 @@ namespace Telegram.ViewModels
 
         public long ChatId => Items.Chat?.Id ?? 0;
 
-        public void SetChat(Chat chat, bool subscribe)
+        public void SetChat(Chat chat)
         {
             if (chat?.Id != Items.Chat?.Id)
             {
                 _ = Items.ReloadAsync(chat);
 
-                if (subscribe)
-                {
-                    Aggregator.Subscribe<UpdateForumTopicInfo>(this, Handle)
-                        .Subscribe<UpdateForumTopicReadInbox>(Handle)
-                        .Subscribe<UpdateForumTopicReadOutbox>(Handle)
-                        .Subscribe<UpdateChatAction>(Handle);
-                }
+                Aggregator.Subscribe<UpdateForumTopicInfo>(this, Handle)
+                    .Subscribe<UpdateForumTopicReadInbox>(Handle)
+                    .Subscribe<UpdateForumTopicReadOutbox>(Handle)
+                    .Subscribe<UpdateChatAction>(Handle);
             }
             else if (chat == null)
             {

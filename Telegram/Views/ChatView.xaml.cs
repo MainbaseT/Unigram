@@ -4516,7 +4516,7 @@ namespace Telegram.Views
                     ForumNavigationHorizontal.UpdateType(ForumViewType.Horizontal);
                 }
 
-                _forumViewModel.SetChat(chat, true);
+                _forumViewModel.SetChat(chat);
                 _forumViewModel.SelectedItem = ViewModel.ThreadId;
                 _forumViewModel.Delegate?.SetSelectedItem(_forumViewModel.Items.FirstOrDefault(x => x.Info.MessageThreadId == ViewModel.ThreadId));
 
@@ -6602,7 +6602,7 @@ namespace Telegram.Views
             {
                 if (_forumCollapsed == ForumViewType.List)
                 {
-                    _forumViewModel.SetChat(null, true);
+                    _forumViewModel.SetChat(null);
                 }
 
                 if (_forumCollapsed != ForumViewType.Vertical)
