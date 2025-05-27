@@ -60,6 +60,7 @@ namespace Telegram.Services
         int UnreadTopicCount(long chatId);
 
         void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
+        void SetPinnedForumTopics(long chatId, IList<long> messageThreadIds);
 
         Task<IList<SavedMessagesTopic>> GetSavedMessagesChatsAsync(int offset, int limit);
 
@@ -471,6 +472,14 @@ namespace Telegram.Services
             if (source is MessageSourceForumTopicHistory && _forums.TryGetValue(chatId, out ForumTopicService manager))
             {
                 manager.ViewMessages(messageThreadId, messageIds);
+            }
+        }
+
+        public void SetPinnedForumTopics(long chatId, IList<long> messageThreadIds)
+        {
+            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
+            {
+                manager.SetPinnedForumTopics(messageThreadIds);
             }
         }
 

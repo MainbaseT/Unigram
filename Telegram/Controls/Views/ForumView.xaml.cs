@@ -266,6 +266,11 @@ namespace Telegram.Controls.Views
 
             var cell = args.ItemContainer.ContentTemplateRoot as IForumTopicDelegate;
 
+            if (cell is ForumTopicVerticalCell vertical)
+            {
+                vertical.UpdateLayout(_type == ForumViewType.Vertical);
+            }
+
             cell.UpdateForumTopic(ViewModel, topic);
             args.Handled = true;
         }
@@ -381,6 +386,7 @@ namespace Telegram.Controls.Views
         {
             try
             {
+                // TODO check if user has rights CanManageTopics
                 if (e.Items[0] is ForumTopic topic)
                 {
                     if (!topic.IsPinned || e.Items.Count > 1 || ScrollingHost.SelectionMode == ListViewSelectionMode.Multiple)
@@ -413,14 +419,17 @@ namespace Telegram.Controls.Views
                     return;
                 }
 
+                var first = _type == ForumViewType.List ? 0 : 1;
+
+                // TODO: this is out of bounds if there are only pinned topics and user picks last one
                 var index = items.IndexOf(topic);
-                var compare = items[index > 0 ? index - 1 : index + 1];
+                var compare = items[index > first ? index - 1 : index + 1];
 
                 if (compare.IsPinned)
                 {
                     var pinned = items.Where(x => x.IsPinned).Select(x => x.Info.MessageThreadId).ToArray();
 
-                    ViewModel.ClientService.Send(new SetPinnedForumTopics(ViewModel.Chat.Id, pinned));
+                    ViewModel.ClientService.SetPinnedForumTopics(ViewModel.Chat.Id, pinned);
                 }
                 else
                 {

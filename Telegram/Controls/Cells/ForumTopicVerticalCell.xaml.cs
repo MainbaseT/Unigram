@@ -33,6 +33,8 @@ namespace Telegram.Controls.Cells
     {
         private bool _selected;
 
+        private bool _vertical;
+
         private ForumTopic _topic;
         private Chat _chat;
 
@@ -56,7 +58,8 @@ namespace Telegram.Controls.Cells
 
         private AnimatedImage Animated;
         private TextBlock TitleLabel;
-        private Border PinnedIcon;
+        private Border PinnedBackground;
+        private TextBlock PinnedIcon;
         private Border UnreadMentionsBadge;
         private BadgeControl UnreadBadge;
         private Rectangle DropVisual;
@@ -72,7 +75,8 @@ namespace Telegram.Controls.Cells
         {
             Animated = GetTemplateChild(nameof(Animated)) as AnimatedImage;
             TitleLabel = GetTemplateChild(nameof(TitleLabel)) as TextBlock;
-            PinnedIcon = GetTemplateChild(nameof(PinnedIcon)) as Border;
+            PinnedBackground = GetTemplateChild(nameof(PinnedBackground)) as Border;
+            PinnedIcon = GetTemplateChild(nameof(PinnedIcon)) as TextBlock;
             UnreadMentionsBadge = GetTemplateChild(nameof(UnreadMentionsBadge)) as Border;
             UnreadBadge = GetTemplateChild(nameof(UnreadBadge)) as BadgeControl;
             DropVisual = GetTemplateChild(nameof(DropVisual)) as Rectangle;
@@ -91,6 +95,11 @@ namespace Telegram.Controls.Cells
         }
 
         #endregion
+
+        public void UpdateLayout(bool vertical)
+        {
+            _vertical = vertical;
+        }
 
         public string GetAutomationName()
         {
@@ -187,7 +196,38 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            PinnedIcon.Visibility = topic.UnreadCount == 0 /*&& !topic.IsMarkedAsUnread*/ && topic.IsPinned ? Visibility.Visible : Visibility.Collapsed;
+            if (topic.IsPinned)
+            {
+                var index = _viewModel.Items.IndexOf(topic);
+                var first = index == 1;
+                var last = index == _viewModel.Items.Count - 1 || !_viewModel.Items[index + 1].IsPinned;
+
+                var radiusBefore = !first ? 0 : 4;
+                var radiusAfter = !last ? 0 : 4;
+
+                if (_vertical)
+                {
+                    var marginBefore = !first ? -2 : 0;
+                    var marginAfter = !last ? -2 : 0;
+
+                    PinnedBackground.Margin = new Thickness(4, marginBefore, 4, marginAfter);
+                    PinnedBackground.CornerRadius = new CornerRadius(radiusBefore, radiusBefore, radiusAfter, radiusAfter);
+                }
+                else
+                {
+                    PinnedBackground.CornerRadius = new CornerRadius(radiusBefore, radiusAfter, radiusAfter, radiusBefore);
+                }
+
+                PinnedBackground.Visibility = Visibility.Visible;
+                PinnedIcon.Visibility = first
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+            else
+            {
+                PinnedBackground.Visibility = Visibility.Collapsed;
+                PinnedIcon.Visibility = Visibility.Collapsed;
+            }
 
             var unread = (topic.UnreadCount > 0 /*|| topic.IsMarkedAsUnread*/) ? topic.UnreadMentionCount == 1 && topic.UnreadCount == 1 ? Visibility.Collapsed : Visibility.Visible : Visibility.Collapsed;
             if (unread == Visibility.Visible)

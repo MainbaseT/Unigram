@@ -81,6 +81,25 @@ namespace Telegram.Services
             }
         }
 
+        public void SetPinnedForumTopics(IList<long> messageThreadIds)
+        {
+            if (messageThreadIds.Count > _clientService.Options.PinnedForumTopicCountMax)
+            {
+                return;
+            }
+
+            _clientService.Send(new SetPinnedForumTopics(_chatId, messageThreadIds));
+
+            Monitor.Enter(_order);
+
+            _pinnedTopicIds.Clear();
+            _pinnedTopicIds.AddRange(messageThreadIds);
+
+            UpdatePinnedTopics();
+
+            Monitor.Exit(_order);
+        }
+
         private void UpdateLastReadInboxMessageId(ForumTopic topic, long lastReadInboxMessageId)
         {
             _pendingLastReadInboxMessageId.Remove(lastReadInboxMessageId);

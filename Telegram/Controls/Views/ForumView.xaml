@@ -32,11 +32,21 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Border x:Name="PinnedIcon"
-                                    Background="{ThemeResource ListViewItemBackgroundPressed}"
-                                    Margin="-8,4"
+                            <Border x:Name="PinnedBackground"
+                                    Background="{ThemeResource ListViewItemBackgroundPointerOver}"
+                                    Margin="-12,4"
                                     CornerRadius="4"
                                     Grid.ColumnSpan="3" />
+
+                            <TextBlock x:Name="PinnedIcon"
+                                       Text="&#xEA05;"
+                                       FontSize="12"
+                                       FontFamily="{StaticResource TelegramThemeFontFamily}"
+                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Top"
+                                       Margin="-8,6,0,0"
+                                       Grid.ColumnSpan="3" />
 
                             <Grid HorizontalAlignment="Center">
                                 <controls:CustomEmojiIcon x:Name="Animated"
@@ -88,7 +98,6 @@
                             <Grid x:Name="PreviewPanel"
                                   Background="Transparent"
                                   VerticalAlignment="Center"
-                                  Margin="4,0,0,0"
                                   Grid.Column="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
