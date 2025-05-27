@@ -386,8 +386,7 @@ namespace Telegram.Controls.Views
         {
             try
             {
-                // TODO check if user has rights CanManageTopics
-                if (e.Items[0] is ForumTopic topic)
+                if (e.Items[0] is ForumTopic topic && ViewModel.Chat.CanManageTopics(ViewModel.ClientService))
                 {
                     if (!topic.IsPinned || e.Items.Count > 1 || ScrollingHost.SelectionMode == ListViewSelectionMode.Multiple)
                     {
@@ -398,6 +397,11 @@ namespace Telegram.Controls.Views
                     {
                         ScrollingHost.CanReorderItems = true;
                     }
+                }
+                else
+                {
+                    ScrollingHost.CanReorderItems = false;
+                    e.Cancel = true;
                 }
             }
             catch
@@ -421,7 +425,6 @@ namespace Telegram.Controls.Views
 
                 var first = _type == ForumViewType.List ? 0 : 1;
 
-                // TODO: this is out of bounds if there are only pinned topics and user picks last one
                 var index = items.IndexOf(topic);
                 var compare = items[index > first ? index - 1 : index + 1];
 

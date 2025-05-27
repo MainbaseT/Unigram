@@ -2648,7 +2648,7 @@ namespace Telegram.Td.Api
         public static bool CanCreateTopics(this Chat chat, IClientService clientService)
         {
             var status = clientService.GetChatMemberStatus(chat, out bool channel);
-            if (status == null)
+            if (status == null || channel)
             {
                 return false;
             }
@@ -2656,14 +2656,25 @@ namespace Telegram.Td.Api
             {
                 return chat.Permissions.CanCreateTopics;
             }
-            else if (channel && status is ChatMemberStatusAdministrator administrator)
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator { Rights.CanManageTopics: true }
+                or ChatMemberStatusRestricted { Permissions.CanCreateTopics: true };
+        }
+
+        public static bool CanManageTopics(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null || channel)
+            {
+                return false;
+            }
+            else if (channel)
             {
                 return false;
             }
 
             return status is ChatMemberStatusCreator
-                or ChatMemberStatusAdministrator { Rights.CanManageTopics: true }
-                or ChatMemberStatusRestricted { Permissions.CanCreateTopics: true };
+                or ChatMemberStatusAdministrator { Rights.CanManageTopics: true };
         }
 
         public static bool CanPinMessages(this Chat chat, IClientService clientService)
