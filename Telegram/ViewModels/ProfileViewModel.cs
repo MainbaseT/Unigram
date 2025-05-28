@@ -95,6 +95,7 @@ namespace Telegram.ViewModels
                 if (ClientService.TryGetSavedMessagesTopic(savedMessagesTopicIdArgs.SavedMessagesTopicId, out SavedMessagesTopic topic))
                 {
                     SavedMessagesTopic = topic;
+                    Topic = new MessageTopicSavedMessages(topic.Id);
                 }
             }
             else if (parameter is ChatMessageIdNavigationArgs args)
@@ -103,7 +104,8 @@ namespace Telegram.ViewModels
 
                 if (ClientService.TryGetTopic(args.ChatId, args.MessageId, out ForumTopic topic))
                 {
-                    Topic = topic;
+                    ForumTopic = topic;
+                    Topic = new MessageTopicForum(topic.Info.MessageThreadId);
                 }
             }
 
@@ -952,14 +954,14 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (_topic != null)
+            if (_forumTopic != null)
             {
-                var popup = new SupergroupTopicPopup(ClientService, _topic.Info);
+                var popup = new SupergroupTopicPopup(ClientService, _forumTopic.Info);
 
                 var confirm = await ShowPopupAsync(popup);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    ClientService.Send(new EditForumTopic(chat.Id, _topic.Info.MessageThreadId, popup.SelectedName, true, popup.SelectedIcon.CustomEmojiId));
+                    ClientService.Send(new EditForumTopic(chat.Id, _forumTopic.Info.MessageThreadId, popup.SelectedName, true, popup.SelectedIcon.CustomEmojiId));
                 }
             }
             else if (chat.Type is ChatTypeSupergroup or ChatTypeBasicGroup)
@@ -1265,7 +1267,7 @@ namespace Telegram.ViewModels
 
         public void OpenSavedMessagesTopic(SavedMessagesTopic topic)
         {
-            NavigationService.NavigateToChat(_chat.Id, savedMessagesTopicId: topic.Id);
+            NavigationService.NavigateToChat(_chat.Id, topic: new MessageTopicSavedMessages(topic.Id));
         }
 
         private StarAmount _starCount;

@@ -4,10 +4,13 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Microsoft.Graphics.Canvas.Geometry;
 using System;
+using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
+using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -15,6 +18,7 @@ using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -24,7 +28,8 @@ namespace Telegram.Controls
     {
         None,
         Ellipse,
-        Superellipse
+        Superellipse,
+        Tail
     }
 
     public partial class ProfilePicture : Control
@@ -35,6 +40,8 @@ namespace Telegram.Controls
 
         private int _fontSize;
         private bool _glyph;
+
+        private bool _tail;
 
         private object _parameters;
 
@@ -77,7 +84,62 @@ namespace Telegram.Controls
                 return;
             }
 
-            LayoutRoot.CornerRadius = new CornerRadius(Shape switch
+            var shape = Shape;
+            if (shape == ProfilePictureShape.Tail)
+            {
+                _tail = true;
+
+                static CompositionPath GetTail(float radius)
+                {
+                    CanvasGeometry result;
+                    using (var builder = new CanvasPathBuilder(null))
+                    {
+                        var cy = radius;
+                        var cx = radius;
+                        var r = radius;
+
+                        float b = cy + r;
+                        float x = r / 81.0f;
+
+                        float startAngle = -180 * (MathF.PI / 180);
+                        float sweepAngle = 270 * (MathF.PI / 180);
+
+                        float x1 = cx + MathF.Cos(startAngle) * r;
+                        float y1 = cy + MathF.Sin(startAngle) * r;
+
+                        float x2 = cx + MathF.Cos(startAngle + sweepAngle) * r;
+                        float y2 = cy + MathF.Sin(startAngle + sweepAngle) * r;
+
+                        builder.BeginFigure(new Vector2(x1, y1));
+                        builder.AddArc(new Vector2(x2, y2), r, r, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Large);
+                        builder.AddCubicBezier(new Vector2(cx - 13 * x, b), new Vector2(cx - 25 * x, b - 3 * x), new Vector2(cx - 36f * x, b - 8.42f * x));
+                        builder.AddCubicBezier(new Vector2(cx - 52 * x, b - x), new Vector2(cx - 56.5f * x, b - x), new Vector2(cx - 78.02f * x, b - x));
+                        builder.AddCubicBezier(new Vector2(cx - 80 * x, b - x), new Vector2(cx - 81 * x, b - 3 * x), new Vector2(cx - 79.52f * x, b - 4.5f * x));
+                        builder.AddCubicBezier(new Vector2(cx - 78 * x, b - 6 * x), new Vector2(cx - 63.73f * x, b - 15 * x), new Vector2(cx - 63.73f * x, b - 31 * x));
+                        builder.AddCubicBezier(new Vector2(cx - 74.5f * x, b - 44.75f * x), new Vector2(cx - r, cy + 18.87f * x), new Vector2(cx - r, cy));
+                        builder.EndFigure(CanvasFigureLoop.Closed);
+                        result = CanvasGeometry.CreatePath(builder);
+                    }
+                    return new CompositionPath(result);
+                }
+
+                var compositor = BootStrapper.Current.Compositor;
+
+                var polygon = compositor.CreatePathGeometry();
+                polygon.Path = GetTail((float)Width / 2);
+
+                var visual = ElementComposition.GetElementVisual(this);
+                visual.Clip = compositor.CreateGeometricClip(polygon);
+            }
+            else if (_tail)
+            {
+                _tail = false;
+
+                var visual = ElementComposition.GetElementVisual(this);
+                visual.Clip = null;
+            }
+
+            LayoutRoot.CornerRadius = new CornerRadius(shape switch
             {
                 ProfilePictureShape.Superellipse => Width / 4,
                 ProfilePictureShape.Ellipse => Width / 2,

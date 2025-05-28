@@ -117,7 +117,7 @@ namespace Telegram.Views
 
             var minForumTopic = ViewModel.IsForum;
             var minForumTopicIndex = panel.FirstVisibleIndex;
-            var minForumTopicValue = 0L;
+            var minForumTopicValue = default(MessageTopic);
 
             var messages = new List<long>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
             var animations = new List<(SelectorItem, MessageViewModel)>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
@@ -188,7 +188,7 @@ namespace Telegram.Views
                     if (minItem == 1 && point.Y + container.ActualHeight + DateHeader.ActualSize.Y + 4 >= 0)
                     {
                         minItem = 0;
-                        UpdateForumTopicHeader(minForumTopicValue = message.IsTopicMessage ? message.MessageThreadId : ForumTopicService.GeneralId);
+                        UpdateForumTopicHeader(minForumTopicValue = message.TopicId);
                     }
                 }
 
@@ -248,7 +248,7 @@ namespace Telegram.Views
                             SetContentOpacity(0);
                             minForumTopicIndex = int.MaxValue; // Force show
 
-                            UpdateForumTopicHeader(minForumTopicValue = message.IsTopicMessage ? message.MessageThreadId : ForumTopicService.GeneralId);
+                            UpdateForumTopicHeader(minForumTopicValue = message.TopicId);
                         }
                         else
                         {
@@ -305,7 +305,7 @@ namespace Telegram.Views
 
                 // This is a workaround for a bug in messages.readDiscussion that causes sent messages
                 // to be marked as read and consequently blocks following updateReadChannelDiscussionOutbox
-                if (ViewModel.Topic == null || !message.IsOutgoing || (message.IsOutgoing && message.UnreadReactions?.Count > 0))
+                if (ViewModel.ForumTopic == null || !message.IsOutgoing || (message.IsOutgoing && message.UnreadReactions?.Count > 0))
                 {
                     if (message.Content is MessageAlbum album)
                     {
@@ -342,7 +342,7 @@ namespace Telegram.Views
             _dateHeaderTimer.Stop();
             _dateHeaderTimer.Start();
             ShowHideDateHeader(minDateValue > 0 && minDateIndex > 0, minDateValue > 0 && minDateIndex is > 0 and < int.MaxValue);
-            ShowHideForumTopicHeader(minForumTopicValue > 0 && minForumTopicIndex > 0, minForumTopicValue > 0 && minForumTopicIndex is > 0 and < int.MaxValue);
+            ShowHideForumTopicHeader(minForumTopicValue != null && minForumTopicIndex > 0, minForumTopicValue != null && minForumTopicIndex is > 0 and < int.MaxValue);
 
             // Read and play messages logic:
             if (messages.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !_fromPreview)
@@ -350,7 +350,7 @@ namespace Telegram.Views
                 MessageSource source = ViewModel.Type switch
                 {
                     DialogType.EventLog => new MessageSourceChatEventLog(),
-                    DialogType.Thread => ViewModel.Topic != null
+                    DialogType.Thread => ViewModel.ForumTopic != null
                         ? new MessageSourceForumTopicHistory()
                         : new MessageSourceMessageThreadHistory(),
                     _ => new MessageSourceChatHistory()
@@ -358,9 +358,9 @@ namespace Telegram.Views
 
                 // This is needed because we don't keep all topics messages in memory as TDLib would do
                 long messageThreadId = 0;
-                if (ViewModel.Topic != null)
+                if (ViewModel.ForumTopic != null)
                 {
-                    messageThreadId = ViewModel.Topic.Info.MessageThreadId;
+                    messageThreadId = ViewModel.ForumTopic.Info.MessageThreadId;
                 }
                 else if (ViewModel.Thread != null)
                 {
@@ -386,7 +386,7 @@ namespace Telegram.Views
                 ViewModel.LockedPinnedMessageId = 0;
             }
 
-            if (ViewModel.Thread is MessageThreadInfo thread && ViewModel.Topic == null)
+            if (ViewModel.Thread is MessageThreadInfo thread && ViewModel.ForumTopic == null)
             {
                 var message = thread.Messages.LastOrDefault();
                 if (message == null || (firstVisibleId <= message.Id && lastVisibleId >= message.Id) || Messages.ScrollingHost.ScrollableHeight == 0)
@@ -521,21 +521,20 @@ namespace Telegram.Views
             batch.End();
         }
 
-        private long _forumTopicHeaderTopic;
+        private MessageTopic _forumTopicHeaderTopic;
 
-        private void UpdateForumTopicHeader(long messageThreadId)
+        private void UpdateForumTopicHeader(MessageTopic messageTopic)
         {
-            if (_forumTopicHeaderTopic == messageThreadId)
+            if (_forumTopicHeaderTopic.AreTheSame(messageTopic))
             {
                 return;
             }
 
-            _forumTopicHeaderTopic = messageThreadId;
+            _forumTopicHeaderTopic = messageTopic;
 
-            ForumTopicHeader.Tag = messageThreadId;
-            ForumTopicHeaderLabel.Text = messageThreadId.ToString();
+            ForumTopicHeader.Tag = messageTopic;
 
-            if (ViewModel.ClientService.TryGetTopic(ViewModel.ChatId, messageThreadId, out ForumTopic topic))
+            if (ViewModel.ClientService.TryGetTopic(ViewModel.ChatId, messageTopic, out ForumTopic topic))
             {
                 ForumTopicHeaderLabel.Text = topic.Info.Name;
 
@@ -571,7 +570,7 @@ namespace Telegram.Views
                     GalleryViewModelBase viewModel;
                     if (message.Content is MessageAnimation)
                     {
-                        viewModel = new ChatGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, message.ChatId, ViewModel.ThreadId, ViewModel.SavedMessagesTopicId, message);
+                        viewModel = new ChatGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, message.ChatId, ViewModel.Topic, message);
                     }
                     else
                     {

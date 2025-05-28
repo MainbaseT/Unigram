@@ -58,7 +58,7 @@ namespace Telegram.Services
 
         void Clear();
 
-        void Play(MessageWithOwner message, long threadId = 0, long savedMessagesTopicId = 0);
+        void Play(MessageWithOwner message, MessageTopic topic = null);
 
         TimeSpan Position { get; }
         TimeSpan Duration { get; }
@@ -92,8 +92,7 @@ namespace Telegram.Services
 
         private WM.SystemMediaTransportControls _transport;
 
-        private long _threadId;
-        private long _savedMessagesTopicId;
+        private MessageTopic _topic;
 
         private List<PlaybackItem> _items;
 
@@ -566,7 +565,7 @@ namespace Telegram.Services
             Dispose(true);
         }
 
-        public async void Play(MessageWithOwner message, long threadId, long savedMessagesTopicId)
+        public async void Play(MessageWithOwner message, MessageTopic topic)
         {
             try
             {
@@ -583,7 +582,7 @@ namespace Telegram.Services
             }
 
             var previous = _items;
-            if (previous != null && _threadId == threadId && _savedMessagesTopicId == savedMessagesTopicId)
+            if (previous != null && _topic.AreTheSame(topic))
             {
                 var already = previous.FirstOrDefault(x => x.Message.Id == message.Id && x.Message.ChatId == message.ChatId);
                 if (already != null)
@@ -599,8 +598,7 @@ namespace Telegram.Services
             var items = _items = new List<PlaybackItem>();
 
             _items.Add(item);
-            _threadId = threadId;
-            _savedMessagesTopicId = savedMessagesTopicId;
+            _topic = topic;
 
             SetSource(null, item);
 
@@ -613,7 +611,7 @@ namespace Telegram.Services
             var filter = message.Content is MessageAudio ? new SearchMessagesFilterAudio() : (SearchMessagesFilter)new SearchMessagesFilterVoiceNote();
 
             // TODO: 172 savedMessagesTopic
-            var response = await message.ClientService.SendAsync(new SearchChatMessages(message.ChatId, string.Empty, null, message.Id, offset, 100, filter, _threadId, _savedMessagesTopicId));
+            var response = await message.ClientService.SendAsync(new SearchChatMessages(message.ChatId, _topic, string.Empty, null, message.Id, offset, 100, filter));
             if (response is FoundChatMessages messages)
             {
                 foreach (var add in message.Content is MessageAudio ? messages.Messages.OrderBy(x => x.Id) : messages.Messages.OrderByDescending(x => x.Id))

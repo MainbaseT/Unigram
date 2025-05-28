@@ -981,24 +981,11 @@ namespace Telegram.Common
             var response = await clientService.SendAsync(new GetMessageLinkInfo(url));
             if (response is MessageLinkInfo info && clientService.TryGetChat(info.ChatId, out Chat chat))
             {
-                if (info.Message != null && clientService.IsForum(chat))
-                {
-                    if (info.Message.Id == ForumTopicService.GeneralId && info.MessageThreadId == 0)
-                    {
-                        info.Message = null;
-                        info.MessageThreadId = ForumTopicService.GeneralId;
-                    }
-                    else if (info.Message.IsTopicMessage is false)
-                    {
-                        info.MessageThreadId = ForumTopicService.GeneralId;
-                    }
-                }
-
                 if (info.Message != null)
                 {
                     if (info.MessageThreadId != 0)
                     {
-                        navigation.NavigateToChat(chat, info.Message.Id, thread: info.MessageThreadId);
+                        navigation.NavigateToChat(chat, info.Message.Id, topic: new MessageTopicForum(info.MessageThreadId));
                     }
                     else
                     {
@@ -1007,7 +994,7 @@ namespace Telegram.Common
                 }
                 else if (info.MessageThreadId != 0)
                 {
-                    navigation.NavigateToChat(chat, thread: info.MessageThreadId);
+                    navigation.NavigateToChat(chat, topic: new MessageTopicForum(info.MessageThreadId));
                 }
                 else
                 {

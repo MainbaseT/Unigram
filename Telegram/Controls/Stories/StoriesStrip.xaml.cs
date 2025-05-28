@@ -576,29 +576,38 @@ namespace Telegram.Controls.Stories
 
         private void OnTick(object sender, object e)
         {
-            var test = ControlledList.Header switch
+            var offset = GetOverscrollOffset();
+            if (offset >= 0 && _collapsed)
             {
-                FrameworkElement header => header.Visibility == Visibility.Visible ? header : ControlledList.ItemsPanelRoot,
-                _ => ControlledList.ItemsPanelRoot
-            };
-
-            if (test != null && _collapsed)
-            {
-                var transform = test.TransformToVisual(ControlledList);
-                var point = transform.TransformVector2();
-
-                Logger.Info(point.Y);
-
-                if (point.Y > 48 && _collapsed && _scrollViewer.VerticalOffset.AlmostEqualsToZero(0.5))
+                if (offset > 48 && _collapsed && _scrollViewer.VerticalOffset.AlmostEqualsToZero(0.5))
                 {
                     _scrollTracker.Stop();
-                    Expand(true, point.Y);
+                    Expand(true, offset);
                 }
             }
             else
             {
                 _scrollTracker.Stop();
             }
+        }
+
+        private float GetOverscrollOffset()
+        {
+            var itemsPanel = ControlledList.Header switch
+            {
+                FrameworkElement header => header.Visibility == Visibility.Visible ? header : ControlledList.ItemsPanelRoot,
+                _ => ControlledList.ItemsPanelRoot
+            };
+
+            if (itemsPanel != null)
+            {
+                var transform = itemsPanel.TransformToVisual(ControlledList);
+                var point = transform.TransformVector2();
+
+                return point.Y;
+            }
+
+            return -1;
         }
 
         private void Batch_Completed(object sender, CompositionBatchCompletedEventArgs args)

@@ -1553,7 +1553,7 @@ namespace Telegram.Views.Popups
             else if (item is ForumTopic topic && ForumList.ItemsSource is TopicListViewModel.ItemsCollection collection)
             {
                 item = collection.Chat;
-                ViewModel.SelectedTopics[collection.Chat.Id] = topic.Info.MessageThreadId;
+                ViewModel.SelectedTopics[collection.Chat.Id] = topic.ToId();
                 ShowHideForum(null);
             }
 

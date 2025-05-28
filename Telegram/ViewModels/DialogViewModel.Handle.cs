@@ -485,7 +485,7 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateChatReadOutbox update)
         {
-            if (update.ChatId == _chat?.Id && _topic == null)
+            if (update.ChatId == _chat?.Id && _forumTopic == null)
             {
                 BeginOnUIThread(() =>
                 {
@@ -495,7 +495,7 @@ namespace Telegram.ViewModels
         }
         public void Handle(UpdateForumTopicReadOutbox update)
         {
-            if (update.ChatId == _chat?.Id && update.MessageThreadId == _topic?.Info.MessageThreadId)
+            if (update.ChatId == _chat?.Id && update.MessageThreadId == _forumTopic?.Info.MessageThreadId)
             {
                 BeginOnUIThread(() =>
                 {
@@ -636,16 +636,11 @@ namespace Telegram.ViewModels
             }
             else if (Type == DialogType.Thread)
             {
-                if (_topic != null && _topic.Info.IsGeneral)
-                {
-                    return message.SchedulingState == null && !message.IsTopicMessage;
-                }
-
-                return message.SchedulingState == null && message.MessageThreadId == ThreadId;
+                return message.SchedulingState == null && message.TopicId.AreTheSame(Topic);
             }
             else if (Type == DialogType.SavedMessagesTopic)
             {
-                return message.SchedulingState == null && message.SavedMessagesTopicId == SavedMessagesTopicId;
+                return message.SchedulingState == null && message.TopicId.AreTheSame(Topic);
             }
             else if (Type == DialogType.Pinned)
             {

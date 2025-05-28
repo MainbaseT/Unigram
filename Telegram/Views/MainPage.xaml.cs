@@ -1514,10 +1514,25 @@ namespace Telegram.Views
             else
             {
                 data.TryGetValue("chat_id", out string chat_id);
-                data.TryGetValue("thread_id", out string thread_id);
+                data.TryGetValue("forum_topic_id", out string forum_topic_id);
+                data.TryGetValue("saved_messages_topic_id", out string saved_messages_topic_id);
+                data.TryGetValue("feedback_chat_topic_id", out string feedback_chat_topic_id);
 
                 long.TryParse(chat_id, out long chatId);
-                long.TryParse(thread_id, out long threadId);
+
+                MessageTopic messageTopic = null;
+                if (long.TryParse(forum_topic_id, out long forumTopicId))
+                {
+                    messageTopic = new MessageTopicForum(forumTopicId);
+                }
+                else if (long.TryParse(saved_messages_topic_id, out long savedMessagesTopicId))
+                {
+                    messageTopic = new MessageTopicSavedMessages(savedMessagesTopicId);
+                }
+                else if (long.TryParse(feedback_chat_topic_id, out long feedbackChatTopicId))
+                {
+                    messageTopic = new MessageTopicFeedbackChat(feedbackChatTopicId);
+                }
 
                 if (_clientService.TryGetChat(chatId, out Chat chat))
                 {
@@ -1533,7 +1548,7 @@ namespace Telegram.Views
 
                     if (chat.ViewAsTopics)
                     {
-                        MasterDetail.NavigationService.NavigateToChat(chat.Id, thread: threadId, state: state, force: false);
+                        MasterDetail.NavigationService.NavigateToChat(chat.Id, topic: messageTopic, state: state, force: false);
                     }
                     else
                     {
@@ -1821,10 +1836,13 @@ namespace Telegram.Views
                 var modifiers = WindowContext.KeyModifiers();
                 var createNewWindow = modifiers == Windows.System.VirtualKeyModifiers.Control;
 
+                var messageChat = ViewModel.ClientService.GetChat(message.ChatId);
+                var hasTabs = ViewModel.ClientService.HasTabs(messageChat);
+
                 MasterDetail.NavigationService.NavigateToChat(
-                    message.ChatId,
+                    messageChat,
                     message: message.Id,
-                    thread: message.IsTopicMessage ? message.MessageThreadId : 0,
+                    topic: hasTabs ? message.TopicId : null,
                     force: false,
                     createNewWindow: createNewWindow);
             }
@@ -1886,7 +1904,7 @@ namespace Telegram.Views
 
                         if (MasterDetail.CurrentState != MasterDetailState.Minimal)
                         {
-                            MasterDetail.NavigationService.NavigateToChat(chat, thread: chat.LastMessage.TopicId(), force: false, clearBackStack: true);
+                            MasterDetail.NavigationService.NavigateToChat(chat, topic: chat.LastMessage.TopicId, force: false, clearBackStack: true);
                         }
                     }
                     else
@@ -1909,7 +1927,7 @@ namespace Telegram.Views
                         var messageThreadId = chat.LastMessage != null && ViewModel.ClientService.IsForum(chat) ? chat.LastMessage.TopicId() : 0;
                         messageThreadId = 0;
 
-                        MasterDetail.NavigationService.NavigateToChat(chat, thread: messageThreadId, force: false, createNewWindow: createNewWindow, clearBackStack: true);
+                        MasterDetail.NavigationService.NavigateToChat(chat, force: false, createNewWindow: createNewWindow, clearBackStack: true);
                     }
 
                     HideTopicList();
@@ -1919,7 +1937,7 @@ namespace Telegram.Views
             {
                 ViewModel.Chats.SelectedItem = topic.Info.ChatId;
                 ViewModel.Topics.SelectedItem = topic.Info.MessageThreadId;
-                MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, thread: topic.Info.MessageThreadId, force: false, clearBackStack: true);
+                MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, topic: topic.ToId(), force: false, clearBackStack: true);
             }
         }
 

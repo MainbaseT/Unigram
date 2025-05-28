@@ -646,9 +646,9 @@ namespace Telegram.Controls
             {
                 PersonalChannel.UpdateChatTitle(chat);
             }
-            else if (ViewModel.Topic != null)
+            else if (ViewModel.ForumTopic != null)
             {
-                Title.Text = ViewModel.Topic.Info.Name;
+                Title.Text = ViewModel.ForumTopic.Info.Name;
             }
             else if (chat.Id == ViewModel.ClientService.Options.MyId)
             {
@@ -666,10 +666,10 @@ namespace Telegram.Controls
             {
                 PersonalChannel.UpdateChatPhoto(chat);
             }
-            else if (ViewModel.Topic != null)
+            else if (ViewModel.ForumTopic != null)
             {
                 FindName(nameof(Icon));
-                Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.Topic.Info.Icon.CustomEmojiId);
+                Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.ForumTopic.Info.Icon.CustomEmojiId);
                 Photo.Clear();
             }
             else
@@ -1055,7 +1055,7 @@ namespace Telegram.Controls
 
         public void UpdateSupergroup(Chat chat, Supergroup group)
         {
-            if (ViewModel.Topic != null)
+            if (ViewModel.ForumTopic != null)
             {
                 Subtitle.Text = string.Format(Strings.TopicProfileStatus, chat.Title);
                 SubtitleWhen.Visibility = Visibility.Collapsed;
@@ -1142,7 +1142,7 @@ namespace Telegram.Controls
 
         public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
-            if (ViewModel.Topic != null)
+            if (ViewModel.ForumTopic != null)
             {
                 Subtitle.Text = string.Format(Strings.TopicProfileStatus, chat.Title);
                 SubtitleWhen.Visibility = Visibility.Collapsed;

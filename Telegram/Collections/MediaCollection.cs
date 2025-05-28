@@ -19,8 +19,7 @@ namespace Telegram.Collections
         private readonly IClientService _clientService;
         private readonly SearchMessagesFilter _filter;
         private readonly long _chatId;
-        private readonly long _threadId;
-        private readonly long _savedMessagesTopicId;
+        private readonly MessageTopic _topic;
         private readonly string _query;
 
         private long _lastMaxId;
@@ -28,12 +27,11 @@ namespace Telegram.Collections
 
         public SearchMessagesFilter Filter => _filter;
 
-        public MediaCollection(IClientService clientService, long chatId, long threadId, long savedMessagesTopicId, SearchMessagesFilter filter, string query = null)
+        public MediaCollection(IClientService clientService, long chatId, MessageTopic topic, SearchMessagesFilter filter, string query = null)
         {
             _clientService = clientService;
             _chatId = chatId;
-            _threadId = threadId;
-            _savedMessagesTopicId = savedMessagesTopicId;
+            _topic = topic;
             _filter = filter;
             _query = query ?? string.Empty;
         }
@@ -44,7 +42,7 @@ namespace Telegram.Collections
             {
                 var count = 0u;
 
-                var response = await _clientService.SendAsync(new SearchChatMessages(_chatId, _query, null, _lastMaxId, 0, 50, _filter, _threadId, _savedMessagesTopicId));
+                var response = await _clientService.SendAsync(new SearchChatMessages(_chatId, _topic, _query, null, _lastMaxId, 0, 50, _filter));
                 if (response is FoundChatMessages messages)
                 {
                     if (messages.NextFromMessageId != 0)

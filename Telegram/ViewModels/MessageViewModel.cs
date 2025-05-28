@@ -302,9 +302,8 @@ namespace Telegram.ViewModels
             _message.InteractionInfo = message.InteractionInfo;
             _message.UnreadReactions = message.UnreadReactions;
             _message.RestrictionReason = message.RestrictionReason;
-            _message.SavedMessagesTopicId = message.SavedMessagesTopicId;
             _message.ImportInfo = message.ImportInfo;
-            _message.IsTopicMessage = message.IsTopicMessage;
+            _message.TopicId = message.TopicId;
             _message.HasTimestampedMedia = message.HasTimestampedMedia;
             _message.SchedulingState = message.SchedulingState;
             _message.SenderBoostCount = message.SenderBoostCount;
@@ -398,7 +397,6 @@ namespace Telegram.ViewModels
         public bool ContainsUnreadMention { get => _message.ContainsUnreadMention; set => _message.ContainsUnreadMention = value; }
         public bool IsFromOffline => _message.IsFromOffline;
         public bool IsChannelPost => _message.IsChannelPost;
-        public bool IsTopicMessage => _message.IsTopicMessage;
         public bool CanBeSaved => _message.CanBeSaved;
         public bool IsOutgoing { get => _message.IsOutgoing; set => _message.IsOutgoing = value; }
         public bool IsPinned { get => _message.IsPinned; set => _message.IsPinned = value; }
@@ -407,6 +405,7 @@ namespace Telegram.ViewModels
         public MessageSendingState SendingState => _message.SendingState;
         public long ChatId => _message.ChatId;
         public long MessageThreadId => _message.MessageThreadId;
+        public MessageTopic TopicId => _message.TopicId;
         public MessageSender SenderId { get => _message.SenderId; set => _message.SenderId = value; }
         public int SenderBoostCount => _message.SenderBoostCount;
         public long SenderBusinessBotUserId => _message.SenderBusinessBotUserId;

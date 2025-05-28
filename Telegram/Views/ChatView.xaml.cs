@@ -361,7 +361,7 @@ namespace Telegram.Views
             DataContext = _viewModel = viewModel;
             Messages.ViewModel = viewModel;
 
-            _forumTopicHeaderTopic = 0;
+            _forumTopicHeaderTopic = null;
 
             _updateThemeTask = new TaskCompletionSource<bool>();
             ViewModel.MessageSliceLoaded += OnMessageSliceLoaded;
@@ -3343,7 +3343,7 @@ namespace Telegram.Views
         {
             if (ViewModel.Type is not DialogType.History and not DialogType.Pinned)
             {
-                if (ViewModel.Type is not DialogType.Thread || ViewModel.Topic == null)
+                if (ViewModel.Type is not DialogType.Thread || ViewModel.ForumTopic == null)
                 {
                     return false;
                 }
@@ -4077,9 +4077,9 @@ namespace Telegram.Views
         private void ForumTopic_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
-            if (button.Tag is long messageThreadId && ViewModel.Type is DialogType.History or DialogType.Thread)
+            if (button.Tag is MessageTopic messageTopic && ViewModel.Type is DialogType.History or DialogType.Thread)
             {
-                NavigateToForumTopic(ViewModel.Chat, messageThreadId);
+                NavigateToForumTopic(ViewModel.Chat, messageTopic);
             }
         }
 
@@ -4199,7 +4199,7 @@ namespace Telegram.Views
             }
             else if (message.Content is MessageHeaderForumTopic)
             {
-                NavigateToForumTopic(message.Chat, message.MessageThreadId);
+                NavigateToForumTopic(message.Chat, message.TopicId);
             }
             else
             {
@@ -4619,9 +4619,9 @@ namespace Telegram.Views
         {
             if (ViewModel.Type == DialogType.Thread)
             {
-                if (ViewModel.Topic != null)
+                if (ViewModel.ForumTopic != null)
                 {
-                    ChatTitle = ViewModel.Topic.Info.Name;
+                    ChatTitle = ViewModel.ForumTopic.Info.Name;
                 }
                 else
                 {
@@ -4700,7 +4700,7 @@ namespace Telegram.Views
         {
             if (ViewModel.Type == DialogType.Thread)
             {
-                if (ViewModel.Topic is ForumTopic topic)
+                if (ViewModel.ForumTopic is ForumTopic topic)
                 {
                     LoadObject(ref Icon, nameof(Icon));
                     Photo.Clear();
@@ -6054,7 +6054,7 @@ namespace Telegram.Views
             {
                 ViewModel.UpdateLastSeen(Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, group.MemberCount));
             }
-            else if (ViewModel.Type == DialogType.Thread && ViewModel.Topic != null)
+            else if (ViewModel.Type == DialogType.Thread && ViewModel.ForumTopic != null)
             {
                 ViewModel.UpdateLastSeen(string.Format(Strings.TopicProfileStatus, chat.Title));
             }
@@ -6080,7 +6080,7 @@ namespace Telegram.Views
             {
                 ViewModel.UpdateLastSeen(Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, fullInfo.MemberCount));
             }
-            else if (ViewModel.Type == DialogType.Thread && ViewModel.Topic != null)
+            else if (ViewModel.Type == DialogType.Thread && ViewModel.ForumTopic != null)
             {
                 ViewModel.UpdateLastSeen(string.Format(Strings.TopicProfileStatus, chat.Title));
             }
@@ -6502,18 +6502,18 @@ namespace Telegram.Views
         {
             if (e.ClickedItem is ForumTopic topic && ViewModel.ClientService.TryGetChat(topic.Info.ChatId, out Chat chat))
             {
-                NavigateToForumTopic(chat, topic.Info.MessageThreadId);
+                NavigateToForumTopic(chat, new MessageTopicForum(topic.Info.MessageThreadId));
             }
         }
 
-        private void NavigateToForumTopic(Chat chat, long messageThreadId)
+        private void NavigateToForumTopic(Chat chat, MessageTopic topic)
         {
-            ViewModel.NavigationService.NavigateToChat(chat, thread: messageThreadId, force: false, clearBackStack: true);
+            ViewModel.NavigationService.NavigateToChat(chat, topic: topic, force: false, clearBackStack: true);
         }
 
         private void NavigateToForumTopic(MessageViewModel message)
         {
-            ViewModel.NavigationService.NavigateToChat(message.Chat, thread: message.MessageThreadId, force: false, clearBackStack: true);
+            ViewModel.NavigationService.NavigateToChat(message.Chat, topic: message.TopicId, force: false, clearBackStack: true);
         }
 
         private void ForumMode_Click(object sender, RoutedEventArgs e)

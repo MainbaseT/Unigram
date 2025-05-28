@@ -102,7 +102,7 @@ namespace Telegram.ViewModels
 
         public void OpenTopic(ForumTopic topic)
         {
-            NavigationService.NavigateToChat(topic.Info.ChatId, thread: topic.Info.MessageThreadId, createNewWindow: true);
+            NavigationService.NavigateToChat(topic.Info.ChatId, topic: topic.ToId(), createNewWindow: true);
         }
 
         #endregion
@@ -475,7 +475,7 @@ namespace Telegram.ViewModels
                 var response = await ClientService.SendAsync(new CreateForumTopic(chat.Id, popup.SelectedName, popup.SelectedIcon));
                 if (response is ForumTopicInfo info)
                 {
-                    NavigationService.NavigateToChat(chat, thread: info.MessageThreadId, force: false, clearBackStack: true);
+                    NavigationService.NavigateToChat(chat, topic: new MessageTopicForum(info.ForumTopicId), force: false, clearBackStack: true);
                 }
             }
         }

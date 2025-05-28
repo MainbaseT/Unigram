@@ -29,6 +29,8 @@ namespace Telegram.ViewModels.Supergroups
 
         private async void SetIsEnabled(bool value)
         {
+            Set(ref _isEnabled, value, nameof(IsEnabled));
+
             if (Chat.Type is ChatTypeBasicGroup)
             {
                 Chat = await UpgradeAsync(Chat);
@@ -36,8 +38,7 @@ namespace Telegram.ViewModels.Supergroups
 
             if (Chat.Type is ChatTypeSupergroup supergroup)
             {
-                Set(ref _isEnabled, value, nameof(IsEnabled));
-                ClientService.Send(new ToggleSupergroupIsForum(supergroup.SupergroupId, value));
+                ClientService.Send(new ToggleSupergroupIsForum(supergroup.SupergroupId, value, UseTabsLayout));
             }
         }
 
@@ -45,14 +46,44 @@ namespace Telegram.ViewModels.Supergroups
         public bool UseTabsLayout
         {
             get => _useTabsLayout;
-            set => Set(ref _useTabsLayout, value);
+            set => SetUseTabsLayout(value);
+        }
+
+        private async void SetUseTabsLayout(bool value)
+        {
+            Set(ref _useTabsLayout, value, nameof(UseTabsLayout));
+
+            if (Chat.Type is ChatTypeBasicGroup)
+            {
+                Chat = await UpgradeAsync(Chat);
+            }
+
+            if (Chat.Type is ChatTypeSupergroup supergroup)
+            {
+                ClientService.Send(new ToggleSupergroupIsForum(supergroup.SupergroupId, value, UseTabsLayout));
+            }
         }
 
         private bool _useListLayout;
         public bool UseListLayout
         {
             get => _useListLayout;
-            set => Set(ref _useListLayout, value);
+            set => SetUseListLayout(value);
+        }
+
+        private async void SetUseListLayout(bool value)
+        {
+            Set(ref _useListLayout, value, nameof(UseListLayout));
+
+            if (Chat.Type is ChatTypeBasicGroup)
+            {
+                Chat = await UpgradeAsync(Chat);
+            }
+
+            if (Chat.Type is ChatTypeSupergroup supergroup)
+            {
+                ClientService.Send(new ToggleSupergroupIsForum(supergroup.SupergroupId, value, UseTabsLayout));
+            }
         }
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)

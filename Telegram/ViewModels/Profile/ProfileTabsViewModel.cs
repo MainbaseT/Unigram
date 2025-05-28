@@ -124,16 +124,12 @@ namespace Telegram.ViewModels.Profile
 
         public IStorageService StorageService => _storageService;
 
-        public long ThreadId => Topic?.Info?.MessageThreadId ?? 0;
-
-        protected ForumTopic _topic;
-        public ForumTopic Topic
+        protected ForumTopic _forumTopic;
+        public ForumTopic ForumTopic
         {
-            get => _topic;
-            set => Set(ref _topic, value);
+            get => _forumTopic;
+            set => Set(ref _forumTopic, value);
         }
-
-        public long SavedMessagesTopicId => SavedMessagesTopic?.Id ?? 0;
 
         protected SavedMessagesTopic _savedMessagesTopic;
         public SavedMessagesTopic SavedMessagesTopic
@@ -141,6 +137,8 @@ namespace Telegram.ViewModels.Profile
             get => _savedMessagesTopic;
             set => Set(ref _savedMessagesTopic, value);
         }
+
+        public MessageTopic Topic { get; set; }
 
         public bool MyProfile { get; private set; }
 
@@ -274,12 +272,12 @@ namespace Telegram.ViewModels.Profile
                 // This should really rarely happen
                 cached ??= await ClientService.SendAsync(new GetSupergroupFullInfo(supergroup.Id)) as SupergroupFullInfo;
 
-                if (Topic == null && cached?.HasPinnedStories is true)
+                if (ForumTopic == null && cached?.HasPinnedStories is true)
                 {
                     AddTab(new ProfileTabItem(Strings.ProfileStories, typeof(ProfileStoriesTabPage)));
                 }
 
-                if (Topic == null && cached?.GiftCount > 0)
+                if (ForumTopic == null && cached?.GiftCount > 0)
                 {
                     AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
                 }
@@ -296,7 +294,7 @@ namespace Telegram.ViewModels.Profile
                 }
                 else
                 {
-                    if (Topic == null)
+                    if (ForumTopic == null)
                     {
                         AddTab(new ProfileTabItem(Strings.ChannelMembers, typeof(ProfileMembersTabPage)));
                     }
@@ -325,7 +323,7 @@ namespace Telegram.ViewModels.Profile
 
             for (int i = 0; i < filters.Length; i++)
             {
-                var response = await ClientService.SendAsync(new GetChatMessageCount(chat.Id, filters[i], SavedMessagesTopicId, false));
+                var response = await ClientService.SendAsync(new GetChatMessageCount(chat.Id, Topic, filters[i], false));
                 if (response is Count count)
                 {
                     SharedCount[i] = count.CountValue;
@@ -418,7 +416,7 @@ namespace Telegram.ViewModels.Profile
         {
             if (sender is SearchMessagesFilter filter)
             {
-                return new MediaCollection(ClientService, Chat.Id, ThreadId, SavedMessagesTopicId, filter, query);
+                return new MediaCollection(ClientService, Chat.Id, Topic, filter, query);
             }
 
             return null;
@@ -448,7 +446,7 @@ namespace Telegram.ViewModels.Profile
                 return;
             }
 
-            NavigationService.NavigateToChat(chat, message.Id, ThreadId, SavedMessagesTopicId);
+            NavigationService.NavigateToChat(chat, message.Id, Topic);
         }
 
         #endregion
@@ -541,7 +539,7 @@ namespace Telegram.ViewModels.Profile
                 return;
             }
 
-            var popup = new DeleteMessagesPopup(ClientService, SavedMessagesTopicId, chat, updated, properties);
+            var popup = new DeleteMessagesPopup(ClientService, chat, Topic, updated, properties);
 
             var confirm = await ShowPopupAsync(popup);
             if (confirm != ContentDialogResult.Primary)

@@ -518,7 +518,7 @@ namespace Telegram.ViewModels
 
         public ObservableCollection<ChatFolderViewModel> Folders { get; private set; }
 
-        public Dictionary<long, long> SelectedTopics = new();
+        public Dictionary<long, MessageTopic> SelectedTopics = new();
 
         private ChatFolderViewModel _selectedFolder;
         public ChatFolderViewModel SelectedFolder
@@ -637,15 +637,36 @@ namespace Telegram.ViewModels
                 Caption = SendMessage;
             }
 
+            void SendWithChat(Chat chat, Action<MessageSendOptions, long> action)
+            {
+                SelectedTopics.TryGetValue(chat.Id, out MessageTopic topic);
+
+                long feedbackChatTopicId = 0;
+                long messageThreadId = 0;
+
+                if (topic is MessageTopicFeedbackChat feedbackChat)
+                {
+                    feedbackChatTopicId = feedbackChat.FeedbackChatTopicId;
+                }
+                else if (topic is MessageTopicForum forum && ClientService.TryGetTopic(chat.Id, forum.ForumTopicId, out ForumTopic forumTopic))
+                {
+                    messageThreadId = forumTopic.Info.MessageThreadId;
+                }
+
+                var starCount = ClientService.PaidMessageStarCount(chat);
+                var options = new MessageSendOptions(feedbackChatTopicId, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
+                action(options, messageThreadId);
+            }
+
             if (IsCommentEnabled && !string.IsNullOrEmpty(Caption?.Text))
             {
                 foreach (var chat in chats)
                 {
-                    var starCount = ClientService.PaidMessageStarCount(chat);
-                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                    SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    var response = await ClientService.SendAsync(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(_caption, null, false)));
+                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    {
+                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(_caption, null, false)));
+                    });
                 }
             }
 
@@ -665,11 +686,10 @@ namespace Telegram.ViewModels
                 {
                     foreach (var messages in shareMessages.MessageIds.GroupBy(x => x.ChatId))
                     {
-                        var starCount = ClientService.PaidMessageStarCount(chat);
-                        var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                        SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                        ClientService.Send(new ForwardMessages(chat.Id, messageThreadId, messages.Key, messages.Select(x => x.Id).ToList(), options, _sendAsCopy || _removeCaptions, _removeCaptions));
+                        SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                        {
+                            ClientService.Send(new ForwardMessages(chat.Id, messageThreadId, messages.Key, messages.Select(x => x.Id).ToList(), options, _sendAsCopy || _removeCaptions, _removeCaptions));
+                        });
                     }
                 }
             }
@@ -679,11 +699,10 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    var starCount = ClientService.PaidMessageStarCount(chat);
-                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                    SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageForwarded(shareMessage.ChatId, shareMessage.MessageId, shareMessage.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
+                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    {
+                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageForwarded(shareMessage.ChatId, shareMessage.MessageId, shareMessage.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
+                    });
                 }
             }
             else if (_configuration is ChooseChatsConfigurationShareStory shareStory)
@@ -692,22 +711,20 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    var starCount = ClientService.PaidMessageStarCount(chat);
-                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                    SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
+                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    {
+                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
+                    });
                 }
             }
             else if (_configuration is ChooseChatsConfigurationPostMessage postMessage)
             {
                 foreach (var chat in chats)
                 {
-                    var starCount = ClientService.PaidMessageStarCount(chat);
-                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                    SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, postMessage.Content));
+                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    {
+                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, postMessage.Content));
+                    });
                 }
 
                 //NavigationService.GoBack();
@@ -721,11 +738,10 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        var starCount = ClientService.PaidMessageStarCount(chat);
-                        var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                        SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                        SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                        {
+                            ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                        });
                     }
                 }
             }
@@ -735,11 +751,10 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    var starCount = ClientService.PaidMessageStarCount(chat);
-                    var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                    SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                    ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    {
+                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                    });
                 }
 
                 //NavigationService.GoBack();
@@ -772,11 +787,10 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        var starCount = ClientService.PaidMessageStarCount(chat);
-                        var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                        SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                        ClientService.Send(new SendInlineQueryResultMessage(chat.Id, messageThreadId, null, options, switchInline.InlineQueryId, switchInline.Result.GetId(), false));
+                        SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                        {
+                            ClientService.Send(new SendInlineQueryResultMessage(chat.Id, messageThreadId, null, options, switchInline.InlineQueryId, switchInline.Result.GetId(), false));
+                        });
                     }
                 }
                 else
@@ -787,14 +801,17 @@ namespace Telegram.ViewModels
             else if (_configuration is ChooseChatsConfigurationDataPackage configurationDataPackage)
             {
                 App.DataPackage = configurationDataPackage.Package;
-                SelectedTopics.TryGetValue(chats[0].Id, out long messageThreadId);
+                SelectedTopics.TryGetValue(chats[0].Id, out MessageTopic messageTopic);
 
                 try
                 {
                     var options = new Windows.System.LauncherOptions();
                     options.TargetApplicationPackageFamilyName = Package.Current.Id.FamilyName;
 
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format(CultureInfo.InvariantCulture, "tg://toast?session={0}&chat_id={1}&thread_id={2}", SessionId, chats[0].Id, messageThreadId)), options);
+                    if (messageTopic is MessageTopicForum messageTopicForum)
+                    {
+                        await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format(CultureInfo.InvariantCulture, "tg://toast?session={0}&chat_id={1}&thread_id={2}", SessionId, chats[0].Id, messageTopicForum.ForumTopicId)), options);
+                    }
                 }
                 catch
                 {
@@ -810,11 +827,10 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        var starCount = ClientService.PaidMessageStarCount(chat);
-                        var options = new MessageSendOptions(SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                        SelectedTopics.TryGetValue(chat.Id, out long messageThreadId);
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                        SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                        {
+                            ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                        });
                     }
                 }
             }

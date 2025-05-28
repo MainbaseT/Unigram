@@ -44,14 +44,12 @@ namespace Telegram.Td.Api
 
         public static long TopicId(this Message message)
         {
-            if (message == null)
+            if (message?.TopicId is MessageTopicForum forum)
             {
-                return 0;
+                return forum.ForumTopicId;
             }
 
-            return message.IsTopicMessage
-                ? message.MessageThreadId
-                : ForumTopicService.GeneralId;
+            return 0;
         }
 
         public static bool IsPhoto(this MessageDocument document)
@@ -350,6 +348,71 @@ namespace Telegram.Td.Api
             }
 
             return x is ReactionTypePaid && y is ReactionTypePaid;
+        }
+
+        public static bool AreTheSame(this MessageTopic x, MessageTopic y)
+        {
+            if (x == null || y == null)
+            {
+                return x == y;
+            }
+            else if (x is MessageTopicForum oldForum
+                && y is MessageTopicForum newForum)
+            {
+                return oldForum.ForumTopicId == newForum.ForumTopicId;
+            }
+            else if (x is MessageTopicSavedMessages oldSavedMessages
+                && y is MessageTopicSavedMessages newSavedMessages)
+            {
+                return oldSavedMessages.SavedMessagesTopicId == newSavedMessages.SavedMessagesTopicId;
+            }
+            else if (x is MessageTopicFeedbackChat oldFeedbackChat
+                && y is MessageTopicFeedbackChat newFeedbackChat)
+            {
+                return oldFeedbackChat.FeedbackChatTopicId == newFeedbackChat.FeedbackChatTopicId;
+            }
+
+            return false;
+        }
+
+        public static bool IsSavedMessages(this MessageTopic messageTopic, long savedMessagesTopicId)
+        {
+            return messageTopic is MessageTopicSavedMessages savedMessages && savedMessages.SavedMessagesTopicId == savedMessagesTopicId;
+        }
+
+        public static bool IsForum(this MessageTopic messageTopic, long forumTopicId)
+        {
+            return messageTopic is MessageTopicForum forum && forum.ForumTopicId == forumTopicId;
+        }
+
+        public static bool IsFeedbackChat(this MessageTopic messageTopic, long feedbackChatTopicId)
+        {
+            return messageTopic is MessageTopicFeedbackChat feedbackChat && feedbackChat.FeedbackChatTopicId == feedbackChatTopicId;
+        }
+
+        public static MessageTopic TopicIdNotGeneral(this Message message)
+        {
+            if (message.TopicId is MessageTopicForum forum && forum.ForumTopicId == ForumTopicService.GeneralId)
+            {
+                return null;
+            }
+
+            return message.TopicId;
+        }
+
+        public static MessageTopic ToId(this ForumTopic topic)
+        {
+            return new MessageTopicForum(topic.Info.ForumTopicId);
+        }
+
+        public static MessageTopic ToId(this SavedMessagesTopic topic)
+        {
+            return new MessageTopicSavedMessages(topic.Id);
+        }
+
+        public static MessageTopic ToId(this FeedbackChatTopic topic)
+        {
+            return new MessageTopicFeedbackChat(topic.Id);
         }
 
         public static bool AreTheSame(this MessageSelfDestructType x, MessageSelfDestructType y)

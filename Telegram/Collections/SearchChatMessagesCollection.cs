@@ -18,7 +18,7 @@ namespace Telegram.Collections
         private readonly IClientService _clientService;
 
         private readonly long _chatId;
-        private readonly long _threadId;
+        private readonly MessageTopic _topic;
         private readonly long _savedMessagesTopicId;
         private readonly string _query;
         private readonly MessageSender _sender;
@@ -32,13 +32,12 @@ namespace Telegram.Collections
 
         private readonly SearchMessagesFilter _filter;
 
-        public SearchChatMessagesCollection(IClientService clientService, long chatId, long threadId, long savedMessagesTopicId, string query, MessageSender sender, long fromMessageId, SearchMessagesFilter filter, ReactionType savedMessagesTag)
+        public SearchChatMessagesCollection(IClientService clientService, long chatId, MessageTopic topic, string query, MessageSender sender, long fromMessageId, SearchMessagesFilter filter, ReactionType savedMessagesTag)
         {
             _clientService = clientService;
 
             _chatId = chatId;
-            _threadId = threadId;
-            _savedMessagesTopicId = savedMessagesTopicId;
+            _topic = topic;
             _query = query;
             _sender = sender;
             _fromMessageId = fromMessageId;
@@ -82,7 +81,7 @@ namespace Telegram.Collections
                     }
                     else
                     {
-                        function = new SearchChatMessages(_chatId, _query, _sender, fromMessageId, offset, (int)count, _filter, _threadId, _savedMessagesTopicId);
+                        function = new SearchChatMessages(_chatId, _topic, _query, _sender, fromMessageId, offset, (int)count, _filter);
                     }
                 }
 

@@ -1709,7 +1709,7 @@ namespace Telegram.Controls.Cells
                 return false;
             }
 
-            if (message.SavedMessagesTopicId != 0 && clientService.TryGetSavedMessagesTopic(message.SavedMessagesTopicId, out SavedMessagesTopic topic))
+            if (message.TopicId is MessageTopicSavedMessages savedMessages && clientService.TryGetSavedMessagesTopic(savedMessages.SavedMessagesTopicId, out SavedMessagesTopic topic))
             {
                 if (topic.Type is SavedMessagesTopicTypeMyNotes or SavedMessagesTopicTypeAuthorHidden)
                 {

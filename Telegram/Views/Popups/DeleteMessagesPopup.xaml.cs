@@ -32,16 +32,16 @@ namespace Telegram.Views.Popups
         private IList<MessageSender> _deleteAll;
         private IList<MessageSender> _banUser;
 
-        public DeleteMessagesPopup(IClientService clientService, long savedMessagesTopicId, Chat chat, IList<Message> messages, IDictionary<MessageId, MessageProperties> properties)
+        public DeleteMessagesPopup(IClientService clientService, Chat chat, MessageTopic topic, IList<Message> messages, IDictionary<MessageId, MessageProperties> properties)
         {
             InitializeComponent();
 
             DataContext = TypeResolver.Current.Resolve<SupergroupEditRestrictedViewModel>(clientService.SessionId);
 
             Title = messages.Count == 1
-                ? savedMessagesTopicId == 0 ? Strings.DeleteSingleMessagesTitle : Strings.UnsaveSingleMessagesTitle
-                : string.Format(savedMessagesTopicId == 0 ? Strings.DeleteMessagesTitle : Strings.UnsaveMessagesTitle, Locale.Declension(Strings.R.messages, messages.Count));
-            PrimaryButtonText = savedMessagesTopicId == 0 ? Strings.Delete : Strings.Remove;
+                ? topic is not MessageTopicSavedMessages ? Strings.DeleteSingleMessagesTitle : Strings.UnsaveSingleMessagesTitle
+                : string.Format(topic is not MessageTopicSavedMessages ? Strings.DeleteMessagesTitle : Strings.UnsaveMessagesTitle, Locale.Declension(Strings.R.messages, messages.Count));
+            PrimaryButtonText = topic is not MessageTopicSavedMessages ? Strings.Delete : Strings.Remove;
             SecondaryButtonText = Strings.Cancel;
 
             var supergroup = clientService.GetSupergroup(chat);
@@ -92,7 +92,7 @@ namespace Telegram.Views.Popups
                     : Visibility.Collapsed;
 
                 _messagesCount = messages.Count;
-                clientService.Send(new SearchChatMessages(chat.Id, string.Empty, senders[0], 0, 0, 1, null, 0, 0), result =>
+                clientService.Send(new SearchChatMessages(chat.Id, null, string.Empty, senders[0], 0, 0, 1, null), result =>
                 {
                     if (result is FoundChatMessages found)
                     {
@@ -114,7 +114,7 @@ namespace Telegram.Views.Popups
                 var canBeDeletedOnlyForSelf = properties.Values.All(x => x.CanBeDeletedOnlyForSelf);
                 var anyCanBeDeletedForAllUsers = properties.Any(x => mapped[x.Key].IsOutgoing && x.Value.CanBeDeletedForAllUsers) && !scheduled;
 
-                if (savedMessagesTopicId != 0)
+                if (topic is MessageTopicSavedMessages)
                 {
                     TextBlockHelper.SetMarkdown(Message, messages.Count == 1
                         ? Strings.AreYouSureUnsaveSingleMessage

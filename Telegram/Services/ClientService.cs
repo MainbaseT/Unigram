@@ -56,6 +56,7 @@ namespace Telegram.Services
 
         ForumTopic GetTopic(long chatId, long id);
         bool TryGetTopic(long chatId, long id, out ForumTopic topic);
+        bool TryGetTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic);
         IEnumerable<ForumTopic> GetTopics(long chatId, IEnumerable<long> ids);
         int UnreadTopicCount(long chatId);
 
@@ -161,6 +162,7 @@ namespace Telegram.Services
         bool IsSavedMessages(Chat chat);
 
         bool IsForum(Chat chat);
+        bool HasTabs(Chat chat);
 
         bool IsPaid(Chat chat);
         long PaidMessageStarCount(Chat chat);
@@ -403,6 +405,17 @@ namespace Telegram.Services
             {
                 topic = manager.GetTopic(id);
                 return topic != null;
+            }
+
+            topic = null;
+            return false;
+        }
+
+        public bool TryGetTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic)
+        {
+            if (messageTopic is MessageTopicForum topicForum)
+            {
+                return TryGetTopic(chatId, topicForum.ForumTopicId, out topic);
             }
 
             topic = null;
@@ -1732,6 +1745,16 @@ namespace Telegram.Services
             if (TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 return supergroup.IsForum;
+            }
+
+            return false;
+        }
+
+        public bool HasTabs(Chat chat)
+        {
+            if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                return supergroup.HasForumTabs || supergroup.IsFeedbackGroup;
             }
 
             return false;

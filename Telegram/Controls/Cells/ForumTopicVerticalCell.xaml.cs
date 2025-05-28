@@ -502,7 +502,7 @@ namespace Telegram.Controls.Cells
                 }
 
                 var service = WindowContext.GetNavigationService(this);
-                service?.NavigateToChat(chat, thread: _topic.Info.MessageThreadId, state: new NavigationState
+                service?.NavigateToChat(chat, topic: _topic.ToId(), state: new NavigationState
                 {
                     { "package", e.DataView }
                 });

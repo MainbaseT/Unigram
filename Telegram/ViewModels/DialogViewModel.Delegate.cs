@@ -109,7 +109,7 @@ namespace Telegram.ViewModels
                 long chatId = replyToChat.Id;
                 long messageId = replyToMessage.MessageId;
 
-                long threadId = 0;
+                MessageTopic messageTopic = null;
 
                 if (message.ChatId == ClientService.Options.RepliesBotChatId)
                 {
@@ -117,24 +117,27 @@ namespace Telegram.ViewModels
                     if (message.ForwardInfo?.Origin is MessageOriginUser or MessageOriginChat && message.ForwardInfo?.Source != null)
                     {
                         chatId = message.ForwardInfo.Source.ChatId;
-                        threadId = message.ForwardInfo.Source.MessageId;
+                        messageTopic = new MessageTopicForum(message.ForwardInfo.Source.MessageId);
                     }
                     else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel)
                     {
                         chatId = fromChannel.ChatId;
-                        threadId = fromChannel.MessageId;
+                        messageTopic = new MessageTopicForum(fromChannel.MessageId);
                     }
 
-                    await ClientService.SendAsync(new GetMessage(chatId, threadId));
-
-                    var response = await ClientService.SendAsync(new GetMessageThread(chatId, threadId));
-                    if (response is not MessageThreadInfo)
+                    if (messageTopic is MessageTopicForum messageTopicForum)
                     {
-                        return;
+                        await ClientService.SendAsync(new GetMessage(chatId, messageTopicForum.ForumTopicId));
+
+                        var response = await ClientService.SendAsync(new GetMessageThread(chatId, messageTopicForum.ForumTopicId));
+                        if (response is not MessageThreadInfo)
+                        {
+                            return;
+                        }
                     }
                 }
 
-                NavigationService.NavigateToChat(chatId, messageId, thread: threadId, state: new NavigationState { { "highlight", replyToMessage.Quote } });
+                NavigationService.NavigateToChat(chatId, messageId, topic: messageTopic, state: new NavigationState { { "highlight", replyToMessage.Quote } });
             }
             else if (replyToMessage.Origin != null && replyToMessage.MessageId == 0)
             {
@@ -186,7 +189,7 @@ namespace Telegram.ViewModels
             var response = await ClientService.SendAsync(new GetMessageThread(chatId, threadId));
             if (response is MessageThreadInfo)
             {
-                NavigationService.NavigateToChat(chatId, messageId, thread: threadId);
+                NavigationService.NavigateToChat(chatId, messageId, topic: new MessageTopicForum(threadId));
             }
         }
 
@@ -383,7 +386,7 @@ namespace Telegram.ViewModels
         {
             if (message.Content is MessageAudio or MessageVoiceNote)
             {
-                _playbackService.Play(message, ThreadId, SavedMessagesTopicId);
+                _playbackService.Play(message, Topic);
 
                 if (timestamp > 0)
                 {
@@ -468,7 +471,7 @@ namespace Telegram.ViewModels
                         }
                         else
                         {
-                            viewModel = new ChatGalleryViewModel(ClientService, _storageService, Aggregator, message.ChatId, ThreadId, SavedMessagesTopicId, message);
+                            viewModel = new ChatGalleryViewModel(ClientService, _storageService, Aggregator, message.ChatId, Topic, message);
                         }
                     }
 
@@ -518,7 +521,7 @@ namespace Telegram.ViewModels
 
         public void PlayMessage(MessageViewModel message)
         {
-            _playbackService.Play(message, ThreadId, SavedMessagesTopicId);
+            _playbackService.Play(message, Topic);
         }
 
         public bool RecognizeSpeech(MessageViewModel message)

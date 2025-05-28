@@ -728,7 +728,7 @@ namespace Telegram.Controls.Messages
                     ? Locale.Declension(Strings.R.Comments, info.ReplyCount)
                     : Strings.LeaveAComment);
             }
-            else if (message.ChatId == message.ClientService.Options.RepliesBotChatId /*|| message.Delegate?.IsForum is true*/)
+            else if (message.ChatId == message.ClientService.Options.RepliesBotChatId)
             {
                 if (light || message.Delegate?.IsForum is true)
                 {
@@ -833,10 +833,6 @@ namespace Telegram.Controls.Messages
                 {
                     message.Delegate.OpenChat(fromChannel.ChatId, fromChannel.MessageId);
                 }
-            }
-            else if (message.Delegate?.IsForum is true)
-            {
-                message.Delegate.NavigationService.NavigateToChat(message.Chat, thread: message.IsTopicMessage ? message.MessageThreadId : ForumTopicService.GeneralId, force: false, clearBackStack: true);
             }
             else
             {

@@ -126,19 +126,19 @@ namespace Telegram.Common
             }
         }
 
-        public static void NavigateToChat(this INavigationService service, Chat chat, long? message = null, long thread = 0, long savedMessagesTopicId = 0, string accessToken = null, NavigationState state = null, bool scheduled = false, bool force = true, bool createNewWindow = false, bool clearBackStack = false)
+        public static void NavigateToChat(this INavigationService service, Chat chat, long? message = null, MessageTopic topic = null, string accessToken = null, NavigationState state = null, bool scheduled = false, bool force = true, bool createNewWindow = false, bool clearBackStack = false)
         {
             if (service is TLNavigationService serviceEx)
             {
-                serviceEx.NavigateToChat(chat, message, thread, savedMessagesTopicId, accessToken, state, scheduled, force, createNewWindow, clearBackStack);
+                serviceEx.NavigateToChat(chat, message, topic, accessToken, state, scheduled, force, createNewWindow, clearBackStack);
             }
         }
 
-        public static void NavigateToChat(this INavigationService service, long chatId, long? message = null, long thread = 0, long savedMessagesTopicId = 0, string accessToken = null, NavigationState state = null, bool scheduled = false, bool force = true, bool createNewWindow = false)
+        public static void NavigateToChat(this INavigationService service, long chatId, long? message = null, MessageTopic topic = null, string accessToken = null, NavigationState state = null, bool scheduled = false, bool force = true, bool createNewWindow = false)
         {
             if (service is TLNavigationService serviceEx)
             {
-                serviceEx.NavigateToChat(chatId, message, thread, savedMessagesTopicId, accessToken, state, scheduled, force, createNewWindow);
+                serviceEx.NavigateToChat(chatId, message, topic, accessToken, state, scheduled, force, createNewWindow);
             }
         }
 

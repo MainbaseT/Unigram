@@ -286,7 +286,7 @@ namespace Telegram.Services
 
             await _clientService.SendAsync(new OpenChat(chatId));
 
-            var messages = await _clientService.SendAsync(new SearchChatMessages(chatId, string.Empty, null, 0, 0, 10, new SearchMessagesFilterDocument(), 0, 0)) as FoundChatMessages;
+            var messages = await _clientService.SendAsync(new SearchChatMessages(chatId, null, string.Empty, null, 0, 0, 10, new SearchMessagesFilterDocument())) as FoundChatMessages;
             if (messages == null)
             {
                 _clientService.Send(new CloseChat(chatId));

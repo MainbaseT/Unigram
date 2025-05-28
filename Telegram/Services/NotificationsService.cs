@@ -708,13 +708,17 @@ namespace Telegram.Services
                 launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;msg_id={1}", launch, message.Id);
             }
 
-            if (message.IsTopicMessage)
+            if (message.TopicId is MessageTopicForum messageTopicForum)
             {
-                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;thread_id={1}", launch, message.MessageThreadId);
+                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;forum_topic_id={1}", launch, messageTopicForum.ForumTopicId);
             }
-            else if (_clientService.IsForum(chat))
+            else if (message.TopicId is MessageTopicSavedMessages messageTopicSavedMessages)
             {
-                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;thread_id={1}", launch, ForumTopicService.GeneralId);
+                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;saved_messages_topic_id={1}", launch, messageTopicSavedMessages.SavedMessagesTopicId);
+            }
+            else if (message.TopicId is MessageTopicFeedbackChat messageTopicFeedbackChat)
+            {
+                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;feedback_chat_topic_id={1}", launch, messageTopicFeedbackChat.FeedbackChatTopicId);
             }
 
             return launch;
@@ -747,8 +751,10 @@ namespace Telegram.Services
                     var messageText = text.Replace("\r\n", "\n").Replace('\v', '\n').Replace('\r', '\n');
                     var formatted = ClientEx.ParseMarkdown(messageText);
 
+                    // TODO: topic id
+
                     var replyToMessage = data.TryGetValue("msg_id", out string msg_id) && long.TryParse(msg_id, out long messageId) ? new InputMessageReplyToMessage(messageId, null) : null;
-                    var response = await _clientService.SendAsync(new SendMessage(chat.Id, 0, replyToMessage, new MessageSendOptions(false, true, false, false, 0, false, null, 0, 0, false), null, new InputMessageText(formatted, null, false)));
+                    var response = await _clientService.SendAsync(new SendMessage(chat.Id, 0, replyToMessage, new MessageSendOptions(0, false, true, false, false, 0, false, null, 0, 0, false), null, new InputMessageText(formatted, null, false)));
 
                     if (chat.Type is ChatTypePrivate && chat.LastMessage != null)
                     {
