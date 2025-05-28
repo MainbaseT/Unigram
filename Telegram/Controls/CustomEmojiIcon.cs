@@ -28,7 +28,7 @@ namespace Telegram.Controls
 
         public string Emoji { get; set; }
 
-        public static void Add(RichTextBlock parent, InlineCollection inlines, IClientService clientService, FormattedText message, string style = null, bool first = false)
+        public static void Add(RichTextBlock parent, InlineCollection inlines, IClientService clientService, FormattedText message, string style = null)
         {
             inlines.Clear();
 
@@ -36,9 +36,6 @@ namespace Telegram.Controls
             {
                 var clean = message.ReplaceSpoilers();
                 var previous = 0;
-
-                // Always be true here because we only process emojis
-                var endsByEmoji = false;
 
                 // TODO: support more entities
                 if (message.Entities != null)
@@ -76,25 +73,21 @@ namespace Telegram.Controls
                         inline.Child = new CustomEmojiContainer(parent, player, baseline: baseline);
 
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
-                        if (first && inlines.Empty())
+                        if (inlines.Empty())
                         {
                             inlines.AddZWNJ();
                         }
 
                         inlines.Add(inline);
+                        inlines.AddZWNJ();
 
                         previous = entity.Offset + entity.Length;
-                        endsByEmoji = previous == clean.Text.Length;
                     }
                 }
 
                 if (clean.Text.Length > previous)
                 {
                     inlines.Add(clean.Text.Substring(previous));
-                }
-                else if (endsByEmoji)
-                {
-                    inlines.AddZWNJ();
                 }
             }
         }
@@ -107,9 +100,6 @@ namespace Telegram.Controls
             {
                 var clean = name.Text.ReplaceSpoilers();
                 var previous = 0;
-
-                // Always be true here because we only process emojis
-                var endsByEmoji = false;
 
                 // TODO: support more entities
                 if (name.Text.Entities != null)
@@ -152,19 +142,15 @@ namespace Telegram.Controls
                         }
 
                         inlines.Add(inline);
+                        inlines.AddZWNJ();
 
                         previous = entity.Offset + entity.Length;
-                        endsByEmoji = previous == clean.Text.Length;
                     }
                 }
 
                 if (clean.Text.Length > previous)
                 {
                     inlines.Add(clean.Text.Substring(previous));
-                }
-                else if (endsByEmoji)
-                {
-                    inlines.AddZWNJ();
                 }
             }
         }

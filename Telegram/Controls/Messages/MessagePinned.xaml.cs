@@ -374,7 +374,7 @@ namespace Telegram.Controls.Messages
             var messageShow = _textVisual == _textVisual1 ? MessageLabel2 : MessageLabel1;
             var labelShow = _textVisual == _textVisual1 ? TextLabel2 : TextLabel1;
 
-            CustomEmojiIcon.Add(labelShow, messageShow.Inlines, clientService, text, "MessageCustomEmojiStyle", false);
+            CustomEmojiIcon.Add(labelShow, messageShow.Inlines, clientService, text, "MessageCustomEmojiStyle");
         }
 
         #endregion

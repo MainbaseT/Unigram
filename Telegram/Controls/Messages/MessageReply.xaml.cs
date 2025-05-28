@@ -343,7 +343,7 @@ namespace Telegram.Controls.Messages
                 _accent = white ? null : accent;
                 _light = white;
 
-                CustomEmojiIcon.Add(Label, MessageLabel.Inlines, clientService, text, "MessageCustomEmojiStyle", false);
+                CustomEmojiIcon.Add(Label, MessageLabel.Inlines, clientService, text, "MessageCustomEmojiStyle");
             }
         }
 

@@ -463,8 +463,6 @@ namespace Telegram.Controls
                 var paragraph = direct.CreateInstance(XamlTypeIndex.Paragraph);
                 var inlines = direct.GetXamlDirectObjectProperty(paragraph, XamlPropertyIndex.Paragraph_Inlines);
 
-                var endsByCustomEmoji = false;
-
                 if (AutoFontSize)
                 {
                     direct.SetDoubleProperty(paragraph, XamlPropertyIndex.TextElement_FontSize, Theme.Current.MessageFontSize);
@@ -677,9 +675,9 @@ namespace Telegram.Controls
                             }
 
                             direct.AddToCollection(inlines, direct.GetXamlDirectObject(inline));
+                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction, fontSize: fontSize, transparent: true));
 
-                            workaround += data.Length;
-                            endsByCustomEmoji = entity.End == text.Length;
+                            workaround += data.Length - 1;
                         }
                         else
                         {
@@ -719,10 +717,6 @@ namespace Telegram.Controls
                 if (text.Length > previous)
                 {
                     direct.AddToCollection(inlines, _fastRun = CreateDirectRun(direct, text.Substring(previous), direction, fontSize: fontSize));
-                }
-                else if (endsByCustomEmoji && i == styled.Paragraphs.Count - 1)
-                {
-                    direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction, fontSize: fontSize, transparent: true));
                 }
 
                 workaround += part.Padding;
