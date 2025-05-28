@@ -404,6 +404,8 @@ namespace Telegram.ViewModels
                 Aggregator.Subscribe<UpdateForumTopicInfo>(this, Handle)
                     .Subscribe<UpdateForumTopicReadInbox>(Handle)
                     .Subscribe<UpdateForumTopicReadOutbox>(Handle)
+                    .Subscribe<UpdateForumTopicUnreadMentionCount>(Handle)
+                    .Subscribe<UpdateForumTopicUnreadReactionCount>(Handle)
                     .Subscribe<UpdateChatAction>(Handle);
             }
             else if (chat == null)
@@ -421,7 +423,7 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == Chat?.Id && update.MessageThreadId != 0)
             {
-                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicActions(chat, ClientService.GetChatActions(update.ChatId, update.MessageThreadId))));
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (cell, topic) => cell.UpdateForumTopicActions(topic, ClientService.GetChatActions(update.ChatId, update.MessageThreadId))));
             }
         }
 
@@ -429,7 +431,7 @@ namespace Telegram.ViewModels
         {
             if (update.Info.ChatId == Chat?.Id)
             {
-                BeginOnUIThread(() => Delegate?.Handle(update.Info.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicInfo(chat)));
+                BeginOnUIThread(() => Delegate?.Handle(update.Info.MessageThreadId, (cell, topic) => cell.UpdateForumTopicInfo(topic)));
             }
         }
 
@@ -437,7 +439,7 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == Chat?.Id)
             {
-                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadInbox(chat)));
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (cell, topic) => cell.UpdateForumTopicReadInbox(topic)));
             }
         }
 
@@ -445,7 +447,23 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == Chat?.Id)
             {
-                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (chatView, chat) => chatView.UpdateForumTopicReadOutbox(chat)));
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (cell, topic) => cell.UpdateForumTopicReadOutbox(topic)));
+            }
+        }
+
+        private void Handle(UpdateForumTopicUnreadMentionCount update)
+        {
+            if (update.ChatId == Chat?.Id)
+            {
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (cell, topic) => cell.UpdateForumTopicUnreadMentionCount(topic)));
+            }
+        }
+
+        private void Handle(UpdateForumTopicUnreadReactionCount update)
+        {
+            if (update.ChatId == Chat?.Id)
+            {
+                BeginOnUIThread(() => Delegate?.Handle(update.MessageThreadId, (cell, topic) => cell.UpdateForumTopicUnreadReactionCount(topic)));
             }
         }
 

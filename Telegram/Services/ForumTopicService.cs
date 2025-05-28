@@ -349,6 +349,16 @@ namespace Telegram.Services
                 UpdateLastReadInboxMessageId(topic, update.LastReadInboxMessageId);
                 UpdateLastReadOutboxMessageId(topic, update.LastReadOutboxMessageId);
 
+                if (topic.UnreadMentionCount != update.UnreadMentionCount)
+                {
+                    _aggregator.Publish(new UpdateForumTopicUnreadMentionCount(_chatId, update.MessageThreadId, topic.UnreadMentionCount = update.UnreadMentionCount));
+                }
+
+                if (topic.UnreadReactionCount != update.UnreadReactionCount)
+                {
+                    _aggregator.Publish(new UpdateForumTopicUnreadReactionCount(_chatId, update.MessageThreadId, topic.UnreadReactionCount = update.UnreadReactionCount));
+                }
+
                 if (topic.IsPinned != update.IsPinned)
                 {
                     topic.IsPinned = update.IsPinned;
@@ -850,6 +860,38 @@ namespace Telegram.Td.Api
         public long MessageThreadId { get; set; }
 
         public long LastReadOutboxMessageId { get; set; }
+    }
+
+    public sealed class UpdateForumTopicUnreadReactionCount
+    {
+        public UpdateForumTopicUnreadReactionCount(long chatId, long messageThreadId, long unreadReactionCount)
+        {
+            ChatId = chatId;
+            MessageThreadId = messageThreadId;
+            UnreadReactionCount = unreadReactionCount;
+        }
+
+        public long ChatId { get; set; }
+
+        public long MessageThreadId { get; set; }
+
+        public long UnreadReactionCount { get; set; }
+    }
+
+    public sealed class UpdateForumTopicUnreadMentionCount
+    {
+        public UpdateForumTopicUnreadMentionCount(long chatId, long messageThreadId, long unreadMentionCount)
+        {
+            ChatId = chatId;
+            MessageThreadId = messageThreadId;
+            UnreadMentionCount = unreadMentionCount;
+        }
+
+        public long ChatId { get; set; }
+
+        public long MessageThreadId { get; set; }
+
+        public long UnreadMentionCount { get; set; }
     }
 
     public sealed class UpdateChatUnreadTopicCount
