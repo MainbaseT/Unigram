@@ -76,7 +76,7 @@ namespace Telegram.ViewModels.Chats
 
         protected override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
-            if (parameter is not ChatMessageIdNavigationArgs args)
+            if (parameter is not MessageId args)
             {
                 return;
             }
@@ -85,15 +85,15 @@ namespace Telegram.ViewModels.Chats
 
             Chat = ClientService.GetChat(args.ChatId);
 
-            Items = new ItemsCollection(ClientService, args.ChatId, args.MessageId);
+            Items = new ItemsCollection(ClientService, args.ChatId, args.Id);
 
-            var message = await ClientService.SendAsync(new GetMessage(args.ChatId, args.MessageId));
+            var message = await ClientService.SendAsync(new GetMessage(args.ChatId, args.Id));
             if (message is Message result)
             {
                 Message = result;
             }
 
-            var response = await ClientService.SendAsync(new GetMessageStatistics(args.ChatId, args.MessageId, false));
+            var response = await ClientService.SendAsync(new GetMessageStatistics(args.ChatId, args.Id, false));
             if (response is MessageStatistics statistics)
             {
                 Interactions = ChartViewData.Create(statistics.MessageInteractionGraph, Strings.InteractionsChartTitle, /*1*/6);

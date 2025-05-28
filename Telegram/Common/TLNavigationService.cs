@@ -422,12 +422,12 @@ namespace Telegram.Common
                     if (topic is MessageTopicForum topicForum)
                     {
                         target = typeof(ChatPage);
-                        parameter = new ChatMessageIdNavigationArgs(chat.Id, topicForum.ForumTopicId);
+                        parameter = new ChatMessageTopic(chat.Id, topicForum);
                     }
                     else if (topic is MessageTopicSavedMessages topicSavedMessages)
                     {
                         target = typeof(ChatSavedPage);
-                        parameter = new ChatSavedMessagesTopicIdNavigationArgs(chat.Id, topicSavedMessages.SavedMessagesTopicId);
+                        parameter = new ChatMessageTopic(chat.Id, topicSavedMessages);
                     }
                     else if (scheduled)
                     {
@@ -459,7 +459,7 @@ namespace Telegram.Common
                         object parameter;
                         if (topic is MessageTopicForum topicForum)
                         {
-                            parameter = new ChatMessageIdNavigationArgs(chat.Id, topicForum.ForumTopicId);
+                            parameter = new ChatMessageTopic(chat.Id, topicForum);
                         }
                         else
                         {
@@ -493,7 +493,7 @@ namespace Telegram.Common
                         if (topic is MessageTopicForum topicForum)
                         {
                             target = typeof(ChatPage);
-                            parameter = new ChatMessageIdNavigationArgs(chat.Id, topicForum.ForumTopicId);
+                            parameter = new ChatMessageTopic(chat.Id, topicForum);
 
                             // TODO: invalid cast
                             if (CurrentPageType == typeof(ChatPage) && chat.Id.Equals((long)CurrentPageParam))
@@ -508,7 +508,7 @@ namespace Telegram.Common
                         else if (topic is MessageTopicSavedMessages topicSavedMessages)
                         {
                             target = typeof(ChatSavedPage);
-                            parameter = new ChatSavedMessagesTopicIdNavigationArgs(chat.Id, topicSavedMessages.SavedMessagesTopicId);
+                            parameter = new ChatMessageTopic(chat.Id, topicSavedMessages);
 
                             // TODO: invalid cast
                             if (CurrentPageType == typeof(ChatPage) && chat.Id.Equals((long)CurrentPageParam))

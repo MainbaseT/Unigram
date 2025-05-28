@@ -1722,11 +1722,11 @@ namespace Telegram.Views
             //    : Icons.Hamburger;
         }
 
-        private void UpdateListViewsSelectedItem(MessageId openChat, bool fromSelection = false)
+        private void UpdateListViewsSelectedItem(ChatMessageTopic openChat, bool fromSelection = false)
         {
             if (openChat.ChatId == 0 && ViewModel.Topics.Chat != null)
             {
-                openChat = new MessageId(ViewModel.Topics.Chat.Id, 0);
+                openChat = new ChatMessageTopic(ViewModel.Topics.Chat.Id, null);
             }
 
             ViewModel.Chats.SelectedItem = openChat.ChatId;
@@ -3349,7 +3349,7 @@ namespace Telegram.Views
         {
             ViewModel.Topics.SetChat(chat);
             ShowHideTopicList(true);
-            UpdateListViewsSelectedItem(new MessageId(chat.Id, 0));
+            UpdateListViewsSelectedItem(new ChatMessageTopic(chat.Id, null));
             TopicListPresenter?.UpdateChat(chat);
         }
 

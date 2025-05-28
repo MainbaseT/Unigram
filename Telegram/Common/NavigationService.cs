@@ -212,7 +212,7 @@ namespace Telegram.Common
 
         public static void RemoveChatFromStack(this INavigationService service, long target)
         {
-            MessageId peer;
+            ChatMessageTopic peer;
             bool found = false;
 
             for (int i = 0; i < service.Frame.BackStackDepth; i++)
@@ -245,11 +245,11 @@ namespace Telegram.Common
             return chatId == GetChatFromBackStack(service, currentPageOnly).ChatId;
         }
 
-        public static MessageId GetChatFromBackStack(this INavigationService service, bool currentPageOnly = false)
+        public static ChatMessageTopic GetChatFromBackStack(this INavigationService service, bool currentPageOnly = false)
         {
             if (service.CurrentPageType == typeof(ChatPage))
             {
-                if (TryGetChatFromParameter(service, service.CurrentPageParam, out MessageId chatId))
+                if (TryGetChatFromParameter(service, service.CurrentPageParam, out ChatMessageTopic chatId))
                 {
                     return chatId;
                 }
@@ -257,7 +257,7 @@ namespace Telegram.Common
 
             if (currentPageOnly)
             {
-                return default;
+                return new ChatMessageTopic(0, null);
             }
 
             //else if (service.CurrentPageType == typeof(ChatSavedPage))
@@ -273,7 +273,7 @@ namespace Telegram.Common
                 var entry = service.Frame.BackStack[i];
                 if (entry.SourcePageType == typeof(ChatPage))
                 {
-                    if (TryGetChatFromParameter(service, entry.Parameter, out MessageId chatId))
+                    if (TryGetChatFromParameter(service, entry.Parameter, out ChatMessageTopic chatId))
                     {
                         return chatId;
                     }
@@ -287,10 +287,10 @@ namespace Telegram.Common
                 //}
             }
 
-            return default;
+            return new ChatMessageTopic(0, null);
         }
 
-        public static bool TryGetChatFromParameter(this INavigationService service, object parameter, out MessageId chatId)
+        public static bool TryGetChatFromParameter(this INavigationService service, object parameter, out ChatMessageTopic chatId)
         {
             if (parameter is string cacheKey && service.CacheKeyToParameter.TryGetValue(cacheKey, out object value))
             {
@@ -299,12 +299,12 @@ namespace Telegram.Common
 
             if (parameter is long)
             {
-                chatId = new MessageId((long)parameter, 0);
+                chatId = new ChatMessageTopic((long)parameter, null);
                 return true;
             }
-            else if (parameter is ChatMessageIdNavigationArgs args)
+            else if (parameter is ChatMessageTopic args)
             {
-                chatId = new MessageId(args.ChatId, args.MessageId);
+                chatId = args;
                 return true;
             }
 
@@ -318,7 +318,7 @@ namespace Telegram.Common
             {
                 var item = service.Frame.BackStack[i];
 
-                if (service.TryGetChatFromParameter(item.Parameter, out MessageId chatId))
+                if (service.TryGetChatFromParameter(item.Parameter, out ChatMessageTopic chatId))
                 {
                     if (chatId.ChatId == oldChatId)
                     {

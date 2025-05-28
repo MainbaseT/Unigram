@@ -40,30 +40,17 @@ using Point = Windows.Foundation.Point;
 
 namespace Telegram.ViewModels
 {
-    public partial class ChatMessageIdNavigationArgs
+    public partial class ChatMessageTopic
     {
-        public ChatMessageIdNavigationArgs(long chatId, long threadId)
+        public ChatMessageTopic(long chatId, MessageTopic messageTopic)
         {
             ChatId = chatId;
-            MessageId = threadId;
+            MessageTopic = messageTopic;
         }
 
         public long ChatId { get; }
 
-        public long MessageId { get; }
-    }
-
-    public partial class ChatSavedMessagesTopicIdNavigationArgs
-    {
-        public ChatSavedMessagesTopicIdNavigationArgs(long chatId, long savedMessagesTopicId)
-        {
-            ChatId = chatId;
-            SavedMessagesTopicId = savedMessagesTopicId;
-        }
-
-        public long ChatId { get; }
-
-        public long SavedMessagesTopicId { get; }
+        public MessageTopic MessageTopic { get; }
     }
 
     public partial class ChatBusinessRepliesIdNavigationArgs
@@ -2159,52 +2146,57 @@ namespace Telegram.ViewModels
 
         protected override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
-            if (parameter is ChatSavedMessagesTopicIdNavigationArgs savedMessagesTopicIdArgs)
+            if (parameter is ChatMessageTopic chatMessageTopic)
             {
-                parameter = savedMessagesTopicIdArgs.ChatId;
+                parameter = chatMessageTopic.ChatId;
 
-                if (ClientService.TryGetSavedMessagesTopic(savedMessagesTopicIdArgs.SavedMessagesTopicId, out var topic))
+                if (chatMessageTopic.MessageTopic is MessageTopicSavedMessages savedMessages)
                 {
-                    SavedMessagesTopic = topic;
-                    Topic = new MessageTopicSavedMessages(topic.Id);
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else if (parameter is ChatMessageIdNavigationArgs messageIdArgs)
-            {
-                Type = DialogType.Thread;
+                    Type = DialogType.SavedMessagesTopic;
 
-                var topic = ClientService.GetTopic(messageIdArgs.ChatId, messageIdArgs.MessageId);
-                if (topic != null)
-                {
-                    ForumTopic = topic;
+                    if (ClientService.TryGetSavedMessagesTopic(savedMessages.SavedMessagesTopicId, out var topic))
+                    {
+                        SavedMessagesTopic = topic;
+                        Topic = new MessageTopicSavedMessages(topic.Id);
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
-                else
+                else if (chatMessageTopic.MessageTopic is MessageTopicForum forum)
                 {
-                    ForumTopic = await ClientService.SendAsync(new GetForumTopic(messageIdArgs.ChatId, messageIdArgs.MessageId)) as ForumTopic;
-                }
+                    Type = DialogType.Thread;
 
-                Thread = await ClientService.SendAsync(new GetMessageThread(messageIdArgs.ChatId, messageIdArgs.MessageId)) as MessageThreadInfo;
+                    var topic = ClientService.GetTopic(chatMessageTopic.ChatId, forum.ForumTopicId);
+                    if (topic != null)
+                    {
+                        ForumTopic = topic;
+                    }
+                    else
+                    {
+                        ForumTopic = await ClientService.SendAsync(new GetForumTopic(chatMessageTopic.ChatId, forum.ForumTopicId)) as ForumTopic;
+                    }
 
-                if (ForumTopic != null)
-                {
-                    // TODO: Workaround, should be removed some day
-                    await ClientService.SendAsync(new GetMessage(messageIdArgs.ChatId, _forumTopic.Info.MessageThreadId));
+                    Thread = await ClientService.SendAsync(new GetMessageThread(chatMessageTopic.ChatId, forum.ForumTopicId)) as MessageThreadInfo;
 
-                    parameter = messageIdArgs.ChatId;
-                    Topic = new MessageTopicForum(_forumTopic.Info.MessageThreadId);
-                }
-                else if (Thread != null)
-                {
-                    parameter = Thread.ChatId;
-                    Topic = new MessageTopicForum(Thread.MessageThreadId);
-                }
-                else
-                {
-                    return;
+                    if (ForumTopic != null)
+                    {
+                        // TODO: Workaround, should be removed some day
+                        await ClientService.SendAsync(new GetMessage(chatMessageTopic.ChatId, _forumTopic.Info.MessageThreadId));
+
+                        parameter = chatMessageTopic.ChatId;
+                        Topic = new MessageTopicForum(_forumTopic.Info.MessageThreadId);
+                    }
+                    else if (Thread != null)
+                    {
+                        parameter = Thread.ChatId;
+                        Topic = new MessageTopicForum(Thread.MessageThreadId);
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
             }
             else if (parameter is ChatBusinessRepliesIdNavigationArgs businessRepliesIdArgs)
@@ -3430,13 +3422,9 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (SavedMessagesTopicId != 0)
+            if (SavedMessagesTopic != null || ForumTopic != null)
             {
-                navigationService.Navigate(typeof(ProfilePage), new ChatSavedMessagesTopicIdNavigationArgs(chat.Id, SavedMessagesTopicId), infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
-            }
-            else if (ForumTopic != null)
-            {
-                navigationService.Navigate(typeof(ProfilePage), new ChatMessageIdNavigationArgs(chat.Id, ThreadId), infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+                navigationService.Navigate(typeof(ProfilePage), new ChatMessageTopic(chat.Id, Topic), infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
             }
             else
             {

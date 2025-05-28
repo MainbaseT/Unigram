@@ -88,24 +88,25 @@ namespace Telegram.ViewModels
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
-            if (parameter is ChatSavedMessagesTopicIdNavigationArgs savedMessagesTopicIdArgs)
+            if (parameter is ChatMessageTopic chatMessageTopic)
             {
-                parameter = savedMessagesTopicIdArgs.ChatId;
+                parameter = chatMessageTopic.ChatId;
 
-                if (ClientService.TryGetSavedMessagesTopic(savedMessagesTopicIdArgs.SavedMessagesTopicId, out SavedMessagesTopic topic))
+                if (chatMessageTopic.MessageTopic is MessageTopicSavedMessages savedMessages)
                 {
-                    SavedMessagesTopic = topic;
-                    Topic = new MessageTopicSavedMessages(topic.Id);
+                    if (ClientService.TryGetSavedMessagesTopic(savedMessages.SavedMessagesTopicId, out SavedMessagesTopic topic))
+                    {
+                        SavedMessagesTopic = topic;
+                        Topic = new MessageTopicSavedMessages(topic.Id);
+                    }
                 }
-            }
-            else if (parameter is ChatMessageIdNavigationArgs args)
-            {
-                parameter = args.ChatId;
-
-                if (ClientService.TryGetTopic(args.ChatId, args.MessageId, out ForumTopic topic))
+                else if (chatMessageTopic.MessageTopic is MessageTopicForum forum)
                 {
-                    ForumTopic = topic;
-                    Topic = new MessageTopicForum(topic.Info.MessageThreadId);
+                    if (ClientService.TryGetTopic(chatMessageTopic.ChatId, forum.ForumTopicId, out ForumTopic topic))
+                    {
+                        ForumTopic = topic;
+                        Topic = new MessageTopicForum(topic.Info.MessageThreadId);
+                    }
                 }
             }
 
