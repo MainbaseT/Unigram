@@ -449,9 +449,16 @@ namespace Telegram.Controls
                 return PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
             }
 
-            if (clientService.IsForum(chat))
+            if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
-                shape = ProfilePictureShape.Superellipse;
+                if (supergroup.IsForum)
+                {
+                    shape = ProfilePictureShape.Superellipse;
+                }
+                else if (supergroup.IsFeedbackGroup)
+                {
+                    shape = ProfilePictureShape.Tail;
+                }
             }
 
             if (file != null)
