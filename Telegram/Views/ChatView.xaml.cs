@@ -4986,7 +4986,7 @@ namespace Telegram.Views
             {
                 return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
             }
-            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetTopic(chat.Id, chat.LastMessage.TopicId(), out ForumTopic forumTopic))
+            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetForumTopic(chat.Id, chat.LastMessage.TopicId(), out ForumTopic forumTopic))
             {
                 messageThreadId = forumTopic.Info.MessageThreadId;
                 return string.Format(Strings.TypeMessageIn, forumTopic.Info.Name);

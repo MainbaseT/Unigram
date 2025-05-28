@@ -15,7 +15,6 @@ using Telegram.Controls.Chats;
 using Telegram.Controls.Messages;
 using Telegram.Converters;
 using Telegram.Navigation;
-using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Chats;
@@ -534,7 +533,7 @@ namespace Telegram.Views
 
             ForumTopicHeader.Tag = messageTopic;
 
-            if (ViewModel.ClientService.TryGetTopic(ViewModel.ChatId, messageTopic, out ForumTopic topic))
+            if (ViewModel.ClientService.TryGetForumTopic(ViewModel.ChatId, messageTopic, out ForumTopic topic))
             {
                 ForumTopicHeaderLabel.Text = topic.Info.Name;
 

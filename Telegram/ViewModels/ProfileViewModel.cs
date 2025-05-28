@@ -102,7 +102,7 @@ namespace Telegram.ViewModels
                 }
                 else if (chatMessageTopic.MessageTopic is MessageTopicForum forum)
                 {
-                    if (ClientService.TryGetTopic(chatMessageTopic.ChatId, forum.ForumTopicId, out ForumTopic topic))
+                    if (ClientService.TryGetForumTopic(chatMessageTopic.ChatId, forum.ForumTopicId, out ForumTopic topic))
                     {
                         ForumTopic = topic;
                         Topic = new MessageTopicForum(topic.Info.MessageThreadId);

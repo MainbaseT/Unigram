@@ -2168,10 +2168,9 @@ namespace Telegram.ViewModels
                 {
                     Type = DialogType.Thread;
 
-                    var topic = ClientService.GetTopic(chatMessageTopic.ChatId, forum.ForumTopicId);
-                    if (topic != null)
+                    if (ClientService.TryGetForumTopic(chatMessageTopic.ChatId, forum.ForumTopicId, out ForumTopic forumTopic))
                     {
-                        ForumTopic = topic;
+                        ForumTopic = forumTopic;
                     }
                     else
                     {

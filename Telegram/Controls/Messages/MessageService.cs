@@ -128,7 +128,7 @@ namespace Telegram.Controls.Messages
                 var iconText = FindName("IconText") as TextBlock;
                 var typeIcon = FindName("TypeIcon") as IdentityIcon;
 
-                if (message.ClientService.TryGetTopic(message.ChatId, message.MessageThreadId, out ForumTopic topic))
+                if (message.ClientService.TryGetForumTopic(message.ChatId, message.TopicId, out ForumTopic topic))
                 {
                     title.Text = topic.Info.Name;
 

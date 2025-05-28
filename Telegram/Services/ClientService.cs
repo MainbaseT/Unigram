@@ -54,10 +54,10 @@ namespace Telegram.Services
         Task<Chats> GetStoryListAsync(StoryList storyList, int offset, int limit);
         Task<ForuminoTopicinos> GetForumTopicsAsync(long chatId, int offset, int limit);
 
-        ForumTopic GetTopic(long chatId, long id);
-        bool TryGetTopic(long chatId, long id, out ForumTopic topic);
-        bool TryGetTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic);
-        IEnumerable<ForumTopic> GetTopics(long chatId, IEnumerable<long> ids);
+        ForumTopic GetForumTopic(long chatId, long id);
+        bool TryGetForumTopic(long chatId, long id, out ForumTopic topic);
+        bool TryGetForumTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic);
+        IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<long> ids);
         int UnreadTopicCount(long chatId);
 
         void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
@@ -399,7 +399,7 @@ namespace Telegram.Services
             return manager.GetForumTopicsAsync(offset, limit);
         }
 
-        public bool TryGetTopic(long chatId, long id, out ForumTopic topic)
+        public bool TryGetForumTopic(long chatId, long id, out ForumTopic topic)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
             {
@@ -411,18 +411,18 @@ namespace Telegram.Services
             return false;
         }
 
-        public bool TryGetTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic)
+        public bool TryGetForumTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic)
         {
             if (messageTopic is MessageTopicForum topicForum)
             {
-                return TryGetTopic(chatId, topicForum.ForumTopicId, out topic);
+                return TryGetForumTopic(chatId, topicForum.ForumTopicId, out topic);
             }
 
             topic = null;
             return false;
         }
 
-        public ForumTopic GetTopic(long chatId, long id)
+        public ForumTopic GetForumTopic(long chatId, long id)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
             {
@@ -432,7 +432,7 @@ namespace Telegram.Services
             return null;
         }
 
-        public IEnumerable<ForumTopic> GetTopics(long chatId, IEnumerable<long> ids)
+        public IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<long> ids)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
             {

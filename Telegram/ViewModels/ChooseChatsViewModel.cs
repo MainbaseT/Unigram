@@ -648,7 +648,7 @@ namespace Telegram.ViewModels
                 {
                     feedbackChatTopicId = feedbackChat.FeedbackChatTopicId;
                 }
-                else if (topic is MessageTopicForum forum && ClientService.TryGetTopic(chat.Id, forum.ForumTopicId, out ForumTopic forumTopic))
+                else if (topic is MessageTopicForum forum && ClientService.TryGetForumTopic(chat.Id, forum.ForumTopicId, out ForumTopic forumTopic))
                 {
                     messageThreadId = forumTopic.Info.MessageThreadId;
                 }

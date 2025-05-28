@@ -595,7 +595,7 @@ namespace Telegram.ViewModels
                         topics.TopicIds.Insert(0, long.MaxValue);
                     }
 
-                    foreach (var topic in _clientService.GetTopics(_chat.Id, topics.TopicIds))
+                    foreach (var topic in _clientService.GetForumTopics(_chat.Id, topics.TopicIds))
                     {
                         var order = topic.Order;
                         if (order != 0)
@@ -806,7 +806,7 @@ namespace Telegram.ViewModels
                 //    return item;
                 //}
 
-                return _clientService.GetTopic(_chat.Id, messageThreadId);
+                return _clientService.GetForumTopic(_chat.Id, messageThreadId);
             }
 
             #endregion
