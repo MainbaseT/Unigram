@@ -523,6 +523,7 @@ namespace Telegram.Controls.Messages
                 MessageChatUpgradeTo chatUpgradeTo => UpdateChatUpgradeTo(message, chatUpgradeTo, active),
                 MessageContactRegistered contactRegistered => UpdateContactRegistered(message, contactRegistered, active),
                 MessageCustomServiceAction customServiceAction => UpdateCustomServiceAction(message, customServiceAction, active),
+                MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged => UpdateFeedbackMessagePriceChanged(message, feedbackMessagePriceChanged, active),
                 MessageForumTopicCreated forumTopicCreated => UpdateForumTopicCreated(message, forumTopicCreated, active),
                 MessageForumTopicEdited forumTopicEdited => UpdateForumTopicEdited(message, forumTopicEdited, active),
                 MessageForumTopicIsClosedToggled forumTopicIsClosedToggled => UpdateForumTopicIsClosedToggled(message, forumTopicIsClosedToggled, active),
@@ -2428,6 +2429,30 @@ namespace Telegram.Controls.Messages
             var formatted = ClientEx.ParseMarkdown(content, (IList<TextEntity>)entities ?? Array.Empty<TextEntity>());
 
             return (formatted.Text, active ? formatted.Entities : null);
+        }
+
+        private static (string, IList<TextEntity>) UpdateFeedbackMessagePriceChanged(MessageViewModel message, MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged, bool active)
+        {
+            var content = string.Empty;
+            var entities = active ? new List<TextEntity>() : null;
+
+            if (feedbackMessagePriceChanged.IsEnabled)
+            {
+                if (feedbackMessagePriceChanged.PaidMessageStarCount > 0)
+                {
+                    content = ReplaceWithLink(Locale.Declension(Strings.R.PostSuggestionsPriceUpdated, feedbackMessagePriceChanged.PaidMessageStarCount), "un1", message.GetSender(), entities); ;
+                }
+                else
+                {
+                    content = ReplaceWithLink(Strings.PostSuggestionsEnabledUpdated, "un1", message.GetSender(), entities); ;
+                }
+            }
+            else
+            {
+                content = ReplaceWithLink(Strings.PostSuggestionsDisabledUpdated, "un1", message.GetSender(), entities); ;
+            }
+
+            return (content, entities);
         }
 
         private static (string, IList<TextEntity>) UpdatePaidMessagePriceChanged(MessageViewModel message, MessagePaidMessagePriceChanged paidMessagePriceChanged, bool active)

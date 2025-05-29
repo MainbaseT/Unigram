@@ -9585,6 +9585,18 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PostingMembers" xml:space="preserve">
     <value>Posting Members</value>
   </data>
+  <data name="PostSuggestionsDisabledUpdated" xml:space="preserve">
+    <value>un1 disabled direct messages</value>
+  </data>
+  <data name="PostSuggestionsEnabledUpdated" xml:space="preserve">
+    <value>un1 now accepts direct messages</value>
+  </data>
+  <data name="PostSuggestionsPriceUpdated_one" xml:space="preserve">
+    <value>un1 now accepts direct messages for {0} star</value>
+  </data>
+  <data name="PostSuggestionsPriceUpdated_other" xml:space="preserve">
+    <value>un1 now accepts direct messages for {0} stars</value>
+  </data>
   <data name="PowerUsage" xml:space="preserve">
     <value>Power Saving</value>
   </data>
