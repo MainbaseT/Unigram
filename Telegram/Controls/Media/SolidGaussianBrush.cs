@@ -12,7 +12,6 @@ using Telegram.Navigation;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Core;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Media
@@ -90,7 +89,7 @@ namespace Telegram.Controls.Media
                     var tintColorEffect = new ColorSourceEffect
                     {
                         Name = "TintColor",
-                        Color = TintColor
+                        Color = Color.FromArgb(52, 0, 0, 0)
                     };
 
                     var compositeEffect = new CompositeEffect();
@@ -143,18 +142,5 @@ namespace Telegram.Controls.Media
 
             base.OnDisconnected();
         }
-
-        #region TintColor
-
-        public Color TintColor
-        {
-            get { return (Color)GetValue(TintColorProperty); }
-            set { SetValue(TintColorProperty, value); }
-        }
-
-        public static readonly DependencyProperty TintColorProperty =
-            DependencyProperty.Register("TintColor", typeof(Color), typeof(SolidGaussianBrush), new PropertyMetadata(default(Color)));
-
-        #endregion
     }
 }
