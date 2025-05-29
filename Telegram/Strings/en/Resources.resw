@@ -1136,6 +1136,12 @@ Your prize is **{0} Stars**.</value>
   <data name="Allow" xml:space="preserve">
     <value>Allow</value>
   </data>
+  <data name="AllowPostSuggestions" xml:space="preserve">
+    <value>Allow Direct Messages</value>
+  </data>
+  <data name="AllowPostSuggestionsHint" xml:space="preserve">
+    <value>Allow users to send messages to your channel, with the option to charge a fee for each message.</value>
+  </data>
   <data name="AllReactions" xml:space="preserve">
     <value>All reactions</value>
   </data>
@@ -4048,6 +4054,9 @@ Minimum length is 5 characters.</value>
   </data>
   <data name="ChatLocation" xml:space="preserve">
     <value>Location</value>
+  </data>
+  <data name="ChatMessageSuggestions" xml:space="preserve">
+    <value>Direct Messages</value>
   </data>
   <data name="ChatNoTheme" xml:space="preserve">
     <value>No Theme</value>
@@ -8493,6 +8502,12 @@ Minimum length is 5 characters.</value>
   <data name="Mono" xml:space="preserve">
     <value>Mono</value>
   </data>
+  <data name="MonoforumMessages" xml:space="preserve">
+    <value>direct messages</value>
+  </data>
+  <data name="MonoforumSpan" xml:space="preserve">
+    <value>MESSAGES</value>
+  </data>
   <data name="MonthAgo" xml:space="preserve">
     <value>a month ago</value>
   </data>
@@ -9585,11 +9600,26 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PostingMembers" xml:space="preserve">
     <value>Posting Members</value>
   </data>
+  <data name="PostSuggestions" xml:space="preserve">
+    <value>Direct Messages</value>
+  </data>
   <data name="PostSuggestionsDisabledUpdated" xml:space="preserve">
     <value>un1 disabled direct messages</value>
   </data>
   <data name="PostSuggestionsEnabledUpdated" xml:space="preserve">
     <value>un1 now accepts direct messages</value>
+  </data>
+  <data name="PostSuggestionsFree" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="PostSuggestionsInfo" xml:space="preserve">
+    <value>Allow users to send messages to your channel, with the option to charge a fee for each message.</value>
+  </data>
+  <data name="PostSuggestionsOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="PostSuggestionsPriceInfo" xml:space="preserve">
+    <value>You will receive {0}% of the selected fee (~{1}) for each incoming message.</value>
   </data>
   <data name="PostSuggestionsPriceUpdated_one" xml:space="preserve">
     <value>un1 now accepts direct messages for {0} star</value>
@@ -9926,6 +9956,9 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   </data>
   <data name="PreviewFeedback2" xml:space="preserve">
     <value>Wrong layout?</value>
+  </data>
+  <data name="PriceForEachSuggestion" xml:space="preserve">
+    <value>Price for each message</value>
   </data>
   <data name="PricePerMonth" xml:space="preserve">
     <value>{0} / month</value>

@@ -90,7 +90,7 @@
 
                         <Slider x:Name="Price"
                                 Value="{x:Bind ViewModel.IncomingPaidMessageStarCount, Mode=TwoWay}"
-                                Maximum="9000"
+                                Maximum="10000"
                                 Minimum="1"
                                 SmallChange="1"
                                 LargeChange="1"

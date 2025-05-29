@@ -45,7 +45,7 @@ namespace Telegram.Views.Settings.Privacy
 
         private string ConvertPriceTicks(int value)
         {
-            return (value == 0 ? 1 : 9000).ToString("N0");
+            return (value == 0 ? 1 : 10000).ToString("N0");
         }
 
         private string ConvertPriceFee(int value)

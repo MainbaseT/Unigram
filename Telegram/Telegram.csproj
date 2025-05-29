@@ -1026,6 +1026,7 @@
     <Compile Include="ViewModels\Stories\StoryListViewModel.cs" />
     <Compile Include="ViewModels\Stories\StoryViewModel.cs" />
     <Compile Include="ViewModels\Stories\StoryInteractionsViewModel.cs" />
+    <Compile Include="ViewModels\Supergroups\SupergroupFeedbackGroupViewModel.cs" />
     <Compile Include="ViewModels\Supergroups\SupergroupTopicsViewModel.cs" />
     <Compile Include="ViewModels\TopicListViewModel.cs" />
     <Compile Include="ViewModels\ChatListViewModel.cs" />
@@ -1437,6 +1438,9 @@
     </Compile>
     <Compile Include="Views\Stars\StarsPage.xaml.cs">
       <DependentUpon>StarsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Supergroups\SupergroupFeedbackGroupPage.xaml.cs">
+      <DependentUpon>SupergroupFeedbackGroupPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Supergroups\SupergroupTopicsPage.xaml.cs">
       <DependentUpon>SupergroupTopicsPage.xaml</DependentUpon>
@@ -2136,6 +2140,7 @@
     <Content Include="Assets\Animations\SupergroupTopics.tgs" />
     <Content Include="Assets\Animations\SupergroupTopicsList.tgs" />
     <Content Include="Assets\Animations\SupergroupTopicsTabs.tgs" />
+    <Content Include="Assets\Animations\SupergroupFeedbackGroup.tgs" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -3454,6 +3459,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Stars\StarsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Supergroups\SupergroupFeedbackGroupPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

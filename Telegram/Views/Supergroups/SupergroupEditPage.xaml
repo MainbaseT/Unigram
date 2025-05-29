@@ -5,6 +5,7 @@
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:controls="using:Telegram.Controls"
                   xmlns:local="using:Telegram.Views"
+                  xmlns:cells="using:Telegram.Controls.Cells"
                   mc:Ignorable="d">
 
     <Page.Transitions>
@@ -142,7 +143,41 @@
                                           Style="{StaticResource GlyphBadgeButtonStyle}"
                                           Glyph="&#xEA67;"
                                           IsChevronVisible="True" />
+
+                    <controls:BadgeButton x:Name="ChannelFeedbackGroup"
+                                          Content="{CustomResource PostSuggestions}"
+                                          Click="{x:Bind ViewModel.FeedbackGroup}"
+                                          Style="{StaticResource GlyphBadgeButtonStyle}"
+                                          Glyph="&#xE992;"
+                                          IsChevronVisible="True">
+                        <controls:BadgeButton.Badge>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <controls:PremiumStarCount x:Name="ChannelFeedbackGroupStars"
+                                                           Visibility="Collapsed"
+                                                           Margin="8,-4,4,-6"
+                                                           Width="20" />
+                                <TextBlock x:Name="ChannelFeedbackGroupStarCount"
+                                           VerticalAlignment="Center"
+                                           Grid.Column="1" />
+                            </Grid>
+                        </controls:BadgeButton.Badge>
+                    </controls:BadgeButton>
                 </controls:HeaderedControl>
+
+                <controls:HeaderedControl x:Name="ChannelFeedbackGroupRoot"
+                                          Visibility="Collapsed">
+                    <Button Click="{x:Bind ViewModel.OpenFeedbackGroup}"
+                            Style="{StaticResource EmptyButtonStyle}"
+                            AutomationProperties.Name="{CustomResource ProfileChannel}">
+                        <cells:ChatCell x:Name="ChannelFeedbackGroupCell"
+                                        Stroke="{ThemeResource ChatLastMessageStateBrush}" />
+                    </Button>
+                </controls:HeaderedControl>
+
 
                 <controls:HeaderedControl x:Name="GroupMembersPanel">
                     <controls:BadgeButton x:Name="Reactions"
