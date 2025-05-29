@@ -118,6 +118,11 @@ namespace Telegram.Controls
             var prevIndicator = _activeIndicator;
             var nextIndicator = FindSelectionIndicator(nextItem, retry);
 
+            if (nextItem != null && nextIndicator == null && retry)
+            {
+                return;
+            }
+
             bool haveValidAnimation = false;
             // It's possible that AnimateSelectionChanged is called multiple times before the first animation is complete.
             // To have better user experience, if the selected target is the same, keep the first animation
@@ -328,21 +333,21 @@ namespace Telegram.Controls
         {
             base.PrepareContainerForItemOverride(element, item);
 
-            if (element is TopNavViewItem topElement)
+            if (element is TopNavViewItem container)
             {
-                var indicator = topElement.GetSelectionIndicator(true);
+                var indicator = container.GetSelectionIndicator(true);
                 if (indicator != null)
                 {
-                    if (topElement.IsSelected)
+                    if (container.IsSelected)
                     {
                         _activeIndicator = indicator;
                     }
 
-                    ResetElementAnimationProperties(indicator, topElement.IsSelected ? 1 : 0);
+                    ResetElementAnimationProperties(indicator, container.IsSelected ? 1 : 0);
                 }
-                else if (topElement.IsSelected)
+                else if (container.IsSelected)
                 {
-                    AnimateSelectionChanged(item);
+                    AnimateSelectionChanged(SelectedItem);
                 }
             }
         }
