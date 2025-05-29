@@ -122,6 +122,7 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <controls:CustomEmojiIcon x:Name="BotVerified"
                                                           Visibility="Collapsed"
@@ -138,6 +139,14 @@
                                                        VerticalAlignment="Bottom"
                                                        Margin="4,0,0,0"
                                                        Grid.Column="2" />
+                                <controls:BadgeControl x:Name="FeedbackGroup"
+                                                       x:Load="False"
+                                                       Text="{CustomResource MonoforumSpan}"
+                                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                                       Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                                       VerticalAlignment="Bottom"
+                                                       CornerRadius="4"
+                                                       Grid.Column="3" />
                                 <TextBlock x:Name="MutedIcon"
                                            Text="&#xE979;"
                                            FontFamily="{StaticResource TelegramThemeFontFamily}"
@@ -145,7 +154,7 @@
                                            VerticalAlignment="Bottom"
                                            FontSize="16"
                                            Margin="4,0,0,0"
-                                           Grid.Column="3" />
+                                           Grid.Column="4" />
                             </Grid>
 
                             <TextBlock x:Name="TimeLabel"

@@ -138,6 +138,8 @@ namespace Telegram.Controls.Cells
         private Border OnlineHeart;
         private StackPanel Folders;
 
+        private BadgeControl FeedbackGroup;
+
         private Border CompactBadgeRoot;
         private BadgeControl CompactBadge;
 
@@ -803,8 +805,8 @@ namespace Telegram.Controls.Cells
             Segments.SetChat(_clientService, chat, 48);
             Photo.SetChat(_clientService, chat, 48);
 
-            SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Ellipse ? 24 : 12;
-            SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Ellipse ? 24 : 12;
+            SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Superellipse ? 12 : 24;
+            SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Superellipse ? 12 : 24;
         }
 
         public void UpdateChatEmojiStatus(Chat chat)
@@ -819,16 +821,29 @@ namespace Telegram.Controls.Cells
             {
                 verification = user.VerificationStatus?.BotVerificationIconCustomEmojiId;
                 Identity.SetStatus(_clientService, user, true);
+
+                UnloadObject(ref FeedbackGroup);
             }
             else if (_clientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 verification = supergroup.VerificationStatus?.BotVerificationIconCustomEmojiId;
                 Identity.SetStatus(supergroup);
+
+                if (supergroup.IsFeedbackGroup)
+                {
+                    LoadObject(ref FeedbackGroup, nameof(FeedbackGroup));
+                }
+                else
+                {
+                    UnloadObject(ref FeedbackGroup);
+                }
             }
             else
             {
                 verification = null;
                 Identity.ClearStatus();
+
+                UnloadObject(ref FeedbackGroup);
             }
 
             if (verification is not null and not 0)

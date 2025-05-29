@@ -67,8 +67,8 @@ namespace Telegram.Controls.Cells
             set
             {
                 Photo.Shape = value;
-                SelectionOutline.RadiusX = value == ProfilePictureShape.Ellipse ? 18 : 9;
-                SelectionOutline.RadiusY = value == ProfilePictureShape.Ellipse ? 18 : 9;
+                SelectionOutline.RadiusX = value == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusY = value == ProfilePictureShape.Superellipse ? 9 : 18;
             }
         }
 
@@ -119,8 +119,8 @@ namespace Telegram.Controls.Cells
                 Photo.SetChat(clientService, chat, 36);
                 Identity.SetStatus(clientService, chat, BotVerified);
 
-                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Ellipse ? 18 : 9;
-                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Ellipse ? 18 : 9;
+                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
             }
 
             if (args.Phase < 2)
@@ -199,8 +199,8 @@ namespace Telegram.Controls.Cells
                     Identity.SetStatus(clientService, chat, BotVerified);
                 }
 
-                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Ellipse ? 18 : 9;
-                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Ellipse ? 18 : 9;
+                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
             }
 
             if (args.Phase < 2)
@@ -240,8 +240,8 @@ namespace Telegram.Controls.Cells
                 Photo.SetChat(clientService, chat, 36);
                 Identity.SetStatus(clientService, chat, BotVerified);
 
-                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Ellipse ? 18 : 9;
-                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Ellipse ? 18 : 9;
+                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
             }
 
             if (args.Phase < 2)
