@@ -89,7 +89,7 @@ namespace Telegram.Controls.Media
                     var tintColorEffect = new ColorSourceEffect
                     {
                         Name = "TintColor",
-                        Color = Color.FromArgb(52, 0, 0, 0)
+                        Color = Color.FromArgb(120, 120, 120, 120)
                     };
 
                     var compositeEffect = new CompositeEffect();
