@@ -42,38 +42,49 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
-        private bool _useTabsLayout = true;
+        enum LayoutType
+        {
+            Tabs,
+            List
+        }
+
+        private LayoutType _layoutType;
+
         public bool UseTabsLayout
         {
-            get => _useTabsLayout;
-            set => SetUseTabsLayout(value);
-        }
-
-        private async void SetUseTabsLayout(bool value)
-        {
-            Set(ref _useTabsLayout, value, nameof(UseTabsLayout));
-
-            if (Chat.Type is ChatTypeBasicGroup)
+            get => _layoutType == LayoutType.Tabs;
+            set
             {
-                Chat = await UpgradeAsync(Chat);
-            }
-
-            if (Chat.Type is ChatTypeSupergroup supergroup)
-            {
-                ClientService.Send(new ToggleSupergroupIsForum(supergroup.SupergroupId, value, UseTabsLayout));
+                if (value)
+                {
+                    SetLayoutType(LayoutType.Tabs);
+                }
             }
         }
 
-        private bool _useListLayout;
         public bool UseListLayout
         {
-            get => _useListLayout;
-            set => SetUseListLayout(value);
+            get => _layoutType == LayoutType.List;
+            set
+            {
+                if (value)
+                {
+                    SetLayoutType(LayoutType.List);
+                }
+            }
         }
 
-        private async void SetUseListLayout(bool value)
+        private async void SetLayoutType(LayoutType type)
         {
-            Set(ref _useListLayout, value, nameof(UseListLayout));
+            if (_layoutType == type)
+            {
+                return;
+            }
+
+            _layoutType = type;
+
+            RaisePropertyChanged(nameof(UseTabsLayout));
+            RaisePropertyChanged(nameof(UseListLayout));
 
             if (Chat.Type is ChatTypeBasicGroup)
             {
@@ -82,7 +93,12 @@ namespace Telegram.ViewModels.Supergroups
 
             if (Chat.Type is ChatTypeSupergroup supergroup)
             {
-                ClientService.Send(new ToggleSupergroupIsForum(supergroup.SupergroupId, value, UseTabsLayout));
+                ClientService.Send(new ToggleSupergroupIsForum(supergroup.SupergroupId, true, type == LayoutType.Tabs));
+
+                if (type == LayoutType.Tabs)
+                {
+                    Aggregator.Publish(new UpdateChatViewAsTopics(Chat.Id, false));
+                }
             }
         }
 
@@ -101,15 +117,18 @@ namespace Telegram.ViewModels.Supergroups
             if (ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 Set(ref _isEnabled, supergroup.IsForum, nameof(IsEnabled));
-                UseTabsLayout = true;
-                UseListLayout = false;
+
+                _layoutType = supergroup.HasForumTabs
+                    ? LayoutType.Tabs
+                    : LayoutType.List;
             }
             else
             {
-                IsEnabled = false;
-                UseTabsLayout = false;
-                UseListLayout = false;
+                Set(ref _isEnabled, false, nameof(IsEnabled));
             }
+
+            RaisePropertyChanged(nameof(UseTabsLayout));
+            RaisePropertyChanged(nameof(UseListLayout));
 
             return Task.CompletedTask;
         }
