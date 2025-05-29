@@ -114,9 +114,9 @@ namespace Telegram.Views
             var minDateIndex = panel.FirstVisibleIndex;
             var minDateValue = 0L;
 
-            var minForumTopic = ViewModel.IsForum;
-            var minForumTopicIndex = panel.FirstVisibleIndex;
-            var minForumTopicValue = default(MessageTopic);
+            var minMessageTopic = ViewModel.IsForum || ViewModel.IsFeedbackGroup;
+            var minMessageTopicIndex = panel.FirstVisibleIndex;
+            var minMessageTopicValue = default(MessageTopic);
 
             var messages = new List<long>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
             var animations = new List<(SelectorItem, MessageViewModel)>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
@@ -163,7 +163,7 @@ namespace Telegram.Views
 
                     if (minItem == 2 && point.Y + container.ActualHeight >= 0)
                     {
-                        minItem = ViewModel.IsForum ? 1 : 0;
+                        minItem = ViewModel.IsForum || ViewModel.IsFeedbackGroup ? 1 : 0;
                         minDateValue = Math.Max(message.Id, message.Date);
 
                         if (message.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
@@ -187,7 +187,7 @@ namespace Telegram.Views
                     if (minItem == 1 && point.Y + container.ActualHeight + DateHeader.ActualSize.Y + 4 >= 0)
                     {
                         minItem = 0;
-                        UpdateForumTopicHeader(minForumTopicValue = message.TopicId);
+                        minMessageTopicValue = message.TopicId;
                     }
                 }
 
@@ -228,7 +228,7 @@ namespace Telegram.Views
                         _dateHeader.Properties.InsertVector3("Translation", Vector3.Zero);
                     }
                 }
-                else if (message.Content is MessageHeaderForumTopic && minForumTopic && i >= panel.FirstVisibleIndex)
+                else if (message.Content is MessageHeaderMessageTopic && minMessageTopic && i >= panel.FirstVisibleIndex)
                 {
                     transform ??= container.TransformToVisual(DateHeaderRelative);
                     var point = transform.TransformPoint(new Point());
@@ -237,7 +237,7 @@ namespace Telegram.Views
 
                     if (offset > height)
                     {
-                        minForumTopic = false;
+                        minMessageTopic = false;
 
                         offset -= height;
                         //height *= 2;
@@ -245,14 +245,14 @@ namespace Telegram.Views
                         if (/*offset >= 0 &&*/ offset < height)
                         {
                             SetContentOpacity(0);
-                            minForumTopicIndex = int.MaxValue; // Force show
+                            minMessageTopicIndex = int.MaxValue; // Force show
 
-                            UpdateForumTopicHeader(minForumTopicValue = message.TopicId);
+                            minMessageTopicValue = message.TopicId;
                         }
                         else
                         {
                             SetContentOpacity(1);
-                            minForumTopicIndex = i;
+                            minMessageTopicIndex = i;
                         }
 
                         if (offset >= height && offset < height * 2)
@@ -332,7 +332,7 @@ namespace Telegram.Views
                 _dateHeader.Properties.InsertVector3("Translation", Vector3.Zero);
             }
 
-            if (minForumTopic)
+            if (minMessageTopic)
             {
                 _forumTopicHeader.Scale = Vector3.One;
                 _forumTopicHeader.Properties.InsertVector3("Translation", Vector3.Zero);
@@ -341,7 +341,12 @@ namespace Telegram.Views
             _dateHeaderTimer.Stop();
             _dateHeaderTimer.Start();
             ShowHideDateHeader(minDateValue > 0 && minDateIndex > 0, minDateValue > 0 && minDateIndex is > 0 and < int.MaxValue);
-            ShowHideForumTopicHeader(minForumTopicValue != null && minForumTopicIndex > 0, minForumTopicValue != null && minForumTopicIndex is > 0 and < int.MaxValue);
+            ShowHideForumTopicHeader(minMessageTopicValue != null && minMessageTopicIndex > 0, minMessageTopicValue != null && minMessageTopicIndex is > 0 and < int.MaxValue);
+
+            if (minMessageTopicValue != null)
+            {
+                UpdateForumTopicHeader(minMessageTopicValue);
+            }
 
             // Read and play messages logic:
             if (messages.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !_fromPreview)
@@ -351,6 +356,8 @@ namespace Telegram.Views
                     DialogType.EventLog => new MessageSourceChatEventLog(),
                     DialogType.Thread => ViewModel.ForumTopic != null
                         ? new MessageSourceForumTopicHistory()
+                        : ViewModel.FeedbackChatTopic != null
+                        ? new MessageSourceFeedbackChatTopicHistory()
                         : new MessageSourceMessageThreadHistory(),
                     _ => new MessageSourceChatHistory()
                 };
@@ -533,13 +540,14 @@ namespace Telegram.Views
 
             ForumTopicHeader.Tag = messageTopic;
 
-            if (ViewModel.ClientService.TryGetForumTopic(ViewModel.ChatId, messageTopic, out ForumTopic topic))
+            if (ViewModel.ClientService.TryGetForumTopic(ViewModel.ChatId, messageTopic, out ForumTopic forumTopic))
             {
-                ForumTopicHeaderLabel.Text = topic.Info.Name;
+                ForumTopicHeaderLabel.Text = forumTopic.Info.Name;
+                ForumTopicHeaderPhoto.Clear();
 
-                if (topic.Info.IsGeneral || topic.Info.Icon.CustomEmojiId != 0)
+                if (forumTopic.Info.IsGeneral || forumTopic.Info.Icon.CustomEmojiId != 0)
                 {
-                    ForumTopicHeaderTypeIcon.SetStatus(ViewModel.ClientService, topic.Info.Icon);
+                    ForumTopicHeaderTypeIcon.SetStatus(ViewModel.ClientService, forumTopic.Info.Icon);
                     ForumTopicHeaderIconRoot.Visibility = Visibility.Collapsed;
                 }
                 else
@@ -547,12 +555,20 @@ namespace Telegram.Views
                     ForumTopicHeaderTypeIcon.ClearStatus();
                     ForumTopicHeaderIconRoot.Visibility = Visibility.Visible;
 
-                    var brush = ForumTopicCell.GetIconGradient(topic.Info.Icon);
+                    var brush = ForumTopicCell.GetIconGradient(forumTopic.Info.Icon);
 
                     ForumTopicHeaderIconPath.Fill = brush;
                     ForumTopicHeaderIconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);
-                    ForumTopicHeaderIconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
+                    ForumTopicHeaderIconText.Text = InitialNameStringConverter.Convert(forumTopic.Info.Name);
                 }
+            }
+            else if (ViewModel.ClientService.TryGetFeedbackChatTopic(ViewModel.ChatId, messageTopic, out FeedbackChatTopic feedbackChatTopic))
+            {
+                ForumTopicHeaderLabel.Text = ViewModel.ClientService.GetTitle(feedbackChatTopic.SenderId);
+                ForumTopicHeaderPhoto.SetMessageSender(ViewModel.ClientService, feedbackChatTopic.SenderId, 16);
+
+                ForumTopicHeaderTypeIcon.ClearStatus();
+                ForumTopicHeaderIconRoot.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -998,7 +1014,7 @@ namespace Telegram.Views
                 {
                     return ChatHistoryViewItemType.ServiceUnread;
                 }
-                else if (message.Content is MessageHeaderForumTopic)
+                else if (message.Content is MessageHeaderMessageTopic)
                 {
                     return ChatHistoryViewItemType.ServiceForumTopic;
                 }

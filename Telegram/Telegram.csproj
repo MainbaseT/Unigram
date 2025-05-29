@@ -358,6 +358,7 @@
     <Compile Include="Services\Calls\VoipState.cs" />
     <Compile Include="Services\Calls\VoipVideoOutput.cs" />
     <Compile Include="Services\Calls\VoipVideoStateChangedEventArgs.cs" />
+    <Compile Include="Services\FeedbackChatTopicService.cs" />
     <Compile Include="Services\PaidReactionService.cs" />
     <Compile Include="Controls\Messages\ReactionAsPaidButton.cs" />
     <Compile Include="Controls\Messages\ReactionAsTagButton.cs" />
@@ -369,7 +370,7 @@
     <Compile Include="Services\Calls\VoipGroupCallNetworkStateChangedEventArgs.cs" />
     <Compile Include="Services\ForumTopicService.cs" />
     <Compile Include="Td\Api\ErrorStarsNeeded.cs" />
-    <Compile Include="Td\Api\MessageHeaderForumTopic.cs" />
+    <Compile Include="Td\Api\MessageHeaderMessageTopic.cs" />
     <Compile Include="Td\Api\PremiumLimitTypeFileSize.cs" />
     <Compile Include="Td\Api\ReactionTypeEqualityComparer.cs" />
     <Compile Include="Controls\PremiumStarCount.cs" />
@@ -588,6 +589,7 @@
     <Compile Include="ViewModels\ComposeViewModel.cs" />
     <Compile Include="ViewModels\Delegates\IBusinessChatLinksDelegate.cs" />
     <Compile Include="ViewModels\Delegates\IBusinessRepliesDelegate.cs" />
+    <Compile Include="ViewModels\Delegates\IFeedbackTopicDelegate.cs" />
     <Compile Include="ViewModels\Delegates\IReactionsDelegate.cs" />
     <Compile Include="ViewModels\Delegates\ISavedMessagesChatsDelegate.cs" />
     <Compile Include="ViewModels\Delegates\ITopicListDelegate.cs" />

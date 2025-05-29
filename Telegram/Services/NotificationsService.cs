@@ -581,9 +581,9 @@ namespace Telegram.Services
                     return true;
                 }
 
-                if (chat.ViewAsTopics && service.CurrentPageType == typeof(ChatPage) && service.CurrentPageParam is ChatMessageIdNavigationArgs args)
+                if (chat.ViewAsTopics && service.CurrentPageType == typeof(ChatPage) && service.CurrentPageParam is ChatMessageTopic args)
                 {
-                    if (args.ChatId == chat.Id && args.MessageId == message.TopicId())
+                    if (args.ChatId == chat.Id && args.MessageTopic.AreTheSame(message.TopicId))
                     {
                         Logger.Info("Topic is open");
                         return false;

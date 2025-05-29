@@ -721,6 +721,12 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
+                case FeedbackChatTopic feedbackChatTopic:
+                    if (feedbackChatTopic.LastMessage != null)
+                    {
+                        ProcessFiles(feedbackChatTopic.LastMessage);
+                    }
+                    break;
                 case FileDownload fileDownload:
                     if (fileDownload.Message != null)
                     {
@@ -2379,6 +2385,12 @@ namespace Telegram.Services
                     if (updateDefaultBackground.Background != null)
                     {
                         ProcessFiles(updateDefaultBackground.Background);
+                    }
+                    break;
+                case UpdateFeedbackChatTopic updateFeedbackChatTopic:
+                    if (updateFeedbackChatTopic.Topic != null)
+                    {
+                        ProcessFiles(updateFeedbackChatTopic.Topic);
                     }
                     break;
                 case UpdateFile updateFile:

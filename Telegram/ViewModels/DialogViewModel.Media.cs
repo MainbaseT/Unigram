@@ -104,7 +104,14 @@ namespace Telegram.ViewModels
             }
             else if (ClientService.TryGetSupergroup(Chat, out Supergroup supergroup))
             {
-                paidMessageStarCount = supergroup.PaidMessageStarCount;
+                if (IsFeedbackChatAdministrator)
+                {
+                    paidMessageStarCount = 0;
+                }
+                else
+                {
+                    paidMessageStarCount = supergroup.PaidMessageStarCount;
+                }
             }
 
             var paid = await ShowPaidMessageConfirmationAsync(messageCount, paidMessageStarCount);

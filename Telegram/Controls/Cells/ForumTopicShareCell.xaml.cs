@@ -43,5 +43,15 @@ namespace Telegram.Controls.Cells
 
             TitleLabel.Text = topic.Info.Name;
         }
+
+        public void UpdateCell(IClientService clientService, FeedbackChatTopic topic)
+        {
+            Animated.Source = null;
+            IconRoot.Visibility = Visibility.Collapsed;
+            General.Visibility = Visibility.Collapsed;
+
+            TitleLabel.Text = clientService.GetTitle(topic.SenderId);
+            Photo.SetMessageSender(clientService, topic.SenderId, 36);
+        }
     }
 }

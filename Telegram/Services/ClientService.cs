@@ -53,12 +53,18 @@ namespace Telegram.Services
         Task<Chats> GetChatListAsync(ChatList chatList, int offset, int limit);
         Task<Chats> GetStoryListAsync(StoryList storyList, int offset, int limit);
         Task<ForuminoTopicinos> GetForumTopicsAsync(long chatId, int offset, int limit);
+        Task<FeedbackChatTopics> GetFeedbackChatTopicsAsync(long chatId, int offset, int limit);
 
         ForumTopic GetForumTopic(long chatId, long id);
         bool TryGetForumTopic(long chatId, long id, out ForumTopic topic);
         bool TryGetForumTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic);
         IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<long> ids);
         int UnreadTopicCount(long chatId);
+
+        FeedbackChatTopic GetFeedbackChatTopic(long chatId, long id);
+        bool TryGetFeedbackChatTopic(long chatId, long id, out FeedbackChatTopic topic);
+        bool TryGetFeedbackChatTopic(long chatId, MessageTopic messageTopic, out FeedbackChatTopic topic);
+        IEnumerable<FeedbackChatTopic> GetFeedbackChatTopics(long chatId, IEnumerable<long> ids);
 
         void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
         void SetPinnedForumTopics(long chatId, IList<long> messageThreadIds);
@@ -162,6 +168,7 @@ namespace Telegram.Services
         bool IsSavedMessages(Chat chat);
 
         bool IsForum(Chat chat);
+        bool IsFeedbackGroup(Chat chat);
         bool HasTabs(Chat chat);
 
         bool IsPaid(Chat chat);
@@ -312,6 +319,7 @@ namespace Telegram.Services
         private readonly ConcurrentDictionary<long, SupergroupFullInfo> _supergroupsFull = new();
 
         private readonly ConcurrentDictionary<long, ForumTopicService> _forums = new();
+        private readonly ConcurrentDictionary<long, FeedbackChatTopicService> _feedbackChats = new();
 
         private readonly ConcurrentDictionary<int, ChatListUnreadCount> _unreadCounts = new();
 
@@ -399,6 +407,62 @@ namespace Telegram.Services
             return manager.GetForumTopicsAsync(offset, limit);
         }
 
+        public Task<FeedbackChatTopics> GetFeedbackChatTopicsAsync(long chatId, int offset, int limit)
+        {
+            _feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager);
+
+            if (manager == null)
+            {
+                manager = new FeedbackChatTopicService(this, _aggregator, chatId);
+                _feedbackChats[chatId] = manager;
+            }
+
+            return manager.GetFeedbackChatTopicsAsync(offset, limit);
+        }
+
+        public IEnumerable<FeedbackChatTopic> GetFeedbackChatTopics(long chatId, IEnumerable<long> ids)
+        {
+            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
+            {
+                return manager.GetTopics(ids);
+            }
+
+            return Array.Empty<FeedbackChatTopic>();
+        }
+
+        public FeedbackChatTopic GetFeedbackChatTopic(long chatId, long id)
+        {
+            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
+            {
+                return manager.GetTopic(id);
+            }
+
+            return null;
+        }
+
+        public bool TryGetFeedbackChatTopic(long chatId, long id, out FeedbackChatTopic topic)
+        {
+            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
+            {
+                topic = manager.GetTopic(id);
+                return topic != null;
+            }
+
+            topic = null;
+            return false;
+        }
+
+        public bool TryGetFeedbackChatTopic(long chatId, MessageTopic messageTopic, out FeedbackChatTopic topic)
+        {
+            if (messageTopic is MessageTopicFeedbackChat topicFeedbackChat)
+            {
+                return TryGetFeedbackChatTopic(chatId, topicFeedbackChat.FeedbackChatTopicId, out topic);
+            }
+
+            topic = null;
+            return false;
+        }
+
         public bool TryGetForumTopic(long chatId, long id, out ForumTopic topic)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
@@ -450,7 +514,25 @@ namespace Telegram.Services
             }
             else
             {
+                //manager = new ForumTopicService(this, _aggregator, chatId);
+                //_forums[chatId] = manager;
 
+                //update(manager);
+            }
+        }
+
+        private void UpdateFeedbackChatTopic(long chatId, Action<FeedbackChatTopicService> update)
+        {
+            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
+            {
+                update(manager);
+            }
+            else
+            {
+                manager = new FeedbackChatTopicService(this, _aggregator, chatId);
+                _feedbackChats[chatId] = manager;
+
+                update(manager);
             }
         }
 
@@ -464,6 +546,11 @@ namespace Telegram.Services
                     _forums[chat.Id] = manager;
 
                     manager.GetForumTopicsAsync(0, 20);
+                }
+                else if (supergroup.IsFeedbackGroup && !_feedbackChats.ContainsKey(chat.Id))
+                {
+                    var manager = new FeedbackChatTopicService(this, _aggregator, chat.Id);
+                    _feedbackChats[chat.Id] = manager;
                 }
             }
         }
@@ -1745,6 +1832,16 @@ namespace Telegram.Services
             if (TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 return supergroup.IsForum;
+            }
+
+            return false;
+        }
+
+        public bool IsFeedbackGroup(Chat chat)
+        {
+            if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                return supergroup.IsFeedbackGroup;
             }
 
             return false;
@@ -3114,6 +3211,9 @@ namespace Telegram.Services
                     break;
                 case UpdateForumTopicInfo updateForumTopicInfo:
                     UpdateForumTopic(updateForumTopicInfo.Info.ChatId, manager => manager.UpdateForumTopicInfo(updateForumTopicInfo.Info));
+                    break;
+                case UpdateFeedbackChatTopic updateFeedbackChatTopic:
+                    UpdateFeedbackChatTopic(updateFeedbackChatTopic.Topic.ChatId, manager => manager.UpdateFeedbackChatTopic(updateFeedbackChatTopic.Topic));
                     break;
                 case UpdateInstalledStickerSets updateInstalledStickerSets:
                     switch (updateInstalledStickerSets.StickerType)

@@ -180,10 +180,10 @@ namespace Telegram.Services
                     yield return new ForumTopic(new ForumTopicInfo(_chatId, 0, 0, Strings.AllTopicsShort, new ForumTopicIcon(), 0, null, false, false, false, false), null, long.MaxValue, false, 0, 0, 0, 0, 0, new ChatNotificationSettings(), null);
                 }
 
-                var chat = GetTopic(id);
-                if (chat != null)
+                var topic = GetTopic(id);
+                if (topic != null)
                 {
-                    yield return chat;
+                    yield return topic;
                 }
             }
         }

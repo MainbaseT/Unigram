@@ -347,7 +347,7 @@ namespace Telegram.Views
             {
                 this.BeginOnUIThread(() => HideTopicList());
             }
-            else if (update.ChatId == _viewModel.Chats.SelectedItem && update.ViewAsTopics)
+            else if (update.ChatId == _viewModel.Chats.SelectedItem && update.ViewAsTopics && update.ChatId != _viewModel.ClientService.Options.MyId)
             {
                 this.BeginOnUIThread(() => ShowTopicList(_viewModel.ClientService.GetChat(update.ChatId)));
             }
@@ -1607,7 +1607,6 @@ namespace Telegram.Views
                 e.SourcePageType == typeof(ChatPinnedPage) ||
                 e.SourcePageType == typeof(ChatScheduledPage) ||
                 e.SourcePageType == typeof(ChatEventLogPage) ||
-                e.SourcePageType == typeof(ChatSavedPage) ||
                 e.SourcePageType == typeof(ChatBusinessRepliesPage) ||
                 e.SourcePageType == typeof(BlankPage);
 
@@ -1675,7 +1674,6 @@ namespace Telegram.Views
                 frame.CurrentSourcePageType == typeof(ChatPinnedPage) ||
                 frame.CurrentSourcePageType == typeof(ChatScheduledPage) ||
                 frame.CurrentSourcePageType == typeof(ChatEventLogPage) ||
-                frame.CurrentSourcePageType == typeof(ChatSavedPage) ||
                 frame.CurrentSourcePageType == typeof(ChatBusinessRepliesPage) ||
                 frame.CurrentSourcePageType == typeof(BlankPage);
 
@@ -1730,6 +1728,17 @@ namespace Telegram.Views
             }
 
             ViewModel.Chats.SelectedItem = openChat.ChatId;
+
+            if (ViewModel.Topics.ChatId == openChat.ChatId)
+            {
+                ViewModel.Topics.SelectedItem = openChat.MessageTopic;
+                ViewModel.Topics.Delegate?.SetSelectedItem(openChat.MessageTopic);
+            }
+            else
+            {
+                ViewModel.Topics.SelectedItem = null;
+                ViewModel.Topics.Delegate?.SetSelectedItem(null);
+            }
 
             if (ViewModel.Chats.SelectionMode != ListViewSelectionMode.Multiple)
             {
@@ -1896,7 +1905,7 @@ namespace Telegram.Views
             {
                 ViewModel.Chats.SelectedItem = chat.Id;
 
-                if (chat.ViewAsTopics && chat.Type is ChatTypeSupergroup)
+                if (chat.ViewAsTopics && chat.Type is ChatTypeSupergroup && !ViewModel.ClientService.HasTabs(chat))
                 {
                     if (ViewModel.Chats.SelectedItem != ViewModel.Topics.Chat?.Id)
                     {
@@ -1936,7 +1945,7 @@ namespace Telegram.Views
             else if (item is ForumTopic topic)
             {
                 ViewModel.Chats.SelectedItem = topic.Info.ChatId;
-                ViewModel.Topics.SelectedItem = topic.Info.MessageThreadId;
+                ViewModel.Topics.SelectedItem = topic.ToId();
                 MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, topic: topic.ToId(), force: false, clearBackStack: true);
             }
         }
@@ -2982,7 +2991,7 @@ namespace Telegram.Views
                 // will move the focus to the last selected item in the chat list if possible.
                 if (args.Direction == FocusNavigationDirection.None && args.OldFocusedElement is not ChatListListViewItem)
                 {
-                    if (!_topicListCollapsed && TopicListPresenter.TryGetContainer(ViewModel?.Topics.LastSelectedItem ?? 0, out SelectorItem container))
+                    if (!_topicListCollapsed && ViewModel?.Topics.LastSelectedItem is MessageTopicForum forum && TopicListPresenter.TryGetContainer(forum.ForumTopicId, out SelectorItem container))
                     {
                         if (args.TrySetNewFocusedElement(container))
                         {

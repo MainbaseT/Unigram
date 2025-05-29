@@ -133,6 +133,7 @@ namespace Telegram.ViewModels
 
                 if (cache != null)
                 {
+                    LinkedChatId = cache.PersonalChatId;
                     Delegate?.UpdateUserFullInfo(chat, item, cache, false, false);
                 }
 
@@ -180,6 +181,7 @@ namespace Telegram.ViewModels
 
                 if (cache != null)
                 {
+                    LinkedChatId = cache.LinkedChatId;
                     Delegate?.UpdateSupergroupFullInfo(chat, item, cache);
                 }
 
@@ -253,9 +255,9 @@ namespace Telegram.ViewModels
 
             if (chat.Type is ChatTypePrivate privata && privata.UserId == update.UserId)
             {
-                LinkedChatId = update.UserFullInfo.PersonalChatId;
                 BeginOnUIThread(() =>
                 {
+                    LinkedChatId = update.UserFullInfo.PersonalChatId;
                     Delegate?.UpdateUserFullInfo(chat, ClientService.GetUser(update.UserId), update.UserFullInfo, false, false);
 
                     if (update.UserFullInfo.BotInfo?.CanGetRevenueStatistics is true)
@@ -338,9 +340,9 @@ namespace Telegram.ViewModels
 
             if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.SupergroupId)
             {
-                LinkedChatId = update.SupergroupFullInfo.LinkedChatId;
                 BeginOnUIThread(() =>
                 {
+                    LinkedChatId = update.SupergroupFullInfo.LinkedChatId;
                     MembersTab.UpdateMembers();
                     Delegate?.UpdateSupergroupFullInfo(chat, ClientService.GetSupergroup(update.SupergroupId), update.SupergroupFullInfo);
 

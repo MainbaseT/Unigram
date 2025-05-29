@@ -6,19 +6,22 @@
 //
 using System;
 using System.Collections.Generic;
-using Telegram.Controls.Cells;
 using Telegram.Td.Api;
 
 namespace Telegram.ViewModels.Delegates
 {
     public interface ITopicListDelegate : IViewModelDelegate
     {
-        void SetSelectedItem(ForumTopic topic);
-        void SetSelectedItems(IList<ForumTopic> topics);
+        void SetSelectedItem(object topic);
+        void SetSelectedItems(IList<object> topics);
 
         void UpdateForumTopicLastMessage(ForumTopic topic);
+        void UpdateFeedbackChatTopicLastMessage(FeedbackChatTopic topic);
 
-        void Handle(long messageThreadId, Action<IForumTopicDelegate, ForumTopic> action);
-        void Handle(ForumTopic topic, Action<IForumTopicDelegate, ForumTopic> action);
+        void HandleForumTopic(long messageThreadId, Action<IForumTopicDelegate, ForumTopic> action);
+        void HandleForumTopic(ForumTopic topic, Action<IForumTopicDelegate, ForumTopic> action);
+
+        void HandleFeedbackChatTopic(long topicId, Action<IFeedbackTopicDelegate, FeedbackChatTopic> action);
+        void HandleFeedbackChatTopic(FeedbackChatTopic topic, Action<IFeedbackTopicDelegate, FeedbackChatTopic> action);
     }
 }

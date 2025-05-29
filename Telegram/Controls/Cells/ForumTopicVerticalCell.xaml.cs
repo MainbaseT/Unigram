@@ -4,7 +4,6 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using System;
 using System.Collections.Generic;
 using System.Text;
 using Telegram.Common;
@@ -19,7 +18,6 @@ using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Telegram.Views;
-using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -29,13 +27,14 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Cells
 {
-    public sealed partial class ForumTopicVerticalCell : ControlEx, IForumTopicDelegate
+    public sealed partial class ForumTopicVerticalCell : ControlEx, IForumTopicDelegate, IFeedbackTopicDelegate
     {
         private bool _selected;
 
         private bool _vertical;
 
-        private ForumTopic _topic;
+        private ForumTopic _forumTopic;
+        private FeedbackChatTopic _feedbackChatTopic;
         private Chat _chat;
 
         private int _thumbnailId;
@@ -57,6 +56,7 @@ namespace Telegram.Controls.Cells
         #region InitializeComponent
 
         private AnimatedImage Animated;
+        private ProfilePicture Photo;
         private TextBlock TitleLabel;
         private Border PinnedBackground;
         private TextBlock PinnedIcon;
@@ -68,12 +68,14 @@ namespace Telegram.Controls.Cells
         private Path IconPath;
         private TextBlock IconText;
         private Path General;
+        private Path AllTopics;
 
         private bool _templateApplied;
 
         protected override void OnApplyTemplate()
         {
             Animated = GetTemplateChild(nameof(Animated)) as AnimatedImage;
+            Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
             TitleLabel = GetTemplateChild(nameof(TitleLabel)) as TextBlock;
             PinnedBackground = GetTemplateChild(nameof(PinnedBackground)) as Border;
             PinnedIcon = GetTemplateChild(nameof(PinnedIcon)) as TextBlock;
@@ -85,12 +87,17 @@ namespace Telegram.Controls.Cells
             IconPath = GetTemplateChild(nameof(IconPath)) as Path;
             IconText = GetTemplateChild(nameof(IconText)) as TextBlock;
             General = GetTemplateChild(nameof(General)) as Path;
+            AllTopics = GetTemplateChild(nameof(AllTopics)) as Path;
 
             _templateApplied = true;
 
-            if (_topic != null)
+            if (_forumTopic != null)
             {
-                UpdateForumTopic(_viewModel, _topic);
+                UpdateForumTopic(_viewModel, _forumTopic);
+            }
+            else if (_feedbackChatTopic != null)
+            {
+                UpdateFeedbackChatTopic(_viewModel, _feedbackChatTopic);
             }
         }
 
@@ -108,9 +115,9 @@ namespace Telegram.Controls.Cells
                 return null;
             }
 
-            if (_topic != null && _chat != null)
+            if (_forumTopic != null && _chat != null)
             {
-                return UpdateAutomation(_viewModel.ClientService, _topic, _chat, _topic.LastMessage);
+                return UpdateAutomation(_viewModel.ClientService, _forumTopic, _chat, _forumTopic.LastMessage);
             }
 
             return null;
@@ -182,7 +189,7 @@ namespace Telegram.Controls.Cells
             return builder.ToString();
         }
 
-        #region Updates
+        #region ForumTopic
 
         public void UpdateForumTopicLastMessage(ForumTopic topic)
         {
@@ -198,9 +205,10 @@ namespace Telegram.Controls.Cells
 
             if (topic.IsPinned)
             {
-                var index = _viewModel.Items.IndexOf(topic);
+                var items = _viewModel.Items as TopicListViewModel.ForumTopicsCollection;
+                var index = items.IndexOf(topic);
                 var first = index == 1;
-                var last = index == _viewModel.Items.Count - 1 || !_viewModel.Items[index + 1].IsPinned;
+                var last = index == items.Count - 1 || !items[index + 1].IsPinned;
 
                 var radiusBefore = !first ? 0 : 4;
                 var radiusAfter = !last ? 0 : 4;
@@ -319,18 +327,28 @@ namespace Telegram.Controls.Cells
                 Animated.Source = new CustomEmojiFileSource(_viewModel.ClientService, topic.Info.Icon.CustomEmojiId);
                 IconRoot.Visibility = Visibility.Collapsed;
                 General.Visibility = Visibility.Collapsed;
+                AllTopics.Visibility = Visibility.Collapsed;
             }
             else if (topic.Info.IsGeneral)
             {
                 Animated.Source = null;
                 IconRoot.Visibility = Visibility.Collapsed;
                 General.Visibility = Visibility.Visible;
+                AllTopics.Visibility = Visibility.Collapsed;
+            }
+            else if (topic.Info.MessageThreadId == 0)
+            {
+                Animated.Source = null;
+                IconRoot.Visibility = Visibility.Collapsed;
+                General.Visibility = Visibility.Collapsed;
+                AllTopics.Visibility = Visibility.Visible;
             }
             else
             {
                 Animated.Source = null;
                 IconRoot.Visibility = Visibility.Visible;
                 General.Visibility = Visibility.Collapsed;
+                AllTopics.Visibility = Visibility.Collapsed;
 
                 var brush = ForumTopicCell.GetIconGradient(topic.Info.Icon);
 
@@ -348,7 +366,7 @@ namespace Telegram.Controls.Cells
         public void UpdateForumTopic(TopicListViewModel viewModel, ForumTopic topic)
         {
             _viewModel = viewModel;
-            _topic = topic;
+            _forumTopic = topic;
             _chat = _viewModel.ClientService.GetChat(topic.Info.ChatId);
 
             if (!_templateApplied)
@@ -362,6 +380,115 @@ namespace Telegram.Controls.Cells
 
             //UpdateChatReadInbox(chat);
             UpdateForumTopicUnreadMentionCount(topic);
+            UpdateNotificationSettings(topic);
+        }
+
+        #endregion
+
+        #region FeedbackChatTopic
+
+        public void UpdateFeedbackChatTopicLastMessage(FeedbackChatTopic topic)
+        {
+            // Not implemented for now
+        }
+
+        public void UpdateFeedbackChatTopicReadInbox(FeedbackChatTopic topic)
+        {
+            if (_viewModel == null || !_templateApplied)
+            {
+                return;
+            }
+
+            var unread = (topic.UnreadCount > 0 || topic.IsMarkedAsUnread) ? topic.UnreadCount == 1 ? Visibility.Collapsed : Visibility.Visible : Visibility.Collapsed;
+            if (unread == Visibility.Visible)
+            {
+                UnreadBadge.Visibility = Visibility.Visible;
+                //UnreadBadge.Text = topic.UnreadCount > 0 ? topic.UnreadCount.ToString() : string.Empty;
+            }
+            else
+            {
+                UnreadBadge.Visibility = Visibility.Collapsed;
+            }
+
+            //UpdateAutomation(_clientService, chat, chat.LastMessage);
+        }
+
+        public void UpdateFeedbackChatTopicReadOutbox(FeedbackChatTopic topic)
+        {
+            // Not implemented for now
+        }
+
+        public void UpdateFeedbackChatIsMarkedAsUnread(Chat chat)
+        {
+
+        }
+
+        public void UpdateFeedbackChatTopicUnreadMentionCount(FeedbackChatTopic topic)
+        {
+            if (_viewModel == null || !_templateApplied)
+            {
+                return;
+            }
+
+            UpdateFeedbackChatTopicReadInbox(topic);
+
+            var unread = topic.UnreadReactionCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (unread == Visibility.Visible)
+            {
+                UnreadMentionsBadge.Visibility = Visibility.Visible;
+                UnreadMentionsLabel.Text = Icons.HeartFilled12;
+            }
+            else
+            {
+                UnreadMentionsBadge.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public void UpdateNotificationSettings(FeedbackChatTopic topic)
+        {
+            if (_viewModel == null || !_templateApplied)
+            {
+                return;
+            }
+
+            UnreadBadge.IsUnmuted = true;
+        }
+
+        public void UpdateFeedbackChatTopicActions(FeedbackChatTopic topic, IDictionary<MessageSender, ChatAction> actions)
+        {
+            // Not implemented for now
+        }
+
+        public void UpdateFeedbackChatTopic(TopicListViewModel viewModel, FeedbackChatTopic topic)
+        {
+            _viewModel = viewModel;
+            _feedbackChatTopic = topic;
+            _chat = _viewModel.ClientService.GetChat(topic.ChatId);
+
+            if (!_templateApplied)
+            {
+                return;
+            }
+
+            if (topic.SenderId == null)
+            {
+                TitleLabel.Text = Strings.AllTopicsShort;
+                Photo.Clear();
+                AllTopics.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                TitleLabel.Text = _viewModel.ClientService.GetTitle(topic.SenderId);
+                Photo.SetMessageSender(_viewModel.ClientService, topic.SenderId, _vertical ? 36 : 20);
+                AllTopics.Visibility = Visibility.Collapsed;
+            }
+
+            //UpdateFeedbackChatTopicName(topic);
+            //UpdateFeedbackChatTopicIcon(topic);
+            //UpdateChatEmojiStatus(topic);
+
+            //UpdateChatReadInbox(chat);
+            UpdateFeedbackChatTopicUnreadMentionCount(topic);
             UpdateNotificationSettings(topic);
         }
 
@@ -502,7 +629,7 @@ namespace Telegram.Controls.Cells
                 }
 
                 var service = WindowContext.GetNavigationService(this);
-                service?.NavigateToChat(chat, topic: _topic.ToId(), state: new NavigationState
+                service?.NavigateToChat(chat, topic: _forumTopic.ToId(), state: new NavigationState
                 {
                     { "package", e.DataView }
                 });

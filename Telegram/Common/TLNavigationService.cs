@@ -279,15 +279,15 @@ namespace Telegram.Common
             await _viewService.OpenAsync(parameters);
         }
 
-        public void NavigateToSender(MessageSender sender)
+        public void NavigateToSender(MessageSender sender, NavigationTransitionInfo infoOverride = null)
         {
             if (sender is MessageSenderUser user)
             {
-                NavigateToUser(user.UserId, false);
+                NavigateToUser(user.UserId, false, infoOverride: infoOverride);
             }
             else if (sender is MessageSenderChat chat)
             {
-                Navigate(typeof(ProfilePage), chat.ChatId);
+                Navigate(typeof(ProfilePage), chat.ChatId, infoOverride: infoOverride);
             }
         }
 
@@ -539,7 +539,7 @@ namespace Telegram.Common
             NavigateToChat(chat, message, topic, accessToken, state, scheduled, force, createNewWindow);
         }
 
-        public async void NavigateToUser(long userId, bool toChat = false)
+        public async void NavigateToUser(long userId, bool toChat = false, NavigationTransitionInfo infoOverride = null)
         {
             if (_clientService.TryGetChatFromUser(userId, out Chat chat))
             {
@@ -550,7 +550,7 @@ namespace Telegram.Common
                 }
                 else
                 {
-                    Navigate(typeof(ProfilePage), chat.Id);
+                    Navigate(typeof(ProfilePage), chat.Id, infoOverride: infoOverride);
                 }
             }
             else

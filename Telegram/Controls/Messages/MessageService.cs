@@ -120,9 +120,10 @@ namespace Telegram.Controls.Messages
 
         private void UpdateContent(MessageViewModel message)
         {
-            if (message.Content is MessageHeaderForumTopic)
+            if (message.Content is MessageHeaderMessageTopic)
             {
                 var title = FindName("TitleLabel") as TextBlock;
+                var photo = FindName("Photo") as ProfilePicture;
                 var iconRoot = FindName("IconRoot") as Grid;
                 var iconPath = FindName("IconPath") as Path;
                 var iconText = FindName("IconText") as TextBlock;
@@ -131,6 +132,7 @@ namespace Telegram.Controls.Messages
                 if (message.ClientService.TryGetForumTopic(message.ChatId, message.TopicId, out ForumTopic topic))
                 {
                     title.Text = topic.Info.Name;
+                    photo.Clear();
 
                     if (topic.Info.IsGeneral || topic.Info.Icon.CustomEmojiId != 0)
                     {
@@ -149,9 +151,13 @@ namespace Telegram.Controls.Messages
                         iconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
                     }
                 }
-                else
+                else if (message.ClientService.TryGetFeedbackChatTopic(message.ChatId, message.TopicId, out FeedbackChatTopic feedbackChatTopic))
                 {
+                    title.Text = message.ClientService.GetTitle(feedbackChatTopic.SenderId);
+                    photo.SetMessageSender(message.ClientService, feedbackChatTopic.SenderId, 16);
 
+                    typeIcon.ClearStatus();
+                    iconRoot.Visibility = Visibility.Collapsed;
                 }
             }
             else if (message.Content is MessageGiveawayPrizeStars giveawayPrizeStars)
@@ -3255,7 +3261,7 @@ namespace Telegram.Controls.Messages
         {
             _geometry.StartPoint = new Windows.Foundation.Point(0, 1);
             _geometry.EndPoint = new Windows.Foundation.Point(finalSize.Width, 1);
-            
+
             var size = base.ArrangeOverride(finalSize);
             return new Size(size.Width, 2);
         }

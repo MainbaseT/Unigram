@@ -75,6 +75,18 @@ namespace Telegram.Controls
             _parameter = null;
         }
 
+        public void SetStatus(IClientService clientService, MessageSender sender)
+        {
+            if (clientService.TryGetChat(sender, out Chat chat))
+            {
+                SetStatus(clientService, chat);
+            }
+            else if (clientService.TryGetUser(sender, out User user))
+            {
+                SetStatus(clientService, user);
+            }
+        }
+
         public void SetStatus(IClientService clientService, Chat chat)
         {
             if (!_templateApplied)

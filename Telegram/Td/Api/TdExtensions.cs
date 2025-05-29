@@ -203,6 +203,18 @@ namespace Telegram.Td.Api
             return string.Equals(x.ToString(), y.ToString());
         }
 
+        public static bool AreTheSame(this SetChatFeedbackGroup x, SetChatFeedbackGroup y)
+        {
+            if (x == null || y == null)
+            {
+                return x == null && y == null;
+            }
+
+            return x.ChatId == y.ChatId
+                && x.IsEnabled == y.IsEnabled
+                && x.PaidMessageStarCount == y.PaidMessageStarCount;
+        }
+
         public static long UserId(this ChatBoost boost)
         {
             return boost.Source switch
@@ -2848,6 +2860,52 @@ namespace Telegram.Td.Api
             return status is ChatMemberStatusCreator
                 or ChatMemberStatusAdministrator
                 or ChatMemberStatusRestricted { Permissions.CanSendPolls: true };
+        }
+
+        public static bool IsFeedbackChatAdministrator(this Chat chat, IClientService clientService)
+        {
+            if (clientService.TryGetSupergroup(chat, out Supergroup supergroup) && clientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
+            {
+                if (supergroup.IsFeedbackGroup && clientService.TryGetChat(fullInfo.FeedbackChatId, out chat))
+                {
+                    clientService.TryGetChat(fullInfo.FeedbackChatId, out chat);
+                }
+
+                var status = clientService.GetChatMemberStatus(chat, out bool channel);
+                if (status is ChatMemberStatusAdministrator administrator)
+                {
+                    return administrator.Rights.CanPostMessages;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool HasForumTabs(this Chat chat, IClientService clientService, out bool isForum)
+        {
+            if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                if (supergroup.HasForumTabs)
+                {
+                    isForum = true;
+                    return true;
+                }
+
+                if (supergroup.IsFeedbackGroup && clientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo) && clientService.TryGetChat(fullInfo.FeedbackChatId, out chat))
+                {
+                    clientService.TryGetChat(fullInfo.FeedbackChatId, out chat);
+                }
+
+                var status = clientService.GetChatMemberStatus(chat, out bool channel);
+                if (status is ChatMemberStatusAdministrator administrator)
+                {
+                    isForum = false;
+                    return administrator.Rights.CanPostMessages;
+                }
+            }
+
+            isForum = false;
+            return false;
         }
 
         public static bool CanSendVoiceNotes(this Chat chat, IClientService clientService)

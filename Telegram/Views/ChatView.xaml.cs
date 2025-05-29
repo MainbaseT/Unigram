@@ -2104,7 +2104,7 @@ namespace Telegram.Views
 
             flyout.CreateFlyoutItem(Search, Strings.Search, Icons.Search, VirtualKey.F);
 
-            if (ViewModel.Type is DialogType.SavedMessagesTopic)
+            if (ViewModel.SavedMessagesTopic != null || ViewModel.FeedbackChatTopic != null)
             {
                 flyout.CreateFlyoutItem(ViewModel.DeleteTopic, Strings.DeleteChatUser, Icons.Delete, destructive: true);
 
@@ -3343,7 +3343,7 @@ namespace Telegram.Views
         {
             if (ViewModel.Type is not DialogType.History and not DialogType.Pinned)
             {
-                if (ViewModel.Type is not DialogType.Thread || ViewModel.ForumTopic == null)
+                if (ViewModel.Type is not DialogType.Thread || (ViewModel.ForumTopic == null && ViewModel.FeedbackChatTopic == null))
                 {
                     return false;
                 }
@@ -4197,7 +4197,7 @@ namespace Telegram.Views
                     }
                 }
             }
-            else if (message.Content is MessageHeaderForumTopic)
+            else if (message.Content is MessageHeaderMessageTopic)
             {
                 NavigateToForumTopic(message.Chat, message.TopicId);
             }
@@ -4505,20 +4505,31 @@ namespace Telegram.Views
 
         private void UpdateForumTopics(Chat chat)
         {
-            if (SettingsService.Current.Diagnostics.ForumTabsDebug && ViewModel.ClientService.IsForum(chat))
+            if (chat.HasForumTabs(ViewModel.ClientService, out bool forum))
             {
-                if (_forumViewModel == null)
+                if (_forumViewModel == null || _forumViewModel.IsForum != forum)
                 {
-                    _forumViewModel = new TopicListViewModel(ViewModel.ClientService, ViewModel.Settings, ViewModel.Aggregator, null, false);
+                    _forumViewModel = new TopicListViewModel(ViewModel.ClientService, ViewModel.Settings, ViewModel.Aggregator, null, false, forum);
                     _forumViewModel.NavigationService = ViewModel.NavigationService;
 
                     ForumNavigation.UpdateType(ForumViewType.Vertical);
                     ForumNavigationHorizontal.UpdateType(ForumViewType.Horizontal);
+
+                    if (_forumCollapsed == ForumViewType.Vertical)
+                    {
+                        _forumViewModel.Delegate = ForumNavigation;
+                        ForumNavigation.ViewModel = _forumViewModel;
+                    }
+                    else if (_forumCollapsed == ForumViewType.Horizontal)
+                    {
+                        _forumViewModel.Delegate = ForumNavigationHorizontal;
+                        ForumNavigationHorizontal.ViewModel = _forumViewModel;
+                    }
                 }
 
                 _forumViewModel.SetChat(chat);
-                _forumViewModel.SelectedItem = ViewModel.ThreadId;
-                _forumViewModel.Delegate?.SetSelectedItem(_forumViewModel.Items.FirstOrDefault(x => x.Info.MessageThreadId == ViewModel.ThreadId));
+                _forumViewModel.SelectedItem = ViewModel.Topic;
+                _forumViewModel.Delegate?.SetSelectedItem(_forumViewModel.Items.GetItem(ViewModel.Topic));
 
                 ShowHideForumTopics(ViewModel.Settings.UseLeftTabsForForums ? ForumViewType.Vertical : ForumViewType.Horizontal);
             }
@@ -4622,6 +4633,10 @@ namespace Telegram.Views
                 if (ViewModel.ForumTopic != null)
                 {
                     ChatTitle = ViewModel.ForumTopic.Info.Name;
+                }
+                else if (ViewModel.FeedbackChatTopic != null)
+                {
+                    ChatTitle = ViewModel.ClientService.GetTitle(ViewModel.FeedbackChatTopic.SenderId);
                 }
                 else
                 {
@@ -4730,6 +4745,14 @@ namespace Telegram.Views
                         TopicIconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
                     }
                 }
+                else if (ViewModel.FeedbackChatTopic != null)
+                {
+                    UnloadObject(Icon);
+                    TopicIconRoot.Visibility = Visibility.Collapsed;
+                    TopicIconGeneral.Visibility = Visibility.Collapsed;
+
+                    Photo.SetMessageSender(ViewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId, 36);
+                }
                 else
                 {
                     UnloadObject(Icon);
@@ -4793,6 +4816,13 @@ namespace Telegram.Views
                 else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
                 {
                     Identity.SetStatus(_viewModel.ClientService, savedChat, BotVerified);
+                }
+            }
+            else if (ViewModel.Type == DialogType.Thread)
+            {
+                if (ViewModel.FeedbackChatTopic != null)
+                {
+                    Identity.SetStatus(_viewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId);
                 }
             }
             else
@@ -4982,7 +5012,7 @@ namespace Telegram.Views
             {
                 return Strings.SendAnonymously;
             }
-            else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator)
+            else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator && !ViewModel.IsFeedbackChatAdministrator)
             {
                 return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
             }
@@ -5542,6 +5572,7 @@ namespace Telegram.Views
             var max = ComposerHeader.Visibility == Visibility.Visible ? 4 : min;
 
             ButtonAttach.CornerRadius = new CornerRadius(_sideMenuCollapsed == SideButton.None ? max : 4, 4, 4, _sideMenuCollapsed == SideButton.None ? min : 4);
+            ButtonFeedback.CornerRadius = new CornerRadius(min, 4, 4, min);
             btnVoiceMessage.CornerRadius = new CornerRadius(4, max, min, 4);
             btnSendMessage.CornerRadius = new CornerRadius(4, max, min, 4);
             btnEdit.CornerRadius = new CornerRadius(4, max, min, 4);
@@ -5645,6 +5676,8 @@ namespace Telegram.Views
             UpdateChatTextPlaceholder(chat);
 
             UpdateUserStatus(chat, user);
+
+            ButtonFeedback.Visibility = Visibility.Collapsed;
 
             if (fullInfo == null)
             {
@@ -5894,6 +5927,8 @@ namespace Telegram.Views
                 ViewModel.UpdateLastSeen(Locale.Declension(Strings.R.Members, group.MemberCount));
             }
 
+            ButtonFeedback.Visibility = Visibility.Collapsed;
+
             if (fullInfo == null)
             {
                 return;
@@ -5995,14 +6030,7 @@ namespace Telegram.Views
                 }
                 else if (group.Status is ChatMemberStatusCreator || group.Status is ChatMemberStatusAdministrator administrator)
                 {
-                    //if (ViewModel.Type != DialogType.Thread && group.IsForum)
-                    //{
-                    //    ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
-                    //}
-                    //else
-                    {
-                        ShowArea(0);
-                    }
+                    ShowArea(0);
                 }
                 else if (group.Status is ChatMemberStatusRestricted restrictedSend)
                 {
@@ -6021,11 +6049,6 @@ namespace Telegram.Views
                             ShowAction(string.Format(Strings.SendMessageRestricted, Formatter.BannedUntil(restrictedSend.RestrictedUntilDate)), false);
                         }
                     }
-                    //else if (ViewModel.Type != DialogType.Thread && group.IsForum)
-                    //{
-                    //    ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
-                    //}
-                    //else
                     {
                         ShowArea(group.PaidMessageStarCount);
                     }
@@ -6038,13 +6061,13 @@ namespace Telegram.Views
                 {
                     ShowAction(Strings.GlobalSendMessageRestricted, fullInfo != null && fullInfo.UnrestrictBoostCount > 0);
                 }
-                //else if (ViewModel.Type != DialogType.Thread && group.IsForum)
-                //{
-                //    ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
-                //}
+                else if (ViewModel.Type != DialogType.Thread && group.IsFeedbackGroup && ViewModel.IsFeedbackChatAdministrator)
+                {
+                    ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
+                }
                 else
                 {
-                    ShowArea(group.PaidMessageStarCount);
+                    ShowArea(ViewModel.IsFeedbackChatAdministrator ? 0 : group.PaidMessageStarCount);
                 }
             }
 
@@ -6062,6 +6085,10 @@ namespace Telegram.Views
             {
                 ViewModel.UpdateLastSeen(null as string);
             }
+
+            ButtonFeedback.Visibility = group.HasFeedbackGroup
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
             if (group.IsChannel)
             {
@@ -6500,9 +6527,27 @@ namespace Telegram.Views
 
         private void ForumNavigation_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if (e.ClickedItem is ForumTopic topic && ViewModel.ClientService.TryGetChat(topic.Info.ChatId, out Chat chat))
+            if (e.ClickedItem is ForumTopic forumTopic && ViewModel.ClientService.TryGetChat(forumTopic.Info.ChatId, out Chat chat))
             {
-                NavigateToForumTopic(chat, new MessageTopicForum(topic.Info.MessageThreadId));
+                if (forumTopic.Info.MessageThreadId != 0)
+                {
+                    NavigateToForumTopic(chat, new MessageTopicForum(forumTopic.Info.MessageThreadId));
+                }
+                else
+                {
+                    ViewModel.NavigationService.NavigateToChat(chat, force: false, clearBackStack: true);
+                }
+            }
+            else if (e.ClickedItem is FeedbackChatTopic feedbackChatTopic && ViewModel.ClientService.TryGetChat(feedbackChatTopic.ChatId, out chat))
+            {
+                if (feedbackChatTopic.Id != 0)
+                {
+                    NavigateToForumTopic(chat, new MessageTopicFeedbackChat(feedbackChatTopic.Id));
+                }
+                else
+                {
+                    ViewModel.NavigationService.NavigateToChat(chat, force: false, clearBackStack: true);
+                }
             }
         }
 
@@ -6912,6 +6957,14 @@ namespace Telegram.Views
         private void ForumTopic_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             _forumTopicHeader.CenterPoint = new Vector3(ForumTopicHeader.ActualSize / 2, 0);
+        }
+
+        private void ButtonFeedback_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.ClientService.TryGetSupergroupFull(ViewModel.Chat, out SupergroupFullInfo fullInfo))
+            {
+                ViewModel.NavigationService.NavigateToChat(fullInfo.FeedbackChatId);
+            }
         }
     }
 

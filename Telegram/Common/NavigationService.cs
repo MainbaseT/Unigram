@@ -12,6 +12,7 @@ using Telegram.ViewModels;
 using Telegram.Views;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Common
@@ -90,11 +91,11 @@ namespace Telegram.Common
             }
         }
 
-        public static void NavigateToSender(this INavigationService service, MessageSender sender)
+        public static void NavigateToSender(this INavigationService service, MessageSender sender, NavigationTransitionInfo infoOverride = null)
         {
             if (service is TLNavigationService serviceEx)
             {
-                serviceEx.NavigateToSender(sender);
+                serviceEx.NavigateToSender(sender, infoOverride);
             }
         }
 

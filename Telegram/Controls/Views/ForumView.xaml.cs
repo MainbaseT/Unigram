@@ -42,15 +42,7 @@ namespace Telegram.Controls.Views
             {
                 DataContext = value;
                 ScrollingHost.ItemsSource = value?.Items;
-
-                if (value?.SelectedItem is long messageThreadId)
-                {
-                    ScrollingHost.SelectedItem = value.Items.FirstOrDefault(x => x.Info.MessageThreadId == messageThreadId);
-                }
-                else
-                {
-                    ScrollingHost.SelectedItem = null;
-                }
+                ScrollingHost.SelectedItem = value?.Items.GetItem(value?.SelectedItem);
             }
         }
 
@@ -90,6 +82,8 @@ namespace Telegram.Controls.Views
                 BackgroundRoot.CornerRadius = new CornerRadius(0);
                 BackgroundRoot.BorderThickness = new Thickness(0, 0, 1, 0);
                 Header.Visibility = Visibility.Collapsed;
+
+                Width = 72;
             }
             else if (type == ForumViewType.Horizontal)
             {
@@ -99,6 +93,8 @@ namespace Telegram.Controls.Views
                 BackgroundRoot.CornerRadius = new CornerRadius(0);
                 BackgroundRoot.BorderThickness = new Thickness(0, 0, 0, 1);
                 Header.Visibility = Visibility.Collapsed;
+
+                Height = 40;
             }
 
             ScrollViewer.SetHorizontalScrollBarVisibility(ScrollingHost, type == ForumViewType.Horizontal ? ScrollBarVisibility.Hidden : ScrollBarVisibility.Disabled);
@@ -251,27 +247,33 @@ namespace Telegram.Controls.Views
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.Item is not ForumTopic topic)
-            {
-                return;
-            }
+            var forumTopic = args.Item as ForumTopic;
+            var feedbackChatTopic = args.Item as FeedbackChatTopic;
+
+            var topicId = forumTopic?.Info.MessageThreadId ?? feedbackChatTopic.Id;
 
             if (args.InRecycleQueue)
             {
-                _itemToSelector.Remove(topic.Info.MessageThreadId);
+                _itemToSelector.Remove(topicId);
                 return;
             }
 
-            _itemToSelector[topic.Info.MessageThreadId] = args.ItemContainer;
+            _itemToSelector[topicId] = args.ItemContainer;
 
-            var cell = args.ItemContainer.ContentTemplateRoot as IForumTopicDelegate;
-
-            if (cell is ForumTopicVerticalCell vertical)
+            if (args.ItemContainer.ContentTemplateRoot is ForumTopicVerticalCell vertical)
             {
                 vertical.UpdateLayout(_type == ForumViewType.Vertical);
             }
 
-            cell.UpdateForumTopic(ViewModel, topic);
+            if (forumTopic != null && args.ItemContainer.ContentTemplateRoot is IForumTopicDelegate forumTopicCell)
+            {
+                forumTopicCell.UpdateForumTopic(ViewModel, forumTopic);
+            }
+            else if (feedbackChatTopic != null && args.ItemContainer.ContentTemplateRoot is IFeedbackTopicDelegate feedbackTopicCell)
+            {
+                feedbackTopicCell.UpdateFeedbackChatTopic(ViewModel, feedbackChatTopic);
+            }
+
             args.Handled = true;
         }
 
@@ -294,6 +296,20 @@ namespace Telegram.Controls.Views
             return false;
         }
 
+        private bool TryGetTopicAndCell(long topicId, out FeedbackChatTopic topic, out IFeedbackTopicDelegate cell)
+        {
+            if (_itemToSelector.TryGetValue(topicId, out SelectorItem container))
+            {
+                topic = ScrollingHost.ItemFromContainer(container) as FeedbackChatTopic;
+                cell = container.ContentTemplateRoot as IFeedbackTopicDelegate;
+                return topic != null && cell != null;
+            }
+
+            topic = null;
+            cell = null;
+            return false;
+        }
+
         private bool TryGetCell(ForumTopic topic, out IForumTopicDelegate cell)
         {
             if (_itemToSelector.TryGetValue(topic.Info.MessageThreadId, out SelectorItem container))
@@ -306,16 +322,30 @@ namespace Telegram.Controls.Views
             return false;
         }
 
+        private bool TryGetCell(FeedbackChatTopic topic, out IFeedbackTopicDelegate cell)
+        {
+            if (_itemToSelector.TryGetValue(topic.Id, out SelectorItem container))
+            {
+                cell = container.ContentTemplateRoot as IFeedbackTopicDelegate;
+                return cell != null;
+            }
+
+            cell = null;
+            return false;
+        }
+
+        #region ForumTopic
+
         public void UpdateForumTopicLastMessage(ForumTopic topic)
         {
-            Handle(topic, (chatView, chat) =>
+            HandleForumTopic(topic, (chatView, chat) =>
             {
                 chatView.UpdateForumTopicReadInbox(chat);
                 chatView.UpdateForumTopicLastMessage(chat);
             });
         }
 
-        public void Handle(long messageThreadId, Action<IForumTopicDelegate, ForumTopic> action)
+        public void HandleForumTopic(long messageThreadId, Action<IForumTopicDelegate, ForumTopic> action)
         {
             if (TryGetTopicAndCell(messageThreadId, out ForumTopic chat, out IForumTopicDelegate cell))
             {
@@ -323,7 +353,7 @@ namespace Telegram.Controls.Views
             }
         }
 
-        public void Handle(ForumTopic topic, Action<IForumTopicDelegate, ForumTopic> action)
+        public void HandleForumTopic(ForumTopic topic, Action<IForumTopicDelegate, ForumTopic> action)
         {
             if (TryGetCell(topic, out IForumTopicDelegate cell))
             {
@@ -331,7 +361,38 @@ namespace Telegram.Controls.Views
             }
         }
 
-        public async void SetSelectedItem(ForumTopic topic)
+        #endregion
+
+        #region FeedbackChatTopic
+
+        public void UpdateFeedbackChatTopicLastMessage(FeedbackChatTopic topic)
+        {
+            HandleFeedbackChatTopic(topic, (chatView, chat) =>
+            {
+                chatView.UpdateFeedbackChatTopicReadInbox(chat);
+                chatView.UpdateFeedbackChatTopicLastMessage(chat);
+            });
+        }
+
+        public void HandleFeedbackChatTopic(long topicId, Action<IFeedbackTopicDelegate, FeedbackChatTopic> action)
+        {
+            if (TryGetTopicAndCell(topicId, out FeedbackChatTopic chat, out IFeedbackTopicDelegate cell))
+            {
+                action(cell, chat);
+            }
+        }
+
+        public void HandleFeedbackChatTopic(FeedbackChatTopic topic, Action<IFeedbackTopicDelegate, FeedbackChatTopic> action)
+        {
+            if (TryGetCell(topic, out IFeedbackTopicDelegate cell))
+            {
+                action(cell, topic);
+            }
+        }
+
+        #endregion
+
+        public async void SetSelectedItem(object topic)
         {
             await System.Threading.Tasks.Task.Delay(100);
 
@@ -351,7 +412,7 @@ namespace Telegram.Controls.Views
             }
         }
 
-        public void SetSelectedItems(IList<ForumTopic> topics)
+        public void SetSelectedItems(IList<object> topics)
         {
             if (ViewModel.SelectionMode == ListViewSelectionMode.Multiple)
             {
@@ -417,7 +478,7 @@ namespace Telegram.Controls.Views
 
             if (args.DropResult == DataPackageOperation.Move && args.Items.Count == 1 && args.Items[0] is ForumTopic topic)
             {
-                var items = ViewModel.Items;
+                var items = ViewModel.Items as TopicListViewModel.ForumTopicsCollection;
                 if (items.Count == 1)
                 {
                     return;
@@ -454,44 +515,51 @@ namespace Telegram.Controls.Views
             }
 
             var flyout = new MenuFlyout();
-            var topic = ScrollingHost.ItemFromContainer(sender) as ForumTopic;
 
-            var canManage = supergroup.CanManageTopics();
-            if (canManage)
+            var topic = ScrollingHost.ItemFromContainer(sender);
+            if (topic is ForumTopic forumTopic)
             {
-                //Telegram.Td.Api.ToggleForumTopicIsPinned // CanManageTopics
-                flyout.CreateFlyoutItem(viewModel.PinTopic, topic, topic.IsPinned ? Strings.UnpinFromTop : Strings.PinToTop, topic.IsPinned ? Icons.PinOff : Icons.Pin);
+                var canManage = supergroup.CanManageTopics();
+                if (canManage)
+                {
+                    //Telegram.Td.Api.ToggleForumTopicIsPinned // CanManageTopics
+                    flyout.CreateFlyoutItem(viewModel.PinTopic, forumTopic, forumTopic.IsPinned ? Strings.UnpinFromTop : Strings.PinToTop, forumTopic.IsPinned ? Icons.PinOff : Icons.Pin);
+                }
+
+                var muted = ViewModel.ClientService.Notifications.IsMuted(chat, forumTopic);
+                flyout.CreateFlyoutItem(viewModel.NotifyTopic, forumTopic, muted ? Strings.Unmute : Strings.Mute, forumTopic.IsPinned ? Icons.Alert : Icons.AlertOff);
+
+                if (canManage)
+                {
+                    //Telegram.Td.Api.ToggleGeneralForumTopicIsHidden // CanManageTopics
+                    //Telegram.Td.Api.ToggleForumTopicIsClosed // CanManageTopics
+                    flyout.CreateFlyoutItem(viewModel.CloseTopic, forumTopic, forumTopic.Info.IsClosed ? Strings.RestartTopic : Strings.CloseTopic, forumTopic.Info.IsClosed ? Icons.PlayCircle : Icons.HandRight);
+                }
+
+                if (forumTopic.UnreadCount > 0)
+                {
+                    flyout.CreateFlyoutItem(viewModel.MarkTopicAsRead, forumTopic, Strings.MarkAsRead, Icons.MarkAsRead);
+                }
+
+                if (canManage)
+                {
+                    //     Deletes all messages in a forum topic; requires CanDeleteMessages administrator
+                    //     right in the supergroup unless the user is creator of the topic, the topic has
+                    //     no messages from other users and has at most 11 messages.
+                    flyout.CreateFlyoutItem(viewModel.DeleteTopic, forumTopic, Strings.Delete, Icons.Delete, destructive: true);
+                }
+
+                if (viewModel.SelectionMode != ListViewSelectionMode.Multiple)
+                {
+                    flyout.CreateFlyoutSeparator();
+                    flyout.CreateFlyoutItem(viewModel.OpenTopic, forumTopic, Strings.OpenInNewWindow, Icons.WindowNew);
+                    flyout.CreateFlyoutSeparator();
+                    flyout.CreateFlyoutItem(viewModel.SelectTopic, forumTopic, Strings.Select, Icons.CheckmarkCircle);
+                }
             }
-
-            var muted = ViewModel.ClientService.Notifications.IsMuted(chat, topic);
-            flyout.CreateFlyoutItem(viewModel.NotifyTopic, topic, muted ? Strings.Unmute : Strings.Mute, topic.IsPinned ? Icons.Alert : Icons.AlertOff);
-
-            if (canManage)
+            else if (topic is FeedbackChatTopic feedbackChatTopic && ViewModel.Chat.IsFeedbackChatAdministrator(ViewModel.ClientService))
             {
-                //Telegram.Td.Api.ToggleGeneralForumTopicIsHidden // CanManageTopics
-                //Telegram.Td.Api.ToggleForumTopicIsClosed // CanManageTopics
-                flyout.CreateFlyoutItem(viewModel.CloseTopic, topic, topic.Info.IsClosed ? Strings.RestartTopic : Strings.CloseTopic, topic.Info.IsClosed ? Icons.PlayCircle : Icons.HandRight);
-            }
-
-            if (topic.UnreadCount > 0)
-            {
-                flyout.CreateFlyoutItem(viewModel.MarkTopicAsRead, topic, Strings.MarkAsRead, Icons.MarkAsRead);
-            }
-
-            if (canManage)
-            {
-                //     Deletes all messages in a forum topic; requires CanDeleteMessages administrator
-                //     right in the supergroup unless the user is creator of the topic, the topic has
-                //     no messages from other users and has at most 11 messages.
-                flyout.CreateFlyoutItem(viewModel.DeleteTopic, topic, Strings.Delete, Icons.Delete, destructive: true);
-            }
-
-            if (viewModel.SelectionMode != ListViewSelectionMode.Multiple)
-            {
-                flyout.CreateFlyoutSeparator();
-                flyout.CreateFlyoutItem(viewModel.OpenTopic, topic, Strings.OpenInNewWindow, Icons.WindowNew);
-                flyout.CreateFlyoutSeparator();
-                flyout.CreateFlyoutItem(viewModel.SelectTopic, topic, Strings.Select, Icons.CheckmarkCircle);
+                flyout.CreateFlyoutItem(viewModel.ClearTopic, feedbackChatTopic, Strings.ClearHistory, Icons.Broom);
             }
 
             flyout.ShowAt(sender, args);

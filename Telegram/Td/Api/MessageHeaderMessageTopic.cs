@@ -8,7 +8,7 @@ using System;
 
 namespace Telegram.Td.Api
 {
-    public partial class MessageHeaderForumTopic : MessageContent
+    public partial class MessageHeaderMessageTopic : MessageContent
     {
         public NativeObject ToUnmanaged()
         {
@@ -17,7 +17,7 @@ namespace Telegram.Td.Api
 
         public override string ToString()
         {
-            return nameof(MessageHeaderForumTopic);
+            return nameof(MessageHeaderMessageTopic);
         }
     }
 }
