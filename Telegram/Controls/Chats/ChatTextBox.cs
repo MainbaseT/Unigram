@@ -767,19 +767,30 @@ namespace Telegram.Controls.Chats
                         var response = await _clientService.SendAsync(new SearchEmojis(_query, new[] { _inputLanguage }));
                         if (response is EmojiKeywords emojis)
                         {
-                            var results = emojis.EmojiKeywordsValue
-                                .DistinctBy(x => x.Emoji)
-                                .Select(x => x.Emoji)
-                                .OrderBy(x =>
-                                {
-                                    var index = SettingsService.Current.Emoji.RecentEmoji.IndexOf(x);
-                                    if (index < 0)
-                                    {
-                                        return int.MaxValue;
-                                    }
+                            var results = new List<string>();
+                            var recent = new Dictionary<int, string>();
 
-                                    return index;
-                                });
+                            var distinct = emojis.EmojiKeywordsValue
+                                .DistinctBy(x => x.Emoji)
+                                .Select(x => x.Emoji);
+
+                            foreach (var emoji in distinct)
+                            {
+                                var index = SettingsService.Current.Emoji.RecentEmoji.IndexOf(emoji);
+                                if (index >= 0)
+                                {
+                                    recent[index] = emoji;
+                                }
+                                else
+                                {
+                                    results.Add(emoji);
+                                }
+                            }
+
+                            foreach (var emoji in recent.OrderByDescending(x => x.Key))
+                            {
+                                results.Insert(0, emoji.Value);
+                            }
 
                             _emoji = string.Join(" ", results);
 

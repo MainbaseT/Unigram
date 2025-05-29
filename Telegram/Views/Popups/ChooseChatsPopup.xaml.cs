@@ -1260,7 +1260,15 @@ namespace Telegram.Views.Popups
             }
             else if (args.ItemContainer.ContentTemplateRoot is ForumTopicShareCell topicCell)
             {
-                topicCell.UpdateCell(ViewModel.ClientService, args.Item as ForumTopic);
+                if (args.Item is ForumTopic forumTopic)
+                {
+                    topicCell.UpdateCell(ViewModel.ClientService, forumTopic);
+                }
+                else if (args.Item is FeedbackChatTopic feedbackChatTopic)
+                {
+                    topicCell.UpdateCell(ViewModel.ClientService, feedbackChatTopic);
+                }
+
                 args.Handled = true;
             }
         }
@@ -1394,8 +1402,14 @@ namespace Telegram.Views.Popups
 
             ShowHideForum(true);
 
-            var viewModel = new TopicListViewModel.ItemsCollection(ViewModel.ClientService, ViewModel.Aggregator, null, chat);
-            ForumList.ItemsSource = viewModel;
+            if (ViewModel.ClientService.IsForum(chat))
+            {
+                ForumList.ItemsSource = new TopicListViewModel.ForumTopicsCollection(ViewModel.ClientService, ViewModel.Aggregator, null, chat);
+            }
+            else
+            {
+                ForumList.ItemsSource = new TopicListViewModel.FeedbackChatTopicsCollection(ViewModel.ClientService, ViewModel.Aggregator, null, chat);
+            }
         }
 
         private void ShowHideForum(bool show)
@@ -1550,10 +1564,16 @@ namespace Telegram.Views.Popups
                     item = response as Chat;
                 }
             }
-            else if (item is ForumTopic topic && ForumList.ItemsSource is TopicListViewModel.ItemsCollection collection)
+            else if (item is ForumTopic forumTopic && ForumList.ItemsSource is TopicListViewModel.ForumTopicsCollection forumTopicCollection)
             {
-                item = collection.Chat;
-                ViewModel.SelectedTopics[collection.Chat.Id] = topic.ToId();
+                item = forumTopicCollection.Chat;
+                ViewModel.SelectedTopics[forumTopicCollection.Chat.Id] = forumTopic.ToId();
+                ShowHideForum(null);
+            }
+            else if (item is FeedbackChatTopic feedbackChatTopic && ForumList.ItemsSource is TopicListViewModel.FeedbackChatTopicsCollection feedbackChatTopicCollection)
+            {
+                item = feedbackChatTopicCollection.Chat;
+                ViewModel.SelectedTopics[feedbackChatTopicCollection.Chat.Id] = feedbackChatTopic.ToId();
                 ShowHideForum(null);
             }
 
@@ -1577,7 +1597,7 @@ namespace Telegram.Views.Popups
             }
 
             var chat = item as Chat;
-            if (chat == null || ItemClick(chat, e.ClickedItem is not ForumTopic))
+            if (chat == null || ItemClick(chat, e.ClickedItem is not ForumTopic and not FeedbackChatTopic))
             {
                 return;
             }
@@ -1636,7 +1656,7 @@ namespace Telegram.Views.Popups
                 ConfirmPaidMessages();
                 return true;
             }
-            else if (ViewModel.Options.CanPostMessages && origin && ViewModel.ClientService.IsForum(chat))
+            else if (ViewModel.Options.CanPostMessages && origin && (ViewModel.ClientService.IsForum(chat) || ViewModel.ClientService.IsFeedbackGroup(chat)))
             {
                 if (ViewModel.SelectedItems.Contains(chat))
                 {
