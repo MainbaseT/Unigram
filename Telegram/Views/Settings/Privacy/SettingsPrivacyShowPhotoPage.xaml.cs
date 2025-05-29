@@ -24,9 +24,7 @@ namespace Telegram.Views.Settings.Privacy
 
         #region Delegate
 
-        public void UpdateUser(Chat chat, User user, bool secret) { }
-
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
+        public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             if (fullInfo != null)
             {

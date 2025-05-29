@@ -272,12 +272,7 @@ namespace Telegram.Views
             ProfileHeader.UpdateChatNotificationSettings(chat);
         }
 
-        public void UpdateUser(Chat chat, User user, bool secret)
-        {
-            ProfileHeader.UpdateUser(chat, user, secret);
-        }
-
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
+        public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             ProfileHeader.UpdateUserFullInfo(chat, user, fullInfo, secret, accessToken);
         }
@@ -296,33 +291,26 @@ namespace Telegram.Views
 
 
 
-        public void UpdateBasicGroup(Chat chat, BasicGroup group)
-        {
-            ProfileHeader.UpdateBasicGroup(chat, group);
-        }
-
-        public void UpdateBasicGroupFullInfo(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
+        public void UpdateBasicGroup(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
         {
             ProfileHeader.UpdateBasicGroupFullInfo(chat, group, fullInfo);
 
-            ViewModel.Members = new SortedObservableCollection<ChatMember>(new ChatMemberComparer(ViewModel.ClientService, true), fullInfo.Members);
+            if (fullInfo != null)
+            {
+                ViewModel.Members = new SortedObservableCollection<ChatMember>(new ChatMemberComparer(ViewModel.ClientService, true), fullInfo.Members);
+            }
         }
 
 
 
-        public void UpdateSupergroup(Chat chat, Supergroup group)
+        public void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
-            ProfileHeader.UpdateSupergroup(chat, group);
+            ProfileHeader.UpdateSupergroupFullInfo(chat, group, fullInfo);
 
             if (!group.IsChannel && (ViewModel.Members == null || group.MemberCount < 200 && group.MemberCount != ViewModel.Members.Count))
             {
                 ViewModel.Members = ViewModel.CreateMembers(group.Id);
             }
-        }
-
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
-        {
-            ProfileHeader.UpdateSupergroupFullInfo(chat, group, fullInfo);
         }
 
         #endregion

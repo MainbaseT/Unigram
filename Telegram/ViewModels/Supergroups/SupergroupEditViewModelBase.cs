@@ -126,15 +126,11 @@ namespace Telegram.ViewModels.Supergroups
                 var item = ClientService.GetSupergroup(super.SupergroupId);
                 var cache = ClientService.GetSupergroupFull(super.SupergroupId);
 
-                UpdateSupergroup(chat, item);
+                UpdateSupergroup(chat, item, cache);
 
                 if (cache == null)
                 {
                     ClientService.Send(new GetSupergroupFullInfo(super.SupergroupId));
-                }
-                else
-                {
-                    Delegate?.UpdateSupergroupFullInfo(chat, item, cache);
                 }
 
                 if (!item.HasEditableUsername())
@@ -152,15 +148,11 @@ namespace Telegram.ViewModels.Supergroups
                 var item = ClientService.GetBasicGroup(basic.BasicGroupId);
                 var cache = ClientService.GetBasicGroupFull(basic.BasicGroupId);
 
-                Delegate?.UpdateBasicGroup(chat, item);
+                Delegate?.UpdateBasicGroup(chat, item, cache);
 
                 if (cache == null)
                 {
                     ClientService.Send(new GetBasicGroupFullInfo(basic.BasicGroupId));
-                }
-                else
-                {
-                    Delegate?.UpdateBasicGroupFullInfo(chat, item, cache);
                 }
 
                 LoadUsername(0);
@@ -187,13 +179,14 @@ namespace Telegram.ViewModels.Supergroups
 
             if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.Supergroup.Id)
             {
-                BeginOnUIThread(() => UpdateSupergroup(chat, update.Supergroup));
+                ClientService.TryGetSupergroupFull(super.SupergroupId, out SupergroupFullInfo fullInfo);
+                BeginOnUIThread(() => UpdateSupergroup(chat, update.Supergroup, fullInfo));
             }
         }
 
-        protected virtual void UpdateSupergroup(Chat chat, Supergroup supergroup)
+        protected virtual void UpdateSupergroup(Chat chat, Supergroup supergroup, SupergroupFullInfo fullInfo)
         {
-            Delegate?.UpdateSupergroup(chat, supergroup);
+            Delegate?.UpdateSupergroup(chat, supergroup, fullInfo);
             UpdateUsernames(supergroup.Usernames, Username);
         }
 
@@ -286,9 +279,9 @@ namespace Telegram.ViewModels.Supergroups
                 return;
             }
 
-            if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.SupergroupId)
+            if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.SupergroupId && ClientService.TryGetSupergroup(update.SupergroupId, out Supergroup supergroup))
             {
-                BeginOnUIThread(() => Delegate?.UpdateSupergroupFullInfo(chat, ClientService.GetSupergroup(update.SupergroupId), update.SupergroupFullInfo));
+                BeginOnUIThread(() => Delegate?.UpdateSupergroup(chat, supergroup, update.SupergroupFullInfo));
             }
         }
 
@@ -302,7 +295,8 @@ namespace Telegram.ViewModels.Supergroups
 
             if (chat.Type is ChatTypeBasicGroup basic && basic.BasicGroupId == update.BasicGroup.Id)
             {
-                BeginOnUIThread(() => Delegate?.UpdateBasicGroup(chat, update.BasicGroup));
+                ClientService.TryGetBasicGroupFull(basic.BasicGroupId, out BasicGroupFullInfo fullInfo);
+                BeginOnUIThread(() => Delegate?.UpdateBasicGroup(chat, update.BasicGroup, fullInfo));
             }
         }
 
@@ -314,9 +308,9 @@ namespace Telegram.ViewModels.Supergroups
                 return;
             }
 
-            if (chat.Type is ChatTypeBasicGroup basic && basic.BasicGroupId == update.BasicGroupId)
+            if (chat.Type is ChatTypeBasicGroup basic && basic.BasicGroupId == update.BasicGroupId && ClientService.TryGetBasicGroup(update.BasicGroupId, out BasicGroup basicGroup))
             {
-                BeginOnUIThread(() => Delegate?.UpdateBasicGroupFullInfo(chat, ClientService.GetBasicGroup(update.BasicGroupId), update.BasicGroupFullInfo));
+                BeginOnUIThread(() => Delegate?.UpdateBasicGroup(chat, basicGroup, update.BasicGroupFullInfo));
             }
         }
 

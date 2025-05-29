@@ -26,7 +26,7 @@ namespace Telegram.Views.Users
 
         #region Delegate
 
-        public void UpdateUser(Chat chat, User user, bool secret)
+        public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             Photo.SetUser(ViewModel.ClientService, user, 96);
 
@@ -59,10 +59,12 @@ namespace Telegram.Views.Users
                 SuggestPhoto.Content = string.Format(Strings.SuggestPhotoFor, user.FirstName);
                 PersonalPhoto.Content = string.Format(Strings.SetPhotoFor, user.FirstName);
             }
-        }
 
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
-        {
+            if (fullInfo == null)
+            {
+                return;
+            }
+
             if (ResetPhoto != null)
             {
                 if (fullInfo.PersonalPhoto != null)

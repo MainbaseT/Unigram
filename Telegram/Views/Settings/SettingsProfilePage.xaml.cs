@@ -32,7 +32,7 @@ namespace Telegram.Views.Settings
 
         #region Delegate
 
-        public void UpdateUser(Chat chat, User user, bool secret)
+        public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             Photo.SetUser(ViewModel.ClientService, user, 96);
 
@@ -62,10 +62,12 @@ namespace Telegram.Views.Settings
             {
                 NameColor.Visibility = Visibility.Collapsed;
             }
-        }
 
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
-        {
+            if (fullInfo == null)
+            {
+                return;
+            }
+
             if (fullInfo.Birthdate != null)
             {
                 Birthdate.Badge = Formatter.Birthdate(fullInfo.Birthdate);

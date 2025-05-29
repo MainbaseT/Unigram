@@ -88,18 +88,16 @@ namespace Telegram.ViewModels.Settings
                 FirstName = user.FirstName;
                 LastName = user.LastName;
 
-                Delegate?.UpdateUser(null, user, false);
-
                 if (ClientService.TryGetUserFull(user.Id, out UserFullInfo userFull))
                 {
                     Bio = userFull.Bio.Text;
-
-                    Delegate?.UpdateUserFullInfo(null, user, userFull, false, false);
                 }
                 else
                 {
                     ClientService.Send(new GetUserFullInfo(user.Id));
                 }
+
+                Delegate?.UpdateUser(null, user, userFull, false, false);
             }
 
             var response = await ClientService.SendAsync(new GetUserPrivacySettingRules(new UserPrivacySettingShowBirthdate()));
@@ -123,12 +121,14 @@ namespace Telegram.ViewModels.Settings
         {
             if (update.User.Id == ClientService.Options.MyId)
             {
+                ClientService.TryGetUserFull(update.User.Id, out UserFullInfo fullInfo);
+
                 BeginOnUIThread(() =>
                 {
                     FirstName = update.User.FirstName;
                     LastName = update.User.LastName;
 
-                    Delegate?.UpdateUser(null, update.User, false);
+                    Delegate?.UpdateUser(null, update.User, fullInfo, false, false);
                 });
             }
         }
@@ -141,7 +141,7 @@ namespace Telegram.ViewModels.Settings
                 {
                     Bio = update.UserFullInfo.Bio.Text;
 
-                    Delegate?.UpdateUserFullInfo(null, user, update.UserFullInfo, false, false);
+                    Delegate?.UpdateUser(null, user, update.UserFullInfo, false, false);
                 });
             }
         }

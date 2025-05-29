@@ -721,7 +721,7 @@ namespace Telegram.Controls
                 : (_filledIcons ? Icons.AlertFilled : Icons.Alert);
         }
 
-        public void UpdateUser(Chat chat, User user, bool secret)
+        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             UpdateUserStatus(chat, user);
 
@@ -812,10 +812,12 @@ namespace Telegram.Controls
             Admins.Visibility = Visibility.Collapsed;
             Members.Visibility = Visibility.Collapsed;
             ChannelSettings.Visibility = Visibility.Collapsed;
-        }
 
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
-        {
+            if (fullInfo == null)
+            {
+                return;
+            }
+
             if (user.Type is UserTypeBot && fullInfo.BotInfo != null)
             {
                 GetEntities(fullInfo.BotInfo.ShortDescription);
@@ -970,7 +972,7 @@ namespace Telegram.Controls
 
 
 
-        public void UpdateBasicGroup(Chat chat, BasicGroup group)
+        public void UpdateBasicGroupFullInfo(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
         {
             Subtitle.Text = Locale.Declension(Strings.R.Members, group.MemberCount);
             SubtitleWhen.Visibility = Visibility.Collapsed;
@@ -1036,10 +1038,12 @@ namespace Telegram.Controls
             UserBirthday.Visibility = Visibility.Collapsed;
 
             BusinessHours.Visibility = Visibility.Collapsed;
-        }
 
-        public void UpdateBasicGroupFullInfo(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
-        {
+            if (fullInfo == null)
+            {
+                return;
+            }
+
             GetEntities(fullInfo.Description);
 
             Description.Visibility = string.IsNullOrEmpty(fullInfo.Description)
@@ -1053,11 +1057,16 @@ namespace Telegram.Controls
 
 
 
-        public void UpdateSupergroup(Chat chat, Supergroup group)
+        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
             if (ViewModel.ForumTopic != null)
             {
                 Subtitle.Text = string.Format(Strings.TopicProfileStatus, chat.Title);
+                SubtitleWhen.Visibility = Visibility.Collapsed;
+            }
+            else if (fullInfo != null)
+            {
+                Subtitle.Text = Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, fullInfo.MemberCount);
                 SubtitleWhen.Visibility = Visibility.Collapsed;
             }
             else
@@ -1138,19 +1147,10 @@ namespace Telegram.Controls
             UserBirthday.Visibility = Visibility.Collapsed;
 
             BusinessHours.Visibility = Visibility.Collapsed;
-        }
 
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
-        {
-            if (ViewModel.ForumTopic != null)
+            if (fullInfo == null)
             {
-                Subtitle.Text = string.Format(Strings.TopicProfileStatus, chat.Title);
-                SubtitleWhen.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                Subtitle.Text = Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, fullInfo.MemberCount);
-                SubtitleWhen.Visibility = Visibility.Collapsed;
+                return;
             }
 
             GetEntities(fullInfo.Description);

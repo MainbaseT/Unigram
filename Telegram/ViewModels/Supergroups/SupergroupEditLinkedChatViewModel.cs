@@ -70,15 +70,11 @@ namespace Telegram.ViewModels.Supergroups
                 var item = ClientService.GetSupergroup(super.SupergroupId);
                 var cache = ClientService.GetSupergroupFull(super.SupergroupId);
 
-                UpdateSupergroup(chat, item);
+                UpdateSupergroup(chat, item, cache);
 
                 if (cache == null)
                 {
                     ClientService.Send(new GetSupergroupFullInfo(super.SupergroupId));
-                }
-                else
-                {
-                    UpdateSupergroupFullInfo(chat, item, cache);
                 }
             }
 
@@ -101,7 +97,8 @@ namespace Telegram.ViewModels.Supergroups
 
             if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.Supergroup.Id)
             {
-                BeginOnUIThread(() => UpdateSupergroup(chat, update.Supergroup));
+                ClientService.TryGetSupergroupFull(super.SupergroupId, out SupergroupFullInfo fullInfo);
+                BeginOnUIThread(() => UpdateSupergroup(chat, update.Supergroup, fullInfo));
             }
         }
 
@@ -115,18 +112,13 @@ namespace Telegram.ViewModels.Supergroups
 
             if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.SupergroupId)
             {
-                BeginOnUIThread(() => UpdateSupergroupFullInfo(chat, ClientService.GetSupergroup(update.SupergroupId), update.SupergroupFullInfo));
+                BeginOnUIThread(() => UpdateSupergroup(chat, ClientService.GetSupergroup(update.SupergroupId), update.SupergroupFullInfo));
             }
         }
 
-        private void UpdateSupergroup(Chat chat, Supergroup group)
+        private void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
-            Delegate?.UpdateSupergroup(chat, group);
-        }
-
-        private void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
-        {
-            Delegate?.UpdateSupergroupFullInfo(chat, group, fullInfo);
+            Delegate?.UpdateSupergroup(chat, group, fullInfo);
 
             if (fullInfo.LinkedChatId != 0)
             {

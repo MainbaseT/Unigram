@@ -5656,12 +5656,7 @@ namespace Telegram.Views
 
 
 
-        public void UpdateUser(Chat chat, User user, bool secret)
-        {
-
-        }
-
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
+        public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             AccountInfoHeader.UpdateUser(_viewModel.ClientService, chat, user, fullInfo);
 
@@ -5874,14 +5869,7 @@ namespace Telegram.Views
             }
         }
 
-
-
-        public void UpdateBasicGroup(Chat chat, BasicGroup group)
-        {
-
-        }
-
-        public void UpdateBasicGroupFullInfo(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
+        public void UpdateBasicGroup(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
         {
             AccountInfoHeader.UpdateUser(_viewModel.ClientService, null, null, null);
 
@@ -5953,14 +5941,7 @@ namespace Telegram.Views
             //ShowHideBotCommands(false);
         }
 
-
-
-        public void UpdateSupergroup(Chat chat, Supergroup group)
-        {
-
-        }
-
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
+        public void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
             AccountInfoHeader.UpdateUser(_viewModel.ClientService, null, null, null);
 

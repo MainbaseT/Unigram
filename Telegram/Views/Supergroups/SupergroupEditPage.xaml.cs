@@ -87,8 +87,74 @@ namespace Telegram.Views.Supergroups
             }
         }
 
-        public void UpdateSupergroup(Chat chat, Supergroup group)
+        public void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
+            if (fullInfo != null)
+            {
+                ViewModel.About = fullInfo.Description;
+                ViewModel.IsAllHistoryAvailable = fullInfo.IsAllHistoryAvailable ? 0 : 1;
+
+                var linkedChat = ViewModel.ClientService.GetChat(fullInfo.LinkedChatId);
+                if (linkedChat != null && ViewModel.ClientService.TryGetSupergroup(linkedChat, out Supergroup linkedSupergroup))
+                {
+                    if (linkedSupergroup.HasActiveUsername(out string username))
+                    {
+                        ChatLinked.Badge = $"@{username}";
+                    }
+                    else
+                    {
+                        ChatLinked.Badge = linkedChat.Title;
+                    }
+                }
+                else
+                {
+                    ChatLinked.Badge = Strings.DiscussionInfoShort;
+                }
+
+                Admins.Badge = fullInfo.AdministratorCount;
+                Members.Badge = fullInfo.MemberCount;
+                Blacklist.Badge = fullInfo.BannedCount;
+
+                ChatBasicPanel.Visibility = ChatType.Visibility == Visibility.Visible
+                    || ChatHistory.Visibility == Visibility.Visible
+                    || ChatLinked.Visibility == Visibility.Visible
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+
+                Statistics.Visibility = fullInfo.CanGetStatistics
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+
+                if (ViewModel.ClientService.TryGetChat(fullInfo.FeedbackChatId, out Chat feedbackChat))
+                {
+                    var price = ViewModel.ClientService.PaidMessageStarCount(feedbackChat);
+                    if (price > 0)
+                    {
+                        ChannelFeedbackGroupStars.Visibility = Visibility.Visible;
+                        ChannelFeedbackGroupStarCount.Text = price.ToString("N0");
+                    }
+                    else
+                    {
+                        ChannelFeedbackGroupStars.Visibility = Visibility.Collapsed;
+                        ChannelFeedbackGroupStarCount.Text = Strings.PostSuggestionsFree;
+                    }
+
+                    ChannelFeedbackGroupRoot.Visibility = Visibility.Visible;
+                    ChannelFeedbackGroupCell.UpdateChat(ViewModel.ClientService, feedbackChat, new ChatListFolder(int.MaxValue));
+                }
+                else
+                {
+                    ChannelFeedbackGroupStars.Visibility = Visibility.Collapsed;
+                    ChannelFeedbackGroupStarCount.Text = Strings.PostSuggestionsOff;
+                }
+            }
+            else
+            {
+                ChannelFeedbackGroupRoot.Visibility = Visibility.Collapsed;
+                ChannelFeedbackGroupStars.Visibility = Visibility.Collapsed;
+                ChannelFeedbackGroupStarCount.Text = string.Empty;
+            }
+
             TitleLabel.PlaceholderText = group.IsChannel ? Strings.EnterChannelName : Strings.GroupName;
 
             Delete.Content = group.IsChannel ? Strings.ChannelDelete : Strings.DeleteMega;
@@ -185,81 +251,21 @@ namespace Telegram.Views.Supergroups
             ChannelAutoTranslate.Visibility = group.IsChannel && canChangeInfo ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
+        public void UpdateBasicGroup(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
         {
             if (fullInfo != null)
             {
-                ViewModel.About = fullInfo.Description;
-                ViewModel.IsAllHistoryAvailable = fullInfo.IsAllHistoryAvailable ? 0 : 1;
-
-                var linkedChat = ViewModel.ClientService.GetChat(fullInfo.LinkedChatId);
-                if (linkedChat != null && ViewModel.ClientService.TryGetSupergroup(linkedChat, out Supergroup linkedSupergroup))
-                {
-                    if (linkedSupergroup.HasActiveUsername(out string username))
-                    {
-                        ChatLinked.Badge = $"@{username}";
-                    }
-                    else
-                    {
-                        ChatLinked.Badge = linkedChat.Title;
-                    }
-                }
-                else
-                {
-                    ChatLinked.Badge = Strings.DiscussionInfoShort;
-                }
-
-                Admins.Badge = fullInfo.AdministratorCount;
-                Members.Badge = fullInfo.MemberCount;
-                Blacklist.Badge = fullInfo.BannedCount;
+                Admins.Badge = fullInfo.Members.Count(x => x.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator);
+                Members.Badge = fullInfo.Members.Count;
+                Blacklist.Badge = 0;
 
                 ChatBasicPanel.Visibility = ChatType.Visibility == Visibility.Visible
                     || ChatHistory.Visibility == Visibility.Visible
                     || ChatLinked.Visibility == Visibility.Visible
                         ? Visibility.Visible
                         : Visibility.Collapsed;
-
-                Statistics.Visibility = fullInfo.CanGetStatistics
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
-
-                if (ViewModel.ClientService.TryGetChat(fullInfo.FeedbackChatId, out Chat feedbackChat))
-                {
-                    var price = ViewModel.ClientService.PaidMessageStarCount(feedbackChat);
-                    if (price > 0)
-                    {
-                        ChannelFeedbackGroupStars.Visibility = Visibility.Visible;
-                        ChannelFeedbackGroupStarCount.Text = price.ToString("N0");
-                    }
-                    else
-                    {
-                        ChannelFeedbackGroupStars.Visibility = Visibility.Collapsed;
-                        ChannelFeedbackGroupStarCount.Text = Strings.PostSuggestionsFree;
-                    }
-
-                    ChannelFeedbackGroupRoot.Visibility = Visibility.Visible;
-                    ChannelFeedbackGroupCell.UpdateChat(ViewModel.ClientService, feedbackChat, new ChatListFolder(int.MaxValue));
-                }
-                else
-                {
-                    ChannelFeedbackGroupStars.Visibility = Visibility.Collapsed;
-                    ChannelFeedbackGroupStarCount.Text = Strings.PostSuggestionsOff;
-                }
-            }
-            else
-            {
-                ChannelFeedbackGroupRoot.Visibility = Visibility.Collapsed;
-                ChannelFeedbackGroupStars.Visibility = Visibility.Collapsed;
-                ChannelFeedbackGroupStarCount.Text = string.Empty;
             }
 
-            UpdateSupergroup(chat, group);
-        }
-
-
-
-        public void UpdateBasicGroup(Chat chat, BasicGroup group)
-        {
             TitleLabel.PlaceholderText = Strings.GroupName;
 
             Delete.Content = Strings.DeleteMega;
@@ -309,24 +315,6 @@ namespace Telegram.Views.Supergroups
                     : Visibility.Collapsed;
 
             AffiliatePrograms.Visibility = Visibility.Collapsed;
-        }
-
-        public void UpdateBasicGroupFullInfo(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
-        {
-            if (fullInfo != null)
-            {
-                Admins.Badge = fullInfo.Members.Count(x => x.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator);
-                Members.Badge = fullInfo.Members.Count;
-                Blacklist.Badge = 0;
-
-                ChatBasicPanel.Visibility = ChatType.Visibility == Visibility.Visible
-                    || ChatHistory.Visibility == Visibility.Visible
-                    || ChatLinked.Visibility == Visibility.Visible
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
-            }
-
-            UpdateBasicGroup(chat, group);
         }
 
         #endregion

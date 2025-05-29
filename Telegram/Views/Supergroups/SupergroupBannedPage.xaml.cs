@@ -56,13 +56,12 @@ namespace Telegram.Views.Supergroups
 
         #region Binding
 
-        public void UpdateSupergroup(Chat chat, Supergroup group)
+        public void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
             AddNewPanel.Visibility = group.CanRestrictMembers() ? Visibility.Visible : Visibility.Collapsed;
             Footer.Text = group.IsChannel ? Strings.NoBlockedChannel : Strings.NoBlockedGroup;
         }
 
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo) { }
         public void UpdateChat(Chat chat) { }
         public void UpdateChatTitle(Chat chat) { }
         public void UpdateChatPhoto(Chat chat) { }

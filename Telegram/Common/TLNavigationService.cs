@@ -382,7 +382,7 @@ namespace Telegram.Common
                 if (accessToken != null && ClientService.TryGetUser(chat, out User user) && ClientService.TryGetUserFull(chat, out UserFullInfo userFull))
                 {
                     page.ViewModel.AccessToken = accessToken;
-                    page.ViewModel.Delegate.UpdateUserFullInfo(chat, user, userFull, false, true);
+                    page.ViewModel.Delegate.UpdateUser(chat, user, userFull, false, true);
                 }
 
                 page.ViewModel.TextField?.Focus(FocusState.Programmatic);

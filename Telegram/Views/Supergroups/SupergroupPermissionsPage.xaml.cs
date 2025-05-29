@@ -61,7 +61,7 @@ namespace Telegram.Views.Supergroups
 
         #region Binding
 
-        public void UpdateSupergroup(Chat chat, Supergroup group)
+        public void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
             AddNew.Visibility = group.CanRestrictMembers() ? Visibility.Visible : Visibility.Collapsed;
             Footer.Text = Strings.NoBlockedGroup;
@@ -76,10 +76,12 @@ namespace Telegram.Views.Supergroups
                 PinMessages.IsEnabled = true;
                 ChangeInfo.IsEnabled = true;
             }
-        }
 
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
-        {
+            if (fullInfo == null)
+            {
+                return;
+            }
+
             Blacklist.Badge = fullInfo.BannedCount;
             ViewModel.SlowModeDelay = fullInfo.SlowModeDelay;
 

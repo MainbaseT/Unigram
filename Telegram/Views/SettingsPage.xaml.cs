@@ -191,15 +191,11 @@ namespace Telegram.Views
 
         #region Binding
 
-        public void UpdateUser(Chat chat, User user, bool secret)
+        public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             Title.Text = user.FullName();
             Photo.SetUser(ViewModel.ClientService, user, 48);
             Identity.SetStatus(ViewModel.ClientService, user, BotVerified);
-        }
-
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
-        {
         }
 
         public void UpdateUserStatus(Chat chat, User user)

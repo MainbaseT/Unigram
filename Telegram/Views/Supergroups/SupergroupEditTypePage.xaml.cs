@@ -163,8 +163,18 @@ namespace Telegram.Views.Supergroups
 
         #region Delegate
 
-        public void UpdateSupergroup(Chat chat, Supergroup group)
+        public void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
+            if (fullInfo != null)
+            {
+                ViewModel.InviteLink = fullInfo.InviteLink?.InviteLink;
+
+                if (fullInfo.InviteLink == null && string.IsNullOrEmpty(group.Usernames?.EditableUsername))
+                {
+                    ViewModel.ClientService.Send(new CreateChatInviteLink(chat.Id, string.Empty, 0, 0, false));
+                }
+            }
+
             Title = group.IsChannel ? Strings.ChannelSettingsTitle : Strings.GroupSettingsTitle;
             Subheader.Header = group.IsChannel ? Strings.ChannelTypeHeader : Strings.GroupTypeHeader;
             Subheader.Footer = group.Usernames?.EditableUsername.Length > 0
@@ -188,18 +198,18 @@ namespace Telegram.Views.Supergroups
             ViewModel.IsPublic = group.Usernames?.EditableUsername.Length > 0;
         }
 
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
+        public void UpdateBasicGroup(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
         {
-            ViewModel.InviteLink = fullInfo.InviteLink?.InviteLink;
-
-            if (fullInfo.InviteLink == null && string.IsNullOrEmpty(group.Usernames?.EditableUsername))
+            if (fullInfo != null)
             {
-                ViewModel.ClientService.Send(new CreateChatInviteLink(chat.Id, string.Empty, 0, 0, false));
-            }
-        }
+                ViewModel.InviteLink = fullInfo.InviteLink?.InviteLink;
 
-        public void UpdateBasicGroup(Chat chat, BasicGroup group)
-        {
+                if (fullInfo.InviteLink == null)
+                {
+                    ViewModel.ClientService.Send(new CreateChatInviteLink(chat.Id, string.Empty, 0, 0, false));
+                }
+            }
+
             Title = Strings.GroupSettingsTitle;
             Subheader.Header = Strings.GroupTypeHeader;
             Subheader.Footer = Strings.MegaPrivateInfo;
@@ -215,16 +225,6 @@ namespace Telegram.Views.Supergroups
 
             ViewModel.Username = string.Empty;
             ViewModel.IsPublic = false;
-        }
-
-        public void UpdateBasicGroupFullInfo(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
-        {
-            ViewModel.InviteLink = fullInfo.InviteLink?.InviteLink;
-
-            if (fullInfo.InviteLink == null)
-            {
-                ViewModel.ClientService.Send(new CreateChatInviteLink(chat.Id, string.Empty, 0, 0, false));
-            }
         }
 
         public void UpdateChat(Chat chat)

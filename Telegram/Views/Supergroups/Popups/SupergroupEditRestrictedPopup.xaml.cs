@@ -56,7 +56,7 @@ namespace Telegram.Views.Supergroups.Popups
         public void UpdateChatTitle(Chat chat) { }
         public void UpdateChatPhoto(Chat chat) { }
 
-        public void UpdateUser(Chat chat, User user, bool secret)
+        public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             Cell.UpdateUser(ViewModel.ClientService, user, 64);
             Cell.Height = double.NaN;
@@ -66,8 +66,6 @@ namespace Telegram.Views.Supergroups.Popups
         {
             Cell.Subtitle = LastSeenConverter.GetLabel(user, true);
         }
-
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken) { }
 
         public void UpdateMember(Chat chat, User user, ChatMember member)
         {

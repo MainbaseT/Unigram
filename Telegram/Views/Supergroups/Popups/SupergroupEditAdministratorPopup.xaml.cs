@@ -50,14 +50,10 @@ namespace Telegram.Views.Supergroups.Popups
         {
         }
 
-        public void UpdateUser(Chat chat, User user, bool secret)
+        public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             Cell.UpdateUser(ViewModel.ClientService, user, 64);
             Cell.Height = double.NaN;
-        }
-
-        public void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
-        {
         }
 
         public void UpdateUserStatus(Chat chat, User user)

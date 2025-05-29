@@ -111,8 +111,6 @@ namespace Telegram.ViewModels.Users
                     LastName = user.LastName;
                 }
 
-                Delegate?.UpdateUser(null, user, false);
-
                 if (ClientService.TryGetUserFull(user.Id, out UserFullInfo userFull))
                 {
                     if (user.Type is UserTypeBot)
@@ -123,9 +121,9 @@ namespace Telegram.ViewModels.Users
                             Description = text.TextValue;
                         }
                     }
-
-                    Delegate?.UpdateUserFullInfo(null, user, userFull, false, false);
                 }
+
+                Delegate?.UpdateUser(null, user, userFull, false, false);
 
                 ClientService.Send(new GetUserFullInfo(user.Id));
 
@@ -180,12 +178,14 @@ namespace Telegram.ViewModels.Users
         {
             if (update.User.Id == _userId)
             {
+                ClientService.TryGetUserFull(update.User.Id, out UserFullInfo fullInfo);
+
                 BeginOnUIThread(() =>
                 {
                     FirstName = update.User.FirstName;
                     LastName = update.User.LastName;
 
-                    Delegate?.UpdateUser(null, update.User, false);
+                    Delegate?.UpdateUser(null, update.User, fullInfo, false, false);
                 });
             }
         }
@@ -198,7 +198,7 @@ namespace Telegram.ViewModels.Users
                 {
                     Description = update.UserFullInfo.BotInfo?.ShortDescription ?? string.Empty;
 
-                    Delegate?.UpdateUserFullInfo(null, user, update.UserFullInfo, false, false);
+                    Delegate?.UpdateUser(null, user, update.UserFullInfo, false, false);
                 });
             }
         }

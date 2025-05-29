@@ -10,8 +10,7 @@ namespace Telegram.ViewModels.Delegates
 {
     public interface IUserDelegate : IViewModelDelegate
     {
-        void UpdateUser(Chat chat, User user, bool secret);
-        void UpdateUserFullInfo(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken);
+        void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken);
 
         void UpdateUserStatus(Chat chat, User user);
     }

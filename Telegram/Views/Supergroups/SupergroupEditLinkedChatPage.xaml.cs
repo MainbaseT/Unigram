@@ -60,7 +60,7 @@ namespace Telegram.Views.Supergroups
 
         #region Delegate
 
-        public void UpdateSupergroup(Chat chat, Supergroup group)
+        public void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
             Headline.Text = string.Format(Strings.DiscussionChannelGroupSetHelp2, chat.Title);
             Headline.Margin = new Thickness(0, 0, 0, group.HasLinkedChat ? 32 : 0);
@@ -70,10 +70,12 @@ namespace Telegram.Views.Supergroups
 
             LayoutRoot.Visibility = group.HasLinkedChat ? Visibility.Visible : Visibility.Collapsed;
             Unlink.Content = group.IsChannel ? Strings.DiscussionUnlinkGroup : Strings.DiscussionUnlinkChannel;
-        }
 
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
-        {
+            if (fullInfo == null)
+            {
+                return;
+            }
+
             var linkedChat = ViewModel.ClientService.GetChat(fullInfo.LinkedChatId);
             if (linkedChat != null)
             {

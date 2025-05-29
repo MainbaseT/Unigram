@@ -52,16 +52,13 @@ namespace Telegram.ViewModels
         {
             if (ClientService.TryGetUser(ClientService.Options.MyId, out User item))
             {
-                Delegate?.UpdateUser(null, item, false);
-
                 var cache = ClientService.GetUserFull(item.Id);
+
+                Delegate?.UpdateUser(null, item, cache, false, false);
+
                 if (cache == null)
                 {
                     ClientService.Send(new GetUserFullInfo(item.Id));
-                }
-                else
-                {
-                    Delegate?.UpdateUserFullInfo(null, item, cache, false, false);
                 }
             }
 
@@ -87,15 +84,16 @@ namespace Telegram.ViewModels
         {
             if (update.User.Id == ClientService.Options.MyId)
             {
-                BeginOnUIThread(() => Delegate?.UpdateUser(null, update.User, false));
+                ClientService.TryGetUserFull(update.User.Id, out UserFullInfo fullInfo);
+                BeginOnUIThread(() => Delegate?.UpdateUser(null, update.User, fullInfo, false, false));
             }
         }
 
         public void Handle(UpdateUserFullInfo update)
         {
-            if (update.UserId == ClientService.Options.MyId)
+            if (update.UserId == ClientService.Options.MyId && ClientService.TryGetUser(update.UserId, out User user))
             {
-                BeginOnUIThread(() => Delegate?.UpdateUserFullInfo(null, ClientService.GetUser(update.UserId), update.UserFullInfo, false, false));
+                BeginOnUIThread(() => Delegate?.UpdateUser(null, user, update.UserFullInfo, false, false));
             }
         }
 

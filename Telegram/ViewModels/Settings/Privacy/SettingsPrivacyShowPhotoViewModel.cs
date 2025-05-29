@@ -30,7 +30,7 @@ namespace Telegram.ViewModels.Settings.Privacy
         {
             if (ClientService.TryGetUserFull(ClientService.Options.MyId, out UserFullInfo userFull))
             {
-                Delegate?.UpdateUserFullInfo(null, null, userFull, false, false);
+                Delegate?.UpdateUser(null, null, userFull, false, false);
             }
             else
             {
@@ -49,7 +49,7 @@ namespace Telegram.ViewModels.Settings.Privacy
         {
             if (update.UserId == ClientService.Options.MyId)
             {
-                BeginOnUIThread(() => Delegate?.UpdateUserFullInfo(null, null, update.UserFullInfo, false, false));
+                BeginOnUIThread(() => Delegate?.UpdateUser(null, null, update.UserFullInfo, false, false));
             }
         }
 

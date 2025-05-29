@@ -63,15 +63,11 @@ namespace Telegram.ViewModels.Supergroups
                 var item = ClientService.GetSupergroup(supergroup.SupergroupId);
                 var cache = ClientService.GetSupergroupFull(supergroup.SupergroupId);
 
-                Delegate?.UpdateSupergroup(chat, item);
+                Delegate?.UpdateSupergroup(chat, item, cache);
 
                 if (cache == null)
                 {
                     ClientService.Send(new GetSupergroupFullInfo(supergroup.SupergroupId));
-                }
-                else
-                {
-                    Delegate?.UpdateSupergroupFullInfo(chat, item, cache);
                 }
 
                 _memberCount = cache?.MemberCount ?? item.MemberCount;
@@ -84,7 +80,12 @@ namespace Telegram.ViewModels.Supergroups
 
                 if (Delegate is IBasicGroupDelegate basicDelegate)
                 {
-                    basicDelegate.UpdateBasicGroup(chat, item);
+                    basicDelegate.UpdateBasicGroup(chat, item, cache);
+                }
+
+                if (cache == null)
+                {
+                    ClientService.Send(new GetBasicGroupFullInfo(basicGroup.BasicGroupId));
                 }
 
                 _memberCount = cache?.Members.Count ?? item.MemberCount;
@@ -104,7 +105,7 @@ namespace Telegram.ViewModels.Supergroups
 
             if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.SupergroupId)
             {
-                BeginOnUIThread(() => Delegate?.UpdateSupergroupFullInfo(chat, ClientService.GetSupergroup(update.SupergroupId), update.SupergroupFullInfo));
+                BeginOnUIThread(() => Delegate?.UpdateSupergroup(chat, ClientService.GetSupergroup(update.SupergroupId), update.SupergroupFullInfo));
             }
         }
 

@@ -69,15 +69,11 @@ namespace Telegram.ViewModels.Supergroups
                 var cache = ClientService.GetUserFull(user.UserId);
 
                 Delegate?.UpdateMember(chat, item, member);
-                Delegate?.UpdateUser(chat, item, false);
+                Delegate?.UpdateUser(chat, item, cache, false, false);
 
                 if (cache == null)
                 {
                     ClientService.Send(new GetUserFullInfo(user.UserId));
-                }
-                else
-                {
-                    Delegate?.UpdateUserFullInfo(chat, item, cache, false, false);
                 }
 
                 Member = member;

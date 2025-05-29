@@ -170,8 +170,18 @@ namespace Telegram.Views.Supergroups
 
         #region Delegate
 
-        public void UpdateSupergroup(Chat chat, Supergroup group)
+        public void UpdateSupergroup(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
         {
+            if (fullInfo != null)
+            {
+                ViewModel.UpdateHiddenMembers(fullInfo.HasHiddenMembers);
+                HideMembers.Visibility = fullInfo.CanHideMembers ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else
+            {
+                HideMembers.Visibility = Visibility.Collapsed;
+            }
+
             Title = group.IsChannel ? Strings.ChannelSubscribers : Strings.ChannelMembers;
 
             AddNew.Content = group.IsChannel ? Strings.AddSubscriber : Strings.AddMember;
@@ -180,24 +190,22 @@ namespace Telegram.Views.Supergroups
             Footer.Visibility = group.IsChannel ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public void UpdateBasicGroup(Chat chat, BasicGroup group)
+        public void UpdateBasicGroup(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
         {
+            if (fullInfo != null)
+            {
+                ViewModel.UpdateHiddenMembers(false);
+                HideMembers.Visibility = fullInfo.CanHideMembers ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else
+            {
+                HideMembers.Visibility = Visibility.Collapsed;
+            }
+
             AddNew.Content = Strings.AddMember;
             AddNewPanel.Visibility = group.CanInviteUsers() ? Visibility.Visible : Visibility.Collapsed;
 
             Footer.Visibility = Visibility.Collapsed;
-        }
-
-        public void UpdateSupergroupFullInfo(Chat chat, Supergroup group, SupergroupFullInfo fullInfo)
-        {
-            ViewModel.UpdateHiddenMembers(fullInfo.HasHiddenMembers);
-            HideMembers.Visibility = fullInfo.CanHideMembers ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        public void UpdateBasicGroupFullInfo(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
-        {
-            ViewModel.UpdateHiddenMembers(false);
-            HideMembers.Visibility = fullInfo.CanHideMembers ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void UpdateChat(Chat chat) { }
