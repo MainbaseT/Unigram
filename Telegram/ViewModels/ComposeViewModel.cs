@@ -432,7 +432,9 @@ namespace Telegram.ViewModels
                 reply = null;
             }
 
-            foreach (var item in popup.ItemsView)
+            var itemsView = GetItemsView(popup.Items, permissions.CanSendPhotos, permissions.CanSendVideos, permissions.CanSendAudios, permissions.CanSendDocuments);
+
+            foreach (var item in itemsView)
             {
                 if (item is StorageAlbum album)
                 {
@@ -450,6 +452,37 @@ namespace Telegram.ViewModels
                     await SendStorageMediaAsync(item, reply, captionz, options, popup.IsFilesSelected, captionAboveMedia, hasSpoiler, highQuality, popup.StarCount);
                 }
             }
+        }
+
+        private IList<StorageMedia> GetItemsView(IList<StorageMedia> items, bool photoAllowed, bool videoAllowed, bool audioAllowed, bool documentAllowed)
+        {
+            var view = new List<StorageMedia>();
+            var album = new List<StorageMedia>();
+
+            void AddAlbum()
+            {
+                if (album.Count > 0)
+                {
+                    view.Add(new StorageAlbum(album));
+                    album = new List<StorageMedia>();
+                }
+            }
+
+            foreach (var item in items)
+            {
+                if ((item is StorageDocument && documentAllowed) || (item is StoragePhoto && photoAllowed) || (item is StorageVideo && videoAllowed) || (item is StorageAudio && audioAllowed))
+                {
+                    if (album.Count > 9)
+                    {
+                        AddAlbum();
+                    }
+
+                    album.Add(item);
+                }
+            }
+
+            AddAlbum();
+            return view;
         }
 
         protected abstract bool CanSchedule { get; }
