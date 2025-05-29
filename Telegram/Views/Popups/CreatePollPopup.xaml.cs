@@ -33,8 +33,6 @@ namespace Telegram.Views.Popups
 
     public sealed partial class CreatePollPopup : ContentPopup
     {
-        private const int MAXIMUM_OPTIONS = 10;
-
         private readonly CreatePollViewModel _viewModel;
 
         public CreatePollPopup(IClientService clientService, bool forceQuiz, bool forceRegular, bool forceAnonymous)
@@ -121,7 +119,7 @@ namespace Telegram.Views.Popups
 
         private void Items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (MAXIMUM_OPTIONS - Items.Count - 1 <= 0)
+            if (_viewModel.ClientService.Options.PollAnswerCountMax - Items.Count - 1 <= 0)
             {
                 AddAnOption.Visibility = Visibility.Collapsed;
                 AddInfo.Text = Strings.AddAnOptionInfoMax;
@@ -130,7 +128,7 @@ namespace Telegram.Views.Popups
             {
                 AddAnOption.Visibility = Visibility.Visible;
                 AddInfo.Text = string.Format(Strings.AddAnOptionInfo,
-                    Locale.Declension(Strings.R.Option, MAXIMUM_OPTIONS - Items.Count - 1));
+                    Locale.Declension(Strings.R.Option, _viewModel.ClientService.Options.PollAnswerCountMax - Items.Count - 1));
             }
 
             UpdatePrimaryButton();
@@ -162,7 +160,7 @@ namespace Telegram.Views.Popups
 
         private void AddAnOption_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Items.Count < MAXIMUM_OPTIONS && !string.IsNullOrEmpty(AddAnOption.Text))
+            if (Items.Count < _viewModel.ClientService.Options.PollAnswerCountMax && !string.IsNullOrEmpty(AddAnOption.Text))
             {
                 Items.Add(new PollOptionViewModel(AddAnOption.Text, Quiz.IsChecked == true, true, option => Remove_Click(option)));
             }
