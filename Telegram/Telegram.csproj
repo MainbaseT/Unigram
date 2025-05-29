@@ -591,7 +591,6 @@
     <Compile Include="ViewModels\Delegates\IReactionsDelegate.cs" />
     <Compile Include="ViewModels\Delegates\ISavedMessagesChatsDelegate.cs" />
     <Compile Include="ViewModels\Delegates\ITopicListDelegate.cs" />
-    <Compile Include="ViewModels\DialogSavedViewModel.cs" />
     <Compile Include="ViewModels\DialogBusinessRepliesViewModel.cs" />
     <Compile Include="ViewModels\DialogViewModel.Translate.cs" />
     <Compile Include="Td\Api\MessageTranslateResult.cs" />
@@ -1154,9 +1153,6 @@
     </Compile>
     <Compile Include="Views\Chats\Popups\ChatBoostFeaturesPopup.xaml.cs">
       <DependentUpon>ChatBoostFeaturesPopup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ChatSavedPage.xaml.cs">
-      <DependentUpon>ChatSavedPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Chats\Popups\ChatBoostReassignPopup.xaml.cs">
       <DependentUpon>ChatBoostReassignPopup.xaml</DependentUpon>
@@ -3086,10 +3082,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Chats\Popups\ChatBoostFeaturesPopup.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ChatSavedPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

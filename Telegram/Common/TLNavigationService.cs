@@ -362,7 +362,7 @@ namespace Telegram.Common
                 }
             }
 
-            async void UpdateCurrentPage(IChatPage page)
+            if (Frame?.Content is ChatPage page && page.ViewModel?.ChatId == chat.Id && page.ViewModel?.Topic.AreTheSame(topic) is true && !scheduled && !createNewWindow)
             {
                 var viewModel = page.ViewModel;
                 if (message != null)
@@ -394,12 +394,6 @@ namespace Telegram.Common
 
                 OverlayWindow.Current?.TryHide(ContentDialogResult.None);
             }
-
-            // TODO: do current page matching for ChatSavedPage and ChatThreadPage as well.
-            if (Frame?.Content is ChatPage page && page.ViewModel?.ChatId == chat.Id && topic is null or MessageTopicForum && page.ViewModel?.Topic.AreTheSame(topic) is true && !scheduled && !createNewWindow)
-            {
-                UpdateCurrentPage(page);
-            }
             else
             {
                 state ??= new NavigationState();
@@ -419,17 +413,7 @@ namespace Telegram.Common
                     Type target;
                     object parameter;
 
-                    if (topic is MessageTopicForum topicForum)
-                    {
-                        target = typeof(ChatPage);
-                        parameter = new ChatMessageTopic(chat.Id, topicForum);
-                    }
-                    else if (topic is MessageTopicSavedMessages topicSavedMessages)
-                    {
-                        target = typeof(ChatSavedPage);
-                        parameter = new ChatMessageTopic(chat.Id, topicSavedMessages);
-                    }
-                    else if (scheduled)
+                    if (scheduled)
                     {
                         target = typeof(ChatScheduledPage);
                         parameter = chat.Id;
@@ -437,7 +421,7 @@ namespace Telegram.Common
                     else
                     {
                         target = typeof(ChatPage);
-                        parameter = chat.Id;
+                        parameter = topic == null ? chat.Id : new ChatMessageTopic(chat.Id, topic);
                     }
 
                     // This is horrible here but I don't want to bloat this method with dozens of parameters.
@@ -453,13 +437,12 @@ namespace Telegram.Common
                 }
                 else
                 {
-                    // TODO: do current page matching for ChatSavedPage and ChatThreadPage as well.
-                    if (Frame?.Content is ChatPage chatPage /*&& thread == 0*/ && topic is null or MessageTopicForum && !scheduled && !force)
+                    if (Frame?.Content is ChatPage chatPage && !scheduled && !force)
                     {
                         object parameter;
-                        if (topic is MessageTopicForum topicForum)
+                        if (topic is not null)
                         {
-                            parameter = new ChatMessageTopic(chat.Id, topicForum);
+                            parameter = new ChatMessageTopic(chat.Id, topic);
                         }
                         else
                         {
@@ -490,37 +473,7 @@ namespace Telegram.Common
                         NavigationTransitionInfo info = null;
                         object parameter;
 
-                        if (topic is MessageTopicForum topicForum)
-                        {
-                            target = typeof(ChatPage);
-                            parameter = new ChatMessageTopic(chat.Id, topicForum);
-
-                            // TODO: invalid cast
-                            if (CurrentPageType == typeof(ChatPage) && chat.Id.Equals((long)CurrentPageParam))
-                            {
-                                info = new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight };
-                            }
-                            else
-                            {
-                                info = new SuppressNavigationTransitionInfo();
-                            }
-                        }
-                        else if (topic is MessageTopicSavedMessages topicSavedMessages)
-                        {
-                            target = typeof(ChatSavedPage);
-                            parameter = new ChatMessageTopic(chat.Id, topicSavedMessages);
-
-                            // TODO: invalid cast
-                            if (CurrentPageType == typeof(ChatPage) && chat.Id.Equals((long)CurrentPageParam))
-                            {
-                                info = new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight };
-                            }
-                            else
-                            {
-                                info = new SuppressNavigationTransitionInfo();
-                            }
-                        }
-                        else if (scheduled)
+                        if (scheduled)
                         {
                             target = typeof(ChatScheduledPage);
                             parameter = chat.Id;
@@ -528,22 +481,34 @@ namespace Telegram.Common
                         else
                         {
                             target = typeof(ChatPage);
-                            parameter = chat.Id;
+                            parameter = topic == null ? chat.Id : new ChatMessageTopic(chat.Id, topic);
 
-                            if (CurrentPageType == typeof(ProfilePage) && CurrentPageParam is long profileId && profileId == chat.Id)
+                            var currentChat = this.GetChatFromBackStack(true, typeof(ProfilePage));
+                            if (currentChat.ChatId == chat.Id && currentChat.MessageTopic.AreTheSame(topic))
                             {
-                                var cacheKey = Guid.NewGuid().ToString();
-                                var chatId = (long)parameter;
+                                if (CurrentPageType == typeof(ProfilePage))
+                                {
+                                    var cacheKey = Guid.NewGuid().ToString();
+                                    var cacheParameter = parameter;
 
-                                parameter = cacheKey;
-                                CacheKeyToParameter[cacheKey] = chatId;
+                                    parameter = cacheKey;
+                                    CacheKeyToParameter[cacheKey] = cacheParameter;
 
-                                GoBackAt(0, false);
+                                    GoBackAt(0, false);
 
-                                Frame.BackStack.Add(new Windows.UI.Xaml.Navigation.PageStackEntry(target, parameter, null));
-                                GoBack(state, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
-                                Frame.ForwardStack.Clear();
-                                return;
+                                    Frame.BackStack.Add(new Windows.UI.Xaml.Navigation.PageStackEntry(target, parameter, null));
+                                    GoBack(state, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+                                    Frame.ForwardStack.Clear();
+                                    return;
+                                }
+                                else if (CurrentPageType == typeof(ChatPage))
+                                {
+                                    info = new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight };
+                                }
+                            }
+                            else
+                            {
+                                info = new SuppressNavigationTransitionInfo();
                             }
                         }
 
