@@ -2275,7 +2275,7 @@ namespace Telegram.Views
 
             flyout.CreateFlyoutItem(() => TextField.Send(true), Strings.SendWithoutSound, Icons.AlertOff);
 
-            if (!ViewModel.ClientService.IsPaid(chat))
+            if (!ViewModel.ClientService.IsPaid(chat) && !ViewModel.ClientService.IsFeedbackGroup(chat))
             {
                 if (ViewModel.ClientService.TryGetUser(chat, out Td.Api.User user) && user.Type is UserTypeRegular && user.Status is not UserStatusRecently && !self)
                 {
