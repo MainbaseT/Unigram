@@ -6820,6 +6820,12 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2Stars" xml:space="preserve">
     <value>Gift Stars</value>
   </data>
+  <data name="Gift2StarsChannel" xml:space="preserve">
+    <value>Send a Gift</value>
+  </data>
+  <data name="Gift2StarsChannelInfo" xml:space="preserve">
+    <value>Select a gift to show appreciation for **{0}**.</value>
+  </data>
   <data name="Gift2StarsInfo" xml:space="preserve">
     <value>Give **{0}** gifts that can be kept on the profile or converted to Stars.</value>
   </data>
@@ -6843,6 +6849,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2TabLimited" xml:space="preserve">
     <value>Limited</value>
+  </data>
+  <data name="Gift2TabMine" xml:space="preserve">
+    <value>My Gifts</value>
   </data>
   <data name="Gift2TabResale" xml:space="preserve">
     <value>Resale</value>
@@ -6885,6 +6894,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2TransferDoPrice" xml:space="preserve">
     <value>Transfer for ⭐️{0}</value>
+  </data>
+  <data name="Gift2TransferMine" xml:space="preserve">
+    <value>Transfer</value>
   </data>
   <data name="Gift2TransferOption" xml:space="preserve">
     <value>Transfer</value>

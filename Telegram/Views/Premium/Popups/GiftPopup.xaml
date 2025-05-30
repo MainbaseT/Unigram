@@ -103,7 +103,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Text="{CustomResource Gift2Stars}"
+                        <TextBlock x:Name="StarsTitle"
                                    Style="{StaticResource PopupTextBlockStyle}"
                                    TextAlignment="Center"
                                    VerticalAlignment="Top"

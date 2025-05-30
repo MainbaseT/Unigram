@@ -3157,7 +3157,7 @@ namespace Telegram.ViewModels
 
         #region Gift premium
 
-        public async void GiftPremium()
+        public void GiftPremium()
         {
             var chat = _chat;
             if (chat == null)
@@ -3168,7 +3168,11 @@ namespace Telegram.ViewModels
             if (ClientService.TryGetUser(chat, out User user) &&
                 ClientService.TryGetUserFull(chat, out UserFullInfo fullInfo))
             {
-                await ShowPopupAsync(new GiftPopup(ClientService, NavigationService, user, fullInfo));
+                ShowPopup(new GiftPopup(ClientService, NavigationService, user, fullInfo));
+            }
+            else
+            {
+                ShowPopup(new GiftPopup(ClientService, NavigationService, chat));
             }
         }
 

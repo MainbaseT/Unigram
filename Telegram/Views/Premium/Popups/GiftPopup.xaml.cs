@@ -27,6 +27,7 @@ namespace Telegram.Views.Premium.Popups
     public enum GiftGroupType
     {
         All,
+        Mine,
         Limited,
         InStock,
         Resale,
@@ -68,6 +69,8 @@ namespace Telegram.Views.Premium.Popups
             Photo.SetUser(clientService, user, 96);
 
             TextBlockHelper.SetMarkdown(PremiumInfo, string.Format(Strings.Gift2PremiumInfo, user.FirstName));
+
+            StarsTitle.Text = Strings.Gift2Stars;
             TextBlockHelper.SetMarkdown(StarsInfo, string.Format(Strings.Gift2StarsInfo, user.FirstName));
 
             AddLink(PremiumInfo, Strings.Gift2PremiumInfoLink, PremiumInfoLink_Click);
@@ -91,7 +94,8 @@ namespace Telegram.Views.Premium.Popups
 
             Photo.SetChat(clientService, chat, 96);
 
-            TextBlockHelper.SetMarkdown(StarsInfo, string.Format(Strings.Gift2StarsInfo, chat.Title));
+            StarsTitle.Text = Strings.Gift2StarsChannel;
+            TextBlockHelper.SetMarkdown(StarsInfo, string.Format(Strings.Gift2StarsChannelInfo, chat.Title));
 
             AddLink(StarsInfo, Strings.Gift2StarsInfoLink, StarsInfoLink_Click);
 
@@ -278,6 +282,7 @@ namespace Telegram.Views.Premium.Popups
             return type switch
             {
                 GiftGroupType.All => Strings.Gift2TabAll,
+                GiftGroupType.Mine => Strings.Gift2TabMine,
                 GiftGroupType.Limited => Strings.Gift2TabLimited,
                 GiftGroupType.InStock => Strings.Gift2TabInStock,
                 GiftGroupType.Resale => Strings.Gift2TabResale,

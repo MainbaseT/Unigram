@@ -5573,6 +5573,7 @@ namespace Telegram.Views
 
             ButtonAttach.CornerRadius = new CornerRadius(_sideMenuCollapsed == SideButton.None ? max : 4, 4, 4, _sideMenuCollapsed == SideButton.None ? min : 4);
             ButtonFeedback.CornerRadius = new CornerRadius(min, 4, 4, min);
+            ButtonGift.CornerRadius = new CornerRadius(4, min, min, 4);
             btnVoiceMessage.CornerRadius = new CornerRadius(4, max, min, 4);
             btnSendMessage.CornerRadius = new CornerRadius(4, max, min, 4);
             btnEdit.CornerRadius = new CornerRadius(4, max, min, 4);
@@ -5673,6 +5674,7 @@ namespace Telegram.Views
             UpdateUserStatus(chat, user);
 
             ButtonFeedback.Visibility = Visibility.Collapsed;
+            ButtonGift.Visibility = Visibility.Collapsed;
 
             if (fullInfo == null)
             {
@@ -5916,6 +5918,7 @@ namespace Telegram.Views
             }
 
             ButtonFeedback.Visibility = Visibility.Collapsed;
+            ButtonGift.Visibility = Visibility.Collapsed;
 
             if (fullInfo == null)
             {
@@ -6056,7 +6059,14 @@ namespace Telegram.Views
 
             if (ViewModel.Type == DialogType.History)
             {
-                ViewModel.UpdateLastSeen(Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, group.MemberCount));
+                if (fullInfo != null)
+                {
+                    ViewModel.UpdateLastSeen(Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, fullInfo.MemberCount));
+                }
+                else
+                {
+                    ViewModel.UpdateLastSeen(Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, group.MemberCount));
+                }
             }
             else if (ViewModel.Type == DialogType.Thread && ViewModel.ForumTopic != null)
             {
@@ -6073,7 +6083,22 @@ namespace Telegram.Views
 
             if (group.IsChannel)
             {
+                if (fullInfo == null)
+                {
+                    ButtonGift.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    ButtonGift.Visibility = fullInfo.CanSendGift
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }
+
                 return;
+            }
+            else
+            {
+                ButtonGift.Visibility = Visibility.Collapsed;
             }
 
             UpdateComposerHeader(chat, ViewModel.ComposerHeader);
@@ -6082,19 +6107,6 @@ namespace Telegram.Views
             if (fullInfo == null)
             {
                 return;
-            }
-
-            if (ViewModel.Type == DialogType.History)
-            {
-                ViewModel.UpdateLastSeen(Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, fullInfo.MemberCount));
-            }
-            else if (ViewModel.Type == DialogType.Thread && ViewModel.ForumTopic != null)
-            {
-                ViewModel.UpdateLastSeen(string.Format(Strings.TopicProfileStatus, chat.Title));
-            }
-            else
-            {
-                ViewModel.UpdateLastSeen(null as string);
             }
 
             btnVoiceMessage.IsRestricted = false;
@@ -6946,6 +6958,11 @@ namespace Telegram.Views
             {
                 ViewModel.NavigationService.NavigateToChat(fullInfo.FeedbackChatId);
             }
+        }
+
+        private void ButtonGift_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.GiftPremium();
         }
     }
 

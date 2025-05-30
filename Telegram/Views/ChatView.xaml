@@ -1843,7 +1843,14 @@
                 <controls:GlyphButton x:Name="ButtonFeedback"
                                       Click="ButtonFeedback_Click"
                                       Foreground="{ThemeResource TelegramForegroundAccentBrush}"
+                                      HorizontalAlignment="Left"
                                       Glyph="&#xEABA;"
+                                      Visibility="Collapsed" />
+                <controls:GlyphButton x:Name="ButtonGift"
+                                      Click="ButtonGift_Click"
+                                      Foreground="{ThemeResource TelegramForegroundAccentBrush}"
+                                      HorizontalAlignment="Right"
+                                      Glyph="&#xEABB;"
                                       Visibility="Collapsed" />
             </Grid>
 
