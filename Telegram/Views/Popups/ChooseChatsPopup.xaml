@@ -10,22 +10,59 @@
                        xmlns:views="using:Telegram.Controls.Views"
                        xmlns:viewModels="using:Telegram.ViewModels"
                        mc:Ignorable="d"
-                       Title="{x:Bind ViewModel.Title, Mode=OneWay}"
                        PrimaryButtonText="OK"
                        PrimaryButtonClick="OnPrimaryButtonClick"
                        IsPrimaryButtonEnabled="{x:Bind ConvertButtonEnabled(ViewModel.AllowEmptySelection, ViewModel.SelectedItems.Count), Mode=OneWay}"
                        SecondaryButtonText="Cancel"
                        VerticalContentAlignment="Stretch"
-                       Padding="24,20,24,0"
+                       Padding="24,24,24,0"
                        Loaded="OnLoaded"
                        Unloaded="OnUnloaded">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid x:Name="TitlePanel"
+              Margin="-24,0,-24,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"
+                                  MinWidth="16" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <controls:GlyphButton x:Name="BackButton"
+                                  Click="BackButton_Click"
+                                  RenderTransformOrigin="0.5,0.5"
+                                  VerticalAlignment="Center"
+                                  Width="48"
+                                  Height="48"
+                                  Margin="4,-12,-8,-8"
+                                  CornerRadius="20"
+                                  Glyph="&#xe93e;"
+                                  Visibility="Collapsed">
+                <Button.RenderTransform>
+                    <ScaleTransform ScaleX="0.8"
+                                    ScaleY="0.8" />
+                </Button.RenderTransform>
+            </controls:GlyphButton>
+
+            <TextBlock x:Name="Title"
+                       Text="{x:Bind ViewModel.Title, Mode=OneWay}"
+                       Foreground="{ThemeResource PageHeaderForegroundBrush}"
+                       Style="{StaticResource BaseTextBlockStyle}"
+                       FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"
+                       MaxLines="1"
+                       VerticalAlignment="Center"
+                       Margin="8,0,0,8"
+                       FontSize="20"
+                       Grid.Column="1" />
+        </Grid>
+
         <controls:SuggestTextBox x:Name="SearchField"
                                  PlaceholderText="{CustomResource Search}"
                                  Style="{StaticResource NoDeleteTextBoxStyle}"
@@ -33,7 +70,8 @@
                                  VerticalAlignment="Center"
                                  GotFocus="Search_Click"
                                  TextChanged="Search_TextChanged"
-                                 StartingIndex="1" />
+                                 StartingIndex="1"
+                                 Grid.Row="1" />
         <controls:GlyphButton x:Name="SearchClear"
                               Click="SearchClear_Click"
                               AllowFocusOnInteraction="False"
@@ -44,7 +82,8 @@
                               Visibility="Collapsed"
                               Margin="-36,0,0,0"
                               Width="36"
-                              Height="32" />
+                              Height="32"
+                              Grid.Row="1" />
 
         <Button x:Name="Alias"
                 Click="Alias_Click"
@@ -90,7 +129,7 @@
 
         <Grid x:Name="ForumGrid"
               Margin="-24,0,-24,0"
-              Grid.Row="1">
+              Grid.Row="2">
             <controls:TextListView x:Name="ForumList"
                                    SelectionMode="None"
                                    IsItemClickEnabled="True"
@@ -111,7 +150,7 @@
 
         <Grid x:Name="MainGrid"
               Margin="-24,0,-24,0"
-              Grid.Row="1">
+              Grid.Row="2">
             <!--<Grid x:Name="SearchPanel"
                   x:Load="False">
 
@@ -210,7 +249,7 @@
               Background="{ThemeResource TextControlBackground}"
               Visibility="Collapsed"
               Margin="-24,0"
-              Grid.Row="2">
+              Grid.Row="3">
             <FlyoutBase.AttachedFlyout>
                 <Flyout x:Name="EmojiFlyout"
                         Placement="Top"
