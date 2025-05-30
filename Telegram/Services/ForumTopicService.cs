@@ -152,7 +152,7 @@ namespace Telegram.Services
                 // This is done to update unread counts for folders
                 if (count == 0 && _clientService.TryGetChat(_chatId, out Chat chat))
                 {
-                    _clientService.Send(new ViewMessages(_chatId, new[] { chat.LastMessage?.Id ?? 0 }, new MessageSourceOther(), true));
+                    _clientService.Send(new ViewMessages(_chatId, new[] { chat.LastMessage?.Id ?? 0 }, new MessageSourceChatHistory(), true));
                 }
 
                 _aggregator.Publish(new UpdateChatUnreadTopicCount(_chatId, UnreadCount));
