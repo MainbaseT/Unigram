@@ -358,6 +358,8 @@
     <Compile Include="Services\Calls\VoipState.cs" />
     <Compile Include="Services\Calls\VoipVideoOutput.cs" />
     <Compile Include="Services\Calls\VoipVideoStateChangedEventArgs.cs" />
+    <Compile Include="Services\ClientService.FeedbackChatTopics.cs" />
+    <Compile Include="Services\ClientService.ForumTopics.cs" />
     <Compile Include="Services\FeedbackChatTopicService.cs" />
     <Compile Include="Services\PaidReactionService.cs" />
     <Compile Include="Controls\Messages\ReactionAsPaidButton.cs" />

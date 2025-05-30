@@ -12,10 +12,22 @@ using Telegram.Td.Api;
 
 namespace Telegram.Services
 {
+    public partial interface ICacheService
+    {
+        Task<Chats> GetStoryListAsync(StoryList storyList, int offset, int limit);
+
+        bool TryGetActiveStories(long chatId, out ChatActiveStories activeStories);
+
+        IEnumerable<ChatActiveStories> GetActiveStorieses(IEnumerable<long> ids);
+        ChatActiveStories GetActiveStories(long id);
+    }
+
     public partial class ClientService
     {
-        private readonly NewDictionary<StoryList, SortedSet<OrderedActiveStories>> _storyList = new(StoryListEqualityComparer.Instance);
+        private readonly NewDictionary<StoryList, SortedSet<OrderedItem>> _storyList = new(StoryListEqualityComparer.Instance);
         private readonly DefaultDictionary<StoryList, bool> _haveFullStoryList = new(StoryListEqualityComparer.Instance);
+
+        private readonly Dictionary<long, ChatActiveStories> _activeStories = new();
 
         private void SetActiveStoriesPositions(ChatActiveStories next, ChatActiveStories prev)
         {
@@ -23,15 +35,42 @@ namespace Telegram.Services
 
             if (prev?.List != null)
             {
-                _storyList[prev.List].Remove(new OrderedActiveStories(prev.ChatId, prev.Order));
+                _storyList[prev.List].Remove(new OrderedItem(prev.ChatId, prev.Order));
             }
 
             if (next.Order != 0)
             {
-                _storyList[next.List].Add(new OrderedActiveStories(next.ChatId, next.Order));
+                _storyList[next.List].Add(new OrderedItem(next.ChatId, next.Order));
             }
 
             Monitor.Exit(_storyList);
+        }
+
+        public bool TryGetActiveStories(long id, out ChatActiveStories value)
+        {
+            return _activeStories.TryGetValue(id, out value);
+        }
+
+        public IEnumerable<ChatActiveStories> GetActiveStorieses(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var activeStories = GetActiveStories(id);
+                if (activeStories != null)
+                {
+                    yield return activeStories;
+                }
+            }
+        }
+
+        public ChatActiveStories GetActiveStories(long id)
+        {
+            if (_activeStories.TryGetValue(id, out ChatActiveStories value))
+            {
+                return value;
+            }
+
+            return null;
         }
 
         public Task<Chats> GetStoryListAsync(StoryList storyList, int offset, int limit)
@@ -87,7 +126,7 @@ namespace Telegram.Services
 
                     if (i >= offset)
                     {
-                        result[pos++] = iter.Current.ChatId;
+                        result[pos++] = iter.Current.Id;
                     }
                 }
             }
@@ -96,44 +135,6 @@ namespace Telegram.Services
 
             Monitor.Exit(_storyList);
             return new Chats(haveFullList ? -1 : 0, result);
-        }
-
-        private readonly struct OrderedActiveStories : IComparable<OrderedActiveStories>
-        {
-            public readonly long ChatId;
-            public readonly long Order;
-
-            public OrderedActiveStories(long chatId, long order)
-            {
-                ChatId = chatId;
-                Order = order;
-            }
-
-            public int CompareTo(OrderedActiveStories o)
-            {
-                if (Order != o.Order)
-                {
-                    return o.Order < Order ? -1 : 1;
-                }
-
-                if (ChatId != o.ChatId)
-                {
-                    return o.ChatId < ChatId ? -1 : 1;
-                }
-
-                return 0;
-            }
-
-            public override bool Equals(object obj)
-            {
-                OrderedActiveStories o = (OrderedActiveStories)obj;
-                return ChatId == o.ChatId && Order == o.Order;
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(ChatId, Order);
-            }
         }
     }
 

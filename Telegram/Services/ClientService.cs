@@ -21,7 +21,7 @@ using TimeZone = Telegram.Td.Api.TimeZone;
 
 namespace Telegram.Services
 {
-    public interface IClientService : ICacheService
+    public partial interface IClientService : ICacheService
     {
         bool TryInitialize();
         void Close(bool restart);
@@ -51,25 +51,8 @@ namespace Telegram.Services
         Task<bool> HasPrivacySettingsRuleAsync<T>(UserPrivacySetting setting) where T : UserPrivacySettingRule;
 
         Task<Chats> GetChatListAsync(ChatList chatList, int offset, int limit);
-        Task<Chats> GetStoryListAsync(StoryList storyList, int offset, int limit);
-        Task<ForuminoTopicinos> GetForumTopicsAsync(long chatId, int offset, int limit);
-        Task<FeedbackChatTopics> GetFeedbackChatTopicsAsync(long chatId, int offset, int limit);
-
-        ForumTopic GetForumTopic(long chatId, long id);
-        bool TryGetForumTopic(long chatId, long id, out ForumTopic topic);
-        bool TryGetForumTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic);
-        IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<long> ids);
-        int UnreadTopicCount(long chatId);
-
-        FeedbackChatTopic GetFeedbackChatTopic(long chatId, long id);
-        bool TryGetFeedbackChatTopic(long chatId, long id, out FeedbackChatTopic topic);
-        bool TryGetFeedbackChatTopic(long chatId, MessageTopic messageTopic, out FeedbackChatTopic topic);
-        IEnumerable<FeedbackChatTopic> GetFeedbackChatTopics(long chatId, IEnumerable<long> ids);
 
         void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
-        void SetPinnedForumTopics(long chatId, IList<long> messageThreadIds);
-
-        Task<IList<SavedMessagesTopic>> GetSavedMessagesChatsAsync(int offset, int limit);
 
         Task<BaseObject> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, StarTransactionDirection direction, string offset, int limit);
 
@@ -78,7 +61,7 @@ namespace Telegram.Services
         int SessionId { get; }
     }
 
-    public interface ICacheService
+    public partial interface ICacheService
     {
         bool IsPremium { get; }
         bool IsPremiumAvailable { get; }
@@ -134,7 +117,6 @@ namespace Telegram.Services
 
         string GetTitle(Chat chat, bool tiny = false);
         string GetTitle(long chatId, bool tiny = false);
-        string GetTitle(SavedMessagesTopic topic);
         string GetTitle(MessageOrigin origin, MessageImportInfo import);
         string GetTitle(MessageSender sender);
 
@@ -148,9 +130,6 @@ namespace Telegram.Services
 
         Chat GetChat(long id);
         IEnumerable<Chat> GetChats(IEnumerable<long> ids);
-
-        ChatActiveStories GetActiveStories(long id);
-        IEnumerable<ChatActiveStories> GetActiveStorieses(IEnumerable<long> ids);
 
         IDictionary<MessageSender, ChatAction> GetChatActions(long id, long threadId = 0);
 
@@ -183,8 +162,6 @@ namespace Telegram.Services
 
         BaseObject GetMessageSender(MessageSender sender);
 
-        bool TryGetSavedMessagesTopic(long savedMessagesTopicId, out SavedMessagesTopic topic);
-
         bool TryGetChat(long chatId, out Chat chat);
         bool TryGetChat(MessageSender sender, out Chat value);
         bool TryGetChat(AffiliateType type, out Chat value);
@@ -194,8 +171,6 @@ namespace Telegram.Services
         bool TryGetActiveStoriesFromUser(long userId, out ChatActiveStories activeStories);
 
         Task<Chat> GetChatFromMessageSenderAsync(MessageSender messageSender);
-
-        bool TryGetActiveStories(long chatId, out ChatActiveStories activeStories);
 
         bool TryGetTimeZone(string timeZoneId, out TimeZone timeZone);
 
@@ -297,13 +272,9 @@ namespace Telegram.Services
 
         private readonly Action<BaseObject> _processFilesDelegate;
 
-        private readonly Dictionary<long, ChatActiveStories> _activeStories = new();
-
         private readonly Dictionary<long, Chat> _chats = new();
         private readonly ConcurrentDictionary<long, ConcurrentDictionary<MessageSender, ChatAction>> _chatActions = new();
         private readonly ConcurrentDictionary<ChatMessageId, ConcurrentDictionary<MessageSender, ChatAction>> _topicActions = new();
-
-        private readonly ConcurrentDictionary<long, SavedMessagesTopic> _savedMessagesTopics = new();
 
         private readonly Dictionary<int, SecretChat> _secretChats = new();
 
@@ -317,9 +288,6 @@ namespace Telegram.Services
 
         private readonly Dictionary<long, Supergroup> _supergroups = new();
         private readonly ConcurrentDictionary<long, SupergroupFullInfo> _supergroupsFull = new();
-
-        private readonly ConcurrentDictionary<long, ForumTopicService> _forums = new();
-        private readonly ConcurrentDictionary<long, FeedbackChatTopicService> _feedbackChats = new();
 
         private readonly ConcurrentDictionary<int, ChatListUnreadCount> _unreadCounts = new();
 
@@ -394,177 +362,6 @@ namespace Telegram.Services
             Initialize(online);
         }
 
-        public Task<ForuminoTopicinos> GetForumTopicsAsync(long chatId, int offset, int limit)
-        {
-            _forums.TryGetValue(chatId, out ForumTopicService manager);
-
-            if (manager == null)
-            {
-                manager = new ForumTopicService(this, _aggregator, chatId);
-                _forums[chatId] = manager;
-            }
-
-            return manager.GetForumTopicsAsync(offset, limit);
-        }
-
-        public Task<FeedbackChatTopics> GetFeedbackChatTopicsAsync(long chatId, int offset, int limit)
-        {
-            _feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager);
-
-            if (manager == null)
-            {
-                manager = new FeedbackChatTopicService(this, _aggregator, chatId);
-                _feedbackChats[chatId] = manager;
-            }
-
-            return manager.GetFeedbackChatTopicsAsync(offset, limit);
-        }
-
-        public IEnumerable<FeedbackChatTopic> GetFeedbackChatTopics(long chatId, IEnumerable<long> ids)
-        {
-            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
-            {
-                return manager.GetTopics(ids);
-            }
-
-            return Array.Empty<FeedbackChatTopic>();
-        }
-
-        public FeedbackChatTopic GetFeedbackChatTopic(long chatId, long id)
-        {
-            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
-            {
-                return manager.GetTopic(id);
-            }
-
-            return null;
-        }
-
-        public bool TryGetFeedbackChatTopic(long chatId, long id, out FeedbackChatTopic topic)
-        {
-            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
-            {
-                topic = manager.GetTopic(id);
-                return topic != null;
-            }
-
-            topic = null;
-            return false;
-        }
-
-        public bool TryGetFeedbackChatTopic(long chatId, MessageTopic messageTopic, out FeedbackChatTopic topic)
-        {
-            if (messageTopic is MessageTopicFeedbackChat topicFeedbackChat)
-            {
-                return TryGetFeedbackChatTopic(chatId, topicFeedbackChat.FeedbackChatTopicId, out topic);
-            }
-
-            topic = null;
-            return false;
-        }
-
-        public bool TryGetForumTopic(long chatId, long id, out ForumTopic topic)
-        {
-            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
-            {
-                topic = manager.GetTopic(id);
-                return topic != null;
-            }
-
-            topic = null;
-            return false;
-        }
-
-        public bool TryGetForumTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic)
-        {
-            if (messageTopic is MessageTopicForum topicForum)
-            {
-                return TryGetForumTopic(chatId, topicForum.ForumTopicId, out topic);
-            }
-
-            topic = null;
-            return false;
-        }
-
-        public ForumTopic GetForumTopic(long chatId, long id)
-        {
-            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
-            {
-                return manager.GetTopic(id);
-            }
-
-            return null;
-        }
-
-        public IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<long> ids)
-        {
-            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
-            {
-                return manager.GetTopics(ids);
-            }
-
-            return Array.Empty<ForumTopic>();
-        }
-
-        private void UpdateForumTopic(long chatId, Action<ForumTopicService> update)
-        {
-            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
-            {
-                update(manager);
-            }
-            else
-            {
-                //manager = new ForumTopicService(this, _aggregator, chatId);
-                //_forums[chatId] = manager;
-
-                //update(manager);
-            }
-        }
-
-        private void UpdateFeedbackChatTopic(long chatId, Action<FeedbackChatTopicService> update)
-        {
-            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
-            {
-                update(manager);
-            }
-            else
-            {
-                manager = new FeedbackChatTopicService(this, _aggregator, chatId);
-                _feedbackChats[chatId] = manager;
-
-                update(manager);
-            }
-        }
-
-        public void UpdateForumTopicNewChat(Chat chat)
-        {
-            if (chat.Type is ChatTypeSupergroup && TryGetSupergroup(chat, out Supergroup supergroup))
-            {
-                if (supergroup.IsForum && !_forums.ContainsKey(chat.Id))
-                {
-                    var manager = new ForumTopicService(this, _aggregator, chat.Id);
-                    _forums[chat.Id] = manager;
-
-                    manager.GetForumTopicsAsync(0, 20);
-                }
-                else if (supergroup.IsFeedbackGroup && !_feedbackChats.ContainsKey(chat.Id))
-                {
-                    var manager = new FeedbackChatTopicService(this, _aggregator, chat.Id);
-                    _feedbackChats[chat.Id] = manager;
-                }
-            }
-        }
-
-        public int UnreadTopicCount(long chatId)
-        {
-            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
-            {
-                return manager.UnreadCount;
-            }
-
-            return 0;
-        }
-
         public void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead)
         {
             Send(new ViewMessages(chatId, messageIds, source, forceRead));
@@ -572,14 +369,6 @@ namespace Telegram.Services
             if (source is MessageSourceForumTopicHistory && _forums.TryGetValue(chatId, out ForumTopicService manager))
             {
                 manager.ViewMessages(messageThreadId, messageIds);
-            }
-        }
-
-        public void SetPinnedForumTopics(long chatId, IList<long> messageThreadIds)
-        {
-            if (_forums.TryGetValue(chatId, out ForumTopicService manager))
-            {
-                manager.SetPinnedForumTopics(messageThreadIds);
             }
         }
 
@@ -1557,24 +1346,6 @@ namespace Telegram.Services
             return chat.Title;
         }
 
-        public string GetTitle(SavedMessagesTopic topic)
-        {
-            if (topic?.Type is SavedMessagesTopicTypeMyNotes)
-            {
-                return Strings.MyNotes;
-            }
-            else if (topic?.Type is SavedMessagesTopicTypeAuthorHidden)
-            {
-                return Strings.AnonymousForward;
-            }
-            else if (topic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && TryGetChat(savedFromChat.ChatId, out Chat chat))
-            {
-                return GetTitle(chat);
-            }
-
-            return Strings.AnonymousForward;
-        }
-
         public string GetTitle(MessageOrigin origin, MessageImportInfo import)
         {
             if (origin is MessageOriginUser fromUser)
@@ -1963,11 +1734,6 @@ namespace Telegram.Services
             return null;
         }
 
-        public bool TryGetSavedMessagesTopic(long savedMessagesTopicId, out SavedMessagesTopic topic)
-        {
-            return _savedMessagesTopics.TryGetValue(savedMessagesTopicId, out topic);
-        }
-
         public bool TryGetChat(long chatId, out Chat chat)
         {
             return _chats.TryGetValue(chatId, out chat);
@@ -2053,39 +1819,8 @@ namespace Telegram.Services
                 var chat = GetChat(id);
                 if (chat != null)
                 {
-                    UpdateForumTopicNewChat(chat);
+                    UpdateMessageTopicNewChat(chat);
                     yield return chat;
-                }
-            }
-        }
-
-        public ChatActiveStories GetActiveStories(long id)
-        {
-            if (_activeStories.TryGetValue(id, out ChatActiveStories value))
-            {
-                return value;
-            }
-
-            return null;
-        }
-
-        public bool TryGetActiveStories(long id, out ChatActiveStories value)
-        {
-            return _activeStories.TryGetValue(id, out value);
-        }
-
-        public IEnumerable<ChatActiveStories> GetActiveStorieses(IEnumerable<long> ids)
-        {
-#if MOCKUP
-            return _chats.Values.ToList();
-#endif
-
-            foreach (var id in ids)
-            {
-                var activeStories = GetActiveStories(id);
-                if (activeStories != null)
-                {
-                    yield return activeStories;
                 }
             }
         }
@@ -3550,6 +3285,60 @@ namespace Telegram.Services
             }
 
             return obj.GetHashCode();
+        }
+    }
+}
+
+namespace Telegram.Td.Api
+{
+    public sealed class Topics
+    {
+        public Topics(int totalCount, IList<long> topics)
+        {
+            TotalCount = totalCount;
+            TopicIds = topics;
+        }
+
+        public int TotalCount { get; set; }
+
+        public IList<long> TopicIds { get; set; }
+    }
+
+    public readonly struct OrderedItem : IComparable<OrderedItem>
+    {
+        public readonly long Id;
+        public readonly long Order;
+
+        public OrderedItem(long id, long order)
+        {
+            Id = id;
+            Order = order;
+        }
+
+        public int CompareTo(OrderedItem o)
+        {
+            if (Order != o.Order)
+            {
+                return o.Order < Order ? -1 : 1;
+            }
+
+            if (Id != o.Id)
+            {
+                return o.Id < Id ? -1 : 1;
+            }
+
+            return 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            OrderedItem o = (OrderedItem)obj;
+            return Id == o.Id && Order == o.Order;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Order);
         }
     }
 }

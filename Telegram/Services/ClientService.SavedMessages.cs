@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,43 +13,103 @@ using Telegram.Td.Api;
 
 namespace Telegram.Services
 {
+    public partial interface ICacheService
+    {
+        Task<Topics> GetSavedMessagesChatsAsync(int offset, int limit);
+
+        bool TryGetSavedMessagesTopic(long savedMessagesTopicId, out SavedMessagesTopic topic);
+
+        IEnumerable<SavedMessagesTopic> GetSavedMessagesTopics(IEnumerable<long> ids);
+        SavedMessagesTopic GetSavedMessagesTopic(long savedMessagesTopicId);
+
+        string GetTitle(SavedMessagesTopic topic);
+    }
+
     public partial class ClientService
     {
-        private readonly SortedSet<OrderedTopic> _savedMessages = new();
+        private readonly ConcurrentDictionary<long, SavedMessagesTopic> _savedMessagesTopics = new();
+        private readonly SortedSet<OrderedItem> _savedMessages = new();
         private bool _haveFullSavedMessages;
 
         private void SetSavedMessagesTopicOrder(SavedMessagesTopic topic, long order)
         {
             Monitor.Enter(_savedMessages);
 
-            _savedMessages.Remove(new OrderedTopic(topic.Id, topic.Order));
+            _savedMessages.Remove(new OrderedItem(topic.Id, topic.Order));
 
             topic.Order = order;
 
             if (order != 0)
             {
-                _savedMessages.Add(new OrderedTopic(topic.Id, order));
+                _savedMessages.Add(new OrderedItem(topic.Id, order));
             }
 
             Monitor.Exit(_savedMessages);
         }
 
-        public Task<IList<SavedMessagesTopic>> GetSavedMessagesChatsAsync(int offset, int limit)
+        public bool TryGetSavedMessagesTopic(long savedMessagesTopicId, out SavedMessagesTopic topic)
+        {
+            return _savedMessagesTopics.TryGetValue(savedMessagesTopicId, out topic);
+        }
+
+        public IEnumerable<SavedMessagesTopic> GetSavedMessagesTopics(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var topic = GetSavedMessagesTopic(id);
+                if (topic != null)
+                {
+                    yield return topic;
+                }
+            }
+        }
+
+        public SavedMessagesTopic GetSavedMessagesTopic(long savedMessagesTopicId)
+        {
+            if (_savedMessagesTopics.TryGetValue(savedMessagesTopicId, out SavedMessagesTopic value))
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        public string GetTitle(SavedMessagesTopic topic)
+        {
+            if (topic?.Type is SavedMessagesTopicTypeMyNotes)
+            {
+                return Strings.MyNotes;
+            }
+            else if (topic?.Type is SavedMessagesTopicTypeAuthorHidden)
+            {
+                return Strings.AnonymousForward;
+            }
+            else if (topic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && TryGetChat(savedFromChat.ChatId, out Chat chat))
+            {
+                return GetTitle(chat);
+            }
+
+            return Strings.AnonymousForward;
+        }
+
+        public Task<Topics> GetSavedMessagesChatsAsync(int offset, int limit)
         {
             return GetSavedMessagesChatsAsyncImpl(offset, limit, false);
         }
 
-        public async Task<IList<SavedMessagesTopic>> GetSavedMessagesChatsAsyncImpl(int offset, int limit, bool reentrancy)
+        public async Task<Topics> GetSavedMessagesChatsAsyncImpl(int offset, int limit, bool reentrancy)
         {
             Monitor.Enter(_savedMessages);
 
             var count = offset + limit;
             var sorted = _savedMessages;
 
+            var haveFullList = _haveFullSavedMessages;
+
 #if MOCKUP
             _haveFullChatList[index] = true;
 #else
-            if (!_haveFullSavedMessages && count > sorted.Count && !reentrancy)
+            if (count > sorted.Count && !haveFullList && !reentrancy)
             {
                 Monitor.Exit(_savedMessages);
 
@@ -61,7 +122,7 @@ namespace Telegram.Services
                     }
                     else
                     {
-                        return Array.Empty<SavedMessagesTopic>();
+                        return new Topics(0, Array.Empty<long>());
                     }
                 }
 
@@ -71,7 +132,7 @@ namespace Telegram.Services
 #endif
 
             // Have enough chats in the chat list to answer request
-            var result = new SavedMessagesTopic[Math.Max(0, Math.Min(limit, sorted.Count - offset))];
+            var result = new long[Math.Max(0, Math.Min(limit, sorted.Count - offset))];
             var pos = 0;
 
             using (var iter = sorted.GetEnumerator())
@@ -84,58 +145,20 @@ namespace Telegram.Services
 
                     if (i >= offset)
                     {
-                        if (_savedMessagesTopics.TryGetValue(iter.Current.TopicId, out var topic))
-                        {
-                            result[pos++] = topic;
-                        }
-                        else
-                        {
-                            pos++;
-                        }
+                        result[pos++] = iter.Current.Id;
                     }
                 }
             }
 
+            haveFullList &= count >= sorted.Count;
+
             Monitor.Exit(_savedMessages);
-            return result;
-        }
-
-        private readonly struct OrderedTopic : IComparable<OrderedTopic>
-        {
-            public readonly long TopicId;
-            public readonly long Order;
-
-            public OrderedTopic(long chatId, long order)
-            {
-                TopicId = chatId;
-                Order = order;
-            }
-
-            public int CompareTo(OrderedTopic o)
-            {
-                if (Order != o.Order)
-                {
-                    return o.Order < Order ? -1 : 1;
-                }
-
-                if (TopicId != o.TopicId)
-                {
-                    return o.TopicId < TopicId ? -1 : 1;
-                }
-
-                return 0;
-            }
-
-            public override bool Equals(object obj)
-            {
-                OrderedTopic o = (OrderedTopic)obj;
-                return TopicId == o.TopicId && Order == o.Order;
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(TopicId, Order);
-            }
+            return new Topics(haveFullList ? -1 : 0, result);
         }
     }
+}
+
+namespace Telegram.Td.Api
+{
+
 }

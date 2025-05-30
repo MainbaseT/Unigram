@@ -47,9 +47,9 @@ namespace Telegram.ViewModels.Profile
             var totalCount = 0u;
 
             var response = await ClientService.GetSavedMessagesChatsAsync(Items.Count, 20);
-            if (response is IList<SavedMessagesTopic> topics)
+            if (response is Topics topics)
             {
-                foreach (var topic in topics)
+                foreach (var topic in ClientService.GetSavedMessagesTopics(topics.TopicIds))
                 {
                     if (topic.IsPinned)
                     {
@@ -83,7 +83,7 @@ namespace Telegram.ViewModels.Profile
                     }
                 }
 
-                HasMoreItems = topics.Count > 0;
+                HasMoreItems = topics.TotalCount >= 0;
                 Aggregator.Subscribe<UpdateSavedMessagesTopic>(this, Handle);
             }
 

@@ -670,7 +670,7 @@ namespace Telegram.ViewModels
                 }
 
                 var response = await _clientService.GetForumTopicsAsync(_chat.Id, Count, 20);
-                if (response is ForuminoTopicinos topics && !token.IsCancellationRequested)
+                if (response is Topics topics && !token.IsCancellationRequested)
                 {
                     if (_viewModel != null && !_viewModel._chatList && Count == 0)
                     {
@@ -1026,7 +1026,7 @@ namespace Telegram.ViewModels
                 }
 
                 var response = await _clientService.GetFeedbackChatTopicsAsync(_chat.Id, Count, 20);
-                if (response is FeedbackChatTopics topics && !token.IsCancellationRequested)
+                if (response is Topics topics && !token.IsCancellationRequested)
                 {
                     if (_viewModel != null && !_viewModel._chatList && Count == 0)
                     {

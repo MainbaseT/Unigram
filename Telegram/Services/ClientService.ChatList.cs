@@ -14,7 +14,7 @@ namespace Telegram.Services
 {
     public partial class ClientService
     {
-        private readonly NewDictionary<ChatList, SortedSet<OrderedChat>> _chatList = new(ChatListEqualityComparer.Instance);
+        private readonly NewDictionary<ChatList, SortedSet<OrderedItem>> _chatList = new(ChatListEqualityComparer.Instance);
         private readonly DefaultDictionary<ChatList, bool> _haveFullChatList = new(ChatListEqualityComparer.Instance);
 
         private void SetChatPositions(Chat chat, IList<ChatPosition> positions)
@@ -23,7 +23,7 @@ namespace Telegram.Services
 
             foreach (var position in chat.Positions)
             {
-                _chatList[position.List].Remove(new OrderedChat(chat.Id, position));
+                _chatList[position.List].Remove(new OrderedItem(chat.Id, position.Order));
             }
 
             chat.Positions = positions;
@@ -32,7 +32,7 @@ namespace Telegram.Services
             {
                 if (position.Order != 0)
                 {
-                    _chatList[position.List].Add(new OrderedChat(chat.Id, position));
+                    _chatList[position.List].Add(new OrderedItem(chat.Id, position.Order));
                 }
             }
 
@@ -92,7 +92,7 @@ namespace Telegram.Services
 
                     if (i >= offset)
                     {
-                        result[pos++] = iter.Current.ChatId;
+                        result[pos++] = iter.Current.Id;
                     }
                 }
             }
@@ -101,44 +101,6 @@ namespace Telegram.Services
 
             Monitor.Exit(_chatList);
             return new Chats(haveFullList ? -1 : 0, result);
-        }
-
-        private readonly struct OrderedChat : IComparable<OrderedChat>
-        {
-            public readonly long ChatId;
-            public readonly long Order;
-
-            public OrderedChat(long chatId, ChatPosition position)
-            {
-                ChatId = chatId;
-                Order = position.Order;
-            }
-
-            public int CompareTo(OrderedChat o)
-            {
-                if (Order != o.Order)
-                {
-                    return o.Order < Order ? -1 : 1;
-                }
-
-                if (ChatId != o.ChatId)
-                {
-                    return o.ChatId < ChatId ? -1 : 1;
-                }
-
-                return 0;
-            }
-
-            public override bool Equals(object obj)
-            {
-                OrderedChat o = (OrderedChat)obj;
-                return ChatId == o.ChatId && Order == o.Order;
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(ChatId, Order);
-            }
         }
     }
 

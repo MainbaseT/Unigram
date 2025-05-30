@@ -21,7 +21,7 @@ namespace Telegram.Services
 
         private readonly Dictionary<long, FeedbackChatTopic> _topics = new();
 
-        private readonly SortedSet<OrderedTopic> _order = new();
+        private readonly SortedSet<OrderedItem> _order = new();
         private bool _haveFullList;
 
         public FeedbackChatTopicService(IClientService clientService, IEventAggregator aggregator, long chatId)
@@ -36,13 +36,13 @@ namespace Telegram.Services
         {
             Monitor.Enter(_order);
 
-            _order.Remove(new OrderedTopic(topic.Id, topic.Order));
+            _order.Remove(new OrderedItem(topic.Id, topic.Order));
 
             topic.Order = order;
 
             if (order != 0)
             {
-                _order.Add(new OrderedTopic(topic.Id, order));
+                _order.Add(new OrderedItem(topic.Id, order));
             }
 
             Monitor.Exit(_order);
@@ -99,13 +99,13 @@ namespace Telegram.Services
         {
             Monitor.Enter(_order);
 
-            _order.Remove(new OrderedTopic(topic.Id, topic.Order));
+            _order.Remove(new OrderedItem(topic.Id, topic.Order));
 
             topic.Order = order;
 
             if (order != 0)
             {
-                _order.Add(new OrderedTopic(topic.Id, order));
+                _order.Add(new OrderedItem(topic.Id, order));
             }
 
             Monitor.Exit(_order);
@@ -144,12 +144,12 @@ namespace Telegram.Services
             return null;
         }
 
-        public Task<FeedbackChatTopics> GetFeedbackChatTopicsAsync(int offset, int limit)
+        public Task<Topics> GetFeedbackChatTopicsAsync(int offset, int limit)
         {
             return GetFeedbackChatTopicsAsyncImpl(offset, limit, false);
         }
 
-        private async Task<FeedbackChatTopics> GetFeedbackChatTopicsAsyncImpl(int offset, int limit, bool reentrancy)
+        private async Task<Topics> GetFeedbackChatTopicsAsyncImpl(int offset, int limit, bool reentrancy)
         {
             Monitor.Enter(_order);
 
@@ -174,7 +174,7 @@ namespace Telegram.Services
                     }
                     else
                     {
-                        return new FeedbackChatTopics(0, Array.Empty<long>());
+                        return new Topics(0, Array.Empty<long>());
                     }
                 }
 
@@ -197,7 +197,7 @@ namespace Telegram.Services
 
                     if (i >= offset)
                     {
-                        result[pos++] = iter.Current.TopicId;
+                        result[pos++] = iter.Current.Id;
                     }
                 }
             }
@@ -205,45 +205,7 @@ namespace Telegram.Services
             haveFullList &= count >= sorted.Count;
 
             Monitor.Exit(_order);
-            return new FeedbackChatTopics(haveFullList ? -1 : 0, result);
-        }
-
-        private readonly struct OrderedTopic : IComparable<OrderedTopic>
-        {
-            public readonly long TopicId;
-            public readonly long Order;
-
-            public OrderedTopic(long chatId, long order)
-            {
-                TopicId = chatId;
-                Order = order;
-            }
-
-            public int CompareTo(OrderedTopic o)
-            {
-                if (Order != o.Order)
-                {
-                    return o.Order < Order ? -1 : 1;
-                }
-
-                if (TopicId != o.TopicId)
-                {
-                    return o.TopicId < TopicId ? -1 : 1;
-                }
-
-                return 0;
-            }
-
-            public override bool Equals(object obj)
-            {
-                OrderedTopic o = (OrderedTopic)obj;
-                return TopicId == o.TopicId && Order == o.Order;
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(TopicId, Order);
-            }
+            return new Topics(haveFullList ? -1 : 0, result);
         }
     }
 }
@@ -357,18 +319,5 @@ namespace Telegram.Td.Api
         public long TopicId { get; set; }
 
         public long UnreadMentionCount { get; set; }
-    }
-
-    public sealed class FeedbackChatTopics
-    {
-        public FeedbackChatTopics(int totalCount, IList<long> topics)
-        {
-            TotalCount = totalCount;
-            TopicIds = topics;
-        }
-
-        public int TotalCount { get; set; }
-
-        public IList<long> TopicIds { get; set; }
     }
 }
