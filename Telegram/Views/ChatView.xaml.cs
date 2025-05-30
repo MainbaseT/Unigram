@@ -1681,12 +1681,12 @@ namespace Telegram.Views
             if (header == null || header.EditingMessage == null || (header.IsEmpty && header.LinkPreviewDisabled))
             {
                 var messageRights = !ViewModel.VerifyRights(chat, x => x.CanSendBasicMessages);
-                var pollRights = !ViewModel.VerifyRights(chat, x => x.CanSendPolls, Strings.GlobalAttachMediaRestricted, Strings.AttachMediaRestrictedForever, Strings.AttachMediaRestricted, out string pollsLabel);
+                var pollRights = !ViewModel.VerifyRights(chat, x => x.CanSendPolls);
 
                 var pollsAllowed = chat.Type is ChatTypeSupergroup or ChatTypeBasicGroup;
                 if (!pollsAllowed && ViewModel.ClientService.TryGetUser(chat, out User user))
                 {
-                    pollsAllowed = user.Type is UserTypeBot;
+                    pollsAllowed = user.Type is UserTypeBot || user.Id == ViewModel.ClientService.Options.MyId;
                 }
 
                 if (photoRights || videoRights)

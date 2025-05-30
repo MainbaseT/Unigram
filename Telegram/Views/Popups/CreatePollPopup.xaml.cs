@@ -119,7 +119,7 @@ namespace Telegram.Views.Popups
 
         private void Items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (_viewModel.ClientService.Options.PollAnswerCountMax - Items.Count - 1 <= 0)
+            if (Items.Count >= _viewModel.ClientService.Options.PollAnswerCountMax)
             {
                 AddAnOption.Visibility = Visibility.Collapsed;
                 AddInfo.Text = Strings.AddAnOptionInfoMax;
@@ -128,7 +128,7 @@ namespace Telegram.Views.Popups
             {
                 AddAnOption.Visibility = Visibility.Visible;
                 AddInfo.Text = string.Format(Strings.AddAnOptionInfo,
-                    Locale.Declension(Strings.R.Option, _viewModel.ClientService.Options.PollAnswerCountMax - Items.Count - 1));
+                    Locale.Declension(Strings.R.Option, _viewModel.ClientService.Options.PollAnswerCountMax - Items.Count));
             }
 
             UpdatePrimaryButton();
