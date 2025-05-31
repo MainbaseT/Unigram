@@ -32,22 +32,6 @@ namespace Telegram.Services
             _chatId = chatId;
         }
 
-        private void SetFeedbackChatTopicOrder(FeedbackChatTopic topic, long order)
-        {
-            Monitor.Enter(_order);
-
-            _order.Remove(new OrderedItem(topic.Id, topic.Order));
-
-            topic.Order = order;
-
-            if (order != 0)
-            {
-                _order.Add(new OrderedItem(topic.Id, order));
-            }
-
-            Monitor.Exit(_order);
-        }
-
         public void UpdateFeedbackChatTopic(FeedbackChatTopic newTopic)
         {
             if (_topics.TryGetValue(newTopic.Id, out FeedbackChatTopic topic))
