@@ -118,8 +118,7 @@ namespace Telegram.ViewModels
             _mentions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadMention());
             _reactions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadReaction());
 
-            //Items = new LegacyMessageCollection();
-            //Items.CollectionChanged += (s, args) => IsEmpty = Items.Count == 0;
+            Items = new MessageCollection(this);
 
             _count++;
             System.Diagnostics.Debug.WriteLine("Creating DialogViewModel {0}", _count);
@@ -822,7 +821,7 @@ namespace Telegram.ViewModels
                             await AddHeaderAsync(messages.MessagesValue, fromMessage?.Get());
                         }
 
-                        tsc.SetResult(new MessageCollection(Items.Ids, messages.MessagesValue, CreateMessage, endReached, Type));
+                        tsc.SetResult(new MessageCollection(this, Items.Ids, messages.MessagesValue, CreateMessage, endReached, Type));
                     }
                     else
                     {
@@ -1664,7 +1663,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                var replied = new MessageCollection(null, values, CreateMessage, false, Type);
+                var replied = new MessageCollection(this, null, values, CreateMessage, false, Type);
                 return new LoadSliceResult(replied, maxId, scrollMode, alignment, pixel);
             }
 
@@ -1846,7 +1845,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public MessageCollection Items { get; } = new MessageCollection();
+        public MessageCollection Items { get; }
 
         public MessageViewModel CreateMessage(Message message, bool forLanguageStatistics = false)
         {
@@ -2444,7 +2443,7 @@ namespace Telegram.ViewModels
 
                 Delegate?.UpdateSecretChat(chat, secret);
                 Delegate?.UpdateUser(chat, item, cache, true, false);
-                Delegate?.UpdateUserRestrictsNewChats(chat, null, null, null);
+                Delegate?.UpdateUserEmptyState(chat, null, null, null);
 
                 ClientService.Send(new GetUserFullInfo(secret.UserId));
             }
@@ -2454,7 +2453,7 @@ namespace Telegram.ViewModels
                 var cache = ClientService.GetBasicGroupFull(basic.BasicGroupId);
 
                 Delegate?.UpdateBasicGroup(chat, item, cache);
-                Delegate?.UpdateUserRestrictsNewChats(chat, null, null, null);
+                Delegate?.UpdateUserEmptyState(chat, null, null, null);
 
                 ClientService.Send(new GetBasicGroupFullInfo(basic.BasicGroupId));
                 _messageDelegate.UpdateAdministrators(chat.Id);
@@ -2465,7 +2464,8 @@ namespace Telegram.ViewModels
                 var cache = ClientService.GetSupergroupFull(super.SupergroupId);
 
                 Delegate?.UpdateSupergroup(chat, item, cache);
-                Delegate?.UpdateUserRestrictsNewChats(chat, null, null, null);
+                Delegate?.UpdateSupergroupEmptyState(chat, item);
+                Delegate?.UpdateUserEmptyState(chat, null, null, null);
 
                 ClientService.Send(new GetSupergroupFullInfo(super.SupergroupId));
                 _messageDelegate.UpdateAdministrators(chat.Id);
@@ -4437,6 +4437,7 @@ namespace Telegram.ViewModels
 
     public partial class MessageCollection : MvxObservableCollection<MessageViewModel>
     {
+        private readonly DialogViewModel _viewModel;
         private readonly Dictionary<long, MessageViewModel> _messages = new();
 
         private long _first = long.MaxValue;
@@ -4456,13 +4457,16 @@ namespace Telegram.ViewModels
         // Used in sub-collection
         public bool IsEndReached { get; }
 
-        public MessageCollection()
+        public MessageCollection(DialogViewModel viewModel)
         {
+            _viewModel = viewModel;
             _messages = new();
         }
 
-        public MessageCollection(ICollection<long> exclude, IEnumerable<Message> source, Func<Message, bool, MessageViewModel> create, bool endReached, DialogType type)
+        public MessageCollection(DialogViewModel viewModel, ICollection<long> exclude, IEnumerable<Message> source, Func<Message, bool, MessageViewModel> create, bool endReached, DialogType type)
         {
+            _viewModel = viewModel;
+
             foreach (var item in source)
             {
                 if (item.Id != 0 && exclude != null && exclude.Contains(item.Id))
@@ -4824,7 +4828,7 @@ namespace Telegram.ViewModels
 
         // TODO: Support MoveItem to optimize UpdateMessageSendSucceeded
 
-        private static MessageViewModel UpdateSeparatorOnInsert(MessageViewModel item, MessageViewModel next)
+        private MessageViewModel UpdateSeparatorOnInsert(MessageViewModel item, MessageViewModel next)
         {
             if (item != null && next != null && item.Content is not MessageHeaderDate && next.Content is not MessageHeaderDate)
             {
@@ -4840,10 +4844,9 @@ namespace Telegram.ViewModels
             return null;
         }
 
-        private static MessageViewModel UpdateForumTopicSeparatorOnInsert(MessageViewModel item, MessageViewModel next)
+        private MessageViewModel UpdateForumTopicSeparatorOnInsert(MessageViewModel item, MessageViewModel next)
         {
-            var delegato = item?.Delegate as DialogMessageDelegate;
-            if (delegato == null || (!delegato.IsForum && !delegato.IsFeedbackGroup))
+            if (!_viewModel.IsForum && !_viewModel.IsFeedbackGroup)
             {
                 return null;
             }
@@ -4894,7 +4897,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        private static int AttachHash(MessageViewModel item)
+        private int AttachHash(MessageViewModel item)
         {
             var hash = 0;
             if (item != null && item.IsFirst)
@@ -4909,7 +4912,7 @@ namespace Telegram.ViewModels
             return hash;
         }
 
-        private static int GetMessageDate(MessageViewModel item)
+        private int GetMessageDate(MessageViewModel item)
         {
             if (item.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
             {
@@ -4927,7 +4930,7 @@ namespace Telegram.ViewModels
             return item.Date;
         }
 
-        private static void UpdateAttach(MessageViewModel item, MessageViewModel previous)
+        private void UpdateAttach(MessageViewModel item, MessageViewModel previous)
         {
             if (item == null)
             {
@@ -4965,7 +4968,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        private static bool AreTogether(MessageViewModel message1, MessageViewModel message2)
+        private bool AreTogether(MessageViewModel message1, MessageViewModel message2)
         {
             if (message1.IsService || message2.IsService || message1.ChatId == message1.ClientService.Options.VerificationCodesBotChatId)
             {

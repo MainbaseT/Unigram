@@ -1419,7 +1419,6 @@
                                                     LoopCount="1" />
                         </Border>
 
-
                         <TextBlock x:Name="RestrictsNewChatsText"
                                    Foreground="#FFFFFF"
                                    TextAlignment="Center"
@@ -1428,12 +1427,14 @@
                                    Padding="0,0,0,4"
                                    Margin="0,0,0,8" />
 
-                        <Border Background="{ThemeResource MessageServiceBackgroundBrush}"
+                        <Border x:Name="RestrictsNewChatsButton"
+                                Background="{ThemeResource MessageServiceBackgroundBrush}"
                                 CornerRadius="12"
                                 HorizontalAlignment="Center"
                                 Padding="12,4,12,4"
                                 Margin="0,0,0,12">
-                            <TextBlock Text="{CustomResource MessagePremiumUnlock}"
+                            <TextBlock x:Name="RestrictsNewChatsButtonText"
+                                       Text="{CustomResource MessagePremiumUnlock}"
                                        Foreground="#FFFFFF"
                                        TextAlignment="Center"
                                        Style="{StaticResource CaptionTextBlockStyle}" />

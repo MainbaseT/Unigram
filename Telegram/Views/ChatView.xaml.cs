@@ -40,6 +40,7 @@ using Telegram.ViewModels.Stories;
 using Telegram.Views.Business;
 using Telegram.Views.Popups;
 using Telegram.Views.Settings;
+using Telegram.Views.Stars.Popups;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.UI.Composition;
@@ -5012,6 +5013,15 @@ namespace Telegram.Views
             {
                 return Strings.SendAnonymously;
             }
+            else if (supergroup.IsFeedbackGroup && !ViewModel.IsFeedbackChatAdministrator)
+            {
+                if (supergroup.PaidMessageStarCount > 0)
+                {
+                    return string.Format(Strings.SuggestPostForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
+                }
+
+                return Strings.SuggestPostForFree;
+            }
             else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator && !ViewModel.IsFeedbackChatAdministrator)
             {
                 return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
@@ -5788,7 +5798,7 @@ namespace Telegram.Views
             }
         }
 
-        public void UpdateUserRestrictsNewChats(Chat chat, User user, UserFullInfo fullInfo, CanSendMessageToUserResult result)
+        public void UpdateUserEmptyState(Chat chat, User user, UserFullInfo fullInfo, CanSendMessageToUserResult result)
         {
             if (result is CanSendMessageToUserResultOk)
             {
@@ -5849,7 +5859,11 @@ namespace Telegram.Views
             }
             else
             {
-                ShowHideRestrictsNewChats(false, null);
+                if (chat.Type is not ChatTypeSupergroup)
+                {
+                    ShowHideRestrictsNewChats(false, null);
+                }
+
                 ShowHideAccountInfo(null, null);
                 ShowHideEmptyChat(false, null, null);
             }
@@ -6136,6 +6150,39 @@ namespace Telegram.Views
             //ShowHideBotCommands(false);
         }
 
+        public void UpdateSupergroupEmptyState(Chat chat, Supergroup supergroup)
+        {
+            var show = supergroup.IsFeedbackGroup && chat.LastMessage == null;
+
+            if (_restrictsNewChatsCollapsed != show)
+            {
+                return;
+            }
+
+            _restrictsNewChatsCollapsed = !show;
+            RestrictsNewChats ??= FindName(nameof(RestrictsNewChats)) as MessageService;
+
+            if (show)
+            {
+                if (supergroup.PaidMessageStarCount > 0)
+                {
+                    TextBlockHelper.SetMarkdown(RestrictsNewChatsText, string.Format(Strings.SuggestionLockedStars.Replace("\u2B50", Icons.Premium + "\u200A"), chat.Title, supergroup.PaidMessageStarCount.ToString("N0")));
+                }
+                else
+                {
+                    TextBlockHelper.SetMarkdown(RestrictsNewChatsText, string.Format(Strings.SuggestionUnlockedStars, chat.Title));
+                }
+
+                RestrictsNewChats.Visibility = Visibility.Visible;
+                RestrictsNewChatsButton.Visibility = Visibility.Visible;
+                RestrictsNewChatsButtonText.Text = Strings.MessageStarsUnlock;
+            }
+            else
+            {
+                RestrictsNewChats.Visibility = Visibility.Collapsed;
+            }
+        }
+
         public void UpdateChatVideoChat(Chat chat, VideoChat videoChat)
         {
             if (chat.Type is ChatTypeBasicGroup or ChatTypeSupergroup)
@@ -6372,7 +6419,14 @@ namespace Telegram.Views
 
         private void RestrictsNewChats_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.NavigationService.ShowPromo();
+            if (ViewModel.Chat.Type is ChatTypePrivate)
+            {
+                ViewModel.NavigationService.ShowPromo();
+            }
+            else if (ViewModel.ClientService.TryGetSupergroup(ViewModel.Chat, out Supergroup supergroup))
+            {
+                ViewModel.NavigationService.ShowPopup(new Views.Stars.Popups.BuyPopup(), BuyStarsArgs.ForChannel(supergroup.PaidMessageStarCount, 0));
+            }
         }
 
         private long _accountInfoCollapsed = 0;
@@ -6422,6 +6476,8 @@ namespace Telegram.Views
                 }
 
                 RestrictsNewChats.Visibility = Visibility.Visible;
+                RestrictsNewChatsButton.Visibility = Visibility.Visible;
+                RestrictsNewChatsButtonText.Text = Strings.MessagePremiumUnlock;
             }
             else
             {

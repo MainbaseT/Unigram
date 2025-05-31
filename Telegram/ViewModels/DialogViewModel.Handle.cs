@@ -241,6 +241,11 @@ namespace Telegram.ViewModels
 
             if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.Supergroup.Id)
             {
+                if (IsFeedbackGroup)
+                {
+                    UpdateEmptyState(update.Supergroup);
+                }
+
                 ClientService.TryGetSupergroupFull(update.Supergroup.Id, out SupergroupFullInfo fullInfo);
                 BeginOnUIThread(() =>
                 {
@@ -575,9 +580,16 @@ namespace Telegram.ViewModels
                     UpdateEmptyState(user, null, true);
                 }
             }
-            else if (update.ChatId == _chat?.Id && _chat.Type is ChatTypeSupergroup && IsForum)
+            else if (update.ChatId == _chat?.Id && _chat.Type is ChatTypeSupergroup)
             {
-                BeginOnUIThread(() => Delegate?.UpdateChatLastMessage(_chat));
+                if (IsForum)
+                {
+                    BeginOnUIThread(() => Delegate?.UpdateChatLastMessage(_chat));
+                }
+                else if (IsFeedbackGroup && ClientService.TryGetSupergroup(_chat, out Supergroup supergroup))
+                {
+                    UpdateEmptyState(supergroup);
+                }
             }
         }
 
@@ -616,7 +628,7 @@ namespace Telegram.ViewModels
                         RestrictsNewChats = result is CanSendMessageToUserResultUserRestrictsNewChats;
 
                         GreetingSticker ??= ClientService.NextGreetingSticker();
-                        Delegate?.UpdateUserRestrictsNewChats(_chat, user, fullInfo, result as CanSendMessageToUserResult);
+                        Delegate?.UpdateUserEmptyState(_chat, user, fullInfo, result as CanSendMessageToUserResult);
                     });
                 });
             }
@@ -627,9 +639,30 @@ namespace Telegram.ViewModels
                     RestrictsNewChats = false;
 
                     GreetingSticker ??= ClientService.NextGreetingSticker();
-                    Delegate?.UpdateUserRestrictsNewChats(_chat, user, fullInfo, null);
+                    Delegate?.UpdateUserEmptyState(_chat, user, fullInfo, null);
                 });
             }
+        }
+
+        private void UpdateEmptyState(Supergroup supergroup)
+        {
+            if (_chat is not Chat chat)
+            {
+                return;
+            }
+
+            var empty = chat.LastMessage == null;
+            if (empty && _isChatEmpty)
+            {
+                return;
+            }
+            else if (empty == _isChatEmpty && supergroup == null)
+            {
+                return;
+            }
+
+            _isChatEmpty = empty;
+            BeginOnUIThread(() => Delegate?.UpdateSupergroupEmptyState(chat, supergroup));
         }
 
         private bool CheckSchedulingState(Message message)

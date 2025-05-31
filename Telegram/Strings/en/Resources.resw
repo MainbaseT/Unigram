@@ -8343,6 +8343,9 @@ Minimum length is 5 characters.</value>
   <data name="MessagesOverview" xml:space="preserve">
     <value>Messages</value>
   </data>
+  <data name="MessageStarsUnlock" xml:space="preserve">
+    <value>Buy Stars</value>
+  </data>
   <data name="Meters_one" xml:space="preserve">
     <value>{0} meter</value>
   </data>
@@ -12297,6 +12300,12 @@ list of viewers.</value>
   <data name="SuggestContactsInfo" xml:space="preserve">
     <value>Display people you message frequently at the top of the search section for quick access.</value>
   </data>
+  <data name="SuggestionLockedStars" xml:space="preserve">
+    <value>**{0}** charges **⭐️ {1}** per message to its admin.</value>
+  </data>
+  <data name="SuggestionUnlockedStars" xml:space="preserve">
+    <value>Send a direct message to the administrator of **{0}**.</value>
+  </data>
   <data name="SuggestPhoto" xml:space="preserve">
     <value>Suggest Photo</value>
   </data>
@@ -12308,6 +12317,12 @@ list of viewers.</value>
   </data>
   <data name="SuggestPhotoShort" xml:space="preserve">
     <value>Suggest</value>
+  </data>
+  <data name="SuggestPostForFree" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="SuggestPostForStars" xml:space="preserve">
+    <value>Message for ⭐️{0}</value>
   </data>
   <data name="SuggestStickers" xml:space="preserve">
     <value>Suggest stickers by emoji</value>
