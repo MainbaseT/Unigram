@@ -1732,7 +1732,7 @@ namespace Telegram.Views
             if (ViewModel.Topics.ChatId == openChat.ChatId)
             {
                 ViewModel.Topics.SelectedItem = openChat.MessageTopic;
-                ViewModel.Topics.Delegate?.SetSelectedItem(openChat.MessageTopic);
+                ViewModel.Topics.Delegate?.SetSelectedItem(ViewModel.Topics.Items.GetItem(openChat.MessageTopic));
             }
             else
             {
@@ -1911,7 +1911,7 @@ namespace Telegram.Views
                     {
                         ShowTopicList(chat);
 
-                        if (MasterDetail.CurrentState != MasterDetailState.Minimal)
+                        if (MasterDetail.CurrentState != MasterDetailState.Minimal && !MasterDetail.NavigationService.IsChatOpen(chat.Id, chat.LastMessage.TopicId))
                         {
                             MasterDetail.NavigationService.NavigateToChat(chat, topic: chat.LastMessage.TopicId, force: false, clearBackStack: true);
                         }

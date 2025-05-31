@@ -246,6 +246,12 @@ namespace Telegram.Common
             return chatId == GetChatFromBackStack(service, currentPageOnly).ChatId;
         }
 
+        public static bool IsChatOpen(this INavigationService service, long chatId, MessageTopic topic, bool currentPageOnly = false)
+        {
+            var currentChat = GetChatFromBackStack(service, currentPageOnly);
+            return currentChat.ChatId == chatId && currentChat.MessageTopic.AreTheSame(topic);
+        }
+
         public static ChatMessageTopic GetChatFromBackStack(this INavigationService service, bool currentPageOnly = false, Type currentPageType = null)
         {
             if (service.CurrentPageType == typeof(ChatPage) || service.CurrentPageType == currentPageType)
