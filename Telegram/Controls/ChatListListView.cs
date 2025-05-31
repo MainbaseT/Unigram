@@ -244,7 +244,7 @@ namespace Telegram.Controls
             {
                 _hasInitialLoadedEventFired = true;
 
-                _visual = ElementComposition.GetElementVisual(ScrollViewer);
+                _visual = ElementComposition.GetElementVisual(ScrollViewer.ContentTemplateRoot);
 
                 _redirect = _visual.Compositor.CreateSpriteVisual();
                 _redirect.RelativeSizeAdjustment = Vector2.One;
