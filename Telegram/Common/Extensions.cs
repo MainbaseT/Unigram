@@ -1130,7 +1130,7 @@ namespace Telegram.Common
             }
         }
 
-        public static async Task<InputThumbnail> ToVideoThumbnailAsync(this StorageFile file, VideoConversion video = null, ConversionType conversion = ConversionType.Copy, string arguments = null)
+        public static async Task<InputThumbnail> ToVideoThumbnailAsync(this StorageFile file, VideoGeneration video = null, ConversionType conversion = ConversionType.Copy, string arguments = null)
         {
             var props = await file.Properties.GetVideoPropertiesAsync();
 
@@ -1153,7 +1153,7 @@ namespace Telegram.Common
             return new InputThumbnail(await file.ToGeneratedAsync(conversion, arguments), width, height);
         }
 
-        public static async Task<InputThumbnail> ToVideoThumbnailAsync(this StorageVideo file, VideoConversion video = null, ConversionType conversion = ConversionType.Copy, string arguments = null)
+        public static async Task<InputThumbnail> ToVideoThumbnailAsync(this StorageVideo file, VideoGeneration video = null, ConversionType conversion = ConversionType.Copy, string arguments = null)
         {
             double originalWidth = file.Width;
             double originalHeight = file.Height;

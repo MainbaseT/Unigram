@@ -31,7 +31,6 @@ using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using static Telegram.Services.GenerationService;
 
 namespace Telegram.ViewModels
 {
@@ -1812,7 +1811,7 @@ namespace Telegram.ViewModels
                 var duration = media.EditState.TrimStopTime - media.EditState.TrimStartTime;
                 var seconds = duration.TotalSeconds;
 
-                var conversion = new VideoConversion();
+                var conversion = new VideoGeneration();
                 conversion.Mute = true;
                 conversion.TrimStartTime = media.EditState.TrimStartTime;
                 conversion.TrimStopTime = media.EditState.TrimStartTime + TimeSpan.FromSeconds(Math.Min(seconds, 9.9));
@@ -1833,12 +1832,14 @@ namespace Telegram.ViewModels
 
                 conversion.CropRectangle = rectangle;
 
-                var generated = await media.File.ToGeneratedAsync(ConversionType.Transcode, JsonConvert.SerializeObject(conversion));
+                var serialized = JsonConvert.SerializeObject(conversion);
+                var generated = await media.File.ToGeneratedAsync(ConversionType.Transcode, serialized);
                 var response = await ClientService.SendAsync(new SetProfilePhoto(new InputChatPhotoAnimation(generated, 0), false));
             }
             else if (file is StoragePhoto photo)
             {
-                var generated = await photo.File.ToGeneratedAsync(ConversionType.Compress, JsonConvert.SerializeObject(photo.EditState));
+                var serialized = JsonConvert.SerializeObject(photo.EditState);
+                var generated = await photo.File.ToGeneratedAsync(ConversionType.Compress, serialized);
                 var response = await ClientService.SendAsync(new SetProfilePhoto(new InputChatPhotoStatic(generated), false));
             }
         }

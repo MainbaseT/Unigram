@@ -276,7 +276,7 @@ namespace Telegram.Views.Popups
                     trimStopTime = TimeSpan.FromMilliseconds(TrimRange.Maximum * TrimRange.OriginalDuration.TotalMilliseconds);
                 }
 
-                _media.EditState = new BitmapEditState
+                _media.EditState = new ImageGeneration
                 {
                     //Rectangle = new Rect(rect.X * w, rect.Y * h, rect.Width * w, rect.Height * h),
                     Rectangle = rect,

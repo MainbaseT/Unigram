@@ -43,7 +43,7 @@ namespace Telegram.Common
             return new Size(width * ratio, height * ratio);
         }
 
-        public static async Task<SizeInt32> GetScaleAsync(StorageFile file, bool allowMultipleFrames = false, int requestedMinSide = 1280, BitmapEditState editState = null)
+        public static async Task<SizeInt32> GetScaleAsync(StorageFile file, bool allowMultipleFrames = false, int requestedMinSide = 1280, ImageGeneration generation = null)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace Telegram.Common
                     var width = decoder.PixelWidth;
                     var height = decoder.PixelHeight;
 
-                    if (editState?.Rectangle is Rect crop)
+                    if (generation?.Rectangle is Rect crop)
                     {
                         width = (uint)(crop.Width * decoder.PixelWidth);
                         height = (uint)(crop.Height * decoder.PixelHeight);
@@ -70,7 +70,7 @@ namespace Telegram.Common
                         double ratioY = (double)requestedMinSide / height;
                         double ratio = Math.Min(ratioX, ratioY);
 
-                        if (editState != null && editState.Rotation is BitmapRotation.Clockwise90Degrees or BitmapRotation.Clockwise270Degrees)
+                        if (generation != null && generation.Rotation is BitmapRotation.Clockwise90Degrees or BitmapRotation.Clockwise270Degrees)
                         {
                             return new SizeInt32
                             {
@@ -86,7 +86,7 @@ namespace Telegram.Common
                         };
                     }
 
-                    if (editState != null && editState.Rotation is BitmapRotation.Clockwise90Degrees or BitmapRotation.Clockwise270Degrees)
+                    if (generation != null && generation.Rotation is BitmapRotation.Clockwise90Degrees or BitmapRotation.Clockwise270Degrees)
                     {
                         return new SizeInt32
                         {
@@ -437,14 +437,14 @@ namespace Telegram.Common
             return (new Rect(x, y, w, h), new Size(ratioW, ratioH));
         }
 
-        public static async Task<ImageSource> CropAndPreviewAsync(StorageMedia source, BitmapEditState editState)
+        public static async Task<ImageSource> CropAndPreviewAsync(StorageMedia source, ImageGeneration generation)
         {
             if (source is StorageVideo)
             {
                 using var videoStream = await source.File.OpenReadAsync();
                 using var animation = await Task.Run(() => VideoAnimation.LoadFromFile(new VideoAnimationStreamSource(videoStream), false, false, false));
 
-                if (editState.TrimStartTime is TimeSpan trimStart && trimStart > TimeSpan.Zero)
+                if (generation.TrimStartTime is TimeSpan trimStart && trimStart > TimeSpan.Zero)
                 {
                     animation.SeekToMilliseconds((long)trimStart.TotalMilliseconds, false);
                 }
@@ -458,16 +458,16 @@ namespace Telegram.Common
                 using var stream = new InMemoryRandomAccessStream();
                 PlaceholderImageHelper.Current.Encode(frame, stream, width, height);
 
-                return await CropAndPreviewAsync(stream, editState);
+                return await CropAndPreviewAsync(stream, generation);
             }
             else
             {
                 using var imageStream = await source.File.OpenReadAsync();
-                return await CropAndPreviewAsync(imageStream, editState);
+                return await CropAndPreviewAsync(imageStream, generation);
             }
         }
 
-        public static async Task<ImageSource> CropAndPreviewAsync(IRandomAccessStream source, BitmapEditState editState, int maxSize = 1280)
+        public static async Task<ImageSource> CropAndPreviewAsync(IRandomAccessStream source, ImageGeneration generation, int maxSize = 1280)
         {
             var decoder = await BitmapDecoder.CreateAsync(source);
             var cropWidth = (double)decoder.PixelWidth;
@@ -484,17 +484,17 @@ namespace Telegram.Common
             }
 
             var cropRectangle = new Rect(
-                editState.Rectangle.X * decoder.PixelWidth,
-                editState.Rectangle.Y * decoder.PixelHeight,
-                editState.Rectangle.Width * decoder.PixelWidth,
-                editState.Rectangle.Height * decoder.PixelHeight);
+                generation.Rectangle.X * decoder.PixelWidth,
+                generation.Rectangle.Y * decoder.PixelHeight,
+                generation.Rectangle.Width * decoder.PixelWidth,
+                generation.Rectangle.Height * decoder.PixelHeight);
 
-            if (editState.Rotation != BitmapRotation.None)
+            if (generation.Rotation != BitmapRotation.None)
             {
-                cropRectangle = RotateArea(cropRectangle, decoder.PixelWidth, decoder.PixelHeight, (int)editState.Rotation);
+                cropRectangle = RotateArea(cropRectangle, decoder.PixelWidth, decoder.PixelHeight, (int)generation.Rotation);
             }
 
-            if (editState.Flip == BitmapFlip.Horizontal)
+            if (generation.Flip == BitmapFlip.Horizontal)
             {
                 cropRectangle = FlipArea(cropRectangle, decoder.PixelWidth);
             }
@@ -512,14 +512,14 @@ namespace Telegram.Common
             transform.ScaledHeight = (uint)scaledSize.Height;
             transform.Bounds = bounds;
             transform.InterpolationMode = BitmapInterpolationMode.Linear;
-            transform.Rotation = editState.Rotation;
-            transform.Flip = editState.Flip;
+            transform.Rotation = generation.Rotation;
+            transform.Flip = generation.Flip;
 
             var pixelData = await decoder.GetSoftwareBitmapAsync(decoder.BitmapPixelFormat, BitmapAlphaMode.Premultiplied, transform, ExifOrientationMode.RespectExifOrientation, ColorManagementMode.DoNotColorManage);
 
-            if (editState.Strokes != null)
+            if (generation.Strokes != null)
             {
-                using (var stream = await DrawStrokesAsync(pixelData, editState.Strokes, editState.Rectangle, editState.Rotation, editState.Flip))
+                using (var stream = await DrawStrokesAsync(pixelData, generation.Strokes, generation.Rectangle, generation.Rotation, generation.Flip))
                 {
                     var bitmapImage = new BitmapImage();
                     await bitmapImage.SetSourceAsync(stream);

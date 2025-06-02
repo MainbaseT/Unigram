@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Entities;
 using Telegram.Navigation;
 using Telegram.Services;
 using Windows.System;
@@ -16,58 +17,6 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Views.Tabbed
 {
-    public record NavigateToHistoryEntryParameters
-    {
-        public NavigateToHistoryEntryParameters(int entryId)
-        {
-            EntryId = entryId;
-        }
-
-        [JsonProperty("entryId")]
-        public int EntryId { get; init; }
-    }
-
-    public record HistoryEntry
-    {
-        [JsonProperty("id")]
-        public int Id { get; init; }
-
-        [JsonProperty("title")]
-        public string Title { get; init; }
-
-        [JsonProperty("url")]
-        public string Url { get; init; }
-
-        [JsonIgnore]
-        public string DocumentTitle
-        {
-            get
-            {
-                if (!string.IsNullOrWhiteSpace(Title))
-                {
-                    return Title;
-                }
-
-                return Url;
-            }
-        }
-
-        [JsonIgnore]
-        public string FaviconUri { get; init; }
-
-        [JsonIgnore]
-        public int Index { get; set; }
-    }
-
-    public record NavigationHistory
-    {
-        [JsonProperty("currentIndex")]
-        public int CurrentIndex { get; init; }
-
-        [JsonProperty("entries")]
-        public IReadOnlyList<HistoryEntry> Entries { get; init; }
-    }
-
     public sealed partial class WebBrowserPage : UserControl
     {
         public static TabViewItem Create(IClientService clientService, string url)

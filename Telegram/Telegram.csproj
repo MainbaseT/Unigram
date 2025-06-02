@@ -343,6 +343,7 @@
     </Compile>
     <Compile Include="CsWinRT.cs" />
     <Compile Include="Entities\StorageAlbum.cs" />
+    <Compile Include="Entities\VideoGeneration.cs" />
     <Compile Include="Services\Calls\VoipCallBase.cs" />
     <Compile Include="Services\Calls\VoipGroupCallVerificationStateChangedEventArgs.cs" />
     <Compile Include="Services\Calls\VoipGroupCallJoinedStateChangedEventArgs.cs" />
@@ -1449,6 +1450,8 @@
     <Compile Include="Views\Supergroups\SupergroupTopicsPage.xaml.cs">
       <DependentUpon>SupergroupTopicsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Entities\NavigateToHistoryEntryParameters.cs" />
+    <Compile Include="Entities\NavigationHistory.cs" />
     <Compile Include="Views\Tabbed\WebBrowserPage.xaml.cs">
       <DependentUpon>WebBrowserPage.xaml</DependentUpon>
     </Compile>
@@ -1475,7 +1478,7 @@
     <Compile Include="Td\Api\ErrorType.cs" />
     <Compile Include="Entities\StorageDocument.cs" />
     <Compile Include="Entities\StorageMedia.cs" />
-    <Compile Include="Entities\BitmapEditState.cs" />
+    <Compile Include="Entities\ImageGeneration.cs" />
     <Compile Include="Entities\StoragePhoto.cs" />
     <Compile Include="Entities\StorageVideo.cs" />
     <Compile Include="Logger.cs" />

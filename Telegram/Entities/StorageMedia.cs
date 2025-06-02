@@ -35,7 +35,7 @@ namespace Telegram.Entities
             //ItemDate = basic.ItemDate;
             Size = fileSize;
 
-            EditState = new BitmapEditState();
+            EditState = new ImageGeneration();
         }
 
         public StorageFile File { get; private set; }
@@ -80,7 +80,7 @@ namespace Telegram.Entities
         {
             get
             {
-                if (_editState is BitmapEditState editState && !editState.IsEmpty)
+                if (_editState is ImageGeneration editState && !editState.IsEmpty)
                 {
                     return editState.Rectangle.Width * Width;
                 }
@@ -93,7 +93,7 @@ namespace Telegram.Entities
         {
             get
             {
-                if (_editState is BitmapEditState editState && !editState.IsEmpty)
+                if (_editState is ImageGeneration editState && !editState.IsEmpty)
                 {
                     return editState.Rectangle.Height * Height;
                 }
@@ -102,8 +102,8 @@ namespace Telegram.Entities
             }
         }
 
-        protected BitmapEditState _editState;
-        public BitmapEditState EditState
+        protected ImageGeneration _editState;
+        public ImageGeneration EditState
         {
             get => _editState;
             set
@@ -117,7 +117,7 @@ namespace Telegram.Entities
 
         public virtual async void Refresh()
         {
-            if (_editState is BitmapEditState editState && !editState.IsEmpty)
+            if (_editState is ImageGeneration editState && !editState.IsEmpty)
             {
                 try
                 {

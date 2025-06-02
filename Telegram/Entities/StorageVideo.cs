@@ -158,7 +158,7 @@ namespace Telegram.Entities
             int originalWidth = this.originalWidth;
             int originalHeight = this.originalHeight;
 
-            if (_editState is BitmapEditState state && state.Rectangle is Rect rectangle)
+            if (_editState is ImageGeneration state && state.Rectangle is Rect rectangle)
             {
                 originalWidth = (int)rectangle.Width;
                 originalHeight = (int)rectangle.Height;
@@ -225,7 +225,7 @@ namespace Telegram.Entities
             int originalWidth = Width;
             int originalHeight = Height;
 
-            if (_editState is BitmapEditState state && state.Rectangle is Rect rectangle)
+            if (_editState is ImageGeneration state && state.Rectangle is Rect rectangle)
             {
                 originalWidth = (int)rectangle.Width;
                 originalHeight = (int)rectangle.Height;
@@ -388,9 +388,9 @@ namespace Telegram.Entities
             }
         }
 
-        public VideoConversion GetConversion()
+        public VideoGeneration GetGeneration()
         {
-            var conversion = new VideoConversion();
+            var conversion = new VideoGeneration();
             conversion.Mute = IsMuted;
 
             var state = _editState;

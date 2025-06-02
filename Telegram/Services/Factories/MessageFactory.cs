@@ -15,30 +15,32 @@ using Windows.Media.Effects;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
-using static Telegram.Services.GenerationService;
 
 namespace Telegram.Services.Factories
 {
     public static class MessageFactory
     {
-        public static async Task<BaseObject> CreatePhotoAsync(StoragePhoto photo, FormattedText caption, bool highQuality, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount, BitmapEditState editState)
+        public static async Task<BaseObject> CreatePhotoAsync(StoragePhoto photo, FormattedText caption, bool highQuality, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount)
         {
             var conversionType = ConversionType.Compress;
             var file = photo.File;
 
-            var size = await ImageHelper.GetScaleAsync(file, allowMultipleFrames: ttl != null || starCount > 0, requestedMinSide: highQuality ? 2560 : 1280, editState: editState);
+            var generation = photo.IsEdited ? photo.EditState : null;
+
+            var size = await ImageHelper.GetScaleAsync(file, allowMultipleFrames: ttl != null || starCount > 0, requestedMinSide: highQuality ? 2560 : 1280, generation: generation);
             if (size.Width == 0 || size.Height == 0)
             {
                 // This may happen if the image is a GIF with multiple frames.
                 conversionType = ConversionType.Copy;
-                editState = null;
+                generation = null;
             }
             else if (highQuality)
             {
                 conversionType = ConversionType.HighQuality;
             }
 
-            var generated = await file.ToGeneratedAsync(conversionType, editState != null ? JsonConvert.SerializeObject(editState) : null);
+            var serialized = generation != null ? JsonConvert.SerializeObject(generation) : null;
+            var generated = await file.ToGeneratedAsync(conversionType, serialized);
             var thumbnail = default(InputThumbnail);
 
             if (starCount > 0)
@@ -53,30 +55,32 @@ namespace Telegram.Services.Factories
             return new InputMessagePhoto(generated, thumbnail, Array.Empty<int>(), size.Width, size.Height, caption, captionAboveMedia, ttl, spoiler);
         }
 
-        public static async Task<BaseObject> CreateVideoAsync(StorageVideo video, FormattedText caption, bool animated, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount, VideoConversion conversion)
+        public static async Task<BaseObject> CreateVideoAsync(StorageVideo video, FormattedText caption, bool animated, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount)
         {
             var duration = video.TotalSeconds;
             var videoWidth = video.Width;
             var videoHeight = video.Height;
+            var generation = video.GetGeneration();
 
-            conversion ??= new VideoConversion
+            generation ??= new VideoGeneration
             {
                 Mute = animated
             };
 
-            if (conversion.TrimStartTime is TimeSpan trimStart && conversion.TrimStopTime is TimeSpan trimStop)
+            if (generation.TrimStartTime is TimeSpan trimStart && generation.TrimStopTime is TimeSpan trimStop)
             {
                 duration = (int)(trimStop.TotalSeconds - trimStart.TotalSeconds);
             }
 
-            if (conversion.Transform && !conversion.CropRectangle.IsEmpty)
+            if (generation.Transform && !generation.CropRectangle.IsEmpty)
             {
-                videoWidth = (int)conversion.CropRectangle.Width;
-                videoHeight = (int)conversion.CropRectangle.Height;
+                videoWidth = (int)generation.CropRectangle.Width;
+                videoHeight = (int)generation.CropRectangle.Height;
             }
 
-            var generated = await video.File.ToGeneratedAsync(ConversionType.Transcode, JsonConvert.SerializeObject(conversion));
-            var thumbnail = await video.ToVideoThumbnailAsync(conversion, ConversionType.TranscodeThumbnail, JsonConvert.SerializeObject(conversion));
+            var serialized = JsonConvert.SerializeObject(generation);
+            var generated = await video.File.ToGeneratedAsync(ConversionType.Transcode, serialized);
+            var thumbnail = await video.ToVideoThumbnailAsync(generation, ConversionType.TranscodeThumbnail, serialized);
 
             if (starCount > 0)
             {
@@ -107,7 +111,7 @@ namespace Telegram.Services.Factories
                 videoHeight = videoProps.Orientation is VideoOrientation.Rotate180 or VideoOrientation.Normal ? (int)profile.Video.Height : (int)profile.Video.Width;
             }
 
-            var conversion = new VideoConversion();
+            var conversion = new VideoGeneration();
             if (profile != null)
             {
                 conversion.Transcode = true;
@@ -130,8 +134,9 @@ namespace Telegram.Services.Factories
                 }
             }
 
-            var generated = await file.ToGeneratedAsync(ConversionType.Transcode, JsonConvert.SerializeObject(conversion));
-            var thumbnail = await file.ToVideoThumbnailAsync(conversion, ConversionType.TranscodeThumbnail, JsonConvert.SerializeObject(conversion));
+            var serialized = JsonConvert.SerializeObject(conversion);
+            var generated = await file.ToGeneratedAsync(ConversionType.Transcode, serialized);
+            var thumbnail = await file.ToVideoThumbnailAsync(conversion, ConversionType.TranscodeThumbnail, serialized);
 
             // TODO: 172 selfDestructType
             return new InputMessageVideoNote(generated, thumbnail, duration, Math.Min(videoWidth, videoHeight), null);

@@ -498,11 +498,11 @@ namespace Telegram.ViewModels
             }
             else if (storage is StoragePhoto photo)
             {
-                await SendPhotoAsync(photo, reply, caption, captionAboveMedia, spoiler, storage.Ttl, highQuality, storage.IsEdited ? storage.EditState : null, options, starCount);
+                await SendPhotoAsync(photo, reply, caption, captionAboveMedia, spoiler, storage.Ttl, highQuality, options, starCount);
             }
             else if (storage is StorageVideo video)
             {
-                await SendVideoAsync(video, reply, caption, video.IsMuted, captionAboveMedia, spoiler, storage.Ttl, video.GetConversion(), options, starCount);
+                await SendVideoAsync(video, reply, caption, video.IsMuted, captionAboveMedia, spoiler, storage.Ttl, options, starCount);
             }
         }
 
@@ -515,9 +515,9 @@ namespace Telegram.ViewModels
             }
         }
 
-        private async Task SendPhotoAsync(StoragePhoto file, InputMessageReplyTo reply, FormattedText caption, bool captionAboveMedia, bool hasSpoiler, MessageSelfDestructType ttl, bool highQuality, BitmapEditState editState, MessageSendOptions options, long starCount = 0)
+        private async Task SendPhotoAsync(StoragePhoto file, InputMessageReplyTo reply, FormattedText caption, bool captionAboveMedia, bool hasSpoiler, MessageSelfDestructType ttl, bool highQuality, MessageSendOptions options, long starCount = 0)
         {
-            var factory = await MessageFactory.CreatePhotoAsync(file, caption, highQuality, captionAboveMedia, hasSpoiler, ttl, starCount, editState);
+            var factory = await MessageFactory.CreatePhotoAsync(file, caption, highQuality, captionAboveMedia, hasSpoiler, ttl, starCount);
             if (factory is InputPaidMedia inputPaidMedia)
             {
                 await SendMessageAsync(reply, new InputMessagePaidMedia(starCount, new[] { inputPaidMedia }, caption, captionAboveMedia, string.Empty), options);
@@ -528,9 +528,9 @@ namespace Telegram.ViewModels
             }
         }
 
-        public async Task SendVideoAsync(StorageVideo video, InputMessageReplyTo reply, FormattedText caption, bool animated, bool captionAboveMedia, bool hasSpoiler, MessageSelfDestructType ttl, VideoConversion conversion, MessageSendOptions options, long starCount = 0)
+        public async Task SendVideoAsync(StorageVideo video, InputMessageReplyTo reply, FormattedText caption, bool animated, bool captionAboveMedia, bool hasSpoiler, MessageSelfDestructType ttl, MessageSendOptions options, long starCount = 0)
         {
-            var factory = await MessageFactory.CreateVideoAsync(video, caption, animated, captionAboveMedia, hasSpoiler, ttl, starCount, conversion);
+            var factory = await MessageFactory.CreateVideoAsync(video, caption, animated, captionAboveMedia, hasSpoiler, ttl, starCount);
             if (factory is InputPaidMedia inputPaidMedia)
             {
                 await SendMessageAsync(reply, new InputMessagePaidMedia(starCount, new[] { inputPaidMedia }, caption, captionAboveMedia, string.Empty), options);
@@ -790,7 +790,7 @@ namespace Telegram.ViewModels
                 }
                 else if (item is StoragePhoto photo)
                 {
-                    var factory = await MessageFactory.CreatePhotoAsync(photo, i == 0 ? caption : null, highQuality, captionAboveMedia, hasSpoiler, photo.Ttl, starCount, photo.IsEdited ? photo.EditState : null);
+                    var factory = await MessageFactory.CreatePhotoAsync(photo, i == 0 ? caption : null, highQuality, captionAboveMedia, hasSpoiler, photo.Ttl, starCount);
                     if (factory is InputPaidMedia inputPaidMedia)
                     {
                         paidOperations.Add(inputPaidMedia);
@@ -802,7 +802,7 @@ namespace Telegram.ViewModels
                 }
                 else if (item is StorageVideo video)
                 {
-                    var factory = await MessageFactory.CreateVideoAsync(video, i == 0 ? caption : null, video.IsMuted, captionAboveMedia, hasSpoiler, video.Ttl, starCount, video.GetConversion());
+                    var factory = await MessageFactory.CreateVideoAsync(video, i == 0 ? caption : null, video.IsMuted, captionAboveMedia, hasSpoiler, video.Ttl, starCount);
                     if (factory is InputPaidMedia inputPaidMedia)
                     {
                         paidOperations.Add(inputPaidMedia);
