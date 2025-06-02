@@ -25,7 +25,7 @@
 
             <media:SolidGaussianBrush x:Key="MessageServiceBackgroundBrush"
                                       FallbackColor="#667A8A96"
-                                      TintColor="#34FFFFFF" />
+                                      TintColor="#78787878" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
             <x:String x:Key="BreadcrumbBarChevronLeftToRight">&#xE0E3;</x:String>
