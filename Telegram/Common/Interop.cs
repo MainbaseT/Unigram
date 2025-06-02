@@ -18,11 +18,12 @@ namespace Telegram.Common
 {
 #if NET9_0_OR_GREATER
     [GeneratedComInterface]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 #else
     [ComImport]
+    [InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
 #endif
     [Guid("F26DA89E-683D-4C67-AEA7-BA29B2217A70")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ICompositionVisualSurfacePartner
     {
 #if NET9_0_OR_GREATER
@@ -51,11 +52,12 @@ namespace Telegram.Common
 
 #if NET9_0_OR_GREATER
     [GeneratedComInterface]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 #else
     [ComImport]
+    [InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
 #endif
     [Guid("0764019b-52c1-41f9-b6f2-9cc205973692")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IInternalCoreWindowPhone
     {
 #if NET9_0_OR_GREATER

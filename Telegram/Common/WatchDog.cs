@@ -307,11 +307,6 @@ namespace Telegram
             public ulong ullTotalVirtual;
             public ulong ullAvailVirtual;
             public ulong ullAvailExtendedVirtual;
-
-            public MEMORYSTATUSEX()
-            {
-                dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>();
-            }
         }
 
 #if NET9_0_OR_GREATER
@@ -335,6 +330,7 @@ namespace Telegram
         public static unsafe void MemoryStatus()
         {
             var status = new MEMORYSTATUSEX();
+            status.dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>();
 #if NET9_0_OR_GREATER
             GlobalMemoryStatusEx(&status);
 #else
@@ -359,6 +355,7 @@ namespace Telegram
             var count = SettingsService.Current.Diagnostics.UpdateCount;
 
             var status = new MEMORYSTATUSEX();
+            status.dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>();
 #if NET9_0_OR_GREATER
             GlobalMemoryStatusEx(&status);
 #else
