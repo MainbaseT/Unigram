@@ -54,6 +54,7 @@ namespace Telegram.Views
         private readonly AttachmentMenuBot _menuBot;
 
         private readonly InternalLinkType _sourceLink;
+        private readonly string _buttonText;
 
         private readonly long _launchId;
 
@@ -65,13 +66,15 @@ namespace Telegram.Views
         private bool _blockingAction;
         private bool _closeNeedConfirmation;
 
+        private bool _sentData;
+
         private bool _settingsVisible;
 
         private CompositionAnimation _placeholderShimmer;
         private ShapeVisual _placeholderVisual;
 
         // TODO: constructor should take a function and URL should be loaded asynchronously
-        public WebAppPage(IClientService clientService, User botUser, string url, long launchId = 0, AttachmentMenuBot menuBot = null, Chat sourceChat = null, InternalLinkType sourceLink = null)
+        public WebAppPage(IClientService clientService, User botUser, string url, long launchId = 0, AttachmentMenuBot menuBot = null, Chat sourceChat = null, InternalLinkType sourceLink = null, string buttonText = null)
         {
             RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
@@ -89,6 +92,7 @@ namespace Telegram.Views
             _menuBot = menuBot;
             _sourceChat = sourceChat;
             _sourceLink = sourceLink != null ? new InternalLinkTypeMainWebApp(botUser.ActiveUsername(), string.Empty, new WebAppOpenModeFullSize()) : null;
+            _buttonText = buttonText;
 
             TitleText.Text = botUser.FullName();
             Photo.SetUser(clientService, botUser, 24);
@@ -1649,22 +1653,20 @@ namespace Telegram.Views
             Close();
         }
 
-        private void SendDataMessage(JsonObject eventData)
+        private async void SendDataMessage(JsonObject eventData)
         {
             var data = eventData.GetNamedString("data");
-            if (string.IsNullOrEmpty(data))
+            if (string.IsNullOrEmpty(data) || string.IsNullOrEmpty(_buttonText) || _sentData)
             {
                 return;
             }
 
-            /*if (!_context
-        || _context->fromSwitch
-        || _context->fromBotApp
-        || _context->fromMainMenu
-        || _context->action.history->peer != _bot
-        || _lastShownQueryId) {
-        return;
-        }*/
+            _sentData = true;
+
+            await _clientService.SendAsync(new SendWebAppData(_botUser.Id, _buttonText, data));
+
+            _closeNeedConfirmation = false;
+            Close();
         }
 
         private void PostEvent(string eventName, string eventData = "null")

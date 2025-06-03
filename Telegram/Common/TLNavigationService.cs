@@ -55,7 +55,7 @@ namespace Telegram.Common
 
         public IClientService ClientService => _clientService;
 
-        public async void NavigateToWebApp(User botUser, string url, long launchId = 0, AttachmentMenuBot menuBot = null, WebAppOpenMode openMode = null, Chat sourceChat = null, InternalLinkType sourceLink = null)
+        public async void NavigateToWebApp(User botUser, string url, long launchId = 0, AttachmentMenuBot menuBot = null, WebAppOpenMode openMode = null, Chat sourceChat = null, InternalLinkType sourceLink = null, string buttonText = null)
         {
             if (sourceLink != null)
             {
@@ -83,7 +83,7 @@ namespace Telegram.Common
                 Height = 640,
                 PersistedId = "WebApp",
                 ViewMode = openMode is WebAppOpenModeFullScreen ? ViewServiceMode.FullScreen : ViewServiceMode.Default,
-                Content = control => new WebAppPage(ClientService, botUser, url, launchId, menuBot, sourceChat, sourceLink)
+                Content = control => new WebAppPage(ClientService, botUser, url, launchId, menuBot, sourceChat, sourceLink, buttonText)
             });
         }
 
@@ -505,6 +505,10 @@ namespace Telegram.Common
                                 {
                                     info = new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight };
                                 }
+                            }
+                            else if (currentChat.ChatId == chat.Id && currentChat.MessageTopic == null && topic != null)
+                            {
+                                info = new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight };
                             }
                             else
                             {
