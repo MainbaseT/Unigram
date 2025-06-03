@@ -2882,10 +2882,32 @@ namespace Telegram.Td.Api
                 or ChatMemberStatusRestricted { Permissions.CanSendPolls: true };
         }
 
+        // TODO: remove once exposed by TDLib
         public static bool IsFeedbackChatAdministrator(this Chat chat, IClientService clientService)
         {
             if (clientService.TryGetSupergroup(chat, out Supergroup supergroup) && clientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
             {
+                if (supergroup.IsFeedbackGroup && clientService.TryGetChat(fullInfo.FeedbackChatId, out chat))
+                {
+                    clientService.TryGetChat(fullInfo.FeedbackChatId, out chat);
+                }
+
+                var status = clientService.GetChatMemberStatus(chat, out bool channel);
+                if (status is ChatMemberStatusAdministrator administrator)
+                {
+                    return administrator.Rights.CanPostMessages;
+                }
+            }
+
+            return false;
+        }
+
+        // TODO: remove once exposed by TDLib
+        public static bool IsFeedbackChatAdministrator(this Supergroup supergroup, IClientService clientService)
+        {
+            if (clientService.TryGetSupergroupFull(supergroup.Id, out SupergroupFullInfo fullInfo))
+            {
+                Chat chat = null;
                 if (supergroup.IsFeedbackGroup && clientService.TryGetChat(fullInfo.FeedbackChatId, out chat))
                 {
                     clientService.TryGetChat(fullInfo.FeedbackChatId, out chat);

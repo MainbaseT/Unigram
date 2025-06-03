@@ -870,7 +870,7 @@ namespace Telegram.Views
                     // TODO: are there chances that at this point TextArea is not up to date yet?
                     checkbox.PrepareForItemOverride(message,
                         _viewModel.Type is DialogType.History or DialogType.Thread or DialogType.ScheduledMessages
-                        && TextArea.Visibility == Visibility.Visible);
+                        && _replyEnabled is true);
 
                     if (checkbox.Content is MessageBubble bubble)
                     {

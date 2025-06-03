@@ -5077,16 +5077,20 @@ namespace Telegram.Views
             {
                 return Strings.SendAnonymously;
             }
-            else if (supergroup.IsFeedbackGroup && !ViewModel.IsFeedbackChatAdministrator)
+            else if (supergroup.IsFeedbackGroup)
             {
-                if (supergroup.PaidMessageStarCount > 0)
+                if (supergroup.IsFeedbackChatAdministrator(ViewModel.ClientService))
+                {
+                    return Strings.TypeMessage;
+                }
+                else if (supergroup.PaidMessageStarCount > 0)
                 {
                     return string.Format(Strings.SuggestPostForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
                 }
 
                 return Strings.SuggestPostForFree;
             }
-            else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator && !ViewModel.IsFeedbackChatAdministrator)
+            else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator)
             {
                 return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
             }
@@ -6124,13 +6128,13 @@ namespace Telegram.Views
                 {
                     ShowAction(Strings.GlobalSendMessageRestricted, fullInfo != null && fullInfo.UnrestrictBoostCount > 0);
                 }
-                else if (ViewModel.Type != DialogType.Thread && group.IsFeedbackGroup && ViewModel.IsFeedbackChatAdministrator)
+                else if (ViewModel.Type != DialogType.Thread && group.IsFeedbackGroup && group.IsFeedbackChatAdministrator(ViewModel.ClientService))
                 {
                     ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
                 }
                 else
                 {
-                    ShowArea(ViewModel.IsFeedbackChatAdministrator ? 0 : group.PaidMessageStarCount);
+                    ShowArea(group.IsFeedbackChatAdministrator(ViewModel.ClientService) ? 0 : group.PaidMessageStarCount);
                 }
             }
 

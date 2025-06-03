@@ -235,9 +235,6 @@ namespace Telegram.ViewModels
 
         public bool IsFeedbackGroup { get; private set; }
 
-        // TODO: not currently reliable
-        public bool IsFeedbackChatAdministrator { get; private set; }
-
         protected Chat _chat;
         public override Chat Chat
         {
@@ -2248,7 +2245,6 @@ namespace Telegram.ViewModels
             Chat = chat;
             IsForum = Type == DialogType.History && ClientService.IsForum(chat);
             IsFeedbackGroup = Type == DialogType.History && ClientService.IsFeedbackGroup(chat);
-            IsFeedbackChatAdministrator = chat.IsFeedbackChatAdministrator(ClientService);
 
             SetScrollMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
             SetTranslating();
