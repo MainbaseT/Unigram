@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using Telegram.Common;
 using Telegram.Controls.Cells;
+using Telegram.Navigation;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -122,12 +123,16 @@ namespace Telegram.Controls
             {
                 if (sender.ItemsPanel == VerticalStack)
                 {
-                    args.ItemContainer = new TextListViewItem();
+                    args.ItemContainer = new TextListViewItem
+                    {
+                        Style = BootStrapper.Current.Resources["DefaultListViewItemStyle"] as Style
+                    };
                 }
                 else
                 {
                     args.ItemContainer = new TextGridViewItem
                     {
+                        Style = App.Current.Resources["DefaultGridViewItemStyle"] as Style,
                         Margin = new Thickness(2)
                     };
                 }
