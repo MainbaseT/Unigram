@@ -561,6 +561,8 @@ namespace Telegram.Controls.Chats
             var range = Document.GetRange(index, index);
             range.GetRect(PointOptions.None, out Rect rect, out _);
 
+            var diff = ContentElement.ExtentHeight - ContentElement.ViewportHeight;
+
             var style = new Style
             {
                 TargetType = typeof(FlyoutPresenter),
@@ -583,7 +585,7 @@ namespace Telegram.Controls.Chats
 
             _emojiFlyout.ShowAt(this, new FlyoutShowOptions
             {
-                Position = new Windows.Foundation.Point(rect.X + Padding.Left - 8, rect.Y + 6),
+                Position = new Windows.Foundation.Point(rect.X + Padding.Left - 8, rect.Y + 6 - diff),
                 Placement = FlyoutPlacementMode.TopEdgeAlignedLeft,
                 ShowMode = FlyoutShowMode.Transient
             });
