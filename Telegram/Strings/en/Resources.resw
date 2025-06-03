@@ -8189,6 +8189,9 @@ Minimum length is 5 characters.</value>
   <data name="Message" xml:space="preserve">
     <value>Message</value>
   </data>
+  <data name="MessageAuthorSentBy" xml:space="preserve">
+    <value>Sent by **{0}**</value>
+  </data>
   <data name="MessageContainsEmojiPack" xml:space="preserve">
     <value>This message contains emoji from {0} pack.</value>
   </data>

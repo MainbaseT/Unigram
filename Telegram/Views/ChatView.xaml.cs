@@ -2718,7 +2718,11 @@ namespace Telegram.Views
                     flyout.CreateFlyoutSeparator();
                 }
 
-                if (CanGetMessageReadDate(message, properties))
+                if (CanGetMessageAuthor(message, properties))
+                {
+                    LoadMessageAuthor(message, properties, flyout);
+                }
+                else if (CanGetMessageReadDate(message, properties))
                 {
                     LoadMessageReadDate(message, properties, flyout);
                 }
@@ -3214,6 +3218,58 @@ namespace Telegram.Views
             {
                 placeholder.Text = Strings.NobodyViewed;
                 placeholder.IsEnabled = false;
+            }
+        }
+
+        private static bool CanGetMessageAuthor(MessageViewModel message, MessageProperties properties)
+        {
+            return properties.CanGetAuthor;
+        }
+
+        private async void LoadMessageAuthor(MessageViewModel message, MessageProperties properties, MenuFlyout flyout)
+        {
+            static async Task<User> GetMessageAuthorAsync(MessageViewModel message, MessageProperties properties)
+            {
+                if (CanGetMessageAuthor(message, properties))
+                {
+                    var response = await message.ClientService.SendAsync(new GetMessageAuthor(message.ChatId, message.Id));
+                    if (response is User user)
+                    {
+                        return user;
+                    }
+                }
+
+                return null;
+            }
+
+            var textBlock = new TextBlock();
+            textBlock.Text = "...";
+            textBlock.FontSize = 12;
+
+            var placeholder = new MenuFlyoutContent();
+            placeholder.Content = textBlock;
+            placeholder.FontSize = 12;
+            //placeholder.Icon = MenuFlyoutHelper.CreateIcon(Icons.Seen);
+            placeholder.Padding = new Thickness(12, 4, 12, 4);
+            placeholder.HorizontalAlignment = HorizontalAlignment.Left;
+
+            // Width must be fixed because viewers are loaded asynchronously
+            placeholder.Width = 200;
+
+            flyout.Items.Add(placeholder);
+            flyout.CreateFlyoutSeparator();
+
+
+            var user = await GetMessageAuthorAsync(message, properties);
+            if (user != null)
+            {
+                var markdown = ClientEx.ParseMarkdown(string.Format(Strings.MessageAuthorSentBy, user.FullName()));
+                if (markdown.Entities.Count == 1)
+                {
+                    markdown.Entities[0].Type = new TextEntityTypeMentionName(user.Id);
+                }
+
+                TextBlockHelper.SetFormattedText(textBlock, markdown);
             }
         }
 
@@ -5779,7 +5835,8 @@ namespace Telegram.Views
                 && user.Id != ViewModel.ClientService.Options.MyId;
 
             Call.Glyph = Icons.Call;
-            Call.Visibility = /*!secret &&*/ fullInfo.CanBeCalled ? Visibility.Visible : Visibility.Collapsed;
+            Call.Visibility = /*!secret &&*/
+            fullInfo.CanBeCalled ? Visibility.Visible : Visibility.Collapsed;
             VideoCall.Visibility = /*!secret &&*/ fullInfo.CanBeCalled && fullInfo.SupportsVideoCalls ? Visibility.Visible : Visibility.Collapsed;
         }
 
@@ -6604,7 +6661,14 @@ namespace Telegram.Views
 
         private void NavigateToForumTopic(Chat chat, MessageTopic topic)
         {
-            ViewModel.NavigationService.NavigateToChat(chat, topic: topic, force: false, clearBackStack: true);
+            if (ViewModel.Topic != null)
+            {
+                ViewModel.NavigationService.NavigateToChat(chat, topic: topic, force: false, clearBackStack: true);
+            }
+            else
+            {
+                ViewModel.NavigationService.NavigateToChat(chat, topic: topic);
+            }
         }
 
         private void NavigateToForumTopic(MessageViewModel message)

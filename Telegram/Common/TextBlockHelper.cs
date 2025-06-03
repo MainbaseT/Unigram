@@ -245,6 +245,15 @@ namespace Telegram.Common
                         span.Inlines.Add(hyperlink);
                         local = hyperlink;
                     }
+                    else if (entity.Type is TextEntityTypeMentionName mentionName)
+                    {
+                        var data = text.Substring(entity.Offset + 1, entity.Length - 1);
+                        var hyperlink = new Hyperlink();
+                        hyperlink.Click += (s, args) => Hyperlink_Click(s, entity.Type, data);
+                        hyperlink.UnderlineStyle = UnderlineStyle.None;
+                        span.Inlines.Add(hyperlink);
+                        local = hyperlink;
+                    }
 
                     var run = new Run { Text = text.Substring(entity.Offset, entity.Length) };
 
@@ -448,6 +457,10 @@ namespace Telegram.Common
             else if (type is TextEntityTypeMention)
             {
                 MessageHelper.NavigateToUsername(clientService, navigationService, data.TrimStart('@'));
+            }
+            else if (type is TextEntityTypeMentionName mentionName)
+            {
+                navigationService.NavigateToUser(mentionName.UserId);
             }
             else if (type is TextEntityTypeUrl)
             {
