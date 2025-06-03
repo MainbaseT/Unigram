@@ -428,7 +428,7 @@ namespace Telegram.ViewModels
             Task<BaseObject> request = null;
             if (popup.IsFilesSelected)
             {
-                request = MessageFactory.CreateDocumentAsync(storage, popup.Caption, false, storage.IsScreenshot);
+                request = MessageFactory.CreateDocumentAsync(storage, popup.Caption, false);
             }
             else if (storage is StoragePhoto photo)
             {

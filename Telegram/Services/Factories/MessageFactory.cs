@@ -142,10 +142,10 @@ namespace Telegram.Services.Factories
             return new InputMessageVideoNote(generated, thumbnail, duration, Math.Min(videoWidth, videoHeight), null);
         }
 
-        public static async Task<BaseObject> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool asFile, bool asScreenshot)
+        public static async Task<BaseObject> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool asFile)
         {
             var file = media.File;
-            var generated = await file.ToGeneratedAsync(asScreenshot ? ConversionType.Screenshot : ConversionType.Copy);
+            var generated = await file.ToGeneratedAsync(media.IsScreenshot ? ConversionType.Screenshot : ConversionType.Copy);
 
             if (!asFile && media is StorageAudio audio)
             {
