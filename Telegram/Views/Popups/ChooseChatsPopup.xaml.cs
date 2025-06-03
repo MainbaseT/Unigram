@@ -1799,7 +1799,7 @@ namespace Telegram.Views.Popups
                     PrimaryButtonText = string.Empty;
 
                     RootGrid.Children.Clear();
-                    RootGrid.Children.Add(new SendMessagesView(ViewModel.ClientService, ViewModel.Aggregator, shareOperation.ShareOperation, ViewModel.SelectedItems.ToList(), ViewModel.SendWithChat));
+                    RootGrid.Children.Add(new SendMessagesView(ViewModel.ClientService, ViewModel.Aggregator, shareOperation.ShareOperation, ViewModel.Caption, ViewModel.SelectedItems.ToList(), ViewModel.SendWithChat));
 
                     args.Cancel = true;
                 }

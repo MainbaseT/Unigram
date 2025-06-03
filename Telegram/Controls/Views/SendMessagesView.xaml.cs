@@ -29,7 +29,7 @@ namespace Telegram.Controls.Views
         private readonly HashSet<MessageId> _trackedMessages = new();
         private readonly HashSet<File> _trackedFiles = new();
 
-        public SendMessagesView(IClientService clientService, IEventAggregator aggregator, ShareOperation shareOperation, List<Chat> chats, SendWithChat action)
+        public SendMessagesView(IClientService clientService, IEventAggregator aggregator, ShareOperation shareOperation, FormattedText caption, List<Chat> chats, SendWithChat action)
         {
             InitializeComponent();
 
@@ -41,10 +41,10 @@ namespace Telegram.Controls.Views
                 .Subscribe<UpdateMessageSendFailed>(Handle)
                 .Subscribe<UpdateDeleteMessages>(Handle);
 
-            Initialize(chats, action, shareOperation);
+            Initialize(chats, action, shareOperation, caption);
         }
 
-        private async void Initialize(List<Chat> chats, SendWithChat action, ShareOperation shareOperation)
+        private async void Initialize(List<Chat> chats, SendWithChat action, ShareOperation shareOperation, FormattedText caption)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Telegram.Controls.Views
                         var media = new List<StorageMedia>();
                         media.Add(photo);
 
-                        Initialize(chats, action, media);
+                        Initialize(chats, action, media, caption);
                     }
                 }
                 else if (shareOperation.Data.AvailableFormats.Contains(StandardDataFormats.StorageItems))
@@ -87,7 +87,7 @@ namespace Telegram.Controls.Views
                     var media = await StorageMedia.CreateAsync(files);
                     if (media.Count > 0)
                     {
-                        Initialize(chats, action, media);
+                        Initialize(chats, action, media, caption);
                     }
                 }
                 else if (shareOperation.Data.AvailableFormats.Contains(StandardDataFormats.WebLink))
@@ -95,8 +95,13 @@ namespace Telegram.Controls.Views
                     var link = await shareOperation.Data.GetWebLinkAsync();
                     var content = new List<object>();
 
-                    content.Add(new InputMessageText(link.AbsoluteUri.AsFormattedText(), null, false));
+                    if (caption?.Text.Length > 0)
+                    {
+                        content.Add(new InputMessageText(caption, null, false));
+                    }
 
+                    content.Add(new InputMessageText(link.AbsoluteUri.AsFormattedText(), null, false));
+                    
                     Initialize(chats, action, content);
                 }
 
@@ -108,7 +113,7 @@ namespace Telegram.Controls.Views
             }
         }
 
-        private async void Initialize(List<Chat> chats, SendWithChat action, IList<StorageMedia> media)
+        private async void Initialize(List<Chat> chats, SendWithChat action, IList<StorageMedia> media, FormattedText caption)
         {
             var itemsView = ComposeViewModel.GetItemsView(media, true, true, true, true, true);
             var content = new List<object>();
@@ -116,20 +121,22 @@ namespace Telegram.Controls.Views
             for (int i = 0; i < itemsView.Count; i++)
             {
                 var item = itemsView[i];
+                var itemCaption = i < itemsView.Count - 1 ? null : caption;
+
                 if (item is StorageAlbum album)
                 {
                     if (album.Media.Count > 1)
                     {
-                        content.Add(await SendGroupedAsync(album.Media));
+                        content.Add(await SendGroupedAsync(album.Media, itemCaption));
                     }
                     else if (album.Media.Count > 0)
                     {
-                        content.Add(await SendStorageMediaAsync(album.Media[0]));
+                        content.Add(await SendStorageMediaAsync(album.Media[0], itemCaption));
                     }
                 }
                 else
                 {
-                    content.Add(await SendStorageMediaAsync(item));
+                    content.Add(await SendStorageMediaAsync(item, itemCaption));
                 }
             }
 
@@ -192,27 +199,27 @@ namespace Telegram.Controls.Views
             }
         }
 
-        private async Task<InputMessageContent> SendStorageMediaAsync(StorageMedia storage)
+        private async Task<InputMessageContent> SendStorageMediaAsync(StorageMedia storage, FormattedText caption)
         {
             if (storage is StorageDocument or StorageAudio)
             {
-                return await SendDocumentAsync(storage);
+                return await SendDocumentAsync(storage, caption);
             }
             else if (storage is StoragePhoto photo)
             {
-                return await SendPhotoAsync(photo);
+                return await SendPhotoAsync(photo, caption);
             }
             else if (storage is StorageVideo video)
             {
-                return await SendVideoAsync(video);
+                return await SendVideoAsync(video, caption);
             }
 
             return null;
         }
 
-        private async Task<InputMessageContent> SendDocumentAsync(StorageMedia file)
+        private async Task<InputMessageContent> SendDocumentAsync(StorageMedia file, FormattedText caption)
         {
-            var factory = await MessageFactory.CreateDocumentAsync(file, null, false);
+            var factory = await MessageFactory.CreateDocumentAsync(file, caption, false);
             if (factory is InputMessageContent input)
             {
                 return input;
@@ -221,9 +228,9 @@ namespace Telegram.Controls.Views
             return null;
         }
 
-        private async Task<InputMessageContent> SendPhotoAsync(StoragePhoto file)
+        private async Task<InputMessageContent> SendPhotoAsync(StoragePhoto file, FormattedText caption)
         {
-            var factory = await MessageFactory.CreatePhotoAsync(file, null, false, false, false, null, 0);
+            var factory = await MessageFactory.CreatePhotoAsync(file, caption, false, false, false, null, 0);
             if (factory is InputMessageContent input)
             {
                 return input;
@@ -232,9 +239,9 @@ namespace Telegram.Controls.Views
             return null;
         }
 
-        public async Task<InputMessageContent> SendVideoAsync(StorageVideo video)
+        public async Task<InputMessageContent> SendVideoAsync(StorageVideo video, FormattedText caption)
         {
-            var factory = await MessageFactory.CreateVideoAsync(video, null, false, false, false, null, 0);
+            var factory = await MessageFactory.CreateVideoAsync(video, caption, false, false, false, null, 0);
             if (factory is InputMessageContent input)
             {
                 return input;
@@ -243,7 +250,7 @@ namespace Telegram.Controls.Views
             return null;
         }
 
-        private async Task<List<InputMessageContent>> SendGroupedAsync(IList<StorageMedia> items)
+        private async Task<List<InputMessageContent>> SendGroupedAsync(IList<StorageMedia> items, FormattedText caption)
         {
             var operations = new List<InputMessageContent>();
             var audio = items.All(x => x is StorageAudio);
@@ -254,7 +261,7 @@ namespace Telegram.Controls.Views
 
                 if (audio)
                 {
-                    var factory = await MessageFactory.CreateDocumentAsync(item, null, false);
+                    var factory = await MessageFactory.CreateDocumentAsync(item, i == items.Count - 1 ? caption : null, false);
                     if (factory is InputMessageContent input)
                     {
                         operations.Add(input);
@@ -262,7 +269,7 @@ namespace Telegram.Controls.Views
                 }
                 else if (item is StoragePhoto photo)
                 {
-                    var factory = await MessageFactory.CreatePhotoAsync(photo, null, false, false, false, null, 0);
+                    var factory = await MessageFactory.CreatePhotoAsync(photo, i == 0 ? caption : null, false, false, false, null, 0);
                     if (factory is InputMessageContent input)
                     {
                         operations.Add(input);
@@ -270,7 +277,7 @@ namespace Telegram.Controls.Views
                 }
                 else if (item is StorageVideo video)
                 {
-                    var factory = await MessageFactory.CreateVideoAsync(video, null, false, false, false, null, 0);
+                    var factory = await MessageFactory.CreateVideoAsync(video, i == 0 ? caption : null, false, false, false, null, 0);
                     if (factory is InputMessageContent input)
                     {
                         operations.Add(input);

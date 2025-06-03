@@ -91,8 +91,7 @@ namespace Telegram.ViewModels
             {
                 SelectionMode = ListViewSelectionMode.Multiple;
                 Options = ChooseChatsOptions.PostMessages;
-                PrimaryButtonText = Strings.Send;
-                IsCommentEnabled = false;
+                IsCommentEnabled = true;
                 IsChatSelection = false;
             }
             else if (parameter is ChooseChatsConfigurationSwitchInline configurationSwitchInline)
