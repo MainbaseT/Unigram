@@ -508,9 +508,6 @@ namespace Telegram.Navigation
         {
             try
             {
-                App.ShareOperation?.TryReportCompleted();
-                App.ShareOperation = null;
-
                 switch (state)
                 {
                     case AuthorizationStateReady:

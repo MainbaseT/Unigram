@@ -61,10 +61,6 @@ namespace Telegram
 {
     sealed partial class App : BootStrapper
     {
-        public static ShareOperation ShareOperation { get; set; }
-
-        public static DataPackageView DataPackage { get; set; }
-
         private static ExtendedExecutionSession _extendedSession;
 
         /// <summary>

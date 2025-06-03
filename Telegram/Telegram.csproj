@@ -338,6 +338,9 @@
     <Compile Include="Controls\Views\ForumView.xaml.cs">
       <DependentUpon>ForumView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Views\SendMessagesView.xaml.cs">
+      <DependentUpon>SendMessagesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\WebVideoPlayer.xaml.cs">
       <DependentUpon>WebVideoPlayer.xaml</DependentUpon>
     </Compile>
@@ -2148,6 +2151,8 @@
     <Content Include="Assets\Animations\SupergroupTopicsList.tgs" />
     <Content Include="Assets\Animations\SupergroupTopicsTabs.tgs" />
     <Content Include="Assets\Animations\SupergroupFeedbackGroup.tgs" />
+    <Content Include="Assets\Animations\SendMessagesCompleted.tgs" />
+    <Content Include="Assets\Animations\SendMessagesProgress.tgs" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -2922,6 +2927,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ProfileColorBadge.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Views\SendMessagesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

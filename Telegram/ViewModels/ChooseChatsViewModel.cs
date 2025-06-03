@@ -87,9 +87,9 @@ namespace Telegram.ViewModels
                 IsCommentEnabled = true;
                 IsChatSelection = false;
             }
-            else if (parameter is ChooseChatsConfigurationDataPackage configurationDataPackage)
+            else if (parameter is ChooseChatsConfigurationShareOperation configurationShareOperation)
             {
-                SelectionMode = ListViewSelectionMode.Single;
+                SelectionMode = ListViewSelectionMode.Multiple;
                 Options = ChooseChatsOptions.PostMessages;
                 PrimaryButtonText = Strings.Send;
                 IsCommentEnabled = false;
@@ -621,6 +621,27 @@ namespace Telegram.ViewModels
             return Task.FromResult(ContentDialogResult.Primary);
         }
 
+        public void SendWithChat(Chat chat, Action<MessageSendOptions, long> action)
+        {
+            SelectedTopics.TryGetValue(chat.Id, out MessageTopic topic);
+
+            long feedbackChatTopicId = 0;
+            long messageThreadId = 0;
+
+            if (topic is MessageTopicFeedbackChat feedbackChat)
+            {
+                feedbackChatTopicId = feedbackChat.FeedbackChatTopicId;
+            }
+            else if (topic is MessageTopicForum forum && ClientService.TryGetForumTopic(chat.Id, forum.ForumTopicId, out ForumTopic forumTopic))
+            {
+                messageThreadId = forumTopic.Info.MessageThreadId;
+            }
+
+            var starCount = ClientService.PaidMessageStarCount(chat);
+            var options = new MessageSendOptions(feedbackChatTopicId, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+
+            action(options, messageThreadId);
+        }
 
         public RelayCommand SendCommand { get; }
         private async void SendExecute()
@@ -635,28 +656,6 @@ namespace Telegram.ViewModels
             {
                 IsCommentEnabled = true;
                 Caption = SendMessage;
-            }
-
-            void SendWithChat(Chat chat, Action<MessageSendOptions, long> action)
-            {
-                SelectedTopics.TryGetValue(chat.Id, out MessageTopic topic);
-
-                long feedbackChatTopicId = 0;
-                long messageThreadId = 0;
-
-                if (topic is MessageTopicFeedbackChat feedbackChat)
-                {
-                    feedbackChatTopicId = feedbackChat.FeedbackChatTopicId;
-                }
-                else if (topic is MessageTopicForum forum && ClientService.TryGetForumTopic(chat.Id, forum.ForumTopicId, out ForumTopic forumTopic))
-                {
-                    messageThreadId = forumTopic.Info.MessageThreadId;
-                }
-
-                var starCount = ClientService.PaidMessageStarCount(chat);
-                var options = new MessageSendOptions(feedbackChatTopicId, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
-
-                action(options, messageThreadId);
             }
 
             if (IsCommentEnabled && !string.IsNullOrEmpty(Caption?.Text))
@@ -796,26 +795,6 @@ namespace Telegram.ViewModels
                 else
                 {
                     NavigationService.NavigateToChat(chats[0], state: NavigationState.GetSwitchQuery(switchInline.Query, switchInline.Bot.Id));
-                }
-            }
-            else if (_configuration is ChooseChatsConfigurationDataPackage configurationDataPackage)
-            {
-                App.DataPackage = configurationDataPackage.Package;
-                SelectedTopics.TryGetValue(chats[0].Id, out MessageTopic messageTopic);
-
-                try
-                {
-                    var options = new Windows.System.LauncherOptions();
-                    options.TargetApplicationPackageFamilyName = Package.Current.Id.FamilyName;
-
-                    if (messageTopic is MessageTopicForum messageTopicForum)
-                    {
-                        await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format(CultureInfo.InvariantCulture, "tg://toast?session={0}&chat_id={1}&thread_id={2}", SessionId, chats[0].Id, messageTopicForum.ForumTopicId)), options);
-                    }
-                }
-                catch
-                {
-                    // All the remote procedure calls must be wrapped in a try-catch block
                 }
             }
             else if (_configuration is ChooseChatsConfigurationGroupCall groupCall)

@@ -9,6 +9,7 @@ using Telegram.Views.Popups;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -34,56 +35,15 @@ namespace Telegram.Views.Host
         public async void Activate(ShareTargetActivatedEventArgs args, INavigationService navigationService, AuthorizationState state)
         {
             WatchDog.TrackEvent("ShareTarget");
-            App.ShareOperation = args.ShareOperation;
 
             if (state is AuthorizationStateReady)
             {
-                var package = new DataPackage();
-
-                try
-                {
-                    var operation = args.ShareOperation.Data;
-                    if (operation.AvailableFormats.Contains(StandardDataFormats.ApplicationLink))
-                    {
-                        package.SetApplicationLink(await operation.GetApplicationLinkAsync());
-                    }
-                    if (operation.AvailableFormats.Contains(StandardDataFormats.Bitmap))
-                    {
-                        package.SetBitmap(await operation.GetBitmapAsync());
-                    }
-                    //if (operation.Contains(StandardDataFormats.Html))
-                    //{
-                    //    package.SetHtmlFormat(await operation.GetHtmlFormatAsync());
-                    //}
-                    //if (operation.Contains(StandardDataFormats.Rtf))
-                    //{
-                    //    package.SetRtf(await operation.GetRtfAsync());
-                    //}
-                    if (operation.AvailableFormats.Contains(StandardDataFormats.StorageItems))
-                    {
-                        package.SetStorageItems(await operation.GetStorageItemsAsync());
-                    }
-                    if (operation.AvailableFormats.Contains(StandardDataFormats.Text))
-                    {
-                        package.SetText(await operation.GetTextAsync());
-                    }
-                    //if (operation.Contains(StandardDataFormats.Uri))
-                    //{
-                    //    package.SetUri(await operation.GetUriAsync());
-                    //}
-                    if (operation.AvailableFormats.Contains(StandardDataFormats.WebLink))
-                    {
-                        package.SetWebLink(await operation.GetWebLinkAsync());
-                    }
-                }
-                catch { }
-
                 var popup = new ChooseChatsPopup();
                 popup.IsSmokeEnabled = false;
                 popup.Closed += OnClosed;
                 popup.AccountClick += OnAccountClick;
 
-                navigationService.ShowPopup(popup, new ChooseChatsConfigurationDataPackage(package.GetView()));
+                navigationService.ShowPopup(popup, new ChooseChatsConfigurationShareOperation(args.ShareOperation));
             }
             else
             {
@@ -101,7 +61,7 @@ namespace Telegram.Views.Host
             }
         }
 
-        private void ShowPopup(ISessionService session, DataPackageView package)
+        private void ShowPopup(ISessionService session, ShareOperation shareOperation)
         {
             var popup = new ChooseChatsPopup();
             popup.IsSmokeEnabled = false;
@@ -111,19 +71,19 @@ namespace Telegram.Views.Host
             var clientService = session.ClientService;
             var service = new TLNavigationService(clientService, null, _window, null, "Share");
 
-            service.ShowPopup(popup, new ChooseChatsConfigurationDataPackage(package));
+            service.ShowPopup(popup, new ChooseChatsConfigurationShareOperation(shareOperation));
         }
 
         private void OnAccountClick(object sender, EventArgs e)
         {
             foreach (var popup in VisualTreeHelper.GetOpenPopupsForXamlRoot(XamlRoot))
             {
-                if (popup.Child is ChooseChatsPopup chooseChats && chooseChats.ViewModel.Configuration is ChooseChatsConfigurationDataPackage package)
+                if (popup.Child is ChooseChatsPopup chooseChats && chooseChats.ViewModel.Configuration is ChooseChatsConfigurationShareOperation shareOperation)
                 {
                     chooseChats.Closed -= OnClosed;
                     chooseChats.Hide();
 
-                    ShowPopup(sender as ISessionService, package.Package);
+                    ShowPopup(sender as ISessionService, shareOperation.ShareOperation);
                 }
             }
         }
@@ -132,10 +92,9 @@ namespace Telegram.Views.Host
         {
             sender.Closed -= OnClosed;
 
-            if (args.Result != ContentDialogResult.Primary)
+            if (args.Result != ContentDialogResult.Primary && sender is ChooseChatsPopup chooseChats && chooseChats.ViewModel.Configuration is ChooseChatsConfigurationShareOperation shareOperation)
             {
-                App.ShareOperation?.TryReportCompleted();
-                App.ShareOperation = null;
+                shareOperation.ShareOperation.TryReportCompleted();
             }
         }
     }

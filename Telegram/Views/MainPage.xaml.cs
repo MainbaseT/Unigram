@@ -1536,23 +1536,13 @@ namespace Telegram.Views
 
                 if (_clientService.TryGetChat(chatId, out Chat chat))
                 {
-                    NavigationState state = null;
-                    if (App.DataPackage is DataPackageView package)
-                    {
-                        App.DataPackage = null;
-                        state = new NavigationState
-                        {
-                            { "package", package }
-                        };
-                    }
-
                     if (chat.ViewAsTopics)
                     {
-                        MasterDetail.NavigationService.NavigateToChat(chat.Id, topic: messageTopic, state: state, force: false);
+                        MasterDetail.NavigationService.NavigateToChat(chat.Id, topic: messageTopic, force: false);
                     }
                     else
                     {
-                        MasterDetail.NavigationService.NavigateToChat(chat.Id, state: state, force: false);
+                        MasterDetail.NavigationService.NavigateToChat(chat.Id, force: false);
                     }
                 }
             }
@@ -1578,12 +1568,7 @@ namespace Telegram.Views
 
         public async void Activate(Uri scheme)
         {
-            if (App.DataPackage is DataPackageView package)
-            {
-                App.DataPackage = null;
-                MasterDetail.NavigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationDataPackage(package));
-            }
-            else if (MessageHelper.IsTelegramUrl(scheme))
+            if (MessageHelper.IsTelegramUrl(scheme))
             {
                 MessageHelper.OpenTelegramUrl(ViewModel.ClientService, MasterDetail.NavigationService, scheme);
             }

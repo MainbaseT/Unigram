@@ -16,6 +16,7 @@ using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
+using Telegram.Controls.Views;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -25,6 +26,7 @@ using Telegram.ViewModels;
 using Telegram.ViewModels.Drawers;
 using Telegram.ViewModels.Folders;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.UI.Composition;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -493,14 +495,14 @@ namespace Telegram.Views.Popups
         public override int NumberOfSentMessages => 1;
     }
 
-    public partial class ChooseChatsConfigurationDataPackage : ChooseChatsConfiguration
+    public partial class ChooseChatsConfigurationShareOperation : ChooseChatsConfiguration
     {
-        public ChooseChatsConfigurationDataPackage(DataPackageView package)
+        public ChooseChatsConfigurationShareOperation(ShareOperation shareOperation)
         {
-            Package = package;
+            ShareOperation = shareOperation;
         }
 
-        public DataPackageView Package { get; }
+        public ShareOperation ShareOperation { get; }
     }
 
     public partial class ChooseChatsConfigurationSwitchInline : ChooseChatsConfiguration
@@ -851,7 +853,7 @@ namespace Telegram.Views.Popups
                 IsDismissButtonVisible = false;
             }
 
-            if (ViewModel.Configuration is ChooseChatsConfigurationDataPackage
+            if (ViewModel.Configuration is ChooseChatsConfigurationShareOperation
                 && TypeResolver.Current.Count > 1
                 && ViewModel.ClientService.TryGetUser(ViewModel.ClientService.Options.MyId, out User user))
             {
@@ -1791,7 +1793,20 @@ namespace Telegram.Views.Popups
 
             if (await ViewModel.ConfirmPaidMessagesAsync())
             {
-                ViewModel.SendCommand.Execute();
+                if (ViewModel.Configuration is ChooseChatsConfigurationShareOperation shareOperation)
+                {
+                    VerticalContentAlignment = VerticalAlignment.Center;
+                    PrimaryButtonText = string.Empty;
+
+                    RootGrid.Children.Clear();
+                    RootGrid.Children.Add(new SendMessagesView(ViewModel.ClientService, ViewModel.Aggregator, shareOperation.ShareOperation, ViewModel.SelectedItems.ToList(), ViewModel.SendWithChat));
+
+                    args.Cancel = true;
+                }
+                else
+                {
+                    ViewModel.SendCommand.Execute();
+                }
             }
             else
             {
@@ -1799,6 +1814,14 @@ namespace Telegram.Views.Popups
             }
 
             deferral.Complete();
+        }
+
+        private void OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            if (RootGrid.Children[0] is SendMessagesView sendMessages)
+            {
+                sendMessages.Cancel();
+            }
         }
 
         private void CaptionInput_Accept(FormattedTextBox sender, EventArgs args)

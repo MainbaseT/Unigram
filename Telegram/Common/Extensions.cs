@@ -560,6 +560,30 @@ namespace Telegram.Common
             }
         }
 
+        public static void TryReportDataRetrieved(this ShareOperation operation)
+        {
+            try
+            {
+                operation.ReportDataRetrieved();
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
+        }
+
+        public static void TryReportError(this ShareOperation operation, string value)
+        {
+            try
+            {
+                operation.ReportError(value);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
+        }
+
         public static void TryProcessDownEvent(this GestureRecognizer recognizer, PointerPoint value)
         {
             try

@@ -444,8 +444,8 @@ namespace Telegram.Controls
                     if (_presenter != null)
                     {
                         _presenter.Unload(this, _state == PlayingState.Playing);
-                        _presenter.LoopCompleted -= LoopCompleted;
-                        _presenter.PositionChanged -= PositionChanged;
+                        _presenter.LoopCompleted -= OnLoopCompleted;
+                        _presenter.PositionChanged -= OnPositionChanged;
                         _presenter.Paused -= OnPaused;
                         _presenter = null;
                     }
@@ -459,8 +459,8 @@ namespace Telegram.Controls
                     if (presentation != null)
                     {
                         _presenter = AnimatedImageLoader.Current.GetOrCreate(presentation);
-                        _presenter.LoopCompleted += LoopCompleted;
-                        _presenter.PositionChanged += PositionChanged;
+                        _presenter.LoopCompleted += OnLoopCompleted;
+                        _presenter.PositionChanged += OnPositionChanged;
                         _presenter.Paused += OnPaused;
                         _presenter.Load(this);
 
@@ -499,13 +499,23 @@ namespace Telegram.Controls
             if (_presenter != null && !IsConnected)
             {
                 _presenter.Unload(this, _state == PlayingState.Playing);
-                _presenter.LoopCompleted -= LoopCompleted;
-                _presenter.PositionChanged -= PositionChanged;
+                _presenter.LoopCompleted -= OnLoopCompleted;
+                _presenter.PositionChanged -= OnPositionChanged;
                 _presenter.Paused -= OnPaused;
                 _presenter = null;
 
                 LayoutRoot.Background = null;
             }
+        }
+
+        private void OnLoopCompleted(object sender, AnimatedImageLoopCompletedEventArgs e)
+        {
+            LoopCompleted?.Invoke(this, e);
+        }
+
+        private void OnPositionChanged(object sender, AnimatedImagePositionChangedEventArgs e)
+        {
+            PositionChanged?.Invoke(this, e);
         }
 
         private void OnPaused(object sender, EventArgs e)
@@ -521,7 +531,10 @@ namespace Telegram.Controls
                 return;
             }
 
-            LayoutRoot.Background = source;
+            if (source != null || CleanOnSourceChanged)
+            {
+                LayoutRoot.Background = source;
+            }
 
             if (_clean && source != null)
             {
@@ -539,6 +552,8 @@ namespace Telegram.Controls
                 }
             }
         }
+
+        public bool CleanOnSourceChanged { get; set; } = true;
 
         private Border LayoutRoot;
 
