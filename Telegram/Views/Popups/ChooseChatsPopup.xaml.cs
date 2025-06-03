@@ -839,7 +839,7 @@ namespace Telegram.Views.Popups
 
                 PrimaryButtonText = string.Empty;
                 SecondaryButtonText = string.Empty;
-                IsDismissButtonVisible = true;
+                IsDismissButtonVisible = ViewModel.Configuration is not ChooseChatsConfigurationShareOperation;
             }
             else
             {
@@ -1796,7 +1796,7 @@ namespace Telegram.Views.Popups
                 if (ViewModel.Configuration is ChooseChatsConfigurationShareOperation shareOperation)
                 {
                     VerticalContentAlignment = VerticalAlignment.Center;
-                    PrimaryButtonText = string.Empty;
+                    SecondaryButtonText = Strings.Cancel;
 
                     RootGrid.Children.Clear();
                     RootGrid.Children.Add(new SendMessagesView(ViewModel.ClientService, ViewModel.Aggregator, shareOperation.ShareOperation, ViewModel.Caption, ViewModel.SelectedItems.ToList(), ViewModel.SendWithChat));
