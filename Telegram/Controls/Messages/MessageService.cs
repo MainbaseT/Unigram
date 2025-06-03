@@ -2604,7 +2604,7 @@ namespace Telegram.Controls.Messages
         private static (string, IList<TextEntity>) UpdatePinMessage(MessageViewModel message, MessagePinMessage pinMessage, bool active)
         {
             var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            IList<TextEntity> entities = active ? new List<TextEntity>() : null;
 
             var sender = message.GetSender();
 
@@ -2687,13 +2687,45 @@ namespace Telegram.Controls.Messages
                 }
                 else if (reply.Content is MessageText text)
                 {
-                    var mess = text.Text.Text.Replace('\n', ' ');
-                    if (mess.Length > 20)
+                    var mess = text.Text.ReplaceSpoilers();
+                    if (mess.Text.Length > 20)
                     {
-                        mess = mess.Substring(0, Math.Min(mess.Length, 20)) + "...";
+                        mess = TdExtensions.Concat(mess.Substring(0, 20), "...".AsFormattedText());
                     }
 
-                    content = ReplaceWithLink(string.Format(Strings.ActionPinnedText, mess), "un1", sender, entities);
+                    var format = ClientEx.Format(Strings.ActionPinnedText, mess);
+                    var param = "un1";
+
+                    var replace = "";
+                    var entityType = default(TextEntityType);
+
+                    if (sender is User user)
+                    {
+                        replace = user.FullName();
+                        entityType = new TextEntityTypeMentionName(user.Id);
+                    }
+                    else if (sender is Chat chat)
+                    {
+                        replace = chat.Title;
+                        entityType = new TextEntityTypeBold();
+                    }
+
+                    var index = format.Text.IndexOf(param);
+                    if (index >= 0)
+                    {
+                        foreach (var entity in format.Entities)
+                        {
+                            entity.Offset += replace.Length - param.Length;
+                        }
+
+                        format.Text = format.Text.Remove(index, param.Length);
+                        format.Text = format.Text.Insert(index, replace);
+
+                        format.Entities.Add(new TextEntity(index, replace.Length, entityType));
+                    }
+
+                    content = format.Text;
+                    entities = active ? format.Entities : new List<TextEntity>();
                 }
                 else
                 {
