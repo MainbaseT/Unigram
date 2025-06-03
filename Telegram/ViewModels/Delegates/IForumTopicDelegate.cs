@@ -19,5 +19,6 @@ namespace Telegram.ViewModels.Delegates
         void UpdateForumTopicReadInbox(ForumTopic topic);
         void UpdateForumTopicReadOutbox(ForumTopic topic);
         void UpdateForumTopicUnreadMentionCount(ForumTopic topic);
+        void UpdateForumTopicNotificationSettings(ForumTopic topic);
     }
 }

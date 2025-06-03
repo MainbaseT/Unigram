@@ -36,6 +36,7 @@ namespace Telegram.Services
         #region Chats related
 
         void SetMuteFor(Chat chat, int muteFor, XamlRoot xamlRoot);
+        void SetMuteFor(ForumTopic topic, int muteFor, XamlRoot xamlRoot);
 
         #endregion
     }
@@ -856,6 +857,43 @@ namespace Telegram.Services
                 settings.MuteFor = value;
 
                 _clientService.Send(new SetChatNotificationSettings(chat.Id, settings));
+
+                if (xamlRoot == null)
+                {
+                    return;
+                }
+
+                if (value == 0)
+                {
+                    ToastPopup.Show(xamlRoot, Strings.NotificationsUnmutedHint, ToastPopupIcon.Unmute);
+                }
+                else if (value >= 366 * 24 * 60 * 60)
+                {
+                    ToastPopup.Show(xamlRoot, Strings.NotificationsMutedHint, ToastPopupIcon.Mute);
+                }
+                else
+                {
+                    ToastPopup.Show(xamlRoot, string.Format(Strings.NotificationsMutedForHint, Locale.FormatMuteFor(value)), ToastPopupIcon.MuteFor);
+                }
+            }
+        }
+
+        public void SetMuteFor(ForumTopic topic, int value, XamlRoot xamlRoot)
+        {
+            if (_clientService.TryGetChat(topic.Info.ChatId, out Chat chat) && _settings.Notifications.TryGetScope(chat, out ScopeNotificationSettings scope))
+            {
+                var settings = topic.NotificationSettings.Clone();
+
+                var useDefault = value == scope.MuteFor || (value >= 366 * 24 * 60 * 60 && scope.MuteFor >= 366 * 24 * 60 * 60);
+                if (useDefault)
+                {
+                    value = scope.MuteFor;
+                }
+
+                settings.UseDefaultMuteFor = useDefault;
+                settings.MuteFor = value;
+
+                _clientService.Send(new SetForumTopicNotificationSettings(chat.Id, topic.Info.MessageThreadId, settings));
 
                 if (xamlRoot == null)
                 {

@@ -218,7 +218,7 @@ namespace Telegram.ViewModels
         {
             if (Chat is Chat chat)
             {
-                _notificationsService.SetMuteFor(chat, ClientService.Notifications.GetMuteFor(chat, topic) > 0 ? 0 : 632053052, NavigationService.XamlRoot);
+                _notificationsService.SetMuteFor(topic, ClientService.Notifications.GetMuteFor(chat, topic) > 0 ? 0 : 632053052, NavigationService.XamlRoot);
             }
         }
 
@@ -432,6 +432,7 @@ namespace Telegram.ViewModels
                         .Subscribe<UpdateForumTopicReadOutbox>(Handle)
                         .Subscribe<UpdateForumTopicUnreadMentionCount>(Handle)
                         .Subscribe<UpdateForumTopicUnreadReactionCount>(Handle)
+                        .Subscribe<UpdateForumTopicNotificationSettings>(Handle)
                         .Subscribe<UpdateChatAction>(Handle);
                 }
                 else
@@ -500,6 +501,14 @@ namespace Telegram.ViewModels
             if (update.ChatId == Chat?.Id)
             {
                 BeginOnUIThread(() => Delegate?.HandleForumTopic(update.MessageThreadId, (cell, topic) => cell.UpdateForumTopicUnreadMentionCount(topic)));
+            }
+        }
+
+        public void Handle(UpdateForumTopicNotificationSettings update)
+        {
+            if (update.ChatId == Chat?.Id)
+            {
+                BeginOnUIThread(() => Delegate?.HandleForumTopic(update.MessageThreadId, (cell, topic) => cell.UpdateForumTopicNotificationSettings(topic)));
             }
         }
 

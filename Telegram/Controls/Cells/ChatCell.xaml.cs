@@ -318,7 +318,7 @@ namespace Telegram.Controls.Cells
             UpdateChatTitle(chat);
             UpdateChatPhoto(chat);
             UpdateChatEmojiStatus(chat);
-            UpdateNotificationSettings(chat);
+            UpdateChatNotificationSettings(chat);
 
             PinnedIcon.Visibility = Visibility.Collapsed;
             UnreadBadge.Visibility = Visibility.Collapsed;
@@ -761,7 +761,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public void UpdateNotificationSettings(Chat chat)
+        public void UpdateChatNotificationSettings(Chat chat)
         {
             if (_clientService == null || !_templateApplied)
             {
@@ -1128,7 +1128,7 @@ namespace Telegram.Controls.Cells
             UpdateChatLastMessage(chat, position);
             //UpdateChatReadInbox(chat);
             UpdateChatUnreadMentionCount(chat, position, false);
-            UpdateNotificationSettings(chat);
+            UpdateChatNotificationSettings(chat);
             UpdateChatActions(chat, _clientService.GetChatActions(chat.Id));
 
             if (_clientService.TryGetUser(chat, out User user) && user.Type is UserTypeRegular && user.Id != _clientService.Options.MyId && user.Id != 777000)

@@ -346,6 +346,11 @@ namespace Telegram.Services
         {
             if (_topics.TryGetValue(update.MessageThreadId, out ForumTopic topic))
             {
+                if (!topic.NotificationSettings.AreTheSame(update.NotificationSettings))
+                {
+                    _aggregator.Publish(new UpdateForumTopicNotificationSettings(_chatId, topic.Info.MessageThreadId, topic.NotificationSettings = update.NotificationSettings));
+                }
+
                 UpdateLastReadInboxMessageId(topic, update.LastReadInboxMessageId);
                 UpdateLastReadOutboxMessageId(topic, update.LastReadOutboxMessageId);
 
@@ -822,6 +827,22 @@ namespace Telegram.Td.Api
         public long MessageThreadId { get; set; }
 
         public long LastReadOutboxMessageId { get; set; }
+    }
+
+    public sealed partial class UpdateForumTopicNotificationSettings
+    {
+        public UpdateForumTopicNotificationSettings(long chatId, long messageThreadId, ChatNotificationSettings notificationSettings)
+        {
+            ChatId = chatId;
+            MessageThreadId = messageThreadId;
+            NotificationSettings = notificationSettings;
+        }
+
+        public long ChatId { get; set; }
+
+        public long MessageThreadId { get; set; }
+
+        public ChatNotificationSettings NotificationSettings { get; set; }
     }
 
     public sealed partial class UpdateForumTopicUnreadReactionCount

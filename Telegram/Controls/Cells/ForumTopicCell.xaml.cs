@@ -315,7 +315,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public void UpdateNotificationSettings(ForumTopic topic)
+        public void UpdateForumTopicNotificationSettings(ForumTopic topic)
         {
             if (_viewModel == null || !_templateApplied)
             {
@@ -495,7 +495,7 @@ namespace Telegram.Controls.Cells
             UpdateForumTopicLastMessage(topic);
             //UpdateChatReadInbox(chat);
             UpdateForumTopicUnreadMentionCount(topic);
-            UpdateNotificationSettings(topic);
+            UpdateForumTopicNotificationSettings(topic);
             UpdateForumTopicActions(topic, _viewModel.ClientService.GetChatActions(topic.Info.ChatId, topic.Info.MessageThreadId));
         }
 

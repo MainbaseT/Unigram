@@ -282,7 +282,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public void UpdateNotificationSettings(ForumTopic topic)
+        public void UpdateForumTopicNotificationSettings(ForumTopic topic)
         {
             if (_viewModel == null || !_templateApplied)
             {
@@ -380,7 +380,7 @@ namespace Telegram.Controls.Cells
 
             //UpdateChatReadInbox(chat);
             UpdateForumTopicUnreadMentionCount(topic);
-            UpdateNotificationSettings(topic);
+            UpdateForumTopicNotificationSettings(topic);
         }
 
         #endregion
