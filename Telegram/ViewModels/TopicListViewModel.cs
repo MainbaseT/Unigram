@@ -18,6 +18,7 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
+using Telegram.Views;
 using Telegram.Views.Supergroups.Popups;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
@@ -41,7 +42,7 @@ namespace Telegram.ViewModels
         public TopicListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, INotificationsService notificationsService, bool chatList, bool forum)
             : base(clientService, settingsService, aggregator)
         {
-            _notificationsService = notificationsService;
+            _notificationsService = notificationsService ?? TypeResolver.Current.Resolve<INotificationsService>(clientService.SessionId);
 
             _chatList = chatList;
             _forum = forum;
