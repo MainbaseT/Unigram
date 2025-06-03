@@ -399,11 +399,11 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            var unread = (topic.UnreadCount > 0 || topic.IsMarkedAsUnread) ? topic.UnreadCount == 1 ? Visibility.Collapsed : Visibility.Visible : Visibility.Collapsed;
+            var unread = (topic.UnreadCount > 0 || topic.IsMarkedAsUnread) ? topic.UnreadReactionCount > 0 ? Visibility.Collapsed : Visibility.Visible : Visibility.Collapsed;
             if (unread == Visibility.Visible)
             {
                 UnreadBadge.Visibility = Visibility.Visible;
-                //UnreadBadge.Text = topic.UnreadCount > 0 ? topic.UnreadCount.ToString() : string.Empty;
+                UnreadBadge.Text = topic.UnreadCount > 0 ? topic.UnreadCount.ToString() : string.Empty;
             }
             else
             {
@@ -479,7 +479,7 @@ namespace Telegram.Controls.Cells
             else
             {
                 TitleLabel.Text = _viewModel.ClientService.GetTitle(topic.SenderId);
-                Photo.SetMessageSender(_viewModel.ClientService, topic.SenderId, _vertical ? 36 : 20);
+                Photo.SetMessageSender(_viewModel.ClientService, topic.SenderId, _vertical ? 28 : 20);
                 AllTopics.Visibility = Visibility.Collapsed;
             }
 

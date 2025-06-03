@@ -395,7 +395,7 @@ namespace Telegram.Views
 
         public void Handle(UpdateChatNotificationSettings update)
         {
-            Handle(update.ChatId, (chatView, chat) => chatView.UpdateNotificationSettings(chat));
+            Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatNotificationSettings(chat));
         }
 
         public void Handle(UpdateUnreadChatCount update)

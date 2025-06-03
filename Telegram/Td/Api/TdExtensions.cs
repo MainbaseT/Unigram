@@ -2244,6 +2244,26 @@ namespace Telegram.Td.Api
             return sender.ParticipantId.AreTheSame(compare.ParticipantId);
         }
 
+        public static bool AreTheSame(this ChatNotificationSettings x,  ChatNotificationSettings y)
+        {
+            return x.DisableMentionNotifications == y.DisableMentionNotifications
+                && x.DisablePinnedMessageNotifications == y.DisablePinnedMessageNotifications
+                && x.MuteFor == y.MuteFor
+                && x.MuteStories == y.MuteStories
+                && x.ShowPreview == y.ShowPreview
+                && x.ShowStoryPoster == y.ShowStoryPoster
+                && x.SoundId == y.SoundId
+                && x.StorySoundId == y.StorySoundId
+                && x.UseDefaultDisableMentionNotifications == y.UseDefaultDisableMentionNotifications
+                && x.UseDefaultDisablePinnedMessageNotifications == y.UseDefaultDisablePinnedMessageNotifications
+                && x.UseDefaultMuteFor == y.UseDefaultMuteFor
+                && x.UseDefaultMuteStories == y.UseDefaultMuteStories
+                && x.UseDefaultShowPreview == y.UseDefaultShowPreview
+                && x.UseDefaultShowStoryPoster == y.UseDefaultShowStoryPoster
+                && x.UseDefaultSound == y.UseDefaultSound
+                && x.UseDefaultStorySound == y.UseDefaultStorySound;
+        }
+
         public static bool IsUser(this MessageSender sender, long userId)
         {
             return sender is MessageSenderUser user && user.UserId == userId;
@@ -2885,7 +2905,7 @@ namespace Telegram.Td.Api
         {
             if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
-                if (supergroup.HasForumTabs)
+                if (supergroup.HasForumTabs || (supergroup.IsForum && !chat.ViewAsTopics && SettingsService.Current.Diagnostics.ForumTabsDebug))
                 {
                     isForum = true;
                     return true;

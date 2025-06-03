@@ -128,8 +128,8 @@
                             <controls:ProfilePicture x:Name="Photo"
                                                      HorizontalAlignment="Center"
                                                      VerticalAlignment="Center"
-                                                     Width="36"
-                                                     Height="36" />
+                                                     Width="28"
+                                                     Height="28" />
                         </Grid>
 
                         <TextBlock x:Name="TitleLabel"
@@ -144,12 +144,9 @@
 
                         <Grid x:Name="PreviewPanel"
                               Background="Transparent"
-                              Margin="12,0,8,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Top"
+                              Margin="0,0,16,10">
                             <Border x:Name="UnreadMentionsBadge"
                                     Background="{ThemeResource ChatUnreadBadgeBrush}"
                                     Width="16"
@@ -157,9 +154,8 @@
                                     CornerRadius="8"
                                     VerticalAlignment="Top"
                                     HorizontalAlignment="Right"
-                                    Margin="4,2,0,0"
-                                    Visibility="Collapsed"
-                                    Grid.Column="1">
+                                    Margin="0,2,0,0"
+                                    Visibility="Collapsed">
                                 <TextBlock x:Name="UnreadMentionsLabel"
                                            Text="&#xE986;"
                                            FontSize="12"
@@ -172,9 +168,8 @@
                             <controls:BadgeControl x:Name="UnreadBadge"
                                                    VerticalAlignment="Top"
                                                    HorizontalAlignment="Right"
-                                                   Margin="4,2,0,0"
-                                                   Visibility="Collapsed"
-                                                   Grid.Column="2" />
+                                                   Margin="0,2,0,0"
+                                                   Visibility="Collapsed" />
                         </Grid>
 
                         <Rectangle x:Name="DropVisual"

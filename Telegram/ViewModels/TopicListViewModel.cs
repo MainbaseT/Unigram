@@ -913,7 +913,7 @@ namespace Telegram.ViewModels
                     return Items[0];
                 }
 
-                if (topic is MessageTopicForum forum)
+                if (topic is MessageTopicForum forum && _topics.Contains(forum.ForumTopicId))
                 {
                     return _clientService.GetForumTopic(_chat.Id, forum.ForumTopicId);
                 }
@@ -1257,7 +1257,7 @@ namespace Telegram.ViewModels
                     return Items[0];
                 }
 
-                if (topic is MessageTopicFeedbackChat feedbackChat)
+                if (topic is MessageTopicFeedbackChat feedbackChat && _topics.Contains(feedbackChat.FeedbackChatTopicId))
                 {
                     return _clientService.GetFeedbackChatTopic(_chat.Id, feedbackChat.FeedbackChatTopicId);
                 }

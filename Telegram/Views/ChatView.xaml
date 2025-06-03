@@ -813,6 +813,7 @@
                                TextTrimming="CharacterEllipsis"
                                Style="{StaticResource CaptionTextBlockStyle}"
                                FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                               MaxWidth="240"
                                Margin="0,2,0,4"
                                Grid.Column="1" />
 
@@ -1263,6 +1264,7 @@
                                                                            TextTrimming="CharacterEllipsis"
                                                                            Style="{StaticResource CaptionTextBlockStyle}"
                                                                            FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                                                                           MaxWidth="240"
                                                                            Margin="0,2,0,4"
                                                                            Grid.Column="1" />
 

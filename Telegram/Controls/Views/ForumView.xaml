@@ -150,11 +150,6 @@
                                   Background="Transparent"
                                   VerticalAlignment="Center"
                                   Grid.Column="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
                                 <Border x:Name="UnreadMentionsBadge"
                                         Background="{ThemeResource ChatUnreadBadgeBrush}"
                                         Width="16"
@@ -163,8 +158,7 @@
                                         VerticalAlignment="Top"
                                         HorizontalAlignment="Right"
                                         Margin="4,2,0,0"
-                                        Visibility="Collapsed"
-                                        Grid.Column="1">
+                                        Visibility="Collapsed">
                                     <TextBlock x:Name="UnreadMentionsLabel"
                                                Text="&#xE986;"
                                                FontSize="12"
@@ -178,8 +172,7 @@
                                                        VerticalAlignment="Top"
                                                        HorizontalAlignment="Right"
                                                        Margin="4,2,0,0"
-                                                       Visibility="Collapsed"
-                                                       Grid.Column="2" />
+                                                       Visibility="Collapsed" />
                             </Grid>
 
                             <Rectangle x:Name="DropVisual"
