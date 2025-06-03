@@ -2521,20 +2521,25 @@ namespace Telegram.ViewModels
             long lastReadMessageId;
             long secondaryId;
 
-            if (_savedMessagesTopic is SavedMessagesTopic savedMessagesTopic)
+            if (SavedMessagesTopic != null)
             {
                 lastReadMessageId = 0;
-                secondaryId = savedMessagesTopic.Id;
+                secondaryId = SavedMessagesTopic.Id;
             }
-            else if (_forumTopic is ForumTopic topic)
+            else if (FeedbackChatTopic != null)
             {
-                lastReadMessageId = topic.LastReadInboxMessageId;
-                secondaryId = ThreadId; // topic.Info.MessageThreadId;
+                lastReadMessageId = FeedbackChatTopic.LastReadInboxMessageId;
+                secondaryId = FeedbackChatTopic.Id;
             }
-            else if (_thread is MessageThreadInfo thread)
+            else if (ForumTopic != null)
             {
-                lastReadMessageId = thread.ReplyInfo?.LastReadInboxMessageId ?? long.MaxValue;
-                secondaryId = ThreadId; //; thread.MessageThreadId;
+                lastReadMessageId = ForumTopic.LastReadInboxMessageId;
+                secondaryId = ForumTopic.Info.MessageThreadId;
+            }
+            else if (Thread != null)
+            {
+                lastReadMessageId = Thread.ReplyInfo?.LastReadInboxMessageId ?? long.MaxValue;
+                secondaryId = Thread.MessageThreadId;
             }
             else
             {
