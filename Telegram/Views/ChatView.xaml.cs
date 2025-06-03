@@ -1282,6 +1282,12 @@ namespace Telegram.Views
                     ViewModel.Autocomplete = null;
                     args.Handled = true;
                 }
+
+                if (ViewModel.Topic != null && _forumCollapsed != ForumViewType.List)
+                {
+                    ViewModel.NavigationService.NavigateToChat(ViewModel.Chat, force: false);
+                    args.Handled = true;
+                }
             }
 
             Focus(FocusState.Programmatic);
@@ -2768,7 +2774,7 @@ namespace Telegram.Views
 
                 if (ViewModel.IsForum)
                 {
-                    flyout.CreateFlyoutItem(NavigateToForumTopic, message, Strings.ViewTopic, Icons.ChatMultiple);
+                    flyout.CreateFlyoutItem(NavigateToMessageTopic, message, Strings.ViewTopic, Icons.ChatMultiple);
                 }
                 else if (MessageThread_Loaded(message, properties))
                 {
@@ -4138,7 +4144,7 @@ namespace Telegram.Views
             var button = sender as Button;
             if (button.Tag is MessageTopic messageTopic && ViewModel.Type is DialogType.History or DialogType.Thread)
             {
-                NavigateToForumTopic(ViewModel.Chat, messageTopic);
+                NavigateToMessageTopic(ViewModel.Chat, messageTopic);
             }
         }
 
@@ -4258,7 +4264,7 @@ namespace Telegram.Views
             }
             else if (message.Content is MessageHeaderMessageTopic)
             {
-                NavigateToForumTopic(message.Chat, message.TopicId);
+                NavigateToMessageTopic(message.Chat, message.TopicId);
             }
             else
             {
@@ -6639,41 +6645,34 @@ namespace Telegram.Views
             {
                 if (forumTopic.Info.MessageThreadId != 0)
                 {
-                    NavigateToForumTopic(chat, new MessageTopicForum(forumTopic.Info.MessageThreadId));
+                    NavigateToMessageTopic(chat, new MessageTopicForum(forumTopic.Info.MessageThreadId));
                 }
                 else
                 {
-                    ViewModel.NavigationService.NavigateToChat(chat, force: false, clearBackStack: true);
+                    ViewModel.NavigationService.NavigateToChat(chat, force: false);
                 }
             }
             else if (e.ClickedItem is FeedbackChatTopic feedbackChatTopic && ViewModel.ClientService.TryGetChat(feedbackChatTopic.ChatId, out chat))
             {
                 if (feedbackChatTopic.Id != 0)
                 {
-                    NavigateToForumTopic(chat, new MessageTopicFeedbackChat(feedbackChatTopic.Id));
+                    NavigateToMessageTopic(chat, new MessageTopicFeedbackChat(feedbackChatTopic.Id));
                 }
                 else
                 {
-                    ViewModel.NavigationService.NavigateToChat(chat, force: false, clearBackStack: true);
+                    ViewModel.NavigationService.NavigateToChat(chat, force: false);
                 }
             }
         }
 
-        private void NavigateToForumTopic(Chat chat, MessageTopic topic)
+        private void NavigateToMessageTopic(Chat chat, MessageTopic topic)
         {
-            if (ViewModel.Topic != null)
-            {
-                ViewModel.NavigationService.NavigateToChat(chat, topic: topic, force: false, clearBackStack: true);
-            }
-            else
-            {
-                ViewModel.NavigationService.NavigateToChat(chat, topic: topic);
-            }
+            ViewModel.NavigationService.NavigateToChat(chat, topic: topic, force: false);
         }
 
-        private void NavigateToForumTopic(MessageViewModel message)
+        private void NavigateToMessageTopic(MessageViewModel message)
         {
-            ViewModel.NavigationService.NavigateToChat(message.Chat, topic: message.TopicId, force: false, clearBackStack: true);
+            ViewModel.NavigationService.NavigateToChat(message.Chat, topic: message.TopicId, force: false);
         }
 
         private void ForumMode_Click(object sender, RoutedEventArgs e)
