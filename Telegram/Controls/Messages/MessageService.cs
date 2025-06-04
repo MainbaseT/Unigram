@@ -120,7 +120,18 @@ namespace Telegram.Controls.Messages
 
         private void UpdateContent(MessageViewModel message)
         {
-            if (message.Content is MessageHeaderMessageTopic)
+            if (message.Content is MessageHeaderAccountInfo)
+            {
+                if (message.Chat.ActionBar is ChatActionBarReportAddBlock reportAddBlock && reportAddBlock.AccountInfo != null)
+                {
+                    if (message.ClientService.TryGetUser(message.Chat, out User user) && message.ClientService.TryGetUserFull(user.Id, out UserFullInfo fullInfo))
+                    {
+                        var info = FindName("AccountInfo") as ChatAccountInfo;
+                        info.Update(message.ClientService, user, fullInfo, reportAddBlock.AccountInfo);
+                    }
+                }
+            }
+            else if (message.Content is MessageHeaderMessageTopic)
             {
                 var title = FindName("TitleLabel") as TextBlock;
                 var photo = FindName("Photo") as ProfilePicture;
@@ -508,372 +519,318 @@ namespace Telegram.Controls.Messages
             return GetEntities(message, false).Text;
         }
 
-        private static (string Text, IList<TextEntity> Entities) GetEntities(MessageViewModel message, bool active)
+        private static FormattedText GetEntities(MessageViewModel message, bool history)
         {
             return message.Content switch
             {
-                MessageBasicGroupChatCreate basicGroupChatCreate => UpdateBasicGroupChatCreate(message, basicGroupChatCreate, active),
-                MessageBotWriteAccessAllowed botWriteAccessAllowed => UpdateBotWriteAccessAllowed(message, botWriteAccessAllowed, active),
-                MessageChatAddMembers chatAddMembers => UpdateChatAddMembers(message, chatAddMembers, active),
-                MessageChatChangePhoto chatChangePhoto => UpdateChatChangePhoto(message, chatChangePhoto, active),
-                MessageChatChangeTitle chatChangeTitle => UpdateChatChangeTitle(message, chatChangeTitle, active),
-                MessageChatSetTheme chatSetTheme => UpdateChatSetTheme(message, chatSetTheme, active),
-                MessageChatDeleteMember chatDeleteMember => UpdateChatDeleteMember(message, chatDeleteMember, active),
-                MessageChatDeletePhoto chatDeletePhoto => UpdateChatDeletePhoto(message, chatDeletePhoto, active),
-                MessageChatJoinByLink chatJoinByLink => UpdateChatJoinByLink(message, chatJoinByLink, active),
-                MessageChatJoinByRequest chatJoinByRequest => UpdateChatJoinByRequest(message, chatJoinByRequest, active),
-                MessageChatSetBackground chatSetBackground => UpdateChatSetBackground(message, chatSetBackground, active),
-                MessageChatSetMessageAutoDeleteTime chatSetMessageAutoDeleteTime => UpdateChatSetMessageAutoDeleteTime(message, chatSetMessageAutoDeleteTime, active),
-                MessageChatShared chatShared => UpdateChatShared(message, chatShared, active),
-                MessageChatUpgradeFrom chatUpgradeFrom => UpdateChatUpgradeFrom(message, chatUpgradeFrom, active),
-                MessageChatUpgradeTo chatUpgradeTo => UpdateChatUpgradeTo(message, chatUpgradeTo, active),
-                MessageContactRegistered contactRegistered => UpdateContactRegistered(message, contactRegistered, active),
-                MessageCustomServiceAction customServiceAction => UpdateCustomServiceAction(message, customServiceAction, active),
-                MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged => UpdateFeedbackMessagePriceChanged(message, feedbackMessagePriceChanged, active),
-                MessageForumTopicCreated forumTopicCreated => UpdateForumTopicCreated(message, forumTopicCreated, active),
-                MessageForumTopicEdited forumTopicEdited => UpdateForumTopicEdited(message, forumTopicEdited, active),
-                MessageForumTopicIsClosedToggled forumTopicIsClosedToggled => UpdateForumTopicIsClosedToggled(message, forumTopicIsClosedToggled, active),
-                MessageGameScore gameScore => UpdateGameScore(message, gameScore, active),
-                MessageGift gift => UpdateGift(message, gift, active),
-                MessageGiftedPremium giftedPremium => UpdateGiftedPremium(message, giftedPremium, active),
-                MessageGiftedStars giftedStars => UpdateGiftedStars(message, giftedStars, active),
-                MessageGiveawayCreated giveawayCreated => UpdateGiveawayCreated(message, giveawayCreated, active),
-                MessageGiveawayCompleted giveawayCompleted => UpdateGiveawayCompleted(message, giveawayCompleted, active),
-                MessageGiveawayPrizeStars giveawayPrizeStars => UpdateGiveawayPrizeStars(message, giveawayPrizeStars, active),
-                MessageInviteVideoChatParticipants inviteVideoChatParticipants => UpdateInviteVideoChatParticipants(message, inviteVideoChatParticipants, active),
-                MessageProximityAlertTriggered proximityAlertTriggered => UpdateProximityAlertTriggered(message, proximityAlertTriggered, active),
-                MessagePremiumGiftCode premiumGiftCode => UpdatePremiumGiftCode(message, premiumGiftCode, active),
-                MessagePaidMessagePriceChanged paidMessagePriceChanged => UpdatePaidMessagePriceChanged(message, paidMessagePriceChanged, active),
-                MessagePaidMessagesRefunded paidMessagesRefunded => UpdatePaidMessagesRefunded(message, paidMessagesRefunded, active),
-                MessagePassportDataSent passportDataSent => UpdatePassportDataSent(message, passportDataSent, active),
-                MessagePaymentSuccessful paymentSuccessful => UpdatePaymentSuccessful(message, paymentSuccessful, active),
-                MessagePaymentRefunded paymentRefunded => UpdatePaymentRefunded(message, paymentRefunded, active),
-                MessagePinMessage pinMessage => UpdatePinMessage(message, pinMessage, active),
-                MessageScreenshotTaken screenshotTaken => UpdateScreenshotTaken(message, screenshotTaken, active),
-                MessageSuggestProfilePhoto suggestProfilePhoto => UpdateSuggestProfilePhoto(message, suggestProfilePhoto, active),
-                MessageSupergroupChatCreate supergroupChatCreate => UpdateSupergroupChatCreate(message, supergroupChatCreate, active),
-                MessageUpgradedGift upgradedGift => UpdateUpgradedGift(message, upgradedGift, active),
-                MessageUsersShared usersShared => UpdateUsersShared(message, usersShared, active),
-                MessageVideoChatEnded videoChatEnded => UpdateVideoChatEnded(message, videoChatEnded, active),
-                MessageVideoChatScheduled videoChatScheduled => UpdateVideoChatScheduled(message, videoChatScheduled, active),
-                MessageVideoChatStarted videoChatStarted => UpdateVideoChatStarted(message, videoChatStarted, active),
-                MessageWebAppDataSent webAppDataSent => UpdateWebAppDataSent(message, webAppDataSent, active),
-                MessageExpiredPhoto expiredPhoto => UpdateExpiredPhoto(message, expiredPhoto, active),
-                MessageExpiredVideo expiredVideo => UpdateExpiredVideo(message, expiredVideo, active),
-                MessageExpiredVideoNote expiredVideoNote => UpdateExpiredVideoNote(message, expiredVideoNote, active),
-                MessageExpiredVoiceNote expiredVoiceNote => UpdateExpiredVoiceNote(message, expiredVoiceNote, active),
-                MessageChatBoost chatBoost => UpdateChatBoost(message, chatBoost, active),
-                MessageAsyncStory story => UpdateStory(message, story, active),
-                MessageStory story => UpdateStory(message, story, active),
+                MessageBasicGroupChatCreate basicGroupChatCreate => UpdateBasicGroupChatCreate(message, basicGroupChatCreate, history),
+                MessageBotWriteAccessAllowed botWriteAccessAllowed => UpdateBotWriteAccessAllowed(message, botWriteAccessAllowed, history),
+                MessageChatAddMembers chatAddMembers => UpdateChatAddMembers(message, chatAddMembers, history),
+                MessageChatChangePhoto chatChangePhoto => UpdateChatChangePhoto(message, chatChangePhoto, history),
+                MessageChatChangeTitle chatChangeTitle => UpdateChatChangeTitle(message, chatChangeTitle, history),
+                MessageChatSetTheme chatSetTheme => UpdateChatSetTheme(message, chatSetTheme, history),
+                MessageChatDeleteMember chatDeleteMember => UpdateChatDeleteMember(message, chatDeleteMember, history),
+                MessageChatDeletePhoto chatDeletePhoto => UpdateChatDeletePhoto(message, chatDeletePhoto, history),
+                MessageChatJoinByLink chatJoinByLink => UpdateChatJoinByLink(message, chatJoinByLink, history),
+                MessageChatJoinByRequest chatJoinByRequest => UpdateChatJoinByRequest(message, chatJoinByRequest, history),
+                MessageChatSetBackground chatSetBackground => UpdateChatSetBackground(message, chatSetBackground, history),
+                MessageChatSetMessageAutoDeleteTime chatSetMessageAutoDeleteTime => UpdateChatSetMessageAutoDeleteTime(message, chatSetMessageAutoDeleteTime, history),
+                MessageChatShared chatShared => UpdateChatShared(message, chatShared, history),
+                MessageChatUpgradeFrom chatUpgradeFrom => UpdateChatUpgradeFrom(message, chatUpgradeFrom, history),
+                MessageChatUpgradeTo chatUpgradeTo => UpdateChatUpgradeTo(message, chatUpgradeTo, history),
+                MessageContactRegistered contactRegistered => UpdateContactRegistered(message, contactRegistered, history),
+                MessageCustomServiceAction customServiceAction => UpdateCustomServiceAction(message, customServiceAction, history),
+                MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged => UpdateFeedbackMessagePriceChanged(message, feedbackMessagePriceChanged, history),
+                MessageForumTopicCreated forumTopicCreated => UpdateForumTopicCreated(message, forumTopicCreated, history),
+                MessageForumTopicEdited forumTopicEdited => UpdateForumTopicEdited(message, forumTopicEdited, history),
+                MessageForumTopicIsClosedToggled forumTopicIsClosedToggled => UpdateForumTopicIsClosedToggled(message, forumTopicIsClosedToggled, history),
+                MessageGameScore gameScore => UpdateGameScore(message, gameScore, history),
+                MessageGift gift => UpdateGift(message, gift, history),
+                MessageGiftedPremium giftedPremium => UpdateGiftedPremium(message, giftedPremium, history),
+                MessageGiftedStars giftedStars => UpdateGiftedStars(message, giftedStars, history),
+                MessageGiveawayCreated giveawayCreated => UpdateGiveawayCreated(message, giveawayCreated, history),
+                MessageGiveawayCompleted giveawayCompleted => UpdateGiveawayCompleted(message, giveawayCompleted, history),
+                MessageGiveawayPrizeStars giveawayPrizeStars => UpdateGiveawayPrizeStars(message, giveawayPrizeStars, history),
+                MessageInviteVideoChatParticipants inviteVideoChatParticipants => UpdateInviteVideoChatParticipants(message, inviteVideoChatParticipants, history),
+                MessageProximityAlertTriggered proximityAlertTriggered => UpdateProximityAlertTriggered(message, proximityAlertTriggered, history),
+                MessagePremiumGiftCode premiumGiftCode => UpdatePremiumGiftCode(message, premiumGiftCode, history),
+                MessagePaidMessagePriceChanged paidMessagePriceChanged => UpdatePaidMessagePriceChanged(message, paidMessagePriceChanged, history),
+                MessagePaidMessagesRefunded paidMessagesRefunded => UpdatePaidMessagesRefunded(message, paidMessagesRefunded, history),
+                MessagePassportDataSent passportDataSent => UpdatePassportDataSent(message, passportDataSent, history),
+                MessagePaymentSuccessful paymentSuccessful => UpdatePaymentSuccessful(message, paymentSuccessful, history),
+                MessagePaymentRefunded paymentRefunded => UpdatePaymentRefunded(message, paymentRefunded, history),
+                MessagePinMessage pinMessage => UpdatePinMessage(message, pinMessage, history),
+                MessageScreenshotTaken screenshotTaken => UpdateScreenshotTaken(message, screenshotTaken, history),
+                MessageSuggestProfilePhoto suggestProfilePhoto => UpdateSuggestProfilePhoto(message, suggestProfilePhoto, history),
+                MessageSupergroupChatCreate supergroupChatCreate => UpdateSupergroupChatCreate(message, supergroupChatCreate, history),
+                MessageUpgradedGift upgradedGift => UpdateUpgradedGift(message, upgradedGift, history),
+                MessageUsersShared usersShared => UpdateUsersShared(message, usersShared, history),
+                MessageVideoChatEnded videoChatEnded => UpdateVideoChatEnded(message, videoChatEnded, history),
+                MessageVideoChatScheduled videoChatScheduled => UpdateVideoChatScheduled(message, videoChatScheduled, history),
+                MessageVideoChatStarted videoChatStarted => UpdateVideoChatStarted(message, videoChatStarted, history),
+                MessageWebAppDataSent webAppDataSent => UpdateWebAppDataSent(message, webAppDataSent, history),
+                MessageExpiredPhoto expiredPhoto => UpdateExpiredPhoto(message, expiredPhoto, history),
+                MessageExpiredVideo expiredVideo => UpdateExpiredVideo(message, expiredVideo, history),
+                MessageExpiredVideoNote expiredVideoNote => UpdateExpiredVideoNote(message, expiredVideoNote, history),
+                MessageExpiredVoiceNote expiredVoiceNote => UpdateExpiredVoiceNote(message, expiredVoiceNote, history),
+                MessageChatBoost chatBoost => UpdateChatBoost(message, chatBoost, history),
+                MessageAsyncStory story => UpdateStory(message, story, history),
+                MessageStory story => UpdateStory(message, story, history),
                 // Local types:
                 MessageChatEvent chatEvent => chatEvent.Action switch
                 {
-                    ChatEventAutomaticTranslationToggled automaticTranslationToggled => UpdateAutomaticTranslationToggled(message, automaticTranslationToggled, active),
-                    ChatEventAvailableReactionsChanged availableReactionsChanged => UpdateAvailableReactionsChanged(message, availableReactionsChanged, active),
-                    ChatEventHasProtectedContentToggled hasProtectedContentToggled => UpdateHasProtectedContentToggled(message, hasProtectedContentToggled, active),
-                    ChatEventSignMessagesToggled signMessagesToggled => UpdateSignMessagesToggled(message, signMessagesToggled, active),
-                    ChatEventShowMessageSenderToggled showMessageSenderToggled => UpdateShowMessageSenderToggled(message, showMessageSenderToggled, active),
-                    ChatEventStickerSetChanged stickerSetChanged => UpdateStickerSetChanged(message, stickerSetChanged, active),
-                    ChatEventCustomEmojiStickerSetChanged customemojiStickerSetChanged => UpdateCustomEmojiStickerSetChanged(message, customemojiStickerSetChanged, active),
-                    ChatEventInvitesToggled invitesToggled => UpdateInvitesToggled(message, invitesToggled, active),
-                    ChatEventIsAllHistoryAvailableToggled isAllHistoryAvailableToggled => UpdateIsAllHistoryAvailableToggled(message, isAllHistoryAvailableToggled, active),
-                    ChatEventLinkedChatChanged linkedChatChanged => UpdateLinkedChatChanged(message, linkedChatChanged, active),
-                    ChatEventLocationChanged locationChanged => UpdateLocationChanged(message, locationChanged, active),
-                    ChatEventMemberJoinedByInviteLink memberJoinedByInviteLink => UpdateMemberJoinedByInviteLink(message, memberJoinedByInviteLink, active),
-                    ChatEventMessageUnpinned messageUnpinned => UpdateMessageUnpinned(message, messageUnpinned, active),
-                    ChatEventMessageDeleted messageDeleted => UpdateMessageDeleted(message, messageDeleted, active),
-                    ChatEventMessageEdited messageEdited => UpdateMessageEdited(message, messageEdited, active),
-                    ChatEventMessageAutoDeleteTimeChanged messageAutoDeleteTimeChanged => UpdateMessageAutoDeleteTimeChanged(message, messageAutoDeleteTimeChanged, active),
-                    ChatEventDescriptionChanged descriptionChanged => UpdateDescriptionChanged(message, descriptionChanged, active),
-                    ChatEventInviteLinkDeleted inviteLinkDeleted => UpdateInviteLinkDeleted(message, inviteLinkDeleted, active),
-                    ChatEventInviteLinkEdited inviteLinkEdited => UpdateInviteLinkEdited(message, inviteLinkEdited, active),
-                    ChatEventInviteLinkRevoked inviteLinkRevoked => UpdateInviteLinkRevoked(message, inviteLinkRevoked, active),
-                    ChatEventMessagePinned messagePinned => UpdateMessagePinned(message, messagePinned, active),
-                    ChatEventUsernameChanged usernameChanged => UpdateUsernameChanged(message, usernameChanged, active),
-                    ChatEventPollStopped pollStopped => UpdatePollStopped(message, pollStopped, active),
-                    ChatEventSlowModeDelayChanged slowModeDelayChanged => UpdateSlowModeDelayChanged(message, slowModeDelayChanged, active),
-                    ChatEventVideoChatCreated videoChatCreated => UpdateVideoChatCreated(message, videoChatCreated, active),
-                    ChatEventVideoChatEnded videoChatEnded => UpdateVideoChatEnded(message, videoChatEnded, active),
-                    ChatEventVideoChatMuteNewParticipantsToggled videoChatMuteNewParticipantsToggled => UpdateVideoChatMuteNewParticipantsToggled(message, videoChatMuteNewParticipantsToggled, active),
-                    ChatEventVideoChatParticipantIsMutedToggled videoChatParticipantIsMutedToggled => UpdateVideoChatParticipantIsMutedToggled(message, videoChatParticipantIsMutedToggled, active),
-                    ChatEventVideoChatParticipantVolumeLevelChanged videoChatParticipantVolumeLevelChanged => UpdateVideoChatParticipantVolumeLevelChanged(message, videoChatParticipantVolumeLevelChanged, active),
-                    ChatEventIsForumToggled isForumToggled => UpdateChatEventIsForumToggled(message, isForumToggled, active),
-                    ChatEventForumTopicCreated forumTopicCreated => UpdateChatEventForumTopicCreated(message, forumTopicCreated, active),
-                    ChatEventForumTopicDeleted forumTopicDeleted => UpdateChatEventForumTopicDeleted(message, forumTopicDeleted, active),
-                    ChatEventForumTopicEdited forumTopicEdited => UpdateChatEventForumTopicEdited(message, forumTopicEdited, active),
-                    ChatEventForumTopicPinned forumTopicPinned => UpdateChatEventForumTopicPinned(message, forumTopicPinned, active),
-                    ChatEventForumTopicToggleIsClosed forumTopicToggleIsClosed => UpdateChatEventForumTopicToggleIsClosed(message, forumTopicToggleIsClosed, active),
-                    ChatEventAccentColorChanged accentColorChanged => UpdateChatEventAccentColorChanged(message, accentColorChanged, active),
-                    ChatEventProfileAccentColorChanged profileAccentColorChanged => UpdateChatEventProfileAccentColorChanged(message, profileAccentColorChanged, active),
-                    ChatEventEmojiStatusChanged emojiStatusChanged => UpdateChatEventEmojiStatusChanged(message, emojiStatusChanged, active),
-                    ChatEventBackgroundChanged backgroundChanged => UpdateChatEventBackgroundChanged(message, backgroundChanged, active),
-                    //ChatEventActiveUsernamesChanged activeUsernamesChanged => UpdateChatEventActiveUsernames(message, activeUsernamesChanged, active),
-                    _ => (string.Empty, null)
+                    ChatEventAutomaticTranslationToggled automaticTranslationToggled => UpdateAutomaticTranslationToggled(message, automaticTranslationToggled, history),
+                    ChatEventAvailableReactionsChanged availableReactionsChanged => UpdateAvailableReactionsChanged(message, availableReactionsChanged, history),
+                    ChatEventHasProtectedContentToggled hasProtectedContentToggled => UpdateHasProtectedContentToggled(message, hasProtectedContentToggled, history),
+                    ChatEventSignMessagesToggled signMessagesToggled => UpdateSignMessagesToggled(message, signMessagesToggled, history),
+                    ChatEventShowMessageSenderToggled showMessageSenderToggled => UpdateShowMessageSenderToggled(message, showMessageSenderToggled, history),
+                    ChatEventStickerSetChanged stickerSetChanged => UpdateStickerSetChanged(message, stickerSetChanged, history),
+                    ChatEventCustomEmojiStickerSetChanged customemojiStickerSetChanged => UpdateCustomEmojiStickerSetChanged(message, customemojiStickerSetChanged, history),
+                    ChatEventInvitesToggled invitesToggled => UpdateInvitesToggled(message, invitesToggled, history),
+                    ChatEventIsAllHistoryAvailableToggled isAllHistoryAvailableToggled => UpdateIsAllHistoryAvailableToggled(message, isAllHistoryAvailableToggled, history),
+                    ChatEventLinkedChatChanged linkedChatChanged => UpdateLinkedChatChanged(message, linkedChatChanged, history),
+                    ChatEventLocationChanged locationChanged => UpdateLocationChanged(message, locationChanged, history),
+                    ChatEventMemberJoinedByInviteLink memberJoinedByInviteLink => UpdateMemberJoinedByInviteLink(message, memberJoinedByInviteLink, history),
+                    ChatEventMessageUnpinned messageUnpinned => UpdateMessageUnpinned(message, messageUnpinned, history),
+                    ChatEventMessageDeleted messageDeleted => UpdateMessageDeleted(message, messageDeleted, history),
+                    ChatEventMessageEdited messageEdited => UpdateMessageEdited(message, messageEdited, history),
+                    ChatEventMessageAutoDeleteTimeChanged messageAutoDeleteTimeChanged => UpdateMessageAutoDeleteTimeChanged(message, messageAutoDeleteTimeChanged, history),
+                    ChatEventDescriptionChanged descriptionChanged => UpdateDescriptionChanged(message, descriptionChanged, history),
+                    ChatEventInviteLinkDeleted inviteLinkDeleted => UpdateInviteLinkDeleted(message, inviteLinkDeleted, history),
+                    ChatEventInviteLinkEdited inviteLinkEdited => UpdateInviteLinkEdited(message, inviteLinkEdited, history),
+                    ChatEventInviteLinkRevoked inviteLinkRevoked => UpdateInviteLinkRevoked(message, inviteLinkRevoked, history),
+                    ChatEventMessagePinned messagePinned => UpdateMessagePinned(message, messagePinned, history),
+                    ChatEventUsernameChanged usernameChanged => UpdateUsernameChanged(message, usernameChanged, history),
+                    ChatEventPollStopped pollStopped => UpdatePollStopped(message, pollStopped, history),
+                    ChatEventSlowModeDelayChanged slowModeDelayChanged => UpdateSlowModeDelayChanged(message, slowModeDelayChanged, history),
+                    ChatEventVideoChatCreated videoChatCreated => UpdateVideoChatCreated(message, videoChatCreated, history),
+                    ChatEventVideoChatEnded videoChatEnded => UpdateVideoChatEnded(message, videoChatEnded, history),
+                    ChatEventVideoChatMuteNewParticipantsToggled videoChatMuteNewParticipantsToggled => UpdateVideoChatMuteNewParticipantsToggled(message, videoChatMuteNewParticipantsToggled, history),
+                    ChatEventVideoChatParticipantIsMutedToggled videoChatParticipantIsMutedToggled => UpdateVideoChatParticipantIsMutedToggled(message, videoChatParticipantIsMutedToggled, history),
+                    ChatEventVideoChatParticipantVolumeLevelChanged videoChatParticipantVolumeLevelChanged => UpdateVideoChatParticipantVolumeLevelChanged(message, videoChatParticipantVolumeLevelChanged, history),
+                    ChatEventIsForumToggled isForumToggled => UpdateChatEventIsForumToggled(message, isForumToggled, history),
+                    ChatEventForumTopicCreated forumTopicCreated => UpdateChatEventForumTopicCreated(message, forumTopicCreated, history),
+                    ChatEventForumTopicDeleted forumTopicDeleted => UpdateChatEventForumTopicDeleted(message, forumTopicDeleted, history),
+                    ChatEventForumTopicEdited forumTopicEdited => UpdateChatEventForumTopicEdited(message, forumTopicEdited, history),
+                    ChatEventForumTopicPinned forumTopicPinned => UpdateChatEventForumTopicPinned(message, forumTopicPinned, history),
+                    ChatEventForumTopicToggleIsClosed forumTopicToggleIsClosed => UpdateChatEventForumTopicToggleIsClosed(message, forumTopicToggleIsClosed, history),
+                    ChatEventAccentColorChanged accentColorChanged => UpdateChatEventAccentColorChanged(message, accentColorChanged, history),
+                    ChatEventProfileAccentColorChanged profileAccentColorChanged => UpdateChatEventProfileAccentColorChanged(message, profileAccentColorChanged, history),
+                    ChatEventEmojiStatusChanged emojiStatusChanged => UpdateChatEventEmojiStatusChanged(message, emojiStatusChanged, history),
+                    ChatEventBackgroundChanged backgroundChanged => UpdateChatEventBackgroundChanged(message, backgroundChanged, history),
+                    //ChatEventActiveUsernamesChanged activeUsernamesChanged => UpdateChatEventActiveUsernames(messageUsernamesChanged),
+                    _ => _emptyString
                 },
-                MessageHeaderDate headerDate => UpdateHeaderDate(message, headerDate, active),
-                _ => (string.Empty, null)
+                MessageHeaderDate headerDate => UpdateHeaderDate(message, headerDate),
+                _ => _emptyString
             };
         }
 
         #region Local
 
-        private static (string Text, IList<TextEntity> Entities) UpdateHeaderDate(MessageViewModel message, MessageHeaderDate headerDate, bool active)
+        private static FormattedText UpdateHeaderDate(MessageViewModel message, MessageHeaderDate headerDate)
         {
             if (message.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
             {
-                return (string.Format(Strings.MessageScheduledOn, Formatter.DayGrouping(Formatter.ToLocalTime(sendAtDate.SendDate))), null);
+                return string.Format(Strings.MessageScheduledOn, Formatter.DayGrouping(Formatter.ToLocalTime(sendAtDate.SendDate))).AsFormattedText();
             }
             else if (message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
             {
-                return (string.Format(Strings.MessageScheduledOn, Formatter.DayGrouping(Formatter.ToLocalTime(sendWhenVideoProcessed.SendDate))), null);
+                return string.Format(Strings.MessageScheduledOn, Formatter.DayGrouping(Formatter.ToLocalTime(sendWhenVideoProcessed.SendDate))).AsFormattedText();
             }
             else if (message.SchedulingState is MessageSchedulingStateSendWhenOnline)
             {
-                return (Strings.MessageScheduledUntilOnline, null);
+                return Strings.MessageScheduledUntilOnline.AsFormattedText();
             }
 
-            return (Formatter.DayGrouping(Formatter.ToLocalTime(message.Date)), null);
+            return Formatter.DayGrouping(Formatter.ToLocalTime(message.Date)).AsFormattedText();
         }
 
         #endregion
 
         #region Event log
 
-        private static (string Text, IList<TextEntity> Entities) UpdateChatEventAccentColorChanged(MessageViewModel message, ChatEventAccentColorChanged accentColorChanged, bool active)
+        private static FormattedText UpdateChatEventAccentColorChanged(MessageViewModel message, ChatEventAccentColorChanged accentColorChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            FormattedText oldEmoji;
+            FormattedText newEmoji;
 
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(Strings.EventLogChangedPeerColorIcon, "un1", fromUser, entities);
-
-            var index1 = content.IndexOf("{0}");
-            if (index1 != -1)
+            if (accentColorChanged.OldBackgroundCustomEmojiId != 0)
             {
-                if (accentColorChanged.OldBackgroundCustomEmojiId != 0)
-                {
-                    entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(accentColorChanged.OldBackgroundCustomEmojiId)));
-                }
-                else
-                {
-                    content = content.Remove(index1, 3);
-                    content = content.Insert(index1, Strings.EventLogEmojiNone);
-                }
-            }
-
-            var index2 = content.IndexOf("{1}");
-            if (index2 != -1)
-            {
-                if (accentColorChanged.NewBackgroundCustomEmojiId != 0)
-                {
-                    entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(accentColorChanged.NewBackgroundCustomEmojiId)));
-                }
-                else
-                {
-                    content = content.Remove(index2, 3);
-                    content = content.Insert(index2, Strings.EventLogEmojiNone);
-                }
-            }
-
-            return (content, entities);
-        }
-
-        private static (string Text, IList<TextEntity> Entities) UpdateChatEventProfileAccentColorChanged(MessageViewModel message, ChatEventProfileAccentColorChanged profileAccentColorChanged, bool active)
-        {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(Strings.EventLogChangedProfileColorIcon, "un1", fromUser, entities);
-
-            var index1 = content.IndexOf("{0}");
-            if (index1 != -1)
-            {
-                if (profileAccentColorChanged.OldProfileBackgroundCustomEmojiId != 0)
-                {
-                    entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(profileAccentColorChanged.OldProfileBackgroundCustomEmojiId)));
-                }
-                else
-                {
-                    content = content.Remove(index1, 3);
-                    content = content.Insert(index1, Strings.EventLogEmojiNone);
-                }
-            }
-
-            var index2 = content.IndexOf("{1}");
-            if (index2 != -1)
-            {
-                if (profileAccentColorChanged.NewProfileBackgroundCustomEmojiId != 0)
-                {
-                    entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(profileAccentColorChanged.NewProfileBackgroundCustomEmojiId)));
-                }
-                else
-                {
-                    content = content.Remove(index2, 3);
-                    content = content.Insert(index2, Strings.EventLogEmojiNone);
-                }
-            }
-
-            return (content, entities);
-        }
-
-        private static (string Text, IList<TextEntity> Entities) UpdateChatEventEmojiStatusChanged(MessageViewModel message, ChatEventEmojiStatusChanged emojiStatusChanged, bool active)
-        {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            if (emojiStatusChanged.NewEmojiStatus != null)
-            {
-                // TODO: FormatTtl may not return the right value
-                if (emojiStatusChanged.NewEmojiStatus.ExpirationDate != 0)
-                {
-                    if (emojiStatusChanged.OldEmojiStatus != null)
-                    {
-                        content = ReplaceWithLink(Strings.EventLogChangedEmojiStatusFromFor, "un1", fromUser, entities);
-                        content = string.Format(content, "{0}", "{1}", Locale.FormatTtl(emojiStatusChanged.NewEmojiStatus.ExpirationDate - message.Date));
-                    }
-                    else
-                    {
-                        content = ReplaceWithLink(Strings.EventLogChangedEmojiStatusFor, "un1", fromUser, entities);
-                        content = string.Format(content, "{0}", "{1}", Locale.FormatTtl(emojiStatusChanged.NewEmojiStatus.ExpirationDate - message.Date));
-                    }
-                }
-                else if (emojiStatusChanged.OldEmojiStatus != null)
-                {
-                    content = ReplaceWithLink(Strings.EventLogChangedEmojiStatusFrom, "un1", fromUser, entities);
-                }
-                else
-                {
-                    content = ReplaceWithLink(Strings.EventLogChangedEmojiStatus, "un1", fromUser, entities);
-                }
+                oldEmoji = new FormattedText("{0}", new[] { new TextEntity(0, 3, new TextEntityTypeCustomEmoji(accentColorChanged.OldBackgroundCustomEmojiId)) });
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogChangedEmojiStatusFrom, "un1", fromUser, entities);
+                oldEmoji = Strings.EventLogEmojiNone.AsFormattedText();
             }
 
-            var index1 = content.IndexOf("{0}");
-            if (index1 != -1)
+            if (accentColorChanged.NewBackgroundCustomEmojiId != 0)
             {
-                if (emojiStatusChanged.OldEmojiStatus?.Type is EmojiStatusTypeCustomEmoji oldCustomEmoji)
-                {
-                    entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(oldCustomEmoji.CustomEmojiId)));
-                }
-                else if (emojiStatusChanged.OldEmojiStatus?.Type is EmojiStatusTypeUpgradedGift oldUpgradedGift)
-                {
-                    entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(oldUpgradedGift.ModelCustomEmojiId)));
-                }
-                else
-                {
-                    content = content.Remove(index1, 3);
-                    content = content.Insert(index1, Strings.EventLogEmojiNone);
-                }
+                newEmoji = new FormattedText("{1}", new[] { new TextEntity(0, 3, new TextEntityTypeCustomEmoji(accentColorChanged.NewBackgroundCustomEmojiId)) });
             }
-
-            var index2 = content.IndexOf("{1}");
-            if (index2 != -1)
+            else
             {
-                if (emojiStatusChanged.NewEmojiStatus?.Type is EmojiStatusTypeCustomEmoji newCustomEmoji)
-                {
-                    entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(newCustomEmoji.CustomEmojiId)));
-                }
-                else if (emojiStatusChanged.NewEmojiStatus?.Type is EmojiStatusTypeUpgradedGift newUpgradedGift)
-                {
-                    entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(newUpgradedGift.ModelCustomEmojiId)));
-                }
-                else
-                {
-                    content = content.Remove(index2, 3);
-                    content = content.Insert(index2, Strings.EventLogEmojiNone);
-                }
+                newEmoji = Strings.EventLogEmojiNone.AsFormattedText();
             }
 
-            return (content, entities);
+            return ReplaceWithLink(ClientEx.Format(Strings.EventLogChangedPeerColorIcon, oldEmoji, newEmoji), message.GetSender());
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateChatEventBackgroundChanged(MessageViewModel message, ChatEventBackgroundChanged backgroundChanged, bool active)
+        private static FormattedText UpdateChatEventProfileAccentColorChanged(MessageViewModel message, ChatEventProfileAccentColorChanged profileAccentColorChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            FormattedText oldEmoji;
+            FormattedText newEmoji;
 
-            var fromUser = message.GetSender();
+            if (profileAccentColorChanged.OldProfileBackgroundCustomEmojiId != 0)
+            {
+                oldEmoji = new FormattedText("{0}", new[] { new TextEntity(0, 3, new TextEntityTypeCustomEmoji(profileAccentColorChanged.OldProfileBackgroundCustomEmojiId)) });
+            }
+            else
+            {
+                oldEmoji = Strings.EventLogEmojiNone.AsFormattedText();
+            }
 
+            if (profileAccentColorChanged.NewProfileBackgroundCustomEmojiId != 0)
+            {
+                newEmoji = new FormattedText("{1}", new[] { new TextEntity(0, 3, new TextEntityTypeCustomEmoji(profileAccentColorChanged.NewProfileBackgroundCustomEmojiId)) });
+            }
+            else
+            {
+                newEmoji = Strings.EventLogEmojiNone.AsFormattedText();
+            }
+
+            return ReplaceWithLink(ClientEx.Format(Strings.EventLogChangedProfileColorIcon, oldEmoji, newEmoji), message.GetSender());
+        }
+
+        private static FormattedText UpdateChatEventEmojiStatusChanged(MessageViewModel message, ChatEventEmojiStatusChanged emojiStatusChanged, bool history)
+        {
+            return _emptyString;
+
+            //FormattedText oldEmoji;
+            //FormattedText newEmoji;
+
+            //if (emojiStatusChanged.NewEmojiStatus != null)
+            //{
+            //    // TODO: FormatTtl may not return the right value
+            //    if (emojiStatusChanged.NewEmojiStatus.ExpirationDate != 0)
+            //    {
+            //        if (emojiStatusChanged.OldEmojiStatus != null)
+            //        {
+            //            content = ReplaceWithLink(Strings.EventLogChangedEmojiStatusFromFor, "un1", fromUser, entities);
+            //            content = string.Format(content, "{0}", "{1}", Locale.FormatTtl(emojiStatusChanged.NewEmojiStatus.ExpirationDate - message.Date));
+            //        }
+            //        else
+            //        {
+            //            content = ReplaceWithLink(Strings.EventLogChangedEmojiStatusFor, "un1", fromUser, entities);
+            //            content = string.Format(content, "{0}", "{1}", Locale.FormatTtl(emojiStatusChanged.NewEmojiStatus.ExpirationDate - message.Date));
+            //        }
+            //    }
+            //    else if (emojiStatusChanged.OldEmojiStatus != null)
+            //    {
+            //        content = ReplaceWithLink(Strings.EventLogChangedEmojiStatusFrom, "un1", fromUser, entities);
+            //    }
+            //    else
+            //    {
+            //        content = ReplaceWithLink(Strings.EventLogChangedEmojiStatus, "un1", fromUser, entities);
+            //    }
+            //}
+            //else
+            //{
+            //    content = ReplaceWithLink(Strings.EventLogChangedEmojiStatusFrom, "un1", fromUser, entities);
+            //}
+
+            //var index1 = content.IndexOf("{0}");
+            //if (index1 != -1)
+            //{
+            //    if (emojiStatusChanged.OldEmojiStatus?.Type is EmojiStatusTypeCustomEmoji oldCustomEmoji)
+            //    {
+            //        entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(oldCustomEmoji.CustomEmojiId)));
+            //    }
+            //    else if (emojiStatusChanged.OldEmojiStatus?.Type is EmojiStatusTypeUpgradedGift oldUpgradedGift)
+            //    {
+            //        entities.Add(new TextEntity(index1, 3, new TextEntityTypeCustomEmoji(oldUpgradedGift.ModelCustomEmojiId)));
+            //    }
+            //    else
+            //    {
+            //        content = content.Remove(index1, 3);
+            //        content = content.Insert(index1, Strings.EventLogEmojiNone);
+            //    }
+            //}
+
+            //var index2 = content.IndexOf("{1}");
+            //if (index2 != -1)
+            //{
+            //    if (emojiStatusChanged.NewEmojiStatus?.Type is EmojiStatusTypeCustomEmoji newCustomEmoji)
+            //    {
+            //        entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(newCustomEmoji.CustomEmojiId)));
+            //    }
+            //    else if (emojiStatusChanged.NewEmojiStatus?.Type is EmojiStatusTypeUpgradedGift newUpgradedGift)
+            //    {
+            //        entities.Add(new TextEntity(index2, 3, new TextEntityTypeCustomEmoji(newUpgradedGift.ModelCustomEmojiId)));
+            //    }
+            //    else
+            //    {
+            //        content = content.Remove(index2, 3);
+            //        content = content.Insert(index2, Strings.EventLogEmojiNone);
+            //    }
+            //}
+
+            //return new FormattedText(content, entities);
+        }
+
+        private static FormattedText UpdateChatEventBackgroundChanged(MessageViewModel message, ChatEventBackgroundChanged backgroundChanged, bool history)
+        {
             if (backgroundChanged.NewBackground != null)
             {
-                content = ReplaceWithLink(Strings.EventLogChangedWallpaper, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogChangedWallpaper, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogRemovedWallpaper, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogRemovedWallpaper, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateSlowModeDelayChanged(MessageViewModel message, ChatEventSlowModeDelayChanged slowModeDelayChanged, bool active)
+        private static FormattedText UpdateSlowModeDelayChanged(MessageViewModel message, ChatEventSlowModeDelayChanged slowModeDelayChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (slowModeDelayChanged.NewSlowModeDelay > 0)
             {
                 if (slowModeDelayChanged.NewSlowModeDelay < 60)
                 {
-                    content = ReplaceWithLink(string.Format(Strings.EventLogToggledSlowmodeOn, string.Format(Strings.SlowmodeSeconds, slowModeDelayChanged.NewSlowModeDelay)), "un1", fromUser, entities);
+                    return ReplaceWithLink(string.Format(Strings.EventLogToggledSlowmodeOn, string.Format(Strings.SlowmodeSeconds, slowModeDelayChanged.NewSlowModeDelay)), message.GetSender());
                 }
                 else if (slowModeDelayChanged.NewSlowModeDelay < 60 * 60)
                 {
-                    content = ReplaceWithLink(string.Format(Strings.EventLogToggledSlowmodeOn, string.Format(Strings.SlowmodeMinutes, slowModeDelayChanged.NewSlowModeDelay / 60)), "un1", fromUser, entities);
+                    return ReplaceWithLink(string.Format(Strings.EventLogToggledSlowmodeOn, string.Format(Strings.SlowmodeMinutes, slowModeDelayChanged.NewSlowModeDelay / 60)), message.GetSender());
                 }
                 else
                 {
-                    content = ReplaceWithLink(string.Format(Strings.EventLogToggledSlowmodeOn, string.Format(Strings.SlowmodeHours, slowModeDelayChanged.NewSlowModeDelay / 60 / 60)), "un1", fromUser, entities);
+                    return ReplaceWithLink(string.Format(Strings.EventLogToggledSlowmodeOn, string.Format(Strings.SlowmodeHours, slowModeDelayChanged.NewSlowModeDelay / 60 / 60)), message.GetSender());
                 }
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogToggledSlowmodeOff, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledSlowmodeOff, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateAutomaticTranslationToggled(MessageViewModel message, ChatEventAutomaticTranslationToggled automaticTranslationToggled, bool active)
+        private static FormattedText UpdateAutomaticTranslationToggled(MessageViewModel message, ChatEventAutomaticTranslationToggled automaticTranslationToggled, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (automaticTranslationToggled.HasAutomaticTranslation)
             {
-                content = ReplaceWithLink(Strings.EventLogToggledAutotranslationOn, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledAutotranslationOn, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogToggledAutotranslationOff, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledAutotranslationOff, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateAvailableReactionsChanged(MessageViewModel message, ChatEventAvailableReactionsChanged availableReactionsChanged, bool active)
+        private static FormattedText UpdateAvailableReactionsChanged(MessageViewModel message, ChatEventAvailableReactionsChanged availableReactionsChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             var oldAllOrNone = availableReactionsChanged.OldAvailableReactions is ChatAvailableReactionsAll or ChatAvailableReactionsSome { Reactions.Count: 0 };
             var newAllOrNone = availableReactionsChanged.NewAvailableReactions is ChatAvailableReactionsAll or ChatAvailableReactionsSome { Reactions.Count: 0 };
 
-            static FormattedText ToString(ChatAvailableReactions reactions, bool active)
+            static FormattedText ToString(ChatAvailableReactions reactions)
             {
                 if (reactions is ChatAvailableReactionsAll || reactions is not ChatAvailableReactionsSome some)
                 {
@@ -883,7 +840,7 @@ namespace Telegram.Controls.Messages
                 if (some.Reactions.Count > 0)
                 {
                     var content = new StringBuilder();
-                    var entities = active ? new List<TextEntity>() : null;
+                    var entities = new List<TextEntity>();
 
                     foreach (var item in some.Reactions)
                     {
@@ -893,631 +850,380 @@ namespace Telegram.Controls.Messages
                         }
                         else if (item is ReactionTypeCustomEmoji customEmoji)
                         {
-                            entities?.Add(new TextEntity(content.Length, 2, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)));
+                            entities.Add(new TextEntity(content.Length, 2, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)));
                             content.Append("\U0001F921");
                         }
                     }
 
-                    return new FormattedText(content.ToString(), active ? entities : Array.Empty<TextEntity>());
+                    return new FormattedText(content.ToString(), entities);
                 }
 
                 return new FormattedText(Strings.NoReactions, Array.Empty<TextEntity>());
             }
 
-            static string Format(string content, IList<TextEntity> entities, params FormattedText[] format)
-            {
-                for (int i = 0; i < format.Length; i++)
-                {
-                    var index = content.IndexOf($"{{{i}}}");
-                    if (index >= 0)
-                    {
-                        content = content.Remove(index, 3);
-                        content = content.Insert(index, format[i].Text);
-
-                        foreach (var entity in format[i].Entities)
-                        {
-                            entities?.Add(new TextEntity(entity.Offset + index, entity.Length, entity.Type));
-                        }
-                    }
-                }
-
-                return content;
-            }
-
             if (oldAllOrNone || newAllOrNone)
             {
-                var oldText = ToString(availableReactionsChanged.OldAvailableReactions, active);
-                var newText = ToString(availableReactionsChanged.NewAvailableReactions, active);
+                var oldText = ToString(availableReactionsChanged.OldAvailableReactions);
+                var newText = ToString(availableReactionsChanged.NewAvailableReactions);
 
-                content = ReplaceWithLink(Strings.ActionReactionsChanged, "un1", fromUser, entities);
-                content = Format(content, entities, oldText, newText);
+                var content = ClientEx.Format(Strings.ActionReactionsChanged, oldText, newText);
+                return ReplaceWithLink(content, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.ActionReactionsChangedList, "un1", fromUser, entities);
-                content = Format(content, entities, ToString(availableReactionsChanged.NewAvailableReactions, active));
+                var content = ClientEx.Format(Strings.ActionReactionsChangedList, ToString(availableReactionsChanged.NewAvailableReactions));
+                return ReplaceWithLink(content, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateHasProtectedContentToggled(MessageViewModel message, ChatEventHasProtectedContentToggled hasProtectedContentToggled, bool active)
+        private static FormattedText UpdateHasProtectedContentToggled(MessageViewModel message, ChatEventHasProtectedContentToggled hasProtectedContentToggled, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (hasProtectedContentToggled.HasProtectedContent)
             {
-                content = ReplaceWithLink(message.IsChannelPost
+                return ReplaceWithLink(message.IsChannelPost
                     ? Strings.ActionForwardsRestrictedChannel
-                    : Strings.ActionForwardsRestrictedGroup, "un1", fromUser, entities);
+                    : Strings.ActionForwardsRestrictedGroup, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(message.IsChannelPost
+                return ReplaceWithLink(message.IsChannelPost
                     ? Strings.ActionForwardsEnabledChannel
-                    : Strings.ActionForwardsEnabledGroup, "un1", fromUser, entities);
+                    : Strings.ActionForwardsEnabledGroup, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateSignMessagesToggled(MessageViewModel message, ChatEventSignMessagesToggled signMessagesToggled, bool active)
+        private static FormattedText UpdateSignMessagesToggled(MessageViewModel message, ChatEventSignMessagesToggled signMessagesToggled, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (signMessagesToggled.SignMessages)
             {
-                content = ReplaceWithLink(Strings.EventLogToggledSignaturesOn, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledSignaturesOn, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogToggledSignaturesOff, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledSignaturesOff, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateShowMessageSenderToggled(MessageViewModel message, ChatEventShowMessageSenderToggled showMessageSenderToggled, bool active)
+        private static FormattedText UpdateShowMessageSenderToggled(MessageViewModel message, ChatEventShowMessageSenderToggled showMessageSenderToggled, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (showMessageSenderToggled.ShowMessageSender)
             {
-                content = ReplaceWithLink(Strings.EventLogToggledSignaturesProfilesOn, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledSignaturesProfilesOn, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogToggledSignaturesProfilesOff, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledSignaturesProfilesOff, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateStickerSetChanged(MessageViewModel message, ChatEventStickerSetChanged stickerSetChanged, bool active)
+        private static FormattedText UpdateStickerSetChanged(MessageViewModel message, ChatEventStickerSetChanged stickerSetChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (stickerSetChanged.NewStickerSetId == 0)
             {
-                content = ReplaceWithLink(Strings.EventLogRemovedStickersSet, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogRemovedStickersSet, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogChangedStickersSet, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogChangedStickersSet, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateCustomEmojiStickerSetChanged(MessageViewModel message, ChatEventCustomEmojiStickerSetChanged customEmojiStickerSetChanged, bool active)
+        private static FormattedText UpdateCustomEmojiStickerSetChanged(MessageViewModel message, ChatEventCustomEmojiStickerSetChanged customEmojiStickerSetChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (customEmojiStickerSetChanged.NewStickerSetId == 0)
             {
-                content = ReplaceWithLink(Strings.EventLogRemovedEmojiPack, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogRemovedEmojiPack, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogChangedEmojiPack, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogChangedEmojiPack, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateInvitesToggled(MessageViewModel message, ChatEventInvitesToggled invitesToggled, bool active)
+        private static FormattedText UpdateInvitesToggled(MessageViewModel message, ChatEventInvitesToggled invitesToggled, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (invitesToggled.CanInviteUsers)
             {
-                content = ReplaceWithLink(Strings.EventLogToggledInvitesOn, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledInvitesOn, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogToggledInvitesOff, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledInvitesOff, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateIsAllHistoryAvailableToggled(MessageViewModel message, ChatEventIsAllHistoryAvailableToggled isAllHistoryAvailableToggled, bool active)
+        private static FormattedText UpdateIsAllHistoryAvailableToggled(MessageViewModel message, ChatEventIsAllHistoryAvailableToggled isAllHistoryAvailableToggled, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (isAllHistoryAvailableToggled.IsAllHistoryAvailable)
             {
-                content = ReplaceWithLink(Strings.EventLogToggledInvitesHistoryOn, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledInvitesHistoryOn, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogToggledInvitesHistoryOff, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogToggledInvitesHistoryOff, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateLinkedChatChanged(MessageViewModel message, ChatEventLinkedChatChanged linkedChatChanged, bool active)
+        private static FormattedText UpdateLinkedChatChanged(MessageViewModel message, ChatEventLinkedChatChanged linkedChatChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (message.IsChannelPost)
             {
                 if (linkedChatChanged.NewLinkedChatId != 0)
                 {
-                    content = ReplaceWithLink(Strings.EventLogChangedLinkedGroup, "un1", fromUser, entities);
-                    content = ReplaceWithLink(content, "un2", message.ClientService.GetChat(linkedChatChanged.NewLinkedChatId), entities);
+                    return ReplaceWithLink(Strings.EventLogChangedLinkedGroup, message.GetSender(), message.ClientService.GetChat(linkedChatChanged.NewLinkedChatId));
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.EventLogRemovedLinkedGroup, "un1", fromUser, entities);
-                    content = ReplaceWithLink(content, "un2", message.ClientService.GetChat(linkedChatChanged.OldLinkedChatId), entities);
+                    return ReplaceWithLink(Strings.EventLogRemovedLinkedGroup, message.GetSender(), message.ClientService.GetChat(linkedChatChanged.OldLinkedChatId));
                 }
             }
             else
             {
                 if (linkedChatChanged.NewLinkedChatId != 0)
                 {
-                    content = ReplaceWithLink(Strings.EventLogChangedLinkedChannel, "un1", fromUser, entities);
-                    content = ReplaceWithLink(content, "un2", message.ClientService.GetChat(linkedChatChanged.NewLinkedChatId), entities);
+                    return ReplaceWithLink(Strings.EventLogChangedLinkedChannel, message.GetSender(), message.ClientService.GetChat(linkedChatChanged.NewLinkedChatId));
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.EventLogRemovedLinkedChannel, "un1", fromUser, entities);
-                    content = ReplaceWithLink(content, "un2", message.ClientService.GetChat(linkedChatChanged.OldLinkedChatId), entities);
+                    return ReplaceWithLink(Strings.EventLogRemovedLinkedChannel, message.GetSender(), message.ClientService.GetChat(linkedChatChanged.OldLinkedChatId));
                 }
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateLocationChanged(MessageViewModel message, ChatEventLocationChanged locationChanged, bool active)
+        private static FormattedText UpdateLocationChanged(MessageViewModel message, ChatEventLocationChanged locationChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (locationChanged.NewLocation != null)
             {
-                content = ReplaceWithLink(string.Format(Strings.EventLogChangedLocation, locationChanged.NewLocation.Address), "un1", fromUser, entities);
+                return ReplaceWithLink(string.Format(Strings.EventLogChangedLocation, locationChanged.NewLocation.Address), message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogRemovedLocation, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogRemovedLocation, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateMemberJoinedByInviteLink(MessageViewModel message, ChatEventMemberJoinedByInviteLink memberJoinedByInviteLink, bool active)
+        private static FormattedText UpdateMemberJoinedByInviteLink(MessageViewModel message, ChatEventMemberJoinedByInviteLink memberJoinedByInviteLink, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsOutgoing)
             {
-                content = Strings.ActionInviteYou;
+                return Strings.ActionInviteYou.AsFormattedText();
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            else
             {
                 if (memberJoinedByInviteLink.ViaChatFolderInviteLink)
                 {
-                    content = ReplaceWithLink(Strings.ActionInviteUserFolder, "un1", senderUser, entities);
+                    return ReplaceWithLink(Strings.ActionInviteUserFolder, message.GetSender());
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.ActionInviteUser, "un1", senderUser, entities);
+                    return ReplaceWithLink(Strings.ActionInviteUser, message.GetSender());
                 }
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateMessageUnpinned(MessageViewModel message, ChatEventMessageUnpinned messageUnpinned, bool active)
+        private static FormattedText UpdateMessageUnpinned(MessageViewModel message, ChatEventMessageUnpinned messageUnpinned, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(Strings.EventLogUnpinnedMessages, "un1", fromUser, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(Strings.EventLogUnpinnedMessages, message.GetSender());
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateMessageDeleted(MessageViewModel message, ChatEventMessageDeleted messageDeleted, bool active)
+        private static FormattedText UpdateMessageDeleted(MessageViewModel message, ChatEventMessageDeleted messageDeleted, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(Strings.EventLogDeletedMessages, "un1", fromUser, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(Strings.EventLogDeletedMessages, message.GetSender());
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateMessageEdited(MessageViewModel message, ChatEventMessageEdited messageEdited, bool active)
+        private static FormattedText UpdateMessageEdited(MessageViewModel message, ChatEventMessageEdited messageEdited, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (messageEdited.NewMessage.Content is MessageText)
             {
-                content = ReplaceWithLink(Strings.EventLogEditedMessages, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogEditedMessages, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogEditedCaption, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogEditedCaption, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateMessageAutoDeleteTimeChanged(MessageViewModel message, ChatEventMessageAutoDeleteTimeChanged messageAutoDeleteTimeChanged, bool active)
+        private static FormattedText UpdateMessageAutoDeleteTimeChanged(MessageViewModel message, ChatEventMessageAutoDeleteTimeChanged messageAutoDeleteTimeChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (messageAutoDeleteTimeChanged.NewMessageAutoDeleteTime > 0)
             {
-                content = ReplaceWithLink(string.Format(Strings.ActionTTLChanged, Locale.FormatTtl(messageAutoDeleteTimeChanged.NewMessageAutoDeleteTime)), "un1", fromUser, entities);
+                return ReplaceWithLink(string.Format(Strings.ActionTTLChanged, Locale.FormatTtl(messageAutoDeleteTimeChanged.NewMessageAutoDeleteTime)), message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.ActionTTLDisabled, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.ActionTTLDisabled, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateDescriptionChanged(MessageViewModel message, ChatEventDescriptionChanged descriptionChanged, bool active)
+        private static FormattedText UpdateDescriptionChanged(MessageViewModel message, ChatEventDescriptionChanged descriptionChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (message.IsChannelPost)
             {
-                content = ReplaceWithLink(Strings.EventLogEditedChannelDescription, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogEditedChannelDescription, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogEditedGroupDescription, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogEditedGroupDescription, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateInviteLinkDeleted(MessageViewModel message, ChatEventInviteLinkDeleted inviteLinkDeleted, bool active)
+        private static FormattedText UpdateInviteLinkDeleted(MessageViewModel message, ChatEventInviteLinkDeleted inviteLinkDeleted, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-            content = ReplaceWithLink(string.Format(Strings.ActionDeletedInviteLink, inviteLinkDeleted.InviteLink.InviteLink), "un1", fromUser, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(string.Format(Strings.ActionDeletedInviteLink, inviteLinkDeleted.InviteLink.InviteLink), message.GetSender());
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateInviteLinkEdited(MessageViewModel message, ChatEventInviteLinkEdited inviteLinkEdited, bool active)
+        private static FormattedText UpdateInviteLinkEdited(MessageViewModel message, ChatEventInviteLinkEdited inviteLinkEdited, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             //if (inviteLinkEdited.)
             //{
             //}
             //else
             {
-                content = ReplaceWithLink(string.Format(Strings.ActionEditedInviteLinkToSame, inviteLinkEdited.NewInviteLink.InviteLink), "un1", fromUser, entities);
+                return ReplaceWithLink(string.Format(Strings.ActionEditedInviteLinkToSame, inviteLinkEdited.NewInviteLink.InviteLink), message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateInviteLinkRevoked(MessageViewModel message, ChatEventInviteLinkRevoked inviteLinkRevoked, bool active)
+        private static FormattedText UpdateInviteLinkRevoked(MessageViewModel message, ChatEventInviteLinkRevoked inviteLinkRevoked, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-            content = ReplaceWithLink(string.Format(Strings.ActionRevokedInviteLink, inviteLinkRevoked.InviteLink.InviteLink), "un1", fromUser, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(string.Format(Strings.ActionRevokedInviteLink, inviteLinkRevoked.InviteLink.InviteLink), message.GetSender());
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateMessagePinned(MessageViewModel message, ChatEventMessagePinned messagePinned, bool active)
+        private static FormattedText UpdateMessagePinned(MessageViewModel message, ChatEventMessagePinned messagePinned, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(Strings.EventLogPinnedMessages, "un1", fromUser, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(Strings.EventLogPinnedMessages, message.GetSender());
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateUsernameChanged(MessageViewModel message, ChatEventUsernameChanged usernameChanged, bool active)
+        private static FormattedText UpdateUsernameChanged(MessageViewModel message, ChatEventUsernameChanged usernameChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (string.IsNullOrEmpty(usernameChanged.NewUsername))
             {
-                content = ReplaceWithLink(Strings.EventLogRemovedGroupLink, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogRemovedGroupLink, message.GetSender());
             }
             else
             {
-                content = ReplaceWithLink(Strings.EventLogChangedGroupLink, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogChangedGroupLink, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdatePollStopped(MessageViewModel message, ChatEventPollStopped pollStopped, bool active)
+        private static FormattedText UpdatePollStopped(MessageViewModel message, ChatEventPollStopped pollStopped, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             var fromUser = message.GetSender();
 
             var poll = pollStopped.Message.Content as MessagePoll;
             if (poll.Poll.Type is PollTypeRegular)
             {
-                content = ReplaceWithLink(Strings.EventLogStopPoll, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogStopPoll, message.GetSender());
             }
             else if (poll.Poll.Type is PollTypeQuiz)
             {
-                content = ReplaceWithLink(Strings.EventLogStopQuiz, "un1", fromUser, entities);
+                return ReplaceWithLink(Strings.EventLogStopQuiz, message.GetSender());
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateVideoChatCreated(MessageViewModel message, ChatEventVideoChatCreated videoChatCreated, bool active)
+        private static FormattedText UpdateVideoChatCreated(MessageViewModel message, ChatEventVideoChatCreated videoChatCreated, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            if (message.ClientService.TryGetUser(message.SenderId, out User fromUser))
+            if (message.IsChannelPost)
             {
-                if (message.IsChannelPost)
-                {
-                    content = ReplaceWithLink(Strings.EventLogStartedLiveStream, "un1", fromUser, entities);
-                }
-                else
-                {
-                    content = ReplaceWithLink(Strings.EventLogStartedVoiceChat, "un1", fromUser, entities);
-                }
+                return ReplaceWithLink(Strings.EventLogStartedLiveStream, message.GetSender());
             }
-
-            return (content, entities);
-        }
-
-        private static (string, IList<TextEntity>) UpdateVideoChatEnded(MessageViewModel message, ChatEventVideoChatEnded videoChatEnded, bool active)
-        {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            if (message.ClientService.TryGetUser(message.SenderId, out User fromUser))
+            else
             {
-                if (message.IsChannelPost)
-                {
-                    content = ReplaceWithLink(Strings.EventLogEndedLiveStream, "un1", fromUser, entities);
-                }
-                else
-                {
-                    content = ReplaceWithLink(Strings.EventLogEndedVoiceChat, "un1", fromUser, entities);
-                }
+                return ReplaceWithLink(Strings.EventLogStartedVoiceChat, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateVideoChatMuteNewParticipantsToggled(MessageViewModel message, ChatEventVideoChatMuteNewParticipantsToggled videoChatMuteNewParticipantsToggled, bool active)
+        private static FormattedText UpdateVideoChatEnded(MessageViewModel message, ChatEventVideoChatEnded videoChatEnded, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            if (message.ClientService.TryGetUser(message.SenderId, out User fromUser))
+            if (message.IsChannelPost)
             {
-                if (videoChatMuteNewParticipantsToggled.MuteNewParticipants)
-                {
-                    content = ReplaceWithLink(Strings.EventLogVoiceChatNotAllowedToSpeak, "un1", fromUser, entities);
-                }
-                else
-                {
-                    content = ReplaceWithLink(Strings.EventLogVoiceChatAllowedToSpeak, "un1", fromUser, entities);
-                }
+                return ReplaceWithLink(Strings.EventLogEndedLiveStream, message.GetSender());
             }
-
-            return (content, entities);
+            else
+            {
+                return ReplaceWithLink(Strings.EventLogEndedVoiceChat, message.GetSender());
+            }
         }
 
-        private static (string, IList<TextEntity>) UpdateVideoChatParticipantIsMutedToggled(MessageViewModel message, ChatEventVideoChatParticipantIsMutedToggled videoChatParticipantIsMutedToggled, bool active)
+        private static FormattedText UpdateVideoChatMuteNewParticipantsToggled(MessageViewModel message, ChatEventVideoChatMuteNewParticipantsToggled videoChatMuteNewParticipantsToggled, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            if (videoChatMuteNewParticipantsToggled.MuteNewParticipants)
+            {
+                return ReplaceWithLink(Strings.EventLogVoiceChatNotAllowedToSpeak, message.GetSender());
+            }
+            else
+            {
+                return ReplaceWithLink(Strings.EventLogVoiceChatAllowedToSpeak, message.GetSender());
+            }
+        }
 
+        private static FormattedText UpdateVideoChatParticipantIsMutedToggled(MessageViewModel message, ChatEventVideoChatParticipantIsMutedToggled videoChatParticipantIsMutedToggled, bool history)
+        {
+            var fromUser = message.GetSender();
             var whoUser = message.ClientService.GetMessageSender(videoChatParticipantIsMutedToggled.ParticipantId);
 
-            if (message.ClientService.TryGetUser(message.SenderId, out User fromUser))
+            if (videoChatParticipantIsMutedToggled.IsMuted)
             {
-                if (videoChatParticipantIsMutedToggled.IsMuted)
-                {
-                    content = ReplaceWithLink(Strings.EventLogVoiceChatMuted, "un1", fromUser, entities);
-                }
-                else
-                {
-                    content = ReplaceWithLink(Strings.EventLogVoiceChatUnmuted, "un1", fromUser, entities);
-                }
-
-                content = ReplaceWithLink(content, "un2", whoUser, entities);
+                return ReplaceWithLink(Strings.EventLogVoiceChatMuted, fromUser, whoUser);
             }
-
-            return (content, entities);
+            else
+            {
+                return ReplaceWithLink(Strings.EventLogVoiceChatUnmuted, fromUser, whoUser);
+            }
         }
 
-        private static (string, IList<TextEntity>) UpdateVideoChatParticipantVolumeLevelChanged(MessageViewModel message, ChatEventVideoChatParticipantVolumeLevelChanged videoChatParticipantVolumeLevelChanged, bool active)
+        private static FormattedText UpdateVideoChatParticipantVolumeLevelChanged(MessageViewModel message, ChatEventVideoChatParticipantVolumeLevelChanged videoChatParticipantVolumeLevelChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
+            var fromUser = message.GetSender();
             var whoUser = message.ClientService.GetMessageSender(videoChatParticipantVolumeLevelChanged.ParticipantId);
 
-            if (message.ClientService.TryGetUser(message.SenderId, out User fromUser))
-            {
-                content = ReplaceWithLink(string.Format(Strings.ActionVolumeChanged, videoChatParticipantVolumeLevelChanged.VolumeLevel), "un1", fromUser, entities);
-                content = ReplaceWithLink(content, "un2", whoUser, entities);
-            }
-
-            return (content, entities);
+            return ReplaceWithLink(string.Format(Strings.ActionVolumeChanged, videoChatParticipantVolumeLevelChanged.VolumeLevel), fromUser, whoUser);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatEventIsForumToggled(MessageViewModel message, ChatEventIsForumToggled isForumToggled, bool active)
+        private static FormattedText UpdateChatEventIsForumToggled(MessageViewModel message, ChatEventIsForumToggled isForumToggled, bool history)
         {
-            // EventLogSwitchToForum, EventLogSwitchToGroup
-
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(isForumToggled.IsForum
+            return ReplaceWithLink(isForumToggled.IsForum
                 ? Strings.EventLogSwitchToForum
-                : Strings.EventLogSwitchToGroup, "un1", fromUser, entities);
-
-            return (content, entities);
+                : Strings.EventLogSwitchToGroup, message.GetSender());
         }
 
-        private static (string, IList<TextEntity>) UpdateChatEventForumTopicCreated(MessageViewModel message, ChatEventForumTopicCreated forumTopicCreated, bool active)
+        private static FormattedText UpdateChatEventForumTopicCreated(MessageViewModel message, ChatEventForumTopicCreated forumTopicCreated, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(Strings.EventLogCreateTopic, "un1", fromUser, entities);
-            content = ReplaceWithLink(content, "un2", forumTopicCreated.TopicInfo, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(Strings.EventLogCreateTopic, message.GetSender(), forumTopicCreated.TopicInfo);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatEventForumTopicDeleted(MessageViewModel message, ChatEventForumTopicDeleted forumTopicDeleted, bool active)
+        private static FormattedText UpdateChatEventForumTopicDeleted(MessageViewModel message, ChatEventForumTopicDeleted forumTopicDeleted, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(Strings.EventLogDeleteTopic, "un1", fromUser, entities);
-            content = ReplaceWithLink(content, "un2", forumTopicDeleted.TopicInfo, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(Strings.EventLogDeleteTopic, message.GetSender(), forumTopicDeleted.TopicInfo);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatEventForumTopicEdited(MessageViewModel message, ChatEventForumTopicEdited forumTopicEdited, bool active)
+        private static FormattedText UpdateChatEventForumTopicEdited(MessageViewModel message, ChatEventForumTopicEdited forumTopicEdited, bool history)
         {
-            // EventLogEditTopic
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            content = ReplaceWithLink(Strings.EventLogEditTopic, "un1", fromUser, entities);
-            content = ReplaceWithLink(content, "un2", forumTopicEdited.OldTopicInfo, entities);
-            content = ReplaceWithLink(content, "un3", forumTopicEdited.NewTopicInfo, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(Strings.EventLogEditTopic, message.GetSender(), forumTopicEdited.OldTopicInfo, forumTopicEdited.NewTopicInfo);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatEventForumTopicPinned(MessageViewModel message, ChatEventForumTopicPinned forumTopicPinned, bool active)
+        private static FormattedText UpdateChatEventForumTopicPinned(MessageViewModel message, ChatEventForumTopicPinned forumTopicPinned, bool history)
         {
-            // EventLogPinTopic, EventLogUnpinTopic
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (forumTopicPinned.NewTopicInfo != null)
             {
-                content = ReplaceWithLink(Strings.EventLogPinTopic, "un1", fromUser, entities);
-                content = ReplaceWithLink(content, "un2", forumTopicPinned.NewTopicInfo, entities);
+                return ReplaceWithLink(Strings.EventLogPinTopic, message.GetSender(), forumTopicPinned.NewTopicInfo);
             }
             else if (forumTopicPinned.OldTopicInfo != null)
             {
-                content = ReplaceWithLink(Strings.EventLogUnpinTopic, "un1", fromUser, entities);
-                content = ReplaceWithLink(content, "un2", forumTopicPinned.OldTopicInfo, entities);
+                return ReplaceWithLink(Strings.EventLogUnpinTopic, message.GetSender(), forumTopicPinned.OldTopicInfo);
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateChatEventForumTopicToggleIsClosed(MessageViewModel message, ChatEventForumTopicToggleIsClosed forumTopicToggleIsClosed, bool active)
+        private static FormattedText UpdateChatEventForumTopicToggleIsClosed(MessageViewModel message, ChatEventForumTopicToggleIsClosed forumTopicToggleIsClosed, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            return (content, entities);
+            // TODO
+            return _emptyString;
         }
 
-        //private static (string, IList<TextEntity>) UpdateChatEventActiveUsernames(MessageViewModel message, ChatEventActiveUsernamesChanged activeUsernamesChanged, bool active)
+        //private static FormattedText UpdateChatEventActiveUsernames(MessageViewModel message, ChatEventActiveUsernamesChanged activeUsernamesChanged)
         //{
         //    //var content = string.Empty;
         //    //var entities = active ? new List<TextEntity>() : null;
@@ -1533,49 +1239,41 @@ namespace Telegram.Controls.Messages
 
         #endregion
 
-        private static (string, IList<TextEntity>) UpdateBasicGroupChatCreate(MessageViewModel message, MessageBasicGroupChatCreate basicGroupChatCreate, bool active)
+        private static FormattedText UpdateBasicGroupChatCreate(MessageViewModel message, MessageBasicGroupChatCreate basicGroupChatCreate, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsOutgoing)
             {
-                content = Strings.ActionYouCreateGroup;
+                return Strings.ActionYouCreateGroup.AsFormattedText();
             }
             else
             {
-                content = ReplaceWithLink(Strings.ActionCreateGroup, "un1", message.GetSender(), entities);
+                return ReplaceWithLink(Strings.ActionCreateGroup, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateBotWriteAccessAllowed(MessageViewModel message, MessageBotWriteAccessAllowed botWriteAccessAllowed, bool active)
+        private static FormattedText UpdateBotWriteAccessAllowed(MessageViewModel message, MessageBotWriteAccessAllowed botWriteAccessAllowed, bool history)
         {
             if (botWriteAccessAllowed.Reason is BotWriteAccessAllowReasonConnectedWebsite websiteConnected)
             {
                 var content = Strings.ActionBotAllowed;
-                var entities = active ? new List<TextEntity>() : null;
+                var entities = new List<TextEntity>();
 
                 var start = content.IndexOf("{0}");
                 content = string.Format(content, websiteConnected.DomainName);
 
-                if (start >= 0 && active)
+                if (start >= 0)
                 {
                     entities.Add(new TextEntity(start, websiteConnected.DomainName.Length, new TextEntityTypeUrl()));
                 }
 
-                return (content, entities);
+                return new FormattedText(content, entities);
             }
 
-            return (Strings.ActionBotAllowedWebapp, null);
+            return Strings.ActionBotAllowedWebapp.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateChatAddMembers(MessageViewModel message, MessageChatAddMembers chatAddMembers, bool active)
+        private static FormattedText UpdateChatAddMembers(MessageViewModel message, MessageChatAddMembers chatAddMembers, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             try
             {
                 long singleUserId = 0;
@@ -1584,47 +1282,39 @@ namespace Telegram.Controls.Messages
                     singleUserId = chatAddMembers.MemberUserIds[0];
                 }
 
-                var fromUser = message.GetSender();
-
                 if (singleUserId != 0)
                 {
                     if (message.SenderId is MessageSenderUser senderUser && singleUserId == senderUser.UserId)
                     {
-                        var chat = message.Chat;
-                        if (chat == null)
-                        {
-                            return (content, entities);
-                        }
-
-                        if (message.Chat?.Type is ChatTypeSupergroup { IsChannel: true })
+                        if (message.Chat.Type is ChatTypeSupergroup { IsChannel: true })
                         {
                             if (singleUserId == message.ClientService.Options.MyId)
                             {
-                                content = Strings.ChannelJoined;
+                                return Strings.ChannelJoined.AsFormattedText();
                             }
                             else
                             {
-                                content = ReplaceWithLink(Strings.EventLogChannelJoined, "un1", fromUser, entities);
+                                return ReplaceWithLink(Strings.EventLogChannelJoined, message.GetSender());
                             }
                         }
-                        else if (message.Chat?.Type is ChatTypeSupergroup)
+                        else if (message.Chat.Type is ChatTypeSupergroup)
                         {
                             if (singleUserId == message.ClientService.Options.MyId)
                             {
-                                content = Strings.ChannelMegaJoined;
+                                return Strings.ChannelMegaJoined.AsFormattedText();
                             }
                             else
                             {
-                                content = ReplaceWithLink(Strings.ActionAddUserSelfMega, "un1", fromUser, entities);
+                                return ReplaceWithLink(Strings.ActionAddUserSelfMega, message.GetSender());
                             }
                         }
                         else if (message.IsOutgoing)
                         {
-                            content = Strings.ActionAddUserSelfYou;
+                            return Strings.ActionAddUserSelfYou.AsFormattedText();
                         }
                         else
                         {
-                            content = ReplaceWithLink(Strings.ActionAddUserSelf, "un1", fromUser, entities);
+                            return ReplaceWithLink(Strings.ActionAddUserSelf, message.GetSender());
                         }
                     }
                     else
@@ -1633,27 +1323,26 @@ namespace Telegram.Controls.Messages
 
                         if (message.IsOutgoing)
                         {
-                            content = ReplaceWithLink(Strings.ActionYouAddUser, "un2", whoUser, entities);
+                            return ReplaceWithLink(Strings.ActionYouAddUser, "un2", whoUser);
                         }
                         else if (singleUserId == message.ClientService.Options.MyId)
                         {
                             if (message.Chat?.Type is ChatTypeSupergroup { IsChannel: true })
                             {
-                                content = ReplaceWithLink(Strings.ChannelAddedBy, "un1", fromUser, entities);
+                                return ReplaceWithLink(Strings.ChannelAddedBy, message.GetSender());
                             }
                             else if (message.Chat?.Type is ChatTypeSupergroup)
                             {
-                                content = ReplaceWithLink(Strings.MegaAddedBy, "un1", fromUser, entities);
+                                return ReplaceWithLink(Strings.MegaAddedBy, message.GetSender());
                             }
                             else
                             {
-                                content = ReplaceWithLink(Strings.ActionAddUserYou, "un1", fromUser, entities);
+                                return ReplaceWithLink(Strings.ActionAddUserYou, message.GetSender());
                             }
                         }
                         else
                         {
-                            content = ReplaceWithLink(Strings.ActionAddUser, "un1", fromUser, entities);
-                            content = ReplaceWithLink(content, "un2", whoUser, entities);
+                            return ReplaceWithLink(Strings.ActionAddUser, message.GetSender(), whoUser);
                         }
                     }
                 }
@@ -1661,12 +1350,12 @@ namespace Telegram.Controls.Messages
                 {
                     if (message.IsOutgoing)
                     {
-                        content = ReplaceWithLink(Strings.ActionYouAddUser, "un2", chatAddMembers.MemberUserIds, message.ClientService, entities);
+                        return ReplaceWithLinks(Strings.ActionYouAddUser, "un2", chatAddMembers.MemberUserIds, message.ClientService);
                     }
                     else
                     {
-                        content = ReplaceWithLink(Strings.ActionAddUser, "un1", fromUser, entities);
-                        content = ReplaceWithLink(content, "un2", chatAddMembers.MemberUserIds, message.ClientService, entities);
+                        var content = ReplaceWithLink(Strings.ActionAddUser, message.GetSender());
+                        return ReplaceWithLinks(content, "un2", chatAddMembers.MemberUserIds, message.ClientService);
                     }
                 }
             }
@@ -1675,117 +1364,95 @@ namespace Telegram.Controls.Messages
                 Logger.Info(message.Content);
                 throw;
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatChangePhoto(MessageViewModel message, MessageChatChangePhoto chatChangePhoto, bool active)
+        private static FormattedText UpdateChatChangePhoto(MessageViewModel message, MessageChatChangePhoto chatChangePhoto, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsChannelPost)
             {
-                content = chatChangePhoto.Photo.Animation != null
-                    ? Strings.ActionChannelChangedVideo
-                    : Strings.ActionChannelChangedPhoto;
+                return chatChangePhoto.Photo.Animation != null
+                    ? Strings.ActionChannelChangedVideo.AsFormattedText()
+                    : Strings.ActionChannelChangedPhoto.AsFormattedText();
             }
             else
             {
                 if (message.IsOutgoing)
                 {
-                    content = chatChangePhoto.Photo.Animation != null
-                        ? Strings.ActionYouChangedVideo
-                        : Strings.ActionYouChangedPhoto;
+                    return chatChangePhoto.Photo.Animation != null
+                        ? Strings.ActionYouChangedVideo.AsFormattedText()
+                        : Strings.ActionYouChangedPhoto.AsFormattedText();
                 }
                 else
                 {
-                    content = chatChangePhoto.Photo.Animation != null
-                        ? ReplaceWithLink(Strings.ActionChangedVideo, "un1", message.GetSender(), entities)
-                        : ReplaceWithLink(Strings.ActionChangedPhoto, "un1", message.GetSender(), entities);
+                    return chatChangePhoto.Photo.Animation != null
+                        ? ReplaceWithLink(Strings.ActionChangedVideo, message.GetSender())
+                        : ReplaceWithLink(Strings.ActionChangedPhoto, message.GetSender());
                 }
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatChangeTitle(MessageViewModel message, MessageChatChangeTitle chatChangeTitle, bool active)
+        private static FormattedText UpdateChatChangeTitle(MessageViewModel message, MessageChatChangeTitle chatChangeTitle, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsChannelPost)
             {
-                content = Strings.ActionChannelChangedTitle.Replace("un2", chatChangeTitle.Title);
+                return ReplaceWithLink(Strings.ActionChannelChangedTitle, "un2", chatChangeTitle.Title);
             }
             else
             {
                 if (message.IsOutgoing)
                 {
-                    content = Strings.ActionYouChangedTitle.Replace("un2", chatChangeTitle.Title);
+                    return ReplaceWithLink(Strings.ActionYouChangedTitle, "un2", chatChangeTitle.Title);
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.ActionChangedTitle.Replace("un2", chatChangeTitle.Title), "un1", message.GetSender(), entities);
+                    return ReplaceWithLink(Strings.ActionChangedTitle.Replace("un2", chatChangeTitle.Title), message.GetSender());
                 }
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatSetTheme(MessageViewModel message, MessageChatSetTheme chatSetTheme, bool active)
+        private static FormattedText UpdateChatSetTheme(MessageViewModel message, MessageChatSetTheme chatSetTheme, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsOutgoing)
             {
                 if (string.IsNullOrEmpty(chatSetTheme.ThemeName))
                 {
-                    content = Strings.ChatThemeDisabledYou;
+                    return Strings.ChatThemeDisabledYou.AsFormattedText();
                 }
                 else
                 {
-                    content = string.Format(Strings.ChatThemeChangedYou, chatSetTheme.ThemeName);
+                    return string.Format(Strings.ChatThemeChangedYou, chatSetTheme.ThemeName).AsFormattedText();
                 }
             }
             else
             {
                 if (string.IsNullOrEmpty(chatSetTheme.ThemeName))
                 {
-                    content = ReplaceWithLink(string.Format(Strings.ChatThemeDisabled, "un1"), "un1", message.GetSender(), entities);
+                    return ReplaceWithLink(string.Format(Strings.ChatThemeDisabled, "un1"), message.GetSender());
                 }
                 else
                 {
-                    content = ReplaceWithLink(string.Format(Strings.ChatThemeChangedTo, "un1", chatSetTheme.ThemeName), "un1", message.GetSender(), entities);
+                    return ReplaceWithLink(string.Format(Strings.ChatThemeChangedTo, "un1", chatSetTheme.ThemeName), message.GetSender());
                 }
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatDeleteMember(MessageViewModel message, MessageChatDeleteMember chatDeleteMember, bool active)
+        private static FormattedText UpdateChatDeleteMember(MessageViewModel message, MessageChatDeleteMember chatDeleteMember, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
             if (message.SenderId is MessageSenderUser senderUser && chatDeleteMember.UserId == senderUser.UserId)
             {
                 if (message.IsOutgoing)
                 {
-                    content = Strings.ActionYouLeftUser;
+                    return Strings.ActionYouLeftUser.AsFormattedText();
                 }
                 else
                 {
                     if (message.IsChannelPost)
                     {
-                        content = ReplaceWithLink(Strings.EventLogLeftChannel, "un1", fromUser, entities);
+                        return ReplaceWithLink(Strings.EventLogLeftChannel, message.GetSender());
                     }
                     else
                     {
-                        content = ReplaceWithLink(Strings.ActionLeftUser, "un1", fromUser, entities);
+                        return ReplaceWithLink(Strings.ActionLeftUser, message.GetSender());
                     }
                 }
             }
@@ -1794,131 +1461,96 @@ namespace Telegram.Controls.Messages
                 var whoUser = message.ClientService.GetUser(chatDeleteMember.UserId);
                 if (message.IsOutgoing)
                 {
-                    content = ReplaceWithLink(Strings.ActionYouKickUser, "un2", whoUser, entities);
+                    return ReplaceWithLink(Strings.ActionYouKickUser, "un2", whoUser);
                 }
                 else if (chatDeleteMember.UserId == message.ClientService.Options.MyId)
                 {
-                    content = ReplaceWithLink(Strings.ActionKickUserYou, "un1", fromUser, entities);
+                    return ReplaceWithLink(Strings.ActionKickUserYou, message.GetSender());
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.ActionKickUser, "un1", fromUser, entities);
-                    content = ReplaceWithLink(content, "un2", whoUser, entities);
+                    return ReplaceWithLink(Strings.ActionKickUser, message.GetSender(), whoUser);
                 }
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatDeletePhoto(MessageViewModel message, MessageChatDeletePhoto chatDeletePhoto, bool active)
+        private static FormattedText UpdateChatDeletePhoto(MessageViewModel message, MessageChatDeletePhoto chatDeletePhoto, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsChannelPost)
             {
-                content = Strings.ActionChannelRemovedPhoto;
+                return Strings.ActionChannelRemovedPhoto.AsFormattedText();
+            }
+            else if (message.IsOutgoing)
+            {
+                return Strings.ActionYouRemovedPhoto.AsFormattedText();
             }
             else
             {
-                if (message.IsOutgoing)
-                {
-                    content = Strings.ActionYouRemovedPhoto;
-                }
-                else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
-                {
-                    content = ReplaceWithLink(Strings.ActionRemovedPhoto, "un1", senderUser, entities);
-                }
+                return ReplaceWithLink(Strings.ActionRemovedPhoto, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatJoinByLink(MessageViewModel message, MessageChatJoinByLink chatJoinByLink, bool active)
+        private static FormattedText UpdateChatJoinByLink(MessageViewModel message, MessageChatJoinByLink chatJoinByLink, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsOutgoing)
             {
-                content = Strings.ActionInviteYou;
+                return Strings.ActionInviteYou.AsFormattedText();
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            else
             {
-                content = ReplaceWithLink(Strings.ActionInviteUser, "un1", senderUser, entities);
+                return ReplaceWithLink(Strings.ActionInviteUser, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatJoinByRequest(MessageViewModel message, MessageChatJoinByRequest chatJoinByRequest, bool active)
+        private static FormattedText UpdateChatJoinByRequest(MessageViewModel message, MessageChatJoinByRequest chatJoinByRequest, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            //if (message.IsOutgoing)
-            //{
-            //    content = Strings.ActionInviteYou;
-            //}
-            //else
-            if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
-            {
-                content = ReplaceWithLink(Strings.UserAcceptedToGroupAction, "un1", senderUser, entities);
-            }
-
-            return (content, entities);
+            return ReplaceWithLink(Strings.UserAcceptedToGroupAction, message.GetSender());
         }
 
-        private static (string, IList<TextEntity>) UpdateChatSetBackground(MessageViewModel message, MessageChatSetBackground chatSetBackground, bool active)
+        private static FormattedText UpdateChatSetBackground(MessageViewModel message, MessageChatSetBackground chatSetBackground, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsChannelPost)
             {
-                content = Strings.ActionSetWallpaperForThisChannel;
+                return Strings.ActionSetWallpaperForThisChannel.AsFormattedText();
             }
             else if (chatSetBackground.OldBackgroundMessageId != 0)
             {
                 if (message.IsOutgoing)
                 {
-                    content = Strings.ActionSetSameWallpaperForThisChatSelf;
+                    return Strings.ActionSetSameWallpaperForThisChatSelf.AsFormattedText();
                 }
                 else if (message.ClientService.TryGetUser(message.SenderId, out User user))
                 {
-                    content = string.Format(Strings.ActionSetSameWallpaperForThisChat, user.FullName(true));
+                    return string.Format(Strings.ActionSetSameWallpaperForThisChat, user.FullName(true)).AsFormattedText();
                 }
             }
             else if (message.IsOutgoing)
             {
                 if (chatSetBackground.OnlyForSelf)
                 {
-                    content = Strings.ActionSetWallpaperForThisChatSelf;
+                    return Strings.ActionSetWallpaperForThisChatSelf.AsFormattedText();
                 }
                 else if (message.ClientService.TryGetUser(message.Chat, out User user))
                 {
-                    content = string.Format(Strings.ActionSetWallpaperForThisChatSelfBoth, user.FullName(true));
+                    return string.Format(Strings.ActionSetWallpaperForThisChatSelfBoth, user.FullName(true)).AsFormattedText();
                 }
             }
             else if (message.ClientService.TryGetUser(message.SenderId, out User user))
             {
-                content = chatSetBackground.OnlyForSelf
-                    ? string.Format(Strings.ActionSetWallpaperForThisChat, user.FullName(true))
-                    : string.Format(Strings.ActionSetWallpaperForThisChatBoth, user.FullName(true));
+                return chatSetBackground.OnlyForSelf
+                    ? string.Format(Strings.ActionSetWallpaperForThisChat, user.FullName(true)).AsFormattedText()
+                    : string.Format(Strings.ActionSetWallpaperForThisChatBoth, user.FullName(true)).AsFormattedText();
             }
             else
             {
-                content = Strings.ActionSetWallpaperForThisGroup;
+                return Strings.ActionSetWallpaperForThisGroup.AsFormattedText();
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateChatSetMessageAutoDeleteTime(MessageViewModel message, MessageChatSetMessageAutoDeleteTime chatSetMessageAutoDeleteTime, bool active)
+        private static FormattedText UpdateChatSetMessageAutoDeleteTime(MessageViewModel message, MessageChatSetMessageAutoDeleteTime chatSetMessageAutoDeleteTime, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             var chat = message.Chat;
             if (chat?.Type is ChatTypeSecret)
             {
@@ -1926,22 +1558,22 @@ namespace Telegram.Controls.Messages
                 {
                     if (message.IsOutgoing)
                     {
-                        content = string.Format(Strings.MessageLifetimeChangedOutgoing, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime));
+                        return string.Format(Strings.MessageLifetimeChangedOutgoing, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)).AsFormattedText();
                     }
                     else
                     {
-                        content = ReplaceWithLink(string.Format(Strings.MessageLifetimeChanged, "un1", Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)), "un1", message.GetSender(), entities);
+                        return ReplaceWithLink(string.Format(Strings.MessageLifetimeChanged, "un1", Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)), message.GetSender());
                     }
                 }
                 else
                 {
                     if (message.IsOutgoing)
                     {
-                        content = Strings.MessageLifetimeYouRemoved;
+                        return Strings.MessageLifetimeYouRemoved.AsFormattedText();
                     }
                     else
                     {
-                        content = ReplaceWithLink(string.Format(Strings.MessageLifetimeRemoved, "un1"), "un1", message.GetSender(), entities);
+                        return ReplaceWithLink(string.Format(Strings.MessageLifetimeRemoved, "un1"), message.GetSender());
                     }
                 }
             }
@@ -1949,11 +1581,11 @@ namespace Telegram.Controls.Messages
             {
                 if (chatSetMessageAutoDeleteTime.MessageAutoDeleteTime != 0)
                 {
-                    content = string.Format(Strings.ActionTTLChannelChanged, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime));
+                    return string.Format(Strings.ActionTTLChannelChanged, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)).AsFormattedText();
                 }
                 else
                 {
-                    content = Strings.ActionTTLChannelDisabled;
+                    return Strings.ActionTTLChannelDisabled.AsFormattedText();
                 }
             }
             else
@@ -1962,146 +1594,121 @@ namespace Telegram.Controls.Messages
                 {
                     if (chatSetMessageAutoDeleteTime.FromUserId == message.ClientService.Options.MyId)
                     {
-                        content = string.Format(Strings.AutoDeleteGlobalActionFromYou, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime));
+                        return string.Format(Strings.AutoDeleteGlobalActionFromYou, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)).AsFormattedText();
                     }
                     else if (chatSetMessageAutoDeleteTime.FromUserId != 0 && message.ClientService.TryGetUser(chatSetMessageAutoDeleteTime.FromUserId, out User fromUser))
                     {
-                        content = ReplaceWithLink(string.Format(Strings.AutoDeleteGlobalAction, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)), "un1", fromUser, entities);
+                        return ReplaceWithLink(string.Format(Strings.AutoDeleteGlobalAction, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)), fromUser);
                     }
                     else if (message.IsOutgoing)
                     {
-                        content = string.Format(Strings.ActionTTLYouChanged, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime));
+                        return string.Format(Strings.ActionTTLYouChanged, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)).AsFormattedText();
                     }
                     else
                     {
-                        content = ReplaceWithLink(string.Format(Strings.ActionTTLChanged, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)), "un1", message.GetSender(), entities);
+                        return ReplaceWithLink(string.Format(Strings.ActionTTLChanged, Locale.FormatTtl(chatSetMessageAutoDeleteTime.MessageAutoDeleteTime)), message.GetSender());
                     }
                 }
                 else
                 {
                     if (message.IsOutgoing)
                     {
-                        content = Strings.ActionTTLYouDisabled;
+                        return Strings.ActionTTLYouDisabled.AsFormattedText();
                     }
                     else
                     {
-                        content = ReplaceWithLink(Strings.ActionTTLDisabled, "un1", message.GetSender(), entities);
+                        return ReplaceWithLink(Strings.ActionTTLDisabled, message.GetSender());
                     }
                 }
             }
-
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateChatUpgradeFrom(MessageViewModel message, MessageChatUpgradeFrom chatUpgradeFrom, bool active)
+        private static FormattedText UpdateChatUpgradeFrom(MessageViewModel message, MessageChatUpgradeFrom chatUpgradeFrom, bool history)
         {
-            return (active ? Strings.GroupUpgradedFrom : Strings.GroupUpgradedTo, null);
+            return (history ? Strings.GroupUpgradedFrom : Strings.GroupUpgradedTo).AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateChatUpgradeTo(MessageViewModel message, MessageChatUpgradeTo chatUpgradeTo, bool active)
+        private static FormattedText UpdateChatUpgradeTo(MessageViewModel message, MessageChatUpgradeTo chatUpgradeTo, bool history)
         {
-            return (Strings.GroupUpgradedTo, null);
+            return Strings.GroupUpgradedTo.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateContactRegistered(MessageViewModel message, MessageContactRegistered contactRegistered, bool active)
+        private static FormattedText UpdateContactRegistered(MessageViewModel message, MessageContactRegistered contactRegistered, bool history)
         {
             if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
             {
-                return (string.Format(Strings.NotificationContactJoined, senderUser.FullName()), null);
+                return string.Format(Strings.NotificationContactJoined, senderUser.FullName()).AsFormattedText();
             }
 
-            return (string.Empty, null);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateCustomServiceAction(MessageViewModel message, MessageCustomServiceAction customServiceAction, bool active)
+        private static FormattedText UpdateCustomServiceAction(MessageViewModel message, MessageCustomServiceAction customServiceAction, bool history)
         {
-            return (customServiceAction.Text, null);
+            return customServiceAction.Text.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateForumTopicCreated(MessageViewModel message, MessageForumTopicCreated forumTopicCreated, bool active)
+        private static FormattedText UpdateForumTopicCreated(MessageViewModel message, MessageForumTopicCreated forumTopicCreated, bool history)
         {
             // TopicWasCreatedAction
             // TopicCreated
             var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            var entities = new List<TextEntity>();
 
             if (true)
             {
                 content = string.Format(Strings.TopicWasCreatedAction, $"\U0001F4C3 {forumTopicCreated.Name}");
-                entities?.Add(new TextEntity(0, 2, new TextEntityTypeCustomEmoji(forumTopicCreated.Icon.CustomEmojiId)));
+                entities.Add(new TextEntity(0, 2, new TextEntityTypeCustomEmoji(forumTopicCreated.Icon.CustomEmojiId)));
             }
             else
             {
                 content = Strings.TopicCreated;
             }
 
-            return (content, entities);
+            return new FormattedText(content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateForumTopicEdited(MessageViewModel message, MessageForumTopicEdited forumTopicEdited, bool active)
+        private static FormattedText UpdateForumTopicEdited(MessageViewModel message, MessageForumTopicEdited forumTopicEdited, bool history)
         {
             // TopicWasIconChangedToAction, TopicWasRenamedToAction TopicWasRenamedToAction2
             // TopicIconChangedToAction, TopicRenamedToAction
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            FormattedText content;
 
-            var fromUser = message.GetSender();
-
-            if (true)
+            if (forumTopicEdited.EditIconCustomEmojiId && forumTopicEdited.Name.Length > 0)
             {
-                if (forumTopicEdited.EditIconCustomEmojiId && forumTopicEdited.Name.Length > 0)
-                {
-                    content = string.Format(Strings.TopicWasRenamedToAction2, "un1", $"\U0001F4C3 {forumTopicEdited.Name}");
-                    content = ReplaceWithLink(content, "un1", fromUser, entities);
-                }
-                else if (forumTopicEdited.EditIconCustomEmojiId)
-                {
-                    content = string.Format(Strings.TopicWasIconChangedToAction, "un1", "\U0001F4C3");
-                    content = ReplaceWithLink(content, "un1", fromUser, entities);
-                }
-                else
-                {
-                    content = string.Format(Strings.TopicWasRenamedToAction, "un1", forumTopicEdited.Name);
-                    content = ReplaceWithLink(content, "un1", fromUser, entities);
-                }
+                content = ReplaceWithLink(string.Format(Strings.TopicWasRenamedToAction2, "un1", $"\U0001F4C3 {forumTopicEdited.Name}"), message.GetSender());
+            }
+            else if (forumTopicEdited.EditIconCustomEmojiId)
+            {
+                content = ReplaceWithLink(string.Format(Strings.TopicWasIconChangedToAction, "un1", "\U0001F4C3"), message.GetSender());
+            }
+            else
+            {
+                content = ReplaceWithLink(string.Format(Strings.TopicWasRenamedToAction, "un1", forumTopicEdited.Name), message.GetSender());
             }
 
-            var index = content.IndexOf("\U0001F4C3");
-            if (index != -1 && entities != null)
+            var index = content.Text.IndexOf("\U0001F4C3");
+            if (index != -1)
             {
-                entities.Add(new TextEntity(index, 2, new TextEntityTypeCustomEmoji(forumTopicEdited.IconCustomEmojiId)));
+                content.Entities.Add(new TextEntity(index, 2, new TextEntityTypeCustomEmoji(forumTopicEdited.IconCustomEmojiId)));
             }
 
-            return (content, entities);
+            return content;
         }
 
-        private static (string, IList<TextEntity>) UpdateForumTopicIsClosedToggled(MessageViewModel message, MessageForumTopicIsClosedToggled forumTopicIsClosedToggled, bool active)
+        private static FormattedText UpdateForumTopicIsClosedToggled(MessageViewModel message, MessageForumTopicIsClosedToggled forumTopicIsClosedToggled, bool history)
         {
             // TopicWasClosedAction, TopicWasReopenedAction
             // TopicClosed2, TopicRestarted2
 
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            var fromUser = message.GetSender();
-
-            if (true)
-            {
-                content = string.Format(forumTopicIsClosedToggled.IsClosed
-                    ? Strings.TopicClosed2
-                    : Strings.TopicRestarted2, "un1");
-                content = ReplaceWithLink(content, "un1", fromUser, entities);
-            }
-
-            return (content, entities);
+            var content = string.Format(forumTopicIsClosedToggled.IsClosed
+                ? Strings.TopicClosed2
+                : Strings.TopicRestarted2, "un1");
+            return ReplaceWithLink(content, message.GetSender());
         }
 
-        private static (string, IList<TextEntity>) UpdateGameScore(MessageViewModel message, MessageGameScore gameScore, bool active)
+        private static FormattedText UpdateGameScore(MessageViewModel message, MessageGameScore gameScore, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             var game = GetGame(message);
             if (game == null)
             {
@@ -2109,11 +1716,11 @@ namespace Telegram.Controls.Messages
                 {
                     if (senderUser.Id == message.ClientService.Options.MyId)
                     {
-                        content = string.Format(Strings.ActionYouScored, Locale.Declension(Strings.R.Points, gameScore.Score));
+                        return string.Format(Strings.ActionYouScored, Locale.Declension(Strings.R.Points, gameScore.Score)).AsFormattedText();
                     }
                     else
                     {
-                        content = ReplaceWithLink(string.Format(Strings.ActionUserScored, Locale.Declension(Strings.R.Points, gameScore.Score)), "un1", senderUser, entities);
+                        return ReplaceWithLink(string.Format(Strings.ActionUserScored, Locale.Declension(Strings.R.Points, gameScore.Score)), senderUser);
                     }
                 }
             }
@@ -2123,382 +1730,290 @@ namespace Telegram.Controls.Messages
                 {
                     if (senderUser.Id == message.ClientService.Options.MyId)
                     {
-                        content = string.Format(Strings.ActionYouScoredInGame, Locale.Declension(Strings.R.Points, gameScore.Score));
+                        return ReplaceWithLink(string.Format(Strings.ActionYouScoredInGame, Locale.Declension(Strings.R.Points, gameScore.Score)), "un2", game);
                     }
                     else
                     {
-                        content = ReplaceWithLink(string.Format(Strings.ActionUserScoredInGame, Locale.Declension(Strings.R.Points, gameScore.Score)), "un1", senderUser, entities);
+                        return ReplaceWithLink(string.Format(Strings.ActionUserScoredInGame, Locale.Declension(Strings.R.Points, gameScore.Score)), senderUser, game);
                     }
                 }
-
-                content = ReplaceWithLink(content, "un2", game, entities);
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateGift(MessageViewModel message, MessageGift gift, bool active)
+        private static FormattedText UpdateGift(MessageViewModel message, MessageGift gift, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            // TODO: markdown
 
             if (message.ChatId == message.ClientService.Options.MyId)
             {
-                content = ReplaceWithLink(Strings.ActionGiftSelf, "un2", gift, entities);
+                return ReplaceWithLink(Strings.ActionGiftSelf, "un2", gift);
             }
             if (message.IsOutgoing)
             {
-                content = ReplaceWithLink(Strings.ActionGiftOutbound, "un2", gift, entities);
+                return ReplaceWithLink(Strings.ActionGiftOutbound, "un2", gift);
             }
             else if (message.ChatId == message.ClientService.Options.TelegramServiceNotificationsChatId)
             {
-                content = ReplaceWithLink(Strings.ActionGift2Received, "un2", gift, entities);
+                return ReplaceWithLink(Strings.ActionGift2Received, "un2", gift);
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            else
             {
-                content = ReplaceWithLink(Strings.ActionGiftInbound, "un1", senderUser, entities);
-                content = ReplaceWithLink(content, "un2", gift, entities);
+                return ReplaceWithLink(Strings.ActionGiftInbound, message.GetSender(), gift);
             }
-
-            var formatted = ClientEx.ParseMarkdown(content, (IList<TextEntity>)entities ?? Array.Empty<TextEntity>());
-
-            return (formatted.Text, formatted.Entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateGiftedPremium(MessageViewModel message, MessageGiftedPremium giftedPremium, bool active)
+        private static FormattedText UpdateGiftedPremium(MessageViewModel message, MessageGiftedPremium giftedPremium, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            // TODO: markdown
 
             if (message.IsOutgoing)
             {
-                content = ReplaceWithLink(Strings.ActionGiftOutbound, "un2", giftedPremium, entities);
+                return ReplaceWithLink(Strings.ActionGiftOutbound, "un2", giftedPremium);
             }
             else if (message.ChatId == message.ClientService.Options.TelegramServiceNotificationsChatId)
             {
-                content = ReplaceWithLink(Strings.ActionGift2Received, "un2", giftedPremium, entities);
+                return ReplaceWithLink(Strings.ActionGift2Received, "un2", giftedPremium);
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            else
             {
-                content = ReplaceWithLink(Strings.ActionGiftInbound, "un1", senderUser, entities);
-                content = ReplaceWithLink(content, "un2", giftedPremium, entities);
+                return ReplaceWithLink(Strings.ActionGiftInbound, message.GetSender(), giftedPremium);
             }
-
-            var formatted = ClientEx.ParseMarkdown(content, (IList<TextEntity>)entities ?? Array.Empty<TextEntity>());
-
-            return (formatted.Text, active ? formatted.Entities : null);
         }
 
-        private static (string, IList<TextEntity>) UpdateGiftedStars(MessageViewModel message, MessageGiftedStars giftedStars, bool active)
+        private static FormattedText UpdateGiftedStars(MessageViewModel message, MessageGiftedStars giftedStars, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            // TODO: markdown
 
             if (giftedStars.GifterUserId == message.ClientService.Options.MyId)
             {
-                content = ReplaceWithLink(Strings.ActionGiftOutbound, "un2", giftedStars, entities);
+                return ReplaceWithLink(Strings.ActionGiftOutbound, "un2", giftedStars);
             }
             else if (message.ClientService.TryGetUser(giftedStars.GifterUserId, out User senderUser))
             {
-                content = ReplaceWithLink(Strings.ActionGiftInbound, "un1", senderUser, entities);
-                content = ReplaceWithLink(content, "un2", giftedStars, entities);
+                return ReplaceWithLink(Strings.ActionGiftInbound, senderUser, giftedStars);
             }
             else
             {
-                content = ReplaceWithLink(Strings.ActionGiftInbound, "un1", Strings.StarsTransactionUnknown, entities);
-                content = ReplaceWithLink(content, "un2", giftedStars, entities);
+                return ReplaceWithLink(Strings.ActionGiftInbound, Strings.StarsTransactionUnknown, giftedStars);
             }
-
-            var formatted = ClientEx.ParseMarkdown(content, (IList<TextEntity>)entities ?? Array.Empty<TextEntity>());
-
-            return (formatted.Text, formatted.Entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateVideoChatEnded(MessageViewModel message, MessageVideoChatEnded videoChatEnded, bool active)
+        private static FormattedText UpdateVideoChatEnded(MessageViewModel message, MessageVideoChatEnded videoChatEnded, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsOutgoing)
             {
-                content = string.Format(Strings.ActionGroupCallEndedByYou, videoChatEnded.GetDuration());
+                return string.Format(Strings.ActionGroupCallEndedByYou, videoChatEnded.GetDuration()).AsFormattedText();
             }
             else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
             {
-                content = ReplaceWithLink(string.Format(Strings.ActionGroupCallEndedBy, videoChatEnded.GetDuration()), "un1", senderUser, entities);
+                return ReplaceWithLink(string.Format(Strings.ActionGroupCallEndedBy, videoChatEnded.GetDuration()), senderUser);
             }
             else
             {
-                content = string.Format(Strings.ActionGroupCallEnded, videoChatEnded.GetDuration());
+                return string.Format(Strings.ActionGroupCallEnded, videoChatEnded.GetDuration()).AsFormattedText();
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateVideoChatScheduled(MessageViewModel message, MessageVideoChatScheduled videoChatScheduled, bool active)
+        private static FormattedText UpdateVideoChatScheduled(MessageViewModel message, MessageVideoChatScheduled videoChatScheduled, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsChannelPost)
             {
-                content = string.Format(Strings.ActionChannelCallScheduled, videoChatScheduled.GetStartsAt());
+                return string.Format(Strings.ActionChannelCallScheduled, videoChatScheduled.GetStartsAt()).AsFormattedText();
             }
             else
             {
-                content = string.Format(Strings.ActionGroupCallScheduled, videoChatScheduled.GetStartsAt());
+                return string.Format(Strings.ActionGroupCallScheduled, videoChatScheduled.GetStartsAt()).AsFormattedText();
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateVideoChatStarted(MessageViewModel message, MessageVideoChatStarted videoChatStarted, bool active)
+        private static FormattedText UpdateVideoChatStarted(MessageViewModel message, MessageVideoChatStarted videoChatStarted, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsChannelPost)
             {
-                content = Strings.ActionChannelCallJustStarted;
+                return Strings.ActionChannelCallJustStarted.AsFormattedText();
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            else if (message.SenderId.IsUser(message.ClientService.Options.MyId))
             {
-                if (senderUser.Id == message.ClientService.Options.MyId)
-                {
-                    content = Strings.ActionGroupCallStartedByYou;
-                }
-                else
-                {
-                    content = ReplaceWithLink(Strings.ActionGroupCallStarted, "un1", senderUser, entities);
-                }
+                return Strings.ActionGroupCallStartedByYou.AsFormattedText();
             }
-            else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+            else
             {
-                content = ReplaceWithLink(Strings.ActionGroupCallStarted, "un1", senderChat, entities);
+                return ReplaceWithLink(Strings.ActionGroupCallStarted, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateInviteVideoChatParticipants(MessageViewModel message, MessageInviteVideoChatParticipants inviteVideoChatParticipants, bool active)
+        private static FormattedText UpdateInviteVideoChatParticipants(MessageViewModel message, MessageInviteVideoChatParticipants inviteVideoChatParticipants, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             long singleUserId = 0;
             if (singleUserId == 0 && inviteVideoChatParticipants.UserIds.Count == 1)
             {
                 singleUserId = inviteVideoChatParticipants.UserIds[0];
             }
 
-            var fromUser = message.GetSender();
-
             if (singleUserId != 0)
             {
                 var whoUser = message.ClientService.GetUser(singleUserId);
                 if (message.IsOutgoing)
                 {
-                    content = ReplaceWithLink(Strings.ActionGroupCallYouInvited, "un2", whoUser, entities);
+                    return ReplaceWithLink(Strings.ActionGroupCallYouInvited, "un2", whoUser);
                 }
                 else if (singleUserId == message.ClientService.Options.MyId)
                 {
-                    content = ReplaceWithLink(Strings.ActionGroupCallInvitedYou, "un1", fromUser, entities);
+                    return ReplaceWithLink(Strings.ActionGroupCallInvitedYou, message.GetSender());
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.ActionGroupCallInvited, "un1", fromUser, entities);
-                    content = ReplaceWithLink(content, "un2", whoUser, entities);
+                    return ReplaceWithLink(Strings.ActionGroupCallInvited, message.GetSender(), whoUser);
                 }
             }
             else
             {
                 if (message.IsOutgoing)
                 {
-                    content = ReplaceWithLink(Strings.ActionGroupCallYouInvited, "un2", inviteVideoChatParticipants.UserIds, message.ClientService, entities);
+                    return ReplaceWithLinks(Strings.ActionGroupCallYouInvited, "un2", inviteVideoChatParticipants.UserIds, message.ClientService);
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.ActionGroupCallInvited, "un1", fromUser, entities);
-                    content = ReplaceWithLink(content, "un2", inviteVideoChatParticipants.UserIds, message.ClientService, entities);
+                    var content = ReplaceWithLink(Strings.ActionGroupCallInvited, message.GetSender());
+                    return ReplaceWithLinks(content, "un2", inviteVideoChatParticipants.UserIds, message.ClientService);
                 }
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateProximityAlertTriggered(MessageViewModel message, MessageProximityAlertTriggered proximityAlertTriggered, bool active)
+        private static FormattedText UpdateProximityAlertTriggered(MessageViewModel message, MessageProximityAlertTriggered proximityAlertTriggered, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            User traveler;
-            User watcher;
-
-            message.ClientService.TryGetUser(proximityAlertTriggered.TravelerId, out traveler);
-            message.ClientService.TryGetUser(proximityAlertTriggered.WatcherId, out watcher);
+            message.ClientService.TryGetUser(proximityAlertTriggered.TravelerId, out User traveler);
+            message.ClientService.TryGetUser(proximityAlertTriggered.WatcherId, out User watcher);
 
             if (traveler != null && watcher != null)
             {
                 if (traveler.Id == message.ClientService.Options.MyId)
                 {
-                    content = ReplaceWithLink(string.Format(Strings.ActionUserWithinYouRadius, Formatter.Distance(proximityAlertTriggered.Distance, false)), "un1", watcher, entities);
+                    return ReplaceWithLink(string.Format(Strings.ActionUserWithinYouRadius, Formatter.Distance(proximityAlertTriggered.Distance, false)), watcher);
                 }
                 else if (watcher.Id == message.ClientService.Options.MyId)
                 {
-                    content = ReplaceWithLink(string.Format(Strings.ActionUserWithinRadius, Formatter.Distance(proximityAlertTriggered.Distance, false)), "un1", traveler, entities);
+                    return ReplaceWithLink(string.Format(Strings.ActionUserWithinRadius, Formatter.Distance(proximityAlertTriggered.Distance, false)), traveler);
                 }
                 else
                 {
-                    content = ReplaceWithLink(string.Format(Strings.ActionUserWithinOtherRadius, Formatter.Distance(proximityAlertTriggered.Distance, false)), "un1", traveler, entities);
-                    content = ReplaceWithLink(content, "un2", watcher, entities);
+                    return ReplaceWithLink(string.Format(Strings.ActionUserWithinOtherRadius, Formatter.Distance(proximityAlertTriggered.Distance, false)), traveler, watcher);
                 }
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateGiveawayCreated(MessageViewModel message, MessageGiveawayCreated giveawayCreated, bool active)
+        private static FormattedText UpdateGiveawayCreated(MessageViewModel message, MessageGiveawayCreated giveawayCreated, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (giveawayCreated.StarCount > 0)
             {
-                content = Locale.Declension(message.IsChannelPost
+                return Locale.Declension(message.IsChannelPost
                     ? Strings.R.BoostingStarsGiveawayJustStarted
-                    : Strings.R.BoostingStarsGiveawayJustStartedGroup, giveawayCreated.StarCount, message.Chat.Title);
+                    : Strings.R.BoostingStarsGiveawayJustStartedGroup, giveawayCreated.StarCount, message.Chat.Title).AsFormattedText();
             }
             else
             {
-                content = string.Format(message.IsChannelPost
+                return string.Format(message.IsChannelPost
                     ? Strings.BoostingGiveawayJustStarted
-                    : Strings.BoostingGiveawayJustStartedGroup, message.Chat.Title);
+                    : Strings.BoostingGiveawayJustStartedGroup, message.Chat.Title).AsFormattedText();
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateGiveawayCompleted(MessageViewModel message, MessageGiveawayCompleted giveawayCompleted, bool active)
+        private static FormattedText UpdateGiveawayCompleted(MessageViewModel message, MessageGiveawayCompleted giveawayCompleted, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
-            content = Locale.Declension(Strings.R.BoostingGiveawayServiceWinnersSelected, giveawayCompleted.WinnerCount);
+            var content = Locale.Declension(Strings.R.BoostingGiveawayServiceWinnersSelected, giveawayCompleted.WinnerCount);
 
             if (giveawayCompleted.UnclaimedPrizeCount > 0)
             {
                 content = string.Format("{0} {1}", content, Locale.Declension(Strings.R.BoostingGiveawayServiceUndistributed, giveawayCompleted.UnclaimedPrizeCount));
             }
 
-            return (content, entities);
+            return content.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateGiveawayPrizeStars(MessageViewModel message, MessageGiveawayPrizeStars giveawayPrizeStars, bool active)
+        private static FormattedText UpdateGiveawayPrizeStars(MessageViewModel message, MessageGiveawayPrizeStars giveawayPrizeStars, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             var boostedChat = message.ClientService.GetChat(giveawayPrizeStars.BoostedChatId);
 
-            content = Locale.Declension(Strings.R.ActionStarGiveawayPrize, giveawayPrizeStars.StarCount);
-            content = ReplaceWithLink(content, "un1", boostedChat, entities);
-
-            return (content, entities);
+            var content = Locale.Declension(Strings.R.ActionStarGiveawayPrize, giveawayPrizeStars.StarCount);
+            return ReplaceWithLink(content, boostedChat);
         }
 
-        private static (string, IList<TextEntity>) UpdatePremiumGiftCode(MessageViewModel message, MessagePremiumGiftCode premiumGiftCode, bool active)
+        private static FormattedText UpdatePremiumGiftCode(MessageViewModel message, MessagePremiumGiftCode premiumGiftCode, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
+            // TODO: parse markdown
             if (message.IsOutgoing)
             {
-                content = ReplaceWithLink(Strings.ActionGiftOutbound, "un2", premiumGiftCode, entities);
+                return ReplaceWithLink(Strings.ActionGiftOutbound, "un2", premiumGiftCode);
             }
             else if (message.ChatId == message.ClientService.Options.TelegramServiceNotificationsChatId)
             {
                 if (premiumGiftCode.Amount > 0)
                 {
-                    content = ReplaceWithLink(Strings.ActionGift2Received, "un2", premiumGiftCode, entities);
+                    return ReplaceWithLink(Strings.ActionGift2Received, "un2", premiumGiftCode);
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.BoostingReceivedGiftNoName, "un2", premiumGiftCode, entities);
+                    return Strings.BoostingReceivedGiftNoName.AsFormattedText();
                 }
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            else
             {
-                content = ReplaceWithLink(Strings.ActionGiftInbound, "un1", senderUser, entities);
-                content = ReplaceWithLink(content, "un2", premiumGiftCode, entities);
+                return ReplaceWithLink(Strings.ActionGiftInbound, message.GetSender(), premiumGiftCode);
             }
-
-            var formatted = ClientEx.ParseMarkdown(content, (IList<TextEntity>)entities ?? Array.Empty<TextEntity>());
-
-            return (formatted.Text, active ? formatted.Entities : null);
         }
 
-        private static (string, IList<TextEntity>) UpdateFeedbackMessagePriceChanged(MessageViewModel message, MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged, bool active)
+        private static FormattedText UpdateFeedbackMessagePriceChanged(MessageViewModel message, MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (feedbackMessagePriceChanged.IsEnabled)
             {
                 if (feedbackMessagePriceChanged.PaidMessageStarCount > 0)
                 {
-                    content = ReplaceWithLink(Locale.Declension(Strings.R.PostSuggestionsPriceUpdated, feedbackMessagePriceChanged.PaidMessageStarCount), "un1", message.GetSender(), entities); ;
+                    return ReplaceWithLink(Locale.Declension(Strings.R.PostSuggestionsPriceUpdated, feedbackMessagePriceChanged.PaidMessageStarCount), message.GetSender());
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.PostSuggestionsEnabledUpdated, "un1", message.GetSender(), entities); ;
+                    return ReplaceWithLink(Strings.PostSuggestionsEnabledUpdated, message.GetSender());
                 }
             }
             else
             {
-                content = ReplaceWithLink(Strings.PostSuggestionsDisabledUpdated, "un1", message.GetSender(), entities); ;
+                return ReplaceWithLink(Strings.PostSuggestionsDisabledUpdated, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdatePaidMessagePriceChanged(MessageViewModel message, MessagePaidMessagePriceChanged paidMessagePriceChanged, bool active)
+        private static FormattedText UpdatePaidMessagePriceChanged(MessageViewModel message, MessagePaidMessagePriceChanged paidMessagePriceChanged, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsOutgoing)
             {
-                content = Locale.Declension(Strings.R.PaidMessagesPriceUpdatedOut, paidMessagePriceChanged.PaidMessageStarCount);
+                return Locale.Declension(Strings.R.PaidMessagesPriceUpdatedOut, paidMessagePriceChanged.PaidMessageStarCount).AsFormattedText();
             }
             else
             {
-                content = Locale.Declension(Strings.R.PaidMessagesPriceUpdated, paidMessagePriceChanged.PaidMessageStarCount);
-                content = ReplaceWithLink(content, "un1", message.GetSender(), entities);
+                return ReplaceWithLink(Locale.Declension(Strings.R.PaidMessagesPriceUpdated, paidMessagePriceChanged.PaidMessageStarCount), message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdatePaidMessagesRefunded(MessageViewModel message, MessagePaidMessagesRefunded paidMessagesRefunded, bool active)
+        private static FormattedText UpdatePaidMessagesRefunded(MessageViewModel message, MessagePaidMessagesRefunded paidMessagesRefunded, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsOutgoing && message.ClientService.TryGetUser(message.Chat, out User receiverUser))
             {
-                content = Locale.Declension(Strings.R.PaidMessagesRefundedOut, paidMessagesRefunded.StarCount);
-                content = ReplaceWithLink(content, "un1", receiverUser, entities);
+                var content = Locale.Declension(Strings.R.PaidMessagesRefundedOut, paidMessagesRefunded.StarCount);
+                return ReplaceWithLink(content, receiverUser);
             }
             else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
             {
-                content = Locale.Declension(Strings.R.PaidMessagesRefunded, paidMessagesRefunded.StarCount);
-                content = ReplaceWithLink(content, "un1", senderUser, entities);
+                var content = Locale.Declension(Strings.R.PaidMessagesRefunded, paidMessagesRefunded.StarCount);
+                return ReplaceWithLink(content, senderUser);
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdatePassportDataSent(MessageViewModel message, MessagePassportDataSent passportDataSent, bool active)
+        private static FormattedText UpdatePassportDataSent(MessageViewModel message, MessagePassportDataSent passportDataSent, bool history)
         {
             string content;
 
@@ -2567,10 +2082,10 @@ namespace Telegram.Controls.Messages
             var chat = message.Chat;
             content = string.Format(Strings.ActionBotDocuments, chat?.Title ?? string.Empty, str.ToString());
 
-            return (content, null);
+            return content.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdatePaymentSuccessful(MessageViewModel message, MessagePaymentSuccessful paymentSuccessful, bool active)
+        private static FormattedText UpdatePaymentSuccessful(MessageViewModel message, MessagePaymentSuccessful paymentSuccessful, bool history)
         {
             var content = string.Empty;
 
@@ -2579,111 +2094,103 @@ namespace Telegram.Controls.Messages
 
             if (invoice != null)
             {
-                content = string.Format(Strings.PaymentSuccessfullyPaid, Locale.FormatCurrency(paymentSuccessful.TotalAmount, paymentSuccessful.Currency), message.ClientService.GetTitle(chat), invoice.ProductInfo.Title);
+                return string.Format(Strings.PaymentSuccessfullyPaid, Locale.FormatCurrency(paymentSuccessful.TotalAmount, paymentSuccessful.Currency), message.ClientService.GetTitle(chat), invoice.ProductInfo.Title).AsFormattedText();
             }
             else
             {
-                content = string.Format(Strings.PaymentSuccessfullyPaidNoItem, Locale.FormatCurrency(paymentSuccessful.TotalAmount, paymentSuccessful.Currency), message.ClientService.GetTitle(chat));
+                return string.Format(Strings.PaymentSuccessfullyPaidNoItem, Locale.FormatCurrency(paymentSuccessful.TotalAmount, paymentSuccessful.Currency), message.ClientService.GetTitle(chat)).AsFormattedText();
             }
-
-            return (content, null);
         }
 
-        private static (string, IList<TextEntity>) UpdatePaymentRefunded(MessageViewModel message, MessagePaymentRefunded paymentRefunded, bool active)
+        private static FormattedText UpdatePaymentRefunded(MessageViewModel message, MessagePaymentRefunded paymentRefunded, bool history)
         {
-            var entities = active ? new List<TextEntity>() : null;
-
-            var sender = message.GetSender();
-
-            var content = string.Format(Strings.ActionRefunded, Locale.FormatCurrency(paymentRefunded.TotalAmount, paymentRefunded.Currency));
-            content = ReplaceWithLink(content, "un1", sender, entities);
-
-            return (content, entities);
+            return ReplaceWithLink(string.Format(Strings.ActionRefunded, Locale.FormatCurrency(paymentRefunded.TotalAmount, paymentRefunded.Currency)), message.GetSender());
         }
 
-        private static (string, IList<TextEntity>) UpdatePinMessage(MessageViewModel message, MessagePinMessage pinMessage, bool active)
+        private static FormattedText UpdatePinMessage(MessageViewModel message, MessagePinMessage pinMessage, bool history)
         {
-            var content = string.Empty;
-            IList<TextEntity> entities = active ? new List<TextEntity>() : null;
-
-            var sender = message.GetSender();
-
             var reply = message.ReplyToItem as MessageViewModel;
             if (reply == null)
             {
-                content = ReplaceWithLink(Strings.ActionPinnedNoText, "un1", sender, entities);
+                return ReplaceWithLink(Strings.ActionPinnedNoText, message.GetSender());
             }
             else
             {
                 if (reply.Content is MessageAnimatedEmoji animatedEmoji)
                 {
-                    content = ReplaceWithLink(string.Format(Strings.ActionPinnedText, animatedEmoji.Emoji), "un1", sender, entities);
+                    if (animatedEmoji.AnimatedEmoji.Sticker?.FullType is StickerFullTypeCustomEmoji customEmoji)
+                    {
+                        var emoji = new FormattedText(animatedEmoji.Emoji, new[] { new TextEntity(0, animatedEmoji.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
+                        return ReplaceWithLink(ClientEx.Format(Strings.ActionPinnedText, emoji), message.GetSender());
+                    }
+
+                    return ReplaceWithLink(string.Format(Strings.ActionPinnedText, animatedEmoji.Emoji), message.GetSender());
                 }
                 else if (reply.Content is MessageAudio)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedMusic, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedMusic, message.GetSender());
                 }
                 else if (reply.Content is MessageVideo)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedVideo, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedVideo, message.GetSender());
                 }
                 else if (reply.Content is MessageAnimation)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedGif, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedGif, message.GetSender());
                 }
                 else if (reply.Content is MessageVoiceNote)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedVoice, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedVoice, message.GetSender());
                 }
                 else if (reply.Content is MessageVideoNote)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedRound, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedRound, message.GetSender());
                 }
                 else if (reply.Content is MessageSticker)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedSticker, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedSticker, message.GetSender());
                 }
                 else if (reply.Content is MessageDocument)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedFile, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedFile, message.GetSender());
                 }
                 else if (reply.Content is MessageLocation location)
                 {
                     if (location.LivePeriod > 0)
                     {
-                        content = ReplaceWithLink(Strings.ActionPinnedGeoLive, "un1", sender, entities);
+                        return ReplaceWithLink(Strings.ActionPinnedGeoLive, message.GetSender());
                     }
                     else
                     {
-                        content = ReplaceWithLink(Strings.ActionPinnedGeo, "un1", sender, entities);
+                        return ReplaceWithLink(Strings.ActionPinnedGeo, message.GetSender());
                     }
                 }
                 else if (reply.Content is MessageVenue)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedGeo, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedGeo, message.GetSender());
                 }
                 else if (reply.Content is MessageContact)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedContact, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedContact, message.GetSender());
                 }
                 else if (reply.Content is MessagePhoto)
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedPhoto, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedPhoto, message.GetSender());
                 }
                 else if (reply.Content is MessagePoll poll)
                 {
                     if (poll.Poll.Type is PollTypeRegular)
                     {
-                        content = ReplaceWithLink(Strings.ActionPinnedPoll, "un1", sender, entities);
+                        return ReplaceWithLink(Strings.ActionPinnedPoll, message.GetSender());
                     }
                     else if (poll.Poll.Type is PollTypeQuiz)
                     {
-                        content = ReplaceWithLink(Strings.ActionPinnedQuiz, "un1", sender, entities);
+                        return ReplaceWithLink(Strings.ActionPinnedQuiz, message.GetSender());
                     }
                 }
                 else if (reply.Content is MessageGame game)
                 {
-                    content = ReplaceWithLink(string.Format(Strings.ActionPinnedGame, "\uD83C\uDFAE " + game.Game.Title), "un1", sender, entities);
+                    return ReplaceWithLink(string.Format(Strings.ActionPinnedGame, "\uD83C\uDFAE " + game.Game.Title), message.GetSender());
                 }
                 else if (reply.Content is MessageText text)
                 {
@@ -2693,70 +2200,33 @@ namespace Telegram.Controls.Messages
                         mess = TdExtensions.Concat(mess.Substring(0, 20), "...".AsFormattedText());
                     }
 
-                    var format = ClientEx.Format(Strings.ActionPinnedText, mess);
-                    var param = "un1";
-
-                    var replace = "";
-                    var entityType = default(TextEntityType);
-
-                    if (sender is User user)
-                    {
-                        replace = user.FullName();
-                        entityType = new TextEntityTypeMentionName(user.Id);
-                    }
-                    else if (sender is Chat chat)
-                    {
-                        replace = chat.Title;
-                        entityType = new TextEntityTypeBold();
-                    }
-
-                    var index = format.Text.IndexOf(param);
-                    if (index >= 0)
-                    {
-                        foreach (var entity in format.Entities)
-                        {
-                            entity.Offset += replace.Length - param.Length;
-                        }
-
-                        format.Text = format.Text.Remove(index, param.Length);
-                        format.Text = format.Text.Insert(index, replace);
-
-                        format.Entities.Add(new TextEntity(index, replace.Length, entityType));
-                    }
-
-                    content = format.Text;
-                    entities = active ? format.Entities : new List<TextEntity>();
+                    return ReplaceWithLink(ClientEx.Format(Strings.ActionPinnedText, mess), message.GetSender());
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.ActionPinnedNoText, "un1", sender, entities);
+                    return ReplaceWithLink(Strings.ActionPinnedNoText, message.GetSender());
                 }
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateScreenshotTaken(MessageViewModel message, MessageScreenshotTaken screenshotTaken, bool active)
+        private static FormattedText UpdateScreenshotTaken(MessageViewModel message, MessageScreenshotTaken screenshotTaken, bool history)
         {
-            string content;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (message.IsOutgoing)
             {
-                content = Strings.ActionTakeScreenshootYou;
+                return Strings.ActionTakeScreenshootYou.AsFormattedText();
             }
             else
             {
-                content = ReplaceWithLink(Strings.ActionTakeScreenshoot, "un1", message.GetSender(), entities);
+                return ReplaceWithLink(Strings.ActionTakeScreenshoot, message.GetSender());
             }
-
-            return (content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateSuggestProfilePhoto(MessageViewModel message, MessageSuggestProfilePhoto suggestProfilePhoto, bool active)
+        private static FormattedText UpdateSuggestProfilePhoto(MessageViewModel message, MessageSuggestProfilePhoto suggestProfilePhoto, bool history)
         {
             var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
+            var entities = new List<TextEntity>();
 
             if (message.IsOutgoing)
             {
@@ -2775,129 +2245,112 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            return (content, entities);
+            return new FormattedText(content, entities);
         }
 
-        private static (string, IList<TextEntity>) UpdateSupergroupChatCreate(MessageViewModel message, MessageSupergroupChatCreate supergroupChatCreate, bool active)
+        private static FormattedText UpdateSupergroupChatCreate(MessageViewModel message, MessageSupergroupChatCreate supergroupChatCreate, bool history)
         {
-            var content = string.Empty;
-
             if (message.IsChannelPost)
             {
-                content = Strings.ActionCreateChannel;
+                return Strings.ActionCreateChannel.AsFormattedText();
             }
             else
             {
-                content = Strings.ActionCreateMega;
+                return Strings.ActionCreateMega.AsFormattedText();
             }
-
-            return (content, null);
         }
 
-        private static (string, IList<TextEntity>) UpdateUpgradedGift(MessageViewModel message, MessageUpgradedGift upgradedGift, bool active)
+        private static FormattedText UpdateUpgradedGift(MessageViewModel message, MessageUpgradedGift upgradedGift, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             if (upgradedGift.IsUpgrade)
             {
                 if (message.ChatId == message.ClientService.Options.MyId)
                 {
-                    content = Strings.ActionUniqueGiftUpgradeSelf;
+                    return Strings.ActionUniqueGiftUpgradeSelf.AsFormattedText();
                 }
                 else if (message.IsOutgoing && message.ClientService.TryGetUser(message.Chat, out User outboundUser))
                 {
-                    content = ReplaceWithLink(Strings.ActionUniqueGiftUpgradeOutbound, "un1", outboundUser, entities);
+                    return ReplaceWithLink(Strings.ActionUniqueGiftUpgradeOutbound, outboundUser);
                 }
                 else if (message.ClientService.TryGetUser(message.SenderId, out User inboundUser))
                 {
-                    content = ReplaceWithLink(Strings.ActionUniqueGiftUpgradeInbound, "un1", inboundUser, entities);
+                    return ReplaceWithLink(Strings.ActionUniqueGiftUpgradeInbound, inboundUser);
                 }
             }
             else if (message.IsOutgoing && message.ClientService.TryGetUser(message.Chat, out User outboundUser))
             {
-                content = ReplaceWithLink(Strings.ActionUniqueGiftTransferOutbound, "un1", outboundUser, entities);
+                return ReplaceWithLink(Strings.ActionUniqueGiftTransferOutbound, outboundUser);
             }
             else if (message.ClientService.TryGetUser(message.SenderId, out User inboundUser))
             {
-                content = ReplaceWithLink(Strings.ActionUniqueGiftTransferInbound, "un1", inboundUser, entities);
+                return ReplaceWithLink(Strings.ActionUniqueGiftTransferInbound, inboundUser);
             }
 
-            return (content, null);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateChatShared(MessageViewModel message, MessageChatShared chatShared, bool active)
+        private static FormattedText UpdateChatShared(MessageViewModel message, MessageChatShared chatShared, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             var chat = message.Chat;
             if (chat != null && message.ClientService.TryGetChat(chatShared.Chat.ChatId, out Chat sharedChat))
             {
                 if (message.ClientService.TryGetSupergroup(sharedChat, out Supergroup supergroup) && supergroup.IsChannel)
                 {
-                    content = ReplaceWithLink(Strings.ActionRequestedPeerChannel, "un2", chat, entities);
+                    return ReplaceWithLink(Strings.ActionRequestedPeerChannel, "un2", chat);
                 }
                 else
                 {
-                    content = ReplaceWithLink(Strings.ActionRequestedPeerChat, "un2", chat, entities);
+                    return ReplaceWithLink(Strings.ActionRequestedPeerChat, "un2", chat);
                 }
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string, IList<TextEntity>) UpdateUsersShared(MessageViewModel message, MessageUsersShared usersShared, bool active)
+        private static FormattedText UpdateUsersShared(MessageViewModel message, MessageUsersShared usersShared, bool history)
         {
-            var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
-
             var chat = message.Chat;
             if (chat != null)
             {
-                content = ReplaceWithLink(Strings.ActionRequestedPeer, "un1", usersShared.Users.Select(x => x.UserId), message.ClientService, entities);
-                content = ReplaceWithLink(content, "un2", chat, entities);
+                var content = ReplaceWithLink(Strings.ActionRequestedPeer, "un1", usersShared.Users.Select(x => x.UserId), message.ClientService);
+                return ReplaceWithLink(content, "un2", chat);
             }
             else if (chat != null)
             {
-                content = ReplaceWithLink(Strings.ActionRequestedPeerUser, "un2", chat, entities);
+                return ReplaceWithLink(Strings.ActionRequestedPeerUser, "un2", chat);
             }
 
-            return (content, entities);
+            return _emptyString;
         }
 
-        private static (string Text, IList<TextEntity> Entities) UpdateWebAppDataSent(MessageViewModel message, MessageWebAppDataSent webAppDataSent, bool active)
+        private static FormattedText UpdateWebAppDataSent(MessageViewModel message, MessageWebAppDataSent webAppDataSent, bool history)
         {
-            var content = string.Format(Strings.ActionBotWebViewData, webAppDataSent.ButtonText);
-            var entities = active ? new List<TextEntity>() : null;
-
-            return (content, entities);
+            return string.Format(Strings.ActionBotWebViewData, webAppDataSent.ButtonText).AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateExpiredPhoto(MessageViewModel message, MessageExpiredPhoto expiredPhoto, bool active)
+        private static FormattedText UpdateExpiredPhoto(MessageViewModel message, MessageExpiredPhoto expiredPhoto, bool history)
         {
-            return (Strings.AttachPhotoExpired, null);
+            return Strings.AttachPhotoExpired.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateExpiredVideo(MessageViewModel message, MessageExpiredVideo expiredVideo, bool active)
+        private static FormattedText UpdateExpiredVideo(MessageViewModel message, MessageExpiredVideo expiredVideo, bool history)
         {
-            return (Strings.AttachVideoExpired, null);
+            return Strings.AttachVideoExpired.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateExpiredVideoNote(MessageViewModel message, MessageExpiredVideoNote expiredVideoNote, bool active)
+        private static FormattedText UpdateExpiredVideoNote(MessageViewModel message, MessageExpiredVideoNote expiredVideoNote, bool history)
         {
-            return (Strings.AttachRoundExpired, null);
+            return Strings.AttachRoundExpired.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateExpiredVoiceNote(MessageViewModel message, MessageExpiredVoiceNote expiredVoiceNote, bool active)
+        private static FormattedText UpdateExpiredVoiceNote(MessageViewModel message, MessageExpiredVoiceNote expiredVoiceNote, bool history)
         {
-            return (Strings.AttachVoiceExpired, null);
+            return Strings.AttachVoiceExpired.AsFormattedText();
         }
 
-        private static (string, IList<TextEntity>) UpdateChatBoost(MessageViewModel message, MessageChatBoost chatBoost, bool active)
+        private static FormattedText UpdateChatBoost(MessageViewModel message, MessageChatBoost chatBoost, bool history)
         {
             var content = string.Empty;
-            var entities = active ? new List<TextEntity>() : null;
 
             if (message.ClientService.TryGetUser(message.SenderId, out User user))
             {
@@ -2912,164 +2365,171 @@ namespace Telegram.Controls.Messages
             {
                 if (chatBoost.BoostCount > 1)
                 {
-                    content = Locale.Declension(message.IsOutgoing ? Strings.R.BoostingBoostsChannelByYouServiceMsgCount : Strings.R.BoostingBoostsChannelByUserServiceMsgCount, chatBoost.BoostCount, content);
+                    return Locale.Declension(message.IsOutgoing ? Strings.R.BoostingBoostsChannelByYouServiceMsgCount : Strings.R.BoostingBoostsChannelByUserServiceMsgCount, chatBoost.BoostCount, content).AsFormattedText();
                 }
                 else
                 {
-                    content = string.Format(message.IsOutgoing ? Strings.BoostingBoostsChannelByYouServiceMsg : Strings.BoostingBoostsChannelByUserServiceMsg, content);
+                    return string.Format(message.IsOutgoing ? Strings.BoostingBoostsChannelByYouServiceMsg : Strings.BoostingBoostsChannelByUserServiceMsg, content).AsFormattedText();
                 }
             }
             else
             {
                 if (chatBoost.BoostCount > 1)
                 {
-                    content = Locale.Declension(message.IsOutgoing ? Strings.R.BoostingBoostsGroupByYouServiceMsgCount : Strings.R.BoostingBoostsGroupByUserServiceMsgCount, chatBoost.BoostCount, content);
+                    return Locale.Declension(message.IsOutgoing ? Strings.R.BoostingBoostsGroupByYouServiceMsgCount : Strings.R.BoostingBoostsGroupByUserServiceMsgCount, chatBoost.BoostCount, content).AsFormattedText();
                 }
                 else
                 {
-                    content = string.Format(message.IsOutgoing ? Strings.BoostingBoostsGroupByYouServiceMsg : Strings.BoostingBoostsGroupByUserServiceMsg, content);
+                    return string.Format(message.IsOutgoing ? Strings.BoostingBoostsGroupByYouServiceMsg : Strings.BoostingBoostsGroupByUserServiceMsg, content).AsFormattedText();
+                }
+            }
+        }
+
+        private static FormattedText UpdateStory(MessageViewModel message, MessageAsyncStory story, bool history)
+        {
+            string content = string.Empty;
+
+            if (message.ClientService.TryGetUser(message.Chat, out User user))
+            {
+                if (message.IsOutgoing)
+                {
+                    content = string.Format(story.State == MessageStoryState.Expired ? Icons.ExpiredStory + "\u00A0" + Strings.ExpiredStoryMentioned : Strings.StoryYouMentionedTitle, user.FullName(true));
+                }
+                else
+                {
+                    content = string.Format(story.State == MessageStoryState.Expired ? Icons.ExpiredStory + "\u00A0" + Strings.ExpiredStoryMention : Strings.StoryMentionedTitle, user.FullName(true));
                 }
             }
 
-            return (content, entities);
+            return ClientEx.ParseMarkdown(content);
         }
 
-        private static (string, IList<TextEntity>) UpdateStory(MessageViewModel message, MessageAsyncStory story, bool active)
+        private readonly static FormattedText _emptyString = new FormattedText(string.Empty, Array.Empty<TextEntity>());
+
+        private static FormattedText UpdateStory(MessageViewModel message, MessageStory story, bool history)
         {
-            if (active)
-            {
-                string content = string.Empty;
-
-                if (message.ClientService.TryGetUser(message.Chat, out User user))
-                {
-                    if (message.IsOutgoing)
-                    {
-                        content = string.Format(story.State == MessageStoryState.Expired ? Icons.ExpiredStory + "\u00A0" + Strings.ExpiredStoryMentioned : Strings.StoryYouMentionedTitle, user.FullName(true));
-                    }
-                    else
-                    {
-                        content = string.Format(story.State == MessageStoryState.Expired ? Icons.ExpiredStory + "\u00A0" + Strings.ExpiredStoryMention : Strings.StoryMentionedTitle, user.FullName(true));
-                    }
-                }
-
-                var formatted = ClientEx.ParseMarkdown(content);
-                return (formatted.Text, formatted.Entities);
-            }
-
-            return (string.Empty, null);
-        }
-
-        private static (string, IList<TextEntity>) UpdateStory(MessageViewModel message, MessageStory story, bool active)
-        {
-            if (active)
-            {
-            }
-            else if (message.IsOutgoing)
+            if (message.IsOutgoing)
             {
                 if (message.ClientService.TryGetUser(message.Chat, out User user))
                 {
-                    return (string.Format(Strings.StoryYouMentionInDialog, user.FullName(true)), null);
+                    return string.Format(Strings.StoryYouMentionInDialog, user.FullName(true)).AsFormattedText();
                 }
             }
             else
             {
-                return (Strings.StoryMentionInDialog, null);
+                return Strings.StoryMentionInDialog.AsFormattedText();
             }
 
-            return (string.Empty, null);
+            return _emptyString;
         }
 
-        public static string ReplaceWithLink(string source, string param, object obj, IList<TextEntity> entities)
+        public static FormattedText ReplaceWithLink(string source, params object[] args)
         {
-            source = source.Replace("**", string.Empty);
+            return ReplaceWithLink(new FormattedText(source, new List<TextEntity>(args.Length)), args);
+        }
 
-            var start = source.IndexOf(param);
-            if (start >= 0)
+        public static FormattedText ReplaceWithLink(FormattedText source, params object[] args)
+        {
+            source.Text = source.Text.Replace("**", string.Empty);
+
+            if (source.Entities.IsReadOnly)
             {
-                String name;
-                String id;
-                if (obj is User user)
-                {
-                    name = user.FullName();
-                    id = "tg-user://" + user.Id;
-                }
-                else if (obj is Chat chat)
-                {
-                    name = chat.Title;
-                    id = "tg-chat://" + chat.Id;
-                }
-                else if (obj is Game game)
-                {
-                    name = game.Title;
-                    id = "tg-game://";
-                }
-                else if (obj is MessageGift gift)
-                {
-                    name = Locale.Declension(Strings.R.StarsCount, gift.Gift.StarCount + gift.PrepaidUpgradeStarCount);
-                    id = null;
-                }
-                else if (obj is MessageGiftedPremium giftedPremium)
-                {
-                    name = Locale.FormatCurrency(giftedPremium.Amount, giftedPremium.Currency);
-                    id = null;
-                }
-                else if (obj is MessagePremiumGiftCode premiumGiftCode)
-                {
-                    name = Locale.FormatCurrency(premiumGiftCode.Amount, premiumGiftCode.Currency);
-                    id = null;
-                }
-                else if (obj is MessageGiftedStars giftedStars)
-                {
-                    name = Locale.FormatCurrency(giftedStars.Amount, giftedStars.Currency);
-                    id = null;
-                }
-                else if (obj is ForumTopicInfo forumTopicInfo)
-                {
-                    name = $"\U0001F4C3 {forumTopicInfo.Name}";
-                    id = "tg-topic://";
-                }
-                else if (obj is string value)
-                {
-                    name = value;
-                    id = null;
-                }
-                else
-                {
-                    name = "";
-                    id = "0";
-                }
+                source.Entities = new List<TextEntity>(source.Entities);
+            }
 
-                name = name.Replace('\n', ' ');
-                source = source.Replace(param, name);
+            for (int i = 0; i < args.Length; i++)
+            {
+                var obj = args[i];
+                var param = "un" + (i + 1);
+                var index = source.Text.IndexOf(param);
 
-                if (entities != null && id != null)
+                if (index >= 0)
                 {
-                    if (obj is User mention)
+                    String name;
+                    TextEntityType id = null;
+                    if (obj is User user)
                     {
-                        entities.Add(new TextEntity(start, name.Length, new TextEntityTypeMentionName(mention.Id)));
+                        name = user.FullName();
+                        id = new TextEntityTypeMentionName(user.Id);
+                    }
+                    else if (obj is Chat chat)
+                    {
+                        name = chat.Title;
+                    }
+                    else if (obj is Game game)
+                    {
+                        name = game.Title;
+                    }
+                    else if (obj is MessageGift gift)
+                    {
+                        name = Locale.Declension(Strings.R.StarsCount, gift.Gift.StarCount + gift.PrepaidUpgradeStarCount);
+                    }
+                    else if (obj is MessageGiftedPremium giftedPremium)
+                    {
+                        name = Locale.FormatCurrency(giftedPremium.Amount, giftedPremium.Currency);
+                    }
+                    else if (obj is MessagePremiumGiftCode premiumGiftCode)
+                    {
+                        name = Locale.FormatCurrency(premiumGiftCode.Amount, premiumGiftCode.Currency);
+                    }
+                    else if (obj is MessageGiftedStars giftedStars)
+                    {
+                        name = Locale.FormatCurrency(giftedStars.Amount, giftedStars.Currency);
                     }
                     else if (obj is ForumTopicInfo forumTopicInfo)
                     {
-                        entities.Add(new TextEntity(start, 2, new TextEntityTypeCustomEmoji(forumTopicInfo.Icon.CustomEmojiId)));
-                        entities.Add(new TextEntity(start + 3, name.Length - 3, new TextEntityTypeTextUrl(id)));
+                        name = $"\U0001F4C3 {forumTopicInfo.Name}";
+
+                        // TODO: build text url
+                        id = new TextEntityTypeTextUrl("tg-topic://");
+                    }
+                    else if (obj is string value)
+                    {
+                        name = value;
+                        id = null;
                     }
                     else
                     {
-                        entities.Add(new TextEntity(start, name.Length, new TextEntityTypeBold()));
+                        name = "";
+                        id = null;
                     }
+
+                    foreach (var entity in source.Entities)
+                    {
+                        if (entity.Offset > index)
+                        {
+                            entity.Offset += name.Length - param.Length;
+                        }
+                    }
+
+                    source.Text = source.Text.Remove(index, param.Length);
+                    source.Text = source.Text.Insert(index, name);
+
+                    source.Entities.Add(new TextEntity(index, name.Length, id ?? new TextEntityTypeBold()));
                 }
             }
 
             return source;
         }
 
-        private static string ReplaceWithLink(string source, string param, IEnumerable<long> uids, IClientService clientService, IList<TextEntity> entities)
+        private static FormattedText ReplaceWithLinks(string source, string param, IEnumerable<long> uids, IClientService clientService)
         {
+            return ReplaceWithLinks(new FormattedText(source, new List<TextEntity>()), param, uids, clientService);
+        }
+
+        private static FormattedText ReplaceWithLinks(FormattedText source, string param, IEnumerable<long> uids, IClientService clientService)
+        {
+            if (source.Entities.IsReadOnly)
+            {
+                source.Entities = new List<TextEntity>(source.Entities);
+            }
+
             int index;
-            int start = index = source.IndexOf(param);
+            int start = index = source.Text.IndexOf(param);
             if (start >= 0)
             {
                 var names = new StringBuilder();
+                var entities = new List<TextEntity>();
 
                 foreach (var user in clientService.GetUsers(uids))
                 {
@@ -3082,10 +2542,21 @@ namespace Telegram.Controls.Messages
                     start = index + names.Length;
                     names.Append(name);
 
-                    entities?.Add(new TextEntity(start, name.Length, new TextEntityTypeMentionName(user.Id)));
+                    entities.Add(new TextEntity(start, name.Length, new TextEntityTypeMentionName(user.Id)));
                 }
 
-                source = source.Replace(param, names.ToString());
+                foreach (var entity in source.Entities)
+                {
+                    if (entity.Offset > start)
+                    {
+                        entity.Offset += names.Length - param.Length;
+                    }
+                }
+
+                source.Text = source.Text.Remove(start, param.Length);
+                source.Text = source.Text.Insert(start, names.ToString());
+
+                source.Entities.AddRange(entities);
             }
 
             return source;
