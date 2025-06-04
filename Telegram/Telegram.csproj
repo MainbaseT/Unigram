@@ -283,6 +283,9 @@
     <Compile Include="Controls\Chats\ChatAccountInfoHeader.xaml.cs">
       <DependentUpon>ChatAccountInfoHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Chats\ChatPinnedMessage.xaml.cs">
+      <DependentUpon>ChatPinnedMessage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Chats\ChatSponsoredHeader.xaml.cs">
       <DependentUpon>ChatSponsoredHeader.xaml</DependentUpon>
     </Compile>
@@ -877,9 +880,6 @@
     <Compile Include="Controls\Messages\MessageBubblePanel.cs" />
     <Compile Include="Controls\Messages\MessageFooter.xaml.cs">
       <DependentUpon>MessageFooter.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Messages\MessagePinned.xaml.cs">
-      <DependentUpon>MessagePinned.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Messages\MessageReferenceBase.cs" />
     <Compile Include="Controls\Messages\MessageSelector.xaml.cs">
@@ -2599,6 +2599,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\Chats\ChatPinnedMessage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\Chats\ChatSponsoredHeader.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2838,10 +2842,6 @@
     <Page Include="Controls\Messages\InvoiceFooter.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\Messages\MessagePinned.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Messages\MessageSelector.xaml">
       <SubType>Designer</SubType>

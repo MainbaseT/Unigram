@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using Telegram.Common;
+using Telegram.Controls.Messages;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -22,9 +23,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 
-namespace Telegram.Controls.Messages
+namespace Telegram.Controls.Chats
 {
-    public sealed partial class MessagePinned : MessageReferenceBase
+    public sealed partial class ChatPinnedMessage : MessageReferenceBase
     {
         private ChatView _chatView;
         private UIElement _parent;
@@ -37,11 +38,9 @@ namespace Telegram.Controls.Messages
         private long _chatId;
         private new MessageViewModel _message;
 
-        private bool _loading;
-
         private string _alternativeText;
 
-        public MessagePinned()
+        public ChatPinnedMessage()
         {
             InitializeComponent();
 
@@ -59,7 +58,7 @@ namespace Telegram.Controls.Messages
 
         protected override AutomationPeer OnCreateAutomationPeer()
         {
-            return new MessagePinnedAutomationPeer(this);
+            return new ChatPinnedMessageAutomationPeer(this);
         }
 
         public string GetNameCore()
@@ -382,11 +381,11 @@ namespace Telegram.Controls.Messages
         #endregion
     }
 
-    public partial class MessagePinnedAutomationPeer : HyperlinkButtonAutomationPeer
+    public partial class ChatPinnedMessageAutomationPeer : HyperlinkButtonAutomationPeer
     {
-        private readonly MessagePinned _owner;
+        private readonly ChatPinnedMessage _owner;
 
-        public MessagePinnedAutomationPeer(MessagePinned owner)
+        public ChatPinnedMessageAutomationPeer(ChatPinnedMessage owner)
             : base(owner)
         {
             _owner = owner;
@@ -398,7 +397,7 @@ namespace Telegram.Controls.Messages
         }
     }
 
-    public partial class MessagePinnedLine : ControlEx
+    public partial class ChatPinnedMessageLine : ControlEx
     {
         private readonly CompositionSpriteShape _back;
         private readonly CompositionSpriteShape _fore;
@@ -406,7 +405,7 @@ namespace Telegram.Controls.Messages
         private readonly CompositionGeometricClip _mask;
         private readonly CompositionPathGeometry _maskPath;
 
-        public MessagePinnedLine()
+        public ChatPinnedMessageLine()
         {
             RegisterPropertyChangedCallback(BorderBrushProperty, OnBorderBrushChanged);
 
@@ -474,11 +473,11 @@ namespace Telegram.Controls.Messages
         }
 
         public static readonly DependencyProperty StrokeProperty =
-            DependencyProperty.Register("Stroke", typeof(Brush), typeof(MessagePinnedLine), new PropertyMetadata(null, OnStrokeChanged));
+            DependencyProperty.Register("Stroke", typeof(Brush), typeof(ChatPinnedMessageLine), new PropertyMetadata(null, OnStrokeChanged));
 
         private static void OnStrokeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var sender = d as MessagePinnedLine;
+            var sender = d as ChatPinnedMessageLine;
             var prev = e.OldValue as SolidColorBrush;
             var next = e.NewValue as SolidColorBrush;
 
