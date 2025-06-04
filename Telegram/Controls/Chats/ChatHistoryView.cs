@@ -75,9 +75,12 @@ namespace Telegram.Controls.Chats
 
         public bool IsSuspended => !_raiseViewChanged;
 
+        public bool HasBeenScrolled { get; private set; }
+
         public void Suspend()
         {
             _raiseViewChanged = false;
+            HasBeenScrolled = false;
         }
 
         public void Resume()
@@ -135,8 +138,20 @@ namespace Telegram.Controls.Chats
             ScrollingHost = (ScrollViewer)GetTemplateChild("ScrollViewer");
             ScrollingHost.ViewChanging += OnViewChanging;
             ScrollingHost.ViewChanged += OnViewChanged;
+            ScrollingHost.DirectManipulationStarted += OnDirectManipulationStarted;
+            ScrollingHost.AddHandler(PointerWheelChangedEvent, new PointerEventHandler(OnPointerWheelChanged), true);
 
             base.OnApplyTemplate();
+        }
+
+        private void OnDirectManipulationStarted(object sender, object e)
+        {
+            HasBeenScrolled = true;
+        }
+
+        private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
+            HasBeenScrolled = true;
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)

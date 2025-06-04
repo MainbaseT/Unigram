@@ -674,6 +674,8 @@ namespace Telegram.ViewModels
             set => Set(ref _isOldestSliceLoaded, value);
         }
 
+        public bool HasUnreadMessages { get; private set; }
+
         private bool _isEmpty = true;
         public bool IsEmpty
         {
@@ -885,6 +887,15 @@ namespace Telegram.ViewModels
             var user = ClientService.GetUser(chat);
             if (user?.Type is not UserTypeBot)
             {
+                if (user != null && chat.ActionBar is ChatActionBarReportAddBlock reportAddBlock && reportAddBlock.AccountInfo != null)
+                {
+                    var fullInfo = ClientService.GetUserFull(user.Id);
+                    fullInfo ??= await ClientService.SendAsync(new GetUserFullInfo(user.Id)) as UserFullInfo;
+
+                    messages.Add(new Message(0, new MessageSenderUser(user.Id), chat.Id, null, null, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderAccountInfo(), null));
+                    return;
+                }
+
                 goto AddDate;
             }
 
@@ -1315,6 +1326,8 @@ namespace Telegram.ViewModels
                     ProcessMessages(chat, replied);
                     Items.RawReplaceWith(replied);
 
+                    HasUnreadMessages = slice.IsUnread;
+
                     NotifyMessageSliceLoaded();
 
                     IsOldestSliceLoaded = null;
@@ -1661,7 +1674,7 @@ namespace Telegram.ViewModels
                 }
 
                 var replied = new MessageCollection(this, null, values, CreateMessage, false, Type);
-                return new LoadSliceResult(replied, maxId, scrollMode, alignment, pixel);
+                return new LoadSliceResult(replied, maxId, scrollMode, alignment, pixel, unread);
             }
 
             return null;
@@ -1669,13 +1682,14 @@ namespace Telegram.ViewModels
 
         private class LoadSliceResult
         {
-            public LoadSliceResult(MessageCollection items, long fromMessageId, ItemsUpdatingScrollMode scrollMode, VerticalAlignment alignment, double? pixel)
+            public LoadSliceResult(MessageCollection items, long fromMessageId, ItemsUpdatingScrollMode scrollMode, VerticalAlignment alignment, double? pixel, bool unread)
             {
                 Items = items;
                 FromMessageId = fromMessageId;
                 ScrollMode = scrollMode;
                 Alignment = alignment;
                 Pixel = pixel;
+                IsUnread = unread;
             }
 
             public MessageCollection Items { get; }
@@ -1687,6 +1701,8 @@ namespace Telegram.ViewModels
             public VerticalAlignment Alignment { get; }
 
             public double? Pixel { get; }
+
+            public bool IsUnread { get; }
         }
 
         private async Task AddSponsoredMessagesAsync()

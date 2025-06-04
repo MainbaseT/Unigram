@@ -376,6 +376,7 @@
     <Compile Include="Services\Calls\VoipGroupCallNetworkStateChangedEventArgs.cs" />
     <Compile Include="Services\ForumTopicService.cs" />
     <Compile Include="Td\Api\ErrorStarsNeeded.cs" />
+    <Compile Include="Td\Api\MessageHeaderAccountInfo.cs" />
     <Compile Include="Td\Api\MessageHeaderMessageTopic.cs" />
     <Compile Include="Td\Api\PremiumLimitTypeFileSize.cs" />
     <Compile Include="Td\Api\ReactionTypeEqualityComparer.cs" />

@@ -648,6 +648,35 @@
             </messages:MessageService>
         </DataTemplate>
 
+        <DataTemplate x:Name="ServiceMessageAccountInfoTemplate">
+            <messages:MessageService AutomationProperties.Name="{CustomResource UnreadMessages}"
+                                     HorizontalAlignment="Stretch"
+                                     CornerRadius="0"
+                                     Margin="0,4,0,0"
+                                     Padding="0">
+                <messages:MessageService.Template>
+                    <ControlTemplate TargetType="messages:MessageService">
+                        <ContentPresenter x:Name="ContentPresenter"
+                                          AutomationProperties.AccessibilityView="Raw"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          ContentTransitions="{TemplateBinding ContentTransitions}"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          BackgroundSizing="InnerBorderEdge"
+                                          Opacity="{TemplateBinding ContentOpacity}" />
+                    </ControlTemplate>
+                </messages:MessageService.Template>
+
+                <chats:ChatAccountInfo x:Name="AccountInfo"
+                                       HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch" />
+            </messages:MessageService>
+        </DataTemplate>
+
         <DataTemplate x:Name="ServiceMessageUnreadTemplate">
             <messages:MessageService AutomationProperties.Name="{CustomResource UnreadMessages}"
                                      HorizontalAlignment="Stretch"
@@ -1292,157 +1321,151 @@
             <Grid x:Name="ContentPanel"
                   SizeChanged="ContentPanel_SizeChanged"
                   Grid.Row="2">
-                <chats:ChatHistoryView x:Name="Messages"
-                                       Style="{StaticResource BubbleListViewStyle}"
-                                       ShowsScrollingPlaceholders="False"
-                                       IsItemClickEnabled="False"
-                                       IsSelectionEnabled="{x:Bind ViewModel.IsSelectionEnabled, Mode=TwoWay}"
-                                       SelectionMode="None"
-                                       ViewChanged="OnViewChanged"
-                                       ChoosingItemContainer="OnChoosingItemContainer"
-                                       ContainerContentChanging="OnContainerContentChanging"
-                                       Margin="0,0,0,8"
-                                       Grid.ColumnSpan="2">
-                    <ListView.Resources>
-                        <CornerRadius x:Key="ListViewItemCornerRadius">0</CornerRadius>
-                    </ListView.Resources>
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsStackPanel Loading="ItemsStackPanel_Loading"
-                                             SizeChanged="OnViewSizeChanged"
-                                             ItemsUpdatingScrollMode="KeepItemsInView"
-                                             VerticalAlignment="Bottom" />
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                    <ListView.ItemContainerTransitions>
-                        <TransitionCollection />
-                    </ListView.ItemContainerTransitions>
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem"
-                               BasedOn="{StaticResource DefaultListViewItemStyle}">
-                            <Setter Property="FontFamily"
-                                    Value="{ThemeResource ContentControlThemeFontFamily}" />
-                            <Setter Property="FontSize"
-                                    Value="{ThemeResource ControlContentThemeFontSize}" />
-                            <Setter Property="Background"
-                                    Value="Transparent" />
-                            <Setter Property="Foreground"
-                                    Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
-                            <Setter Property="TabNavigation"
-                                    Value="Local" />
-                            <Setter Property="IsHoldingEnabled"
-                                    Value="True" />
-                            <Setter Property="IsTabStop"
-                                    Value="False" />
-                            <Setter Property="Padding"
-                                    Value="0,0,0,0" />
-                            <Setter Property="HorizontalContentAlignment"
-                                    Value="Stretch" />
-                            <Setter Property="VerticalContentAlignment"
-                                    Value="Stretch" />
-                            <Setter Property="MinWidth"
-                                    Value="{ThemeResource ListViewItemMinWidth}" />
-                            <Setter Property="MinHeight"
-                                    Value="0" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.Header>
-                        <Grid x:Name="MessagesHeaderRoot"
-                              Padding="0,48,0,0">
-                            <chats:ChatAccountInfo x:Name="AccountInfo"
-                                                   x:Load="False"
-                                                   HorizontalAlignment="Stretch"
-                                                   VerticalAlignment="Stretch" />
-                        </Grid>
-                    </ListView.Header>
-                </chats:ChatHistoryView>
+                <Grid x:Name="MessagesRoot">
+                    <chats:ChatHistoryView x:Name="Messages"
+                                           Style="{StaticResource BubbleListViewStyle}"
+                                           ShowsScrollingPlaceholders="False"
+                                           IsItemClickEnabled="False"
+                                           IsSelectionEnabled="{x:Bind ViewModel.IsSelectionEnabled, Mode=TwoWay}"
+                                           SelectionMode="None"
+                                           ViewChanged="OnViewChanged"
+                                           ChoosingItemContainer="OnChoosingItemContainer"
+                                           ContainerContentChanging="OnContainerContentChanging"
+                                           Margin="0,0,0,8"
+                                           Grid.ColumnSpan="2">
+                        <ListView.Resources>
+                            <CornerRadius x:Key="ListViewItemCornerRadius">0</CornerRadius>
+                        </ListView.Resources>
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsStackPanel Loading="ItemsStackPanel_Loading"
+                                                 SizeChanged="OnViewSizeChanged"
+                                                 ItemsUpdatingScrollMode="KeepItemsInView"
+                                                 VerticalAlignment="Bottom" />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemContainerTransitions>
+                            <TransitionCollection />
+                        </ListView.ItemContainerTransitions>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem"
+                                   BasedOn="{StaticResource DefaultListViewItemStyle}">
+                                <Setter Property="FontFamily"
+                                        Value="{ThemeResource ContentControlThemeFontFamily}" />
+                                <Setter Property="FontSize"
+                                        Value="{ThemeResource ControlContentThemeFontSize}" />
+                                <Setter Property="Background"
+                                        Value="Transparent" />
+                                <Setter Property="Foreground"
+                                        Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                                <Setter Property="TabNavigation"
+                                        Value="Local" />
+                                <Setter Property="IsHoldingEnabled"
+                                        Value="True" />
+                                <Setter Property="IsTabStop"
+                                        Value="False" />
+                                <Setter Property="Padding"
+                                        Value="0,0,0,0" />
+                                <Setter Property="HorizontalContentAlignment"
+                                        Value="Stretch" />
+                                <Setter Property="VerticalContentAlignment"
+                                        Value="Stretch" />
+                                <Setter Property="MinWidth"
+                                        Value="{ThemeResource ListViewItemMinWidth}" />
+                                <Setter Property="MinHeight"
+                                        Value="0" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </chats:ChatHistoryView>
+                </Grid>
+                <Grid x:Name="MessagesOverlay">
+                    <StackPanel x:Name="EmptyChatRoot"
+                                x:Load="False"
+                                VerticalAlignment="Center">
+                        <messages:MessageService Click="EmptyChat_Click"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Padding="12,8,12,12"
+                                                 Width="216">
+                            <StackPanel>
+                                <TextBlock x:Name="EmptyChatTitle"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           Foreground="#FFFFFF"
+                                           Style="{StaticResource BaseTextBlockStyle}" />
+                                <TextBlock x:Name="EmptyChatMessage"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           Foreground="#FFFFFF"
+                                           Style="{StaticResource BodyTextBlockStyle}"
+                                           Margin="0,0,0,12" />
+                                <controls:AnimatedImage x:Name="EmptyChatAnimated"
+                                                        Width="140"
+                                                        Height="140"
+                                                        FrameSize="140,140"
+                                                        DecodeFrameType="Logical"
+                                                        IsViewportAware="True"
+                                                        LoopCount="0" />
+                            </StackPanel>
+                        </messages:MessageService>
 
-                <StackPanel x:Name="EmptyChatRoot"
-                            x:Load="False"
-                            VerticalAlignment="Center">
-                    <messages:MessageService Click="EmptyChat_Click"
+                        <messages:MessageService x:Name="EmptyChatHowRoot"
+                                                 Click="EmptyChatHow_Click"
+                                                 Margin="0,8,0,0"
+                                                 Padding="12,2,12,0">
+                            <TextBlock x:Name="EmptyChatHow"
+                                       Foreground="#FFFFFF"
+                                       TextAlignment="Center"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
+                                       Padding="0,0,0,4" />
+                        </messages:MessageService>
+                    </StackPanel>
+
+                    <messages:MessageService x:Name="RestrictsNewChats"
+                                             x:Load="False"
+                                             Click="RestrictsNewChats_Click"
                                              HorizontalAlignment="Center"
                                              VerticalAlignment="Center"
-                                             Padding="12,8,12,12"
+                                             Padding="12,0,12,0"
                                              Width="216">
                         <StackPanel>
-                            <TextBlock x:Name="EmptyChatTitle"
-                                       TextAlignment="Center"
-                                       TextWrapping="Wrap"
+                            <Border Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                    CornerRadius="60"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,12,0,12">
+                                <controls:AnimatedImage Source="ms-appx:///Assets/Animations/RestrictsNewChats.tgs"
+                                                        Width="120"
+                                                        Height="120"
+                                                        FrameSize="120,120"
+                                                        DecodeFrameType="Logical"
+                                                        IsViewportAware="True"
+                                                        LoopCount="1" />
+                            </Border>
+
+                            <TextBlock x:Name="RestrictsNewChatsText"
                                        Foreground="#FFFFFF"
-                                       Style="{StaticResource BaseTextBlockStyle}" />
-                            <TextBlock x:Name="EmptyChatMessage"
                                        TextAlignment="Center"
-                                       TextWrapping="Wrap"
-                                       Foreground="#FFFFFF"
                                        Style="{StaticResource BodyTextBlockStyle}"
-                                       Margin="0,0,0,12" />
-                            <controls:AnimatedImage x:Name="EmptyChatAnimated"
-                                                    Width="140"
-                                                    Height="140"
-                                                    FrameSize="140,140"
-                                                    DecodeFrameType="Logical"
-                                                    IsViewportAware="True"
-                                                    LoopCount="0" />
+                                       FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
+                                       Padding="0,0,0,4"
+                                       Margin="0,0,0,8" />
+
+                            <Border x:Name="RestrictsNewChatsButton"
+                                    Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                    CornerRadius="12"
+                                    HorizontalAlignment="Center"
+                                    Padding="12,4,12,4"
+                                    Margin="0,0,0,12">
+                                <TextBlock x:Name="RestrictsNewChatsButtonText"
+                                           Text="{CustomResource MessagePremiumUnlock}"
+                                           Foreground="#FFFFFF"
+                                           TextAlignment="Center"
+                                           Style="{StaticResource CaptionTextBlockStyle}" />
+                            </Border>
                         </StackPanel>
                     </messages:MessageService>
-
-                    <messages:MessageService x:Name="EmptyChatHowRoot"
-                                             Click="EmptyChatHow_Click"
-                                             Margin="0,8,0,0"
-                                             Padding="12,2,12,0">
-                        <TextBlock x:Name="EmptyChatHow"
-                                   Foreground="#FFFFFF"
-                                   TextAlignment="Center"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
-                                   Padding="0,0,0,4" />
-                    </messages:MessageService>
-                </StackPanel>
-
-                <messages:MessageService x:Name="RestrictsNewChats"
-                                         x:Load="False"
-                                         Click="RestrictsNewChats_Click"
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Center"
-                                         Padding="12,0,12,0"
-                                         Width="216">
-                    <StackPanel>
-                        <Border Background="{ThemeResource MessageServiceBackgroundBrush}"
-                                CornerRadius="60"
-                                HorizontalAlignment="Center"
-                                Margin="0,12,0,12">
-                            <controls:AnimatedImage Source="ms-appx:///Assets/Animations/RestrictsNewChats.tgs"
-                                                    Width="120"
-                                                    Height="120"
-                                                    FrameSize="120,120"
-                                                    DecodeFrameType="Logical"
-                                                    IsViewportAware="True"
-                                                    LoopCount="1" />
-                        </Border>
-
-                        <TextBlock x:Name="RestrictsNewChatsText"
-                                   Foreground="#FFFFFF"
-                                   TextAlignment="Center"
-                                   Style="{StaticResource BodyTextBlockStyle}"
-                                   FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
-                                   Padding="0,0,0,4"
-                                   Margin="0,0,0,8" />
-
-                        <Border x:Name="RestrictsNewChatsButton"
-                                Background="{ThemeResource MessageServiceBackgroundBrush}"
-                                CornerRadius="12"
-                                HorizontalAlignment="Center"
-                                Padding="12,4,12,4"
-                                Margin="0,0,0,12">
-                            <TextBlock x:Name="RestrictsNewChatsButtonText"
-                                       Text="{CustomResource MessagePremiumUnlock}"
-                                       Foreground="#FFFFFF"
-                                       TextAlignment="Center"
-                                       Style="{StaticResource CaptionTextBlockStyle}" />
-                        </Border>
-                    </StackPanel>
-                </messages:MessageService>
+                </Grid>
 
                 <chats:ChatHistoryArrows x:Name="Arrows"
                                          UnreadCount="{x:Bind ViewModel.UnreadCount, Mode=OneWay}"

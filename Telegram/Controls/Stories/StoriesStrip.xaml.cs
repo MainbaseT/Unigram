@@ -705,7 +705,7 @@ namespace Telegram.Controls.Stories
 
             ControlledList.Padding = new Thickness(0, 0, 0, 0);
             _progressAnimation.Properties.InsertBoolean("Collapsed", true);
-            _scrollViewer.SetVerticalPadding(0);
+            _scrollViewer.SetVerticalPadding(0, 0);
 
             UpdateMinHeight();
             UpdateIndexes();
@@ -760,7 +760,7 @@ namespace Telegram.Controls.Stories
 
             ControlledList.Padding = new Thickness(0, 88, 0, 0);
             _progressAnimation.Properties.InsertBoolean("Collapsed", false);
-            _scrollViewer.SetVerticalPadding(88);
+            _scrollViewer.SetVerticalPadding(88, 0);
 
             UpdateMinHeight();
             UpdateIndexes();

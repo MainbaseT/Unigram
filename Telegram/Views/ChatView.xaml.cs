@@ -130,6 +130,7 @@ namespace Telegram.Views
             AddStrategy(ChatHistoryViewItemType.ServiceGiftCode, ServiceMessageGiftCodeTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceGift, ServiceMessageGiftTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceUpgradedGift, ServiceMessageUpgradedGiftTemplate);
+            AddStrategy(ChatHistoryViewItemType.ServiceAccountInfo, ServiceMessageAccountInfoTemplate);
 
             _focusState = new DebouncedProperty<FocusState>(100, FocusText, CanFocusText);
 
@@ -222,14 +223,14 @@ namespace Telegram.Views
         private void OnNavigatedTo()
         {
             SearchMask.InitializeParent(Header, ClipperOuter, DateHeaderRelative);
-            GroupCall.InitializeParent(ClipperGroupCall);
-            JoinRequests.InitializeParent(ClipperJoinRequests);
-            TranslateHeader.InitializeParent(ClipperTranslate);
-            ActionBar.InitializeParent(ClipperActionBar);
-            ConnectedBot.InitializeParent(ClipperConnected);
-            PinnedMessage.InitializeParent(ClipperPinned);
-            AccountInfoHeader.InitializeParent(ClipperAccountInfo);
-            Sponsored.InitializeParent(Clipper);
+            GroupCall.InitializeParent(this, ClipperGroupCall);
+            JoinRequests.InitializeParent(this, ClipperJoinRequests);
+            TranslateHeader.InitializeParent(this, ClipperTranslate);
+            ActionBar.InitializeParent(this, ClipperActionBar);
+            ConnectedBot.InitializeParent(this, ClipperConnected);
+            PinnedMessage.InitializeParent(this, ClipperPinned);
+            AccountInfoHeader.InitializeParent(this, ClipperAccountInfo);
+            Sponsored.InitializeParent(this, Clipper);
         }
 
         public string GetAutomationName()
@@ -345,6 +346,8 @@ namespace Telegram.Views
 
             if (sender is DialogViewModel viewModel)
             {
+                _headerUnreadNotReady = viewModel.HasUnreadMessages;
+
                 _messages.UpdateSource(viewModel.Items);
                 viewModel.MessageSliceLoaded -= OnMessageSliceLoaded;
             }
@@ -363,6 +366,8 @@ namespace Telegram.Views
             Messages.ViewModel = viewModel;
 
             _forumTopicHeaderTopic = null;
+            _headerUnreadViewport = null;
+            _headerUnreadNotReady = false;
 
             _updateThemeTask = new TaskCompletionSource<bool>();
             ViewModel.MessageSliceLoaded += OnMessageSliceLoaded;
@@ -678,6 +683,32 @@ namespace Telegram.Views
                     continue;
                 }
 
+                if (container == _newestItemAsFooter && !message.IsLast)
+                {
+                    _newestItemAsFooter.UpdatePadding(null, 0);
+                    _newestItemAsFooter = null;
+                }
+                else if (message.IsLast && _newestItemAsFooterNeeded && ViewModel.IsNewestSliceLoaded is true && ViewModel.Items[^1] == message)
+                {
+                    _newestItemAsFooter?.UpdatePadding(null, 0);
+
+                    _newestItemAsFooter = container;
+                    _newestItemAsFooter.UpdatePadding(null, _messagesScrollBarPadding);
+                }
+
+                if (container == _oldestItemAsHeader && !message.IsFirst)
+                {
+                    _oldestItemAsHeader.UpdatePadding(0, null);
+                    _oldestItemAsHeader = null;
+                }
+                else if (message.IsFirst && _oldestItemAsHeaderNeeded && ViewModel.IsOldestSliceLoaded is true && ViewModel.Items[0] == message)
+                {
+                    _oldestItemAsHeader?.UpdatePadding(0, null);
+
+                    _oldestItemAsHeader = container;
+                    _oldestItemAsHeader.UpdatePadding(_messagesScrollBarPadding, null);
+                }
+
                 var content = container.ContentTemplateRoot as FrameworkElement;
                 if (content == null)
                 {
@@ -723,17 +754,12 @@ namespace Telegram.Views
             else if (e.PropertyName.Equals(nameof(ViewModel.IsNewestSliceLoaded)))
             {
                 UpdateArrowVisibility();
+                UpdateNewestItemAsFooter();
             }
             else if (e.PropertyName.Equals(nameof(ViewModel.IsOldestSliceLoaded)))
             {
-                if (ViewModel.IsLastSliceLoaded is true)
-                {
-                    MessagesHeaderRoot.Padding = new Thickness(0, ClipperOuter.ActualHeight - DateHeaderRelative.ActualHeight, 0, 0);
-                }
-                else
-                {
-                    MessagesHeaderRoot.Padding = new Thickness(0);
-                }
+                UpdateMessagesHeaderPadding();
+                UpdateOldestItemAsHeader();
             }
             else if (e.PropertyName.Equals(nameof(ViewModel.GreetingSticker)))
             {
@@ -5910,20 +5936,17 @@ namespace Telegram.Views
                 if (result is CanSendMessageToUserResultUserRestrictsNewChats)
                 {
                     ShowHideRestrictsNewChats(true, user);
-                    ShowHideAccountInfo(null, null);
                     ShowHideEmptyChat(false, null, null);
                 }
                 else
                 {
                     ShowHideRestrictsNewChats(false, null);
-                    ShowHideAccountInfo(null, null);
                     ShowHideEmptyChat(true, user, fullInfo);
                 }
             }
             else if (ViewModel.Type == DialogType.History && chat.ActionBar is ChatActionBarReportAddBlock reportAddBlock && reportAddBlock.AccountInfo != null)
             {
                 ShowHideRestrictsNewChats(false, null);
-                ShowHideAccountInfo(user, reportAddBlock.AccountInfo);
                 ShowHideEmptyChat(false, null, null);
             }
             else
@@ -5933,7 +5956,6 @@ namespace Telegram.Views
                     ShowHideRestrictsNewChats(false, null);
                 }
 
-                ShowHideAccountInfo(null, null);
                 ShowHideEmptyChat(false, null, null);
             }
         }
@@ -6311,6 +6333,12 @@ namespace Telegram.Views
                 return;
             }
 
+            if (selector.SuppressSizeChanged)
+            {
+                selector.SuppressSizeChanged = false;
+                return;
+            }
+
             var index = Messages.IndexFromContainer(selector);
             //if (index < panel.LastVisibleIndex)
             //{
@@ -6498,33 +6526,6 @@ namespace Telegram.Views
             }
         }
 
-        private long _accountInfoCollapsed = 0;
-
-        private void ShowHideAccountInfo(User user, AccountInfo info)
-        {
-            if (_accountInfoCollapsed == (user?.Id ?? 0))
-            {
-                return;
-            }
-
-            _accountInfoCollapsed = user?.Id ?? 0;
-            AccountInfo ??= FindName(nameof(AccountInfo)) as ChatAccountInfo;
-
-            if (user != null)
-            {
-                if (info != null)
-                {
-                    AccountInfo.Update(_viewModel.ClientService, user, _viewModel.ClientService.GetUserFull(user.Id), info);
-                }
-
-                AccountInfo.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                AccountInfo.Visibility = Visibility.Collapsed;
-            }
-        }
-
         private bool _restrictsNewChatsCollapsed = true;
 
         private void ShowHideRestrictsNewChats(bool show, User user)
@@ -6632,14 +6633,161 @@ namespace Telegram.Views
         private void ClipperOuter_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ClipperBackground.Margin = new Thickness(-ForumNavigation.ActualWidth, -e.NewSize.Height - 48, -72, 0);
+            //UpdateMessagesHeaderPadding();
+        }
 
-            if (ViewModel.IsLastSliceLoaded is true)
+        private float _messagesHeaderRootPadding;
+        private float _messagesScrollBarPadding;
+        private bool _messageScrollBarPaddingBottom;
+
+        private ChatHistoryViewItem _oldestItemAsHeader;
+        private ChatHistoryViewItem _oldestItem;
+        private bool _oldestItemAsHeaderNeeded = false;
+
+        private ChatHistoryViewItem _newestItemAsFooter;
+        private ChatHistoryViewItem _newestItem;
+        private bool _newestItemAsFooterNeeded = false;
+
+        private void UpdateOldestItemAsHeader(bool clear = true)
+        {
+            if (_oldestItemAsHeaderNeeded && ViewModel.IsOldestSliceLoaded is true)
             {
-                MessagesHeaderRoot.Padding = new Thickness(0, e.NewSize.Height - DateHeaderRelative.ActualHeight, 0, 0);
+                _oldestItemAsHeader = _oldestItem;
+                _oldestItemAsHeader?.UpdatePadding(_messagesScrollBarPadding, null);
+            }
+            else if (_oldestItemAsHeader != null && clear)
+            {
+                _oldestItemAsHeader.UpdatePadding(0, null);
+                _oldestItemAsHeader = null;
+            }
+        }
+
+        private void UpdateNewestItemAsFooter(bool clear = true)
+        {
+            if (_newestItemAsFooterNeeded && ViewModel.IsNewestSliceLoaded is true)
+            {
+                _newestItemAsFooter = _newestItem;
+                _newestItemAsFooter?.UpdatePadding(null, _messagesScrollBarPadding);
+            }
+            else if (_newestItemAsFooter != null && clear)
+            {
+                _newestItemAsFooter.UpdatePadding(null, 0);
+                _newestItemAsFooter = null;
+            }
+        }
+
+        public void UpdateMessagesHeaderPadding()
+        {
+            if (_headerUnreadNotReady)
+            {
+                return;
+            }
+
+            var padding = GroupCall.AnimatedHeight
+                + JoinRequests.AnimatedHeight
+                + TranslateHeader.AnimatedHeight
+                + ActionBar.AnimatedHeight
+                + ConnectedBot.AnimatedHeight
+                + PinnedMessage.AnimatedHeight
+                + AccountInfoHeader.AnimatedHeight
+                + Sponsored.AnimatedHeight;
+
+            var args = _headerUnreadViewport;
+            if (args?.EffectiveViewport.Top < 4 && args.EffectiveViewport.Top >= -padding && args.BringIntoViewDistanceY <= 28 && !Messages.HasBeenScrolled)
+            {
+                UpdateMessagesHeaderPadding(padding, true, padding);
             }
             else
             {
-                MessagesHeaderRoot.Padding = new Thickness(0);
+                UpdateMessagesHeaderPadding(0, false, padding);
+            }
+        }
+
+        public void UpdateMessagesHeaderPadding(float padding, bool animate, float scrollBar)
+        {
+            var changed = _messagesScrollBarPadding != scrollBar;
+            if (changed || _messageScrollBarPaddingBottom != animate)
+            {
+                _messagesScrollBarPadding = scrollBar;
+                _messageScrollBarPaddingBottom = animate;
+
+                Messages.ScrollingHost.SetVerticalPadding(animate ? 0 : scrollBar, animate ? scrollBar : 0);
+            }
+
+            if (_oldestItemAsHeaderNeeded == animate || changed)
+            {
+                _oldestItemAsHeaderNeeded = !animate;
+                UpdateOldestItemAsHeader();
+            }
+
+            if (_newestItemAsFooterNeeded != animate || changed)
+            {
+                _newestItemAsFooterNeeded = animate;
+                UpdateNewestItemAsFooter();
+            }
+
+            if (_messagesHeaderRootPadding != padding)
+            {
+                var diff = _messagesHeaderRootPadding - padding;
+
+                _messagesHeaderRootPadding = padding;
+
+                MessagesRoot.Margin = new Thickness(0, padding, 0, -padding);
+                MessagesOverlay.Margin = new Thickness(0, padding, 0, 0);
+
+                if (animate)
+                {
+                    ElementCompositionPreview.SetIsTranslationEnabled(MessagesRoot, true);
+                    var visual = ElementComposition.GetElementVisual(MessagesRoot);
+                    visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, 0);
+
+                    var offset = visual.Compositor.CreateScalarKeyFrameAnimation();
+                    offset.InsertKeyFrame(0, diff);
+                    offset.InsertKeyFrame(1, 0);
+                    offset.Duration = Constants.FastAnimation;
+
+                    var clip = visual.Compositor.CreateScalarKeyFrameAnimation();
+                    clip.InsertKeyFrame(0, -32);
+                    clip.InsertKeyFrame(1, -32 + padding);
+                    clip.Duration = Constants.FastAnimation;
+
+                    visual.StartAnimation("Translation.Y", offset);
+                    visual.Clip.StartAnimation("BottomInset", clip);
+                }
+                else
+                {
+                    ElementCompositionPreview.SetIsTranslationEnabled(MessagesRoot, true);
+                    var visual = ElementComposition.GetElementVisual(MessagesRoot);
+                    visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, -32 + padding);
+                    visual.Properties.InsertVector3("Translation", Vector3.Zero);
+                }
+            }
+        }
+
+        private EffectiveViewportChangedEventArgs _headerUnreadViewport;
+        private bool _headerUnreadNotReady = true;
+
+        private void HeaderUnread_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+        {
+            //_headerUnreadNotReady = args.EffectiveViewport.Top > 8000 || args.EffectiveViewport.Top < -8000;
+
+            var padding = GroupCall.AnimatedHeight
+                + JoinRequests.AnimatedHeight
+                + TranslateHeader.AnimatedHeight
+                + ActionBar.AnimatedHeight
+                + ConnectedBot.AnimatedHeight
+                + PinnedMessage.AnimatedHeight
+                + AccountInfoHeader.AnimatedHeight
+                + Sponsored.AnimatedHeight;
+
+            if (args.EffectiveViewport.Top < 4 && args.EffectiveViewport.Top >= -padding && args.BringIntoViewDistanceY <= 28 && !Messages.HasBeenScrolled)
+            {
+                _headerUnreadViewport = args;
+                UpdateMessagesHeaderPadding(padding, true, padding);
+            }
+            else
+            {
+                _headerUnreadViewport = null;
             }
         }
 

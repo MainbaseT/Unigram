@@ -8,6 +8,7 @@ using Telegram.Common;
 using Telegram.Controls.Messages;
 using Telegram.Services;
 using Telegram.Td.Api;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -26,6 +27,7 @@ namespace Telegram.Controls.Chats
         ServiceGift,
         ServiceGiftCode,
         ServiceUpgradedGift,
+        ServiceAccountInfo,
     }
 
     public partial class ChatHistoryViewItem : ListViewItemEx
@@ -48,6 +50,21 @@ namespace Telegram.Controls.Chats
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new ChatListViewAutomationPeer(this);
+        }
+
+        public bool SuppressSizeChanged { get; set; }
+
+        public void UpdatePadding(double? top, double? bottom)
+        {
+            var padding = Padding;
+            var newTop = top ?? padding.Top;
+            var newBottom = bottom ?? padding.Bottom;
+
+            if (padding.Top != newTop || padding.Bottom != newBottom)
+            {
+                SuppressSizeChanged = true;
+                Padding = new Thickness(0, newTop, 0, newBottom);
+            }
         }
     }
 

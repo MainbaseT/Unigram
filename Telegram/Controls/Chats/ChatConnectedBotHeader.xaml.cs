@@ -4,6 +4,7 @@ using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.Views;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -17,6 +18,8 @@ namespace Telegram.Controls.Chats
         public DialogViewModel ViewModel => DataContext as DialogViewModel;
 
         private Chat _chat;
+
+        private ChatView _chatView;
         private UIElement _parent;
 
         public ChatConnectedBotHeader()
@@ -24,8 +27,11 @@ namespace Telegram.Controls.Chats
             InitializeComponent();
         }
 
-        public void InitializeParent(UIElement parent)
+        public float AnimatedHeight => _collapsed ? 0 : 48;
+
+        public void InitializeParent(ChatView chatView, UIElement parent)
         {
+            _chatView = chatView;
             ElementCompositionPreview.SetIsTranslationEnabled(_parent = parent, true);
         }
 
@@ -87,18 +93,20 @@ namespace Telegram.Controls.Chats
                 }
             };
 
+            _chatView.UpdateMessagesHeaderPadding();
+
             var clip = visual.Compositor.CreateScalarKeyFrameAnimation();
             clip.InsertKeyFrame(show ? 0 : 1, 48);
             clip.InsertKeyFrame(show ? 1 : 0, 0);
             clip.Duration = Constants.FastAnimation;
 
-            var offset = visual.Compositor.CreateVector3KeyFrameAnimation();
-            offset.InsertKeyFrame(show ? 0 : 1, new Vector3(0, -48, 0));
-            offset.InsertKeyFrame(show ? 1 : 0, new Vector3());
+            var offset = visual.Compositor.CreateScalarKeyFrameAnimation();
+            offset.InsertKeyFrame(show ? 0 : 1, -48);
+            offset.InsertKeyFrame(show ? 1 : 0, 0);
             offset.Duration = Constants.FastAnimation;
 
             visual.Clip.StartAnimation("TopInset", clip);
-            parent.StartAnimation("Translation", offset);
+            parent.StartAnimation("Translation.Y", offset);
 
             batch.End();
         }
