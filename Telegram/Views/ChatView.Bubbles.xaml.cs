@@ -74,7 +74,7 @@ namespace Telegram.Views
 
             if (Messages.ScrollingHost == null || Messages.ScrollingHost.ScrollableHeight - Messages.ScrollingHost.VerticalOffset < 40)
             {
-                Arrows.IsVisible = ViewModel.IsFirstSliceLoaded == false;
+                Arrows.IsVisible = ViewModel.IsNewestSliceLoaded == false;
                 return;
             }
 
@@ -607,7 +607,7 @@ namespace Telegram.Views
                 }
                 else
                 {
-                    if (_messageIdToSelector.TryGetValue(message.Id, out SelectorItem container))
+                    if (_messageIdToSelector.TryGetValue(message.Id, out ChatHistoryViewItem container))
                     {
                         Play(new (SelectorItem, MessageViewModel)[] { (container, message) });
                     }
@@ -708,8 +708,8 @@ namespace Telegram.Views
 
 
 
-        private readonly Dictionary<long, SelectorItem> _albumIdToSelector = new();
-        private readonly Dictionary<long, SelectorItem> _messageIdToSelector = new();
+        private readonly Dictionary<long, ChatHistoryViewItem> _albumIdToSelector = new();
+        private readonly Dictionary<long, ChatHistoryViewItem> _messageIdToSelector = new();
         private readonly MultiValueDictionary<long, long> _messageIdToMessageIds = new();
 
         private readonly Dictionary<ChatHistoryViewItemType, ChoosingItemStrategy> _typeToStrategy = new();
@@ -833,7 +833,7 @@ namespace Telegram.Views
                 return;
             }
 
-            UpdateCache(message, args.ItemContainer, args.InRecycleQueue);
+            UpdateCache(message, container, args.InRecycleQueue);
 
             if (args.InRecycleQueue)
             {
@@ -1126,7 +1126,7 @@ namespace Telegram.Views
 
         public void UpdateMessageSendSucceeded(long oldMessageId, MessageViewModel message)
         {
-            if (_messageIdToSelector.TryGetValue(oldMessageId, out SelectorItem container))
+            if (_messageIdToSelector.TryGetValue(oldMessageId, out ChatHistoryViewItem container))
             {
                 _messageIdToSelector[message.Id] = container;
                 _messageIdToSelector.Remove(oldMessageId);
@@ -1139,7 +1139,7 @@ namespace Telegram.Views
             }
         }
 
-        private void UpdateCache(MessageViewModel message, SelectorItem container, bool recycle)
+        private void UpdateCache(MessageViewModel message, ChatHistoryViewItem container, bool recycle)
         {
             if (recycle)
             {

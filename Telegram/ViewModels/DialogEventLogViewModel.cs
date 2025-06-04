@@ -128,8 +128,8 @@ namespace Telegram.ViewModels
                 }
 
                 _loadingSlice = true;
-                IsLastSliceLoaded = null;
-                IsFirstSliceLoaded = null;
+                IsOldestSliceLoaded = null;
+                IsNewestSliceLoaded = null;
                 IsLoading = true;
 
                 System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadScheduledSliceAsync");
@@ -150,8 +150,8 @@ namespace Telegram.ViewModels
 
                     Items.RawReplaceWith(replied);
 
-                    IsLastSliceLoaded = false;
-                    IsFirstSliceLoaded = true;
+                    IsOldestSliceLoaded = false;
+                    IsNewestSliceLoaded = true;
                 }
 
                 _loadingSlice = false;
@@ -175,7 +175,7 @@ namespace Telegram.ViewModels
                     return;
                 }
 
-                if (_loadingSlice || Items.Count < 1 || IsLastSliceLoaded == true)
+                if (_loadingSlice || Items.Count < 1 || IsOldestSliceLoaded == true)
                 {
                     return;
                 }
@@ -199,7 +199,7 @@ namespace Telegram.ViewModels
                     ProcessMessages(chat, replied);
 
                     Items.RawInsertRange(0, replied, false, out bool empty);
-                    IsLastSliceLoaded = empty;
+                    IsOldestSliceLoaded = empty;
 
                     if (empty)
                     {

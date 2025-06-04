@@ -40,8 +40,8 @@ namespace Telegram.ViewModels
 
         public override async Task LoadQuickReplyShortcutSliceAsync()
         {
-            IsFirstSliceLoaded = true;
-            IsLastSliceLoaded = true;
+            IsNewestSliceLoaded = true;
+            IsOldestSliceLoaded = true;
 
             Handle(new UpdateQuickReplyShortcutMessages(QuickReplyShortcut.Id, ClientService.GetQuickReplyMessages(QuickReplyShortcut.Id)));
 
@@ -96,8 +96,8 @@ namespace Telegram.ViewModels
                     Delegate?.UpdateBubbleWithMessageId(item.OldValue.Id, bubble => bubble.UpdateMessage(item.OldValue));
                 }
 
-                IsFirstSliceLoaded = true;
-                IsLastSliceLoaded = true;
+                IsNewestSliceLoaded = true;
+                IsOldestSliceLoaded = true;
             });
         }
 

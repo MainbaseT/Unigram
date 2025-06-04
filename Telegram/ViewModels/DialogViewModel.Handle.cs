@@ -560,7 +560,7 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == _chat?.Id && update.LastMessage == null)
             {
-                IsFirstSliceLoaded = null;
+                IsNewestSliceLoaded = null;
             }
 
             if (update.ChatId == _chat?.Id && _chat.Type is ChatTypePrivate privata)
@@ -1235,7 +1235,7 @@ namespace Telegram.ViewModels
         {
             using (await _loadMoreLock.WaitAsync())
             {
-                if (IsFirstSliceLoaded == true || Type == DialogType.ScheduledMessages)
+                if (IsNewestSliceLoaded == true || Type == DialogType.ScheduledMessages)
                 {
                     if (IsTranslating)
                     {

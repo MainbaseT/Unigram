@@ -120,7 +120,7 @@ namespace Telegram.ViewModels
                 _languageSlices++;
 
                 var enough = _languageSlices == 2 || _languageMessages >= 10;
-                var complete = IsFirstSliceLoaded is true && IsLastSliceLoaded is true;
+                var complete = IsNewestSliceLoaded is true && IsOldestSliceLoaded is true;
 
                 if (enough || complete)
                 {

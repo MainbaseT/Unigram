@@ -660,18 +660,18 @@ namespace Telegram.ViewModels
             set => Set(ref _greetingSticker, value);
         }
 
-        private bool? _isFirstSliceLoaded;
-        public bool? IsFirstSliceLoaded
+        private bool? _isNewestSliceLoaded;
+        public bool? IsNewestSliceLoaded
         {
-            get => _isFirstSliceLoaded;
-            set => Set(ref _isFirstSliceLoaded, value);
+            get => _isNewestSliceLoaded;
+            set => Set(ref _isNewestSliceLoaded, value);
         }
 
-        private bool? _isLastSliceLoaded;
-        public bool? IsLastSliceLoaded
+        private bool? _isOldestSliceLoaded;
+        public bool? IsOldestSliceLoaded
         {
-            get => _isLastSliceLoaded;
-            set => Set(ref _isLastSliceLoaded, value);
+            get => _isOldestSliceLoaded;
+            set => Set(ref _isOldestSliceLoaded, value);
         }
 
         private bool _isEmpty = true;
@@ -737,7 +737,7 @@ namespace Telegram.ViewModels
                     return;
                 }
 
-                if (direction == PanelScrollingDirection.Backward && IsLastSliceLoaded == true)
+                if (direction == PanelScrollingDirection.Backward && IsOldestSliceLoaded == true)
                 {
                     return;
                 }
@@ -853,12 +853,12 @@ namespace Telegram.ViewModels
 
                     if (direction == PanelScrollingDirection.Backward)
                     {
-                        IsLastSliceLoaded = replied.IsEndReached;
+                        IsOldestSliceLoaded = replied.IsEndReached;
                         UpdateDetectedLanguage();
                     }
                     else
                     {
-                        IsFirstSliceLoaded = replied.IsEndReached || IsEndReached();
+                        IsNewestSliceLoaded = replied.IsEndReached || IsEndReached();
                     }
                 }
 
@@ -1293,8 +1293,8 @@ namespace Telegram.ViewModels
                 }
 
                 _loadingSlice = true;
-                IsLastSliceLoaded = null;
-                IsFirstSliceLoaded = null;
+                IsOldestSliceLoaded = null;
+                IsNewestSliceLoaded = null;
                 IsLoading = true;
 
                 System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadMessageSliceAsync");
@@ -1317,8 +1317,8 @@ namespace Telegram.ViewModels
 
                     NotifyMessageSliceLoaded();
 
-                    IsLastSliceLoaded = null;
-                    IsFirstSliceLoaded = IsEndReached();
+                    IsOldestSliceLoaded = null;
+                    IsNewestSliceLoaded = IsEndReached();
 
                     if (Items.TryGetValue(maxId, out already))
                     {
@@ -1358,8 +1358,8 @@ namespace Telegram.ViewModels
                 {
                     NotifyMessageSliceLoaded();
 
-                    IsLastSliceLoaded = true;
-                    IsFirstSliceLoaded = true;
+                    IsOldestSliceLoaded = true;
+                    IsNewestSliceLoaded = true;
 
                     HistoryField?.Resume();
                 }
@@ -1742,8 +1742,8 @@ namespace Telegram.ViewModels
                 }
 
                 _loadingSlice = true;
-                IsLastSliceLoaded = null;
-                IsFirstSliceLoaded = null;
+                IsOldestSliceLoaded = null;
+                IsNewestSliceLoaded = null;
                 IsLoading = true;
 
                 Logger.Info();
@@ -1770,8 +1770,8 @@ namespace Telegram.ViewModels
 
                     Items.ReplaceWith(replied);
 
-                    IsLastSliceLoaded = true;
-                    IsFirstSliceLoaded = true;
+                    IsOldestSliceLoaded = true;
+                    IsNewestSliceLoaded = true;
                 }
 
                 _loadingSlice = false;

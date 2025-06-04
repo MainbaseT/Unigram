@@ -673,7 +673,7 @@ namespace Telegram.Views
         {
             foreach (var message in items)
             {
-                if (message == null || !_messageIdToSelector.TryGetValue(message.Id, out var container))
+                if (message == null || !_messageIdToSelector.TryGetValue(message.Id, out ChatHistoryViewItem container))
                 {
                     continue;
                 }
@@ -720,11 +720,11 @@ namespace Telegram.Views
                     UpdateForumTopics(ViewModel.Chat);
                 }
             }
-            else if (e.PropertyName.Equals(nameof(ViewModel.IsFirstSliceLoaded)))
+            else if (e.PropertyName.Equals(nameof(ViewModel.IsNewestSliceLoaded)))
             {
                 UpdateArrowVisibility();
             }
-            else if (e.PropertyName.Equals(nameof(ViewModel.IsLastSliceLoaded)))
+            else if (e.PropertyName.Equals(nameof(ViewModel.IsOldestSliceLoaded)))
             {
                 if (ViewModel.IsLastSliceLoaded is true)
                 {
@@ -6292,13 +6292,13 @@ namespace Telegram.Views
                 return;
             }
 
-            if (_messageIdToSelector.TryGetValue(messages[0].Id, out SelectorItem selector))
+            if (_messageIdToSelector.TryGetValue(messages[0].Id, out ChatHistoryViewItem selector))
             {
                 AnimateSizeChanged(messages[0], selector);
             }
         }
 
-        private void AnimateSizeChanged(MessageViewModel message, SelectorItem selector)
+        private void AnimateSizeChanged(MessageViewModel message, ChatHistoryViewItem selector)
         {
             var next = new Vector2(0, 0);
             var prev = selector.ActualSize;

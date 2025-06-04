@@ -185,8 +185,8 @@ namespace Telegram.Controls.Chats
                     return;
                 }
 
-                var lastSlice = ViewModel.IsLastSliceLoaded != true;
-                var firstSlice = ViewModel.IsFirstSliceLoaded != true;
+                var lastSlice = ViewModel.IsOldestSliceLoaded != true;
+                var firstSlice = ViewModel.IsNewestSliceLoaded != true;
 
                 if (direction == PanelScrollingDirection.Backward
                     && panel.FirstCacheIndex == 0
