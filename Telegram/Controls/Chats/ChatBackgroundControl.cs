@@ -21,29 +21,47 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Chats
 {
-    public partial class ChatBackgroundControl : GridEx
+    public partial class ChatBackgroundControl : ControlEx
     {
         private IClientService _clientService;
         private IEventAggregator _aggregator;
 
         private Background _oldBackground = new Background();
         private bool? _oldDark;
+        private int? _oldDimming;
 
-        private readonly ChatBackgroundPresenter _presenter;
+        private ChatBackgroundPresenter Presenter;
+
+        private bool _templateApplied;
+        private bool _initialized;
 
         private readonly Compositor _compositor;
 
         public ChatBackgroundControl()
         {
-            _presenter = new ChatBackgroundPresenter();
+            DefaultStyleKey = typeof(ChatBackgroundControl);
+
+            Presenter = new ChatBackgroundPresenter();
             _compositor = BootStrapper.Current.Compositor;
 
             this.CreateInsetClip();
 
-            Children.Add(_presenter);
-
             Connected += OnLoaded;
             Disconnected += OnUnloaded;
+        }
+
+        protected override void OnApplyTemplate()
+        {
+            Presenter = GetTemplateChild(nameof(Presenter)) as ChatBackgroundPresenter;
+
+            _templateApplied = true;
+
+            if (_oldDark != null && _oldDimming != null)
+            {
+                UpdateBackground(_oldBackground, _oldDark.Value, _oldDimming.Value);
+            }
+
+            base.OnApplyTemplate();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -138,16 +156,24 @@ namespace Telegram.Controls.Chats
         {
             if (_oldBackground?.Type is BackgroundTypeFill updateFill && updateFill.Fill is BackgroundFillFreeformGradient)
             {
-                _presenter.Next();
+                Presenter.Next();
             }
             else if (_oldBackground?.Type is BackgroundTypePattern updatePattern && updatePattern.Fill is BackgroundFillFreeformGradient)
             {
-                _presenter.Next();
+                Presenter.Next();
             }
         }
 
         private void UpdateBackground(Background background, bool dark, int dimming)
         {
+            if (!_templateApplied)
+            {
+                _oldBackground = background;
+                _oldDark = dark;
+                _oldDimming = dimming;
+                return;
+            }
+
             if (background == null)
             {
                 var freeform = dark ? new[] { 0x6C7FA6, 0x2E344B, 0x7874A7, 0x333258 } : new[] { 0xDBDDBB, 0x6BA587, 0xD5D88D, 0x88B884 };
@@ -156,24 +182,26 @@ namespace Telegram.Controls.Chats
                     new BackgroundTypePattern(new BackgroundFillFreeformGradient(freeform), dark ? 100 : 50, dark, false));
             }
 
-            if (_oldDark == dark && BackgroundEquals(_oldBackground, background))
+            if (_initialized && _oldDark == dark && _oldDimming == dimming && BackgroundEquals(_oldBackground, background))
             {
                 return;
             }
 
             _oldBackground = background;
             _oldDark = dark;
+            _oldDimming = dimming;
+            _initialized = true;
 
-            _presenter.UpdateSource(_clientService, background, false);
+            Presenter.UpdateSource(_clientService, background, false);
 
             if (dark && dimming != 0)
             {
-                _presenter.Opacity = 1 - (dimming / 100d);
+                Presenter.Opacity = 1 - (dimming / 100d);
                 Background = new SolidColorBrush(Colors.Black);
             }
             else
             {
-                _presenter.Opacity = 1;
+                Presenter.Opacity = 1;
                 Background = null;
             }
         }

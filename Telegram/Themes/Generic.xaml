@@ -300,6 +300,8 @@
                                                 Value="0" />
                                         <Setter Target="BackgroundPart.CornerRadius"
                                                 Value="0" />
+                                        <Setter Target="BackgroundPart.BorderThickness"
+                                                Value="0,1,0,0" />
                                         <Setter Target="BorderPart.CornerRadius"
                                                 Value="0" />
                                         <Setter Target="BorderPart.BorderThickness"
@@ -323,6 +325,7 @@
                             <chats:ChatBackgroundControl x:Name="BackgroundPart"
                                                          Margin="{TemplateBinding BackgroundMargin}"
                                                          CornerRadius="9,0,0,0"
+                                                         BorderThickness="1,1,0,0"
                                                          Grid.RowSpan="3" />
 
                             <Grid MaxWidth="1000"
@@ -1712,6 +1715,18 @@
         </Setter>
     </Style>
 
+    <Style TargetType="chats:ChatBackgroundControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="chats:ChatBackgroundControl">
+                    <chats:ChatBackgroundPresenter x:Name="Presenter"
+                                                   CornerRadius="{TemplateBinding CornerRadius}"
+                                                   BorderThickness="{TemplateBinding BorderThickness}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="chats:ChatBackgroundPresenter">
         <Setter Property="Background"
                 Value="Transparent" />
@@ -1724,7 +1739,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="chats:ChatBackgroundPresenter">
-                    <Border Background="{TemplateBinding Background}"
+                    <Border BackgroundSizing="OuterBorderEdge"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}">
                         <Border x:Name="Canvas"
                                 Background="{TemplateBinding Foreground}"
