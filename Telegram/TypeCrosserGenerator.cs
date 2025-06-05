@@ -136,6 +136,12 @@ namespace Telegram
                 builder.Decrement();
             }
 
+            builder.AppendLine("case File file:");
+            builder.Increment();
+            builder.AppendLine("ProcessFile(file);");
+            builder.AppendLine("break;");
+            builder.Decrement();
+
             builder.AppendLine("}");
             var c = builder.ToString();
 

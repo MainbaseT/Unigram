@@ -1887,7 +1887,7 @@ namespace Telegram.Controls.Messages
             }
             else if (content is MessageVenue venue)
             {
-                var venueText = $"{venue.Venue.Title}{Environment.NewLine}{venue.Venue.Address}";
+                var venueText = $"{venue.Venue.Title}\n{venue.Venue.Address}";
                 var venueEntities = new TextEntity[]
                 {
                     new TextEntity(0, venue.Venue.Title.Length, new TextEntityTypeBold())

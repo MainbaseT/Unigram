@@ -19,7 +19,6 @@ namespace Telegram
         public static readonly string AppChannel;
 
         public static readonly string AppCenterId;
-        public static readonly string BingMapsApiKey;
 
         public static readonly ushort BuildNumber;
 

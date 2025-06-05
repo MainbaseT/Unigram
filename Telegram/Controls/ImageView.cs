@@ -420,5 +420,32 @@ namespace Telegram.Controls
         }
 
         #endregion
+
+        #region Location
+
+        private double _latitude;
+        private double _longitude;
+
+        public async void SetSource(IClientService clientService, Location location, int width, int height, long chatId)
+        {
+            if (_latitude == location.Latitude && _longitude == location.Longitude)
+            {
+                return;
+            }
+
+            _latitude = location.Latitude;
+            _longitude = location.Longitude;
+
+            var scaledWidth = (int)(width * XamlRoot.RasterizationScale);
+            var scaledHeight = (int)(height * XamlRoot.RasterizationScale);
+
+            var response = await clientService.SendAsync(new GetMapThumbnailFile(location, 15, scaledWidth, scaledHeight, 1, chatId));
+            if (response is File file && _latitude == location.Latitude && _longitude == location.Longitude)
+            {
+                SetSource(clientService, file, width, height);
+            }
+        }
+
+        #endregion
     }
 }

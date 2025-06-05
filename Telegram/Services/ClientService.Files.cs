@@ -2641,6 +2641,9 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
+                case File file:
+                    ProcessFile(file);
+                    break;
             }
         }
     }

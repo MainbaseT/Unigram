@@ -1,11 +1,7 @@
-﻿using System;
-using System.Globalization;
-using Telegram.Common;
+﻿using Telegram.Common;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Business;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Business
@@ -36,25 +32,20 @@ namespace Telegram.Views.Business
             {
                 VisualUtilities.ShakeView(Address);
             }
+            else if (e.PropertyName == nameof(ViewModel.IsLocationValid) || e.PropertyName == nameof(ViewModel.Location))
+            {
+                UpdateLocation(ViewModel.IsLocationValid, ViewModel.Location);
+            }
         }
 
         #region Binding
 
-        private ImageSource ConvertLocation(bool valid, Location location)
+        private void UpdateLocation(bool valid, Location location)
         {
             if (valid)
             {
-                var width = 1000 * XamlRoot.RasterizationScale;
-                var height = 200 * XamlRoot.RasterizationScale;
-
-                var latitude = location.Latitude.ToString(CultureInfo.InvariantCulture);
-                var longitude = location.Longitude.ToString(CultureInfo.InvariantCulture);
-
-                return new BitmapImage(new Uri(string.Format("https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/{0},{1}/{2}?mapSize={3:F0},{4:F0}&key={5}",
-                    latitude, longitude, 15, width, height, Constants.BingMapsApiKey)));
+                Map.SetSource(ViewModel.ClientService, location, 200, 200, 0);
             }
-
-            return null;
         }
 
         private Visibility ConvertClear(string address, bool valid)

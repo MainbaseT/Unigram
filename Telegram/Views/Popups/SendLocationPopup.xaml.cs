@@ -138,9 +138,9 @@ namespace Telegram.Views.Popups
                 input.Location = ViewModel.Location;
             }
 
-            if (_previewShimmer == null)
+            if (_previewShimmer == null && (ViewModel?.Location.Latitude != point.Coordinate.Point.Position.Latitude || ViewModel?.Location.Longitude != point.Coordinate.Point.Position.Longitude))
             {
-                _previewShimmer = CompositionPathParser.CreateThumbnail(320, 200, 0, out ShapeVisual visual);
+                _previewShimmer = CompositionPathParser.CreateThumbnail(16, 9, 0, out ShapeVisual visual);
                 ElementCompositionPreview.SetElementChildVisual(MapShimmer, visual);
             }
 
@@ -149,8 +149,8 @@ namespace Telegram.Views.Popups
 
             var rasterization = XamlRoot.RasterizationScale;
 
-            var width = MapPresenter.ActualWidth * rasterization;
-            var height = MapPresenter.ActualHeight * rasterization;
+            var width = (int)(MapPresenter.ActualWidth);
+            var height = (int)(MapPresenter.ActualHeight);
 
             var pixels = 96 * rasterization;
             var scale = pixels * 39.37 * 156543.04 * Math.Cos(latitude * Math.PI / 180) / Math.Pow(2, 15);
@@ -185,8 +185,7 @@ namespace Telegram.Views.Popups
                 _accuracyRadius = radius;
             }
 
-            Map.Source = new BitmapImage(new Uri(string.Format("https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/{0},{1}/{2}?mapSize={3:F0},{4:F0}&key={5}",
-                latitude, longitude, 15, width, height, Constants.BingMapsApiKey)));
+            Map.SetSource(ViewModel.ClientService, ViewModel.Location, width, height, 0);
 
             CurrentLocation.Address = string.Format(Strings.AccurateTo,
                 Locale.Declension(Strings.R.Meters, (int)point.Coordinate.Accuracy));

@@ -62,15 +62,8 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            var width = 320 * XamlRoot.RasterizationScale;
-            var height = 200 * XamlRoot.RasterizationScale;
-
-            var latitude = venue.Venue.Location.Latitude.ToString(CultureInfo.InvariantCulture);
-            var longitude = venue.Venue.Location.Longitude.ToString(CultureInfo.InvariantCulture);
-
             Texture.Constraint = message;
-            Texture.Source = new BitmapImage(new Uri(string.Format("https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/{0},{1}/{2}?mapSize={3:F0},{4:F0}&key={5}",
-                latitude, longitude, 15, width, height, Constants.BingMapsApiKey)));
+            Texture.SetSource(message.ClientService, venue.Venue.Location,320, 200, message.ChatId);
 
             if (string.IsNullOrEmpty(venue.Venue.Type))
             {

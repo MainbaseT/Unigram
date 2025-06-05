@@ -66,8 +66,6 @@ namespace Telegram.Controls.Messages.Content
 
         #endregion
 
-        private string _prevUrl;
-
         public void UpdateMessage(MessageViewModel message)
         {
             _message = message;
@@ -78,20 +76,8 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            var width = 320 * XamlRoot.RasterizationScale;
-            var height = 200 * XamlRoot.RasterizationScale;
-
-            var latitude = location.Location.Latitude.ToString(CultureInfo.InvariantCulture);
-            var longitude = location.Location.Longitude.ToString(CultureInfo.InvariantCulture);
-
-            var nextUrl = string.Format("https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/{0},{1}/{2}?mapSize={3:F0},{4:F0}&key={5}",
-                latitude, longitude, 15, width, height, Constants.BingMapsApiKey);
-
-            if (nextUrl != _prevUrl)
-            {
-                Texture.Constraint = message;
-                Texture.Source = new BitmapImage(new Uri(_prevUrl = nextUrl));
-            }
+            Texture.Constraint = message;
+            Texture.SetSource(message.ClientService, location.Location, 320, 200, message.ChatId);
 
             if (location.LivePeriod > 0)
             {
