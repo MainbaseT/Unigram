@@ -471,7 +471,10 @@ namespace Telegram.Services
                     _messages.Remove(topic.LastMessage.Id);
                 }
 
-                _messages[message.Id] = topic;
+                if (message != null)
+                {
+                    _messages[message.Id] = topic;
+                }
 
                 topic.LastMessage = message;
 

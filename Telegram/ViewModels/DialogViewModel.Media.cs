@@ -104,7 +104,7 @@ namespace Telegram.ViewModels
             }
             else if (ClientService.TryGetSupergroup(Chat, out Supergroup supergroup))
             {
-                if (supergroup.IsFeedbackChatAdministrator(ClientService))
+                if (supergroup.IsAdministeredFeedbackGroup)
                 {
                     paidMessageStarCount = 0;
                 }

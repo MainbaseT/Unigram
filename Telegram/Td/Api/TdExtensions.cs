@@ -2902,27 +2902,6 @@ namespace Telegram.Td.Api
             return false;
         }
 
-        // TODO: remove once exposed by TDLib
-        public static bool IsFeedbackChatAdministrator(this Supergroup supergroup, IClientService clientService)
-        {
-            if (clientService.TryGetSupergroupFull(supergroup.Id, out SupergroupFullInfo fullInfo))
-            {
-                Chat chat = null;
-                if (supergroup.IsFeedbackGroup && clientService.TryGetChat(fullInfo.FeedbackChatId, out chat))
-                {
-                    clientService.TryGetChat(fullInfo.FeedbackChatId, out chat);
-                }
-
-                var status = clientService.GetChatMemberStatus(chat, out bool channel);
-                if (status is ChatMemberStatusAdministrator administrator)
-                {
-                    return administrator.Rights.CanPostMessages;
-                }
-            }
-
-            return false;
-        }
-
         public static bool HasForumTabs(this Chat chat, IClientService clientService, out bool isForum)
         {
             if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
@@ -2933,16 +2912,10 @@ namespace Telegram.Td.Api
                     return true;
                 }
 
-                if (supergroup.IsFeedbackGroup && clientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo) && clientService.TryGetChat(fullInfo.FeedbackChatId, out chat))
-                {
-                    clientService.TryGetChat(fullInfo.FeedbackChatId, out chat);
-                }
-
-                var status = clientService.GetChatMemberStatus(chat, out bool channel);
-                if (status is ChatMemberStatusAdministrator administrator)
+                if (supergroup.IsFeedbackGroup)
                 {
                     isForum = false;
-                    return administrator.Rights.CanPostMessages;
+                    return supergroup.IsAdministeredFeedbackGroup;
                 }
             }
 

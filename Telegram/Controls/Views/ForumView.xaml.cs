@@ -557,7 +557,7 @@ namespace Telegram.Controls.Views
                     flyout.CreateFlyoutItem(viewModel.SelectTopic, forumTopic, Strings.Select, Icons.CheckmarkCircle);
                 }
             }
-            else if (topic is FeedbackChatTopic feedbackChatTopic && ViewModel.Chat.IsFeedbackChatAdministrator(ViewModel.ClientService))
+            else if (topic is FeedbackChatTopic feedbackChatTopic && supergroup.IsAdministeredFeedbackGroup)
             {
                 flyout.CreateFlyoutItem(viewModel.ClearTopic, feedbackChatTopic, Strings.ClearHistory, Icons.Broom);
             }

@@ -5105,7 +5105,7 @@ namespace Telegram.Views
             }
             else if (supergroup.IsFeedbackGroup)
             {
-                if (supergroup.IsFeedbackChatAdministrator(ViewModel.ClientService))
+                if (supergroup.IsAdministeredFeedbackGroup)
                 {
                     return Strings.TypeMessage;
                 }
@@ -6150,13 +6150,13 @@ namespace Telegram.Views
                 {
                     ShowAction(Strings.GlobalSendMessageRestricted, fullInfo != null && fullInfo.UnrestrictBoostCount > 0);
                 }
-                else if (ViewModel.Type != DialogType.Thread && group.IsFeedbackGroup && group.IsFeedbackChatAdministrator(ViewModel.ClientService))
+                else if (ViewModel.Type != DialogType.Thread && group.IsFeedbackGroup && group.IsAdministeredFeedbackGroup)
                 {
                     ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
                 }
                 else
                 {
-                    ShowArea(group.IsFeedbackChatAdministrator(ViewModel.ClientService) ? 0 : group.PaidMessageStarCount);
+                    ShowArea(group.IsAdministeredFeedbackGroup ? 0 : group.PaidMessageStarCount);
                 }
             }
 
