@@ -72,6 +72,8 @@ namespace Telegram.Controls.Messages
 
         private bool _ignoreSizeChanged = true;
 
+        private bool _hasReplyMarkup;
+
         private DirectRectangleClip _cornerRadius;
 
         public MessageBubble()
@@ -501,14 +503,17 @@ namespace Telegram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             if (content is MessageSticker or MessageDice or MessageVideoNote or MessageBigEmoji)
             {
+                _hasReplyMarkup = false;
                 SetCorners(0, 0, 0, 0);
             }
             else if (content is MessageInvoice invoice && invoice.PaidMedia is not PaidMediaUnsupported and not null)
             {
+                _hasReplyMarkup = false;
                 SetCorners(topLeft, topRight, bottomRight, bottomLeft);
             }
             else if (message.ReplyMarkup is ReplyMarkupInlineKeyboard)
             {
+                _hasReplyMarkup = true;
                 SetCorners(topLeft, topRight, small, small);
 
                 if (Markup != null)
@@ -518,6 +523,7 @@ namespace Telegram.Controls.Messages
             }
             else
             {
+                _hasReplyMarkup = false;
                 SetCorners(topLeft, topRight, bottomRight, bottomLeft);
             }
 
@@ -1263,6 +1269,11 @@ namespace Telegram.Controls.Messages
 
                 Markup.Visibility = Visibility.Visible;
                 Markup.Update(message, message.ReplyMarkup);
+
+                if (!_hasReplyMarkup)
+                {
+                    UpdateAttach(message);
+                }
             }
             else
             {
@@ -1270,6 +1281,11 @@ namespace Telegram.Controls.Messages
                 {
                     Markup.Visibility = Visibility.Collapsed;
                     Markup.Children.Clear();
+                }
+
+                if (_hasReplyMarkup)
+                {
+                    UpdateAttach(message);
                 }
             }
         }
