@@ -432,11 +432,6 @@ namespace Telegram.Views
                 return;
             }
 
-            if (ViewModel.LockedPinnedMessageId < firstVisibleId)
-            {
-                ViewModel.LockedPinnedMessageId = 0;
-            }
-
             if (ViewModel.Thread is MessageThreadInfo thread && ViewModel.ForumTopic == null)
             {
                 var message = thread.Messages.LastOrDefault();
@@ -451,9 +446,19 @@ namespace Telegram.Views
             }
             else if (ViewModel.PinnedMessages.Count > 0)
             {
-                var currentPinned = ViewModel.LockedPinnedMessageId != 0
-                    ? ViewModel.PinnedMessages.LastOrDefault(x => x.Id < firstVisibleId) ?? ViewModel.PinnedMessages.LastOrDefault()
-                    : ViewModel.PinnedMessages.LastOrDefault(x => x.Id <= lastVisibleId) ?? ViewModel.PinnedMessages.FirstOrDefault();
+                MessageViewModel currentPinned = null;
+
+                var lockedPinnedVisible = ViewModel.LockedPinnedMessageId >= firstVisibleId && ViewModel.LockedPinnedMessageId <= lastVisibleId;
+                if (lockedPinnedVisible && !Messages.HasBeenScrolled)
+                {
+                    currentPinned = ViewModel.PinnedMessages.LastOrDefault(x => x.Id < ViewModel.LockedPinnedMessageId) ?? ViewModel.PinnedMessages.LastOrDefault();
+                }
+                else
+                {
+                    currentPinned = ViewModel.PinnedMessages.LastOrDefault(x => x.Id <= lastVisibleId) ?? ViewModel.PinnedMessages.FirstOrDefault();
+                    ViewModel.LockedPinnedMessageId = 0;
+                }
+
                 if (currentPinned != null)
                 {
                     //PinnedMessage.UpdateIndex(ViewModel.PinnedMessages.IndexOf(currentPinned), ViewModel.PinnedMessages.Count, intermediate);
