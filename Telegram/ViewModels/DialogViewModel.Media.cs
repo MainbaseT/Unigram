@@ -93,7 +93,7 @@ namespace Telegram.ViewModels
             var chat = _chat;
             if (chat == null || ComposerHeader?.EditingMessage != null)
             {
-                return new MessageSendOptions(FeedbackChatTopicId, false, false, false, false, 0, false, null, 0, 0, false);
+                return new MessageSendOptions(0, false, false, false, false, 0, false, null, 0, 0, false);
             }
 
             var paidMessageStarCount = 0L;
@@ -146,7 +146,7 @@ namespace Telegram.ViewModels
                 schedulingState = new MessageSchedulingStateSendWhenOnline();
             }
 
-            return new MessageSendOptions(FeedbackChatTopicId, disableNotification ?? false, false, false, false, messageCount * paidMessageStarCount, Settings.Stickers.DynamicPackOrder && reorder, schedulingState, 0, 0, false);
+            return new MessageSendOptions(0, disableNotification ?? false, false, false, false, messageCount * paidMessageStarCount, Settings.Stickers.DynamicPackOrder && reorder, schedulingState, 0, 0, false);
         }
 
         protected override void ContinueSendMessage(MessageSendOptions options)

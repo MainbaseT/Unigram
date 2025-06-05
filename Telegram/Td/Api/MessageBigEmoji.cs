@@ -29,5 +29,10 @@ namespace Telegram.Td.Api
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return nameof(MessageBigEmoji);
+        }
     }
 }

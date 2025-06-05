@@ -713,6 +713,20 @@ namespace Telegram.ViewModels
 
         protected virtual Function CreateSendMessage(long chatId, long messageThreadId, InputMessageReplyTo replyTo, MessageSendOptions messageSendOptions, InputMessageContent inputMessageContent)
         {
+            if (replyTo is InputMessageReplyToTopicMessage replyToTopicMessage)
+            {
+                if (replyToTopicMessage.TopicId is MessageTopicForum topicForum)
+                {
+                    messageThreadId = topicForum.ForumTopicId;
+                }
+                else if (replyToTopicMessage.TopicId is MessageTopicFeedbackChat topicFeedbackChat && messageSendOptions != null)
+                {
+                    messageSendOptions.FeedbackChatTopicId = topicFeedbackChat.FeedbackChatTopicId;
+                }
+
+                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote);
+            }
+
             return new SendMessage(chatId, messageThreadId, replyTo, messageSendOptions, null, inputMessageContent);
         }
 
@@ -831,6 +845,20 @@ namespace Telegram.ViewModels
 
         protected virtual Function CreateSendMessageAlbum(long chatId, long messageThreadId, InputMessageReplyTo replyTo, MessageSendOptions messageSendOptions, IList<InputMessageContent> inputMessageContent)
         {
+            if (replyTo is InputMessageReplyToTopicMessage replyToTopicMessage)
+            {
+                if (replyToTopicMessage.TopicId is MessageTopicForum topicForum)
+                {
+                    messageThreadId = topicForum.ForumTopicId;
+                }
+                else if (replyToTopicMessage.TopicId is MessageTopicFeedbackChat topicFeedbackChat && messageSendOptions != null)
+                {
+                    messageSendOptions.FeedbackChatTopicId = topicFeedbackChat.FeedbackChatTopicId;
+                }
+
+                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote);
+            }
+
             return new SendMessageAlbum(chatId, messageThreadId, replyTo, messageSendOptions, inputMessageContent);
         }
 
