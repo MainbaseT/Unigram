@@ -148,7 +148,7 @@ namespace Telegram.Controls
             _fromTextChanging = true;
             _isEmpty = null;
 
-            if (args.IsContentChanging)
+            if (args.IsContentChanging && !_undoGroup)
             {
                 // Fixes insertion of some fully qualified emoji from WIN+.
                 var inserted = Document.GetRange(Document.Selection.StartPosition - 1, Document.Selection.StartPosition);
