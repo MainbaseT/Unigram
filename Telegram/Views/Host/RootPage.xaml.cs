@@ -76,13 +76,10 @@ namespace Telegram.Views.Host
             _navigationViewItems = new MvxObservableCollection<object>
             {
                 RootDestination.ShowAccounts,
-                RootDestination.Status,
-                RootDestination.MyProfile,
-                // ------------
-                RootDestination.Separator,
-                // ------------
                 RootDestination.ArchivedChats,
                 RootDestination.SavedMessages,
+                RootDestination.MyProfile,
+                RootDestination.Status,
                 // ------------
                 RootDestination.Separator,
                 // ------------
@@ -396,49 +393,57 @@ namespace Telegram.Views.Host
                 else if (_navigationViewItems[i] is AttachmentMenuBot && _attachmentMenuBots != botsHash)
                 {
                     _navigationViewItems.RemoveAt(i);
+
+                    if (i < _navigationViewItems.Count && _navigationViewItems[i] is RootDestination.Separator)
+                    {
+                        _navigationViewItems.RemoveAt(i);
+                    }
+
                     i--;
                 }
             }
 
-            var index = 4;
-
-            if (clientService.IsPremium is false)
-            {
-                if (_navigationViewItems[1] is RootDestination.Status)
-                {
-                    _navigationViewItems.RemoveAt(1);
-                }
-
-                index = 3;
-            }
-            else if (_navigationViewItems[1] is not RootDestination.Status)
-            {
-                _navigationViewItems.Insert(1, RootDestination.Status);
-            }
-
-            if (_attachmentMenuBots != botsHash)
-            {
-                for (int i = 0; i < bots.Count; i++)
-                {
-                    _navigationViewItems.Insert(index - 1, bots[i]);
-                    index++;
-                }
-            }
-            else
-            {
-                index += bots.Count;
-            }
+            var hasArchived = true;
+            var hasPremium = true;
 
             if (SettingsService.Current.HideArchivedChats is false)
             {
-                if (_navigationViewItems[index] is RootDestination.ArchivedChats)
+                if (_navigationViewItems[1] is RootDestination.ArchivedChats)
                 {
-                    _navigationViewItems.RemoveAt(index);
+                    _navigationViewItems.RemoveAt(1);
+                    hasArchived = false;
                 }
             }
-            else if (_navigationViewItems[index] is not RootDestination.ArchivedChats)
+            else if (_navigationViewItems[1] is not RootDestination.ArchivedChats)
             {
-                _navigationViewItems.Insert(index, RootDestination.ArchivedChats);
+                _navigationViewItems.Insert(1, RootDestination.ArchivedChats);
+            }
+
+            var index = hasArchived ? 4 : 3;
+
+            if (clientService.IsPremium is false)
+            {
+                if (_navigationViewItems[index] is RootDestination.Status)
+                {
+                    _navigationViewItems.RemoveAt(index);
+                    hasPremium = false;
+                }
+            }
+            else if (_navigationViewItems[index] is not RootDestination.Status)
+            {
+                _navigationViewItems.Insert(index, RootDestination.Status);
+            }
+
+            index = hasPremium && hasArchived ? 5 : hasPremium || hasArchived ? 4 : 3;
+
+            if (_attachmentMenuBots != botsHash)
+            {
+                for (int i = bots.Count - 1; i >= 0; i--)
+                {
+                    _navigationViewItems.Insert(index, bots[i]);
+                }
+
+                _navigationViewItems.Insert(index, RootDestination.Separator);
             }
 
             if (show && items != null)
