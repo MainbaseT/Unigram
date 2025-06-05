@@ -107,7 +107,7 @@ namespace Telegram.Views
             var minItem = 2;
             var minDate = true;
             var minDateIndex = panel.FirstVisibleIndex;
-            var minDateValue = default(DateTime?);
+            var minDateValue = DateTime.MaxValue;
             var minDateScheduled = false;
 
             var minMessageTopic = ViewModel.IsForum || ViewModel.IsFeedbackGroup;
@@ -169,7 +169,7 @@ namespace Telegram.Views
 
                         if (message.Content is MessageHeaderUnread)
                         {
-                            minDateValue = null;
+                            minDateValue = DateTime.MaxValue;
                         }
                         else if (message.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
                         {
@@ -368,7 +368,7 @@ namespace Telegram.Views
 
             _dateHeaderTimer.Stop();
             _dateHeaderTimer.Start();
-            ShowHideDateHeader(minDateValue != null && minDateIndex > 0, minDateValue != null && minDateIndex is > 0 and < int.MaxValue);
+            ShowHideDateHeader(minDateValue != DateTime.MaxValue && minDateIndex > 0, minDateValue != DateTime.MaxValue && minDateIndex is > 0 and < int.MaxValue);
             ShowHideForumTopicHeader(minMessageTopicValue != null && minMessageTopicIndex > 0, minMessageTopicValue != null && minMessageTopicIndex is > 0 and < int.MaxValue);
 
             if (minMessageTopicValue != null)
@@ -376,9 +376,9 @@ namespace Telegram.Views
                 UpdateForumTopicHeader(minMessageTopicValue);
             }
 
-            if (minDateValue != null)
+            if (minDateValue != DateTime.MaxValue)
             {
-                UpdateDateHeader(minDateValue.Value, minDateScheduled);
+                UpdateDateHeader(minDateValue, minDateScheduled);
             }
 
             // Read and play messages logic:
