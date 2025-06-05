@@ -426,6 +426,11 @@ namespace Telegram.ViewModels
             {
                 _ = Items.ReloadAsync(chat);
 
+                LastSelectedItem = null;
+
+                SelectedItem = null;
+                SelectedItems.Clear();
+
                 if (_forum)
                 {
                     Aggregator.Subscribe<UpdateForumTopicInfo>(this, Handle)

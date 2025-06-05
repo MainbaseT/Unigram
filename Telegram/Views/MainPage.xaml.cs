@@ -3343,8 +3343,17 @@ namespace Telegram.Views
         {
             ViewModel.Topics.SetChat(chat);
             ShowHideTopicList(true);
-            UpdateListViewsSelectedItem(new ChatMessageTopic(chat.Id, null));
             TopicListPresenter?.UpdateChat(chat);
+
+            var currentChat = MasterDetail.NavigationService.GetChatFromBackStack();
+            if (currentChat.ChatId == chat.Id)
+            {
+                UpdateListViewsSelectedItem(currentChat);
+            }
+            else
+            {
+                UpdateListViewsSelectedItem(new ChatMessageTopic(chat.Id, null));
+            }
         }
 
         private void HideTopicList(bool fromSelection = false)
