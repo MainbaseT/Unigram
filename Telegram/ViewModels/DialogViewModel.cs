@@ -3488,8 +3488,7 @@ namespace Telegram.ViewModels
                 || Type == DialogType.EventLog
                 || Type == DialogType.Pinned
                 || Type == DialogType.BusinessReplies
-                || Type == DialogType.ScheduledMessages
-                || IsFeedbackGroup)
+                || Type == DialogType.ScheduledMessages)
             {
                 return;
             }
@@ -3501,6 +3500,10 @@ namespace Telegram.ViewModels
             else if (FeedbackChatTopic != null)
             {
                 navigationService.NavigateToSender(FeedbackChatTopic.SenderId, infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+            }
+            else if (IsFeedbackGroup && ClientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
+            {
+                navigationService.Navigate(typeof(ProfilePage), fullInfo.FeedbackChatId, infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
             }
             else
             {
