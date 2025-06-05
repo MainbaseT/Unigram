@@ -219,7 +219,7 @@ namespace Telegram.Controls.Messages
                 var button = FindName("ViewLabel") as TextBlock;
                 var ribbonRoot = FindName("RibbonRoot") as Grid;
 
-                var user = message.ClientService.GetUser(message.Chat);
+                var user = message.ClientService.GetTitle(gift.SenderId, true);
                 var self = message.ClientService.GetUser(message.ClientService.Options.MyId);
 
                 if (user == null || self == null)
@@ -230,7 +230,7 @@ namespace Telegram.Controls.Messages
                 if (message.IsOutgoing)
                 {
                     title.Text = gift.IsPrivate
-                        ? string.Format(Strings.Gift2ActionTitleInAnonymous, user.FullName(true))
+                        ? string.Format(Strings.Gift2ActionTitleInAnonymous, user)
                         : string.Format(Strings.Gift2ActionTitle, self.FullName(true));
 
                     if (gift.Text.Text.Length > 0)
@@ -239,11 +239,11 @@ namespace Telegram.Controls.Messages
                     }
                     else if (gift.PrepaidUpgradeStarCount > 0)
                     {
-                        subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(string.Format(Strings.Gift2ActionUpgradeOut, user.FullName(true))));
+                        subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(string.Format(Strings.Gift2ActionUpgradeOut, user)));
                     }
                     else
                     {
-                        subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(Locale.Declension(Strings.R.Gift2ActionOutInfo, gift.SellStarCount, user.FullName(true))));
+                        subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(Locale.Declension(Strings.R.Gift2ActionOutInfo, gift.SellStarCount, user)));
                     }
 
                     view.Visibility = Visibility.Visible;
@@ -253,7 +253,7 @@ namespace Telegram.Controls.Messages
                 {
                     title.Text = gift.IsPrivate
                         ? Strings.Gift2ActionTitleAnonymous
-                        : string.Format(Strings.Gift2ActionTitle, user.FullName(true));
+                        : string.Format(Strings.Gift2ActionTitle, user);
 
                     if (gift.Text.Text.Length > 0)
                     {
@@ -1754,13 +1754,13 @@ namespace Telegram.Controls.Messages
             {
                 return ReplaceWithLink(Strings.ActionGiftOutbound, "un2", gift);
             }
-            else if (message.ChatId == message.ClientService.Options.TelegramServiceNotificationsChatId)
+            else if (message.ClientService.TryGetMessageSender(gift.SenderId, out BaseObject sender))
             {
-                return ReplaceWithLink(Strings.ActionGift2Received, "un2", gift);
+                return ReplaceWithLink(Strings.ActionGiftInbound, sender, gift);
             }
             else
             {
-                return ReplaceWithLink(Strings.ActionGiftInbound, message.GetSender(), gift);
+                return ReplaceWithLink(Strings.ActionGift2Received, "un2", gift);
             }
         }
 

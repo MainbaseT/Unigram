@@ -118,7 +118,7 @@ namespace Telegram.Services
         string GetTitle(Chat chat, bool tiny = false);
         string GetTitle(long chatId, bool tiny = false);
         string GetTitle(MessageOrigin origin, MessageImportInfo import);
-        string GetTitle(MessageSender sender);
+        string GetTitle(MessageSender sender, bool firstName = false);
 
         IList<ChatFolderInfo> GetChatFolders(Chat chat);
 
@@ -161,6 +161,7 @@ namespace Telegram.Services
         bool CanInviteUsers(Chat chat);
 
         BaseObject GetMessageSender(MessageSender sender);
+        bool TryGetMessageSender(MessageSender sender, out BaseObject value);
 
         bool TryGetChat(long chatId, out Chat chat);
         bool TryGetChat(MessageSender sender, out Chat value);
@@ -1372,11 +1373,11 @@ namespace Telegram.Services
             return null;
         }
 
-        public string GetTitle(MessageSender sender)
+        public string GetTitle(MessageSender sender, bool firstName = false)
         {
             if (TryGetUser(sender, out User user))
             {
-                return user.FullName();
+                return user.FullName(firstName);
             }
             else if (TryGetChat(sender, out Chat chat))
             {
@@ -1732,6 +1733,23 @@ namespace Telegram.Services
             }
 
             return null;
+        }
+
+        public bool TryGetMessageSender(MessageSender sender, out BaseObject value)
+        {
+            if (sender is MessageSenderUser user && TryGetUser(user.UserId, out User resultUser))
+            {
+                value = resultUser;
+                return true;
+            }
+            else if (sender is MessageSenderChat chat && TryGetChat(chat.ChatId, out Chat resultChat))
+            {
+                value = resultChat;
+                return true;
+            }
+
+            value = null;
+            return false;
         }
 
         public bool TryGetChat(long chatId, out Chat chat)

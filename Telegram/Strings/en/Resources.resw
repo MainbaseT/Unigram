@@ -517,6 +517,12 @@
   <data name="ActionGift2Received" xml:space="preserve">
     <value>You received a gift for **un2**</value>
   </data>
+  <data name="ActionGiftChannel_one" xml:space="preserve">
+    <value>**un1** sent a gift to **un2** for {0} Star</value>
+  </data>
+  <data name="ActionGiftChannel_other" xml:space="preserve">
+    <value>**un1** sent a gift to **un2** for {0} Stars</value>
+  </data>
   <data name="ActionGiftInbound" xml:space="preserve">
     <value>un1 sent you a gift for **un2**</value>
   </data>
@@ -8524,7 +8530,7 @@ Minimum length is 5 characters.</value>
     <value>direct messages</value>
   </data>
   <data name="MonoforumSpan" xml:space="preserve">
-    <value>MESSAGES</value>
+    <value>DIRECT</value>
   </data>
   <data name="MonthAgo" xml:space="preserve">
     <value>a month ago</value>
