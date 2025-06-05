@@ -6632,7 +6632,10 @@ namespace Telegram.Views
 
         private void ClipperOuter_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ClipperBackground.Margin = new Thickness(-ForumNavigation.ActualWidth, -e.NewSize.Height - 48, -72, 0);
+            var width = ForumNavigation.ActualWidth;
+            var height = e.NewSize.Height - DateHeaderRelative.ActualHeight;
+
+            ClipperBackground.Margin = new Thickness(-width, -height - 48, -72, 0);
             //UpdateMessagesHeaderPadding();
         }
 

@@ -107,13 +107,13 @@ namespace Telegram.Controls.Chats
             clip.InsertKeyFrame(show ? 1 : 0, 0);
             clip.Duration = Constants.FastAnimation;
 
-            var offset = visual.Compositor.CreateVector3KeyFrameAnimation();
-            offset.InsertKeyFrame(show ? 0 : 1, new Vector3(0, -32, 0));
-            offset.InsertKeyFrame(show ? 1 : 0, new Vector3());
+            var offset = visual.Compositor.CreateScalarKeyFrameAnimation();
+            offset.InsertKeyFrame(show ? 0 : 1, -32);
+            offset.InsertKeyFrame(show ? 1 : 0, 0);
             offset.Duration = Constants.FastAnimation;
 
             visual.Clip.StartAnimation("TopInset", clip);
-            parent.StartAnimation("Translation", offset);
+            parent.StartAnimation("Translation.Y", offset);
 
             batch.End();
         }
