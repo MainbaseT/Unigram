@@ -60,7 +60,7 @@ namespace Telegram.ViewModels
                 return null;
             }
 
-            return new MessageViewModel(ClientService, _playbackService, _messageDelegate, null, null, message, false);
+            return new MessageViewModel(ClientService, _playbackService, _messageDelegate, null, null, null, message, false);
         }
 
         private InstantGalleryViewModel _gallery;

@@ -436,7 +436,7 @@ namespace Telegram.Controls.Messages
 
             if (message.IsOutgoing && !message.IsChannelPost && !message.IsSaved)
             {
-                var maxId = message.Topic?.LastReadOutboxMessageId ?? message.Chat.LastReadOutboxMessageId;
+                var maxId = message.LastReadOutboxMessageId;
                 var messageHash = message.ChatId ^ message.Id;
 
                 if (message.SendingState is MessageSendingStateFailed)

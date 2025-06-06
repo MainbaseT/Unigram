@@ -28,7 +28,7 @@ namespace Telegram.Views.Popups
             var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
 
             var delegato = new ChatMessageDelegate(clientService, settings, chat);
-            var viewModel = new MessageViewModel(clientService, playback, delegato, chat, null, message, true);
+            var viewModel = new MessageViewModel(clientService, playback, delegato, chat, null, null, message, true);
 
             BackgroundControl.Update(clientService, null);
             Message.UpdateMessage(viewModel);

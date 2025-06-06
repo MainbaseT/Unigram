@@ -21,18 +21,20 @@ namespace Telegram.ViewModels
         private readonly WeakReference _delegate;
 
         protected readonly Chat _chat;
-        protected readonly ForumTopic _topic;
+        protected readonly ForumTopic _forumTopic;
+        protected readonly FeedbackChatTopic _feedbackChatTopic;
 
         private Action _updateSelection;
 
-        public MessageViewModel(IClientService clientService, IPlaybackService playbackService, IMessageDelegate delegato, Chat chat, ForumTopic topic, Message message, bool processText = false)
+        public MessageViewModel(IClientService clientService, IPlaybackService playbackService, IMessageDelegate delegato, Chat chat, ForumTopic forumTopic, FeedbackChatTopic feedbackChatTopic, Message message, bool processText = false)
             : base(clientService, message)
         {
             _playbackService = playbackService;
             _delegate = new WeakReference(delegato);
 
             _chat = chat;
-            _topic = topic;
+            _forumTopic = forumTopic;
+            _feedbackChatTopic = feedbackChatTopic;
 
             if (processText)
             {
@@ -42,8 +44,9 @@ namespace Telegram.ViewModels
 
         public Chat Chat => _chat;
 
-        // WARNING: currently this is only valid when opening the topic itself.
-        public ForumTopic Topic => _topic;
+        public long LastReadOutboxMessageId => _forumTopic?.LastReadOutboxMessageId
+            ?? _feedbackChatTopic?.LastReadOutboxMessageId
+            ?? Chat.LastReadOutboxMessageId;
 
         public void SelectionChanged()
         {

@@ -1828,7 +1828,7 @@ namespace Telegram.ViewModels
                 return null;
             }
 
-            var model = new MessageViewModel(ClientService, _playbackService, _messageDelegate, _chat, _forumTopic, message, true);
+            var model = new MessageViewModel(ClientService, _playbackService, _messageDelegate, _chat, _forumTopic, _feedbackChatTopic, message, true);
 
             if (forLanguageStatistics)
             {
@@ -4823,7 +4823,7 @@ namespace Telegram.ViewModels
 
                 if (previousDate.Date != itemDate.Date)
                 {
-                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, next.Topic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, next.Date, 0, null, null, null, null, null, null, next.MessageThreadId, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
+                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, _viewModel.ForumTopic, _viewModel.FeedbackChatTopic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, next.Date, 0, null, null, null, null, null, null, next.MessageThreadId, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
                 }
             }
 
@@ -4841,7 +4841,7 @@ namespace Telegram.ViewModels
             {
                 if (!item.TopicId.AreTheSame(next.TopicId))
                 {
-                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, next.Topic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, next.Date, 0, null, null, null, null, null, null, next.MessageThreadId, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderMessageTopic(), null));
+                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, _viewModel.ForumTopic, _viewModel.FeedbackChatTopic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, next.Date, 0, null, null, null, null, null, null, next.MessageThreadId, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderMessageTopic(), null));
                 }
             }
 

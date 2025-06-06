@@ -16,7 +16,7 @@ namespace Telegram.ViewModels
     public partial class QuickReplyMessageViewModel : MessageViewModel
     {
         public QuickReplyMessageViewModel(IClientService clientService, IPlaybackService playbackService, IMessageDelegate delegato, Chat chat, Message message, bool processText = false)
-            : base(clientService, playbackService, delegato, chat, null, message, processText)
+            : base(clientService, playbackService, delegato, chat, null, null, message, processText)
         {
         }
 

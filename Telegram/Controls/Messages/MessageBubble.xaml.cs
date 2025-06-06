@@ -304,8 +304,6 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            var maxId = message.Topic?.LastReadOutboxMessageId ?? message.Chat.LastReadOutboxMessageId;
-
             if (chat.Id != message.ClientService.Options.MyId)
             {
                 if (message.SendingState is MessageSendingStateFailed)
@@ -314,7 +312,7 @@ namespace Telegram.Controls.Messages
                 else if (message.SendingState is MessageSendingStatePending)
                 {
                 }
-                else if (message.Id <= maxId && message.IsOutgoing && !message.IsChannelPost)
+                else if (message.Id <= message.LastReadOutboxMessageId && message.IsOutgoing && !message.IsChannelPost)
                 {
                 }
                 else if (message.IsOutgoing && !message.IsChannelPost)
@@ -406,7 +404,7 @@ namespace Telegram.Controls.Messages
             else if (message.SendingState is MessageSendingStatePending)
             {
             }
-            else if (message.Id <= maxId && message.IsOutgoing && !message.IsChannelPost)
+            else if (message.Id <= message.LastReadOutboxMessageId && message.IsOutgoing && !message.IsChannelPost)
             {
                 builder.Append(". ");
                 builder.Append(Strings.AccDescrMsgRead);
