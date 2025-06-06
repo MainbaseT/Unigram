@@ -1257,7 +1257,24 @@ namespace Telegram.ViewModels
 
             if (onlyRemote is false && Items.TryGetValue(maxId, out MessageViewModel already))
             {
-                if (alignment == VerticalAlignment.Top && !onlyRemote)
+                if (alignment == VerticalAlignment.Center)
+                {
+                    var index = Items.IndexOf(already);
+                    var needNextSlice = index < 25 || Items.Count - index < 25;
+
+                    if (needNextSlice)
+                    {
+                        if (direction == ScrollIntoViewAlignment.Leading)
+                        {
+                            await LoadNextSliceAsync(PanelScrollingDirection.Forward);
+                        }
+                        else
+                        {
+                            await LoadNextSliceAsync(PanelScrollingDirection.Backward);
+                        }
+                    }
+                }
+                else if (alignment == VerticalAlignment.Top && !onlyRemote)
                 {
                     long lastMessageId;
                     if (_forumTopic is ForumTopic topic)
