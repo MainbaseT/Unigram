@@ -513,7 +513,7 @@ namespace Telegram.ViewModels
         {
             get
             {
-                if (Type != DialogType.History)
+                if (Type != DialogType.History || IsFeedbackGroup)
                 {
                     return 0;
                 }
