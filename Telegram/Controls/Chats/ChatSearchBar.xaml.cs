@@ -68,8 +68,7 @@ namespace Telegram.Controls.Chats
             {
                 var history = viewModel.Dialog.Type is
                     not DialogType.History and
-                    not DialogType.Thread and
-                    not DialogType.SavedMessagesTopic;
+                    not DialogType.Thread;
 
                 SearchPrevious.Visibility = history ? Visibility.Collapsed : Visibility.Visible;
                 SearchNext.Visibility = history ? Visibility.Collapsed : Visibility.Visible;

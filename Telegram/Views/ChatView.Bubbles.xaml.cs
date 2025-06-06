@@ -55,7 +55,7 @@ namespace Telegram.Views
 
         private void UpdateArrowVisibility()
         {
-            if (ViewModel.Type is not DialogType.History and not DialogType.Thread and not DialogType.SavedMessagesTopic)
+            if (ViewModel.Type is not DialogType.History and not DialogType.Thread)
             {
                 Arrows.IsVisible = false;
                 return;

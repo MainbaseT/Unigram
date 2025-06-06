@@ -250,13 +250,26 @@ namespace Telegram.ViewModels
         private string _lastSeen;
         public string LastSeen
         {
-            get => Type switch
+            get
             {
-                DialogType.History => IsFeedbackGroup ? Strings.ChatMessageSuggestions : _lastSeen,
-                DialogType.EventLog => Strings.EventLog,
-                DialogType.SavedMessagesTopic => Strings.SavedMessagesTab,
-                _ => _lastSeen
-            };
+                if (Type == DialogType.History)
+                {
+                    return IsFeedbackGroup ? Strings.ChatMessageSuggestions : _lastSeen;
+                }
+                else if (Type == DialogType.Thread)
+                {
+                    if (SavedMessagesTopic != null)
+                    {
+                        return Strings.SavedMessagesTab;
+                    }
+                }
+                else if (Type == DialogType.EventLog)
+                {
+                    return Strings.EventLog;
+                }
+
+                return _lastSeen;
+            }
             set
             {
                 Set(ref _lastSeen, value);
@@ -721,7 +734,7 @@ namespace Telegram.ViewModels
             // Backward => Going to top, to the past
             // Forward => Going to bottom, to the present
 
-            if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned and not DialogType.SavedMessagesTopic)
+            if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned)
             {
                 return;
             }
@@ -1111,17 +1124,21 @@ namespace Telegram.ViewModels
             var filter = new SearchMessagesFilterPinned();
             var messageTopic = default(MessageTopic);
 
-            if (_forumTopic is ForumTopic topic)
+            if (SavedMessagesTopic != null)
             {
-                messageTopic = new MessageTopicForum(topic.Info.MessageThreadId);
+                messageTopic = new MessageTopicSavedMessages(SavedMessagesTopic.Id);
             }
-            else if (_thread is MessageThreadInfo thread)
+            else if (FeedbackChatTopic != null)
             {
-                messageTopic = new MessageTopicForum(thread.MessageThreadId);
+                messageTopic = new MessageTopicFeedbackChat(FeedbackChatTopic.Id);
             }
-            else if (SavedMessagesTopicId != 0)
+            else if (ForumTopic != null)
             {
-                messageTopic = new MessageTopicSavedMessages(SavedMessagesTopicId);
+                messageTopic = new MessageTopicForum(ForumTopic.Info.MessageThreadId);
+            }
+            else if (Thread != null)
+            {
+                messageTopic = new MessageTopicForum(Thread.MessageThreadId);
             }
 
             if (!_hasLoadedLastPinnedMessage && Type == DialogType.History)
@@ -1206,7 +1223,7 @@ namespace Telegram.ViewModels
 
         public async Task LoadMessageSliceAsync(long? previousId, long maxId, VerticalAlignment alignment = VerticalAlignment.Center, double? pixel = null, ScrollIntoViewAlignment? direction = null, bool? disableAnimation = null, TextQuote highlight = null, bool onlyRemote = false)
         {
-            if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned and not DialogType.SavedMessagesTopic)
+            if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned)
             {
                 NotifyMessageSliceLoaded();
                 return;
@@ -2136,10 +2153,13 @@ namespace Telegram.ViewModels
             {
                 parameter = chatMessageTopic.ChatId;
 
+                if (Type == DialogType.History)
+                {
+                    Type = DialogType.Thread;
+                }
+
                 if (chatMessageTopic.MessageTopic is MessageTopicSavedMessages savedMessages)
                 {
-                    Type = DialogType.SavedMessagesTopic;
-
                     if (ClientService.TryGetSavedMessagesTopic(savedMessages.SavedMessagesTopicId, out var topic))
                     {
                         SavedMessagesTopic = topic;
@@ -2152,8 +2172,6 @@ namespace Telegram.ViewModels
                 }
                 else if (chatMessageTopic.MessageTopic is MessageTopicForum forum)
                 {
-                    Type = DialogType.Thread;
-
                     if (ClientService.TryGetForumTopic(chatMessageTopic.ChatId, forum.ForumTopicId, out ForumTopic forumTopic))
                     {
                         ForumTopic = forumTopic;
@@ -2185,8 +2203,6 @@ namespace Telegram.ViewModels
                 }
                 else if (chatMessageTopic.MessageTopic is MessageTopicFeedbackChat feedbackChat)
                 {
-                    Type = DialogType.Thread;
-
                     if (ClientService.TryGetFeedbackChatTopic(chatMessageTopic.ChatId, feedbackChat.FeedbackChatTopicId, out FeedbackChatTopic feedbeckChatTopic))
                     {
                         FeedbackChatTopic = feedbeckChatTopic;
@@ -2513,7 +2529,7 @@ namespace Telegram.ViewModels
 
             ClientService.Send(new CloseChat(chat.Id));
 
-            if (Type is not DialogType.History and not DialogType.Thread and not DialogType.SavedMessagesTopic)
+            if (Type is not DialogType.History and not DialogType.Thread)
             {
                 return;
             }
@@ -4264,9 +4280,9 @@ namespace Telegram.ViewModels
             {
                 FilterExecute();
             }
-            else if (Type == DialogType.SavedMessagesTopic)
+            else if (SavedMessagesTopic != null)
             {
-                if (SavedMessagesTopic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
+                if (SavedMessagesTopic.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
                 {
                     NavigationService.NavigateToChat(savedChat);
                 }

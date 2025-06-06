@@ -413,7 +413,7 @@ namespace Telegram.Views
 
             StickersPanel.MaxWidth = SettingsService.Current.IsAdaptiveWideEnabled ? 1024 : double.PositiveInfinity;
 
-            Options.Visibility = ViewModel.Type is DialogType.History or DialogType.Thread or DialogType.SavedMessagesTopic
+            Options.Visibility = ViewModel.Type is DialogType.History or DialogType.Thread
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
@@ -4710,59 +4710,57 @@ namespace Telegram.Views
 
         public void UpdateChatTitle(Chat chat)
         {
-            if (ViewModel.Type == DialogType.Thread)
+            if (ViewModel.ForumTopic != null)
             {
-                if (ViewModel.ForumTopic != null)
+                ChatTitle = ViewModel.ForumTopic.Info.Name;
+            }
+            else if (ViewModel.FeedbackChatTopic != null)
+            {
+                ChatTitle = ViewModel.ClientService.GetTitle(ViewModel.FeedbackChatTopic.SenderId);
+            }
+            else if (ViewModel.Thread != null)
+            {
+                var message = ViewModel.Thread.Messages.LastOrDefault();
+                if (message == null || message.InteractionInfo?.ReplyInfo == null)
                 {
-                    ChatTitle = ViewModel.ForumTopic.Info.Name;
+                    return;
                 }
-                else if (ViewModel.FeedbackChatTopic != null)
-                {
-                    ChatTitle = ViewModel.ClientService.GetTitle(ViewModel.FeedbackChatTopic.SenderId);
-                }
-                else
-                {
-                    var message = ViewModel.Thread?.Messages.LastOrDefault();
-                    if (message == null || message.InteractionInfo?.ReplyInfo == null)
-                    {
-                        return;
-                    }
 
-                    if (ViewModel.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+                // TODO: UpdateTopicMessageCount
+                if (ViewModel.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+                {
+                    if (senderChat.Type is ChatTypeSupergroup supergroup && supergroup.IsChannel)
                     {
-                        if (senderChat.Type is ChatTypeSupergroup supergroup && supergroup.IsChannel)
-                        {
-                            ChatTitle = Locale.Declension(Strings.R.Comments, message.InteractionInfo.ReplyInfo.ReplyCount);
-                        }
-                        else
-                        {
-                            ChatTitle = Locale.Declension(Strings.R.Replies, message.InteractionInfo.ReplyInfo.ReplyCount);
-                        }
+                        ChatTitle = Locale.Declension(Strings.R.Comments, message.InteractionInfo.ReplyInfo.ReplyCount);
                     }
                     else
                     {
                         ChatTitle = Locale.Declension(Strings.R.Replies, message.InteractionInfo.ReplyInfo.ReplyCount);
                     }
                 }
+                else
+                {
+                    ChatTitle = Locale.Declension(Strings.R.Replies, message.InteractionInfo.ReplyInfo.ReplyCount);
+                }
+            }
+            else if (ViewModel.SavedMessagesTopic != null)
+            {
+                if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeMyNotes)
+                {
+                    ChatTitle = Strings.MyNotes;
+                }
+                else if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeAuthorHidden)
+                {
+                    ChatTitle = Strings.AnonymousForward;
+                }
+                else if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
+                {
+                    ChatTitle = ViewModel.ClientService.GetTitle(savedChat);
+                }
             }
             else if (ViewModel.Type == DialogType.ScheduledMessages)
             {
                 ChatTitle = ViewModel.ClientService.IsSavedMessages(chat) ? Strings.Reminders : Strings.ScheduledMessages;
-            }
-            else if (ViewModel.Type == DialogType.SavedMessagesTopic)
-            {
-                if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeMyNotes)
-                {
-                    ChatTitle = Strings.MyNotes;
-                }
-                else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeAuthorHidden)
-                {
-                    ChatTitle = Strings.AnonymousForward;
-                }
-                else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
-                {
-                    ChatTitle = ViewModel.ClientService.GetTitle(savedChat);
-                }
             }
             else if (ViewModel.Type == DialogType.BusinessReplies && ViewModel.QuickReplyShortcut is QuickReplyShortcut shortcut)
             {
@@ -4795,56 +4793,53 @@ namespace Telegram.Views
 
         public void UpdateChatPhoto(Chat chat)
         {
-            if (ViewModel.Type == DialogType.Thread)
+            if (ViewModel.ForumTopic is ForumTopic topic)
             {
-                if (ViewModel.ForumTopic is ForumTopic topic)
+                LoadObject(ref Icon, nameof(Icon));
+                Photo.Clear();
+
+                if (topic.Info.Icon.CustomEmojiId != 0)
                 {
-                    LoadObject(ref Icon, nameof(Icon));
-                    Photo.Clear();
-
-                    if (topic.Info.Icon.CustomEmojiId != 0)
-                    {
-                        Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, topic.Info.Icon.CustomEmojiId);
-                        TopicIconRoot.Visibility = Visibility.Collapsed;
-                        TopicIconGeneral.Visibility = Visibility.Collapsed;
-                    }
-                    else if (topic.Info.IsGeneral)
-                    {
-                        Icon.Source = null;
-                        TopicIconRoot.Visibility = Visibility.Collapsed;
-                        TopicIconGeneral.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        Icon.Source = null;
-                        TopicIconRoot.Visibility = Visibility.Visible;
-                        TopicIconGeneral.Visibility = Visibility.Collapsed;
-
-                        var brush = ForumTopicCell.GetIconGradient(topic.Info.Icon);
-
-                        TopicIconPath.Fill = brush;
-                        TopicIconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);
-                        TopicIconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
-                    }
-                }
-                else if (ViewModel.FeedbackChatTopic != null)
-                {
-                    UnloadObject(Icon);
+                    Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, topic.Info.Icon.CustomEmojiId);
                     TopicIconRoot.Visibility = Visibility.Collapsed;
                     TopicIconGeneral.Visibility = Visibility.Collapsed;
-
-                    Photo.SetMessageSender(ViewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId, 36);
+                }
+                else if (topic.Info.IsGeneral)
+                {
+                    Icon.Source = null;
+                    TopicIconRoot.Visibility = Visibility.Collapsed;
+                    TopicIconGeneral.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    UnloadObject(Icon);
-                    TopicIconRoot.Visibility = Visibility.Collapsed;
+                    Icon.Source = null;
+                    TopicIconRoot.Visibility = Visibility.Visible;
                     TopicIconGeneral.Visibility = Visibility.Collapsed;
 
-                    Photo.Source = PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
+                    var brush = ForumTopicCell.GetIconGradient(topic.Info.Icon);
+
+                    TopicIconPath.Fill = brush;
+                    TopicIconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);
+                    TopicIconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
                 }
             }
-            else if (ViewModel.Type == DialogType.SavedMessagesTopic)
+            else if (ViewModel.FeedbackChatTopic != null)
+            {
+                UnloadObject(Icon);
+                TopicIconRoot.Visibility = Visibility.Collapsed;
+                TopicIconGeneral.Visibility = Visibility.Collapsed;
+
+                Photo.SetMessageSender(ViewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId, 36);
+            }
+            else if (ViewModel.Thread != null)
+            {
+                UnloadObject(Icon);
+                TopicIconRoot.Visibility = Visibility.Collapsed;
+                TopicIconGeneral.Visibility = Visibility.Collapsed;
+
+                Photo.Source = PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
+            }
+            else if (ViewModel.SavedMessagesTopic != null)
             {
                 UnloadObject(Icon);
                 TopicIconRoot.Visibility = Visibility.Collapsed;
@@ -4885,27 +4880,24 @@ namespace Telegram.Views
 
         public void UpdateChatEmojiStatus(Chat chat)
         {
-            if (ViewModel.Type == DialogType.SavedMessagesTopic)
+            if (ViewModel.SavedMessagesTopic != null)
             {
-                if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeMyNotes)
+                if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeMyNotes)
                 {
                     Identity.ClearStatus(BotVerified);
                 }
-                else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeAuthorHidden)
+                else if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeAuthorHidden)
                 {
                     Identity.ClearStatus(BotVerified);
                 }
-                else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
+                else if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
                 {
                     Identity.SetStatus(_viewModel.ClientService, savedChat, BotVerified);
                 }
             }
-            else if (ViewModel.Type == DialogType.Thread)
+            else if (ViewModel.FeedbackChatTopic != null)
             {
-                if (ViewModel.FeedbackChatTopic != null)
-                {
-                    Identity.SetStatus(_viewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId);
-                }
+                Identity.SetStatus(_viewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId);
             }
             else
             {
@@ -4981,7 +4973,7 @@ namespace Telegram.Views
                 return;
             }
 
-            if (actions != null && actions.Count > 0 && (ViewModel.Type == DialogType.History || ViewModel.Type == DialogType.Thread))
+            if (actions != null && actions.Count > 0 && (ViewModel.Type is DialogType.History or DialogType.Thread))
             {
                 ChatActionLabel.Text = InputChatActionManager.GetTypingString(chat.Type, actions, ViewModel.ClientService, out ChatAction commonAction);
                 ChatActionIndicator.UpdateAction(commonAction);
@@ -5787,17 +5779,17 @@ namespace Telegram.Views
             {
                 ShowAction(ViewModel.Search.FilterByTag ? Strings.SavedTagShowOtherMessages : Strings.SavedTagHideOtherMessages, true);
             }
-            else if (ViewModel.Type == DialogType.SavedMessagesTopic)
+            else if (ViewModel.SavedMessagesTopic != null)
             {
-                if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeMyNotes)
+                if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeMyNotes)
                 {
                     ShowArea(fullInfo.OutgoingPaidMessageStarCount);
                 }
-                else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeAuthorHidden)
+                else if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeAuthorHidden)
                 {
                     ShowAction(Strings.AuthorHiddenDescription, false);
                 }
-                else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
+                else if (ViewModel.SavedMessagesTopic.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
                 {
                     if (savedChat.Type is ChatTypePrivate)
                     {
