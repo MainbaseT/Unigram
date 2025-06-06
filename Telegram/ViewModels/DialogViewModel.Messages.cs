@@ -1349,6 +1349,11 @@ namespace Telegram.ViewModels
                 return;
             }
 
+            if (message.ReplyMarkup is ReplyMarkupShowKeyboard { OneTime: true })
+            {
+                ClientService.Send(new DeleteChatReplyMarkup(message.ChatId, message.Id));
+            }
+
             if (keyboardButton.Type is KeyboardButtonTypeRequestPhoneNumber)
             {
                 if (ClientService.TryGetUser(ClientService.Options.MyId, out Telegram.Td.Api.User cached))

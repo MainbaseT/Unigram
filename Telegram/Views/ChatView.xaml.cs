@@ -1894,11 +1894,6 @@ namespace Telegram.Views
             {
                 ViewModel.KeyboardButtonExecute(panel.Tag as MessageViewModel, e.Button);
             }
-
-            if (e.OneTime)
-            {
-                ShowHideMarkup(false, false);
-            }
         }
 
         private void Commands_Click(object sender, RoutedEventArgs e)
@@ -5163,6 +5158,11 @@ namespace Telegram.Views
                     UpdateChatTextPlaceholder(chat);
                 }
 
+                ButtonMarkup.Visibility = Visibility.Collapsed;
+                ShowHideMarkup(false, false);
+            }
+            else if (message?.ReplyMarkup is ReplyMarkupShowKeyboard { OneTime: true, IsPersonal: false })
+            {
                 ButtonMarkup.Visibility = Visibility.Collapsed;
                 ShowHideMarkup(false, false);
             }

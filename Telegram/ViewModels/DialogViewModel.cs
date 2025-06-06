@@ -2958,6 +2958,11 @@ namespace Telegram.ViewModels
                 {
                     return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, embedded.ReplyToMessage.TopicId, embedded.ReplyToQuote);
                 }
+                else if (clean && embedded.ReplyToMessage.ReplyMarkup is ReplyMarkupForceReply)
+                {
+                    // Code should arrive here only when getting the reply while sending a message
+                    ClientService.Send(new DeleteChatReplyMarkup(embedded.ReplyToMessage.ChatId, embedded.ReplyToMessage.Id));
+                }
 
                 return new InputMessageReplyToMessage(embedded.ReplyToMessage.Id, embedded.ReplyToQuote);
             }
