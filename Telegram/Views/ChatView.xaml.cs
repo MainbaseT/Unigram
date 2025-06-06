@@ -4794,7 +4794,6 @@ namespace Telegram.Views
         {
             if (ViewModel.ForumTopic is ForumTopic topic)
             {
-                LoadObject(ref Icon, nameof(Icon));
                 Photo.Clear();
 
                 if (topic.Info.Icon.CustomEmojiId != 0)
@@ -4824,25 +4823,26 @@ namespace Telegram.Views
             }
             else if (ViewModel.FeedbackChatTopic != null)
             {
-                UnloadObject(Icon);
                 TopicIconRoot.Visibility = Visibility.Collapsed;
                 TopicIconGeneral.Visibility = Visibility.Collapsed;
 
+                Icon.Source = null;
                 Photo.SetMessageSender(ViewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId, 36);
             }
             else if (ViewModel.Thread != null)
             {
-                UnloadObject(Icon);
                 TopicIconRoot.Visibility = Visibility.Collapsed;
                 TopicIconGeneral.Visibility = Visibility.Collapsed;
 
+                Icon.Source = null;
                 Photo.Source = PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
             }
             else if (ViewModel.SavedMessagesTopic != null)
             {
-                UnloadObject(Icon);
                 TopicIconRoot.Visibility = Visibility.Collapsed;
                 TopicIconGeneral.Visibility = Visibility.Collapsed;
+
+                Icon.Source = null;
 
                 if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeMyNotes)
                 {
@@ -4861,10 +4861,10 @@ namespace Telegram.Views
             }
             else
             {
-                UnloadObject(Icon);
                 TopicIconRoot.Visibility = Visibility.Collapsed;
                 TopicIconGeneral.Visibility = Visibility.Collapsed;
 
+                Icon.Source = null;
                 Photo.SetChat(ViewModel.ClientService, chat, 36);
             }
         }

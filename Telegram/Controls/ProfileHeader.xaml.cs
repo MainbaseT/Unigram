@@ -12,6 +12,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Controls.Cells;
 using Telegram.Controls.Gallery;
 using Telegram.Controls.Media;
 using Telegram.Converters;
@@ -251,8 +252,6 @@ namespace Telegram.Controls
 
         public ElementTheme HeaderTheme => HeaderRoot.RequestedTheme;
 
-        private CompositionPropertySet _properties;
-
         private void OnActualThemeChanged(FrameworkElement sender, object args)
         {
             if (_actualTheme == sender.ActualTheme || _actualTheme == ElementTheme.Default)
@@ -302,29 +301,17 @@ namespace Telegram.Controls
         public void ViewChanged(double verticalOffset)
         {
             Pattern.Update((float)(verticalOffset / HeaderRoot.ActualHeight));
-
-            var visual = ElementComposition.GetElementVisual(Segments);
-            visual.CenterPoint = new Vector3(70, 70, 0);
-            visual.Scale = new Vector3(1 - (float)(verticalOffset / HeaderRoot.ActualHeight));
-
-            var title = ElementComposition.GetElementVisual(TitleRoot);
-            var subtitle = ElementComposition.GetElementVisual(SubtitleRoot);
-
-            title.CenterPoint = new Vector3(TitleRoot.ActualSize.X / 2, TitleRoot.ActualSize.Y, 0);
-            subtitle.CenterPoint = new Vector3(SubtitleRoot.ActualSize.X / 2, 0, 0);
         }
 
         public void InitializeScrolling(CompositionPropertySet properties)
         {
-            _properties = properties.Compositor.CreatePropertySet();
-            _properties.InsertScalar("targetY", HeaderRoot.ActualSize.Y);
-
             var target = ElementComposition.GetElementVisual(this);
             var controls = ElementComposition.GetElementVisual(ControlsRoot);
             var title = ElementComposition.GetElementVisual(TitleRoot);
             var subtitle = ElementComposition.GetElementVisual(SubtitleRoot);
             var buttons = ElementComposition.GetElementVisual(Buttons);
             var root = ElementComposition.GetElementVisual(HeaderRoot);
+            var photo = ElementComposition.GetElementVisual(HeaderPhoto);
 
             ElementCompositionPreview.SetIsTranslationEnabled(Buttons, true);
             ElementCompositionPreview.SetIsTranslationEnabled(HeaderRoot, true);
@@ -337,8 +324,13 @@ namespace Telegram.Controls
             rootTranslation.SetReferenceParameter("scrollViewer", properties);
             rootTranslation.SetReferenceParameter("target", target);
 
+            var photoExp = "clamp(1 - -scrollViewer.Translation.Y / root.Size.Y, 0, 1.1)";
+            var photoScale = root.Compositor.CreateExpressionAnimation($"vector3({photoExp}, {photoExp}, 1)");
+            photoScale.SetReferenceParameter("scrollViewer", properties);
+            photoScale.SetReferenceParameter("root", root);
+
             //var rootExp = "clamp(-scrollViewer.Translation.Y - (this.Target.Size.Y - 48 + 0), 0, target.Size.Y - this.Target.Size.Y)";
-            var controlsExp = "clamp(-scrollViewer.Translation.Y - (target.Size.Y - 40), 0, target.Size.Y)";
+            var controlsExp = "-scrollViewer.Translation.Y - (target.Size.Y - 40)";
             var controlsClip = root.Compositor.CreateExpressionAnimation(controlsExp);
             controlsClip.SetReferenceParameter("scrollViewer", properties);
             controlsClip.SetReferenceParameter("target", root);
@@ -354,17 +346,18 @@ namespace Telegram.Controls
             buttonsOpacity.SetReferenceParameter("target", root);
 
             //var titleExp = "clamp(-scrollViewer.Translation.Y - 168 - 8, 0, 86)";
-            var titleExp = "clamp(-scrollViewer.Translation.Y - 184 - 8, 0, 86)";
+            var titleExp = "clamp(-scrollViewer.Translation.Y - 188, 0, buttons.Size.Y > 0 ? 86 : 11)";
             var titleTranslation = root.Compositor.CreateExpressionAnimation(titleExp);
             titleTranslation.SetReferenceParameter("scrollViewer", properties);
+            titleTranslation.SetReferenceParameter("buttons", buttons);
 
             //var titleScaleExp = "max(diff, 1 - clamp((-scrollViewer.Translation.Y - 184) / 32, 0, 1) * diff)";
-            var titleScaleExp = "clamp(1 - ((-scrollViewer.Translation.Y - 140) / 68) * 0.3, 0.7, 1)";
+            var titleScaleExp = "clamp(1 - ((-scrollViewer.Translation.Y - 122) / 68) * 0.3, 0.7, 1)";
             var titleScale = root.Compositor.CreateExpressionAnimation($"vector3({titleScaleExp}, {titleScaleExp}, 1)");
             titleScale.SetReferenceParameter("scrollViewer", properties);
 
             //var subtitleScaleExp = "max(diff, 1 - clamp((-scrollViewer.Translation.Y - 184) / 32, 0, 1) * diff)";
-            var subtitleScaleExp = "clamp(1 - ((-scrollViewer.Translation.Y - 140) / 68) * 0.143, 0.857, 1)";
+            var subtitleScaleExp = "clamp(1 - ((-scrollViewer.Translation.Y - 122) / 68) * 0.143, 0.857, 1)";
             var subtitleScale = root.Compositor.CreateExpressionAnimation($"vector3({subtitleScaleExp}, {subtitleScaleExp}, 1)");
             subtitleScale.SetReferenceParameter("scrollViewer", properties);
 
@@ -377,6 +370,7 @@ namespace Telegram.Controls
             title.StartAnimation("Scale", titleScale);
             subtitle.StartAnimation("Translation.Y", titleTranslation);
             subtitle.StartAnimation("Scale", subtitleScale);
+            photo.StartAnimation("Scale", photoScale);
         }
 
         #region Delegate
@@ -668,13 +662,34 @@ namespace Telegram.Controls
             }
             else if (ViewModel.ForumTopic != null)
             {
-                FindName(nameof(Icon));
-                Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.ForumTopic.Info.Icon.CustomEmojiId);
-                Photo.Clear();
+                if (ViewModel.ForumTopic.Info.Icon.CustomEmojiId != 0)
+                {
+                    Icon.Source = new CustomEmojiFileSource(ViewModel.ClientService, ViewModel.ForumTopic.Info.Icon.CustomEmojiId);
+                    TopicIconRoot.Visibility = Visibility.Collapsed;
+                    TopicIconGeneral.Visibility = Visibility.Collapsed;
+                }
+                else if (ViewModel.ForumTopic.Info.IsGeneral)
+                {
+                    Icon.Source = null;
+                    TopicIconRoot.Visibility = Visibility.Collapsed;
+                    TopicIconGeneral.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Icon.Source = null;
+                    TopicIconRoot.Visibility = Visibility.Visible;
+                    TopicIconGeneral.Visibility = Visibility.Collapsed;
+
+                    var brush = ForumTopicCell.GetIconGradient(ViewModel.ForumTopic.Info.Icon);
+
+                    TopicIconPath.Fill = brush;
+                    TopicIconPath.Stroke = new SolidColorBrush(brush.GradientStops[1].Color);
+                    TopicIconText.Text = InitialNameStringConverter.Convert(ViewModel.ForumTopic.Info.Name);
+                }
             }
             else
             {
-                UnloadObject(Icon);
+                Icon.Source = null;
 
                 if (chat.Id == ViewModel.ClientService.Options.MyId && ViewModel.ClientService.TryGetUser(chat, out User user))
                 {
@@ -1878,6 +1893,24 @@ namespace Telegram.Controls
         private void Identity_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShowPromo();
+        }
+
+        private void HeaderPhoto_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var visual = ElementComposition.GetElementVisual(HeaderPhoto);
+            visual.CenterPoint = new Vector3(HeaderPhoto.ActualSize / 2, 0);
+        }
+
+        private void TitleRoot_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var title = ElementComposition.GetElementVisual(TitleRoot);
+            title.CenterPoint = new Vector3(TitleRoot.ActualSize.X / 2, TitleRoot.ActualSize.Y, 0);
+        }
+
+        private void SubtitleRoot_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var subtitle = ElementComposition.GetElementVisual(SubtitleRoot);
+            subtitle.CenterPoint = new Vector3(SubtitleRoot.ActualSize.X / 2, 0, 0);
         }
     }
 }
