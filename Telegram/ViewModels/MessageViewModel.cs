@@ -234,12 +234,14 @@ namespace Telegram.ViewModels
             return false;
         }
 
+        public bool IsFeedbackChatTopicMessage => _feedbackChatTopic != null;
+
         private bool? _hasSenderPhoto;
         public bool HasSenderPhoto => _hasSenderPhoto ??= GetHasSenderPhoto();
 
         private bool GetHasSenderPhoto()
         {
-            if (IsService)
+            if (IsService || IsFeedbackChatTopicMessage)
             {
                 return false;
             }
