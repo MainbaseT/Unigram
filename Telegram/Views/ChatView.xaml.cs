@@ -2246,22 +2246,6 @@ namespace Telegram.Views
             //{
             //    CreateFlyoutItem(ref flyout, null, Strings.AddShortcut);
             //}
-            if (user != null && user.Type is UserTypeBot)
-            {
-                var fullInfo = ViewModel.ClientService.GetUserFull(user.Id);
-                if (fullInfo?.BotInfo != null)
-                {
-                    if (fullInfo.BotInfo.Commands.Any(x => x.Command.Equals("settings", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        flyout.CreateFlyoutItem(() => ViewModel.SendMessage("/settings"), Strings.BotSettings);
-                    }
-
-                    if (fullInfo.BotInfo.Commands.Any(x => x.Command.Equals("help", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        flyout.CreateFlyoutItem(() => ViewModel.SendMessage("/help"), Strings.BotHelp);
-                    }
-                }
-            }
 
             var hidden = ViewModel.Settings.GetChatPinnedMessage(chat.Id);
             if (hidden != 0)
