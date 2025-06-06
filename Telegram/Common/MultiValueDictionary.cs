@@ -25,6 +25,18 @@ namespace Telegram.Common
             }
         }
 
+        public void AddRange(TKey key, IEnumerable<TValue> items)
+        {
+            if (TryGetValue(key, out var values))
+            {
+                values.AddRange(items);
+            }
+            else
+            {
+                Add(key, new List<TValue>(items));
+            }
+        }
+
         public void Remove(TKey key, TValue value)
         {
             if (TryGetValue(key, out var values))

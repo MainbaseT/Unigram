@@ -320,19 +320,17 @@ namespace Telegram.Views
                 {
                     if (feedbackChatMessages != null && message.TopicId is MessageTopicFeedbackChat topicFeedbackChat && ViewModel.ClientService.TryGetFeedbackChatTopic(message.ChatId, topicFeedbackChat.FeedbackChatTopicId, out FeedbackChatTopic feedbackChatTopic))
                     {
-                        if ((message.IsOutgoing && message.UnreadReactions?.Count > 0) || (message.Id < feedbackChatTopic.LastReadInboxMessageId && !message.IsOutgoing))
+                        //if ((message.IsOutgoing && message.UnreadReactions?.Count > 0) || (message.Id < feedbackChatTopic.LastReadInboxMessageId && !message.IsOutgoing))
+                        //{
+                        if (message.Content is MessageAlbum album)
                         {
-                            var temp = feedbackChatMessages[topicFeedbackChat.FeedbackChatTopicId];
-
-                            if (message.Content is MessageAlbum album)
-                            {
-                                messages.AddRange(album.Messages.Keys);
-                            }
-                            else
-                            {
-                                messages.Add(message.Id);
-                            }
+                            feedbackChatMessages.AddRange(topicFeedbackChat.FeedbackChatTopicId, album.Messages.Keys);
                         }
+                        else
+                        {
+                            feedbackChatMessages.Add(topicFeedbackChat.FeedbackChatTopicId, message.Id);
+                        }
+                        //}
                     }
                     else if (message.Content is MessageAlbum album)
                     {
@@ -382,7 +380,7 @@ namespace Telegram.Views
             }
 
             // Read and play messages logic:
-            if (messages.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !_fromPreview)
+            if ((messages.Count > 0 || feedbackChatMessages != null) && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !_fromPreview)
             {
                 MessageSource source = ViewModel.Type switch
                 {
@@ -397,17 +395,6 @@ namespace Telegram.Views
                     : new MessageSourceChatHistory()
                 };
 
-                // This is needed because we don't keep all topics messages in memory as TDLib would do
-                long messageThreadId = 0;
-                if (ViewModel.ForumTopic != null)
-                {
-                    messageThreadId = ViewModel.ForumTopic.Info.MessageThreadId;
-                }
-                else if (ViewModel.Thread != null)
-                {
-                    messageThreadId = ViewModel.Thread.MessageThreadId;
-                }
-
                 if (feedbackChatMessages != null)
                 {
                     foreach (var topic in feedbackChatMessages)
@@ -417,6 +404,13 @@ namespace Telegram.Views
                 }
                 else
                 {
+                    // This is needed because we don't keep all topics messages in memory as TDLib would do
+                    long messageThreadId = 0;
+                    if (ViewModel.ForumTopic != null)
+                    {
+                        messageThreadId = ViewModel.ForumTopic.Info.MessageThreadId;
+                    }
+
                     ViewModel.ClientService.ViewMessages(chat.Id, messageThreadId, messages, source, false);
                 }
             }
