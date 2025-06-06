@@ -558,6 +558,20 @@ namespace Telegram.ViewModels.Drawers
             }
         }
 
+        public virtual void Update(IEnumerable<StickerViewModel> stickers, bool raise = false)
+        {
+            stickers ??= Enumerable.Empty<StickerViewModel>();
+
+            if (raise)
+            {
+                Stickers.ReplaceWith(stickers);
+            }
+            else
+            {
+                Stickers = new MvxObservableCollection<StickerViewModel>(stickers);
+            }
+        }
+
         public MvxObservableCollection<StickerViewModel> Stickers { get; protected set; }
 
         public bool IsLoaded { get; set; }
@@ -603,13 +617,13 @@ namespace Telegram.ViewModels.Drawers
             SetId = setId;
         }
 
-        public StickerViewModel(IClientService clientService, Sticker sticker)
+        public StickerViewModel(IClientService clientService, Sticker sticker, EmojiStatusType emojiStatusType = null)
         {
             _clientService = clientService;
-            Update(sticker);
+            Update(sticker, emojiStatusType);
         }
 
-        public void Update(Sticker sticker)
+        public void Update(Sticker sticker, EmojiStatusType emojiStatusType = null)
         {
             Id = sticker.Id;
             StickerValue = sticker.StickerValue;
@@ -621,9 +635,13 @@ namespace Telegram.ViewModels.Drawers
             Width = sticker.Width;
             SetId = sticker.SetId;
 
-            if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
+            if (emojiStatusType != null)
             {
-                EmojiStatusType = new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId);
+                EmojiStatusType ??= emojiStatusType;
+            }
+            else if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
+            {
+                EmojiStatusType ??= new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId);
             }
         }
 

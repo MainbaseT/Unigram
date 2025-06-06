@@ -504,7 +504,7 @@ namespace Telegram.Controls.Messages
             return a / (2 * MathF.Tan(180 / n * MathF.PI / 180));
         }
 
-        private void OnStatusContextRequested(UIElement sender, ItemContextRequestedEventArgs<Sticker> args)
+        private void OnStatusContextRequested(UIElement sender, ItemContextRequestedEventArgs<StickerViewModel> args)
         {
             var element = sender as FrameworkElement;
             var sticker = args.Item;
@@ -542,14 +542,7 @@ namespace Telegram.Controls.Messages
                 }
                 else if (_mode == EmojiDrawerMode.EmojiStatus)
                 {
-                    if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
-                    {
-                        _clientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), 0)));
-                    }
-                    else
-                    {
-                        _clientService.Send(new SetEmojiStatus(null));
-                    }
+                    _clientService.Send(new SetEmojiStatus(new EmojiStatus(sticker.EmojiStatusType, 0)));
                 }
                 else if (_mode == EmojiDrawerMode.Reactions)
                 {
@@ -558,22 +551,22 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private void SetStatus((Sticker Sticker, int Duration) item)
+        private void SetStatus((StickerViewModel Sticker, int Duration) item)
         {
             if (_mode == EmojiDrawerMode.EmojiStatus && item.Sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                _clientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), DateTime.Now.ToTimestamp() + item.Duration)));
+                _clientService.Send(new SetEmojiStatus(new EmojiStatus(item.Sticker.EmojiStatusType, DateTime.Now.ToTimestamp() + item.Duration)));
             }
         }
 
-        private async void ChooseStatus(Sticker sticker)
+        private async void ChooseStatus(StickerViewModel sticker)
         {
             var popup = new ChooseStatusDurationPopup();
 
             var confirm = await popup.ShowQueuedAsync(XamlRoot);
-            if (confirm == ContentDialogResult.Primary && _mode == EmojiDrawerMode.EmojiStatus && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
+            if (confirm == ContentDialogResult.Primary && _mode == EmojiDrawerMode.EmojiStatus)
             {
-                _clientService.Send(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(customEmoji.CustomEmojiId), DateTime.Now.ToTimestamp() + popup.Value)));
+                _clientService.Send(new SetEmojiStatus(new EmojiStatus(sticker.EmojiStatusType, DateTime.Now.ToTimestamp() + popup.Value)));
             }
         }
 

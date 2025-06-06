@@ -52,7 +52,7 @@ namespace Telegram.Controls.Drawers
         public EmojiDrawerViewModel ViewModel => DataContext as EmojiDrawerViewModel;
 
         public event ItemClickEventHandler ItemClick;
-        public event TypedEventHandler<UIElement, ItemContextRequestedEventArgs<Sticker>> ItemContextRequested;
+        public event TypedEventHandler<UIElement, ItemContextRequestedEventArgs<StickerViewModel>> ItemContextRequested;
 
         private bool _needUpdate;
 
@@ -789,7 +789,7 @@ namespace Telegram.Controls.Drawers
                 return;
             }
 
-            ItemContextRequested?.Invoke(sender, new ItemContextRequestedEventArgs<Sticker>(sticker, args));
+            ItemContextRequested?.Invoke(sender, new ItemContextRequestedEventArgs<StickerViewModel>(sticker, args));
         }
 
         private void Player_Ready(object sender, System.EventArgs e)

@@ -5291,6 +5291,9 @@ If the number above is correct, please wait for the verification code.</value>
   <data name="EmojiArchived" xml:space="preserve">
     <value>Emoji archived.</value>
   </data>
+  <data name="EmojiPackCollectibles" xml:space="preserve">
+    <value>Collectibles</value>
+  </data>
   <data name="EmojiRemoved" xml:space="preserve">
     <value>Emoji removed.</value>
   </data>

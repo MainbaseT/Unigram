@@ -10,6 +10,7 @@ using Telegram.Controls.Media;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.ViewModels.Drawers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -101,7 +102,7 @@ namespace Telegram.Views
             args.ShowAt(flyout, element);
         }
 
-        private void Emoji_ContextRequested(object sender, ItemContextRequestedEventArgs<Sticker> args)
+        private void Emoji_ContextRequested(object sender, ItemContextRequestedEventArgs<StickerViewModel> args)
         {
             var element = sender as FrameworkElement;
             var sticker = args.Item;
@@ -131,14 +132,14 @@ namespace Telegram.Views
 
             if (ViewModel.Type is DialogType.History or DialogType.Thread && ViewModel.IsPremium)
             {
-                flyout.CreateFlyoutItem(Send, sticker, Strings.SendEmojiPreview, Icons.Send);
+                flyout.CreateFlyoutItem(Send, (Sticker)sticker, Strings.SendEmojiPreview, Icons.Send);
             }
 
-            flyout.CreateFlyoutItem(Copy, sticker, Strings.CopyEmojiPreview, Icons.DocumentCopy);
+            flyout.CreateFlyoutItem(Copy, (Sticker)sticker, Strings.CopyEmojiPreview, Icons.DocumentCopy);
 
             if (ViewModel.Type is DialogType.History or DialogType.Thread && ViewModel.IsPremium)
             {
-                flyout.CreateFlyoutItem(SetAsStatus, sticker, Strings.SetAsEmojiStatus, Icons.Emoji);
+                flyout.CreateFlyoutItem(SetAsStatus, (Sticker)sticker, Strings.SetAsEmojiStatus, Icons.Emoji);
             }
 
             args.ShowAt(flyout, element);
