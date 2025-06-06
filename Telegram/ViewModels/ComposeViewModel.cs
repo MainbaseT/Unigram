@@ -684,7 +684,7 @@ namespace Telegram.ViewModels
                 return null;
             }
 
-            InsertedEmojiStickerSets.Clear();
+            InsertedCustomEmojiIds.Clear();
 
             options ??= new MessageSendOptions();
             options.SendingId = Math.Max(options.SendingId, 1);
@@ -874,7 +874,7 @@ namespace Telegram.ViewModels
             return ClientEx.ParseMarkdown(text.Format());
         }
 
-        public HashSet<long> InsertedEmojiStickerSets = new();
+        public HashSet<long> InsertedCustomEmojiIds = new();
 
         public Task<BaseObject> SendMessageAsync(FormattedText formattedText, LinkPreviewOptions linkPreview = null, MessageSendOptions options = null, InputMessageReplyTo reply = null)
         {
@@ -901,8 +901,8 @@ namespace Telegram.ViewModels
                 formattedText = new FormattedText(text, entities);
             }
 
-            var reorder = InsertedEmojiStickerSets.Count == 1;
-            InsertedEmojiStickerSets.Clear();
+            var reorder = TextStillContainsEmojis(formattedText.Entities);
+            InsertedCustomEmojiIds.Clear();
 
             var applied = await BeforeSendMessageAsync(formattedText, linkPreview);
             if (applied || string.IsNullOrEmpty(formattedText.Text))
@@ -911,7 +911,7 @@ namespace Telegram.ViewModels
             }
 
             options ??= await PickMessageSendOptionsAsync(reorder: reorder);
-            options.UpdateOrderOfInstalledStickerSets = Settings.Stickers.DynamicPackOrder && reorder;
+            options.UpdateOrderOfInstalledStickerSets = reorder;
 
             if (options == null)
             {
@@ -949,6 +949,24 @@ namespace Telegram.ViewModels
             }
 
             return response;
+        }
+
+        private bool TextStillContainsEmojis(IList<TextEntity> entities)
+        {
+            if (entities.Count == 0 || !Settings.Stickers.DynamicPackOrder)
+            {
+                return false;
+            }
+
+            foreach (var entity in entities)
+            {
+                if (entity.Type is TextEntityTypeCustomEmoji customEmoji && InsertedCustomEmojiIds.Contains(customEmoji.CustomEmojiId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public virtual LinkPreviewOptions GetLinkPreviewOptions()

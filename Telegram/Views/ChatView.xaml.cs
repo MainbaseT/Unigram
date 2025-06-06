@@ -3893,9 +3893,9 @@ namespace Telegram.Views
             {
                 TextField.InsertText(text);
             }
-            else if (emoji is Sticker sticker)
+            else if (emoji is Sticker sticker && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                ViewModel.InsertedEmojiStickerSets.Add(sticker.SetId);
+                ViewModel.InsertedCustomEmojiIds.Add(customEmoji.CustomEmojiId);
                 TextField.InsertEmoji(sticker);
             }
 
