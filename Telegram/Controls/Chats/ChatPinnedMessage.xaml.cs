@@ -27,6 +27,8 @@ namespace Telegram.Controls.Chats
 {
     public sealed partial class ChatPinnedMessage : MessageReferenceBase
     {
+        public DialogViewModel ViewModel => DataContext as DialogViewModel;
+
         private ChatView _chatView;
         private UIElement _parent;
 
@@ -295,22 +297,23 @@ namespace Telegram.Controls.Chats
             yield return ActionButton.Visibility == Visibility.Visible ? ActionButton : ListButton.Visibility == Visibility.Visible ? ListButton : HideButton;
         }
 
-        public event RoutedEventHandler HideClick
+
+        private void HideButton_Click(object sender, RoutedEventArgs e)
         {
-            add => HideButton.Click += value;
-            remove => HideButton.Click -= value;
+            ViewModel.HidePinnedMessage();
         }
 
-        public event RoutedEventHandler ListClick
+        private void ListButton_Click(object sender, RoutedEventArgs e)
         {
-            add => ListButton.Click += value;
-            remove => ListButton.Click -= value;
+            ViewModel.ShowPinnedMessage();
         }
 
-        public event RoutedEventHandler ActionClick
+        private void ActionButton_Click(object sender, RoutedEventArgs e)
         {
-            add => ActionButton.Click += value;
-            remove => ActionButton.Click -= value;
+            if (Message?.ReplyMarkup is ReplyMarkupInlineKeyboard inlineKeyboard)
+            {
+                ViewModel.OpenInlineButton(Message, inlineKeyboard.Rows[0][0]);
+            }
         }
 
         #region Overrides

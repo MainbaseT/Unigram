@@ -241,7 +241,7 @@ namespace Telegram.Controls.Messages.Content
             Progress.Maximum = 1;
             Progress.Value = 0.3;
 
-            Subtitle.Text = FormatTime(TimeSpan.FromSeconds(1)) + " / " + FormatTime(TimeSpan.FromSeconds(3));
+            Subtitle.Text = FormatTime(TimeSpan.FromSeconds(1), 0) + " / " + FormatTime(TimeSpan.FromSeconds(3), 0);
 
             Button.SetGlyph(0, MessageContentState.Pause);
         }
@@ -309,15 +309,20 @@ namespace Telegram.Controls.Messages.Content
 
             if (message.AreTheSame(message.PlaybackService.CurrentItem) /*&& !_pressed*/)
             {
-                Subtitle.Text = FormatTime(position) + " / " + FormatTime(duration);
+                if (duration.TotalSeconds == 0)
+                {
+                    return;
+                }
+
+                Subtitle.Text = FormatTime(duration - position, duration.TotalHours);
                 Progress.Maximum = /*Slider.Maximum =*/ duration.TotalSeconds;
                 Progress.Value = /*Slider.Value =*/ position.TotalSeconds;
             }
         }
 
-        private string FormatTime(TimeSpan span)
+        private string FormatTime(TimeSpan span, double totalHours)
         {
-            if (span.TotalHours >= 1)
+            if (totalHours >= 1)
             {
                 return span.ToString("h\\:mm\\:ss");
             }

@@ -152,15 +152,18 @@
         </Grid>
 
         <controls:GlyphButton x:Name="HideButton"
+                              Click="HideButton_Click"
                               AutomationProperties.Name="{CustomResource UnpinMessageAlertTitle}"
                               Glyph="&#xE711;"
                               Grid.Column="3" />
         <controls:GlyphButton x:Name="ListButton"
+                              Click="ListButton_Click"
                               AutomationProperties.Name="{CustomResource AccPinnedMessagesList}"
                               Glyph="&#xEA37;"
                               Grid.Column="3" />
 
         <controls:BadgeButton x:Name="ActionButton"
+                              Click="ActionButton_Click"
                               Style="{StaticResource PillButtonStyle}"
                               HorizontalAlignment="Right"
                               VerticalAlignment="Center"
