@@ -341,6 +341,12 @@ namespace Telegram.Views
             _messageIdToSelector.Clear();
             _messageIdToMessageIds.Clear();
 
+            _oldestItem = null;
+            _oldestItemAsHeader = null;
+
+            _newestItem = null;
+            _newestItemAsFooter = null;
+
             if (sender is DialogViewModel viewModel)
             {
                 _headerUnreadNotReady = viewModel.HasUnreadMessages;
@@ -365,6 +371,8 @@ namespace Telegram.Views
             _forumTopicHeaderTopic = null;
             _headerUnreadViewport = null;
             _headerUnreadNotReady = false;
+            _oldestItemAsHeaderNeeded = null;
+            _newestItemAsFooterNeeded = null;
 
             _updateThemeTask = new TaskCompletionSource<bool>();
             ViewModel.MessageSliceLoaded += OnMessageSliceLoaded;
@@ -682,28 +690,28 @@ namespace Telegram.Views
 
                 if (container == _newestItemAsFooter && !message.IsLast)
                 {
-                    _newestItemAsFooter.UpdatePadding(null, 0);
+                    _newestItemAsFooter.UpdatePadding(-1, 0);
                     _newestItemAsFooter = null;
                 }
-                else if (message.IsLast && _newestItemAsFooterNeeded && ViewModel.IsNewestSliceLoaded is true && ViewModel.Items[^1] == message)
+                else if (message.IsLast && _newestItemAsFooterNeeded is true && ViewModel.IsNewestSliceLoaded is true && ViewModel.Items[^1] == message)
                 {
-                    _newestItemAsFooter?.UpdatePadding(null, 0);
+                    _newestItemAsFooter?.UpdatePadding(-1, 0);
 
                     _newestItemAsFooter = container;
-                    _newestItemAsFooter.UpdatePadding(null, _messagesScrollBarPadding);
+                    _newestItemAsFooter.UpdatePadding(-1, _messagesScrollBarPadding);
                 }
 
                 if (container == _oldestItemAsHeader && !message.IsFirst)
                 {
-                    _oldestItemAsHeader.UpdatePadding(0, null);
+                    _oldestItemAsHeader.UpdatePadding(0, -1);
                     _oldestItemAsHeader = null;
                 }
-                else if (message.IsFirst && _oldestItemAsHeaderNeeded && ViewModel.IsOldestSliceLoaded is true && ViewModel.Items[0] == message)
+                else if (message.IsFirst && _oldestItemAsHeaderNeeded is true && ViewModel.IsOldestSliceLoaded is true && ViewModel.Items[0] == message)
                 {
-                    _oldestItemAsHeader?.UpdatePadding(0, null);
+                    _oldestItemAsHeader?.UpdatePadding(0, -1);
 
                     _oldestItemAsHeader = container;
-                    _oldestItemAsHeader.UpdatePadding(_messagesScrollBarPadding, null);
+                    _oldestItemAsHeader.UpdatePadding(_messagesScrollBarPadding, -1);
                 }
 
                 var content = container.ContentTemplateRoot as FrameworkElement;
@@ -756,7 +764,6 @@ namespace Telegram.Views
             else if (e.PropertyName.Equals(nameof(ViewModel.IsOldestSliceLoaded)))
             {
                 UpdateMessagesHeaderPadding();
-                UpdateOldestItemAsHeader();
             }
             else if (e.PropertyName.Equals(nameof(ViewModel.GreetingSticker)))
             {
@@ -6634,36 +6641,46 @@ namespace Telegram.Views
 
         private ChatHistoryViewItem _oldestItemAsHeader;
         private ChatHistoryViewItem _oldestItem;
-        private bool _oldestItemAsHeaderNeeded = false;
+        private bool? _oldestItemAsHeaderNeeded = false;
 
         private ChatHistoryViewItem _newestItemAsFooter;
         private ChatHistoryViewItem _newestItem;
-        private bool _newestItemAsFooterNeeded = false;
+        private bool? _newestItemAsFooterNeeded = false;
 
         private void UpdateOldestItemAsHeader(bool clear = true)
         {
-            if (_oldestItemAsHeaderNeeded && ViewModel.IsOldestSliceLoaded is true)
+            if (_oldestItemAsHeaderNeeded is true && ViewModel.IsOldestSliceLoaded is true)
             {
+                if (_oldestItem == null)
+                {
+                    _oldestItem = Messages.ContainerFromIndex(0) as ChatHistoryViewItem;
+                }
+
                 _oldestItemAsHeader = _oldestItem;
-                _oldestItemAsHeader?.UpdatePadding(_messagesScrollBarPadding, null);
+                _oldestItemAsHeader?.UpdatePadding(_messagesScrollBarPadding, -1);
             }
             else if (_oldestItemAsHeader != null && clear)
             {
-                _oldestItemAsHeader.UpdatePadding(0, null);
+                _oldestItemAsHeader.UpdatePadding(0, -1);
                 _oldestItemAsHeader = null;
             }
         }
 
         private void UpdateNewestItemAsFooter(bool clear = true)
         {
-            if (_newestItemAsFooterNeeded && ViewModel.IsNewestSliceLoaded is true)
+            if (_newestItemAsFooterNeeded is true && ViewModel.IsNewestSliceLoaded is true)
             {
+                if (_newestItem == null && ViewModel.Items.Count > 0)
+                {
+                    _newestItem = Messages.ContainerFromIndex(Messages.Items.Count - 1) as ChatHistoryViewItem;
+                }
+
                 _newestItemAsFooter = _newestItem;
-                _newestItemAsFooter?.UpdatePadding(null, _messagesScrollBarPadding);
+                _newestItemAsFooter?.UpdatePadding(-1, _messagesScrollBarPadding);
             }
             else if (_newestItemAsFooter != null && clear)
             {
-                _newestItemAsFooter.UpdatePadding(null, 0);
+                _newestItemAsFooter.UpdatePadding(-1, 0);
                 _newestItemAsFooter = null;
             }
         }
@@ -6706,7 +6723,7 @@ namespace Telegram.Views
                 Messages.ScrollingHost.SetVerticalPadding(animate ? 0 : scrollBar, animate ? scrollBar : 0);
             }
 
-            if (_oldestItemAsHeaderNeeded == animate || changed)
+            if (_oldestItemAsHeaderNeeded != !animate || changed)
             {
                 _oldestItemAsHeaderNeeded = !animate;
                 UpdateOldestItemAsHeader();

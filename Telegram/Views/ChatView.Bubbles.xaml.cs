@@ -364,6 +364,8 @@ namespace Telegram.Views
                 _forumTopicHeader.Properties.InsertVector3("Translation", Vector3.Zero);
             }
 
+            // TODO: do not hide if above corresponding message
+
             _dateHeaderTimer.Stop();
             _dateHeaderTimer.Start();
             ShowHideDateHeader(minDateValue != DateTime.MaxValue && minDateIndex > 0, minDateValue != DateTime.MaxValue && minDateIndex is > 0 and < int.MaxValue);
@@ -903,14 +905,14 @@ namespace Telegram.Views
                 {
                     _oldestItem = null;
                     _oldestItemAsHeader = null;
-                    container.UpdatePadding(0, null);
+                    container.UpdatePadding(0, -1);
                 }
 
                 if (_newestItem == container)
                 {
                     _newestItem = null;
                     _newestItemAsFooter = null;
-                    container.UpdatePadding(null, 0);
+                    container.UpdatePadding(-1, 0);
                 }
 
                 return;
@@ -960,30 +962,38 @@ namespace Telegram.Views
                         : HorizontalAlignment.Stretch;
                 }
 
-                if (args.ItemIndex == ViewModel.Items.Count - 1)
+                if (args.ItemIndex == ViewModel.Items.Count - 1 && ViewModel.IsNewestSliceLoaded is true)
                 {
                     _newestItem = container;
 
-                    if (_newestItemAsFooterNeeded && ViewModel.IsNewestSliceLoaded is true)
+                    if (_newestItemAsFooterNeeded is true)
                     {
-                        _newestItemAsFooter?.UpdatePadding(null, 0);
+                        _newestItemAsFooter?.UpdatePadding(-1, 0);
 
                         _newestItemAsFooter = container;
-                        _newestItemAsFooter.UpdatePadding(null, _messagesHeaderRootPadding);
+                        _newestItemAsFooter.UpdatePadding(-1, _messagesScrollBarPadding);
                     }
                 }
+                else
+                {
+                    container.UpdatePadding(-1, 0);
+                }
 
-                if (args.ItemIndex == 0)
+                if (args.ItemIndex == 0 && ViewModel.IsOldestSliceLoaded is true)
                 {
                     _oldestItem = container;
 
-                    if (_oldestItemAsHeaderNeeded && ViewModel.IsOldestSliceLoaded is true)
+                    if (_oldestItemAsHeaderNeeded is true)
                     {
-                        _oldestItemAsHeader?.UpdatePadding(0, null);
+                        _oldestItemAsHeader?.UpdatePadding(0, -1);
 
                         _oldestItemAsHeader = container;
-                        _oldestItemAsHeader.UpdatePadding(_messagesHeaderRootPadding, null);
+                        _oldestItemAsHeader.UpdatePadding(_messagesScrollBarPadding, -1);
                     }
+                }
+                else
+                {
+                    container.UpdatePadding(0, -1);
                 }
             }
         }

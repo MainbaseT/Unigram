@@ -54,14 +54,19 @@ namespace Telegram.Controls.Chats
 
         public bool SuppressSizeChanged { get; set; }
 
-        public void UpdatePadding(double? top, double? bottom)
-        {
-            var padding = Padding;
-            var newTop = top ?? padding.Top;
-            var newBottom = bottom ?? padding.Bottom;
+        private double _paddingTop;
+        private double _paddingBottom;
 
-            if (padding.Top != newTop || padding.Bottom != newBottom)
+        public void UpdatePadding(double top, double bottom)
+        {
+            var newTop = top >= 0 ? top : _paddingTop;
+            var newBottom = bottom >= 0 ? bottom : _paddingBottom;
+
+            if (_paddingTop != newTop || _paddingBottom != newBottom)
             {
+                _paddingTop = newTop;
+                _paddingBottom = newBottom;
+
                 SuppressSizeChanged = true;
                 Padding = new Thickness(0, newTop, 0, newBottom);
             }
