@@ -131,7 +131,7 @@ namespace Telegram.Entities
             }
             else
             {
-                
+                await RefreshAsync();
             }
 
             RaisePropertyChanged(nameof(Preview));
