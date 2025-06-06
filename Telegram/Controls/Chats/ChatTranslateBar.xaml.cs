@@ -61,7 +61,7 @@ namespace Telegram.Controls.Chats
                     : Visibility.Visible;
             }
 
-            if (language != null)
+            if (language != null || !chat.IsTranslatable)
             {
                 ShowHide(canTranslate);
             }

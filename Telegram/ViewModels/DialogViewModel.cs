@@ -1148,10 +1148,10 @@ namespace Telegram.ViewModels
                 //Delegate?.UpdatePinnedMessage(chat, null, chat.PinnedMessageId != 0);
                 //Delegate?.UpdatePinnedMessage(chat, true);
 
-                var count = await ClientService.SendAsync(new GetChatMessageCount(chat.Id, messageTopic, filter, true)) as Count;
-                if (count != null)
+                var last = await ClientService.SendAsync(new GetChatPinnedMessage(chat.Id)) as Message;
+                if (last != null)
                 {
-                    Delegate?.UpdatePinnedMessage(chat, count.CountValue > 0);
+                    Delegate?.UpdatePinnedMessage(chat, true);
                 }
                 else
                 {

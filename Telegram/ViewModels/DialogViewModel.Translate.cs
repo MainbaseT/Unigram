@@ -27,6 +27,8 @@ namespace Telegram.ViewModels
 
         public string DetectedLanguage => _languageDetected;
 
+        public bool IsLanguageDetected => _languageDetected != null && _languageDetected != "und";
+
         public bool CanTranslate => _chat.IsTranslatable && TranslateService.CanTranslate(_languageDetected, true);
 
         private bool _isTranslating;
@@ -76,7 +78,7 @@ namespace Telegram.ViewModels
 
         private void UpdateLanguageStatistics(MessageViewModel message)
         {
-            if (_languageDetected != null || message.IsOutgoing || message.Text == null || !HasAutomaticTranslation())
+            if (IsLanguageDetected || message.IsOutgoing || message.Text == null || !HasAutomaticTranslation())
             {
                 return;
             }
@@ -112,7 +114,7 @@ namespace Telegram.ViewModels
 
             lock (_languageLock)
             {
-                if (_languageDetected != null || _languageBuilder == null || !HasAutomaticTranslation())
+                if (IsLanguageDetected || _languageBuilder == null || !HasAutomaticTranslation())
                 {
                     return;
                 }
@@ -129,6 +131,11 @@ namespace Telegram.ViewModels
 
                     Logger.Info(_languageDetected);
                     Dispatcher.Dispatch(UpdateChatIsTranslatable);
+                }
+                else
+                {
+                    _languageDetected = "und";
+                    Dispatcher.Dispatch(() => Delegate?.UpdateChatIsTranslatable(_chat, _languageDetected));
                 }
             }
         }
