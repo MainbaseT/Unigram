@@ -437,7 +437,7 @@ namespace Telegram.Common
             return (new Rect(x, y, w, h), new Size(ratioW, ratioH));
         }
 
-        public static async Task<ImageSource> CropAndPreviewAsync(StorageMedia source, ImageGeneration generation)
+        public static async Task<ImageSource> CropAndPreviewAsync(StorageMedia source, ImageGeneration generation, int maxSize = 1280)
         {
             if (source is StorageVideo)
             {
@@ -458,12 +458,12 @@ namespace Telegram.Common
                 using var stream = new InMemoryRandomAccessStream();
                 PlaceholderImageHelper.Current.Encode(frame, stream, width, height);
 
-                return await CropAndPreviewAsync(stream, generation);
+                return await CropAndPreviewAsync(stream, generation, maxSize);
             }
             else
             {
                 using var imageStream = await source.File.OpenReadAsync();
-                return await CropAndPreviewAsync(imageStream, generation);
+                return await CropAndPreviewAsync(imageStream, generation, maxSize);
             }
         }
 

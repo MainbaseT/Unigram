@@ -121,33 +121,49 @@ namespace Telegram.Entities
             {
                 try
                 {
-                    _preview = await ImageHelper.CropAndPreviewAsync(this, editState);
+                    // TODO: actual logical pixel size
+                    _preview = await ImageHelper.CropAndPreviewAsync(this, editState, 600);
                 }
                 catch
                 {
-                    try
-                    {
-                        _preview = await ImageHelper.GetPreviewBitmapAsync(this);
-                    }
-                    catch
-                    {
-                        _preview = new BitmapImage();
-                    }
+                    await RefreshAsync();
                 }
             }
             else
             {
-                try
-                {
-                    _preview = await ImageHelper.GetPreviewBitmapAsync(this);
-                }
-                catch
-                {
-                    _preview = new BitmapImage();
-                }
+                
             }
 
             RaisePropertyChanged(nameof(Preview));
+        }
+
+        private async Task RefreshAsync()
+        {
+            try
+            {
+                if (this is StorageVideo)
+                {
+                    // TODO: actual logical pixel size
+                    _preview = await ImageHelper.GetPreviewBitmapAsync(this, 600);
+                }
+                else
+                {
+                    var preview = new BitmapImage
+                    {
+                        DecodePixelWidth = 300,
+                        DecodePixelType = DecodePixelType.Logical
+                    };
+
+                    using var stream = await File.OpenReadAsync();
+                    await preview.SetSourceAsync(stream);
+
+                    _preview = preview;
+                }
+            }
+            catch
+            {
+                _preview = new BitmapImage();
+            }
         }
 
         public static async Task<StorageMedia> CreateAsync(StorageFile file, bool probe = true)
