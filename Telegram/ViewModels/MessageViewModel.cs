@@ -264,7 +264,7 @@ namespace Telegram.ViewModels
                 return false;
             }
 
-            return Chat?.Type is ChatTypeSupergroup or ChatTypeBasicGroup || _message.ChatId == _clientService.Options.VerificationCodesBotChatId;
+            return Chat?.Type is ChatTypeSupergroup or ChatTypeBasicGroup || (_message.ChatId == _clientService.Options.VerificationCodesBotChatId && _message.Id != 0);
         }
 
 

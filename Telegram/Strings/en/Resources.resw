@@ -10628,6 +10628,9 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="Replies_other" xml:space="preserve">
     <value>{0} Replies</value>
   </data>
+  <data name="RepliesChatInfo" xml:space="preserve">
+    <value>This chat helps you keep track of replies to your comments in Channels.</value>
+  </data>
   <data name="RepliesTitle" xml:space="preserve">
     <value>Replies</value>
   </data>

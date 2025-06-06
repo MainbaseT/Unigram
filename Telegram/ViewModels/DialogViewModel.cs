@@ -924,37 +924,51 @@ namespace Telegram.ViewModels
             }
             else
             {
-                var fullInfo = ClientService.GetUserFull(user.Id);
-                fullInfo ??= await ClientService.SendAsync(new GetUserFullInfo(user.Id)) as UserFullInfo;
-
-                if (fullInfo?.BotInfo?.Description.Length > 0)
+                MessageContent content = null;
+                if (chat.Id == ClientService.Options.RepliesBotChatId)
                 {
-                    var entities = ClientEx.GetTextEntities(fullInfo.BotInfo.Description);
+                    content = new MessageText(Strings.RepliesChatInfo.AsFormattedText(), null, null);
+                }
+                else if (chat.Id == ClientService.Options.VerificationCodesBotChatId)
+                {
+                    content = new MessageText(Strings.VerifyChatInfo.AsFormattedText(), null, null);
+                }
+                else
+                {
+                    var fullInfo = ClientService.GetUserFull(user.Id);
+                    fullInfo ??= await ClientService.SendAsync(new GetUserFullInfo(user.Id)) as UserFullInfo;
 
-                    foreach (var entity in entities)
+                    if (fullInfo?.BotInfo?.Description.Length > 0)
                     {
-                        entity.Offset += Strings.BotInfoTitle.Length + Environment.NewLine.Length;
-                    }
+                        var entities = ClientEx.GetTextEntities(fullInfo.BotInfo.Description);
 
-                    entities.Add(new TextEntity(0, Strings.BotInfoTitle.Length, new TextEntityTypeBold()));
+                        foreach (var entity in entities)
+                        {
+                            entity.Offset += Strings.BotInfoTitle.Length + 1;
+                        }
 
-                    var message = $"{Strings.BotInfoTitle}{Environment.NewLine}{fullInfo.BotInfo.Description}";
-                    var text = new FormattedText(message, entities);
+                        entities.Add(new TextEntity(0, Strings.BotInfoTitle.Length, new TextEntityTypeBold()));
 
-                    MessageContent content;
-                    if (fullInfo.BotInfo.Animation != null)
-                    {
-                        content = new MessageAnimation(fullInfo.BotInfo.Animation, text, false, false, false);
-                    }
-                    else if (fullInfo.BotInfo.Photo != null)
-                    {
-                        content = new MessagePhoto(fullInfo.BotInfo.Photo, text, false, false, false);
-                    }
-                    else
-                    {
-                        content = new MessageText(text, null, null);
-                    }
+                        var message = $"{Strings.BotInfoTitle}\n{fullInfo.BotInfo.Description}";
+                        var text = new FormattedText(message, entities);
 
+                        if (fullInfo.BotInfo.Animation != null)
+                        {
+                            content = new MessageAnimation(fullInfo.BotInfo.Animation, text, false, false, false);
+                        }
+                        else if (fullInfo.BotInfo.Photo != null)
+                        {
+                            content = new MessagePhoto(fullInfo.BotInfo.Photo, text, false, false, false);
+                        }
+                        else
+                        {
+                            content = new MessageText(text, null, null);
+                        }
+                    }
+                }
+
+                if (content != null)
+                {
                     messages.Add(new Message(0, new MessageSenderUser(user.Id), chat.Id, null, null, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, content, null));
                     return;
                 }
