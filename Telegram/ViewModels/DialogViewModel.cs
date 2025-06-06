@@ -788,7 +788,11 @@ namespace Telegram.ViewModels
                 }
 
                 Function func;
-                if (Search?.SavedMessagesTag != null)
+                if (Type == DialogType.Pinned)
+                {
+                    func = new SearchChatMessages(chat.Id, Topic, string.Empty, null, fromMessageId, offset, 50, new SearchMessagesFilterPinned());
+                }
+                else if (Search?.SavedMessagesTag != null)
                 {
                     func = new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, fromMessageId, offset, 50);
                 }
@@ -807,10 +811,6 @@ namespace Telegram.ViewModels
                 else if (Thread != null)
                 {
                     func = new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, fromMessageId, offset, 50);
-                }
-                else if (Type == DialogType.Pinned)
-                {
-                    func = new SearchChatMessages(chat.Id, null, string.Empty, null, fromMessageId, offset, 50, new SearchMessagesFilterPinned());
                 }
                 else
                 {
@@ -1094,8 +1094,9 @@ namespace Telegram.ViewModels
             await Task.Yield();
 
             var chat = _chat;
-            if (chat == null || (Type != DialogType.History && (Type == DialogType.Thread && ForumTopic == null)))
+            if (chat == null || (Type != DialogType.History && (Type == DialogType.Thread && ForumTopic == null && FeedbackChatTopic == null)))
             {
+                Delegate?.UpdatePinnedMessage(chat, false);
                 return;
             }
 
@@ -1427,7 +1428,11 @@ namespace Telegram.ViewModels
         private async Task<LoadSliceResult> LoadMessageSliceImpl(Chat chat, long maxId, VerticalAlignment alignment, ScrollIntoViewAlignment? direction, double? pixel)
         {
             Task<BaseObject> func;
-            if (Search?.SavedMessagesTag != null && Search.FilterByTag)
+            if (Type == DialogType.Pinned)
+            {
+                func = ClientService.SendAsync(new SearchChatMessages(chat.Id, Topic, string.Empty, null, maxId, -25, 50, new SearchMessagesFilterPinned()));
+            }
+            else if (Search?.SavedMessagesTag != null && Search.FilterByTag)
             {
                 func = ClientService.SendAsync(new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, maxId, -25, 50));
             }
@@ -1454,10 +1459,6 @@ namespace Telegram.ViewModels
                 {
                     func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, maxId, -25, 50));
                 }
-            }
-            else if (Type == DialogType.Pinned)
-            {
-                func = ClientService.SendAsync(new SearchChatMessages(chat.Id, null, string.Empty, null, maxId, -25, 50, new SearchMessagesFilterPinned()));
             }
             else
             {
@@ -3658,7 +3659,14 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            NavigationService.Navigate(typeof(ChatPinnedPage), chat.Id);
+            if (Topic != null)
+            {
+                NavigationService.Navigate(typeof(ChatPinnedPage), new ChatMessageTopic(chat.Id, Topic));
+            }
+            else
+            {
+                NavigationService.Navigate(typeof(ChatPinnedPage), chat.Id);
+            }
         }
 
         #endregion
@@ -4297,6 +4305,10 @@ namespace Telegram.ViewModels
                         if (FeedbackChatTopic != null)
                         {
                             ClientService.Send(new UnpinAllFeedbackChatTopicMessages(chat.Id, FeedbackChatTopic.Id));
+                        }
+                        else if (ForumTopic != null)
+                        {
+                            ClientService.Send(new UnpinAllMessageThreadMessages(chat.Id, ForumTopic.Info.MessageThreadId));
                         }
                         else
                         {
@@ -5213,7 +5225,6 @@ namespace Telegram.ViewModels
         Thread,
         Pinned,
         ScheduledMessages,
-        SavedMessagesTopic,
         BusinessReplies,
         EventLog
     }

@@ -4592,7 +4592,7 @@ namespace Telegram.Views
 
         private void UpdateForumTopics(Chat chat)
         {
-            if (chat.HasForumTabs(ViewModel.ClientService, out bool forum))
+            if (ViewModel.Type is DialogType.History or DialogType.Thread && chat.HasForumTabs(ViewModel.ClientService, out bool forum))
             {
                 if (_forumViewModel == null || _forumViewModel.IsForum != forum)
                 {
