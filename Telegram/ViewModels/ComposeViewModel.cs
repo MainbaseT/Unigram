@@ -684,6 +684,8 @@ namespace Telegram.ViewModels
                 return null;
             }
 
+            InsertedEmojiStickerSets.Clear();
+
             options ??= new MessageSendOptions();
             options.SendingId = Math.Max(options.SendingId, 1);
 
@@ -872,6 +874,8 @@ namespace Telegram.ViewModels
             return ClientEx.ParseMarkdown(text.Format());
         }
 
+        public HashSet<long> InsertedEmojiStickerSets = new();
+
         public Task<BaseObject> SendMessageAsync(FormattedText formattedText, LinkPreviewOptions linkPreview = null, MessageSendOptions options = null, InputMessageReplyTo reply = null)
         {
             return SendMessageAsync(formattedText?.Text, formattedText?.Entities, linkPreview, options, reply);
@@ -897,13 +901,17 @@ namespace Telegram.ViewModels
                 formattedText = new FormattedText(text, entities);
             }
 
+            var reorder = InsertedEmojiStickerSets.Count == 1;
+            InsertedEmojiStickerSets.Clear();
+
             var applied = await BeforeSendMessageAsync(formattedText, linkPreview);
             if (applied || string.IsNullOrEmpty(formattedText.Text))
             {
                 return null;
             }
 
-            options ??= await PickMessageSendOptionsAsync();
+            options ??= await PickMessageSendOptionsAsync(reorder: reorder);
+            options.UpdateOrderOfInstalledStickerSets = Settings.Stickers.DynamicPackOrder && reorder;
 
             if (options == null)
             {
