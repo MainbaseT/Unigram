@@ -90,7 +90,6 @@ namespace Telegram.Views
         private readonly AnimatedListHandler _autocompleteHandler;
 
         private TaskCompletionSource<bool> _updateThemeTask;
-        private readonly TaskCompletionSource<bool> _loadedThemeTask;
 
         private ChatBackgroundControl _backgroundControl;
 
@@ -112,8 +111,6 @@ namespace Telegram.Views
             _autocompleteZoomer.Closing = _autocompleteHandler.ThrottleVisibleItems;
             _autocompleteZoomer.DownloadFile = fileId => ViewModel.ClientService.DownloadFile(fileId, 32);
             _autocompleteZoomer.SessionId = () => ViewModel.ClientService.SessionId;
-
-            _loadedThemeTask = new TaskCompletionSource<bool>();
 
             void AddStrategy(ChatHistoryViewItemType type, DataTemplate template, int minimum = 0)
             {
@@ -809,8 +806,6 @@ namespace Telegram.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            _loadedThemeTask?.TrySetResult(true);
-
             //Bindings.StopTracking();
             //Bindings.Update();
 
@@ -835,7 +830,6 @@ namespace Telegram.Views
 
             ViewModel.NavigationService.Window.CoreWindow.CharacterReceived -= OnCharacterReceived;
 
-            _loadedThemeTask?.TrySetResult(true);
             _updateThemeTask?.TrySetResult(true);
 
             LeakTest(false);
@@ -4677,7 +4671,7 @@ namespace Telegram.Views
             }
         }
 
-        private async void UpdateChatTheme(ChatTheme theme)
+        private void UpdateChatTheme(ChatTheme theme)
         {
             if (Theme.Current.Update(ActualTheme, theme, _viewModel.Chat.Background))
             {
@@ -4689,11 +4683,6 @@ namespace Telegram.Views
 
                 current ??= ActualTheme == ElementTheme.Light ? theme?.LightSettings.Background : theme?.DarkSettings.Background;
                 current ??= ViewModel.ClientService.GetDefaultBackground(ActualTheme == ElementTheme.Dark);
-
-                if (_loadedThemeTask != null)
-                {
-                    await _loadedThemeTask.Task;
-                }
 
                 _backgroundControl ??= FindBackgroundControl();
                 _backgroundControl?.Update(current, ActualTheme == ElementTheme.Dark);

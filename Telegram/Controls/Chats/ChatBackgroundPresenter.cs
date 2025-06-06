@@ -45,6 +45,7 @@ namespace Telegram.Controls.Chats
         private double _rasterizationScale;
 
         private Border Canvas;
+        private Border Negative;
 
         public ChatBackgroundPresenter()
         {
@@ -60,6 +61,7 @@ namespace Telegram.Controls.Chats
         protected override void OnApplyTemplate()
         {
             Canvas = GetTemplateChild(nameof(Canvas)) as Border;
+            Negative = GetTemplateChild(nameof(Negative)) as Border;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -276,17 +278,21 @@ namespace Telegram.Controls.Chats
         {
             if (_pattern != null && _patternPath == file.Local.Path && _rasterizationScale == scale)
             {
-                UpdatePattern(pattern, 1);
+                UpdatePattern(pattern, true);
                 return;
             }
 
-            //UpdatePattern(pattern, 0);
+            UpdatePattern(pattern, false);
 
             if (file.Local.IsDownloadingCompleted)
             {
                 if (_negative)
                 {
                     BorderBrush = new SolidColorBrush(Colors.Black);
+                }
+                else
+                {
+                    BorderBrush = null;
                 }
 
                 _patternPath = file.Local.Path;
@@ -307,8 +313,7 @@ namespace Telegram.Controls.Chats
 
                     if (_backgroundId == file.Id && !IsDisconnected)
                     {
-                        BorderBrush = null;
-                        UpdatePattern(pattern, 1);
+                        UpdateTiledBrush(true);
                     }
                     // TODO: Dispose here shouldn't be needed
                     //else
@@ -317,22 +322,19 @@ namespace Telegram.Controls.Chats
                     //}
                 }
 
+                if (_backgroundId != file.Id)
+                {
+                    return;
+                }
+
                 if (_pattern != null)
                 {
                     _pattern.LoadCompleted += handler;
                 }
-                else if (_backgroundId == file.Id)
-                {
-                    BorderBrush = null;
-                }
-            }
-            else
-            {
-                UpdatePattern(pattern, 0);
             }
         }
 
-        private void UpdatePattern(BackgroundTypePattern pattern, double opacity)
+        private void UpdatePattern(BackgroundTypePattern pattern, bool show)
         {
             var fill = pattern.Fill;
             if (fill is BackgroundFillSolid solid)
@@ -360,17 +362,18 @@ namespace Telegram.Controls.Chats
                 }
             }
 
-            UpdateTiledBrush(opacity);
+            UpdateTiledBrush(show);
         }
 
-        private void UpdateTiledBrush(double opacity)
+        private bool _collapsed = true;
+
+        private void UpdateTiledBrush(bool show)
         {
             if (Foreground is TiledBrush tiledBrush)
             {
                 tiledBrush.ImageSource = _pattern;
                 tiledBrush.Intensity = _intensity;
                 tiledBrush.IsNegative = _negative;
-                tiledBrush.Opacity = opacity;
 
                 tiledBrush.Update();
             }
@@ -383,6 +386,35 @@ namespace Telegram.Controls.Chats
                     IsNegative = _negative,
                 };
             }
+
+            if (_collapsed != show || Canvas == null)
+            {
+                return;
+            }
+
+            _collapsed = !show;
+
+            var canvas = ElementComposition.GetElementVisual(Canvas);
+            var negative = ElementComposition.GetElementVisual(Negative);
+
+            var hide = _negative ? show : !show;
+            var target = _negative ? negative : canvas;
+
+            if (_negative)
+            {
+                canvas.StopAnimation("Opacity");
+                canvas.Opacity = 1;
+            }
+            else
+            {
+                negative.StopAnimation("Opacity");
+                negative.Opacity = 0;
+            }
+
+            var animation = canvas.Compositor.CreateScalarKeyFrameAnimation();
+            animation.InsertKeyFrame(hide ? 0 : 1, 1);
+            animation.InsertKeyFrame(hide ? 1 : 0, 0);
+            target.StartAnimation("Opacity", animation);
         }
 
         private SpriteVisual _blurVisual;
