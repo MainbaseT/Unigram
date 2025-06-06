@@ -1003,6 +1003,12 @@ namespace Telegram.Views
             if (args.Item is MessageViewModel { Content: MessageHeaderUnread })
             {
                 _headerUnreadNotReady = false;
+
+                if (_headerUnreadRetry)
+                {
+                    UpdateMessagesHeaderPadding();
+                }
+
                 args.Handled = true;
                 return;
             }

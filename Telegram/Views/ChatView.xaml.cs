@@ -371,6 +371,7 @@ namespace Telegram.Views
             _forumTopicHeaderTopic = null;
             _headerUnreadViewport = null;
             _headerUnreadNotReady = false;
+            _headerUnreadRetry = false;
             _oldestItemAsHeaderNeeded = null;
             _newestItemAsFooterNeeded = null;
 
@@ -759,7 +760,7 @@ namespace Telegram.Views
             else if (e.PropertyName.Equals(nameof(ViewModel.IsNewestSliceLoaded)))
             {
                 UpdateArrowVisibility();
-                UpdateNewestItemAsFooter();
+                UpdateMessagesHeaderPadding();
             }
             else if (e.PropertyName.Equals(nameof(ViewModel.IsOldestSliceLoaded)))
             {
@@ -6680,8 +6681,11 @@ namespace Telegram.Views
         {
             if (_headerUnreadNotReady)
             {
+                _headerUnreadRetry = true;
                 return;
             }
+
+            _headerUnreadRetry = false;
 
             var padding = GroupCall.AnimatedHeight
                 + JoinRequests.AnimatedHeight
@@ -6766,6 +6770,7 @@ namespace Telegram.Views
 
         private EffectiveViewportChangedEventArgs _headerUnreadViewport;
         private bool _headerUnreadNotReady = true;
+        private bool _headerUnreadRetry = false;
 
         private void HeaderUnread_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
         {
