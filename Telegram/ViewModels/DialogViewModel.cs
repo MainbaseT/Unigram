@@ -4837,6 +4837,12 @@ namespace Telegram.ViewModels
             var next = index > 0 ? this[index - 1] : null;
             var previous = index < Count - 1 ? this[index + 1] : null;
 
+            if (UpdateForumTopicSeparatorOnRemove(next, previous, index))
+            {
+                index--;
+                next = index > 0 ? this[index - 1] : null;
+            }
+
             var hash2 = AttachHash(next);
             var hash3 = AttachHash(previous);
 
@@ -4897,8 +4903,6 @@ namespace Telegram.ViewModels
 
         private void UpdateSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
         {
-            UpdateForumTopicSeparatorOnRemove(next, previous, index);
-
             if (next != null && next.Content is MessageHeaderDate && previous != null)
             {
                 var itemDate = Formatter.ToLocalTime(GetMessageDate(next));
@@ -4915,19 +4919,23 @@ namespace Telegram.ViewModels
             }
         }
 
-        private void UpdateForumTopicSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
+        private bool UpdateForumTopicSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
         {
             if (next != null && next.Content is MessageHeaderMessageTopic forumTopic && previous != null)
             {
                 if (!next.TopicId.AreTheSame(previous.TopicId))
                 {
                     base.RemoveItem(index - 1);
+                    return true;
                 }
             }
             else if (next != null && next.Content is MessageHeaderMessageTopic && previous == null)
             {
                 base.RemoveItem(index - 1);
+                return true;
             }
+
+            return false;
         }
 
         private int AttachHash(MessageViewModel item)
