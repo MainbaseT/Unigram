@@ -289,12 +289,12 @@ namespace Telegram.ViewModels
             return base.GetHashCode();
         }
 
-        public void UpdateWith(MessageViewModel message)
+        public void UpdateAlbum(MessageViewModel message)
         {
-            UpdateWith(message.Get());
+            UpdateAlbum(message.Get());
         }
 
-        public void UpdateWith(Message message)
+        public void UpdateAlbum(Message message)
         {
             _message.AuthorSignature = message.AuthorSignature;
             _message.CanBeSaved = message.CanBeSaved;

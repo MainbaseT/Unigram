@@ -735,7 +735,7 @@ namespace Telegram.ViewModels
 
                                         if (album.Messages.Count > 0)
                                         {
-                                            message.UpdateWith(album.Messages[0]);
+                                            message.UpdateAlbum(album.Messages[0]);
                                             album.Invalidate();
                                         }
                                         else
@@ -1140,7 +1140,7 @@ namespace Telegram.ViewModels
                                 Items.UpdateMessageSendSucceeded(messageId, child.Id, message);
                             }
 
-                            message.UpdateWith(album.Messages[0]);
+                            message.UpdateAlbum(album.Messages[0]);
                             album.Invalidate();
 
                             if (action1 != null)
@@ -1200,7 +1200,7 @@ namespace Telegram.ViewModels
                         {
                             update(child);
 
-                            message.UpdateWith(album.Messages[0]);
+                            message.UpdateAlbum(album.Messages[0]);
                             album.Invalidate();
 
                             Delegate?.UpdateBubbleWithMediaAlbumId(message.MediaAlbumId, bubble => action(bubble, albumMessage, false));

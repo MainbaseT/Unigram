@@ -108,7 +108,7 @@ namespace Telegram.ViewModels
 
         public void UpdateItem(MessageViewModel oldItem, MessageViewModel newItem)
         {
-            oldItem.UpdateWith(newItem);
+            oldItem.Replace(newItem);
             oldItem.Content = newItem.Content;
         }
     }
