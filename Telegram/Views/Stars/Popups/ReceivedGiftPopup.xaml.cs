@@ -130,7 +130,10 @@ namespace Telegram.Views.Stars.Popups
                         Convert.Visibility = Visibility.Collapsed;
                     }
 
-                    Info.Text = Strings.Gift2ProfileVisible3;
+                    Info.Text = receiverId is MessageSenderChat
+                        ? Strings.Gift2ChannelProfileVisible3
+                        : Strings.Gift2ProfileVisible3;
+
                     PurchaseText.Text = Strings.OK;
                 }
                 else
@@ -146,7 +149,10 @@ namespace Telegram.Views.Stars.Popups
                         Convert.Visibility = Visibility.Collapsed;
                     }
 
-                    Info.Text = Strings.Gift2ProfileInvisible3;
+                    Info.Text = receiverId is MessageSenderChat
+                        ? Strings.Gift2ChannelProfileInvisible3
+                        : Strings.Gift2ProfileInvisible3;
+
                     PurchaseText.Text = Strings.OK;
                 }
 
@@ -815,15 +821,11 @@ namespace Telegram.Views.Stars.Popups
                 }
                 else
                 {
-                    string ConvertResaleFee(long value)
-                    {
-                        var xtr = value / 1000d;
-                        var usd = xtr * _clientService.Options.GiftResaleEarningsPerMille;
+                    var xtr = args.Value / 1000d;
+                    var usd = (long)(xtr * _clientService.Options.ThousandStarToUsdRate);
+                    var stars = (long)(xtr * _clientService.Options.GiftResaleEarningsPerMille);
 
-                        return Formatter.FormatAmount((long)usd, "USD");
-                    }
-
-                    args.Footer = string.Format("{0} ~{1}", Locale.Declension(Strings.R.ResellGiftInfo, args.Value), ConvertResaleFee(args.Value));
+                    args.Footer = string.Format("{0} ~{1}", Locale.Declension(Strings.R.ResellGiftInfo, stars), Formatter.FormatAmount(usd, "USD"));
                 }
             };
 

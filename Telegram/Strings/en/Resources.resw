@@ -770,6 +770,9 @@ Your prize is **{0} Stars**.</value>
   <data name="ActionUniqueGiftTransferOutbound" xml:space="preserve">
     <value>You transferred a gift to **un1**</value>
   </data>
+  <data name="ActionUniqueGiftTransferService" xml:space="preserve">
+    <value>**un1** transferred a gift to **un2**!</value>
+  </data>
   <data name="ActionUniqueGiftUpgradeInbound" xml:space="preserve">
     <value>**un1** turned the gift from you into a unique collectible</value>
   </data>

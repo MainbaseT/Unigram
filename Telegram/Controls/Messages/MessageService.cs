@@ -1756,12 +1756,22 @@ namespace Telegram.Controls.Messages
             }
             else if (message.ClientService.TryGetMessageSender(gift.SenderId, out BaseObject sender))
             {
-                return ReplaceWithLink(Strings.ActionGiftInbound, sender, gift);
+                if (gift.ReceiverId.IsUser(message.ClientService.Options.MyId))
+                {
+                    return ReplaceWithLink(Strings.ActionGiftInbound, sender, gift);
+                    
+                }
+                else if (message.ClientService.TryGetMessageSender(gift.ReceiverId, out BaseObject outboundUser))
+                {
+                    return ReplaceWithLink(Locale.Declension(Strings.R.ActionGiftChannel, gift.Gift.StarCount + gift.PrepaidUpgradeStarCount), sender, outboundUser);
+                }
             }
             else
             {
                 return ReplaceWithLink(Strings.ActionGift2Received, "un2", gift);
             }
+
+            return _emptyString;
         }
 
         private static FormattedText UpdateGiftedPremium(MessageViewModel message, MessageGiftedPremium giftedPremium, bool history)
@@ -2264,26 +2274,37 @@ namespace Telegram.Controls.Messages
         {
             if (upgradedGift.IsUpgrade)
             {
-                if (message.ChatId == message.ClientService.Options.MyId)
+                if (upgradedGift.ReceiverId.IsUser(message.ClientService.Options.MyId))
                 {
-                    return Strings.ActionUniqueGiftUpgradeSelf.AsFormattedText();
+                    if (message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out BaseObject outboundUser))
+                    {
+                        return ReplaceWithLink(Strings.ActionUniqueGiftUpgradeOutbound, outboundUser);
+                    }
+                    else
+                    {
+                        return Strings.ActionUniqueGiftUpgradeSelf.AsFormattedText();
+                    }
                 }
-                else if (message.IsOutgoing && message.ClientService.TryGetUser(message.Chat, out User outboundUser))
-                {
-                    return ReplaceWithLink(Strings.ActionUniqueGiftUpgradeOutbound, outboundUser);
-                }
-                else if (message.ClientService.TryGetUser(message.SenderId, out User inboundUser))
+                else if (message.ClientService.TryGetMessageSender(upgradedGift.ReceiverId, out BaseObject inboundUser))
                 {
                     return ReplaceWithLink(Strings.ActionUniqueGiftUpgradeInbound, inboundUser);
                 }
             }
-            else if (message.IsOutgoing && message.ClientService.TryGetUser(message.Chat, out User outboundUser))
+            else if (upgradedGift.ReceiverId.IsUser(message.ClientService.Options.MyId))
             {
-                return ReplaceWithLink(Strings.ActionUniqueGiftTransferOutbound, outboundUser);
+                if (message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out BaseObject inboundUser))
+                {
+                    return ReplaceWithLink(Strings.ActionUniqueGiftTransferInbound, inboundUser);
+                }
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User inboundUser))
+            else if (message.IsOutgoing)
             {
-                return ReplaceWithLink(Strings.ActionUniqueGiftTransferInbound, inboundUser);
+                return ReplaceWithLink(Strings.ActionUniqueGiftTransferOutbound, message.ClientService.GetMessageSender(upgradedGift.ReceiverId));
+            }
+            else if (message.ClientService.TryGetMessageSender(upgradedGift.ReceiverId, out BaseObject outboundUser)
+                && message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out BaseObject inboundUser))
+            {
+                return ReplaceWithLink(Strings.ActionUniqueGiftTransferService, inboundUser, outboundUser);
             }
 
             return _emptyString;
