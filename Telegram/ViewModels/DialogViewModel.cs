@@ -2876,7 +2876,7 @@ namespace Telegram.ViewModels
             var chatId = embedded.ReplyToMessage.ChatId;
             if (chatId == _chat?.Id || chatId == 0)
             {
-                if (embedded.ReplyToMessage.TopicId != null)
+                if (embedded.ReplyToMessage.TopicId != null && (IsForum || IsFeedbackGroup))
                 {
                     return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, embedded.ReplyToMessage.TopicId, embedded.ReplyToQuote);
                 }
