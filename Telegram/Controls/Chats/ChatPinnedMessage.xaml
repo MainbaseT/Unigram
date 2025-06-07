@@ -83,17 +83,19 @@
 
         <chats:ChatPinnedMessageLine x:Name="Line"
                                      Stroke="{ThemeResource PinnedMessageForegroundBrush}"
-                                     BorderBrush="{ThemeResource PinnedMessageBorderBrush}"
+                                     Fill="{ThemeResource PinnedMessageBorderBrush}"
                                      IsTabStop="False"
                                      Width="4"
-                                     Height="36" />
+                                     Height="48"
+                                     UseLayoutRounding="False" />
 
         <Border x:Name="ThumbRoot"
-                x:DeferLoadStrategy="Lazy"
-                Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}"
+                Visibility="Collapsed"
+                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
                 Width="36"
                 Height="36"
                 Margin="6,0,2,0"
+                CornerRadius="2"
                 Grid.Column="1">
             <Border x:Name="ThumbEllipse">
                 <Border.Background>
@@ -105,7 +107,8 @@
             </Border>
         </Border>
 
-        <Grid Margin="6,0,0,2"
+        <Grid x:Name="ContentRoot"
+              Margin="6,0,0,2"
               VerticalAlignment="Center"
               Grid.Column="2">
             <Grid.RowDefinitions>

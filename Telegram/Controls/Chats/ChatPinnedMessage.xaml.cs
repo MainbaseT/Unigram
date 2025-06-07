@@ -6,16 +6,15 @@
 //
 using Microsoft.Graphics.Canvas.Geometry;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
 using Telegram.Common;
+using Telegram.Composition;
 using Telegram.Controls.Messages;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views;
-using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -162,7 +161,6 @@ namespace Telegram.Controls.Chats
             }
 
             _playing = true;
-            Debug.WriteLine("Playing text");
 
             var cross = _chatId == chat.Id;
             var prev = _message?.Id < message?.Id;
@@ -322,22 +320,59 @@ namespace Telegram.Controls.Chats
 
         protected override void HideThumbnail()
         {
-            if (ThumbRoot != null)
-            {
-                ThumbRoot.Visibility = Visibility.Collapsed;
-            }
+            ShowHideThumbnail(false);
         }
 
         protected override void ShowThumbnail(CornerRadius radius = default)
         {
-            FindName(nameof(ThumbRoot));
-            if (ThumbRoot != null)
-            {
-                ThumbRoot.Visibility = Visibility.Visible;
-            }
+            ShowHideThumbnail(true);
 
             ThumbRoot.CornerRadius =
                 ThumbEllipse.CornerRadius = radius == default ? _defaultRadius : radius;
+        }
+
+        private bool _collapsedThumbnail = true;
+
+        private void ShowHideThumbnail(bool show)
+        {
+            if (_collapsedThumbnail != show)
+            {
+                return;
+            }
+
+            _collapsedThumbnail = !show;
+            ThumbRoot.Visibility = Visibility.Visible;
+
+            ElementCompositionPreview.SetIsTranslationEnabled(ContentRoot, true);
+
+            var visual = ElementComposition.GetElementVisual(ThumbRoot);
+            var content = ElementComposition.GetElementVisual(ContentRoot);
+
+            var batch = visual.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            batch.Completed += (s, args) =>
+            {
+                content.Properties.InsertVector3("Translation", Vector3.Zero);
+
+                if (_collapsedThumbnail)
+                {
+                    ThumbRoot.Visibility = Visibility.Collapsed;
+                }
+            };
+
+            var opacity = visual.Compositor.CreateScalarKeyFrameAnimation();
+            opacity.InsertKeyFrame(0, show ? 0 : 1);
+            opacity.InsertKeyFrame(1, show ? 1 : 0);
+            opacity.Duration = Constants.FastAnimation;
+
+            var translation = visual.Compositor.CreateScalarKeyFrameAnimation();
+            translation.InsertKeyFrame(0, show ? -44 : 0);
+            translation.InsertKeyFrame(1, show ? 0 : -44);
+            translation.Duration = Constants.FastAnimation;
+
+            visual.StartAnimation("Opacity", opacity);
+            content.StartAnimation("Translation.X", translation);
+
+            batch.End();
         }
 
         protected override void SetThumbnail(ImageSource value)
@@ -404,33 +439,32 @@ namespace Telegram.Controls.Chats
     {
         private readonly CompositionSpriteShape _back;
         private readonly CompositionSpriteShape _fore;
-        private readonly CompositionRectangleGeometry _forePath;
+        private readonly CompositionRoundedRectangleGeometry _forePath;
         private readonly CompositionGeometricClip _mask;
         private readonly CompositionPathGeometry _maskPath;
 
         public ChatPinnedMessageLine()
         {
-            RegisterPropertyChangedCallback(BorderBrushProperty, OnBorderBrushChanged);
-
             var compositor = BootStrapper.Current.Compositor;
 
             var visual = compositor.CreateShapeVisual();
-            visual.Size = new Vector2(2, 36);
+            visual.Size = new Vector2(4, 48);
 
             var back = compositor.CreateRectangleGeometry();
             back.Offset = Vector2.Zero;
-            back.Size = new Vector2(4, 36);
+            back.Size = new Vector2(3, 48);
 
             var backShape = compositor.CreateSpriteShape(back);
-            backShape.FillBrush = GetBrush(BorderBrushProperty);
+            backShape.FillBrush = _fillBrush ??= new CompositionColorSource(Fill, IsConnected);
 
-            var fore = compositor.CreateRectangleGeometry();
-            fore.Offset = Vector2.Zero;
+            // TODO: This will never render properly for some reason
+            var fore = compositor.CreateRoundedRectangleGeometry();
+            fore.Offset = new Vector2(0, 6);
             fore.Size = new Vector2(4, 36);
-            //fore.CornerRadius = Vector2.One;
+            fore.CornerRadius = new Vector2(3);
 
             var foreShape = compositor.CreateSpriteShape(fore);
-            foreShape.FillBrush = GetBrush(ForegroundProperty);
+            foreShape.FillBrush = _strokeBrush ??= new CompositionColorSource(Stroke, IsConnected);
 
             var mask = compositor.CreatePathGeometry(GetMask(1));
             var maskShape = compositor.CreateGeometricClip(mask);
@@ -438,6 +472,7 @@ namespace Telegram.Controls.Chats
             visual.Shapes.Add(backShape);
             visual.Shapes.Add(foreShape);
             visual.Clip = maskShape;
+            visual.IsPixelSnappingEnabled = false;
 
             _back = backShape;
             _fore = foreShape;
@@ -453,21 +488,19 @@ namespace Telegram.Controls.Chats
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (_strokeToken == 0 && _fore != null)
-            {
-                Stroke?.RegisterColorChangedCallback(OnStrokeChanged, ref _strokeToken);
-                OnStrokeChanged(Stroke, SolidColorBrush.ColorProperty);
-            }
+            _strokeBrush?.Register();
+            _fillBrush?.Register();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
-            Stroke?.UnregisterColorChangedCallback(ref _strokeToken);
+            _strokeBrush?.Unregister();
+            _fillBrush?.Unregister();
         }
 
         #region Stroke
 
-        private long _strokeToken;
+        private CompositionColorSource _strokeBrush;
 
         public Brush Stroke
         {
@@ -480,61 +513,40 @@ namespace Telegram.Controls.Chats
 
         private static void OnStrokeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var sender = d as ChatPinnedMessageLine;
-            var prev = e.OldValue as SolidColorBrush;
-            var next = e.NewValue as SolidColorBrush;
-
-            sender.OnStrokeChanged(prev, next);
+            ((ChatPinnedMessageLine)d).OnStrokeChanged(e.NewValue as SolidColorBrush, e.OldValue as SolidColorBrush);
         }
 
-        private void OnStrokeChanged(SolidColorBrush oldValue, SolidColorBrush newValue)
+        private void OnStrokeChanged(SolidColorBrush newValue, SolidColorBrush oldValue)
         {
-            oldValue?.UnregisterColorChangedCallback(ref _strokeToken);
-
-            if (newValue == null || _fore == null)
-            {
-                return;
-            }
-
-            _fore.FillBrush = BootStrapper.Current.Compositor.CreateColorBrush(newValue.Color);
-
-            if (IsConnected)
-            {
-                newValue.RegisterColorChangedCallback(OnStrokeChanged, ref _strokeToken);
-            }
-        }
-
-        private void OnStrokeChanged(DependencyObject sender, DependencyProperty dp)
-        {
-            var solid = sender as SolidColorBrush;
-            if (solid == null || _fore == null)
-            {
-                return;
-            }
-
-            _fore.FillBrush = BootStrapper.Current.Compositor.CreateColorBrush(solid.Color);
+            _strokeBrush?.PropertyChanged(newValue, IsConnected);
         }
 
         #endregion
 
-        private void OnBorderBrushChanged(DependencyObject sender, DependencyProperty dp)
+        #region Fill
+
+        private CompositionColorSource _fillBrush;
+
+        public Brush Fill
         {
-            if (_back != null)
-            {
-                _back.FillBrush = GetBrush(dp);
-            }
+            get => (Brush)GetValue(FillProperty);
+            set => SetValue(FillProperty, value);
         }
 
-        private CompositionBrush GetBrush(DependencyProperty dp)
-        {
-            var value = GetValue(dp);
-            if (value is SolidColorBrush solid)
-            {
-                return BootStrapper.Current.Compositor.CreateColorBrush(solid.Color);
-            }
+        public static readonly DependencyProperty FillProperty =
+            DependencyProperty.Register("Fill", typeof(Brush), typeof(ChatPinnedMessageLine), new PropertyMetadata(null, OnFillChanged));
 
-            return BootStrapper.Current.Compositor.CreateColorBrush(Colors.White);
+        private static void OnFillChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ChatPinnedMessageLine)d).OnFillChanged(e.NewValue as SolidColorBrush, e.OldValue as SolidColorBrush);
         }
+
+        private void OnFillChanged(SolidColorBrush newValue, SolidColorBrush oldValue)
+        {
+            _fillBrush?.PropertyChanged(newValue, IsConnected);
+        }
+
+        #endregion
 
         private readonly Queue<(int, int, int)> _queue = new Queue<(int, int, int)>();
         private bool _playing;
@@ -544,8 +556,6 @@ namespace Telegram.Controls.Chats
 
         public void UpdateIndex(int value, int maximum, int direction)
         {
-            Debug.WriteLine("UpdateIndex({0}, {1}, {2})", value, maximum, direction);
-
             if (_maskPath == null || _nextValue == value)
             {
                 return;
@@ -560,8 +570,6 @@ namespace Telegram.Controls.Chats
             _playing = true;
             _nextValue = value;
 
-            Debug.WriteLine("Playing line");
-
             var h = 12f;
             var m = 3f;
 
@@ -570,7 +578,7 @@ namespace Telegram.Controls.Chats
                 h = (36f - (maximum - 1) * m) / maximum;
             }
 
-            _forePath.Size = new Vector2(2, h);
+            _forePath.Size = new Vector2(3, h);
             _maskPath.Path = GetMask(maximum);
 
             var easing = _mask.Compositor.CreateLinearEasingFunction();
@@ -673,8 +681,6 @@ namespace Telegram.Controls.Chats
                 final2 = next * (h + m);
             }
 
-            Debug.WriteLine("Initial1: " + initial1 + ", final1: " + final1);
-
             var batch = _mask.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
             {
@@ -688,11 +694,11 @@ namespace Telegram.Controls.Chats
 
             if (initial1 != final1)
             {
-                var anim1 = _mask.Compositor.CreateVector2KeyFrameAnimation();
-                anim1.InsertKeyFrame(0, new Vector2(0, initial1 + 2), easing);
-                anim1.InsertKeyFrame(1, new Vector2(0, final1 + 2), easing);
+                var anim1 = _mask.Compositor.CreateScalarKeyFrameAnimation();
+                anim1.InsertKeyFrame(0, initial1 + 2, easing);
+                anim1.InsertKeyFrame(1, final1 + 2, easing);
 
-                _mask.StartAnimation("Offset", anim1);
+                _mask.StartAnimation("Offset.Y", anim1);
             }
             else
             {
@@ -701,11 +707,11 @@ namespace Telegram.Controls.Chats
 
             if (initial2 != final2 && maximum > 1)
             {
-                var anim2 = _mask.Compositor.CreateVector2KeyFrameAnimation();
-                anim2.InsertKeyFrame(0, new Vector2(0, initial2), easing);
-                anim2.InsertKeyFrame(1, new Vector2(0, final2), easing);
+                var anim2 = _mask.Compositor.CreateScalarKeyFrameAnimation();
+                anim2.InsertKeyFrame(0, initial2, easing);
+                anim2.InsertKeyFrame(1, final2, easing);
 
-                _fore.StartAnimation("Offset", anim2);
+                _fore.StartAnimation("Offset.Y", anim2);
             }
             else
             {
@@ -739,12 +745,10 @@ namespace Telegram.Controls.Chats
 
             for (int i = 0; i < geometries.Length; i++)
             {
-                geometries[i] = CanvasGeometry.CreateRectangle(null, 0, 0 + i * (h + m), 4, h);
+                geometries[i] = CanvasGeometry.CreateRoundedRectangle(null, 0, 6 + i * (h + m), 3, h, 3, 3);
             }
 
-            var rectangle = CanvasGeometry.CreateRectangle(null, -2, -2, 8, (h + m) * geometries.Length + 1);
             return new CompositionPath(CanvasGeometry.CreateGroup(null, geometries, CanvasFilledRegionDetermination.Winding));
         }
-
     }
 }
