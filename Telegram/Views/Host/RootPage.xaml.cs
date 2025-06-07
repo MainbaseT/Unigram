@@ -443,7 +443,10 @@ namespace Telegram.Views.Host
                     _navigationViewItems.Insert(index, bots[i]);
                 }
 
-                _navigationViewItems.Insert(index, RootDestination.Separator);
+                if (bots.Count > 0)
+                {
+                    _navigationViewItems.Insert(index, RootDestination.Separator);
+                }
             }
 
             if (show && items != null)
