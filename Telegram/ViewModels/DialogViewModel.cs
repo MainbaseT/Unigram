@@ -1057,15 +1057,23 @@ namespace Telegram.ViewModels
                 var panel = field.ItemsPanelRoot as ItemsStackPanel;
                 if (panel != null && panel.LastVisibleIndex >= 0 && panel.LastVisibleIndex < Items.Count && Items.Count > 0)
                 {
-                    var item = Items[panel.LastVisibleIndex];
-                    if (item.Content is MessageAlbum album)
+                    for (int i = panel.LastVisibleIndex; i >= panel.FirstVisibleIndex; i--)
                     {
-                        item = album.Messages.LastOrDefault();
-                    }
+                        var item = Items[i];
+                        if (item.Id == 0)
+                        {
+                            continue;
+                        }
 
-                    id = item.Id;
-                    index = panel.LastVisibleIndex;
-                    return true;
+                        if (item.Content is MessageAlbum album)
+                        {
+                            item = album.Messages.LastOrDefault();
+                        }
+
+                        id = item.Id;
+                        index = i;
+                        return true;
+                    }
                 }
             }
 
@@ -1082,14 +1090,22 @@ namespace Telegram.ViewModels
                 var panel = field.ItemsPanelRoot as ItemsStackPanel;
                 if (panel != null && panel.FirstVisibleIndex >= 0 && panel.FirstVisibleIndex < Items.Count && Items.Count > 0)
                 {
-                    var item = Items[panel.FirstVisibleIndex];
-                    if (item.Content is MessageAlbum album)
+                    for (int i = panel.FirstVisibleIndex; i <= panel.LastVisibleIndex; i++)
                     {
-                        item = album.Messages.FirstOrDefault();
-                    }
+                        var item = Items[i];
+                        if (item.Id == 0)
+                        {
+                            continue;
+                        }
 
-                    id = item.Id;
-                    return true;
+                        if (item.Content is MessageAlbum album)
+                        {
+                            item = album.Messages.FirstOrDefault();
+                        }
+
+                        id = item.Id;
+                        return true;
+                    }
                 }
             }
 
