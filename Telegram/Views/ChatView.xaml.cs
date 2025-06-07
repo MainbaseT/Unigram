@@ -6853,6 +6853,8 @@ namespace Telegram.Views
             var hori = type == ForumViewType.Horizontal;
             var vert = type == ForumViewType.Vertical;
 
+            var collaped = _forumCollapsed == ForumViewType.List;
+
             var changingHori = hori || _forumCollapsed == ForumViewType.Horizontal;
             var changingVert = vert || _forumCollapsed == ForumViewType.Vertical;
 
@@ -7047,8 +7049,11 @@ namespace Telegram.Views
                 TextAreaAnimateWidth(vert, duration);
             }
 
-            ForumNavigation.AnimateWidth(hori, duration);
-            ForumNavigationHorizontal.AnimateWidth(vert, duration);
+            if (!collaped)
+            {
+                ForumNavigation.AnimateWidth(hori, duration);
+                ForumNavigationHorizontal.AnimateWidth(vert, duration);
+            }
 
             batch.End();
 
