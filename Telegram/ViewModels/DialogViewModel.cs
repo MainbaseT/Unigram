@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Common.Chats;
 using Telegram.Controls;
@@ -78,9 +77,6 @@ namespace Telegram.ViewModels
 
         protected readonly IMessageDelegate _messageDelegate;
 
-        protected readonly DialogUnreadMessagesViewModel _mentions;
-        protected readonly DialogUnreadMessagesViewModel _reactions;
-
         protected readonly ILocationService _locationService;
         protected readonly INotificationsService _notificationsService;
         protected readonly IPlaybackService _playbackService;
@@ -97,8 +93,10 @@ namespace Telegram.ViewModels
 
         public IVoipService VoipService => _voipService;
 
-        public DialogUnreadMessagesViewModel Mentions => _mentions;
-        public DialogUnreadMessagesViewModel Reactions => _reactions;
+        public DialogUnreadMessagesViewModel Mentions { get; }
+        public DialogUnreadMessagesViewModel Reactions { get; }
+
+        public DialogPinnedMessagesViewModel PinnedMessages { get; }
 
         public IDialogDelegate Delegate { get; set; }
 
@@ -115,8 +113,10 @@ namespace Telegram.ViewModels
 
             _messageDelegate = new DialogMessageDelegate(this);
 
-            _mentions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadMention());
-            _reactions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadReaction());
+            Mentions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadMention());
+            Reactions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadReaction());
+
+            PinnedMessages = new DialogPinnedMessagesViewModel(this);
 
             Items = new MessageCollection(this);
 
@@ -432,12 +432,6 @@ namespace Telegram.ViewModels
         }
 
         private bool _needsUpdateSpeechRecognitionTrial;
-
-        private bool _hasLoadedLastPinnedMessage = false;
-
-        public long LockedPinnedMessageId { get; set; }
-        public MessageViewModel LastPinnedMessage { get; private set; }
-        public IList<MessageViewModel> PinnedMessages { get; } = new List<MessageViewModel>();
 
         private Td.Api.Chats _groupsInCommon;
         public Td.Api.Chats GroupsInCommon
@@ -833,7 +827,7 @@ namespace Telegram.ViewModels
                             await AddHeaderAsync(messages.MessagesValue, fromMessage?.Get());
                         }
 
-                        tsc.SetResult(new MessageCollection(this, Items.Ids, messages.MessagesValue, CreateMessage, endReached, Type));
+                        tsc.SetResult(new MessageCollection(this, Items.Ids, messages.MessagesValue, endReached, Type));
                     }
                     else
                     {
@@ -880,7 +874,7 @@ namespace Telegram.ViewModels
                 _loadingSlice = false;
                 IsLoading = false;
 
-                LoadPinnedMessagesSliceAsync(fromMessageId, direction);
+                PinnedMessages.LoadSlice(fromMessageId, direction);
             }
         }
 
@@ -1103,130 +1097,6 @@ namespace Telegram.ViewModels
             return false;
         }
 
-        private async void LoadPinnedMessagesSliceAsync(long maxId, PanelScrollingDirection direction = PanelScrollingDirection.None)
-        {
-            await Task.Yield();
-
-            var chat = _chat;
-            if (chat == null || (Type != DialogType.History && (Type == DialogType.Thread && ForumTopic == null && FeedbackChatTopic == null)))
-            {
-                Delegate?.UpdatePinnedMessage(chat, false);
-                return;
-            }
-
-            var hidden = Settings.GetChatPinnedMessage(chat.Id);
-            if (hidden != 0)
-            {
-                Delegate?.UpdatePinnedMessage(chat, false);
-                return;
-            }
-
-            if (direction == PanelScrollingDirection.Backward && PinnedMessages.Count > 0)
-            {
-                if (PinnedMessages[0].Id < maxId)
-                {
-                    return;
-                }
-            }
-            else if (direction == PanelScrollingDirection.Forward && PinnedMessages.Count > 0)
-            {
-                if (PinnedMessages[^1].Id > maxId)
-                {
-                    return;
-                }
-            }
-
-            var filter = new SearchMessagesFilterPinned();
-            var messageTopic = default(MessageTopic);
-
-            if (SavedMessagesTopic != null)
-            {
-                messageTopic = new MessageTopicSavedMessages(SavedMessagesTopic.Id);
-            }
-            else if (FeedbackChatTopic != null)
-            {
-                messageTopic = new MessageTopicFeedbackChat(FeedbackChatTopic.Id);
-            }
-            else if (ForumTopic != null)
-            {
-                messageTopic = new MessageTopicForum(ForumTopic.Info.MessageThreadId);
-            }
-            else if (Thread != null)
-            {
-                messageTopic = new MessageTopicForum(Thread.MessageThreadId);
-            }
-
-            if (!_hasLoadedLastPinnedMessage && Type == DialogType.History)
-            {
-                _hasLoadedLastPinnedMessage = true;
-                //Delegate?.UpdatePinnedMessage(chat, null, chat.PinnedMessageId != 0);
-                //Delegate?.UpdatePinnedMessage(chat, true);
-
-                var last = await ClientService.SendAsync(new GetChatPinnedMessage(chat.Id)) as Message;
-                if (last != null)
-                {
-                    Delegate?.UpdatePinnedMessage(chat, true);
-                }
-                else
-                {
-                    Delegate?.UpdatePinnedMessage(chat, false);
-                }
-            }
-
-            var offset = direction == PanelScrollingDirection.Backward ? 0 : direction == PanelScrollingDirection.Forward ? -49 : -25;
-            var limit = 50;
-
-            if (direction == PanelScrollingDirection.None && (maxId == LastPinnedMessage?.Id || maxId == 0))
-            {
-                offset = -1;
-                limit = 100;
-            }
-
-            var func = new SearchChatMessages(chat.Id, messageTopic, string.Empty, null, maxId, offset, limit, filter);
-
-            var tsc = new TaskCompletionSource<List<MessageViewModel>>();
-            void handler(BaseObject result)
-            {
-                if (result is FoundChatMessages foundChatMessages)
-                {
-                    tsc.SetResult(foundChatMessages.Messages.OrderByDescending(x => x.Id).Select(x => CreateMessage(x)).ToList());
-                }
-                else
-                {
-                    tsc.SetResult(null);
-                }
-            }
-
-            ClientService.Send(func, handler);
-
-            var response = await tsc.Task;
-            if (response is List<MessageViewModel> messages && messages.Count > 0)
-            {
-                if (direction == PanelScrollingDirection.None)
-                {
-                    PinnedMessages.Clear();
-                }
-
-                foreach (var message in messages)
-                {
-                    if (direction == PanelScrollingDirection.Forward)
-                    {
-                        InsertMessageInOrder(PinnedMessages, message);
-                    }
-                    else
-                    {
-                        PinnedMessages.Insert(0, message);
-                    }
-                }
-
-                Delegate?.ViewVisibleMessages();
-            }
-            else if (PinnedMessages.Empty())
-            {
-                Delegate?.UpdatePinnedMessage(chat, false);
-            }
-        }
-
         // This is to notify the view to update bindings
         public event EventHandler MessageSliceLoaded;
 
@@ -1395,7 +1265,7 @@ namespace Telegram.ViewModels
                 _loadingSlice = false;
                 IsLoading = false;
 
-                LoadPinnedMessagesSliceAsync(maxId);
+                PinnedMessages.LoadSlice(maxId);
             }
 
             if (loadMore != PanelScrollingDirection.None)
@@ -1666,7 +1536,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                var replied = new MessageCollection(this, null, values, CreateMessage, false, Type);
+                var replied = new MessageCollection(this, null, values, false, Type);
                 return new LoadSliceResult(replied, maxId, scrollMode, alignment, pixel, unread);
             }
 
@@ -1868,6 +1738,16 @@ namespace Telegram.ViewModels
             }
 
             return model;
+        }
+
+        public PinnedMessageViewModel CreatePinnedMessage(Message message, int index)
+        {
+            if (message == null)
+            {
+                return null;
+            }
+
+            return new PinnedMessageViewModel(ClientService, _playbackService, _messageDelegate, _chat, message, index);
         }
 
         protected void ProcessMessages(Chat chat, IList<MessageViewModel> messages)
@@ -2531,14 +2411,9 @@ namespace Telegram.ViewModels
 
             _lastSeenTimer?.Stop();
             _groupedMessages.Clear();
-            _hasLoadedLastPinnedMessage = false;
             _chatActionManager = null;
 
             SelectedItems.Clear();
-
-            PinnedMessages.Clear();
-            LastPinnedMessage = null;
-            LockedPinnedMessageId = 0;
 
             IsSelectionEnabled = false;
 
@@ -3662,7 +3537,11 @@ namespace Telegram.ViewModels
             }
 
             Settings.SetChatPinnedMessage(chat.Id, 0);
-            LoadPinnedMessagesSliceAsync(0);
+
+            if (TryGetFirstVisibleMessageId(out long firstVisibleId))
+            {
+                PinnedMessages.LoadSlice(firstVisibleId);
+            }
         }
 
         public void OpenPinnedMessages()
@@ -4466,778 +4345,6 @@ namespace Telegram.ViewModels
 
         public long UserId { get; set; }
         public BotCommand Item { get; set; }
-    }
-
-    public partial class MessageCollection : MvxObservableCollection<MessageViewModel>
-    {
-        private readonly DialogViewModel _viewModel;
-        private readonly Dictionary<long, MessageViewModel> _messages = new();
-
-        private long _first = long.MaxValue;
-        private long _last = long.MinValue;
-
-        private bool _suppressOperations = false;
-        private bool _suppressPrev = false;
-        private bool _suppressNext = false;
-
-        public ICollection<long> Ids => _messages.Keys;
-
-        public long FirstId => _first;
-        public long LastId => _last;
-
-        public Action<IEnumerable<MessageViewModel>> AttachChanged;
-
-        // Used in sub-collection
-        public bool IsEndReached { get; }
-
-        public MessageCollection(DialogViewModel viewModel)
-        {
-            _viewModel = viewModel;
-            _messages = new();
-        }
-
-        public MessageCollection(DialogViewModel viewModel, ICollection<long> exclude, IEnumerable<Message> source, Func<Message, bool, MessageViewModel> create, bool endReached, DialogType type)
-        {
-            _viewModel = viewModel;
-
-            foreach (var item in source)
-            {
-                if (item.Id != 0 && exclude != null && exclude.Contains(item.Id))
-                {
-                    continue;
-                }
-                else if (item.Content is MessageForumTopicCreated or MessageChatUpgradeFrom && type == DialogType.Thread)
-                {
-                    continue;
-                }
-
-                Insert(0, create(item, true /* forLanguageStatistics */));
-            }
-
-            IsEndReached = endReached || Count == 0;
-        }
-
-        //~MessageCollection()
-        //{
-        //    Debug.WriteLine("Finalizing MessageCollection");
-        //    GC.Collect();
-        //}
-
-        protected override void ClearItems()
-        {
-            _messages.Clear();
-            base.ClearItems();
-        }
-
-        public bool ContainsKey(long id)
-        {
-            return _messages.ContainsKey(id);
-        }
-
-        public bool TryGetValue(long id, out MessageViewModel value)
-        {
-            return _messages.TryGetValue(id, out value);
-        }
-
-        public void UpdateMessageSendSucceeded(long oldMessageId, MessageViewModel message)
-        {
-            _messages.Remove(oldMessageId);
-            _messages[message.Id] = message;
-        }
-
-        public void UpdateMessageSendSucceeded(long oldMessageId, long newMessageId, MessageViewModel message)
-        {
-            _messages.Remove(oldMessageId);
-            _messages[newMessageId] = message;
-        }
-
-        public void RawAddRange(IList<MessageViewModel> source, bool filter, out bool empty)
-        {
-            empty = true;
-
-            for (int i = 0; i < source.Count; i++)
-            {
-                var message = source[i];
-
-                if (filter && message.Id != 0)
-                {
-                    if (message.Id < _last || _messages.ContainsKey(message.Id))
-                    {
-                        continue;
-                    }
-                }
-
-                _suppressOperations = i > 0;
-                _suppressNext = !_suppressOperations;
-
-                Add(message);
-                empty = false;
-
-                if (message.Id != 0 && message.Id > _last)
-                {
-                    _last = message.Id;
-                }
-            }
-
-            _suppressOperations = false;
-            _suppressNext = false;
-        }
-
-        public void RawInsertRange(int index, IList<MessageViewModel> source, bool filter, out bool empty)
-        {
-            empty = true;
-
-            for (int i = source.Count - 1; i >= 0; i--)
-            {
-                var message = source[i];
-
-                if (filter && message.Id != 0)
-                {
-                    if (message.Id > _first || _messages.ContainsKey(message.Id))
-                    {
-                        continue;
-                    }
-                }
-
-                _suppressOperations = i < source.Count - 1;
-                _suppressPrev = !_suppressOperations;
-
-                Insert(0, message);
-                empty = false;
-
-                if (message.Id != 0 && message.Id < _first)
-                {
-                    _first = message.Id;
-                }
-            }
-
-            _suppressOperations = false;
-            _suppressPrev = false;
-        }
-
-        public void RawReplaceWith(IEnumerable<MessageViewModel> source)
-        {
-            _messages.Clear();
-            _suppressOperations = true;
-
-            _first = long.MaxValue;
-            _last = long.MinValue;
-
-            ReplaceWith(source);
-
-            _suppressOperations = false;
-        }
-
-        protected override void InsertItem(int index, MessageViewModel item)
-        {
-            if (item.Content is MessageAlbum album)
-            {
-                foreach (var child in album.Messages)
-                {
-                    _messages[child.Id] = item;
-                }
-            }
-
-            _messages[item.Id] = item;
-
-            if (item.Id != 0)
-            {
-                _first = Math.Min(item.Id, _first);
-                _last = Math.Max(item.Id, _last);
-            }
-
-            if (_suppressOperations)
-            {
-                base.InsertItem(index, item);
-            }
-            else if (_suppressNext)
-            {
-                var prev = index > 0 ? this[index - 1] : null;
-                var prevSeparator = UpdateSeparatorOnInsert(prev, item);
-                var prevForumTopic = UpdateForumTopicSeparatorOnInsert(prev, item);
-                var prevHash = AttachHash(prev);
-
-                if (prevForumTopic != null)
-                {
-                    UpdateAttach(null, prev);
-                    UpdateAttach(prevForumTopic, item);
-                }
-                else if (prevSeparator != null)
-                {
-                    UpdateAttach(null, prev);
-                    UpdateAttach(prevSeparator, item);
-                }
-                else
-                {
-                    UpdateAttach(item, prev);
-                }
-
-                if (prevSeparator != null)
-                {
-                    base.InsertItem(index++, prevSeparator);
-                }
-
-                if (prevForumTopic != null)
-                {
-                    base.InsertItem(index++, prevForumTopic);
-                }
-
-                base.InsertItem(index, item);
-
-                var prevUpdate = AttachHash(prev);
-                if (prevUpdate != prevHash)
-                {
-                    AttachChanged?.Invoke(new[] { prev });
-                }
-            }
-            else if (_suppressPrev)
-            {
-                var next = index < Count ? this[index] : null;
-                var nextSeparator = UpdateSeparatorOnInsert(item, next);
-                var nextForumTopic = UpdateForumTopicSeparatorOnInsert(item, next);
-                var nextHash = AttachHash(next);
-
-                if (nextForumTopic != null)
-                {
-                    UpdateAttach(next, null);
-                    UpdateAttach(item, nextForumTopic);
-                }
-                else if (nextSeparator != null)
-                {
-                    UpdateAttach(next, null);
-                    UpdateAttach(item, nextSeparator);
-                }
-                else
-                {
-                    UpdateAttach(next, item);
-                }
-
-                base.InsertItem(index, item);
-
-                if (nextSeparator != null)
-                {
-                    base.InsertItem(++index, nextSeparator);
-                }
-
-                if (nextForumTopic != null)
-                {
-                    base.InsertItem(++index, nextForumTopic);
-                }
-
-                var nextUpdate = AttachHash(next);
-                if (nextUpdate != nextHash)
-                {
-                    AttachChanged?.Invoke(new[] { next });
-                }
-            }
-            else
-            {
-                var prev = index > 0 ? this[index - 1] : null;
-                var next = index < Count ? this[index] : null;
-
-                // Order must be:
-                // Separator between previous and item
-                // Item
-                // Separator between item and next
-                // UpdateSeparatorOnInsert must return the new messages
-                // This way only two AttachChanged will be needed at most
-
-                var prevSeparator = UpdateSeparatorOnInsert(prev, item);
-                var nextSeparator = UpdateSeparatorOnInsert(item, next);
-
-                var prevForumTopic = UpdateForumTopicSeparatorOnInsert(prev, item);
-                var nextForumTopic = UpdateForumTopicSeparatorOnInsert(item, next);
-
-                var nextHash = AttachHash(next);
-                var prevHash = AttachHash(prev);
-
-                if (prevForumTopic != null)
-                {
-                    UpdateAttach(null, prev);
-                    UpdateAttach(prevForumTopic, item);
-                }
-                else if (prevSeparator != null)
-                {
-                    UpdateAttach(null, prev);
-                    UpdateAttach(prevSeparator, item);
-                }
-                else
-                {
-                    UpdateAttach(item, prev);
-                }
-
-                if (nextForumTopic != null)
-                {
-                    UpdateAttach(next, null);
-                    UpdateAttach(item, nextForumTopic);
-                }
-                else if (nextSeparator != null)
-                {
-                    UpdateAttach(next, null);
-                    UpdateAttach(item, nextSeparator);
-                }
-                else
-                {
-                    UpdateAttach(next, item);
-                }
-
-                if (prevSeparator != null)
-                {
-                    base.InsertItem(index++, prevSeparator);
-                }
-
-                if (prevForumTopic != null)
-                {
-                    base.InsertItem(index++, prevForumTopic);
-                }
-
-                base.InsertItem(index, item);
-
-                if (nextSeparator != null)
-                {
-                    base.InsertItem(++index, nextSeparator);
-                }
-
-                if (nextForumTopic != null)
-                {
-                    base.InsertItem(++index, nextForumTopic);
-                }
-
-                var nextUpdate = AttachHash(next);
-                var prevUpdate = AttachHash(prev);
-
-                if (prevHash != prevUpdate || nextHash != nextUpdate)
-                {
-                    AttachChanged?.Invoke(new[]
-                    {
-                        prevHash != prevUpdate ? prev : null,
-                        nextHash != nextUpdate ? next : null
-                    });
-                }
-            }
-        }
-
-        public void RawRemoveAt(int index)
-        {
-            _suppressOperations = true;
-            RemoveAt(index);
-            _suppressOperations = false;
-        }
-
-        protected override void RemoveItem(int index)
-        {
-            _messages?.Remove(this[index].Id);
-
-            if (_suppressOperations)
-            {
-                base.RemoveItem(index);
-                return;
-            }
-
-            var next = index > 0 ? this[index - 1] : null;
-            var previous = index < Count - 1 ? this[index + 1] : null;
-
-            if (UpdateForumTopicSeparatorOnRemove(next, previous, index))
-            {
-                index--;
-                next = index > 0 ? this[index - 1] : null;
-            }
-
-            var hash2 = AttachHash(next);
-            var hash3 = AttachHash(previous);
-
-            UpdateAttach(previous, next);
-
-            var update2 = AttachHash(next);
-            var update3 = AttachHash(previous);
-
-            if (hash3 != update3 || hash2 != update2)
-            {
-                AttachChanged?.Invoke(new[]
-                {
-                    hash3 != update3 ? previous : null,
-                    hash2 != update2 ? next : null
-                });
-            }
-
-            base.RemoveItem(index);
-
-            UpdateSeparatorOnRemove(next, previous, index);
-        }
-
-        // TODO: Support MoveItem to optimize UpdateMessageSendSucceeded
-
-        private MessageViewModel UpdateSeparatorOnInsert(MessageViewModel item, MessageViewModel next)
-        {
-            if (item != null && next != null && item.Content is not MessageHeaderDate && next.Content is not MessageHeaderDate)
-            {
-                var itemDate = Formatter.ToLocalTime(GetMessageDate(item));
-                var previousDate = Formatter.ToLocalTime(GetMessageDate(next));
-
-                if (previousDate.Date != itemDate.Date)
-                {
-                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, _viewModel.ForumTopic, _viewModel.FeedbackChatTopic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, next.Date, 0, null, null, null, null, null, null, next.MessageThreadId, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
-                }
-            }
-
-            return null;
-        }
-
-        private MessageViewModel UpdateForumTopicSeparatorOnInsert(MessageViewModel item, MessageViewModel next)
-        {
-            if (!_viewModel.IsForum && !_viewModel.IsFeedbackGroup)
-            {
-                return null;
-            }
-
-            if (item != null && next != null && item.Content is not MessageHeaderMessageTopic && next.Content is not MessageHeaderMessageTopic)
-            {
-                if (!item.TopicId.AreTheSame(next.TopicId))
-                {
-                    return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, _viewModel.ForumTopic, _viewModel.FeedbackChatTopic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, next.Date, 0, null, null, null, null, null, null, next.MessageThreadId, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderMessageTopic(), null));
-                }
-            }
-
-            return null;
-        }
-
-        private void UpdateSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
-        {
-            if (next != null && next.Content is MessageHeaderDate && previous != null)
-            {
-                var itemDate = Formatter.ToLocalTime(GetMessageDate(next));
-                var previousDate = Formatter.ToLocalTime(GetMessageDate(previous));
-
-                if (previousDate.Date != itemDate.Date)
-                {
-                    base.RemoveItem(index - 1);
-                }
-            }
-            else if (next != null && next.Content is MessageHeaderDate && previous == null)
-            {
-                base.RemoveItem(index - 1);
-            }
-        }
-
-        private bool UpdateForumTopicSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
-        {
-            if (next != null && next.Content is MessageHeaderMessageTopic forumTopic && previous != null)
-            {
-                if (!next.TopicId.AreTheSame(previous.TopicId))
-                {
-                    base.RemoveItem(index - 1);
-                    return true;
-                }
-            }
-            else if (next != null && next.Content is MessageHeaderMessageTopic && previous == null)
-            {
-                base.RemoveItem(index - 1);
-                return true;
-            }
-
-            return false;
-        }
-
-        private int AttachHash(MessageViewModel item)
-        {
-            var hash = 0;
-            if (item != null && item.IsFirst)
-            {
-                hash |= 1 << 0;
-            }
-            if (item != null && item.IsLast)
-            {
-                hash |= 2 << 0;
-            }
-
-            return hash;
-        }
-
-        private int GetMessageDate(MessageViewModel item)
-        {
-            if (item.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
-            {
-                return sendAtDate.SendDate;
-            }
-            else if (item.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
-            {
-                return sendWhenVideoProcessed.SendDate;
-            }
-            else if (item.SchedulingState is MessageSchedulingStateSendWhenOnline)
-            {
-                return int.MinValue;
-            }
-
-            return item.Date;
-        }
-
-        private void UpdateAttach(MessageViewModel item, MessageViewModel previous)
-        {
-            if (item == null)
-            {
-                if (previous != null)
-                {
-                    previous.IsLast = true;
-                }
-
-                return;
-            }
-
-            if (item.IsChannelPost)
-            {
-                item.IsFirst = true;
-                item.IsLast = true;
-                return;
-            }
-
-            var attach = false;
-            if (previous != null)
-            {
-                var previousPost = previous.IsChannelPost;
-
-                attach = !previousPost &&
-                         //!(previous.IsService()) &&
-                         AreTogether(item, previous) &&
-                         GetMessageDate(item) - GetMessageDate(previous) < 900;
-            }
-
-            item.IsFirst = !attach;
-
-            if (previous != null)
-            {
-                previous.IsLast = item.IsFirst /*|| item.IsService()*/;
-            }
-        }
-
-        private bool AreTogether(MessageViewModel message1, MessageViewModel message2)
-        {
-            if (message1.IsService || message2.IsService || message1.ChatId == message1.ClientService.Options.VerificationCodesBotChatId)
-            {
-                return false;
-            }
-
-            var saved1 = message1.IsSaved;
-            var saved2 = message2.IsSaved;
-
-            if (saved1 && saved2)
-            {
-                if (message1.ForwardInfo?.Origin is MessageOriginUser fromUser1 && message2.ForwardInfo?.Origin is MessageOriginUser fromUser2)
-                {
-                    return fromUser1.SenderUserId == fromUser2.SenderUserId && message1.ForwardInfo.Source?.ChatId == message2.ForwardInfo.Source?.ChatId;
-                }
-                else if (message1.ForwardInfo?.Origin is MessageOriginChat fromChat1 && message2.ForwardInfo?.Origin is MessageOriginChat fromChat2)
-                {
-                    return fromChat1.SenderChatId == fromChat2.SenderChatId && message1.ForwardInfo.Source?.ChatId == message2.ForwardInfo.Source?.ChatId;
-                }
-                else if (message1.ForwardInfo?.Origin is MessageOriginChannel fromChannel1 && message2.ForwardInfo?.Origin is MessageOriginChannel fromChannel2)
-                {
-                    return fromChannel1.ChatId == fromChannel2.ChatId && message1.ForwardInfo.Source?.ChatId == message2.ForwardInfo.Source?.ChatId;
-                }
-                else if (message1.ForwardInfo?.Origin is MessageOriginHiddenUser hiddenUser1 && message2.ForwardInfo?.Origin is MessageOriginHiddenUser hiddenUser2)
-                {
-                    return hiddenUser1.SenderName == hiddenUser2.SenderName;
-                }
-                else if (message1.ImportInfo != null && message2.ImportInfo != null)
-                {
-                    return message1.ImportInfo.SenderName == message2.ImportInfo.SenderName;
-                }
-
-                return false;
-            }
-            else if (saved1 || saved2)
-            {
-                return false;
-            }
-
-            if (message1.SenderId is MessageSenderChat chat1 && message2.SenderId is MessageSenderChat chat2)
-            {
-                if (message1.IsOutgoing || message2.IsOutgoing)
-                {
-                    return false;
-                }
-
-                return chat1.ChatId == chat2.ChatId
-                    && message1.AuthorSignature == message2.AuthorSignature;
-            }
-            else if (message1.SenderId is MessageSenderUser user1 && message2.SenderId is MessageSenderUser user2)
-            {
-                return user1.UserId == user2.UserId;
-            }
-
-            return false;
-        }
-    }
-
-    public partial class DialogUnreadMessagesViewModel : BindableBase
-    {
-        private readonly DialogViewModel _viewModel;
-        private readonly SearchMessagesFilter _filter;
-
-        private readonly bool _oldToNew;
-
-        private List<long> _messages = new();
-        private long _lastMessage;
-
-        public DialogUnreadMessagesViewModel(DialogViewModel viewModel, SearchMessagesFilter filter)
-        {
-            _viewModel = viewModel;
-            _filter = filter;
-
-            _oldToNew = filter is SearchMessagesFilterUnreadMention;
-        }
-
-        public void SetLastViewedMessage(long messageId)
-        {
-            _lastMessage = messageId;
-        }
-
-        public void RemoveMessage(long messageId)
-        {
-            _messages?.Remove(messageId);
-        }
-
-        public async void NextMessage()
-        {
-            var chat = _viewModel.Chat;
-            if (chat == null)
-            {
-                return;
-            }
-
-            if (_messages != null && _messages.Count > 0)
-            {
-                await _viewModel.LoadMessageSliceAsync(null, _messages.RemoveLast());
-            }
-            else
-            {
-                long fromMessageId;
-                if (_lastMessage != 0)
-                {
-                    fromMessageId = _lastMessage;
-                }
-                else
-                {
-                    var first = _viewModel.Items.FirstOrDefault();
-                    if (first != null)
-                    {
-                        fromMessageId = first.Id;
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-
-                var messageTopic = default(MessageTopic);
-
-                if (_viewModel.ForumTopic is ForumTopic topic)
-                {
-                    messageTopic = new MessageTopicForum(topic.Info.MessageThreadId);
-                }
-                else if (_viewModel.Thread is MessageThreadInfo thread)
-                {
-                    messageTopic = new MessageTopicForum(thread.MessageThreadId);
-                }
-
-                var response = await _viewModel.ClientService.SendAsync(new SearchChatMessages(chat.Id, messageTopic, string.Empty, null, fromMessageId, -9, 10, _filter));
-                if (response is FoundChatMessages messages)
-                {
-                    List<long> stack = null;
-
-                    if (_oldToNew)
-                    {
-                        foreach (var message in messages.Messages.Reverse())
-                        {
-                            stack ??= new List<long>();
-                            stack.Add(message.Id);
-                        }
-                    }
-                    else
-                    {
-                        foreach (var message in messages.Messages)
-                        {
-                            stack ??= new List<long>();
-                            stack.Add(message.Id);
-                        }
-                    }
-
-                    if (stack != null)
-                    {
-                        _messages = stack;
-                        NextMessage();
-                    }
-                }
-            }
-        }
-    }
-
-    public partial class MessageComposerHeader
-    {
-        public IClientService ClientService { get; }
-
-        public MessageComposerHeader(IClientService clientService)
-        {
-            ClientService = clientService;
-        }
-
-        public MessageViewModel ReplyToMessage { get; set; }
-        public InputTextQuote ReplyToQuote { get; set; }
-
-        public MessageViewModel EditingMessage { get; set; }
-        public InputMessageContent EditingMessageMedia { get; set; }
-
-        public LinkPreview LinkPreview { get; set; }
-        public string LinkPreviewUrl { get; set; }
-
-        public bool LinkPreviewDisabled
-        {
-            get => LinkPreviewOptions?.IsDisabled ?? false;
-            set
-            {
-                if (LinkPreviewOptions == null && !value)
-                {
-                    return;
-                }
-
-                LinkPreviewOptions ??= new();
-                LinkPreviewOptions.IsDisabled = value;
-            }
-        }
-
-        private LinkPreviewOptions _linkPreviewOptions = new();
-        public LinkPreviewOptions LinkPreviewOptions
-        {
-            get => _linkPreviewOptions;
-            set
-            {
-                if (value != null)
-                {
-                    _linkPreviewOptions = value;
-                }
-            }
-        }
-
-        public bool IsEmpty
-        {
-            get
-            {
-                return ReplyToMessage == null && EditingMessage == null;
-            }
-        }
-
-        public bool Matches(long messageId)
-        {
-            if (ReplyToMessage != null && ReplyToMessage.Id == messageId)
-            {
-                return true;
-            }
-            else if (EditingMessage != null && EditingMessage.Id == messageId)
-            {
-                return true;
-            }
-
-            return false;
-        }
     }
 
     [Flags]

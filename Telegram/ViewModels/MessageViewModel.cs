@@ -13,6 +13,22 @@ using Telegram.ViewModels.Delegates;
 
 namespace Telegram.ViewModels
 {
+    public partial class PinnedMessageViewModel : MessageViewModel
+    {
+        public PinnedMessageViewModel(IClientService clientService, IPlaybackService playbackService, IMessageDelegate delegato, Chat chat, Message message, int index)
+            : base(clientService, playbackService, delegato, chat, null, null, message)
+        {
+            Index = index;
+        }
+
+        public int Index { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("Id: {0}, Index: {1}", Id, Index);
+        }
+    }
+
     public partial class MessageViewModel : MessageWithOwner
     {
         private readonly IPlaybackService _playbackService;

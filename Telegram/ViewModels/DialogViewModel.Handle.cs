@@ -900,7 +900,7 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == _chat?.Id)
             {
-                _mentions.RemoveMessage(update.MessageId);
+                Mentions.RemoveMessage(update.MessageId);
 
                 Handle(update.MessageId, message =>
                 {
@@ -916,7 +916,7 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == _chat?.Id)
             {
-                _reactions.RemoveMessage(update.MessageId);
+                Reactions.RemoveMessage(update.MessageId);
 
                 Handle(update.MessageId, message =>
                 {
@@ -983,8 +983,13 @@ namespace Telegram.ViewModels
                 }
                 else
                 {
-                    _hasLoadedLastPinnedMessage = false;
-                    BeginOnUIThread(() => LoadPinnedMessagesSliceAsync(update.MessageId));
+                    BeginOnUIThread(() =>
+                    {
+                        if (TryGetFirstVisibleMessageId(out long firstVisibleId))
+                        {
+                            PinnedMessages.LoadSlice(firstVisibleId);
+                        }
+                    });
 
                     Handle(update.MessageId, message =>
                     {

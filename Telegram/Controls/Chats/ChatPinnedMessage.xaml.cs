@@ -305,7 +305,7 @@ namespace Telegram.Controls.Chats
 
         private void ListButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.ShowPinnedMessage();
+            ViewModel.OpenPinnedMessages();
         }
 
         private void ActionButton_Click(object sender, RoutedEventArgs e)

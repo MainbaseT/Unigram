@@ -428,9 +428,9 @@ namespace Telegram.Views
                 return;
             }
 
-            if (ViewModel.Thread is MessageThreadInfo thread && ViewModel.ForumTopic == null)
+            if (ViewModel.Thread != null && ViewModel.ForumTopic == null)
             {
-                var message = thread.Messages.LastOrDefault();
+                var message = ViewModel.Thread.Messages.LastOrDefault();
                 if (message == null || (firstVisibleId <= message.Id && lastVisibleId >= message.Id) || Messages.ScrollingHost.ScrollableHeight == 0)
                 {
                     PinnedMessage.UpdateMessage(ViewModel.Chat, null, false, 0, 1, false);
@@ -442,24 +442,10 @@ namespace Telegram.Views
             }
             else if (ViewModel.PinnedMessages.Count > 0)
             {
-                MessageViewModel currentPinned = null;
-
-                var lockedPinnedVisible = ViewModel.LockedPinnedMessageId >= firstVisibleId && ViewModel.LockedPinnedMessageId <= lastVisibleId;
-                if (lockedPinnedVisible && !Messages.HasBeenScrolled)
-                {
-                    currentPinned = ViewModel.PinnedMessages.LastOrDefault(x => x.Id < ViewModel.LockedPinnedMessageId) ?? ViewModel.PinnedMessages.LastOrDefault();
-                }
-                else
-                {
-                    currentPinned = ViewModel.PinnedMessages.LastOrDefault(x => x.Id <= lastVisibleId) ?? ViewModel.PinnedMessages.FirstOrDefault();
-                    ViewModel.LockedPinnedMessageId = 0;
-                }
-
+                var currentPinned = ViewModel.PinnedMessages.GetVisible(lastVisibleId, Messages.HasBeenScrolled);
                 if (currentPinned != null)
                 {
-                    //PinnedMessage.UpdateIndex(ViewModel.PinnedMessages.IndexOf(currentPinned), ViewModel.PinnedMessages.Count, intermediate);
-                    PinnedMessage.UpdateMessage(ViewModel.Chat, currentPinned, false,
-                        ViewModel.PinnedMessages.IndexOf(currentPinned), ViewModel.PinnedMessages.Count, intermediate);
+                    PinnedMessage.UpdateMessage(ViewModel.Chat, currentPinned, false, currentPinned.Index, ViewModel.PinnedMessages.TotalCount, intermediate);
                 }
                 else
                 {

@@ -1860,8 +1860,11 @@ namespace Telegram.Views
                 {
                     await ViewModel.LoadMessageSliceAsync(null, message);
 
-                    ViewModel.LockedPinnedMessageId = message;
-                    ViewVisibleMessages();
+                    if (sender is ChatPinnedMessage)
+                    {
+                        ViewModel.PinnedMessages.SetLocked(message);
+                        ViewVisibleMessages();
+                    }
                 }
             }
             //else if (ViewModel.ComposerHeader?.WebPagePreview != null)

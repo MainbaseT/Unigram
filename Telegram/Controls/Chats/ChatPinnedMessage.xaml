@@ -130,9 +130,8 @@
                                Style="{StaticResource ReplyBodyRichTextBlockStyle}">
                     <Paragraph>
                         <Run x:Name="ServiceLabel1"
-                             Foreground="{ThemeResource MessageSubtleForegroundBrush}" />
-                        <Span x:Name="MessageLabel1"
-                              Foreground="{ThemeResource MessageForegroundBrush}" />
+                             Foreground="{ThemeResource MessageSubtleForegroundBrush}" /><Span x:Name="MessageLabel1"
+                                                                                               Foreground="{ThemeResource MessageForegroundBrush}" />
                     </Paragraph>
                 </RichTextBlock>
                 <RichTextBlock x:Name="TextLabel2"
@@ -143,9 +142,8 @@
                                Style="{StaticResource ReplyBodyRichTextBlockStyle}">
                     <Paragraph>
                         <Run x:Name="ServiceLabel2"
-                             Foreground="{ThemeResource MessageSubtleForegroundBrush}" />
-                        <Span x:Name="MessageLabel2"
-                              Foreground="{ThemeResource MessageForegroundBrush}" />
+                             Foreground="{ThemeResource MessageSubtleForegroundBrush}" /><Span x:Name="MessageLabel2"
+                                                                                               Foreground="{ThemeResource MessageForegroundBrush}" />
                     </Paragraph>
                 </RichTextBlock>
             </Grid>
