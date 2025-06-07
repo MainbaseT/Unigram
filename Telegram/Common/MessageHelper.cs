@@ -456,181 +456,138 @@ namespace Telegram.Common
 
         public static void OpenTelegramUrl(IClientService clientService, INavigationService navigation, InternalLinkType internalLink, OpenUrlSource source = null)
         {
-            if (internalLink is InternalLinkTypeActiveSessions)
+            switch (internalLink)
             {
-                navigation.Navigate(typeof(SettingsSessionsPage));
-            }
-            else if (internalLink is InternalLinkTypeAuthenticationCode authenticationCode)
-            {
-                if (clientService.AuthorizationState is AuthorizationStateWaitCode)
-                {
-                    clientService.Send(new CheckAuthenticationCode(authenticationCode.Code));
-                }
-            }
-            else if (internalLink is InternalLinkTypeAttachmentMenuBot attachmentMenuBot)
-            {
-                NavigateToAttachmentMenuBot(clientService, navigation, attachmentMenuBot, source);
-            }
-            else if (internalLink is InternalLinkTypeBackground background)
-            {
-                NavigateToBackground(clientService, navigation, background.BackgroundName);
-            }
-            else if (internalLink is InternalLinkTypeBotStart botStart)
-            {
-                NavigateToBotStart(clientService, navigation, botStart.BotUsername, botStart.StartParameter, botStart.Autostart, false);
-            }
-            else if (internalLink is InternalLinkTypeBotStartInGroup botStartInGroup)
-            {
-                // Not yet supported: AdministratorRights
-                NavigateToBotStart(clientService, navigation, botStartInGroup.BotUsername, botStartInGroup.StartParameter, false, true);
-            }
-            else if (internalLink is InternalLinkTypeBusinessChat businessChat)
-            {
-                NavigateToBusinessChat(clientService, navigation, businessChat.LinkName);
-            }
-            else if (internalLink is InternalLinkTypeChangePhoneNumber)
-            {
-                navigation.Navigate(typeof(SettingsProfilePage));
-            }
-            else if (internalLink is InternalLinkTypeLanguageSettings)
-            {
-                navigation.Navigate(typeof(SettingsLanguagePage));
-            }
-            else if (internalLink is InternalLinkTypeChatBoost chatBoost)
-            {
-                NavigateToChatBoost(clientService, navigation, chatBoost.Url);
-            }
-            else if (internalLink is InternalLinkTypeChatInvite chatInvite)
-            {
-                NavigateToInviteLink(clientService, navigation, chatInvite.InviteLink);
-            }
-            else if (internalLink is InternalLinkTypeChatFolderInvite chatFolderInvite)
-            {
-                NavigateToChatFolderInviteLink(clientService, navigation, chatFolderInvite.InviteLink);
-            }
-            else if (internalLink is InternalLinkTypeChatFolderSettings)
-            {
-                navigation.Navigate(typeof(FoldersPage));
-            }
-            else if (internalLink is InternalLinkTypeGame game)
-            {
-                NavigateToUsername(clientService, navigation, game.BotUsername, null, game.GameShortName);
-            }
-            else if (internalLink is InternalLinkTypeInstantView instantView)
-            {
-                navigation.NavigateToInstant(instantView.Url, instantView.FallbackUrl);
-            }
-            else if (internalLink is InternalLinkTypeInvoice invoice)
-            {
-                NavigateToInvoice(navigation, invoice.InvoiceName);
-            }
-            else if (internalLink is InternalLinkTypeLanguagePack languagePack)
-            {
-                NavigateToLanguage(clientService, navigation, languagePack.LanguagePackId);
-            }
-            else if (internalLink is InternalLinkTypeMessage message)
-            {
-                NavigateToMessage(clientService, navigation, message.Url);
-            }
-            else if (internalLink is InternalLinkTypeMessageDraft messageDraft)
-            {
-                NavigateToShare(navigation, messageDraft.Text, messageDraft.ContainsLink);
-            }
-            else if (internalLink is InternalLinkTypePassportDataRequest)
-            {
-
-            }
-            else if (internalLink is InternalLinkTypePremiumFeatures premiumFeatures)
-            {
-                navigation.ShowPromo(new PremiumSourceLink(premiumFeatures.Referrer));
-            }
-            else if (internalLink is InternalLinkTypePremiumGiftCode premiumGiftCode)
-            {
-                NavigateToPremiumGiftCode(clientService, navigation, premiumGiftCode.Code, source);
-            }
-            else if (internalLink is InternalLinkTypePrivacyAndSecuritySettings)
-            {
-                navigation.Navigate(typeof(SettingsPrivacyAndSecurityPage));
-            }
-            else if (internalLink is InternalLinkTypePhoneNumberConfirmation phoneNumberConfirmation)
-            {
-                NavigateToConfirmPhone(clientService, phoneNumberConfirmation.PhoneNumber, phoneNumberConfirmation.Hash);
-            }
-            else if (internalLink is InternalLinkTypeProxy proxy)
-            {
-                NavigateToProxy(clientService, navigation, proxy.Server, proxy.Port, proxy.Type);
-            }
-            else if (internalLink is InternalLinkTypeUnsupportedProxy)
-            {
-                navigation.ShowToast(Strings.ProxyLinkUnsupported, ToastPopupIcon.Error);
-            }
-            else if (internalLink is InternalLinkTypePublicChat publicChat)
-            {
-                NavigateToUsername(clientService, navigation, publicChat.ChatUsername, draftText: publicChat.DraftText, openProfile: publicChat.OpenProfile);
-            }
-            else if (internalLink is InternalLinkTypeQrCodeAuthentication)
-            {
-
-            }
-            else if (internalLink is InternalLinkTypeSettings)
-            {
-
-            }
-            else if (internalLink is InternalLinkTypeStickerSet stickerSet)
-            {
-                NavigateToStickerSet(navigation, stickerSet.StickerSetName);
-            }
-            else if (internalLink is InternalLinkTypeStory story)
-            {
-                NavigateToStory(clientService, navigation, story.StoryPosterUsername, story.StoryId);
-            }
-            else if (internalLink is InternalLinkTypeTheme theme)
-            {
-                NavigateToTheme(clientService, navigation, theme.ThemeName);
-            }
-            else if (internalLink is InternalLinkTypeThemeSettings)
-            {
-                navigation.Navigate(typeof(SettingsAppearancePage));
-            }
-            else if (internalLink is InternalLinkTypeUnknownDeepLink unknownDeepLink)
-            {
-                NavigateToUnknownDeepLink(clientService, navigation, unknownDeepLink.Link);
-            }
-            else if (internalLink is InternalLinkTypeUserPhoneNumber phoneNumber)
-            {
-                NavigateToPhoneNumber(clientService, navigation, phoneNumber.PhoneNumber, phoneNumber.DraftText, phoneNumber.OpenProfile);
-            }
-            else if (internalLink is InternalLinkTypeUserToken userToken)
-            {
-                NavigateToUserToken(clientService, navigation, userToken.Token);
-            }
-            else if (internalLink is InternalLinkTypeVideoChat videoChat)
-            {
-                NavigateToUsername(clientService, navigation, videoChat.ChatUsername, videoChat.InviteHash, null);
-            }
-            else if (internalLink is InternalLinkTypeWebApp webApp)
-            {
-                NavigateToWebApp(clientService, navigation, webApp.BotUsername, webApp.StartParameter, webApp.WebAppShortName, webApp.Mode, source);
-            }
-            else if (internalLink is InternalLinkTypeMainWebApp mainWebApp)
-            {
-                NavigateToMainWebApp(clientService, navigation, mainWebApp.BotUsername, mainWebApp.StartParameter, mainWebApp.Mode, source);
-            }
-            else if (internalLink is InternalLinkTypeChatAffiliateProgram chatAffiliateProgram)
-            {
-                NavigateToUsername(clientService, navigation, chatAffiliateProgram.Username, referrer: chatAffiliateProgram.Referrer);
-            }
-            else if (internalLink is InternalLinkTypeUpgradedGift upgradedGift)
-            {
-                NavigateToUpgradedGift(clientService, navigation, upgradedGift.Name);
-            }
-            else if (internalLink is InternalLinkTypeGroupCall groupCall)
-            {
-                NavigateToGroupCall(clientService, navigation, new InputGroupCallLink(groupCall.InviteLink));
-            }
-            else if (internalLink is InternalLinkTypeMyStars)
-            {
-                navigation.Navigate(typeof(StarsPage));
+                case InternalLinkTypeActiveSessions:
+                    navigation.Navigate(typeof(SettingsSessionsPage));
+                    break;
+                case InternalLinkTypeAuthenticationCode authenticationCode:
+                    if (clientService.AuthorizationState is AuthorizationStateWaitCode)
+                    {
+                        clientService.Send(new CheckAuthenticationCode(authenticationCode.Code));
+                    }
+                    break;
+                case InternalLinkTypeAttachmentMenuBot attachmentMenuBot:
+                    NavigateToAttachmentMenuBot(clientService, navigation, attachmentMenuBot, source);
+                    break;
+                case InternalLinkTypeBackground background:
+                    NavigateToBackground(clientService, navigation, background.BackgroundName);
+                    break;
+                case InternalLinkTypeBotStart botStart:
+                    NavigateToBotStart(clientService, navigation, botStart.BotUsername, botStart.StartParameter, botStart.Autostart, false);
+                    break;
+                case InternalLinkTypeBotStartInGroup botStartInGroup:
+                    // Not yet supported: AdministratorRights
+                    NavigateToBotStart(clientService, navigation, botStartInGroup.BotUsername, botStartInGroup.StartParameter, false, true);
+                    break;
+                case InternalLinkTypeBusinessChat businessChat:
+                    NavigateToBusinessChat(clientService, navigation, businessChat.LinkName);
+                    break;
+                case InternalLinkTypeChangePhoneNumber:
+                    navigation.Navigate(typeof(SettingsProfilePage));
+                    break;
+                case InternalLinkTypeLanguageSettings:
+                    navigation.Navigate(typeof(SettingsLanguagePage));
+                    break;
+                case InternalLinkTypeChatBoost chatBoost:
+                    NavigateToChatBoost(clientService, navigation, chatBoost.Url);
+                    break;
+                case InternalLinkTypeChatInvite chatInvite:
+                    NavigateToInviteLink(clientService, navigation, chatInvite.InviteLink);
+                    break;
+                case InternalLinkTypeChatFolderInvite chatFolderInvite:
+                    NavigateToChatFolderInviteLink(clientService, navigation, chatFolderInvite.InviteLink);
+                    break;
+                case InternalLinkTypeChatFolderSettings:
+                    navigation.Navigate(typeof(FoldersPage));
+                    break;
+                case InternalLinkTypeGame game:
+                    NavigateToUsername(clientService, navigation, game.BotUsername, null, game.GameShortName);
+                    break;
+                case InternalLinkTypeInstantView instantView:
+                    navigation.NavigateToInstant(instantView.Url, instantView.FallbackUrl);
+                    break;
+                case InternalLinkTypeInvoice invoice:
+                    NavigateToInvoice(navigation, invoice.InvoiceName);
+                    break;
+                case InternalLinkTypeLanguagePack languagePack:
+                    NavigateToLanguage(clientService, navigation, languagePack.LanguagePackId);
+                    break;
+                case InternalLinkTypeMessage message:
+                    NavigateToMessage(clientService, navigation, message.Url);
+                    break;
+                case InternalLinkTypeMessageDraft messageDraft:
+                    NavigateToShare(navigation, messageDraft.Text, messageDraft.ContainsLink);
+                    break;
+                case InternalLinkTypePassportDataRequest:
+                    break;
+                case InternalLinkTypePremiumFeatures premiumFeatures:
+                    navigation.ShowPromo(new PremiumSourceLink(premiumFeatures.Referrer));
+                    break;
+                case InternalLinkTypePremiumGiftCode premiumGiftCode:
+                    NavigateToPremiumGiftCode(clientService, navigation, premiumGiftCode.Code, source);
+                    break;
+                case InternalLinkTypePrivacyAndSecuritySettings:
+                    navigation.Navigate(typeof(SettingsPrivacyAndSecurityPage));
+                    break;
+                case InternalLinkTypePhoneNumberConfirmation phoneNumberConfirmation:
+                    NavigateToConfirmPhone(clientService, phoneNumberConfirmation.PhoneNumber, phoneNumberConfirmation.Hash);
+                    break;
+                case InternalLinkTypeProxy proxy:
+                    NavigateToProxy(clientService, navigation, proxy.Server, proxy.Port, proxy.Type);
+                    break;
+                case InternalLinkTypeUnsupportedProxy:
+                    navigation.ShowToast(Strings.ProxyLinkUnsupported, ToastPopupIcon.Error);
+                    break;
+                case InternalLinkTypePublicChat publicChat:
+                    NavigateToUsername(clientService, navigation, publicChat.ChatUsername, draftText: publicChat.DraftText, openProfile: publicChat.OpenProfile);
+                    break;
+                case InternalLinkTypeQrCodeAuthentication:
+                    break;
+                case InternalLinkTypeSettings:
+                    break;
+                case InternalLinkTypeStickerSet stickerSet:
+                    NavigateToStickerSet(navigation, stickerSet.StickerSetName);
+                    break;
+                case InternalLinkTypeStory story:
+                    NavigateToStory(clientService, navigation, story.StoryPosterUsername, story.StoryId);
+                    break;
+                case InternalLinkTypeTheme theme:
+                    NavigateToTheme(clientService, navigation, theme.ThemeName);
+                    break;
+                case InternalLinkTypeThemeSettings:
+                    navigation.Navigate(typeof(SettingsAppearancePage));
+                    break;
+                case InternalLinkTypeUnknownDeepLink unknownDeepLink:
+                    NavigateToUnknownDeepLink(clientService, navigation, unknownDeepLink.Link);
+                    break;
+                case InternalLinkTypeUserPhoneNumber phoneNumber:
+                    NavigateToPhoneNumber(clientService, navigation, phoneNumber.PhoneNumber, phoneNumber.DraftText, phoneNumber.OpenProfile);
+                    break;
+                case InternalLinkTypeUserToken userToken:
+                    NavigateToUserToken(clientService, navigation, userToken.Token);
+                    break;
+                case InternalLinkTypeVideoChat videoChat:
+                    NavigateToUsername(clientService, navigation, videoChat.ChatUsername, videoChat.InviteHash, null);
+                    break;
+                case InternalLinkTypeWebApp webApp:
+                    NavigateToWebApp(clientService, navigation, webApp.BotUsername, webApp.StartParameter, webApp.WebAppShortName, webApp.Mode, source);
+                    break;
+                case InternalLinkTypeMainWebApp mainWebApp:
+                    NavigateToMainWebApp(clientService, navigation, mainWebApp.BotUsername, mainWebApp.StartParameter, mainWebApp.Mode, source);
+                    break;
+                case InternalLinkTypeChatAffiliateProgram chatAffiliateProgram:
+                    NavigateToUsername(clientService, navigation, chatAffiliateProgram.Username, referrer: chatAffiliateProgram.Referrer);
+                    break;
+                case InternalLinkTypeUpgradedGift upgradedGift:
+                    NavigateToUpgradedGift(clientService, navigation, upgradedGift.Name);
+                    break;
+                case InternalLinkTypeGroupCall groupCall:
+                    NavigateToGroupCall(clientService, navigation, new InputGroupCallLink(groupCall.InviteLink));
+                    break;
+                case InternalLinkTypeMyStars:
+                    navigation.Navigate(typeof(StarsPage));
+                    break;
             }
         }
 
