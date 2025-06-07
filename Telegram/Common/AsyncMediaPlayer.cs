@@ -250,6 +250,11 @@ namespace Telegram.Common
                 return new AsyncMediaTrack(0, 0);
             }
 
+            if (track.Orientation is VideoOrientation.RightTop or VideoOrientation.LeftTop)
+            {
+                return new AsyncMediaTrack((int)track.Height, (int)track.Width);
+            }
+
             return new AsyncMediaTrack((int)track.Width, (int)track.Height);
         }
 
