@@ -834,9 +834,8 @@ namespace Telegram.ViewModels
 
                         if (update.NewContent is MessageExpiredPhoto or MessageExpiredVideo or MessageExpiredVideoNote or MessageExpiredVoiceNote)
                         {
-                            // Probably not the best way
-                            Items.Remove(message);
-                            InsertMessageInOrder(Items, message);
+                            // Probably not the best way but replacing content template is not supported
+                            InsertMessageInOrder(message, 0, true);
                         }
                     }
                 }, (bubble, message, reply) =>
@@ -1035,6 +1034,11 @@ namespace Telegram.ViewModels
                     if (message.Content is MessagePaidMedia paidMedia)
                     {
                         message.Content = new MessagePaidAlbum(paidMedia);
+                    }
+
+                    if (IsNewestSliceLoaded == true)
+                    {
+                        InsertMessageInOrder(message, update.OldMessageId);
                     }
 
                     return true; //MoveMessageInOrder(Items, message);
@@ -1248,7 +1252,7 @@ namespace Telegram.ViewModels
 
                     if (result.Count > 0)
                     {
-                        InsertMessageInOrder(Items, result[0]);
+                        InsertMessageInOrder(result[0]);
                     }
                 }
                 else if (message.IsOutgoing && message.SendingState is MessageSendingStatePending)
@@ -1268,86 +1272,77 @@ namespace Telegram.ViewModels
             await LoadMessageSliceAsync(null, message.Id, VerticalAlignment.Top);
         }
 
-        public static int InsertMessageInOrder(IList<MessageViewModel> messages, MessageViewModel message)
+        private void InsertMessageInOrder(MessageViewModel message, long oldMessageId = 0, bool force = false)
         {
-            var oldIndex = -1;
-
-            if (messages.Count == 0)
+            var newIndex = NextIndexOf(message, oldMessageId, out int oldIndex);
+            if (newIndex != -1)
             {
-                oldIndex = 0;
-            }
-
-            for (var i = messages.Count - 1; i >= 0; i--)
-            {
-                if (messages[i].Id == 0)
+                if (oldIndex != -1)
                 {
-                    if (messages[i].Date < message.Date)
-                    {
-                        oldIndex = i + 1;
-                        break;
-                    }
-
-                    continue;
+                    Items.RemoveAt(oldIndex);
                 }
 
-                if (messages[i].Id == message.Id)
-                {
-                    oldIndex = -1;
-                    break;
-                }
-                if (messages[i].Id < message.Id)
-                {
-                    oldIndex = i + 1;
-                    break;
-                }
+                Items.Insert(newIndex, message);
             }
-
-            if (oldIndex != -1)
+            else if (force && oldIndex != -1)
             {
-                messages.Insert(oldIndex, message);
+                Items.RemoveAt(oldIndex);
+                Items.Insert(oldIndex, message);
             }
-
-            return oldIndex;
         }
 
-        public static bool MoveMessageInOrder(MvxObservableCollection<MessageViewModel> messages, MessageViewModel message)
+        private int NextIndexOf(MessageViewModel message, long oldMessageId, out int oldIndex)
         {
-            var newIndex = -1;
-            var oldIndex = -1;
+            oldIndex = -1;
+            var newIndex = Items.Count;
 
-            for (var i = messages.Count - 1; i >= 0; i--)
+            var oldIndexNeeded = Items.ContainsKey(oldMessageId != 0 ? oldMessageId : message.Id);
+            var newIndexNeeded = true;
+
+            for (int i = Items.Count - 1; i >= 0; i--)
             {
-                if (messages[i].Id == 0)
+                var item = Items[i];
+                if (item.Id == 0)
                 {
-                    if (messages[i].Date < message.Date && newIndex == -1)
+                    if (item.Date <= message.Date)
                     {
-                        newIndex = i;
-                        break;
+                        newIndex = i + 1;
+                        newIndexNeeded = false;
                     }
-
-                    continue;
+                    else
+                    {
+                        continue;
+                    }
                 }
 
-                if (messages[i].Id == message.Id)
+                if (item.Id < message.Id && newIndexNeeded)
+                {
+                    newIndex = i + 1;
+                    newIndexNeeded = false;
+                }
+
+                if (item.Id == message.Id && oldIndexNeeded)
                 {
                     oldIndex = i;
+                    oldIndexNeeded = false;
+                }
+
+                if (!newIndexNeeded && !oldIndexNeeded)
+                {
                     break;
                 }
-                if (messages[i].Id < message.Id && newIndex == -1)
-                {
-                    newIndex = i;
-                }
             }
 
-            if (newIndex > oldIndex)
+            if (newIndex == oldIndex)
             {
-                newIndex = Math.Min(newIndex, messages.Count - 1);
-                messages.RemoveAt(oldIndex);
-                messages.Insert(newIndex, message);
-                return false;
+                return -1;
+            }
+            else if (oldIndex != -1 && oldIndex < newIndex)
+            {
+                newIndex--;
             }
 
-            return true;
+            return newIndex;
         }
 
         public void UpdateQuery(string query)
