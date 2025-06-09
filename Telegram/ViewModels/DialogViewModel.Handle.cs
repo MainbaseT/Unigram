@@ -673,7 +673,14 @@ namespace Telegram.ViewModels
             }
             else if (Type == DialogType.Thread)
             {
-                return message.SchedulingState == null && message.TopicId.AreTheSame(Topic);
+                if (Thread != null)
+                {
+                    return message.SchedulingState == null && message.MessageThreadId == ThreadId;
+                }
+                else
+                {
+                    return message.SchedulingState == null && message.TopicId.AreTheSame(Topic);
+                }
             }
             else if (Type == DialogType.Pinned)
             {
