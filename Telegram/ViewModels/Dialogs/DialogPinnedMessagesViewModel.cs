@@ -99,7 +99,7 @@ namespace Telegram.ViewModels
 
                 //var last = await _viewModel.ClientService.SendAsync(new GetChatPinnedMessage(chat.Id)) as Message;
                 var last = await _viewModel.ClientService.SendAsync(new GetChatMessageCount(chat.Id, messageTopic, filter, true)) as Count;
-                if (last != null)
+                if (last is Count { CountValue: > 0 })
                 {
                     _viewModel.Delegate?.UpdatePinnedMessage(chat, true);
                 }

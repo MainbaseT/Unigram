@@ -346,13 +346,14 @@ namespace Telegram.Controls.Chats
             }
             else if (alignment == VerticalAlignment.Center)
             {
-                if (selectorItem.ActualHeight < ActualHeight - 48)
+                var occludedHeight = Delegate.AnimatedHeight;
+                if (selectorItem.ActualHeight < ActualHeight - occludedHeight)
                 {
-                    position.Y -= (ActualHeight - selectorItem.ActualHeight) / 2d;
+                    position.Y -= (ActualHeight - selectorItem.ActualHeight) / 2d + occludedHeight / 2;
                 }
                 else
                 {
-                    position.Y -= 48 + 4;
+                    position.Y -= occludedHeight;
                 }
             }
             else if (alignment == VerticalAlignment.Bottom)

@@ -6720,6 +6720,15 @@ namespace Telegram.Views
             }
         }
 
+        public float AnimatedHeight => GroupCall.AnimatedHeight
+            + JoinRequests.AnimatedHeight
+            + TranslateHeader.AnimatedHeight
+            + ActionBar.AnimatedHeight
+            + ConnectedBot.AnimatedHeight
+            + PinnedMessage.AnimatedHeight
+            + AccountInfoHeader.AnimatedHeight
+            + Sponsored.AnimatedHeight;
+
         private EffectiveViewportChangedEventArgs _headerUnreadViewport;
         private bool _headerUnreadNotReady = true;
         private bool _headerUnreadRetry = false;

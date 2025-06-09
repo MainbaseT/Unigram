@@ -72,5 +72,7 @@ namespace Telegram.ViewModels.Delegates
 
         bool HasContainerForItem(long id);
         SelectorItem ContainerFromItem(long id);
+
+        float AnimatedHeight { get; }
     }
 }
