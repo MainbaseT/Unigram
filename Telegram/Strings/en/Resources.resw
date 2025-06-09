@@ -8361,6 +8361,9 @@ Minimum length is 5 characters.</value>
   <data name="MessageStarsUnlock" xml:space="preserve">
     <value>Buy Stars</value>
   </data>
+  <data name="MessageSuggestionsUnsavedChanges" xml:space="preserve">
+    <value>You have changed the direct message settings. Apply changes?</value>
+  </data>
   <data name="Meters_one" xml:space="preserve">
     <value>{0} meter</value>
   </data>

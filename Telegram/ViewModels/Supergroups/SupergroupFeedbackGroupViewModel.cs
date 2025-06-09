@@ -56,12 +56,12 @@ namespace Telegram.ViewModels.Supergroups
                 }
                 else
                 {
-                    _cached = new SetChatFeedbackGroup(chat.Id, false, 20);
+                    _cached = new SetChatFeedbackGroup(chat.Id, false, ClientService.Options.DirectChannelMessageStarCountDefault);
                 }
             }
             else
             {
-                _cached = new SetChatFeedbackGroup(chat.Id, false, 20);
+                _cached = new SetChatFeedbackGroup(chat.Id, false, ClientService.Options.DirectChannelMessageStarCountDefault);
             }
 
             IsEnabled = _cached.IsEnabled;
@@ -76,8 +76,7 @@ namespace Telegram.ViewModels.Supergroups
             {
                 args.Cancel = true;
 
-                // TODO: translate
-                var confirm = await ShowPopupAsync("You have changed direct message settings. Apply changes?", Strings.UnsavedChanges, Strings.ChatThemeSaveDialogApply, Strings.ChatThemeSaveDialogDiscard);
+                var confirm = await ShowPopupAsync(Strings.MessageSuggestionsUnsavedChanges, Strings.UnsavedChanges, Strings.ChatThemeSaveDialogApply, Strings.ChatThemeSaveDialogDiscard);
                 if (confirm == ContentDialogResult.Primary)
                 {
                     Continue();
