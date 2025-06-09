@@ -119,9 +119,9 @@ namespace Telegram.Views
 
             AddStrategy(ChatHistoryViewItemType.Outgoing, OutgoingMessageTemplate, 20);
             AddStrategy(ChatHistoryViewItemType.Incoming, IncomingMessageTemplate, 20);
-            AddStrategy(ChatHistoryViewItemType.Service, ServiceMessageTemplate);
+            AddStrategy(ChatHistoryViewItemType.Service, ServiceMessageTemplate, 20);
+            AddStrategy(ChatHistoryViewItemType.ServiceForumTopic, ServiceMessageForumTopicTemplate, 20);
             AddStrategy(ChatHistoryViewItemType.ServiceUnread, ServiceMessageUnreadTemplate);
-            AddStrategy(ChatHistoryViewItemType.ServiceForumTopic, ServiceMessageForumTopicTemplate);
             AddStrategy(ChatHistoryViewItemType.ServicePhoto, ServiceMessagePhotoTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceBackground, ServiceMessageBackgroundTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceGiftCode, ServiceMessageGiftCodeTemplate);
@@ -151,6 +151,23 @@ namespace Telegram.Views
             _dateHeaderTimer.Tick += (s, args) =>
             {
                 _dateHeaderTimer.Stop();
+
+                //var watch = Stopwatch.StartNew();
+                //var point = DateHeaderRelative.TransformToPoint(XamlRoot.Content);
+                //var x = point.X + (DateHeaderRelative.ActualWidth / 2) - Math.Max(DateHeader.ActualWidth, ForumTopicHeader.ActualWidth) / 2;
+                //var y = point.Y + (DateHeaderRelative.ActualHeight / 2);
+
+                //var rect = new Rect(x, y, Math.Max(DateHeader.ActualWidth, ForumTopicHeader.ActualWidth), DateHeaderRelative.ActualHeight);
+
+                //var children = VisualTreeHelper.FindElementsInHostCoordinates(rect, Messages);
+                //watch.Stop();
+                //var test = children.ToList();
+
+                //if (children.OfType<ChatHistoryViewItem>().Any(x => x.TypeName == ChatHistoryViewItemType.ServiceForumTopic))
+                //{
+                //    return;
+                //}
+
                 ShowHideDateHeader(false, true);
                 ShowHideForumTopicHeader(false, true);
             };
