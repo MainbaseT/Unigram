@@ -105,19 +105,20 @@ namespace Telegram.Common
             switch (SettingsService.Current.Appearance.EmojiSet)
             {
                 case "microsoft":
-                    this["EmojiOnlyThemeFontFamily"] = "ms-appx:///Assets/Emoji/microsoft.ttf#Segoe UI Emoji";
+                    this["EmojiThemeFontFamily"] = "ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji";
+                    this["ContentControlThemeFontFamily"] = "ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji";
                     xamlAutoFontFamily.Prepend("ms-appx:///Assets/Emoji/microsoft.ttf#Segoe UI Emoji", comma);
                     break;
                 default:
-                    this["EmojiOnlyThemeFontFamily"] = "ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji";
+                    this["EmojiThemeFontFamily"] = "ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji";
+                    this["ContentControlThemeFontFamily"] = "ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji";
                     xamlAutoFontFamily.Prepend("ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji", comma);
                     break;
             }
 
             XamlAutoFontFamily = xamlAutoFontFamily.ToString();
 
-            this["EmojiThemeFontFamily"] = new FontFamily(xamlAutoFontFamily.ToString());
-            this["ContentControlThemeFontFamily"] = new FontFamily(xamlAutoFontFamily.ToString());
+            this["EmojiTextThemeFontFamily"] = new FontFamily(xamlAutoFontFamily.ToString());
 
             xamlAutoFontFamily.Prepend("ms-appx:///Assets/Fonts/Telegram.ttf#Telegram", comma);
 

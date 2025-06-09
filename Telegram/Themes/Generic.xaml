@@ -51,6 +51,22 @@
         <ResourceDictionary Source="ms-appx:///Controls/Messages/MessageSelector.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <Style x:Key="DefaultTextBoxStyle"
+           TargetType="TextBox"
+           BasedOn="{StaticResource DefaultTextBoxStyle}">
+        <Setter Property="FontFamily"
+                Value="{ThemeResource EmojiTextThemeFontFamily}" />
+    </Style>
+
+    <Style x:Key="DefaultRichEditBoxStyle"
+           TargetType="RichEditBox"
+           BasedOn="{StaticResource DefaultRichEditBoxStyle}">
+        <Setter Property="FontFamily"
+                Value="{ThemeResource EmojiTextThemeFontFamily}" />
+    </Style>
+
+    <Style TargetType="TextBox"
+           BasedOn="{StaticResource DefaultTextBoxStyle}" />
     <Style TargetType="local:PhoneTextBox"
            BasedOn="{StaticResource DefaultTextBoxStyle}" />
     <Style TargetType="local:ColorTextBox"
@@ -59,6 +75,8 @@
            BasedOn="{StaticResource DefaultTextBoxStyle}" />
     <Style TargetType="local:SuggestTextBox"
            BasedOn="{StaticResource DefaultTextBoxStyle}" />
+    <Style TargetType="RichEditBox"
+           BasedOn="{StaticResource DefaultRichEditBoxStyle}" />
     <Style TargetType="local:FormattedTextBox"
            BasedOn="{StaticResource DefaultRichEditBoxStyle}" />
     <Style TargetType="local:SettingsComboBox"
@@ -4812,7 +4830,7 @@
         <Setter Property="BorderThickness"
                 Value="{ThemeResource TextControlBorderThemeThickness}" />
         <Setter Property="FontFamily"
-                Value="{ThemeResource ContentControlThemeFontFamily}" />
+                Value="{ThemeResource EmojiTextThemeFontFamily}" />
         <Setter Property="FontSize"
                 Value="{ThemeResource ControlContentThemeFontSize}" />
         <Setter Property="ScrollViewer.HorizontalScrollMode"
