@@ -402,9 +402,9 @@ namespace Telegram.Services
                         var empty = crop == default || (crop.Width == 0 && crop.Height == 0);
 
                         var transform = new VideoTransformEffectDefinition();
-                        transform.Rotation = generation.Rotation;
+                        transform.Rotation = (MediaRotation)generation.Rotation;
+                        transform.Mirror = (MediaMirroringOptions)generation.Flip;
                         transform.OutputSize = generation.OutputSize;
-                        transform.Mirror = generation.Mirror;
                         transform.CropRectangle = empty ? Rect.Empty : generation.CropRectangle;
 
                         if (generation.VideoBitrate != 0)
@@ -458,55 +458,29 @@ namespace Telegram.Services
         {
             try
             {
+                var file = await StorageApplicationPermissions.FutureAccessList.GetFileAsync(args[0]);
+                var temp = await StorageFile.GetFileFromPathAsync(update.DestinationPath);
+
                 var generation = JsonConvert.DeserializeObject<VideoGeneration>(args[2]);
-                //if (conversion.Transcode)
+
+                if (args.Length > 3)
                 {
-                    var file = await StorageApplicationPermissions.FutureAccessList.GetFileAsync(args[0]);
-                    var temp = await StorageFile.GetFileFromPathAsync(update.DestinationPath);
+                    var rectangle = generation.CropRectangle;
 
-                    var props = await file.Properties.GetVideoPropertiesAsync();
+                    await ImageHelper.CropAsync(file, temp, rectangle, 320, 0, rotation: generation.Rotation, flip: generation.Flip, bestQuality: false);
 
-                    double originalWidth = props.GetWidth();
-                    double originalHeight = props.GetHeight();
-
-                    if (generation.Transform && !generation.CropRectangle.IsEmpty)
-                    {
-                        file = await ImageHelper.CropAsync(file, temp, generation.CropRectangle, trimStart: generation.TrimStartTime);
-                        originalWidth = generation.CropRectangle.Width;
-                        originalHeight = generation.CropRectangle.Height;
-                    }
-
-                    using (var fileStream = await ImageHelper.OpenReadAsync(file))
-                    using (var outputStream = await temp.OpenAsync(FileAccessMode.ReadWrite))
-                    {
-                        var decoder = await BitmapDecoder.CreateAsync(fileStream);
-
-                        double ratioX = 320d / originalWidth;
-                        double ratioY = 320d / originalHeight;
-                        double ratio = Math.Min(ratioX, ratioY);
-
-                        uint width = (uint)(originalWidth * ratio);
-                        uint height = (uint)(originalHeight * ratio);
-
-                        var transform = new BitmapTransform();
-                        transform.ScaledWidth = width;
-                        transform.ScaledHeight = height;
-                        transform.InterpolationMode = BitmapInterpolationMode.Linear;
-                        transform.Flip = generation.Mirror == MediaMirroringOptions.Horizontal ? BitmapFlip.Horizontal : BitmapFlip.None;
-
-                        var pixelData = await decoder.GetSoftwareBitmapAsync(decoder.BitmapPixelFormat, decoder.BitmapAlphaMode, transform, ExifOrientationMode.RespectExifOrientation, ColorManagementMode.DoNotColorManage);
-
-                        var propertySet = new BitmapPropertySet();
-                        var qualityValue = new BitmapTypedValue(0.77, PropertyType.Single);
-                        propertySet.Add("ImageQuality", qualityValue);
-
-                        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, outputStream);
-                        encoder.SetSoftwareBitmap(pixelData);
-                        await encoder.FlushAsync();
-
-                        _clientService.Send(new FinishFileGeneration(update.GenerationId, null));
-                    }
+                    //var drawing = generation.Strokes;
+                    //if (drawing != null && drawing.Count > 0)
+                    //{
+                    //    await ImageHelper.DrawStrokesAsync(temp, drawing, rectangle, generation.Rotation, generation.Flip);
+                    //}
                 }
+                else
+                {
+                    await ImageHelper.ScaleAsync(BitmapEncoder.JpegEncoderId, file, temp, 320, true, generation.TrimStartTime);
+                }
+
+                _clientService.Send(new FinishFileGeneration(update.GenerationId, null));
             }
             catch (Exception ex)
             {

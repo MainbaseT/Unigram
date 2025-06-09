@@ -19,13 +19,13 @@ using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Windows.Foundation;
-using Windows.Graphics.Imaging;
 using Windows.Media.Core;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using VirtualKey = Windows.System.VirtualKey;
@@ -42,8 +42,8 @@ namespace Telegram.Views.Popups
         private readonly StorageFile _file;
         private readonly StorageMedia _media;
 
-        private BitmapRotation _rotation = BitmapRotation.None;
-        private BitmapFlip _flip = BitmapFlip.None;
+        private ImageRotation _rotation;
+        private ImageFlip _flip;
 
         private TimeSpan _duration;
         private bool _resume;
@@ -207,17 +207,35 @@ namespace Telegram.Views.Popups
                 using var stream = await media.File.OpenReadAsync();
                 using var animation = await Task.Run(() => VideoAnimation.LoadFromFile(new VideoAnimationStreamSource(stream), false, false, false));
 
-                double ratioX = (double)40 / animation.PixelWidth;
-                double ratioY = (double)40 / animation.PixelHeight;
+                var pixelWidth = animation.PixelWidth;
+                var pixelHeight = animation.PixelHeight;
+
+                if (animation.Rotation is 90 or 270)
+                {
+                    pixelWidth = animation.PixelHeight;
+                    pixelHeight = animation.PixelWidth;
+                }
+
+                double ratioX = (double)40 / pixelWidth;
+                double ratioY = (double)40 / pixelHeight;
                 double ratio = Math.Max(ratioY, ratioY);
 
-                var width = (int)(animation.PixelWidth * ratio);
-                var height = (int)(animation.PixelHeight * ratio);
+                var width = (int)(pixelWidth * ratio);
+                var height = (int)(pixelHeight * ratio);
 
                 var count = Math.Ceiling(296d / width);
 
-                width = (int)(width * XamlRoot.RasterizationScale);
-                height = (int)(height * XamlRoot.RasterizationScale);
+                int rasterWidth;
+                int rasterHeight;
+                if (animation.Rotation is 90 or 270)
+                {
+                    rasterWidth = (int)(height * XamlRoot.RasterizationScale);
+                    rasterHeight = (int)(width * XamlRoot.RasterizationScale);
+                }
+                {
+                    rasterWidth = (int)(width * XamlRoot.RasterizationScale);
+                    rasterHeight = (int)(height * XamlRoot.RasterizationScale);
+                }
 
                 var duration = TimeSpan.FromMilliseconds(animation.Duration);
                 var maxLength = mask == ImageCropperMask.Ellipse
@@ -235,19 +253,31 @@ namespace Telegram.Views.Popups
 
                 for (int i = 0; i < count; i++)
                 {
-                    var bitmap = new WriteableBitmap(width, height);
+                    var bitmap = new WriteableBitmap(rasterWidth, rasterHeight);
                     var buffer = new PixelBuffer(bitmap);
 
                     await Task.Run(() =>
                     {
                         animation.SeekToMilliseconds((long)(animation.Duration / count * i), false);
-                        animation.RenderSync(buffer, width, height, true, out _);
+                        animation.RenderSync(buffer, rasterWidth, rasterHeight, true, out _);
                     });
 
-                    var image = new Image();
-                    image.Height = 40;
-                    image.Stretch = Windows.UI.Xaml.Media.Stretch.UniformToFill;
-                    image.Source = bitmap;
+                    var image = new Border();
+                    image.Height = height;
+                    image.Width = width;
+                    image.Background = new ImageBrush
+                    {
+                        ImageSource = bitmap,
+                        AlignmentX = AlignmentX.Center,
+                        AlignmentY = AlignmentY.Center,
+                        Stretch = Stretch.Fill,
+                        RelativeTransform = new CompositeTransform
+                        {
+                            CenterX = 0.5,
+                            CenterY = 0.5,
+                            Rotation = animation.Rotation
+                        }
+                    };
 
                     Grid.SetColumn(image, i);
 
@@ -370,28 +400,28 @@ namespace Telegram.Views.Popups
 
         private async void Rotate_Click(object sender, RoutedEventArgs e)
         {
-            var rotation = BitmapRotation.None;
+            var rotation = ImageRotation.None;
 
             var proportions = RotateProportions(Cropper.Proportions);
             var rectangle = RotateArea(Cropper.CropRectangle);
 
             switch (_rotation)
             {
-                case BitmapRotation.None:
-                    rotation = BitmapRotation.Clockwise90Degrees;
+                case ImageRotation.None:
+                    rotation = ImageRotation.Clockwise90Degrees;
                     break;
-                case BitmapRotation.Clockwise90Degrees:
-                    rotation = BitmapRotation.Clockwise180Degrees;
+                case ImageRotation.Clockwise90Degrees:
+                    rotation = ImageRotation.Clockwise180Degrees;
                     break;
-                case BitmapRotation.Clockwise180Degrees:
-                    rotation = BitmapRotation.Clockwise270Degrees;
+                case ImageRotation.Clockwise180Degrees:
+                    rotation = ImageRotation.Clockwise270Degrees;
                     break;
             }
 
             _rotation = rotation;
             await Cropper.SetSourceAsync(_file, rotation, _flip, proportions, rectangle);
 
-            Rotate.IsChecked = _rotation != BitmapRotation.None;
+            Rotate.IsChecked = _rotation != ImageRotation.None;
             Canvas.Invalidate();
         }
 
@@ -450,39 +480,39 @@ namespace Telegram.Views.Popups
 
             switch (rotation)
             {
-                case BitmapRotation.Clockwise90Degrees:
-                case BitmapRotation.Clockwise270Degrees:
+                case ImageRotation.Clockwise90Degrees:
+                case ImageRotation.Clockwise270Degrees:
                     switch (flip)
                     {
-                        case BitmapFlip.None:
-                            flip = BitmapFlip.Vertical;
+                        case ImageFlip.None:
+                            flip = ImageFlip.Vertical;
                             break;
-                        case BitmapFlip.Vertical:
-                            flip = BitmapFlip.None;
+                        case ImageFlip.Vertical:
+                            flip = ImageFlip.None;
                             break;
-                        case BitmapFlip.Horizontal:
-                            flip = BitmapFlip.None;
-                            rotation = rotation == BitmapRotation.Clockwise90Degrees
-                                ? BitmapRotation.Clockwise270Degrees
-                                : BitmapRotation.Clockwise90Degrees;
+                        case ImageFlip.Horizontal:
+                            flip = ImageFlip.None;
+                            rotation = rotation == ImageRotation.Clockwise90Degrees
+                                ? ImageRotation.Clockwise270Degrees
+                                : ImageRotation.Clockwise90Degrees;
                             break;
                     }
                     break;
-                case BitmapRotation.None:
-                case BitmapRotation.Clockwise180Degrees:
+                case ImageRotation.None:
+                case ImageRotation.Clockwise180Degrees:
                     switch (flip)
                     {
-                        case BitmapFlip.None:
-                            flip = BitmapFlip.Horizontal;
+                        case ImageFlip.None:
+                            flip = ImageFlip.Horizontal;
                             break;
-                        case BitmapFlip.Horizontal:
-                            flip = BitmapFlip.None;
+                        case ImageFlip.Horizontal:
+                            flip = ImageFlip.None;
                             break;
-                        case BitmapFlip.Vertical:
-                            flip = BitmapFlip.None;
-                            rotation = rotation == BitmapRotation.None
-                                ? BitmapRotation.Clockwise180Degrees
-                                : BitmapRotation.None;
+                        case ImageFlip.Vertical:
+                            flip = ImageFlip.None;
+                            rotation = rotation == ImageRotation.None
+                                ? ImageRotation.Clockwise180Degrees
+                                : ImageRotation.None;
                             break;
                     }
                     break;
@@ -492,10 +522,10 @@ namespace Telegram.Views.Popups
             _rotation = rotation;
             await Cropper.SetSourceAsync(_file, _rotation, flip, proportions, rectangle);
 
-            //Transform.ScaleX = _flip == BitmapFlip.Horizontal ? -1 : 1;
-            //Transform.ScaleY = _flip == BitmapFlip.Vertical ? -1 : 1;
+            //Transform.ScaleX = _flip == ImageFlip.Horizontal ? -1 : 1;
+            //Transform.ScaleY = _flip == ImageFlip.Vertical ? -1 : 1;
 
-            Flip.IsChecked = _flip != BitmapFlip.None;
+            Flip.IsChecked = _flip != ImageFlip.None;
             Canvas.Invalidate();
         }
 

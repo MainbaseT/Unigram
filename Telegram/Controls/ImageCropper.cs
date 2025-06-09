@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Entities;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
@@ -69,8 +70,8 @@ namespace Telegram.Controls
         private ImageCropperMask _mask = ImageCropperMask.Rectangle;
 
         private BitmapProportions _proportions = BitmapProportions.Custom;
-        private BitmapRotation _rotation;
-        private BitmapFlip _flip;
+        private ImageRotation _rotation;
+        private ImageFlip _flip;
 
         private Grid m_layoutRoot;
         private Image m_imageViewer;
@@ -851,7 +852,7 @@ namespace Telegram.Controls
 
         #region Source
 
-        public async Task SetSourceAsync(StorageFile file, BitmapRotation rotation = BitmapRotation.None, BitmapFlip flip = BitmapFlip.None, BitmapProportions proportions = BitmapProportions.Custom, Rect? cropRectangle = null)
+        public async Task SetSourceAsync(StorageFile file, ImageRotation rotation = ImageRotation.None, ImageFlip flip = ImageFlip.None, BitmapProportions proportions = BitmapProportions.Custom, Rect? cropRectangle = null)
         {
             _rotation = rotation;
             _flip = flip;
@@ -864,8 +865,8 @@ namespace Telegram.Controls
                     var decoder = await BitmapDecoder.CreateAsync(fileStream);
                     var transform = ImageHelper.ComputeScalingTransformForSourceImage(decoder);
 
-                    transform.Rotation = rotation;
-                    transform.Flip = flip;
+                    transform.Rotation = (BitmapRotation)rotation;
+                    transform.Flip = (BitmapFlip)flip;
 
                     var software = await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied, transform, ExifOrientationMode.RespectExifOrientation, ColorManagementMode.DoNotColorManage);
                     source = new SoftwareBitmapSource();
@@ -958,21 +959,21 @@ namespace Telegram.Controls
 
             switch (_rotation)
             {
-                case BitmapRotation.None:
-                case BitmapRotation.Clockwise180Degrees:
+                case ImageRotation.None:
+                case ImageRotation.Clockwise180Degrees:
                     m_imagePresenter.Margin = new Thickness(horizontal, vertical, horizontal, vertical);
                     m_imagePresenter.Width = e.NewSize.Width;
                     m_imagePresenter.Height = e.NewSize.Height;
-                    m_imagePresenterTransform.Rotation = _rotation == BitmapRotation.None
+                    m_imagePresenterTransform.Rotation = _rotation == ImageRotation.None
                         ? 0
                         : 180;
                     break;
-                case BitmapRotation.Clockwise90Degrees:
-                case BitmapRotation.Clockwise270Degrees:
+                case ImageRotation.Clockwise90Degrees:
+                case ImageRotation.Clockwise270Degrees:
                     m_imagePresenter.Margin = new Thickness(horizontal, vertical, horizontal, vertical);
                     m_imagePresenter.Width = e.NewSize.Height;
                     m_imagePresenter.Height = e.NewSize.Width;
-                    m_imagePresenterTransform.Rotation = _rotation == BitmapRotation.Clockwise90Degrees
+                    m_imagePresenterTransform.Rotation = _rotation == ImageRotation.Clockwise90Degrees
                         ? 90
                         : 270;
                     break;
@@ -984,10 +985,10 @@ namespace Telegram.Controls
 
         private void UpdatePresenterTransform()
         {
-            m_imagePresenterTransform.ScaleX = _flip == BitmapFlip.Horizontal
+            m_imagePresenterTransform.ScaleX = _flip == ImageFlip.Horizontal
                 ? -1
                 : 1;
-            m_imagePresenterTransform.ScaleY = _flip == BitmapFlip.Vertical
+            m_imagePresenterTransform.ScaleY = _flip == ImageFlip.Vertical
                 ? -1
                 : 1;
         }

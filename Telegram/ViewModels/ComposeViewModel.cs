@@ -548,7 +548,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public async Task SendVideoNoteAsync(StorageFile file, MediaEncodingProfile profile = null, VideoTransformEffectDefinition transform = null)
+        public async Task SendVideoNoteAsync(StorageVideo video, VideoGeneration generation)
         {
             var options = await PickMessageSendOptionsAsync();
             if (options == null)
@@ -556,7 +556,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var factory = await MessageFactory.CreateVideoNoteAsync(file, profile, transform);
+            var factory = await MessageFactory.CreateVideoNoteAsync(video, generation);
             if (factory is InputMessageContent input)
             {
                 var reply = GetReply(true);

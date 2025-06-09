@@ -94,52 +94,18 @@ namespace Telegram.Services.Factories
             return new InputMessageVideo(generated, thumbnail, null, 0, Array.Empty<int>(), duration, videoWidth, videoHeight, true, caption, captionAboveMedia, ttl, spoiler);
         }
 
-        public static async Task<InputMessageContent> CreateVideoNoteAsync(StorageFile file, MediaEncodingProfile profile = null, VideoTransformEffectDefinition transform = null)
+        public static async Task<InputMessageContent> CreateVideoNoteAsync(StorageVideo video, VideoGeneration generation)
         {
-            var basicProps = await file.GetBasicPropertiesAsync();
-            var videoProps = await file.Properties.GetVideoPropertiesAsync();
+            var duration = video.TotalSeconds;
+            var videoWidth = video.Width;
+            var videoHeight = video.Height;
 
-            //var thumbnail = await ImageHelper.GetVideoThumbnailAsync(file, videoProps, transform);
-
-            var duration = (int)videoProps.Duration.TotalSeconds;
-            var videoWidth = (int)videoProps.GetWidth();
-            var videoHeight = (int)videoProps.GetHeight();
-
-            if (profile != null)
-            {
-                videoWidth = videoProps.Orientation is VideoOrientation.Rotate180 or VideoOrientation.Normal ? (int)profile.Video.Width : (int)profile.Video.Height;
-                videoHeight = videoProps.Orientation is VideoOrientation.Rotate180 or VideoOrientation.Normal ? (int)profile.Video.Height : (int)profile.Video.Width;
-            }
-
-            var conversion = new VideoGeneration();
-            if (profile != null)
-            {
-                conversion.Transcode = true;
-                conversion.Width = profile.Video.Width;
-                conversion.Height = profile.Video.Height;
-                conversion.VideoBitrate = profile.Video.Bitrate;
-
-                if (profile.Audio != null)
-                {
-                    conversion.AudioBitrate = profile.Audio.Bitrate;
-                }
-
-                if (transform != null)
-                {
-                    conversion.Transform = true;
-                    conversion.Rotation = transform.Rotation;
-                    conversion.OutputSize = transform.OutputSize;
-                    conversion.Mirror = transform.Mirror;
-                    conversion.CropRectangle = transform.CropRectangle;
-                }
-            }
-
-            var serialized = JsonConvert.SerializeObject(conversion);
-            var generated = await file.ToGeneratedAsync(ConversionType.Transcode, serialized);
-            var thumbnail = await file.ToVideoThumbnailAsync(conversion, ConversionType.TranscodeThumbnail, serialized);
+            var serialized = JsonConvert.SerializeObject(generation);
+            var generated = await video.File.ToGeneratedAsync(ConversionType.Transcode, serialized);
+            var thumbnail = await video.ToVideoThumbnailAsync(generation, ConversionType.TranscodeThumbnail, serialized);
 
             // TODO: 172 selfDestructType
-            return new InputMessageVideoNote(generated, thumbnail, duration, Math.Min(videoWidth, videoHeight), null);
+            return new InputMessageVideoNote(generated, thumbnail, duration, (int)generation.Width, null);
         }
 
         public static async Task<BaseObject> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool asFile)

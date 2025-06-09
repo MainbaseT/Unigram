@@ -1003,7 +1003,7 @@ namespace winrt::Telegram::Native::implementation
                 ReturnIfFailed(result, textLayout->SetFontFamilyName(L"Consolas", { startPosition, length }));
             }
         }
-        
+
         DWRITE_TEXT_METRICS metrics;
         ReturnIfFailed(result, textLayout->GetMetrics(&metrics));
 
@@ -1089,7 +1089,7 @@ namespace winrt::Telegram::Native::implementation
             //{
             //    textLayout->SetInlineObject(m_customEmoji.get(), { startPosition, length });
             //}
-            else if (name == winrt::name_of<TextEntityTypeCode>() ||  name == winrt::name_of<TextEntityTypePre>() || name == winrt::name_of<TextEntityTypePreCode>())
+            else if (name == winrt::name_of<TextEntityTypeCode>() || name == winrt::name_of<TextEntityTypePre>() || name == winrt::name_of<TextEntityTypePreCode>())
             {
                 ReturnIfFailed(result, textLayout->SetFontCollection(m_systemCollection.get(), { startPosition, length }));
                 ReturnIfFailed(result, textLayout->SetFontFamilyName(L"Consolas", { startPosition, length }));
@@ -1227,6 +1227,7 @@ namespace winrt::Telegram::Native::implementation
     }
 
     HRESULT PlaceholderImageHelper::Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height)
+    HRESULT PlaceholderImageHelper::Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height, int32_t rotation)
     {
         HRESULT result;
         winrt::com_ptr<IStream> stream;
@@ -1246,10 +1247,47 @@ namespace winrt::Telegram::Native::implementation
         ReturnIfFailed(result, wicFrameEncode->Initialize(nullptr));
 
         WICPixelFormatGUID pixelFormat = GUID_WICPixelFormat32bppBGRA;
-        ReturnIfFailed(result, wicFrameEncode->SetSize(width, height));
         ReturnIfFailed(result, wicFrameEncode->SetPixelFormat(&pixelFormat));
 
-        ReturnIfFailed(result, wicFrameEncode->WritePixels(height, width * 4, width * height * 4, source.data()));
+        // TODO: just rotate via EXIF?
+        if (rotation)
+        {
+            winrt::com_ptr<IWICBitmap> pBitmap;
+            ReturnIfFailed(result, m_wicFactory->CreateBitmapFromMemory(width, height, GUID_WICPixelFormat32bppBGRA, width * 4, width * height * 4, source.data(), pBitmap.put()));
+
+            winrt::com_ptr<IWICBitmapFlipRotator> pRotator;
+            ReturnIfFailed(result, m_wicFactory->CreateBitmapFlipRotator(pRotator.put()));
+
+            auto options = WICBitmapTransformRotate0;
+            switch (rotation)
+            {
+            case 90:
+                ReturnIfFailed(result, wicFrameEncode->SetSize(height, width));
+                options = WICBitmapTransformRotate90;
+                break;
+            case 180:
+                ReturnIfFailed(result, wicFrameEncode->SetSize(width, height));
+                options = WICBitmapTransformRotate180;
+                break;
+            case 270:
+                ReturnIfFailed(result, wicFrameEncode->SetSize(height, width));
+                options = WICBitmapTransformRotate270;
+                break;
+            default:
+                ReturnIfFailed(result, wicFrameEncode->SetSize(width, height));
+                options = WICBitmapTransformRotate0;
+                break;
+            }
+
+            ReturnIfFailed(result, pRotator->Initialize(pBitmap.get(), options));
+            ReturnIfFailed(result, wicFrameEncode->WriteSource(pRotator.get(), nullptr));
+        }
+        else
+        {
+            ReturnIfFailed(result, wicFrameEncode->SetSize(width, height));
+            ReturnIfFailed(result, wicFrameEncode->WritePixels(height, width * 4, width * height * 4, source.data()));
+        }
+
         ReturnIfFailed(result, wicFrameEncode->Commit());
         ReturnIfFailed(result, wicBitmapEncoder->Commit());
 

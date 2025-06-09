@@ -70,7 +70,7 @@ namespace Telegram.Common
                         double ratioY = (double)requestedMinSide / height;
                         double ratio = Math.Min(ratioX, ratioY);
 
-                        if (generation != null && generation.Rotation is BitmapRotation.Clockwise90Degrees or BitmapRotation.Clockwise270Degrees)
+                        if (generation != null && generation.Rotation is ImageRotation.Clockwise90Degrees or ImageRotation.Clockwise270Degrees)
                         {
                             return new SizeInt32
                             {
@@ -86,7 +86,7 @@ namespace Telegram.Common
                         };
                     }
 
-                    if (generation != null && generation.Rotation is BitmapRotation.Clockwise90Degrees or BitmapRotation.Clockwise270Degrees)
+                    if (generation != null && generation.Rotation is ImageRotation.Clockwise90Degrees or ImageRotation.Clockwise270Degrees)
                     {
                         return new SizeInt32
                         {
@@ -122,9 +122,9 @@ namespace Telegram.Common
         /// <param name="requestedMinSide">Max width/height of the output image</param>
         /// <param name="quality">JPEG compression quality (0.77 for pictures, 0.87 for thumbnails)</param>
         /// <returns></returns>
-        public static async Task<StorageFile> ScaleAsync(Guid encoderId, StorageFile sourceFile, StorageFile resizedImageFile, int requestedMinSide, bool bestQuality = false)
+        public static async Task<StorageFile> ScaleAsync(Guid encoderId, StorageFile sourceFile, StorageFile resizedImageFile, int requestedMinSide, bool bestQuality = false, TimeSpan? trimStart = null)
         {
-            using (var source = await sourceFile.OpenReadAsync())
+            using (var source = await OpenReadAsync(sourceFile, trimStart))
             {
                 return await ScaleAsync(encoderId, source, resizedImageFile, requestedMinSide, bestQuality);
             }
@@ -303,7 +303,7 @@ namespace Telegram.Common
             }
         }
 
-        public static async Task<StorageFile> CropAsync(StorageFile sourceFile, StorageFile file, Rect cropRectangle, int min = 1280, int max = 0, double quality = 0.77, BitmapRotation rotation = BitmapRotation.None, BitmapFlip flip = BitmapFlip.None, TimeSpan? trimStart = null, bool bestQuality = false)
+        public static async Task<StorageFile> CropAsync(StorageFile sourceFile, StorageFile file, Rect cropRectangle, int min = 1280, int max = 0, double quality = 0.77, ImageRotation rotation = ImageRotation.None, ImageFlip flip = ImageFlip.None, TimeSpan? trimStart = null, bool bestQuality = false)
         {
             file ??= await ApplicationData.Current.TemporaryFolder.CreateFileAsync("crop.jpg", CreationCollisionOption.ReplaceExisting);
 
@@ -333,12 +333,12 @@ namespace Telegram.Common
                         cropRectangle.Height * decoder.PixelHeight);
                 }
 
-                if (rotation != BitmapRotation.None)
+                if (rotation != ImageRotation.None)
                 {
                     cropRectangle = RotateArea(cropRectangle, decoder.PixelWidth, decoder.PixelHeight, (int)rotation);
                 }
 
-                if (flip == BitmapFlip.Horizontal)
+                if (flip == ImageFlip.Horizontal)
                 {
                     cropRectangle = FlipArea(cropRectangle, decoder.PixelWidth);
                 }
@@ -356,8 +356,8 @@ namespace Telegram.Common
                     ScaledWidth = (uint)scaledSize.Width,
                     ScaledHeight = (uint)scaledSize.Height,
                     Bounds = bounds,
-                    Rotation = rotation,
-                    Flip = flip,
+                    Rotation = (BitmapRotation)rotation,
+                    Flip = (BitmapFlip)flip,
                     InterpolationMode = bestQuality
                             ? BitmapInterpolationMode.Fant
                             : BitmapInterpolationMode.Linear
@@ -456,7 +456,7 @@ namespace Telegram.Common
                 await Task.Run(() => animation.RenderSync(frame, width, height, true, out _));
 
                 using var stream = new InMemoryRandomAccessStream();
-                PlaceholderImageHelper.Current.Encode(frame, stream, width, height);
+                PlaceholderImageHelper.Current.Encode(frame, stream, width, height, animation.Rotation);
 
                 return await CropAndPreviewAsync(stream, generation, maxSize);
             }
@@ -489,12 +489,12 @@ namespace Telegram.Common
                 generation.Rectangle.Width * decoder.PixelWidth,
                 generation.Rectangle.Height * decoder.PixelHeight);
 
-            if (generation.Rotation != BitmapRotation.None)
+            if (generation.Rotation != ImageRotation.None)
             {
                 cropRectangle = RotateArea(cropRectangle, decoder.PixelWidth, decoder.PixelHeight, (int)generation.Rotation);
             }
 
-            if (generation.Flip == BitmapFlip.Horizontal)
+            if (generation.Flip == ImageFlip.Horizontal)
             {
                 cropRectangle = FlipArea(cropRectangle, decoder.PixelWidth);
             }
@@ -512,8 +512,8 @@ namespace Telegram.Common
             transform.ScaledHeight = (uint)scaledSize.Height;
             transform.Bounds = bounds;
             transform.InterpolationMode = BitmapInterpolationMode.Linear;
-            transform.Rotation = generation.Rotation;
-            transform.Flip = generation.Flip;
+            transform.Rotation = (BitmapRotation)generation.Rotation;
+            transform.Flip = (BitmapFlip)generation.Flip;
 
             var pixelData = await decoder.GetSoftwareBitmapAsync(decoder.BitmapPixelFormat, BitmapAlphaMode.Premultiplied, transform, ExifOrientationMode.RespectExifOrientation, ColorManagementMode.DoNotColorManage);
 
@@ -557,7 +557,7 @@ namespace Telegram.Common
                     var result = animation.RenderSync(frame, width, height, true, out _);
 
                     var stream = new InMemoryRandomAccessStream();
-                    PlaceholderImageHelper.Current.Encode(frame, stream, width, height);
+                    PlaceholderImageHelper.Current.Encode(frame, stream, width, height, animation.Rotation);
 
                     return stream;
                 });
@@ -586,110 +586,38 @@ namespace Telegram.Common
             return transform;
         }
 
-        public static async Task<IRandomAccessStream> DrawStrokesAsync(SoftwareBitmap file, IReadOnlyList<SmoothPathBuilder> strokes, Rect rectangle, BitmapRotation rotation, BitmapFlip flip)
+        public static async Task<IRandomAccessStream> DrawStrokesAsync(SoftwareBitmap file, IReadOnlyList<SmoothPathBuilder> strokes, Rect rectangle, ImageRotation rotation, ImageFlip flip)
         {
             var device = ElementComposition.GetSharedDevice();
             var bitmap = CanvasBitmap.CreateFromSoftwareBitmap(device, file);
-            var canvas1 = new CanvasRenderTarget(device, (float)bitmap.Size.Width, (float)bitmap.Size.Height, bitmap.Dpi);
-            var canvas2 = new CanvasRenderTarget(device, (float)bitmap.Size.Width, (float)bitmap.Size.Height, bitmap.Dpi);
-
-            var size = canvas1.Size.ToVector2();
-            var canvasSize = canvas1.Size.ToVector2();
-
-            var scaleX = 1 / (float)rectangle.Width;
-            var scaleY = 1 / (float)rectangle.Height;
-
-            var offsetX = (float)rectangle.X * scaleX;
-            var offsetY = (float)rectangle.Y * scaleY;
-
-            if (rotation is BitmapRotation.Clockwise270Degrees or BitmapRotation.Clockwise90Degrees)
-            {
-                size = new Vector2(size.Y, size.X);
-
-                scaleX = scaleY;
-                scaleY = 1 * 1 / (float)rectangle.Width;
-            }
-
-            using (var session = canvas1.CreateDrawingSession())
-            {
-                switch (rotation)
-                {
-                    case BitmapRotation.Clockwise90Degrees:
-                        var transform1 = Matrix3x2.CreateRotation(MathFEx.ToRadians(90));
-                        transform1.Translation = new Vector2(size.Y, 0);
-                        session.Transform = transform1;
-                        break;
-                    case BitmapRotation.Clockwise180Degrees:
-                        var transform2 = Matrix3x2.CreateRotation(MathFEx.ToRadians(180));
-                        transform2.Translation = new Vector2(size.X, size.Y);
-                        session.Transform = transform2;
-                        break;
-                    case BitmapRotation.Clockwise270Degrees:
-                        var transform3 = Matrix3x2.CreateRotation(MathFEx.ToRadians(270));
-                        transform3.Translation = new Vector2(0, size.X);
-                        session.Transform = transform3;
-                        break;
-                }
-
-                switch (flip)
-                {
-                    case BitmapFlip.Horizontal:
-                        switch (rotation)
-                        {
-                            case BitmapRotation.Clockwise90Degrees:
-                            case BitmapRotation.Clockwise270Degrees:
-                                session.Transform = Matrix3x2.Multiply(session.Transform, Matrix3x2.CreateScale(1, -1, canvasSize / 2));
-                                break;
-                            default:
-                                session.Transform = Matrix3x2.Multiply(session.Transform, Matrix3x2.CreateScale(-1, 1, canvasSize / 2));
-                                break;
-                        }
-                        break;
-                    case BitmapFlip.Vertical:
-                        switch (rotation)
-                        {
-                            case BitmapRotation.None:
-                            case BitmapRotation.Clockwise180Degrees:
-                                session.Transform = Matrix3x2.Multiply(session.Transform, Matrix3x2.CreateScale(1, -1, canvasSize / 2));
-                                break;
-                            default:
-                                session.Transform = Matrix3x2.Multiply(session.Transform, Matrix3x2.CreateScale(-1, 1, canvasSize / 2));
-                                break;
-                        }
-                        break;
-                }
-
-                session.Transform = Matrix3x2.Multiply(session.Transform, Matrix3x2.CreateScale(scaleX, scaleY));
-                session.Transform = Matrix3x2.Multiply(session.Transform, Matrix3x2.CreateTranslation(-(offsetX * size.X), -(offsetY * size.Y)));
-
-                foreach (var builder in strokes)
-                {
-                    PencilCanvas.DrawPath(session, builder, size);
-                }
-            }
-
-            using (var session = canvas2.CreateDrawingSession())
-            {
-                session.DrawImage(bitmap);
-                session.DrawImage(canvas1);
-            }
-
-            bitmap.Dispose();
 
             var stream = new InMemoryRandomAccessStream();
-            await canvas2.SaveAsync(stream, CanvasBitmapFileFormat.Jpeg/*, 0.77f*/);
 
-            canvas2.Dispose();
-            canvas1.Dispose();
+            using (var canvas2 = DrawStrokes(device, bitmap, strokes, rectangle, rotation, flip))
+            {
+                await canvas2.SaveAsync(stream, CanvasBitmapFileFormat.Jpeg/*, 0.77f*/);
+            }
 
             stream.Seek(0);
             return stream;
         }
 
-        public static async Task<StorageFile> DrawStrokesAsync(StorageFile file, IReadOnlyList<SmoothPathBuilder> strokes, Rect rectangle, BitmapRotation rotation, BitmapFlip flip)
+        public static async Task<StorageFile> DrawStrokesAsync(StorageFile file, IReadOnlyList<SmoothPathBuilder> strokes, Rect rectangle, ImageRotation rotation, ImageFlip flip)
         {
             var device = ElementComposition.GetSharedDevice();
             var bitmap = await CanvasBitmap.LoadAsync(device, file.Path);
+
+            using (var canvas2 = DrawStrokes(device, bitmap, strokes, rectangle, rotation, flip))
+            using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                await canvas2.SaveAsync(stream, CanvasBitmapFileFormat.Jpeg/*, 0.77f*/);
+            }
+
+            return file;
+        }
+
+        public static CanvasRenderTarget DrawStrokes(CanvasDevice device, CanvasBitmap bitmap, IReadOnlyList<SmoothPathBuilder> strokes, Rect rectangle, ImageRotation rotation, ImageFlip flip)
+        {
             var canvas1 = new CanvasRenderTarget(device, (float)bitmap.Size.Width, (float)bitmap.Size.Height, bitmap.Dpi);
             var canvas2 = new CanvasRenderTarget(device, (float)bitmap.Size.Width, (float)bitmap.Size.Height, bitmap.Dpi);
 
@@ -702,7 +630,7 @@ namespace Telegram.Common
             var offsetX = (float)rectangle.X * scaleX;
             var offsetY = (float)rectangle.Y * scaleY;
 
-            if (rotation is BitmapRotation.Clockwise270Degrees or BitmapRotation.Clockwise90Degrees)
+            if (rotation is ImageRotation.Clockwise270Degrees or ImageRotation.Clockwise90Degrees)
             {
                 size = new Vector2(size.Y, size.X);
 
@@ -714,17 +642,17 @@ namespace Telegram.Common
             {
                 switch (rotation)
                 {
-                    case BitmapRotation.Clockwise90Degrees:
+                    case ImageRotation.Clockwise90Degrees:
                         var transform1 = Matrix3x2.CreateRotation(MathFEx.ToRadians(90));
                         transform1.Translation = new Vector2(size.Y, 0);
                         session.Transform = transform1;
                         break;
-                    case BitmapRotation.Clockwise180Degrees:
+                    case ImageRotation.Clockwise180Degrees:
                         var transform2 = Matrix3x2.CreateRotation(MathFEx.ToRadians(180));
                         transform2.Translation = new Vector2(size.X, size.Y);
                         session.Transform = transform2;
                         break;
-                    case BitmapRotation.Clockwise270Degrees:
+                    case ImageRotation.Clockwise270Degrees:
                         var transform3 = Matrix3x2.CreateRotation(MathFEx.ToRadians(270));
                         transform3.Translation = new Vector2(0, size.X);
                         session.Transform = transform3;
@@ -733,11 +661,11 @@ namespace Telegram.Common
 
                 switch (flip)
                 {
-                    case BitmapFlip.Horizontal:
+                    case ImageFlip.Horizontal:
                         switch (rotation)
                         {
-                            case BitmapRotation.Clockwise90Degrees:
-                            case BitmapRotation.Clockwise270Degrees:
+                            case ImageRotation.Clockwise90Degrees:
+                            case ImageRotation.Clockwise270Degrees:
                                 session.Transform = Matrix3x2.Multiply(session.Transform, Matrix3x2.CreateScale(1, -1, canvasSize / 2));
                                 break;
                             default:
@@ -745,11 +673,11 @@ namespace Telegram.Common
                                 break;
                         }
                         break;
-                    case BitmapFlip.Vertical:
+                    case ImageFlip.Vertical:
                         switch (rotation)
                         {
-                            case BitmapRotation.None:
-                            case BitmapRotation.Clockwise180Degrees:
+                            case ImageRotation.None:
+                            case ImageRotation.Clockwise180Degrees:
                                 session.Transform = Matrix3x2.Multiply(session.Transform, Matrix3x2.CreateScale(1, -1, canvasSize / 2));
                                 break;
                             default:
@@ -775,16 +703,9 @@ namespace Telegram.Common
             }
 
             bitmap.Dispose();
-
-            using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
-            {
-                await canvas2.SaveAsync(stream, CanvasBitmapFileFormat.Jpeg/*, 0.77f*/);
-            }
-
-            canvas2.Dispose();
             canvas1.Dispose();
 
-            return file;
+            return canvas2;
         }
     }
 }

@@ -1154,29 +1154,6 @@ namespace Telegram.Common
             }
         }
 
-        public static async Task<InputThumbnail> ToVideoThumbnailAsync(this StorageFile file, VideoGeneration video = null, ConversionType conversion = ConversionType.Copy, string arguments = null)
-        {
-            var props = await file.Properties.GetVideoPropertiesAsync();
-
-            double originalWidth = props.GetWidth();
-            double originalHeight = props.GetHeight();
-
-            if (!video.CropRectangle.IsEmpty)
-            {
-                originalWidth = video.CropRectangle.Width;
-                originalHeight = video.CropRectangle.Height;
-            }
-
-            double ratioX = 90 / originalWidth;
-            double ratioY = 90 / originalHeight;
-            double ratio = Math.Min(ratioX, ratioY);
-
-            int width = (int)(originalWidth * ratio);
-            int height = (int)(originalHeight * ratio);
-
-            return new InputThumbnail(await file.ToGeneratedAsync(conversion, arguments), width, height);
-        }
-
         public static async Task<InputThumbnail> ToVideoThumbnailAsync(this StorageVideo file, VideoGeneration video = null, ConversionType conversion = ConversionType.Copy, string arguments = null)
         {
             double originalWidth = file.Width;

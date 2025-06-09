@@ -8,10 +8,24 @@ using System;
 using System.Collections.Generic;
 using Telegram.Controls;
 using Windows.Foundation;
-using Windows.Graphics.Imaging;
 
 namespace Telegram.Entities
 {
+    public enum ImageRotation
+    {
+        None,
+        Clockwise90Degrees,
+        Clockwise180Degrees,
+        Clockwise270Degrees
+    }
+
+    public enum ImageFlip
+    {
+        None,
+        Horizontal,
+        Vertical
+    }
+
     public partial class ImageGeneration
     {
         public Rect Rectangle { get; set; } = new Rect(0, 0, 1, 1);
@@ -21,8 +35,8 @@ namespace Telegram.Entities
 
         public IReadOnlyList<SmoothPathBuilder> Strokes { get; set; }
 
-        public BitmapRotation Rotation { get; set; } = BitmapRotation.None;
-        public BitmapFlip Flip { get; set; }
+        public ImageRotation Rotation { get; set; }
+        public ImageFlip Flip { get; set; }
 
         public TimeSpan TrimStartTime { get; set; }
         public TimeSpan TrimStopTime { get; set; }
@@ -31,8 +45,8 @@ namespace Telegram.Entities
         {
             get => (Rectangle.IsEmpty || (Rectangle.X == 0 && Rectangle.Y == 0 && Rectangle.Width == 1 && Rectangle.Height == 1))
                 && Strokes == null
-                && Rotation == BitmapRotation.None
-                && Flip == BitmapFlip.None;
+                && Rotation == ImageRotation.None
+                && Flip == ImageFlip.None;
         }
     }
 }

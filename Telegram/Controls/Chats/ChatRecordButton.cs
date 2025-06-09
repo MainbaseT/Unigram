@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Entities;
 using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
@@ -20,7 +21,6 @@ using Windows.Media;
 using Windows.Media.Capture;
 using Windows.Media.Capture.Frames;
 using Windows.Media.Devices;
-using Windows.Media.Effects;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
 using Windows.System;
@@ -1136,20 +1136,23 @@ namespace Telegram.Controls.Chats
                     var videoBitrate = viewModel.ClientService.Options.SuggestedVideoNoteVideoBitrate;
                     var audioBitrate = viewModel.ClientService.Options.SuggestedVideoNoteAudioBitrate;
 
-                    var transform = new VideoTransformEffectDefinition();
-                    transform.CropRectangle = new Rect(x, y, width, height);
-                    transform.OutputSize = new Size(length, length);
-                    transform.Mirror = mirroring ? MediaMirroringOptions.Horizontal : MediaMirroringOptions.None;
-
-                    var profile = MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Vga);
-                    profile.Video.Width = (uint)length;
-                    profile.Video.Height = (uint)length;
-                    profile.Video.Bitrate = (uint)videoBitrate * 1000;
-                    profile.Audio.Bitrate = (uint)audioBitrate * 1000;
+                    var video = await StorageMedia.CreateAsync(file);
+                    var generation = new VideoGeneration
+                    {
+                        Transcode = true,
+                        Transform = true,
+                        CropRectangle = new Rect(x, y, width, height),
+                        OutputSize = new Size(length, length),
+                        Flip = mirroring ? ImageFlip.Horizontal : ImageFlip.None,
+                        Width = (uint)length,
+                        Height = (uint)length,
+                        VideoBitrate = (uint)videoBitrate * 1000,
+                        AudioBitrate = (uint)audioBitrate * 1000
+                    };
 
                     try
                     {
-                        _dispatcherQueue.TryEnqueue(() => _ = viewModel.SendVideoNoteAsync(file, profile, transform));
+                        _dispatcherQueue.TryEnqueue(() => _ = viewModel.SendVideoNoteAsync(video as StorageVideo, generation));
                     }
                     catch { }
                 }

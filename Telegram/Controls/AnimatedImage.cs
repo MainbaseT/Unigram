@@ -85,6 +85,8 @@ namespace Telegram.Controls
             {
                 Load();
             }
+
+            UpdateRotation(LayoutRoot.Background as ImageBrush);
         }
 
         public bool FitToSize { get; set; }
@@ -539,7 +541,15 @@ namespace Telegram.Controls
             if (_clean && source != null)
             {
                 _clean = false;
-                source.Stretch = Stretch;
+
+                if (UpdateRotation(source))
+                {
+                    source.Stretch = Stretch.None;
+                }
+                else
+                {
+                    source.Stretch = Stretch;
+                }
 
                 _shimmer = null;
                 ElementCompositionPreview.SetElementChildVisual(LayoutRoot, null);
@@ -551,6 +561,40 @@ namespace Telegram.Controls
                     ReplacementColorChanged(true);
                 }
             }
+        }
+
+        public bool UpdateRotation(ImageBrush source)
+        {
+            if (LayoutRoot.Background is ImageBrush { ImageSource: WriteableBitmap bitmap, Transform: CompositeTransform composite })
+            {
+                double pixelWidth;
+                double pixelHeight;
+
+                if (composite.Rotation is 90 or 270)
+                {
+                    pixelWidth = bitmap.PixelHeight;
+                    pixelHeight = bitmap.PixelWidth;
+                }
+                else
+                {
+                    pixelWidth = bitmap.PixelWidth;
+                    pixelHeight = bitmap.PixelHeight;
+                }
+
+                var scaleX = ActualWidth / pixelWidth;
+                var scaleY = ActualHeight / pixelHeight;
+                var scale = Math.Max(scaleX, scaleY);
+
+                composite.ScaleX = scale;
+                composite.ScaleY = scale;
+
+                composite.CenterX = ActualWidth / 2;
+                composite.CenterY = ActualHeight / 2;
+
+                return true;
+            }
+
+            return false;
         }
 
         public bool CleanOnSourceChanged { get; set; } = true;
@@ -1357,13 +1401,23 @@ namespace Telegram.Controls
 
                 next.Source.Invalidate();
 
-                _imageBrush ??= new ImageBrush
+                if (_imageBrush == null)
                 {
-                    //ImageSource = _surface.Source,
-                    Stretch = Stretch.Uniform,
-                    AlignmentX = AlignmentX.Center,
-                    AlignmentY = AlignmentY.Center,
-                };
+                    _imageBrush = new ImageBrush
+                    {
+                        Stretch = Stretch.Uniform,
+                        AlignmentX = AlignmentX.Center,
+                        AlignmentY = AlignmentY.Center,
+                    };
+
+                    if (_task.Rotation != 0)
+                    {
+                        _imageBrush.Transform = new CompositeTransform
+                        {
+                            Rotation = _task.Rotation
+                        };
+                    }
+                }
 
                 _imageBrush.ImageSource = next.Source;
 
@@ -1484,6 +1538,7 @@ namespace Telegram.Controls
 
             PixelWidth = animation.PixelWidth;
             PixelHeight = animation.PixelHeight;
+            Rotation = animation.Rotation;
 
             var frameRate = Math.Clamp(animation.FrameRate, 1, 60 /*presentation.LimitFps ? 30 : 60*/);
             var interval = TimeSpan.FromMilliseconds(Math.Floor(1000 / frameRate));
@@ -1585,6 +1640,8 @@ namespace Telegram.Controls
 
         public int PixelWidth { get; init; }
         public int PixelHeight { get; init; }
+
+        public int Rotation { get; init; }
 
         public TimeSpan Interval { get; init; }
 

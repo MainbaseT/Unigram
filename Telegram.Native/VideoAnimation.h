@@ -11,6 +11,7 @@
 extern "C"
 {
 #include <libavformat/avformat.h>
+#include <libavutil/display.h>
 #include <libavutil/eval.h>
 #include <libswscale/swscale.h>
 #include <libavutil/imgutils.h>

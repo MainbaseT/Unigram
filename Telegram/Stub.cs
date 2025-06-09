@@ -6306,11 +6306,11 @@ public static class PlaceholderImageHelper_stub
             throw new RuntimeException(ex);
         }
     }
-    public static void Encode_stub(this Telegram.Native.PlaceholderImageHelper sender, Windows.Storage.Streams.IBuffer source, Windows.Storage.Streams.IRandomAccessStream destination, int width, int height)
+    public static void Encode_stub(this Telegram.Native.PlaceholderImageHelper sender, Windows.Storage.Streams.IBuffer source, Windows.Storage.Streams.IRandomAccessStream destination, int width, int height, int rotation)
     {
         try
         {
-            sender.Encode(source, destination, width, height);
+            sender.Encode(source, destination, width, height, rotation);
         }
         catch (Exception ex)
         {

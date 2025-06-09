@@ -17,9 +17,9 @@ namespace Telegram.Entities
         public TimeSpan? TrimStopTime { get; set; }
 
         public bool Transform { get; set; }
-        public MediaRotation Rotation { get; set; }
+        public ImageRotation Rotation { get; set; }
+        public ImageFlip Flip { get; set; }
         public Size OutputSize { get; set; }
-        public MediaMirroringOptions Mirror { get; set; }
         public Rect CropRectangle { get; set; }
     }
 
