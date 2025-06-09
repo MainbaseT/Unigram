@@ -12,6 +12,7 @@ using Telegram.Controls;
 using Telegram.Converters;
 using Telegram.Services;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.ViewModels.Supergroups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -32,7 +33,7 @@ namespace Telegram.Views.Popups
         private IList<MessageSender> _deleteAll;
         private IList<MessageSender> _banUser;
 
-        public DeleteMessagesPopup(IClientService clientService, Chat chat, MessageTopic topic, IList<Message> messages, IDictionary<MessageId, MessageProperties> properties)
+        public DeleteMessagesPopup(IClientService clientService, Chat chat, MessageTopic topic, IList<MessageWithOwner> messages, IDictionary<MessageId, MessageProperties> properties)
         {
             InitializeComponent();
 

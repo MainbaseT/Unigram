@@ -269,8 +269,7 @@ namespace Telegram.ViewModels
 
             var items = messages
                 .DistinctBy(x => x.Id)
-                .Select(x => x.Get())
-                .ToList();
+                .ToList<MessageWithOwner>();
 
             IDictionary<MessageId, MessageProperties> properties;
             if (Type == DialogType.BusinessReplies)

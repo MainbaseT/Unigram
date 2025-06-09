@@ -514,12 +514,12 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        public static string GetText(MessageViewModel message)
+        public static string GetText(MessageWithOwner message)
         {
             return GetEntities(message, false).Text;
         }
 
-        private static FormattedText GetEntities(MessageViewModel message, bool history)
+        private static FormattedText GetEntities(MessageWithOwner message, bool history)
         {
             return message.Content switch
             {
@@ -628,7 +628,7 @@ namespace Telegram.Controls.Messages
 
         #region Local
 
-        private static FormattedText UpdateHeaderDate(MessageViewModel message, MessageHeaderDate headerDate)
+        private static FormattedText UpdateHeaderDate(MessageWithOwner message, MessageHeaderDate headerDate)
         {
             if (message.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
             {
@@ -650,7 +650,7 @@ namespace Telegram.Controls.Messages
 
         #region Event log
 
-        private static FormattedText UpdateChatEventAccentColorChanged(MessageViewModel message, ChatEventAccentColorChanged accentColorChanged, bool history)
+        private static FormattedText UpdateChatEventAccentColorChanged(MessageWithOwner message, ChatEventAccentColorChanged accentColorChanged, bool history)
         {
             FormattedText oldEmoji;
             FormattedText newEmoji;
@@ -676,7 +676,7 @@ namespace Telegram.Controls.Messages
             return ReplaceWithLink(ClientEx.Format(Strings.EventLogChangedPeerColorIcon, oldEmoji, newEmoji), message.GetSender());
         }
 
-        private static FormattedText UpdateChatEventProfileAccentColorChanged(MessageViewModel message, ChatEventProfileAccentColorChanged profileAccentColorChanged, bool history)
+        private static FormattedText UpdateChatEventProfileAccentColorChanged(MessageWithOwner message, ChatEventProfileAccentColorChanged profileAccentColorChanged, bool history)
         {
             FormattedText oldEmoji;
             FormattedText newEmoji;
@@ -702,7 +702,7 @@ namespace Telegram.Controls.Messages
             return ReplaceWithLink(ClientEx.Format(Strings.EventLogChangedProfileColorIcon, oldEmoji, newEmoji), message.GetSender());
         }
 
-        private static FormattedText UpdateChatEventEmojiStatusChanged(MessageViewModel message, ChatEventEmojiStatusChanged emojiStatusChanged, bool history)
+        private static FormattedText UpdateChatEventEmojiStatusChanged(MessageWithOwner message, ChatEventEmojiStatusChanged emojiStatusChanged, bool history)
         {
             return _emptyString;
 
@@ -778,7 +778,7 @@ namespace Telegram.Controls.Messages
             //return new FormattedText(content, entities);
         }
 
-        private static FormattedText UpdateChatEventBackgroundChanged(MessageViewModel message, ChatEventBackgroundChanged backgroundChanged, bool history)
+        private static FormattedText UpdateChatEventBackgroundChanged(MessageWithOwner message, ChatEventBackgroundChanged backgroundChanged, bool history)
         {
             if (backgroundChanged.NewBackground != null)
             {
@@ -790,7 +790,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateSlowModeDelayChanged(MessageViewModel message, ChatEventSlowModeDelayChanged slowModeDelayChanged, bool history)
+        private static FormattedText UpdateSlowModeDelayChanged(MessageWithOwner message, ChatEventSlowModeDelayChanged slowModeDelayChanged, bool history)
         {
             if (slowModeDelayChanged.NewSlowModeDelay > 0)
             {
@@ -813,7 +813,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateAutomaticTranslationToggled(MessageViewModel message, ChatEventAutomaticTranslationToggled automaticTranslationToggled, bool history)
+        private static FormattedText UpdateAutomaticTranslationToggled(MessageWithOwner message, ChatEventAutomaticTranslationToggled automaticTranslationToggled, bool history)
         {
             if (automaticTranslationToggled.HasAutomaticTranslation)
             {
@@ -825,7 +825,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateAvailableReactionsChanged(MessageViewModel message, ChatEventAvailableReactionsChanged availableReactionsChanged, bool history)
+        private static FormattedText UpdateAvailableReactionsChanged(MessageWithOwner message, ChatEventAvailableReactionsChanged availableReactionsChanged, bool history)
         {
             var oldAllOrNone = availableReactionsChanged.OldAvailableReactions is ChatAvailableReactionsAll or ChatAvailableReactionsSome { Reactions.Count: 0 };
             var newAllOrNone = availableReactionsChanged.NewAvailableReactions is ChatAvailableReactionsAll or ChatAvailableReactionsSome { Reactions.Count: 0 };
@@ -876,7 +876,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateHasProtectedContentToggled(MessageViewModel message, ChatEventHasProtectedContentToggled hasProtectedContentToggled, bool history)
+        private static FormattedText UpdateHasProtectedContentToggled(MessageWithOwner message, ChatEventHasProtectedContentToggled hasProtectedContentToggled, bool history)
         {
             if (hasProtectedContentToggled.HasProtectedContent)
             {
@@ -892,7 +892,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateSignMessagesToggled(MessageViewModel message, ChatEventSignMessagesToggled signMessagesToggled, bool history)
+        private static FormattedText UpdateSignMessagesToggled(MessageWithOwner message, ChatEventSignMessagesToggled signMessagesToggled, bool history)
         {
             if (signMessagesToggled.SignMessages)
             {
@@ -904,7 +904,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateShowMessageSenderToggled(MessageViewModel message, ChatEventShowMessageSenderToggled showMessageSenderToggled, bool history)
+        private static FormattedText UpdateShowMessageSenderToggled(MessageWithOwner message, ChatEventShowMessageSenderToggled showMessageSenderToggled, bool history)
         {
             if (showMessageSenderToggled.ShowMessageSender)
             {
@@ -916,7 +916,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateStickerSetChanged(MessageViewModel message, ChatEventStickerSetChanged stickerSetChanged, bool history)
+        private static FormattedText UpdateStickerSetChanged(MessageWithOwner message, ChatEventStickerSetChanged stickerSetChanged, bool history)
         {
             if (stickerSetChanged.NewStickerSetId == 0)
             {
@@ -928,7 +928,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateCustomEmojiStickerSetChanged(MessageViewModel message, ChatEventCustomEmojiStickerSetChanged customEmojiStickerSetChanged, bool history)
+        private static FormattedText UpdateCustomEmojiStickerSetChanged(MessageWithOwner message, ChatEventCustomEmojiStickerSetChanged customEmojiStickerSetChanged, bool history)
         {
             if (customEmojiStickerSetChanged.NewStickerSetId == 0)
             {
@@ -940,7 +940,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateInvitesToggled(MessageViewModel message, ChatEventInvitesToggled invitesToggled, bool history)
+        private static FormattedText UpdateInvitesToggled(MessageWithOwner message, ChatEventInvitesToggled invitesToggled, bool history)
         {
             if (invitesToggled.CanInviteUsers)
             {
@@ -952,7 +952,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateIsAllHistoryAvailableToggled(MessageViewModel message, ChatEventIsAllHistoryAvailableToggled isAllHistoryAvailableToggled, bool history)
+        private static FormattedText UpdateIsAllHistoryAvailableToggled(MessageWithOwner message, ChatEventIsAllHistoryAvailableToggled isAllHistoryAvailableToggled, bool history)
         {
             if (isAllHistoryAvailableToggled.IsAllHistoryAvailable)
             {
@@ -964,7 +964,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateLinkedChatChanged(MessageViewModel message, ChatEventLinkedChatChanged linkedChatChanged, bool history)
+        private static FormattedText UpdateLinkedChatChanged(MessageWithOwner message, ChatEventLinkedChatChanged linkedChatChanged, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -990,7 +990,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateLocationChanged(MessageViewModel message, ChatEventLocationChanged locationChanged, bool history)
+        private static FormattedText UpdateLocationChanged(MessageWithOwner message, ChatEventLocationChanged locationChanged, bool history)
         {
             if (locationChanged.NewLocation != null)
             {
@@ -1002,7 +1002,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateMemberJoinedByInviteLink(MessageViewModel message, ChatEventMemberJoinedByInviteLink memberJoinedByInviteLink, bool history)
+        private static FormattedText UpdateMemberJoinedByInviteLink(MessageWithOwner message, ChatEventMemberJoinedByInviteLink memberJoinedByInviteLink, bool history)
         {
             if (message.IsOutgoing)
             {
@@ -1021,17 +1021,17 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateMessageUnpinned(MessageViewModel message, ChatEventMessageUnpinned messageUnpinned, bool history)
+        private static FormattedText UpdateMessageUnpinned(MessageWithOwner message, ChatEventMessageUnpinned messageUnpinned, bool history)
         {
             return ReplaceWithLink(Strings.EventLogUnpinnedMessages, message.GetSender());
         }
 
-        private static FormattedText UpdateMessageDeleted(MessageViewModel message, ChatEventMessageDeleted messageDeleted, bool history)
+        private static FormattedText UpdateMessageDeleted(MessageWithOwner message, ChatEventMessageDeleted messageDeleted, bool history)
         {
             return ReplaceWithLink(Strings.EventLogDeletedMessages, message.GetSender());
         }
 
-        private static FormattedText UpdateMessageEdited(MessageViewModel message, ChatEventMessageEdited messageEdited, bool history)
+        private static FormattedText UpdateMessageEdited(MessageWithOwner message, ChatEventMessageEdited messageEdited, bool history)
         {
             if (messageEdited.NewMessage.Content is MessageText)
             {
@@ -1043,7 +1043,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateMessageAutoDeleteTimeChanged(MessageViewModel message, ChatEventMessageAutoDeleteTimeChanged messageAutoDeleteTimeChanged, bool history)
+        private static FormattedText UpdateMessageAutoDeleteTimeChanged(MessageWithOwner message, ChatEventMessageAutoDeleteTimeChanged messageAutoDeleteTimeChanged, bool history)
         {
             if (messageAutoDeleteTimeChanged.NewMessageAutoDeleteTime > 0)
             {
@@ -1055,7 +1055,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateDescriptionChanged(MessageViewModel message, ChatEventDescriptionChanged descriptionChanged, bool history)
+        private static FormattedText UpdateDescriptionChanged(MessageWithOwner message, ChatEventDescriptionChanged descriptionChanged, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1067,12 +1067,12 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateInviteLinkDeleted(MessageViewModel message, ChatEventInviteLinkDeleted inviteLinkDeleted, bool history)
+        private static FormattedText UpdateInviteLinkDeleted(MessageWithOwner message, ChatEventInviteLinkDeleted inviteLinkDeleted, bool history)
         {
             return ReplaceWithLink(string.Format(Strings.ActionDeletedInviteLink, inviteLinkDeleted.InviteLink.InviteLink), message.GetSender());
         }
 
-        private static FormattedText UpdateInviteLinkEdited(MessageViewModel message, ChatEventInviteLinkEdited inviteLinkEdited, bool history)
+        private static FormattedText UpdateInviteLinkEdited(MessageWithOwner message, ChatEventInviteLinkEdited inviteLinkEdited, bool history)
         {
             //if (inviteLinkEdited.)
             //{
@@ -1083,17 +1083,17 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateInviteLinkRevoked(MessageViewModel message, ChatEventInviteLinkRevoked inviteLinkRevoked, bool history)
+        private static FormattedText UpdateInviteLinkRevoked(MessageWithOwner message, ChatEventInviteLinkRevoked inviteLinkRevoked, bool history)
         {
             return ReplaceWithLink(string.Format(Strings.ActionRevokedInviteLink, inviteLinkRevoked.InviteLink.InviteLink), message.GetSender());
         }
 
-        private static FormattedText UpdateMessagePinned(MessageViewModel message, ChatEventMessagePinned messagePinned, bool history)
+        private static FormattedText UpdateMessagePinned(MessageWithOwner message, ChatEventMessagePinned messagePinned, bool history)
         {
             return ReplaceWithLink(Strings.EventLogPinnedMessages, message.GetSender());
         }
 
-        private static FormattedText UpdateUsernameChanged(MessageViewModel message, ChatEventUsernameChanged usernameChanged, bool history)
+        private static FormattedText UpdateUsernameChanged(MessageWithOwner message, ChatEventUsernameChanged usernameChanged, bool history)
         {
             if (string.IsNullOrEmpty(usernameChanged.NewUsername))
             {
@@ -1105,7 +1105,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdatePollStopped(MessageViewModel message, ChatEventPollStopped pollStopped, bool history)
+        private static FormattedText UpdatePollStopped(MessageWithOwner message, ChatEventPollStopped pollStopped, bool history)
         {
             var fromUser = message.GetSender();
 
@@ -1122,7 +1122,7 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateVideoChatCreated(MessageViewModel message, ChatEventVideoChatCreated videoChatCreated, bool history)
+        private static FormattedText UpdateVideoChatCreated(MessageWithOwner message, ChatEventVideoChatCreated videoChatCreated, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1134,7 +1134,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateVideoChatEnded(MessageViewModel message, ChatEventVideoChatEnded videoChatEnded, bool history)
+        private static FormattedText UpdateVideoChatEnded(MessageWithOwner message, ChatEventVideoChatEnded videoChatEnded, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1146,7 +1146,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateVideoChatMuteNewParticipantsToggled(MessageViewModel message, ChatEventVideoChatMuteNewParticipantsToggled videoChatMuteNewParticipantsToggled, bool history)
+        private static FormattedText UpdateVideoChatMuteNewParticipantsToggled(MessageWithOwner message, ChatEventVideoChatMuteNewParticipantsToggled videoChatMuteNewParticipantsToggled, bool history)
         {
             if (videoChatMuteNewParticipantsToggled.MuteNewParticipants)
             {
@@ -1158,7 +1158,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateVideoChatParticipantIsMutedToggled(MessageViewModel message, ChatEventVideoChatParticipantIsMutedToggled videoChatParticipantIsMutedToggled, bool history)
+        private static FormattedText UpdateVideoChatParticipantIsMutedToggled(MessageWithOwner message, ChatEventVideoChatParticipantIsMutedToggled videoChatParticipantIsMutedToggled, bool history)
         {
             var fromUser = message.GetSender();
             var whoUser = message.ClientService.GetMessageSender(videoChatParticipantIsMutedToggled.ParticipantId);
@@ -1173,7 +1173,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateVideoChatParticipantVolumeLevelChanged(MessageViewModel message, ChatEventVideoChatParticipantVolumeLevelChanged videoChatParticipantVolumeLevelChanged, bool history)
+        private static FormattedText UpdateVideoChatParticipantVolumeLevelChanged(MessageWithOwner message, ChatEventVideoChatParticipantVolumeLevelChanged videoChatParticipantVolumeLevelChanged, bool history)
         {
             var fromUser = message.GetSender();
             var whoUser = message.ClientService.GetMessageSender(videoChatParticipantVolumeLevelChanged.ParticipantId);
@@ -1181,29 +1181,29 @@ namespace Telegram.Controls.Messages
             return ReplaceWithLink(string.Format(Strings.ActionVolumeChanged, videoChatParticipantVolumeLevelChanged.VolumeLevel), fromUser, whoUser);
         }
 
-        private static FormattedText UpdateChatEventIsForumToggled(MessageViewModel message, ChatEventIsForumToggled isForumToggled, bool history)
+        private static FormattedText UpdateChatEventIsForumToggled(MessageWithOwner message, ChatEventIsForumToggled isForumToggled, bool history)
         {
             return ReplaceWithLink(isForumToggled.IsForum
                 ? Strings.EventLogSwitchToForum
                 : Strings.EventLogSwitchToGroup, message.GetSender());
         }
 
-        private static FormattedText UpdateChatEventForumTopicCreated(MessageViewModel message, ChatEventForumTopicCreated forumTopicCreated, bool history)
+        private static FormattedText UpdateChatEventForumTopicCreated(MessageWithOwner message, ChatEventForumTopicCreated forumTopicCreated, bool history)
         {
             return ReplaceWithLink(Strings.EventLogCreateTopic, message.GetSender(), forumTopicCreated.TopicInfo);
         }
 
-        private static FormattedText UpdateChatEventForumTopicDeleted(MessageViewModel message, ChatEventForumTopicDeleted forumTopicDeleted, bool history)
+        private static FormattedText UpdateChatEventForumTopicDeleted(MessageWithOwner message, ChatEventForumTopicDeleted forumTopicDeleted, bool history)
         {
             return ReplaceWithLink(Strings.EventLogDeleteTopic, message.GetSender(), forumTopicDeleted.TopicInfo);
         }
 
-        private static FormattedText UpdateChatEventForumTopicEdited(MessageViewModel message, ChatEventForumTopicEdited forumTopicEdited, bool history)
+        private static FormattedText UpdateChatEventForumTopicEdited(MessageWithOwner message, ChatEventForumTopicEdited forumTopicEdited, bool history)
         {
             return ReplaceWithLink(Strings.EventLogEditTopic, message.GetSender(), forumTopicEdited.OldTopicInfo, forumTopicEdited.NewTopicInfo);
         }
 
-        private static FormattedText UpdateChatEventForumTopicPinned(MessageViewModel message, ChatEventForumTopicPinned forumTopicPinned, bool history)
+        private static FormattedText UpdateChatEventForumTopicPinned(MessageWithOwner message, ChatEventForumTopicPinned forumTopicPinned, bool history)
         {
             if (forumTopicPinned.NewTopicInfo != null)
             {
@@ -1217,13 +1217,13 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateChatEventForumTopicToggleIsClosed(MessageViewModel message, ChatEventForumTopicToggleIsClosed forumTopicToggleIsClosed, bool history)
+        private static FormattedText UpdateChatEventForumTopicToggleIsClosed(MessageWithOwner message, ChatEventForumTopicToggleIsClosed forumTopicToggleIsClosed, bool history)
         {
             // TODO
             return _emptyString;
         }
 
-        //private static FormattedText UpdateChatEventActiveUsernames(MessageViewModel message, ChatEventActiveUsernamesChanged activeUsernamesChanged)
+        //private static FormattedText UpdateChatEventActiveUsernames(MessageWithOwner message, ChatEventActiveUsernamesChanged activeUsernamesChanged)
         //{
         //    //var content = string.Empty;
         //    //var entities = active ? new List<TextEntity>() : null;
@@ -1239,7 +1239,7 @@ namespace Telegram.Controls.Messages
 
         #endregion
 
-        private static FormattedText UpdateBasicGroupChatCreate(MessageViewModel message, MessageBasicGroupChatCreate basicGroupChatCreate, bool history)
+        private static FormattedText UpdateBasicGroupChatCreate(MessageWithOwner message, MessageBasicGroupChatCreate basicGroupChatCreate, bool history)
         {
             if (message.IsOutgoing)
             {
@@ -1251,7 +1251,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateBotWriteAccessAllowed(MessageViewModel message, MessageBotWriteAccessAllowed botWriteAccessAllowed, bool history)
+        private static FormattedText UpdateBotWriteAccessAllowed(MessageWithOwner message, MessageBotWriteAccessAllowed botWriteAccessAllowed, bool history)
         {
             if (botWriteAccessAllowed.Reason is BotWriteAccessAllowReasonConnectedWebsite websiteConnected)
             {
@@ -1272,7 +1272,7 @@ namespace Telegram.Controls.Messages
             return Strings.ActionBotAllowedWebapp.AsFormattedText();
         }
 
-        private static FormattedText UpdateChatAddMembers(MessageViewModel message, MessageChatAddMembers chatAddMembers, bool history)
+        private static FormattedText UpdateChatAddMembers(MessageWithOwner message, MessageChatAddMembers chatAddMembers, bool history)
         {
             try
             {
@@ -1366,7 +1366,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateChatChangePhoto(MessageViewModel message, MessageChatChangePhoto chatChangePhoto, bool history)
+        private static FormattedText UpdateChatChangePhoto(MessageWithOwner message, MessageChatChangePhoto chatChangePhoto, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1391,7 +1391,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateChatChangeTitle(MessageViewModel message, MessageChatChangeTitle chatChangeTitle, bool history)
+        private static FormattedText UpdateChatChangeTitle(MessageWithOwner message, MessageChatChangeTitle chatChangeTitle, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1410,7 +1410,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateChatSetTheme(MessageViewModel message, MessageChatSetTheme chatSetTheme, bool history)
+        private static FormattedText UpdateChatSetTheme(MessageWithOwner message, MessageChatSetTheme chatSetTheme, bool history)
         {
             if (message.IsOutgoing)
             {
@@ -1436,7 +1436,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateChatDeleteMember(MessageViewModel message, MessageChatDeleteMember chatDeleteMember, bool history)
+        private static FormattedText UpdateChatDeleteMember(MessageWithOwner message, MessageChatDeleteMember chatDeleteMember, bool history)
         {
             if (message.SenderId is MessageSenderUser senderUser && chatDeleteMember.UserId == senderUser.UserId)
             {
@@ -1474,7 +1474,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateChatDeletePhoto(MessageViewModel message, MessageChatDeletePhoto chatDeletePhoto, bool history)
+        private static FormattedText UpdateChatDeletePhoto(MessageWithOwner message, MessageChatDeletePhoto chatDeletePhoto, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1490,7 +1490,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateChatJoinByLink(MessageViewModel message, MessageChatJoinByLink chatJoinByLink, bool history)
+        private static FormattedText UpdateChatJoinByLink(MessageWithOwner message, MessageChatJoinByLink chatJoinByLink, bool history)
         {
             if (message.IsOutgoing)
             {
@@ -1502,12 +1502,12 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateChatJoinByRequest(MessageViewModel message, MessageChatJoinByRequest chatJoinByRequest, bool history)
+        private static FormattedText UpdateChatJoinByRequest(MessageWithOwner message, MessageChatJoinByRequest chatJoinByRequest, bool history)
         {
             return ReplaceWithLink(Strings.UserAcceptedToGroupAction, message.GetSender());
         }
 
-        private static FormattedText UpdateChatSetBackground(MessageViewModel message, MessageChatSetBackground chatSetBackground, bool history)
+        private static FormattedText UpdateChatSetBackground(MessageWithOwner message, MessageChatSetBackground chatSetBackground, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1549,7 +1549,7 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateChatSetMessageAutoDeleteTime(MessageViewModel message, MessageChatSetMessageAutoDeleteTime chatSetMessageAutoDeleteTime, bool history)
+        private static FormattedText UpdateChatSetMessageAutoDeleteTime(MessageWithOwner message, MessageChatSetMessageAutoDeleteTime chatSetMessageAutoDeleteTime, bool history)
         {
             var chat = message.Chat;
             if (chat?.Type is ChatTypeSecret)
@@ -1623,17 +1623,17 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateChatUpgradeFrom(MessageViewModel message, MessageChatUpgradeFrom chatUpgradeFrom, bool history)
+        private static FormattedText UpdateChatUpgradeFrom(MessageWithOwner message, MessageChatUpgradeFrom chatUpgradeFrom, bool history)
         {
             return (history ? Strings.GroupUpgradedFrom : Strings.GroupUpgradedTo).AsFormattedText();
         }
 
-        private static FormattedText UpdateChatUpgradeTo(MessageViewModel message, MessageChatUpgradeTo chatUpgradeTo, bool history)
+        private static FormattedText UpdateChatUpgradeTo(MessageWithOwner message, MessageChatUpgradeTo chatUpgradeTo, bool history)
         {
             return Strings.GroupUpgradedTo.AsFormattedText();
         }
 
-        private static FormattedText UpdateContactRegistered(MessageViewModel message, MessageContactRegistered contactRegistered, bool history)
+        private static FormattedText UpdateContactRegistered(MessageWithOwner message, MessageContactRegistered contactRegistered, bool history)
         {
             if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
             {
@@ -1643,12 +1643,12 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateCustomServiceAction(MessageViewModel message, MessageCustomServiceAction customServiceAction, bool history)
+        private static FormattedText UpdateCustomServiceAction(MessageWithOwner message, MessageCustomServiceAction customServiceAction, bool history)
         {
             return customServiceAction.Text.AsFormattedText();
         }
 
-        private static FormattedText UpdateForumTopicCreated(MessageViewModel message, MessageForumTopicCreated forumTopicCreated, bool history)
+        private static FormattedText UpdateForumTopicCreated(MessageWithOwner message, MessageForumTopicCreated forumTopicCreated, bool history)
         {
             // TopicWasCreatedAction
             // TopicCreated
@@ -1668,7 +1668,7 @@ namespace Telegram.Controls.Messages
             return new FormattedText(content, entities);
         }
 
-        private static FormattedText UpdateForumTopicEdited(MessageViewModel message, MessageForumTopicEdited forumTopicEdited, bool history)
+        private static FormattedText UpdateForumTopicEdited(MessageWithOwner message, MessageForumTopicEdited forumTopicEdited, bool history)
         {
             // TopicWasIconChangedToAction, TopicWasRenamedToAction TopicWasRenamedToAction2
             // TopicIconChangedToAction, TopicRenamedToAction
@@ -1696,7 +1696,7 @@ namespace Telegram.Controls.Messages
             return content;
         }
 
-        private static FormattedText UpdateForumTopicIsClosedToggled(MessageViewModel message, MessageForumTopicIsClosedToggled forumTopicIsClosedToggled, bool history)
+        private static FormattedText UpdateForumTopicIsClosedToggled(MessageWithOwner message, MessageForumTopicIsClosedToggled forumTopicIsClosedToggled, bool history)
         {
             // TopicWasClosedAction, TopicWasReopenedAction
             // TopicClosed2, TopicRestarted2
@@ -1707,9 +1707,9 @@ namespace Telegram.Controls.Messages
             return ReplaceWithLink(content, message.GetSender());
         }
 
-        private static FormattedText UpdateGameScore(MessageViewModel message, MessageGameScore gameScore, bool history)
+        private static FormattedText UpdateGameScore(MessageWithOwner message, MessageGameScore gameScore, bool history)
         {
-            var game = GetGame(message);
+            var game = GetGame(message as MessageViewModel);
             if (game == null)
             {
                 if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
@@ -1742,7 +1742,7 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateGift(MessageViewModel message, MessageGift gift, bool history)
+        private static FormattedText UpdateGift(MessageWithOwner message, MessageGift gift, bool history)
         {
             // TODO: markdown
 
@@ -1759,7 +1759,7 @@ namespace Telegram.Controls.Messages
                 if (gift.ReceiverId.IsUser(message.ClientService.Options.MyId))
                 {
                     return ReplaceWithLink(Strings.ActionGiftInbound, sender, gift);
-                    
+
                 }
                 else if (message.ClientService.TryGetMessageSender(gift.ReceiverId, out BaseObject outboundUser))
                 {
@@ -1774,7 +1774,7 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateGiftedPremium(MessageViewModel message, MessageGiftedPremium giftedPremium, bool history)
+        private static FormattedText UpdateGiftedPremium(MessageWithOwner message, MessageGiftedPremium giftedPremium, bool history)
         {
             // TODO: markdown
 
@@ -1792,7 +1792,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateGiftedStars(MessageViewModel message, MessageGiftedStars giftedStars, bool history)
+        private static FormattedText UpdateGiftedStars(MessageWithOwner message, MessageGiftedStars giftedStars, bool history)
         {
             // TODO: markdown
 
@@ -1810,7 +1810,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateVideoChatEnded(MessageViewModel message, MessageVideoChatEnded videoChatEnded, bool history)
+        private static FormattedText UpdateVideoChatEnded(MessageWithOwner message, MessageVideoChatEnded videoChatEnded, bool history)
         {
             if (message.IsOutgoing)
             {
@@ -1826,7 +1826,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateVideoChatScheduled(MessageViewModel message, MessageVideoChatScheduled videoChatScheduled, bool history)
+        private static FormattedText UpdateVideoChatScheduled(MessageWithOwner message, MessageVideoChatScheduled videoChatScheduled, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1838,7 +1838,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateVideoChatStarted(MessageViewModel message, MessageVideoChatStarted videoChatStarted, bool history)
+        private static FormattedText UpdateVideoChatStarted(MessageWithOwner message, MessageVideoChatStarted videoChatStarted, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -1854,7 +1854,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateInviteVideoChatParticipants(MessageViewModel message, MessageInviteVideoChatParticipants inviteVideoChatParticipants, bool history)
+        private static FormattedText UpdateInviteVideoChatParticipants(MessageWithOwner message, MessageInviteVideoChatParticipants inviteVideoChatParticipants, bool history)
         {
             long singleUserId = 0;
             if (singleUserId == 0 && inviteVideoChatParticipants.UserIds.Count == 1)
@@ -1892,7 +1892,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateProximityAlertTriggered(MessageViewModel message, MessageProximityAlertTriggered proximityAlertTriggered, bool history)
+        private static FormattedText UpdateProximityAlertTriggered(MessageWithOwner message, MessageProximityAlertTriggered proximityAlertTriggered, bool history)
         {
             message.ClientService.TryGetUser(proximityAlertTriggered.TravelerId, out User traveler);
             message.ClientService.TryGetUser(proximityAlertTriggered.WatcherId, out User watcher);
@@ -1916,7 +1916,7 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateGiveawayCreated(MessageViewModel message, MessageGiveawayCreated giveawayCreated, bool history)
+        private static FormattedText UpdateGiveawayCreated(MessageWithOwner message, MessageGiveawayCreated giveawayCreated, bool history)
         {
             if (giveawayCreated.StarCount > 0)
             {
@@ -1932,7 +1932,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateGiveawayCompleted(MessageViewModel message, MessageGiveawayCompleted giveawayCompleted, bool history)
+        private static FormattedText UpdateGiveawayCompleted(MessageWithOwner message, MessageGiveawayCompleted giveawayCompleted, bool history)
         {
             var content = Locale.Declension(Strings.R.BoostingGiveawayServiceWinnersSelected, giveawayCompleted.WinnerCount);
 
@@ -1944,7 +1944,7 @@ namespace Telegram.Controls.Messages
             return content.AsFormattedText();
         }
 
-        private static FormattedText UpdateGiveawayPrizeStars(MessageViewModel message, MessageGiveawayPrizeStars giveawayPrizeStars, bool history)
+        private static FormattedText UpdateGiveawayPrizeStars(MessageWithOwner message, MessageGiveawayPrizeStars giveawayPrizeStars, bool history)
         {
             var boostedChat = message.ClientService.GetChat(giveawayPrizeStars.BoostedChatId);
 
@@ -1952,7 +1952,7 @@ namespace Telegram.Controls.Messages
             return ReplaceWithLink(content, boostedChat);
         }
 
-        private static FormattedText UpdatePremiumGiftCode(MessageViewModel message, MessagePremiumGiftCode premiumGiftCode, bool history)
+        private static FormattedText UpdatePremiumGiftCode(MessageWithOwner message, MessagePremiumGiftCode premiumGiftCode, bool history)
         {
             // TODO: parse markdown
             if (message.IsOutgoing)
@@ -1976,7 +1976,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateFeedbackMessagePriceChanged(MessageViewModel message, MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged, bool history)
+        private static FormattedText UpdateFeedbackMessagePriceChanged(MessageWithOwner message, MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged, bool history)
         {
             if (feedbackMessagePriceChanged.IsEnabled)
             {
@@ -1995,7 +1995,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdatePaidMessagePriceChanged(MessageViewModel message, MessagePaidMessagePriceChanged paidMessagePriceChanged, bool history)
+        private static FormattedText UpdatePaidMessagePriceChanged(MessageWithOwner message, MessagePaidMessagePriceChanged paidMessagePriceChanged, bool history)
         {
             if (message.IsOutgoing)
             {
@@ -2007,7 +2007,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdatePaidMessagesRefunded(MessageViewModel message, MessagePaidMessagesRefunded paidMessagesRefunded, bool history)
+        private static FormattedText UpdatePaidMessagesRefunded(MessageWithOwner message, MessagePaidMessagesRefunded paidMessagesRefunded, bool history)
         {
             if (message.IsOutgoing && message.ClientService.TryGetUser(message.Chat, out User receiverUser))
             {
@@ -2023,7 +2023,7 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdatePassportDataSent(MessageViewModel message, MessagePassportDataSent passportDataSent, bool history)
+        private static FormattedText UpdatePassportDataSent(MessageWithOwner message, MessagePassportDataSent passportDataSent, bool history)
         {
             string content;
 
@@ -2095,11 +2095,11 @@ namespace Telegram.Controls.Messages
             return content.AsFormattedText();
         }
 
-        private static FormattedText UpdatePaymentSuccessful(MessageViewModel message, MessagePaymentSuccessful paymentSuccessful, bool history)
+        private static FormattedText UpdatePaymentSuccessful(MessageWithOwner message, MessagePaymentSuccessful paymentSuccessful, bool history)
         {
             var content = string.Empty;
 
-            var invoice = GetInvoice(message);
+            var invoice = GetInvoice(message as MessageViewModel);
             var chat = message.Chat;
 
             if (invoice != null)
@@ -2112,19 +2112,14 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdatePaymentRefunded(MessageViewModel message, MessagePaymentRefunded paymentRefunded, bool history)
+        private static FormattedText UpdatePaymentRefunded(MessageWithOwner message, MessagePaymentRefunded paymentRefunded, bool history)
         {
             return ReplaceWithLink(string.Format(Strings.ActionRefunded, Locale.FormatCurrency(paymentRefunded.TotalAmount, paymentRefunded.Currency)), message.GetSender());
         }
 
-        private static FormattedText UpdatePinMessage(MessageViewModel message, MessagePinMessage pinMessage, bool history)
+        private static FormattedText UpdatePinMessage(MessageWithOwner message, MessagePinMessage pinMessage, bool history)
         {
-            var reply = message.ReplyToItem as MessageViewModel;
-            if (reply == null)
-            {
-                return ReplaceWithLink(Strings.ActionPinnedNoText, message.GetSender());
-            }
-            else
+            if (message is MessageViewModel { ReplyTo: MessageViewModel reply })
             {
                 if (reply.Content is MessageAnimatedEmoji animatedEmoji)
                 {
@@ -2217,11 +2212,15 @@ namespace Telegram.Controls.Messages
                     return ReplaceWithLink(Strings.ActionPinnedNoText, message.GetSender());
                 }
             }
+            else
+            {
+                return ReplaceWithLink(Strings.ActionPinnedNoText, message.GetSender());
+            }
 
             return _emptyString;
         }
 
-        private static FormattedText UpdateScreenshotTaken(MessageViewModel message, MessageScreenshotTaken screenshotTaken, bool history)
+        private static FormattedText UpdateScreenshotTaken(MessageWithOwner message, MessageScreenshotTaken screenshotTaken, bool history)
         {
             if (message.IsOutgoing)
             {
@@ -2233,7 +2232,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateSuggestProfilePhoto(MessageViewModel message, MessageSuggestProfilePhoto suggestProfilePhoto, bool history)
+        private static FormattedText UpdateSuggestProfilePhoto(MessageWithOwner message, MessageSuggestProfilePhoto suggestProfilePhoto, bool history)
         {
             var content = string.Empty;
             var entities = new List<TextEntity>();
@@ -2258,7 +2257,7 @@ namespace Telegram.Controls.Messages
             return new FormattedText(content, entities);
         }
 
-        private static FormattedText UpdateSupergroupChatCreate(MessageViewModel message, MessageSupergroupChatCreate supergroupChatCreate, bool history)
+        private static FormattedText UpdateSupergroupChatCreate(MessageWithOwner message, MessageSupergroupChatCreate supergroupChatCreate, bool history)
         {
             if (message.IsChannelPost)
             {
@@ -2270,7 +2269,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateUpgradedGift(MessageViewModel message, MessageUpgradedGift upgradedGift, bool history)
+        private static FormattedText UpdateUpgradedGift(MessageWithOwner message, MessageUpgradedGift upgradedGift, bool history)
         {
             if (upgradedGift.IsUpgrade)
             {
@@ -2310,7 +2309,7 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateChatShared(MessageViewModel message, MessageChatShared chatShared, bool history)
+        private static FormattedText UpdateChatShared(MessageWithOwner message, MessageChatShared chatShared, bool history)
         {
             var chat = message.Chat;
             if (chat != null && message.ClientService.TryGetChat(chatShared.Chat.ChatId, out Chat sharedChat))
@@ -2328,7 +2327,7 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateUsersShared(MessageViewModel message, MessageUsersShared usersShared, bool history)
+        private static FormattedText UpdateUsersShared(MessageWithOwner message, MessageUsersShared usersShared, bool history)
         {
             var chat = message.Chat;
             if (chat != null)
@@ -2344,32 +2343,32 @@ namespace Telegram.Controls.Messages
             return _emptyString;
         }
 
-        private static FormattedText UpdateWebAppDataSent(MessageViewModel message, MessageWebAppDataSent webAppDataSent, bool history)
+        private static FormattedText UpdateWebAppDataSent(MessageWithOwner message, MessageWebAppDataSent webAppDataSent, bool history)
         {
             return string.Format(Strings.ActionBotWebViewData, webAppDataSent.ButtonText).AsFormattedText();
         }
 
-        private static FormattedText UpdateExpiredPhoto(MessageViewModel message, MessageExpiredPhoto expiredPhoto, bool history)
+        private static FormattedText UpdateExpiredPhoto(MessageWithOwner message, MessageExpiredPhoto expiredPhoto, bool history)
         {
             return Strings.AttachPhotoExpired.AsFormattedText();
         }
 
-        private static FormattedText UpdateExpiredVideo(MessageViewModel message, MessageExpiredVideo expiredVideo, bool history)
+        private static FormattedText UpdateExpiredVideo(MessageWithOwner message, MessageExpiredVideo expiredVideo, bool history)
         {
             return Strings.AttachVideoExpired.AsFormattedText();
         }
 
-        private static FormattedText UpdateExpiredVideoNote(MessageViewModel message, MessageExpiredVideoNote expiredVideoNote, bool history)
+        private static FormattedText UpdateExpiredVideoNote(MessageWithOwner message, MessageExpiredVideoNote expiredVideoNote, bool history)
         {
             return Strings.AttachRoundExpired.AsFormattedText();
         }
 
-        private static FormattedText UpdateExpiredVoiceNote(MessageViewModel message, MessageExpiredVoiceNote expiredVoiceNote, bool history)
+        private static FormattedText UpdateExpiredVoiceNote(MessageWithOwner message, MessageExpiredVoiceNote expiredVoiceNote, bool history)
         {
             return Strings.AttachVoiceExpired.AsFormattedText();
         }
 
-        private static FormattedText UpdateChatBoost(MessageViewModel message, MessageChatBoost chatBoost, bool history)
+        private static FormattedText UpdateChatBoost(MessageWithOwner message, MessageChatBoost chatBoost, bool history)
         {
             var content = string.Empty;
 
@@ -2406,7 +2405,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateStory(MessageViewModel message, MessageAsyncStory story, bool history)
+        private static FormattedText UpdateStory(MessageWithOwner message, MessageAsyncStory story, bool history)
         {
             string content = string.Empty;
 
@@ -2427,7 +2426,7 @@ namespace Telegram.Controls.Messages
 
         private readonly static FormattedText _emptyString = new FormattedText(string.Empty, Array.Empty<TextEntity>());
 
-        private static FormattedText UpdateStory(MessageViewModel message, MessageStory story, bool history)
+        private static FormattedText UpdateStory(MessageWithOwner message, MessageStory story, bool history)
         {
             if (message.IsOutgoing)
             {
@@ -2718,7 +2717,7 @@ namespace Telegram.Controls.Messages
 
         private static Game GetGame(MessageViewModel message)
         {
-            var reply = message.ReplyToItem as MessageViewModel;
+            var reply = message?.ReplyToItem as MessageViewModel;
             if (reply == null)
             {
                 return null;
@@ -2735,7 +2734,7 @@ namespace Telegram.Controls.Messages
 
         private static MessageInvoice GetInvoice(MessageViewModel message)
         {
-            var reply = message.ReplyToItem as MessageViewModel;
+            var reply = message?.ReplyToItem as MessageViewModel;
             if (reply == null)
             {
                 return null;

@@ -1059,9 +1059,9 @@ namespace Telegram.Td.Api
             }
         }
 
-        public static Photo GetPhoto(this Message message)
+        public static Photo GetPhoto(this MessageContent content)
         {
-            switch (message.Content)
+            switch (content)
             {
                 case MessageGame game:
                     return game.Game.Photo;
@@ -1709,9 +1709,9 @@ namespace Telegram.Td.Api
             return linkPreview.SiteName.Length > 0 || linkPreview.Title.Length > 0 || linkPreview.Author.Length > 0 || linkPreview.Description?.Text.Length > 0;
         }
 
-        public static bool IsService(this Message message)
+        public static bool IsService(this MessageContent content)
         {
-            switch (message.Content)
+            switch (content)
             {
                 case MessageAlbum:
                 case MessageAnimatedEmoji:
@@ -2246,6 +2246,11 @@ namespace Telegram.Td.Api
 
         public static bool AreTheSame(this ChatNotificationSettings x,  ChatNotificationSettings y)
         {
+            if (x == null || y == null)
+            {
+                return x == y;
+            }
+
             return x.DisableMentionNotifications == y.DisableMentionNotifications
                 && x.DisablePinnedMessageNotifications == y.DisablePinnedMessageNotifications
                 && x.MuteFor == y.MuteFor
@@ -2289,6 +2294,40 @@ namespace Telegram.Td.Api
         }
 
         public static bool IsSaved(this Message message, long savedMessagesId)
+        {
+            if (message.ForwardInfo?.Origin is MessageOriginUser)
+            {
+                return message.ForwardInfo.Source != null;
+            }
+            else if (message.ForwardInfo?.Origin is MessageOriginChat)
+            {
+                return message.ForwardInfo.Source != null;
+            }
+            else if (message.ForwardInfo?.Origin is MessageOriginChannel originChannel)
+            {
+                // TODO: not fully correct
+                if (message.ChatId == savedMessagesId)
+                {
+                    return message.ForwardInfo.Source != null;
+                }
+
+                return message.ForwardInfo.Source != null
+                    && message.ForwardInfo.Source.ChatId == originChannel.ChatId
+                    && message.ForwardInfo.Source.MessageId == originChannel.MessageId;
+            }
+            else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser)
+            {
+                return message.ChatId == savedMessagesId;
+            }
+            else if (message.ImportInfo != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsSaved(this MessageViewModel message, long savedMessagesId)
         {
             if (message.ForwardInfo?.Origin is MessageOriginUser)
             {

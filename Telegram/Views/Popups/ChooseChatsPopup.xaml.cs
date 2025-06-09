@@ -572,11 +572,11 @@ namespace Telegram.Views.Popups
     {
         public ChooseChatsConfigurationReplyToMessage(MessageViewModel message, InputTextQuote quote = null)
         {
-            Message = message.Get();
+            Message = message;
             Quote = quote;
         }
 
-        public Message Message { get; }
+        public MessageViewModel Message { get; }
 
         public InputTextQuote Quote { get; }
     }

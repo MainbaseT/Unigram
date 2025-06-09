@@ -521,7 +521,6 @@ namespace Telegram.ViewModels.Profile
 
             var items = messages
                 .DistinctBy(x => x.Id)
-                .Select(x => x.Get())
                 .ToList();
 
             var properties = await ClientService.GetMessagePropertiesAsync(items.Select(x => new MessageId(x)));

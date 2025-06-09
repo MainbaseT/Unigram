@@ -206,13 +206,326 @@ namespace Telegram.Common
 
         public static string GetSummary(MessageWithOwner message, bool details = false, bool addCaption = true)
         {
-            var altText = message.TranslatedText is MessageTranslateResultText text ? text.Text.Text : null;
-            return GetSummary(message.ClientService, message.Get(), details, addCaption, altText);
+            var altText = message.TranslatedText is MessageTranslateResultText resultText ? resultText.Text.Text : null;
+            var clientService = message.ClientService;
+
+            if (message.Content.IsService() && clientService.TryGetChat(message.ChatId, out Chat chat))
+            {
+                return MessageService.GetText(message) + ", ";
+            }
+
+            if (message.Content is MessageAlbum album)
+            {
+                if (album.IsMedia)
+                {
+                    var caption = string.Empty;
+                    if (!string.IsNullOrEmpty(album.Caption.Text))
+                    {
+                        caption = album.Caption.Text + ", ";
+                    }
+
+                    var photos = album.Messages.Count(x => x.Content is MessagePhoto);
+                    var videos = album.Messages.Count - photos;
+
+                    if (album.Messages.Count > 0 && album.Messages[0].Content is MessageVideo)
+                    {
+                        if (photos > 0)
+                        {
+                            return Locale.Declension(Strings.R.Videos, videos) + ", " + Locale.Declension(Strings.R.Photos, photos) + ", " + caption;
+                        }
+
+                        return Locale.Declension(Strings.R.Videos, videos) + ", " + caption;
+                    }
+
+                    if (videos > 0)
+                    {
+                        return Locale.Declension(Strings.R.Photos, photos) + ", " + Locale.Declension(Strings.R.Videos, videos) + ", " + caption;
+                    }
+
+                    return Locale.Declension(Strings.R.Photos, photos) + ", " + caption;
+                }
+                else if (album.Messages.Count > 0 && album.Messages[0].Content is MessageAudio)
+                {
+                    return Locale.Declension(Strings.R.MusicFiles, album.Messages.Count) + ", ";
+                }
+                else
+                {
+                    return Locale.Declension(Strings.R.Files, album.Messages.Count) + ", ";
+                }
+            }
+            else if (message.Content is MessagePaidAlbum paidAlbum)
+            {
+                var caption = string.Empty;
+                if (!string.IsNullOrEmpty(paidAlbum.Caption.Text))
+                {
+                    caption = paidAlbum.Caption.Text + ", ";
+                }
+
+                var photos = paidAlbum.Media.Count(x => x.IsPhoto());
+                var videos = paidAlbum.Media.Count - photos;
+
+                if (paidAlbum.Media.Count > 0 && paidAlbum.Media[0].IsVideo())
+                {
+                    if (photos > 0)
+                    {
+                        return Locale.Declension(Strings.R.Videos, videos) + ", " + Locale.Declension(Strings.R.Photos, photos) + ", " + caption;
+                    }
+
+                    return Locale.Declension(Strings.R.Videos, videos) + ", " + caption;
+                }
+
+                if (videos > 0)
+                {
+                    return Locale.Declension(Strings.R.Photos, photos) + ", " + Locale.Declension(Strings.R.Videos, videos) + ", " + caption;
+                }
+
+                return Locale.Declension(Strings.R.Photos, photos) + ", " + caption;
+            }
+            else if (message.Content is MessagePaidMedia paidMedia)
+            {
+                var caption = string.Empty;
+                if (!string.IsNullOrEmpty(paidMedia.Caption.Text))
+                {
+                    caption = paidMedia.Caption.Text + ", ";
+                }
+
+                var photos = paidMedia.Media.Count(x => x.IsPhoto());
+                var videos = paidMedia.Media.Count - photos;
+
+                if (paidMedia.Media.Count > 0 && paidMedia.Media[0].IsVideo())
+                {
+                    if (photos > 0)
+                    {
+                        return Locale.Declension(Strings.R.Videos, videos) + ", " + Locale.Declension(Strings.R.Photos, photos) + ", " + caption;
+                    }
+
+                    return Locale.Declension(Strings.R.Videos, videos) + ", " + caption;
+                }
+
+                if (videos > 0)
+                {
+                    return Locale.Declension(Strings.R.Photos, photos) + ", " + Locale.Declension(Strings.R.Videos, videos) + ", " + caption;
+                }
+
+                return Locale.Declension(Strings.R.Photos, photos) + ", " + caption;
+            }
+            else if (message.Content is MessageText text)
+            {
+                if (altText != null)
+                {
+                    return altText + ", ";
+                }
+
+                return text.Text.Text + ", ";
+            }
+            else if (message.Content is MessageDice dice)
+            {
+                return dice.Emoji + ", ";
+            }
+            else if (message.Content is MessageAnimatedEmoji animatedEmoji)
+            {
+                return animatedEmoji.Emoji + ", ";
+            }
+            else if (message.Content is MessageGame gameMedia)
+            {
+                return Strings.AttachGame + ", " + gameMedia.Game.Title + ", ";
+            }
+            else if (message.Content is MessageExpiredVideo)
+            {
+                return Strings.AttachVideoExpired + ", ";
+            }
+            else if (message.Content is MessageExpiredPhoto)
+            {
+                return Strings.AttachPhotoExpired + ", ";
+            }
+            else if (message.Content is MessageExpiredVideoNote)
+            {
+                return Strings.AttachRoundExpired + ", ";
+            }
+            else if (message.Content is MessageExpiredVoiceNote)
+            {
+                return Strings.AttachVoiceExpired + ", ";
+            }
+            else if (message.Content is MessageVideoNote videoNote)
+            {
+                var result = message.SelfDestructType is MessageSelfDestructTypeImmediately
+                    ? Strings.AttachOnceRound
+                    : Strings.AttachRound;
+
+                result += ", " + (videoNote.IsViewed ? "" : Strings.AccDescrMsgNotPlayed + ", ");
+
+                if (details)
+                {
+                    result += videoNote.VideoNote.GetDuration() + ", ";
+                }
+
+                return result;
+            }
+            else if (message.Content is MessageSticker sticker)
+            {
+                if (string.IsNullOrEmpty(sticker.Sticker.Emoji))
+                {
+                    return Strings.AttachSticker + ", ";
+                }
+
+                return $"{sticker.Sticker.Emoji} {Strings.AttachSticker}" + ", ";
+            }
+
+            string GetCaption(string caption)
+            {
+                return !addCaption || string.IsNullOrEmpty(altText ?? caption) ? string.Empty : ", " + (altText ?? caption);
+            }
+
+            if (message.Content is MessageVoiceNote voiceNote)
+            {
+                var result = message.SelfDestructType is MessageSelfDestructTypeImmediately
+                    ? Strings.AttachOnceAudio
+                    : Strings.AttachAudio;
+
+                result += GetCaption(voiceNote.Caption.Text) + ", " + (voiceNote.IsListened ? "" : Strings.AccDescrMsgNotPlayed + ", ");
+
+                if (details)
+                {
+                    result += voiceNote.VoiceNote.GetDuration() + ", ";
+
+                    if (voiceNote.VoiceNote.SpeechRecognitionResult is SpeechRecognitionResultText recognitionResultText)
+                    {
+                        result += recognitionResultText.Text + ", ";
+                    }
+                    else if (voiceNote.VoiceNote.SpeechRecognitionResult is SpeechRecognitionResultError)
+                    {
+                        result += Strings.NoWordsRecognized + ", ";
+                    }
+                }
+
+                return result;
+            }
+            else if (message.Content is MessageVideo video)
+            {
+                var result = (video.IsSecret ? Strings.AttachDestructingVideo : Strings.AttachVideo) + GetCaption(video.Caption.Text) + ", ";
+
+                if (details)
+                {
+                    result += video.Video.GetDuration() + ", ";
+                }
+
+                if (details && !video.Video.VideoValue.Local.IsDownloadingCompleted)
+                {
+                    result += FileSizeConverter.Convert(video.Video.VideoValue.Size) + ", ";
+                }
+
+                return result;
+            }
+            else if (message.Content is MessageAnimation animation)
+            {
+                var result = Strings.AttachGif + GetCaption(animation.Caption.Text) + ", ";
+                if (details)
+                {
+                    result += FileSizeConverter.Convert(animation.Animation.AnimationValue.Size) + ", ";
+                }
+
+                return result;
+            }
+            else if (message.Content is MessageAudio audio)
+            {
+                string result;
+                if (string.IsNullOrEmpty(audio.Audio.Performer) || string.IsNullOrEmpty(audio.Audio.Title))
+                {
+                    result = Strings.AttachMusic + ", " + audio.Audio.FileName + GetCaption(audio.Caption.Text) + ", ";
+                }
+                else
+                {
+                    result = Strings.AttachMusic + ", " + $"{audio.Audio.Performer} - {audio.Audio.Performer}" + GetCaption(audio.Caption.Text) + ", ";
+                }
+
+                if (details)
+                {
+                    result += audio.Audio.GetDuration() + ", ";
+                }
+
+                if (details && !audio.Audio.AudioValue.Local.IsDownloadingCompleted)
+                {
+                    result += FileSizeConverter.Convert(audio.Audio.AudioValue.Size) + ", ";
+                }
+
+                return result;
+            }
+            else if (message.Content is MessageDocument document)
+            {
+                string result;
+                if (string.IsNullOrEmpty(document.Document.FileName))
+                {
+                    result = Strings.AttachDocument + GetCaption(document.Caption.Text) + ", ";
+                }
+                else
+                {
+                    result = document.Document.FileName + GetCaption(document.Caption.Text) + ", ";
+                }
+
+                if (details)
+                {
+                    result += FileSizeConverter.Convert(document.Document.DocumentValue.Size) + ", ";
+                }
+
+                return result;
+            }
+            else if (message.Content is MessageInvoice invoice)
+            {
+                return Strings.PaymentInvoice + ", " + invoice.ProductInfo.Title + ", ";
+            }
+            else if (message.Content is MessageContact)
+            {
+                return Strings.AttachContact + ", ";
+            }
+            else if (message.Content is MessageLocation location)
+            {
+                return (location.LivePeriod > 0 ? Strings.AttachLiveLocation : Strings.AttachLocation) + ", ";
+            }
+            else if (message.Content is MessageVenue)
+            {
+                return Strings.AttachLocation + ", ";
+            }
+            else if (message.Content is MessagePhoto photo)
+            {
+                return (photo.IsSecret ? Strings.AttachDestructingPhoto : Strings.AttachPhoto) + GetCaption(photo.Caption.Text) + ", ";
+            }
+            else if (message.Content is MessagePoll poll)
+            {
+                if (details)
+                {
+                    string type = null;
+                    if (poll.Poll.Type is PollTypeRegular)
+                    {
+                        type = poll.Poll.IsClosed ? Strings.FinalResults : poll.Poll.IsAnonymous ? Strings.AnonymousPoll : Strings.PublicPoll;
+                    }
+                    else if (poll.Poll.Type is PollTypeQuiz)
+                    {
+                        type = poll.Poll.IsClosed ? Strings.FinalResults : poll.Poll.IsAnonymous ? Strings.AnonymousQuizPoll : Strings.QuizPoll;
+                    }
+
+                    if (type != null)
+                    {
+                        return type + ", " + poll.Poll.Question.Text + ", ";
+                    }
+                }
+
+                return Strings.Poll + ", " + poll.Poll.Question.Text + ", ";
+            }
+            else if (message.Content is MessageCall call)
+            {
+                return call.ToOutcomeText(message.IsOutgoing) + ", ";
+            }
+            else if (message.Content is MessageUnsupported)
+            {
+                return Strings.UnsupportedAttachment + ", ";
+            }
+
+            return null;
         }
 
         public static string GetSummary(IClientService clientService, Message message, bool details = false, bool addCaption = true, string altText = null)
         {
-            if (message.IsService() && clientService.TryGetChat(message.ChatId, out Chat chat))
+            if (message.Content.IsService() && clientService.TryGetChat(message.ChatId, out Chat chat))
             {
                 return MessageService.GetText(new MessageViewModel(clientService, null, null, chat, null, null, message)) + ", ";
             }
@@ -431,17 +744,14 @@ namespace Telegram.Common
             }
             else if (message.Content is MessageAudio audio)
             {
-                var performer = string.IsNullOrEmpty(audio.Audio.Performer) ? null : audio.Audio.Performer;
-                var title = string.IsNullOrEmpty(audio.Audio.Title) ? null : audio.Audio.Title;
-
                 string result;
-                if (performer == null && title == null)
+                if (string.IsNullOrEmpty(audio.Audio.Performer) || string.IsNullOrEmpty(audio.Audio.Title))
                 {
                     result = Strings.AttachMusic + ", " + audio.Audio.FileName + GetCaption(audio.Caption.Text) + ", ";
                 }
                 else
                 {
-                    result = Strings.AttachMusic + ", " + $"{performer ?? Strings.AudioUnknownArtist} - {title ?? Strings.AudioUnknownTitle}" + GetCaption(audio.Caption.Text) + ", ";
+                    result = Strings.AttachMusic + ", " + $"{audio.Audio.Performer} - {audio.Audio.Performer}" + GetCaption(audio.Caption.Text) + ", ";
                 }
 
                 if (details)

@@ -2526,7 +2526,7 @@ namespace Telegram.ViewModels
 
         private void ShowReplyTo(IDictionary<string, object> state)
         {
-            if (Type == DialogType.History && state.TryGet("reply_to", out Message message))
+            if (Type == DialogType.History && state.TryGet("reply_to", out MessageViewModel message))
             {
                 state.TryGet("reply_to_quote", out InputTextQuote quote);
 
@@ -2535,7 +2535,7 @@ namespace Telegram.ViewModels
 
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyToMessage = CreateMessage(message),
+                    ReplyToMessage = message,
                     ReplyToQuote = quote
                 };
 

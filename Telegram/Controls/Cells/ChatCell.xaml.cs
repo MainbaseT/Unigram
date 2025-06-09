@@ -1639,7 +1639,7 @@ namespace Telegram.Controls.Cells
 
         public static string UpdateFromLabel(IClientService clientService, Chat chat, Message message)
         {
-            if (message.IsService())
+            if (message.Content.IsService())
             {
                 if (chat == null && clientService.TryGetChat(message.ChatId, out chat))
                 {
@@ -1719,7 +1719,7 @@ namespace Telegram.Controls.Cells
             senderUser = null;
             senderChat = null;
 
-            if (message.IsService())
+            if (message.Content.IsService())
             {
                 return false;
             }

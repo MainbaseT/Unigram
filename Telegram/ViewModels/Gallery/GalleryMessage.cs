@@ -39,7 +39,7 @@ namespace Telegram.ViewModels.Gallery
             var thumbnail = _message.GetThumbnail();
             if (thumbnail == null)
             {
-                var photo = _message.GetPhoto();
+                var photo = _message.Content.GetPhoto();
                 if (photo != null)
                 {
                     Thumbnail = photo.GetSmall()?.Photo;
