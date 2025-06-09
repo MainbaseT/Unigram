@@ -1023,6 +1023,8 @@ namespace Telegram.ViewModels
                 return Task.CompletedTask;
             }
 
+            PinnedMessages.SetLocked(0);
+
             var details = GetCurrentDetails();
 
             if (TryGetLastVisibleMessageId(out long lastVisibleId, out int lastVisibleIndex))

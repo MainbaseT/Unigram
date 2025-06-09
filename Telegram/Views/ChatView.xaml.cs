@@ -1858,6 +1858,11 @@ namespace Telegram.Views
                 var message = referenceBase.MessageId;
                 if (message != 0)
                 {
+                    if (sender is not ChatPinnedMessage)
+                    {
+                        ViewModel.PinnedMessages.SetLocked(0);
+                    }
+
                     await ViewModel.LoadMessageSliceAsync(null, message);
 
                     if (sender is ChatPinnedMessage)

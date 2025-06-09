@@ -18,6 +18,8 @@ namespace Telegram.ViewModels
         private readonly DialogViewModel _viewModel;
         private readonly HashSet<long> _messages = new();
 
+        private long _lockedId;
+
         private bool _hasLoadedLastPinnedMessage = false;
 
         private bool _hasLoadedOldestSlice = false;
@@ -29,8 +31,6 @@ namespace Telegram.ViewModels
         {
             _viewModel = viewModel;
         }
-
-        public long LockedId { get; set; }
 
         public int TotalCount { get; private set; }
 
@@ -211,7 +211,7 @@ namespace Telegram.ViewModels
 
         public void SetLocked(long messageId)
         {
-            LockedId = messageId;
+            _lockedId = messageId;
 
             if (Count > 0 && this[0].Id == messageId)
             {
@@ -221,14 +221,14 @@ namespace Telegram.ViewModels
 
         public PinnedMessageViewModel GetVisible(long lastVisibleId, bool hasBeenScrolled)
         {
-            if (LockedId != 0 && !hasBeenScrolled)
+            if (_lockedId != 0 && !hasBeenScrolled)
             {
                 // We subtract 1 because we don't want to match the same
-                lastVisibleId = LockedId - 1;
+                lastVisibleId = _lockedId - 1;
             }
             else
             {
-                LockedId = 0;
+                _lockedId = 0;
             }
 
             for (int i = Count - 1; i >= 0; i--)
