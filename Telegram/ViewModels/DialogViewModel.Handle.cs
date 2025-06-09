@@ -693,7 +693,7 @@ namespace Telegram.ViewModels
 
                 BeginOnUIThread(() =>
                 {
-                    InsertMessage(message);
+                    InsertMessage(message, 0);
 
                     if (!update.Message.IsOutgoing && Settings.Notifications.InAppSounds)
                     {
@@ -786,8 +786,6 @@ namespace Telegram.ViewModels
 
                         if (toBeDeleted != null)
                         {
-                            //Delegate?.UpdateDeleteMessages(_chat, toBeDeleted);
-
                             foreach (var item in toBeDeleted)
                             {
                                 Items.Remove(item);
@@ -1036,8 +1034,10 @@ namespace Telegram.ViewModels
                         message.Content = new MessagePaidAlbum(paidMedia);
                     }
 
-                    if (IsNewestSliceLoaded == true)
+                    // Let's not reorder text messages 
+                    if (message.Content is not MessageText and not MessageAnimatedEmoji)
                     {
+                        // TODO: InsertMessage?
                         InsertMessageInOrder(message, update.OldMessageId);
                     }
 
@@ -1236,7 +1236,7 @@ namespace Telegram.ViewModels
             });
         }
 
-        private async void InsertMessage(MessageViewModel message)
+        private async void InsertMessage(MessageViewModel message, long oldMessageId)
         {
             using (await _loadMoreLock.WaitAsync())
             {
@@ -1252,7 +1252,7 @@ namespace Telegram.ViewModels
 
                     if (result.Count > 0)
                     {
-                        InsertMessageInOrder(result[0]);
+                        InsertMessageInOrder(result[0], oldMessageId);
                     }
                 }
                 else if (message.IsOutgoing && message.SendingState is MessageSendingStatePending)
@@ -1279,10 +1279,13 @@ namespace Telegram.ViewModels
             {
                 if (oldIndex != -1)
                 {
-                    Items.RemoveAt(oldIndex);
+                    //Items.RemoveAt(oldIndex);
+                    Items.Move(oldIndex, newIndex);
                 }
-
-                Items.Insert(newIndex, message);
+                else
+                {
+                    Items.Insert(newIndex, message);
+                }
             }
             else if (force && oldIndex != -1)
             {

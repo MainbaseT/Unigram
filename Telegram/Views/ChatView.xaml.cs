@@ -477,32 +477,7 @@ namespace Telegram.Views
 
             if (args.Action == NotifyCollectionChangedAction.Remove && panel.FirstCacheIndex < args.OldStartingIndex && panel.LastCacheIndex >= args.OldStartingIndex)
             {
-                // I don't want to play this animation for now
-                return;
-
-                var owner = _measurement;
-                owner ??= _measurement = new MessageBubble();
-
-                owner.UpdateMessage(args.OldItems[0] as MessageViewModel);
-                owner.Measure(new Size(ActualWidth, ActualHeight));
-
-                var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-
-                var anim = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
-                anim.InsertKeyFrame(0, new Vector3(0, -(float)owner.DesiredSize.Height, 0));
-                anim.InsertKeyFrame(1, new Vector3());
-                //anim.Duration = TimeSpan.FromSeconds(1);
-
-                for (int i = panel.FirstCacheIndex; i < args.OldStartingIndex; i++)
-                {
-                    var container = Messages.ContainerFromIndex(i) as SelectorItem;
-                    var child = VisualTreeHelper.GetChild(container, 0) as UIElement;
-
-                    var visual = ElementComposition.GetElementVisual(child);
-                    visual.StartAnimation("Offset", anim);
-                }
-
-                batch.End();
+                UpdateDeleteMessages(args.OldItems[0] as MessageViewModel);
             }
             else if (args.Action == NotifyCollectionChangedAction.Add)
             {
@@ -522,7 +497,7 @@ namespace Telegram.Views
 
                 await panel.UpdateLayoutAsync();
 
-                if (message.IsOutgoing && message.SendingState is MessageSendingStatePending { SendingId: not 0 } && !Messages.IsBottomReached)
+                if (message.IsOutgoing && message.SendingState is MessageSendingStatePending && !Messages.IsBottomReached)
                 {
                     var tsc = new TaskCompletionSource<bool>();
                     Messages.ScrollToItem(message, VerticalAlignment.Bottom, new MessageBubbleHighlightOptions(false, false), tsc: tsc);
@@ -643,7 +618,21 @@ namespace Telegram.Views
                             _ => reply ? 29 : 44f
                         };
 
-                        var xScale = (TextArea.ActualSize.X - xOffset) / bubble.ActualSize.X;
+                        float xScale;
+                        float xTranslate;
+
+                        // 432: maxMessageWidth
+                        if (TextArea.ActualSize.X - xOffset > 432)
+                        {
+                            xScale = 432 / bubble.ActualSize.X;
+                            xTranslate = (TextArea.ActualSize.X - xOffset) - 432;
+                        }
+                        else
+                        {
+                            xScale = (TextArea.ActualSize.X - xOffset) / bubble.ActualSize.X;
+                            xTranslate = 0;
+                        }
+
                         var yScale = content switch
                         {
                             MessageText => MathF.Min((float)TextField.MaxHeight, bubble.ActualSize.Y) / bubble.ActualSize.Y,
@@ -657,7 +646,7 @@ namespace Telegram.Views
                             _ => 1
                         };
 
-                        bubble.AnimateSendout(xScale, yScale, fontScale, outer, inner, delay, reply);
+                        bubble.AnimateSendout(xTranslate, xScale, yScale, fontScale, outer, inner, delay, reply);
 
                         anim = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
                         anim.InsertKeyFrame(0, yOffset);
@@ -6292,16 +6281,11 @@ namespace Telegram.Views
             }
         }
 
-        public void UpdateDeleteMessages(Chat chat, IList<MessageViewModel> messages)
+        public void UpdateDeleteMessages(MessageViewModel message)
         {
-            if (messages.Count > 1)
+            if (_messageIdToSelector.TryGetValue(message.Id, out ChatHistoryViewItem selector))
             {
-                return;
-            }
-
-            if (_messageIdToSelector.TryGetValue(messages[0].Id, out ChatHistoryViewItem selector))
-            {
-                AnimateSizeChanged(messages[0], selector);
+                AnimateSizeChanged(message, selector);
             }
         }
 
@@ -6330,43 +6314,7 @@ namespace Telegram.Views
             //    return;
             //}
 
-            if (index >= panel.FirstVisibleIndex && index <= panel.LastVisibleIndex)
-            {
-                var direction = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView ? -1 : 1;
-                var edge = (index == panel.LastVisibleIndex && direction == 1) || index == panel.FirstVisibleIndex && direction == -1;
-
-                if (edge && !Messages.VisualContains(selector))
-                {
-                    direction *= -1;
-                }
-
-                var first = direction == 1 ? panel.FirstCacheIndex : index + 1;
-                var last = direction == 1 ? index : panel.LastCacheIndex;
-
-                var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-                var anim = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
-                anim.InsertKeyFrame(0, diff * direction);
-                anim.InsertKeyFrame(1, 0);
-                //anim.Duration = TimeSpan.FromSeconds(5);
-
-                for (int i = first; i <= last; i++)
-                {
-                    var container = Messages.ContainerFromIndex(i) as SelectorItem;
-                    if (container == null)
-                    {
-                        continue;
-                    }
-
-                    var child = VisualTreeHelper.GetChild(container, 0) as UIElement;
-                    if (child != null)
-                    {
-                        var visual = ElementComposition.GetElementVisual(child);
-                        visual.StartAnimation("Offset.Y", anim);
-                    }
-                }
-
-                batch.End();
-            }
+            AnimateSizeChanged(panel, selector, index, prev, next);
         }
 
         #endregion

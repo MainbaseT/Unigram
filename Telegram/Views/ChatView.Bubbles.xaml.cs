@@ -1048,7 +1048,14 @@ namespace Telegram.Views
                 }
             }
 
-            if (index >= panel.FirstVisibleIndex && index <= panel.LastVisibleIndex && sender is SelectorItem selector)
+            AnimateSizeChanged(panel, sender as SelectorItem, index, prev, next);
+        }
+
+        private void AnimateSizeChanged(ItemsStackPanel panel, SelectorItem selector, int index, Vector2 prev, Vector2 next)
+        {
+            var diff = next.Y - prev.Y;
+
+            if (index >= panel.FirstVisibleIndex && index <= panel.LastVisibleIndex)
             {
                 var direction = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView ? -1 : 1;
                 var edge = (index == panel.LastVisibleIndex && direction == 1) || index == panel.FirstVisibleIndex && direction == -1;
