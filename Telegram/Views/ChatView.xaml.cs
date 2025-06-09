@@ -6093,7 +6093,14 @@ namespace Telegram.Views
                 }
                 else if (group.Status is ChatMemberStatusCreator || group.Status is ChatMemberStatusAdministrator administrator)
                 {
-                    ShowArea(0);
+                    if (ViewModel.Type != DialogType.Thread && group.IsFeedbackGroup && group.IsAdministeredFeedbackGroup)
+                    {
+                        ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
+                    }
+                    else
+                    {
+                        ShowArea(0);
+                    }
                 }
                 else if (group.Status is ChatMemberStatusRestricted restrictedSend)
                 {
