@@ -1498,17 +1498,7 @@ namespace Telegram.Controls.Cells
             }
             else if (content is MessageAudio audio)
             {
-                var performer = string.IsNullOrEmpty(audio.Audio.Performer) ? null : audio.Audio.Performer;
-                var title = string.IsNullOrEmpty(audio.Audio.Title) ? null : audio.Audio.Title;
-
-                if (performer == null && title == null)
-                {
-                    return Text1("\U0001F3B5 ", audio.Caption, audio.Audio.FileName);
-                }
-                else
-                {
-                    return Text1("\U0001F3B5 ", audio.Caption, $"{performer ?? Strings.AudioUnknownArtist} - {title ?? Strings.AudioUnknownTitle}");
-                }
+                return Text1("\U0001F3B5 ", audio.Caption, audio.Audio.GetTitle());
             }
             else if (content is MessageDocument document)
             {

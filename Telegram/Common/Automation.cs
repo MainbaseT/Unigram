@@ -428,16 +428,7 @@ namespace Telegram.Common
             }
             else if (message.Content is MessageAudio audio)
             {
-                string result;
-                if (string.IsNullOrEmpty(audio.Audio.Performer) || string.IsNullOrEmpty(audio.Audio.Title))
-                {
-                    result = Strings.AttachMusic + ", " + audio.Audio.FileName + GetCaption(audio.Caption.Text) + ", ";
-                }
-                else
-                {
-                    result = Strings.AttachMusic + ", " + $"{audio.Audio.Performer} - {audio.Audio.Performer}" + GetCaption(audio.Caption.Text) + ", ";
-                }
-
+                var result = Strings.AttachMusic + ", " + audio.Audio.GetTitle() + GetCaption(audio.Caption.Text) + ", ";
                 if (details)
                 {
                     result += audio.Audio.GetDuration() + ", ";
@@ -744,16 +735,7 @@ namespace Telegram.Common
             }
             else if (message.Content is MessageAudio audio)
             {
-                string result;
-                if (string.IsNullOrEmpty(audio.Audio.Performer) || string.IsNullOrEmpty(audio.Audio.Title))
-                {
-                    result = Strings.AttachMusic + ", " + audio.Audio.FileName + GetCaption(audio.Caption.Text) + ", ";
-                }
-                else
-                {
-                    result = Strings.AttachMusic + ", " + $"{audio.Audio.Performer} - {audio.Audio.Performer}" + GetCaption(audio.Caption.Text) + ", ";
-                }
-
+                var result = Strings.AttachMusic + ", " + audio.Audio.GetTitle() + GetCaption(audio.Caption.Text) + ", ";
                 if (details)
                 {
                     result += audio.Audio.GetDuration() + ", ";

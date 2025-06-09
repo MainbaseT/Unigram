@@ -736,24 +736,11 @@ namespace Telegram.Controls.Messages
         {
             HideThumbnail();
 
-            var performer = string.IsNullOrEmpty(audio.Audio.Performer) ? null : audio.Audio.Performer;
-            var audioTitle = string.IsNullOrEmpty(audio.Audio.Title) ? null : audio.Audio.Title;
-
-            string service;
-            if (performer == null || audioTitle == null)
-            {
-                service = Strings.AttachMusic;
-            }
-            else
-            {
-                service = $"\uD83C\uDFB5 {performer} - {audioTitle}";
-            }
-
             SetText(clientService,
                 outgoing,
                 sender,
                 title,
-                service,
+                $"\uD83C\uDFB5 {audio.Audio.GetTitle()}",
                 text ?? audio.Caption,
                 quote,
                 white);

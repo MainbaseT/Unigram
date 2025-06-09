@@ -1829,17 +1829,13 @@ namespace Telegram.Td.Api
 
         public static string GetTitle(this Audio audio)
         {
-            var performer = string.IsNullOrEmpty(audio.Performer) ? null : audio.Performer;
-            var title = string.IsNullOrEmpty(audio.Title) ? null : audio.Title;
-
-            if (string.IsNullOrEmpty(audio.Performer)
-                || string.IsNullOrEmpty(audio.Title))
+            if (string.IsNullOrEmpty(audio.Performer) || string.IsNullOrEmpty(audio.Title))
             {
                 return audio.FileName;
             }
             else
             {
-                return $"{performer} - {title}";
+                return $"{audio.Performer} - {audio.Title}";
             }
         }
 
