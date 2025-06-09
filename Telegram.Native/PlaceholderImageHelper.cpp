@@ -12,6 +12,7 @@
 #include <src\webp\demux.h>
 
 #include <shcore.h>
+#include <propkey.h>
 
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -1226,7 +1227,6 @@ namespace winrt::Telegram::Native::implementation
         ReturnIfFailed(result, stream->Seek({ 0 }, STREAM_SEEK_SET, nullptr));
     }
 
-    HRESULT PlaceholderImageHelper::Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height)
     HRESULT PlaceholderImageHelper::Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height, int32_t rotation)
     {
         HRESULT result;
@@ -1247,47 +1247,39 @@ namespace winrt::Telegram::Native::implementation
         ReturnIfFailed(result, wicFrameEncode->Initialize(nullptr));
 
         WICPixelFormatGUID pixelFormat = GUID_WICPixelFormat32bppBGRA;
+        ReturnIfFailed(result, wicFrameEncode->SetSize(width, height));
         ReturnIfFailed(result, wicFrameEncode->SetPixelFormat(&pixelFormat));
 
-        // TODO: just rotate via EXIF?
         if (rotation)
         {
-            winrt::com_ptr<IWICBitmap> pBitmap;
-            ReturnIfFailed(result, m_wicFactory->CreateBitmapFromMemory(width, height, GUID_WICPixelFormat32bppBGRA, width * 4, width * height * 4, source.data(), pBitmap.put()));
+            winrt::com_ptr<IWICMetadataQueryWriter> pMetadataWriter;
+            ReturnIfFailed(result, wicFrameEncode->GetMetadataQueryWriter(pMetadataWriter.put()));
 
-            winrt::com_ptr<IWICBitmapFlipRotator> pRotator;
-            ReturnIfFailed(result, m_wicFactory->CreateBitmapFlipRotator(pRotator.put()));
+            PROPVARIANT propValue;
+            PropVariantInit(&propValue);
+            propValue.vt = VT_UI2;
 
-            auto options = WICBitmapTransformRotate0;
             switch (rotation)
             {
             case 90:
-                ReturnIfFailed(result, wicFrameEncode->SetSize(height, width));
-                options = WICBitmapTransformRotate90;
+                propValue.uiVal = PHOTO_ORIENTATION_ROTATE270;
                 break;
             case 180:
-                ReturnIfFailed(result, wicFrameEncode->SetSize(width, height));
-                options = WICBitmapTransformRotate180;
+                propValue.uiVal = PHOTO_ORIENTATION_ROTATE180;
                 break;
             case 270:
-                ReturnIfFailed(result, wicFrameEncode->SetSize(height, width));
-                options = WICBitmapTransformRotate270;
+                propValue.uiVal = PHOTO_ORIENTATION_ROTATE90;
                 break;
             default:
-                ReturnIfFailed(result, wicFrameEncode->SetSize(width, height));
-                options = WICBitmapTransformRotate0;
+                propValue.uiVal = PHOTO_ORIENTATION_NORMAL;
                 break;
             }
 
-            ReturnIfFailed(result, pRotator->Initialize(pBitmap.get(), options));
-            ReturnIfFailed(result, wicFrameEncode->WriteSource(pRotator.get(), nullptr));
-        }
-        else
-        {
-            ReturnIfFailed(result, wicFrameEncode->SetSize(width, height));
-            ReturnIfFailed(result, wicFrameEncode->WritePixels(height, width * 4, width * height * 4, source.data()));
+            ReturnIfFailed(result, pMetadataWriter->SetMetadataByName(L"System.Photo.Orientation", &propValue));
+            PropVariantClear(&propValue);
         }
 
+        ReturnIfFailed(result, wicFrameEncode->WritePixels(height, width * 4, width * height * 4, source.data()));
         ReturnIfFailed(result, wicFrameEncode->Commit());
         ReturnIfFailed(result, wicBitmapEncoder->Commit());
 

@@ -324,7 +324,11 @@ namespace Telegram.Common
                     cropHeight *= ratio;
                 }
 
-                if (cropRectangle.Right <= 1 && cropRectangle.Bottom <= 1)
+                if (cropRectangle == default || (cropRectangle.Width == 0 && cropRectangle.Height == 0))
+                {
+                    cropRectangle = new Rect(0, 0, decoder.PixelWidth, decoder.PixelHeight);
+                }
+                else if (cropRectangle.Right <= 1 && cropRectangle.Bottom <= 1)
                 {
                     cropRectangle = new Rect(
                         cropRectangle.X * decoder.PixelWidth,
