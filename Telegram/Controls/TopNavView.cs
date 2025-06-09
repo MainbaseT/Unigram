@@ -13,6 +13,7 @@ using Windows.Foundation;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 
@@ -350,7 +351,11 @@ namespace Telegram.Controls
                     AnimateSelectionChanged(SelectedItem);
                 }
             }
+
+            PrepareContainerForItem?.Invoke(element as SelectorItem, item);
         }
+
+        public event TypedEventHandler<SelectorItem, object> PrepareContainerForItem;
     }
 
     public partial class TopNavViewItem : TextListViewItem
