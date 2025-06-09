@@ -237,7 +237,7 @@ namespace Telegram.ViewModels.Profile
                         AddTab(new ProfileTabItem(Strings.ProfileBotPreviewTab, typeof(ProfileStoriesTabPage), ChatStoriesType.Pinned));
                     }
 
-                    if (cached != null && cached.GiftCount > 0)
+                    if (user.Id != ClientService.Options.MyId && cached != null && cached.GiftCount > 0)
                     {
                         AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
                     }
