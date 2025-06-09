@@ -79,8 +79,6 @@ namespace Telegram.Controls.Messages
         private float _bottomRight;
         private float _bottomLeft;
 
-        private DirectRectangleClip _cornerRadius;
-
         public MessageBubble()
         {
             DefaultStyleKey = typeof(MessageBubble);
@@ -468,7 +466,7 @@ namespace Telegram.Controls.Messages
             {
                 if (message.IsFirst && message.IsLast)
                 {
-                    //bottomRight = 0;
+                    bottomRight = SettingsService.Current.Diagnostics.BubbleTailDebug ? 0 : bottomRight;
                 }
                 else if (message.IsFirst)
                 {
@@ -477,7 +475,7 @@ namespace Telegram.Controls.Messages
                 else if (message.IsLast)
                 {
                     topRight = small;
-                    //bottomRight = 0;
+                    bottomRight = SettingsService.Current.Diagnostics.BubbleTailDebug ? 0 : bottomRight;
                 }
                 else
                 {
@@ -489,7 +487,7 @@ namespace Telegram.Controls.Messages
             {
                 if (message.IsFirst && message.IsLast)
                 {
-                    //bottomLeft = 0;
+                    bottomLeft = SettingsService.Current.Diagnostics.BubbleTailDebug ? 0 : bottomLeft;
                 }
                 else if (message.IsFirst)
                 {
@@ -498,7 +496,7 @@ namespace Telegram.Controls.Messages
                 else if (message.IsLast)
                 {
                     topLeft = small;
-                    //bottomLeft = 0;
+                    bottomLeft = SettingsService.Current.Diagnostics.BubbleTailDebug ? 0 : bottomLeft;
                 }
                 else
                 {
@@ -589,30 +587,51 @@ namespace Telegram.Controls.Messages
 
         private void SetCorners(float topLeft, float topRight, float bottomRight, float bottomLeft)
         {
+            if (_topLeft == topLeft && _topRight == topRight && _bottomRight == bottomRight && _bottomLeft == bottomLeft)
+            {
+                return;
+            }
+
             _topLeft = topLeft;
             _topRight = topRight;
             _bottomRight = bottomRight;
             _bottomLeft = bottomLeft;
 
-            if (_cornerRadius != null)
+            var width = (float)Math.Truncate(ContentPanel.ActualWidth);
+            var height = (float)Math.Truncate(ContentPanel.ActualHeight);
+
+            var radius = topLeft == 0 && topRight == 0 && bottomRight == 0 && bottomLeft == 0;
+            radius |= bottomLeft != 0 && bottomRight != 0;
+            radius |= width == 0 && height == 0;
+
+            if (radius)
             {
-                _cornerRadius.Set(topLeft, topRight, bottomRight, bottomLeft);
+                if (_tail != null)
+                {
+                    _tail = null;
+
+                    var visual = ElementComposition.GetElementVisual(ContentPanel);
+                    visual.Clip = null;
+                }
+
+                _corners = true;
+                ContentPanel.CornerRadius = new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
             }
             else
             {
-                ContentPanel.CornerRadius = new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
-            }
-        }
+                var compositor = BootStrapper.Current.Compositor;
 
-        private void MoveCorners()
-        {
-            if (_cornerRadius == null)
-            {
-                _cornerRadius = CompositionDevice.CreateRectangleClip(ContentPanel);
-                _cornerRadius.Set(_topLeft, _topRight, _bottomRight, _bottomLeft);
+                _tail ??= compositor.CreatePathGeometry();
+                _tail.Path = GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
 
-                ContentPanel.CornerRadius = new CornerRadius();
-                UpdateClip();
+                var visual = ElementComposition.GetElementVisual(ContentPanel);
+                visual.Clip ??= compositor.CreateGeometricClip(_tail);
+
+                if (_corners)
+                {
+                    _corners = false;
+                    ContentPanel.CornerRadius = new CornerRadius();
+                }
             }
         }
 
@@ -2165,40 +2184,32 @@ namespace Telegram.Controls.Messages
             _ignoreSizeChanged = true;
         }
 
+        private CompositionPathGeometry _tail;
+        private bool _corners;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void UpdateClip()
         {
-            if (_cornerRadius != null)
+            if (_bottomLeft != 0 && _bottomRight != 0)
             {
-                if (_cornerRadius.TopLeft == 0 && _cornerRadius.BottomRight == 0)
-                {
-                    _cornerRadius.SetInset(-float.MaxValue, -float.MaxValue, float.MaxValue, float.MaxValue);
-                }
-                else
-                {
-                    _cornerRadius.SetInset(0, 0, (float)Math.Truncate(ContentPanel.ActualWidth), (float)Math.Truncate(ContentPanel.ActualHeight));
-                }
+                return;
             }
 
-            return;
-
+            var width = (float)Math.Truncate(ContentPanel.ActualWidth);
+            var height = (float)Math.Truncate(ContentPanel.ActualHeight);
             var compositor = BootStrapper.Current.Compositor;
 
-            var polygon = compositor.CreatePathGeometry();
-            polygon.Path = GetTail((float)Math.Truncate(ContentPanel.ActualWidth), (float)Math.Truncate(ContentPanel.ActualHeight), _topLeft, _topRight, _bottomRight, _bottomLeft);
+            _tail ??= compositor.CreatePathGeometry();
+            _tail.Path = GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
 
             var visual = ElementComposition.GetElementVisual(ContentPanel);
+            visual.Clip ??= compositor.CreateGeometricClip(_tail);
 
-            //if (visual.Clip is not CompositionGeometricClip clip || clip.Geometry is not CompositionPathGeometry path)
+            if (_corners)
             {
-                visual.Clip = compositor.CreateGeometricClip(polygon);
+                _corners = false;
+                ContentPanel.CornerRadius = new CornerRadius();
             }
-            //else
-            //{
-            //    var anim = compositor.CreatePathKeyFrameAnimation();
-            //    anim.InsertKeyFrame(1, polygon.Path);
-            //    path.StartAnimation("Path", anim);
-            //}
         }
 
         private CompositionPath GetTail(float width, float height, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
@@ -2273,8 +2284,6 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            MoveCorners();
-
             var content = _message?.GeneratedContent ?? _message?.Content;
             var panel = ElementComposition.GetElementVisual(ContentPanel);
 
@@ -2306,19 +2315,6 @@ namespace Telegram.Controls.Messages
                 var background = ElementComposition.GetElementVisual(BackgroundPanel);
                 background.CenterPoint = new Vector3(0, reply ? 0 : ContentPanel.ActualSize.Y / 2, 0);
                 background.StartAnimation("Scale", crossScale);
-
-                if (reply)
-                {
-                    _cornerRadius.AnimateBottom(BootStrapper.Current.Compositor, ContentPanel.ActualSize.Y * yScale, ContentPanel.ActualSize.Y, outer / 1000);
-                }
-                else
-                {
-                    var scaled = ContentPanel.ActualSize.Y * yScale;
-                    var diff = (scaled - ContentPanel.ActualSize.Y) / 2;
-
-                    _cornerRadius.AnimateTop(BootStrapper.Current.Compositor, -diff, 0, outer / 1000);
-                    _cornerRadius.AnimateBottom(BootStrapper.Current.Compositor, ContentPanel.ActualSize.Y + diff, ContentPanel.ActualSize.Y, outer / 1000);
-                }
             }
 
             var header = ElementComposition.GetElementVisual(Header);
@@ -2463,6 +2459,23 @@ namespace Telegram.Controls.Messages
 
             var factor = BootStrapper.Current.Compositor.CreateExpressionAnimation("Vector3(1 / content.Scale.X, 1 / content.Scale.Y, 1)");
             factor.SetReferenceParameter("content", panel);
+
+            // It crashes...
+            //if (_tail != null && ApiInfo.IsWindows11 && panel.Clip is CompositionGeometricClip clip2 && clip2.Geometry is CompositionPathGeometry path2)
+            //{
+            //    var width = (float)Math.Truncate(ContentPanel.ActualWidth);
+            //    var height = (float)Math.Truncate(ContentPanel.ActualHeight);
+            //    var compositor = BootStrapper.Current.Compositor;
+
+            //    var path = compositor.CreatePathKeyFrameAnimation();
+            //    path.InsertKeyFrame(0, GetTail(prev.X, prev.Y, _topLeft, _topRight, _bottomRight, _bottomLeft));
+            //    path.InsertKeyFrame(1, GetTail(next.X, next.Y, _topLeft, _topRight, _bottomRight, _bottomLeft));
+            //    path.Duration = TimeSpan.FromSeconds(3);
+
+            //    path2.StartAnimation("Path", anim);
+
+            //    //panel.Clip.StartAnimation("Scale", factor);
+            //}
 
             var header = ElementComposition.GetElementVisual(Header);
             var text = ElementComposition.GetElementVisual(Message);
@@ -2773,14 +2786,7 @@ namespace Telegram.Controls.Messages
 
                     if (ApiInfo.IsWindows11)
                     {
-                        if (_cornerRadius != null)
-                        {
-                            solid.Clip = BootStrapper.Current.Compositor.CreateRectangleClip(0, 0, (float)target.ActualWidth, (float)target.ActualHeight, new Vector2(_cornerRadius.TopLeft), new Vector2(_cornerRadius.TopRight), new Vector2(_cornerRadius.BottomRight), new Vector2(_cornerRadius.BottomLeft));
-                        }
-                        else
-                        {
-                            solid.Clip = BootStrapper.Current.Compositor.CreateRectangleClip(0, 0, (float)target.ActualWidth, (float)target.ActualHeight, new Vector2((float)ContentPanel.CornerRadius.TopLeft), new Vector2((float)ContentPanel.CornerRadius.TopRight), new Vector2((float)ContentPanel.CornerRadius.BottomRight), new Vector2((float)ContentPanel.CornerRadius.BottomLeft));
-                        }
+                        solid.Clip = BootStrapper.Current.Compositor.CreateRectangleClip(0, 0, (float)target.ActualWidth, (float)target.ActualHeight, new Vector2(_topLeft), new Vector2(_topRight), new Vector2(_bottomRight), new Vector2(_bottomLeft));
                     }
 
                     _highlight.Children.InsertAtTop(visual);

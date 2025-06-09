@@ -157,8 +157,15 @@ namespace Telegram.Services.Settings
         private bool? _forumTabsDebug;
         public bool ForumTabsDebug
         {
-            get => _forumTabsDebug ??= GetValueOrDefault("ForumTabsDebug", false);
+            get => _forumTabsDebug ??= GetValueOrDefault("ForumTabsDebug", Constants.DEBUG);
             set => AddOrUpdateValue(ref _forumTabsDebug, "ForumTabsDebug", value);
+        }
+
+        private bool? _bubbleTailDebug;
+        public bool BubbleTailDebug
+        {
+            get => _bubbleTailDebug ??= GetValueOrDefault("BubbleTailDebug", true);
+            set => AddOrUpdateValue(ref _bubbleTailDebug, "BubbleTailDebug", value);
         }
 
         public bool IsLastErrorDiskFull { get; set; }

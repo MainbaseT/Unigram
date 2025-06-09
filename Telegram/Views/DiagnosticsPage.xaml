@@ -69,6 +69,10 @@
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.ForumTabsDebug, Mode=TwoWay}"
                               Content="Forum Tabs Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
+
+                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.BubbleTailDebug, Mode=TwoWay}"
+                              Content="Bubble Tail Debug"
+                              Style="{StaticResource SettingsCheckBoxStyle}" />
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl Header="Crash Mitigation">
