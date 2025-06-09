@@ -1746,6 +1746,8 @@
     </Style>
 
     <Style TargetType="chats:ChatBackgroundPresenter">
+        <Setter Property="BackgroundSizing"
+                Value="OuterBorderEdge" />
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="BorderBrush"
@@ -1757,7 +1759,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="chats:ChatBackgroundPresenter">
-                    <Grid BackgroundSizing="OuterBorderEdge"
+                    <Grid BackgroundSizing="{TemplateBinding BackgroundSizing}"
                           Background="{TemplateBinding Background}"
                           BorderThickness="{TemplateBinding BorderThickness}"
                           CornerRadius="{TemplateBinding CornerRadius}">

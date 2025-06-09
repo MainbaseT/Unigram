@@ -123,6 +123,10 @@ namespace Telegram.Controls.Chats
 
         public void UpdateSource(IClientService clientService, Background background, bool thumbnail)
         {
+            BackgroundSizing = background.IsDark
+                ? BackgroundSizing.InnerBorderEdge
+                : BackgroundSizing.OuterBorderEdge;
+
             UpdateManager.Unsubscribe(this, ref _fileToken, true);
 
             var clear = _background == null;
