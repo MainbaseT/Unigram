@@ -345,6 +345,8 @@ namespace Telegram.ViewModels
                 return;
             }
 
+            PreSelectedItems = new List<long>(SelectedItems.Select(x => x.Id));
+
             var chatList = SelectedFolder?.ChatList ?? new ChatListMain();
 
             var response = await ClientService.GetChatListAsync(chatList, 0, 200);
