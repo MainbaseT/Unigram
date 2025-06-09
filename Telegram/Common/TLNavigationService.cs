@@ -483,10 +483,10 @@ namespace Telegram.Common
                             target = typeof(ChatPage);
                             parameter = topic == null ? chat.Id : new ChatMessageTopic(chat.Id, topic);
 
-                            var currentChat = this.GetChatFromBackStack(true, typeof(ProfilePage));
+                            var currentChat = this.GetChatFromBackStack(true, typeof(ProfilePage), typeof(ChatPinnedPage));
                             if (currentChat.ChatId == chat.Id && currentChat.MessageTopic.AreTheSame(topic))
                             {
-                                if (CurrentPageType == typeof(ProfilePage))
+                                if (CurrentPageType == typeof(ProfilePage) || CurrentPageType == typeof(ChatPinnedPage))
                                 {
                                     var cacheKey = Guid.NewGuid().ToString();
                                     var cacheParameter = parameter;

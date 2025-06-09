@@ -1607,6 +1607,15 @@ namespace Telegram.ViewModels
 
         #endregion
 
+        #region View in chat
+
+        public void ViewMessageInChat(MessageViewModel message)
+        {
+            NavigationService.NavigateToChat(message.Chat, message.Id, Topic);
+        }
+
+        #endregion
+
         #region Show in folder
 
         public async void OpenMessageFolder(MessageViewModel message)

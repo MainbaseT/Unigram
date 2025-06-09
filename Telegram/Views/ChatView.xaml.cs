@@ -2804,6 +2804,11 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(ViewModel.PinMessage, message, message.IsPinned ? Strings.UnpinMessage : Strings.PinMessage, message.IsPinned ? Icons.PinOff : Icons.Pin);
                 }
 
+                if (ViewModel.Type == DialogType.Pinned)
+                {
+                    flyout.CreateFlyoutItem(ViewModel.ViewMessageInChat, message, Strings.ViewInChat, Icons.ChatEmpty);
+                }
+
                 if (MessageStatistics_Loaded(message, properties))
                 {
                     flyout.CreateFlyoutItem(ViewModel.OpenMessageStatistics, message, Strings.Statistics, Icons.DataUsage);
