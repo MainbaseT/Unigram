@@ -1481,7 +1481,6 @@
                       CornerRadius="8,8,0,0">
                     <controls:InlineBotResultsView x:Name="ListInline"
                                                    x:Load="{x:Bind ViewModel.IsInlineBotResultsVisible, Mode=OneWay}"
-                                                   Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
                                                    Loaded="InlineBotResults_Loaded"
                                                    ItemClick="InlineBotResults_ItemClick"
                                                    VerticalAlignment="Bottom" />

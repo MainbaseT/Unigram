@@ -66,7 +66,7 @@
     </UserControl.Resources>
 
     <Grid x:Name="Root"
-          Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+          Background="{ThemeResource PageSubHeaderBackgroundBrush2}">
         <Grid x:Name="LayoutRoot">
             <ListView x:Name="ScrollingHost"
                       ItemsSource="{x:Bind ViewModel.InlineBotResults, Mode=OneWay}"
