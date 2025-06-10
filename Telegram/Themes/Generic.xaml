@@ -302,6 +302,8 @@
     </Style>
 
     <Style TargetType="local:MasterDetailView">
+        <Setter Property="CornerRadius"
+                Value="{ThemeResource NavigationViewContentGridCornerRadius}" />
         <Setter Property="IsTabStop"
                 Value="False" />
         <Setter Property="Template">
@@ -329,7 +331,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="DetailHeaderPresenter2"
-                              CornerRadius="{ThemeResource NavigationViewContentGridCornerRadius}">
+                              CornerRadius="{TemplateBinding CornerRadius}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="64" />
@@ -337,12 +339,12 @@
                             </Grid.RowDefinitions>
                             <Border x:Name="MaterialPart"
                                     Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    CornerRadius="{ThemeResource NavigationViewContentGridCornerRadius}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
                                     Grid.RowSpan="3" />
 
                             <chats:ChatBackgroundControl x:Name="BackgroundPart"
                                                          Margin="{TemplateBinding BackgroundMargin}"
-                                                         CornerRadius="9,0,0,0"
+                                                         CornerRadius="{TemplateBinding CornerRadius}"
                                                          BorderThickness="1,1,0,0"
                                                          Grid.RowSpan="3" />
 
@@ -434,7 +436,7 @@
                             <Border x:Name="BorderPart"
                                     BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
                                     BorderThickness="{ThemeResource NavigationViewContentGridBorderThickness}"
-                                    CornerRadius="{ThemeResource NavigationViewContentGridCornerRadius}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
                                     Grid.RowSpan="3" />
                         </Grid>
 

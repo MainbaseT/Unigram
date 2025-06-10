@@ -3380,6 +3380,7 @@ namespace Telegram.Views
             _topicListCollapsed = !show;
             TopicListPresenter.Visibility = Visibility.Visible;
 
+            MasterDetail.CornerRadius = new CornerRadius(show ? 0 : 8, 0, 0, 0);
             Canvas.SetZIndex(ChatsRoot, show ? 1 : 0);
 
             if (show)
