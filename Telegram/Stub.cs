@@ -211,21 +211,6 @@ public static class FormattedText_stub
         }
     }
 }
-public static class Message_stub
-{
-    public static string ToString_stub(this Telegram.Td.Api.Message sender)
-    {
-        try
-        {
-            return sender.ToString();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace);
-            throw new RuntimeException(ex);
-        }
-    }
-}
 public static class AppCapability_stub
 {
     public static Windows.Security.Authorization.AppCapabilityAccess.AppCapabilityAccessStatus CheckAccess_stub(this Windows.Security.Authorization.AppCapabilityAccess.AppCapability sender)
@@ -1440,18 +1425,6 @@ public static class CompositionDevice_stub
 }
 public static class DirectRectangleClip_stub
 {
-    public static void AnimateBottom_stub(this Telegram.Native.Composition.DirectRectangleClip sender, Windows.UI.Composition.Compositor compositor, float from, float to, double duration)
-    {
-        try
-        {
-            sender.AnimateBottom(compositor, from, to, duration);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace);
-            throw new RuntimeException(ex);
-        }
-    }
     public static void AnimateBottomLeft_stub(this Telegram.Native.Composition.DirectRectangleClip sender, Windows.UI.Composition.Compositor compositor, float from, float to, double duration)
     {
         try
@@ -1469,18 +1442,6 @@ public static class DirectRectangleClip_stub
         try
         {
             sender.AnimateBottomRight(compositor, from, to, duration);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void AnimateTop_stub(this Telegram.Native.Composition.DirectRectangleClip sender, Windows.UI.Composition.Compositor compositor, float from, float to, double duration)
-    {
-        try
-        {
-            sender.AnimateTop(compositor, from, to, duration);
         }
         catch (Exception ex)
         {
@@ -3984,30 +3945,6 @@ public static class Clipboard_stub
 }
 public static class DataPackage_stub
 {
-    public static Windows.ApplicationModel.DataTransfer.DataPackageView GetView_stub(this Windows.ApplicationModel.DataTransfer.DataPackage sender)
-    {
-        try
-        {
-            return sender.GetView();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void SetApplicationLink_stub(this Windows.ApplicationModel.DataTransfer.DataPackage sender, System.Uri value)
-    {
-        try
-        {
-            sender.SetApplicationLink(value);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace);
-            throw new RuntimeException(ex);
-        }
-    }
     public static void SetBitmap_stub(this Windows.ApplicationModel.DataTransfer.DataPackage sender, Windows.Storage.Streams.RandomAccessStreamReference value)
     {
         try
@@ -4049,18 +3986,6 @@ public static class DataPackage_stub
         try
         {
             sender.SetText(value);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void SetWebLink_stub(this Windows.ApplicationModel.DataTransfer.DataPackage sender, System.Uri value)
-    {
-        try
-        {
-            sender.SetWebLink(value);
         }
         catch (Exception ex)
         {
@@ -4608,11 +4533,11 @@ public static class CanvasGeometry_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Microsoft.Graphics.Canvas.Geometry.CanvasGeometry CreateRoundedRectangle_stub(Microsoft.Graphics.Canvas.ICanvasResourceCreator resourceCreator, Windows.Foundation.Rect rect, float radiusX, float radiusY)
+    public static Microsoft.Graphics.Canvas.Geometry.CanvasGeometry CreateRoundedRectangle_stub(Microsoft.Graphics.Canvas.ICanvasResourceCreator resourceCreator, float x, float y, float w, float h, float radiusX, float radiusY)
     {
         try
         {
-            return Microsoft.Graphics.Canvas.Geometry.CanvasGeometry.CreateRoundedRectangle(resourceCreator, rect, radiusX, radiusY);
+            return Microsoft.Graphics.Canvas.Geometry.CanvasGeometry.CreateRoundedRectangle(resourceCreator, x, y, w, h, radiusX, radiusY);
         }
         catch (Exception ex)
         {
@@ -4620,11 +4545,11 @@ public static class CanvasGeometry_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Microsoft.Graphics.Canvas.Geometry.CanvasGeometry CreateRoundedRectangle_stub(Microsoft.Graphics.Canvas.ICanvasResourceCreator resourceCreator, float x, float y, float w, float h, float radiusX, float radiusY)
+    public static Microsoft.Graphics.Canvas.Geometry.CanvasGeometry CreateRoundedRectangle_stub(Microsoft.Graphics.Canvas.ICanvasResourceCreator resourceCreator, Windows.Foundation.Rect rect, float radiusX, float radiusY)
     {
         try
         {
-            return Microsoft.Graphics.Canvas.Geometry.CanvasGeometry.CreateRoundedRectangle(resourceCreator, x, y, w, h, radiusX, radiusY);
+            return Microsoft.Graphics.Canvas.Geometry.CanvasGeometry.CreateRoundedRectangle(resourceCreator, rect, radiusX, radiusY);
         }
         catch (Exception ex)
         {
@@ -7121,6 +7046,30 @@ public static class ShareOperation_stub
         try
         {
             sender.ReportCompleted();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void ReportDataRetrieved_stub(this Windows.ApplicationModel.DataTransfer.ShareTarget.ShareOperation sender)
+    {
+        try
+        {
+            sender.ReportDataRetrieved();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void ReportError_stub(this Windows.ApplicationModel.DataTransfer.ShareTarget.ShareOperation sender, string value)
+    {
+        try
+        {
+            sender.ReportError(value);
         }
         catch (Exception ex)
         {
