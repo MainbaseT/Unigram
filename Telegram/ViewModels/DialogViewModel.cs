@@ -2094,24 +2094,28 @@ namespace Telegram.ViewModels
                         ForumTopic = await ClientService.SendAsync(new GetForumTopic(chatMessageTopic.ChatId, forum.ForumTopicId)) as ForumTopic;
                     }
 
-                    Thread = await ClientService.SendAsync(new GetMessageThread(chatMessageTopic.ChatId, forum.ForumTopicId)) as MessageThreadInfo;
-
                     if (ForumTopic != null)
                     {
                         // TODO: Workaround, should be removed some day
                         await ClientService.SendAsync(new GetMessage(chatMessageTopic.ChatId, _forumTopic.Info.MessageThreadId));
+                        await ClientService.SendAsync(new GetMessageThread(chatMessageTopic.ChatId, forum.ForumTopicId));
 
                         parameter = chatMessageTopic.ChatId;
                         Topic = new MessageTopicForum(_forumTopic.Info.MessageThreadId);
                     }
-                    else if (Thread != null)
-                    {
-                        parameter = Thread.ChatId;
-                        Topic = new MessageTopicForum(Thread.MessageThreadId);
-                    }
                     else
                     {
-                        return;
+                        Thread = await ClientService.SendAsync(new GetMessageThread(chatMessageTopic.ChatId, forum.ForumTopicId)) as MessageThreadInfo;
+
+                        if (Thread != null)
+                        {
+                            parameter = Thread.ChatId;
+                            Topic = new MessageTopicForum(Thread.MessageThreadId);
+                        }
+                        else
+                        {
+                            return;
+                        }
                     }
                 }
                 else if (chatMessageTopic.MessageTopic is MessageTopicDirectMessages directMessagesChat)
