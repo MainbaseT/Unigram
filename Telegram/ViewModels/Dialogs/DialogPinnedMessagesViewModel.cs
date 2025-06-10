@@ -16,9 +16,10 @@ namespace Telegram.ViewModels
     public partial class DialogPinnedMessagesViewModel : List<PinnedMessageViewModel>
     {
         private readonly DialogViewModel _viewModel;
-        private readonly HashSet<long> _messages = new();
+        private readonly Dictionary<long, PinnedMessageViewModel> _messages = new();
 
         private long _lockedId;
+        private long _visibleId;
 
         private bool _hasLoadedLastPinnedMessage = false;
 
@@ -165,12 +166,12 @@ namespace Telegram.ViewModels
                     {
                         var message = messages[i];
 
-                        if (_messages.Contains(message.Id))
+                        if (_messages.ContainsKey(message.Id))
                         {
                             continue;
                         }
 
-                        _messages.Add(message.Id);
+                        _messages.Add(message.Id, message);
                         Insert(0, message);
                     }
                 }
@@ -185,12 +186,12 @@ namespace Telegram.ViewModels
                     {
                         var message = messages[i];
 
-                        if (_messages.Contains(message.Id))
+                        if (_messages.ContainsKey(message.Id))
                         {
                             continue;
                         }
 
-                        _messages.Add(message.Id);
+                        _messages.Add(message.Id, message);
                         Add(message);
                     }
                 }
@@ -236,16 +237,39 @@ namespace Telegram.ViewModels
                 var message = this[i];
                 if (message?.Id <= lastVisibleId)
                 {
+                    _visibleId = message.Id;
                     return message;
                 }
             }
 
             if (hasBeenScrolled)
             {
+                _visibleId = this[0].Id;
                 return this[0];
             }
 
+            _visibleId = this[^1].Id;
             return this[^1];
+        }
+
+        public void UpdateMessageContent(long messageId, MessageContent newContent)
+        {
+            if (_messages.TryGetValue(messageId, out var message))
+            {
+                message.Content = newContent;
+
+                if (_visibleId == messageId)
+                {
+                    _viewModel.BeginOnUIThread(UpdateMessageContent);
+                }
+            }
+        }
+
+        private void UpdateMessageContent()
+        {
+            // This invalidates the current visible message, otherwise it won't update
+            _viewModel.Delegate?.UpdatePinnedMessage(_viewModel.Chat, true);
+            _viewModel.Delegate?.ViewVisibleMessages();
         }
     }
 }

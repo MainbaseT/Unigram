@@ -856,6 +856,8 @@ namespace Telegram.ViewModels
                     }
                 });
 
+                PinnedMessages.UpdateMessageContent(update.MessageId, update.NewContent);
+
                 //BeginOnUIThread(() =>
                 //{
                 //    for (int i = 0; i < PinnedMessages.Count; i++)
