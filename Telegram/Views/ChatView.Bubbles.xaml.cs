@@ -372,9 +372,7 @@ namespace Telegram.Views
                         : ViewModel.DirectMessagesChatTopic != null
                         ? new MessageSourceDirectMessagesChatTopicHistory()
                         : new MessageSourceMessageThreadHistory(),
-                    _ => ViewModel.IsDirectMessagesGroup
-                    ? new MessageSourceDirectMessagesChatTopicHistory()
-                    : new MessageSourceChatHistory()
+                    _ => new MessageSourceChatHistory()
                 };
 
                 // This is needed because we don't keep all topics messages in memory as TDLib would do
@@ -398,7 +396,7 @@ namespace Telegram.Views
                 return;
             }
 
-            if (ViewModel.Thread != null && ViewModel.ForumTopic == null)
+            if (ViewModel.Thread != null)
             {
                 var message = ViewModel.Thread.Messages.LastOrDefault();
                 if (message == null || (firstVisibleId <= message.Id && lastVisibleId >= message.Id) || Messages.ScrollingHost.ScrollableHeight == 0)
