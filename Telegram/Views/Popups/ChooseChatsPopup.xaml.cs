@@ -1289,6 +1289,7 @@ namespace Telegram.Views.Popups
             }
 
             _searchCollapsed = !show;
+            ShowHideBackButton(show || !_forumCollapsed);
 
             FindName(nameof(SearchPanel));
             ChatListPanel.Visibility = Visibility.Visible;
@@ -1422,7 +1423,7 @@ namespace Telegram.Views.Popups
             }
 
             _forumCollapsed = !show;
-            ShowHideBackButton(show);
+            ShowHideBackButton(show || !_searchCollapsed);
 
             FindName(nameof(ForumGrid));
             MainGrid.Visibility = Visibility.Visible;
@@ -1879,7 +1880,14 @@ namespace Telegram.Views.Popups
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            ShowHideForum(null);
+            if (!_searchCollapsed)
+            {
+                ShowHideSearch(false);
+            }
+            else if (!_forumCollapsed)
+            {
+                ShowHideForum(null);
+            }
         }
 
         private bool _backButtonCollapsed = true;
