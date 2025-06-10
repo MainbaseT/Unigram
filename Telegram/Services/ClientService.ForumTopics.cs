@@ -99,18 +99,18 @@ namespace Telegram.Services
             return 0;
         }
 
-        private void UpdateForumTopic(long chatId, Action<ForumTopicService> update)
+        private void UpdateForumTopic(long chatId, bool createNew, Action<ForumTopicService> update)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
             {
                 update(manager);
             }
-            else
+            else if (createNew)
             {
                 manager = new ForumTopicService(this, _aggregator, chatId);
                 _forums[chatId] = manager;
 
-                manager.GetForumTopicsAsync(0, 20);
+                //manager.GetForumTopicsAsync(0, 20);
 
                 update(manager);
             }
@@ -125,7 +125,7 @@ namespace Telegram.Services
                     var manager = new ForumTopicService(this, _aggregator, chat.Id);
                     _forums[chat.Id] = manager;
 
-                    manager.GetForumTopicsAsync(0, 20);
+                    //manager.GetForumTopicsAsync(0, 20);
                 }
                 else if (supergroup.IsFeedbackGroup && !_feedbackChats.ContainsKey(chat.Id))
                 {

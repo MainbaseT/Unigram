@@ -117,12 +117,6 @@ namespace Telegram.Views
             var messages = new List<long>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
             var animations = new List<(SelectorItem, MessageViewModel)>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
 
-            MultiValueDictionary<long, long> feedbackChatMessages = null;
-            if (ViewModel.IsFeedbackGroup)
-            {
-                feedbackChatMessages = new();
-            }
-
             for (int i = panel.FirstVisibleIndex; i <= panel.LastVisibleIndex; i++)
             {
                 // TODO: this would be preferable, but it can't be done because
@@ -318,21 +312,7 @@ namespace Telegram.Views
                 // to be marked as read and consequently blocks following updateReadChannelDiscussionOutbox
                 if (ViewModel.ForumTopic == null || !message.IsOutgoing || (message.IsOutgoing && message.UnreadReactions?.Count > 0))
                 {
-                    if (feedbackChatMessages != null && message.TopicId is MessageTopicFeedbackChat topicFeedbackChat && ViewModel.ClientService.TryGetFeedbackChatTopic(message.ChatId, topicFeedbackChat.FeedbackChatTopicId, out FeedbackChatTopic feedbackChatTopic))
-                    {
-                        //if ((message.IsOutgoing && message.UnreadReactions?.Count > 0) || (message.Id < feedbackChatTopic.LastReadInboxMessageId && !message.IsOutgoing))
-                        //{
-                        if (message.Content is MessageAlbum album)
-                        {
-                            feedbackChatMessages.AddRange(topicFeedbackChat.FeedbackChatTopicId, album.Messages.Keys);
-                        }
-                        else
-                        {
-                            feedbackChatMessages.Add(topicFeedbackChat.FeedbackChatTopicId, message.Id);
-                        }
-                        //}
-                    }
-                    else if (message.Content is MessageAlbum album)
+                    if (message.Content is MessageAlbum album)
                     {
                         messages.AddRange(album.Messages.Keys);
                     }
@@ -382,7 +362,7 @@ namespace Telegram.Views
             }
 
             // Read and play messages logic:
-            if ((messages.Count > 0 || feedbackChatMessages != null) && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !_fromPreview)
+            if (messages.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !_fromPreview)
             {
                 MessageSource source = ViewModel.Type switch
                 {
@@ -397,24 +377,14 @@ namespace Telegram.Views
                     : new MessageSourceChatHistory()
                 };
 
-                if (feedbackChatMessages != null)
+                // This is needed because we don't keep all topics messages in memory as TDLib would do
+                long messageThreadId = 0;
+                if (ViewModel.ForumTopic != null)
                 {
-                    foreach (var topic in feedbackChatMessages)
-                    {
-                        ViewModel.ClientService.Send(new ViewMessages(chat.Id, topic.Value, source, true));
-                    }
+                    messageThreadId = ViewModel.ForumTopic.Info.MessageThreadId;
                 }
-                else
-                {
-                    // This is needed because we don't keep all topics messages in memory as TDLib would do
-                    long messageThreadId = 0;
-                    if (ViewModel.ForumTopic != null)
-                    {
-                        messageThreadId = ViewModel.ForumTopic.Info.MessageThreadId;
-                    }
 
-                    ViewModel.ClientService.ViewMessages(chat.Id, messageThreadId, messages, source, false);
-                }
+                ViewModel.ClientService.ViewMessages(chat.Id, messageThreadId, messages, source, false);
             }
 
             if (animations.Count > 0 && !intermediate && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated)

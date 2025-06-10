@@ -389,6 +389,24 @@ namespace Telegram.Services
             {
                 topic.Info = info;
             }
+            else if (_clientService.TryGetChat(_chatId, out Chat chat))
+            {
+                // Preload empty topic to have info readily available
+                _topics[info.MessageThreadId] = new ForumTopic
+                {
+                    DraftMessage = null,
+                    NotificationSettings = chat.NotificationSettings,
+                    UnreadReactionCount = 0,
+                    UnreadMentionCount = 0,
+                    LastReadOutboxMessageId = 0,
+                    LastReadInboxMessageId = 0,
+                    UnreadCount = 0,
+                    IsPinned = false,
+                    Order = 0,
+                    LastMessage = null,
+                    Info = info
+                };
+            }
         }
 
         private void UpdateNewTopic(BaseObject response)
@@ -409,12 +427,15 @@ namespace Telegram.Services
                 topic.UnreadMentionCount = newTopic.UnreadMentionCount;
                 topic.UnreadCount = newTopic.UnreadCount;
                 topic.IsPinned = newTopic.IsPinned;
-                topic.LastMessage = newTopic.LastMessage;
                 topic.Info = newTopic.Info;
 
                 UpdateLastReadInboxMessageId(topic, newTopic.LastReadInboxMessageId);
                 UpdateLastReadOutboxMessageId(topic, newTopic.LastReadOutboxMessageId);
-                UpdateLastMessage(topic, newTopic.LastMessage);
+
+                if (newTopic.LastMessage != null)
+                {
+                    UpdateLastMessage(topic, newTopic.LastMessage);
+                }
             }
             else
             {
@@ -451,7 +472,11 @@ namespace Telegram.Services
             }
             else
             {
-                _clientService.Send(new GetForumTopic(_chatId, message.TopicId()), UpdateNewTopic);
+                var topicId = message.TopicId();
+                if (topicId != 0)
+                {
+                    _clientService.Send(new GetForumTopic(_chatId, topicId), UpdateNewTopic);
+                }
             }
 
             if (message.SendingState is MessageSendingStatePending)
@@ -499,16 +524,16 @@ namespace Telegram.Services
                 {
                     if (topic.LastMessage?.Id == messageId)
                     {
+                        if (topic.LastMessage != null)
+                        {
+                            _messages.Remove(topic.LastMessage.Id);
+                        }
+
                         // Update last message
                         // Deliver update UpdateForumTopicLastMessage;
 
-                        _clientService.Send(new GetForumTopic(_chatId, topic.Info.MessageThreadId), response =>
+                        _clientService.Send(new GetForumTopic(_chatId, topic.Info.ForumTopicId), response =>
                         {
-                            if (topic.LastMessage != null)
-                            {
-                                _messages.Remove(topic.LastMessage.Id);
-                            }
-
                             var updatePinnedTopics = false;
                             var updateCurrentTopic = false;
 
@@ -539,7 +564,7 @@ namespace Telegram.Services
 
                             if (topic.LastMessage == null && topic.Order != 0)
                             {
-                                _clientService.Send(new GetForumTopic(_chatId, topic.Info.MessageThreadId), UpdateNewTopic);
+                                _clientService.Send(new GetForumTopic(_chatId, topic.Info.ForumTopicId), UpdateNewTopic);
                             }
 
                             if (updatePinnedTopics)

@@ -442,7 +442,7 @@ namespace Telegram.Controls.Messages
             return builder.ToString();
         }
 
-        public void UpdateAttach(MessageViewModel message, bool wide = false)
+        public void UpdateAttach(MessageViewModel message)
         {
             var chat = message?.Chat;
             if (chat == null || !_templateApplied)
@@ -462,7 +462,8 @@ namespace Telegram.Controls.Messages
             var bottomRight = radius;
             var bottomLeft = radius;
 
-            if (message.IsOutgoing && !wide)
+            var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
+            if (outgoing)
             {
                 if (message.IsFirst && message.IsLast)
                 {
@@ -2277,7 +2278,7 @@ namespace Telegram.Controls.Messages
             return new CompositionPath(result);
         }
 
-        public void AnimateSendout(float xScale, float yScale, float fontScale, double outer, double inner, double delay, bool reply)
+        public void AnimateSendout(float xTranslate, float xScale, float yScale, float fontScale, double outer, double inner, double delay, bool reply)
         {
             if (!_templateApplied)
             {
@@ -2299,7 +2300,7 @@ namespace Telegram.Controls.Messages
                 var outOpacity = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
                 outOpacity.InsertKeyFrame(0, 1);
                 outOpacity.InsertKeyFrame(1, 0);
-                outOpacity.Duration = TimeSpan.FromMilliseconds(outer);
+                outOpacity.Duration = TimeSpan.FromMilliseconds(inner);
                 outOpacity.DelayTime = TimeSpan.FromMilliseconds(delay);
                 outOpacity.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
 
@@ -2423,8 +2424,18 @@ namespace Telegram.Controls.Messages
                 text.StartAnimation("Translation", textOffset);
             }
 
+            var offset = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
+            offset.InsertKeyFrame(0, -xTranslate);
+            offset.InsertKeyFrame(1, 0);
+            offset.Duration = TimeSpan.FromMilliseconds(textOffsetY > 0 ? outer : inner);
+            offset.DelayTime = TimeSpan.FromMilliseconds(delay);
+            offset.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
+
+            ElementCompositionPreview.SetIsTranslationEnabled(ContentPanel, true);
+
             panel.CenterPoint = new Vector3(ContentPanel.ActualSize, 0);
             panel.StartAnimation("Scale", scale);
+            panel.StartAnimation("Translation.X", offset);
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)

@@ -2479,7 +2479,7 @@ namespace Telegram.Services
                             Monitor.Exit(value);
                         }
 
-                        UpdateForumTopic(updateChatLastMessage.ChatId, manager => manager.UpdateChatLastMessage(updateChatLastMessage.LastMessage));
+                        UpdateForumTopic(updateChatLastMessage.ChatId, false, manager => manager.UpdateChatLastMessage(updateChatLastMessage.LastMessage));
                         break;
                     }
 
@@ -2960,10 +2960,10 @@ namespace Telegram.Services
                     _favoriteStickers = updateFavoriteStickers.StickerIds;
                     break;
                 case UpdateForumTopic updateForumTopic:
-                    UpdateForumTopic(updateForumTopic.ChatId, manager => manager.UpdateForumTopic(updateForumTopic));
+                    UpdateForumTopic(updateForumTopic.ChatId, true, manager => manager.UpdateForumTopic(updateForumTopic));
                     break;
                 case UpdateForumTopicInfo updateForumTopicInfo:
-                    UpdateForumTopic(updateForumTopicInfo.Info.ChatId, manager => manager.UpdateForumTopicInfo(updateForumTopicInfo.Info));
+                    UpdateForumTopic(updateForumTopicInfo.Info.ChatId, true, manager => manager.UpdateForumTopicInfo(updateForumTopicInfo.Info));
                     break;
                 case UpdateFeedbackChatTopic updateFeedbackChatTopic:
                     UpdateFeedbackChatTopic(updateFeedbackChatTopic.Topic.ChatId, manager => manager.UpdateFeedbackChatTopic(updateFeedbackChatTopic.Topic));
@@ -2987,7 +2987,7 @@ namespace Telegram.Services
                     break;
                 case UpdateMessageIsPinned updateMessageIsPinned:
                     _settings.SetChatPinnedMessage(updateMessageIsPinned.ChatId, 0);
-                    UpdateForumTopic(updateMessageIsPinned.ChatId, manager => manager.UpdateMessageIsPinned(updateMessageIsPinned.MessageId, updateMessageIsPinned.IsPinned));
+                    UpdateForumTopic(updateMessageIsPinned.ChatId, false, manager => manager.UpdateMessageIsPinned(updateMessageIsPinned.MessageId, updateMessageIsPinned.IsPinned));
                     break;
                 case UpdateMessageMentionRead updateMessageMentionRead:
                     {
@@ -2996,7 +2996,7 @@ namespace Telegram.Services
                             value.UnreadMentionCount = updateMessageMentionRead.UnreadMentionCount;
                         }
 
-                        UpdateForumTopic(updateMessageMentionRead.ChatId, manager => manager.UpdateMessageMentionRead(updateMessageMentionRead.MessageId, updateMessageMentionRead.UnreadMentionCount));
+                        UpdateForumTopic(updateMessageMentionRead.ChatId, false, manager => manager.UpdateMessageMentionRead(updateMessageMentionRead.MessageId, updateMessageMentionRead.UnreadMentionCount));
                         break;
                     }
 
@@ -3007,7 +3007,7 @@ namespace Telegram.Services
                             value.UnreadReactionCount = updateMessageUnreadReactions.UnreadReactionCount;
                         }
 
-                        UpdateForumTopic(updateMessageUnreadReactions.ChatId, manager => manager.UpdateMessageUnreadReactions(updateMessageUnreadReactions.MessageId, updateMessageUnreadReactions.UnreadReactions, updateMessageUnreadReactions.UnreadReactionCount));
+                        UpdateForumTopic(updateMessageUnreadReactions.ChatId, false, manager => manager.UpdateMessageUnreadReactions(updateMessageUnreadReactions.MessageId, updateMessageUnreadReactions.UnreadReactions, updateMessageUnreadReactions.UnreadReactionCount));
                         break;
                     }
 
@@ -3234,31 +3234,31 @@ namespace Telegram.Services
                     _freezeState = updateFreezeState;
                     break;
                 case UpdateNewMessage updateNewMessage:
-                    UpdateForumTopic(updateNewMessage.Message.ChatId, manager => manager.UpdateNewMessage(updateNewMessage.Message));
+                    UpdateForumTopic(updateNewMessage.Message.ChatId, false, manager => manager.UpdateNewMessage(updateNewMessage.Message));
                     break;
                 case UpdateDeleteMessages updateDeleteMessages:
-                    UpdateForumTopic(updateDeleteMessages.ChatId, manager => manager.UpdateDeleteMessages(updateDeleteMessages.MessageIds, updateDeleteMessages.IsPermanent, updateDeleteMessages.FromCache));
+                    UpdateForumTopic(updateDeleteMessages.ChatId, false, manager => manager.UpdateDeleteMessages(updateDeleteMessages.MessageIds, updateDeleteMessages.IsPermanent, updateDeleteMessages.FromCache));
                     break;
                 case UpdateMessageSendSucceeded updateMessageSendSucceeded:
-                    UpdateForumTopic(updateMessageSendSucceeded.Message.ChatId, manager => manager.UpdateMessageSendSucceeded(updateMessageSendSucceeded.Message, updateMessageSendSucceeded.OldMessageId));
+                    UpdateForumTopic(updateMessageSendSucceeded.Message.ChatId, false, manager => manager.UpdateMessageSendSucceeded(updateMessageSendSucceeded.Message, updateMessageSendSucceeded.OldMessageId));
                     break;
                 case UpdateMessageSendFailed updateMessageSendFailed:
-                    UpdateForumTopic(updateMessageSendFailed.Message.ChatId, manager => manager.UpdateMessageSendFailed(updateMessageSendFailed.Message, updateMessageSendFailed.OldMessageId, updateMessageSendFailed.Error));
+                    UpdateForumTopic(updateMessageSendFailed.Message.ChatId, false, manager => manager.UpdateMessageSendFailed(updateMessageSendFailed.Message, updateMessageSendFailed.OldMessageId, updateMessageSendFailed.Error));
                     break;
                 case UpdateMessageContent updateMessageContent:
-                    UpdateForumTopic(updateMessageContent.ChatId, manager => manager.UpdateMessageContent(updateMessageContent.MessageId, updateMessageContent.NewContent));
+                    UpdateForumTopic(updateMessageContent.ChatId, false, manager => manager.UpdateMessageContent(updateMessageContent.MessageId, updateMessageContent.NewContent));
                     break;
                 case UpdateMessageEdited updateMessageEdited:
-                    UpdateForumTopic(updateMessageEdited.ChatId, manager => manager.UpdateMessageEdited(updateMessageEdited.MessageId, updateMessageEdited.EditDate, updateMessageEdited.ReplyMarkup));
+                    UpdateForumTopic(updateMessageEdited.ChatId, false, manager => manager.UpdateMessageEdited(updateMessageEdited.MessageId, updateMessageEdited.EditDate, updateMessageEdited.ReplyMarkup));
                     break;
                 case UpdateMessageInteractionInfo updateMessageInteractionInfo:
-                    UpdateForumTopic(updateMessageInteractionInfo.ChatId, manager => manager.UpdateMessageInteractionInfo(updateMessageInteractionInfo.MessageId, updateMessageInteractionInfo.InteractionInfo));
+                    UpdateForumTopic(updateMessageInteractionInfo.ChatId, false, manager => manager.UpdateMessageInteractionInfo(updateMessageInteractionInfo.MessageId, updateMessageInteractionInfo.InteractionInfo));
                     break;
                 case UpdateMessageContentOpened updateMessageContentOpened:
-                    UpdateForumTopic(updateMessageContentOpened.ChatId, manager => manager.UpdateMessageContentOpened(updateMessageContentOpened.MessageId));
+                    UpdateForumTopic(updateMessageContentOpened.ChatId, false, manager => manager.UpdateMessageContentOpened(updateMessageContentOpened.MessageId));
                     break;
                 case UpdateMessageFactCheck updateMessageFactCheck:
-                    UpdateForumTopic(updateMessageFactCheck.ChatId, manager => manager.UpdateMessageFactCheck(updateMessageFactCheck.MessageId, updateMessageFactCheck.FactCheck));
+                    UpdateForumTopic(updateMessageFactCheck.ChatId, false, manager => manager.UpdateMessageFactCheck(updateMessageFactCheck.MessageId, updateMessageFactCheck.FactCheck));
                     break;
             }
 
