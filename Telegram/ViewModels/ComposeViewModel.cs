@@ -721,9 +721,9 @@ namespace Telegram.ViewModels
                 {
                     messageThreadId = topicForum.ForumTopicId;
                 }
-                else if (replyToTopicMessage.TopicId is MessageTopicFeedbackChat topicFeedbackChat && messageSendOptions != null)
+                else if (replyToTopicMessage.TopicId is MessageTopicDirectMessages topicDirectMessagesChat && messageSendOptions != null)
                 {
-                    messageSendOptions.FeedbackChatTopicId = topicFeedbackChat.FeedbackChatTopicId;
+                    messageSendOptions.DirectMessagesChatTopicId = topicDirectMessagesChat.DirectMessagesChatTopicId;
                 }
 
                 replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote);
@@ -853,9 +853,9 @@ namespace Telegram.ViewModels
                 {
                     messageThreadId = topicForum.ForumTopicId;
                 }
-                else if (replyToTopicMessage.TopicId is MessageTopicFeedbackChat topicFeedbackChat && messageSendOptions != null)
+                else if (replyToTopicMessage.TopicId is MessageTopicDirectMessages topicDirectMessagesChat && messageSendOptions != null)
                 {
-                    messageSendOptions.FeedbackChatTopicId = topicFeedbackChat.FeedbackChatTopicId;
+                    messageSendOptions.DirectMessagesChatTopicId = topicDirectMessagesChat.DirectMessagesChatTopicId;
                 }
 
                 replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote);

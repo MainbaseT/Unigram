@@ -40,7 +40,7 @@ namespace Telegram.ViewModels
             using var disposable = await _loadMoreLock.WaitAsync();
 
             var chat = _viewModel.Chat;
-            if (chat == null || (_viewModel.Type != DialogType.History && (_viewModel.Type == DialogType.Thread && _viewModel.ForumTopic == null && _viewModel.FeedbackChatTopic == null)))
+            if (chat == null || (_viewModel.Type != DialogType.History && (_viewModel.Type == DialogType.Thread && _viewModel.ForumTopic == null && _viewModel.DirectMessagesChatTopic == null)))
             {
                 _viewModel.Delegate?.UpdatePinnedMessage(chat, false);
                 return;

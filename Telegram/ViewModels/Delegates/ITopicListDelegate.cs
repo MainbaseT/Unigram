@@ -16,12 +16,12 @@ namespace Telegram.ViewModels.Delegates
         void SetSelectedItems(IList<object> topics);
 
         void UpdateForumTopicLastMessage(ForumTopic topic);
-        void UpdateFeedbackChatTopicLastMessage(FeedbackChatTopic topic);
+        void UpdateDirectMessagesChatTopicLastMessage(DirectMessagesChatTopic topic);
 
         void HandleForumTopic(long messageThreadId, Action<IForumTopicDelegate, ForumTopic> action);
         void HandleForumTopic(ForumTopic topic, Action<IForumTopicDelegate, ForumTopic> action);
 
-        void HandleFeedbackChatTopic(long topicId, Action<IFeedbackTopicDelegate, FeedbackChatTopic> action);
-        void HandleFeedbackChatTopic(FeedbackChatTopic topic, Action<IFeedbackTopicDelegate, FeedbackChatTopic> action);
+        void HandleDirectMessagesChatTopic(long topicId, Action<IDirectMessagesTopicDelegate, DirectMessagesChatTopic> action);
+        void HandleDirectMessagesChatTopic(DirectMessagesChatTopic topic, Action<IDirectMessagesTopicDelegate, DirectMessagesChatTopic> action);
     }
 }

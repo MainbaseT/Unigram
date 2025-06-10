@@ -721,10 +721,10 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
-                case FeedbackChatTopic feedbackChatTopic:
-                    if (feedbackChatTopic.LastMessage != null)
+                case DirectMessagesChatTopic directMessagesChatTopic:
+                    if (directMessagesChatTopic.LastMessage != null)
                     {
-                        ProcessFiles(feedbackChatTopic.LastMessage);
+                        ProcessFiles(directMessagesChatTopic.LastMessage);
                     }
                     break;
                 case FileDownload fileDownload:
@@ -2387,10 +2387,10 @@ namespace Telegram.Services
                         ProcessFiles(updateDefaultBackground.Background);
                     }
                     break;
-                case UpdateFeedbackChatTopic updateFeedbackChatTopic:
-                    if (updateFeedbackChatTopic.Topic != null)
+                case UpdateDirectMessagesChatTopic updateDirectMessagesChatTopic:
+                    if (updateDirectMessagesChatTopic.Topic != null)
                     {
-                        ProcessFiles(updateFeedbackChatTopic.Topic);
+                        ProcessFiles(updateDirectMessagesChatTopic.Topic);
                     }
                     break;
                 case UpdateFile updateFile:

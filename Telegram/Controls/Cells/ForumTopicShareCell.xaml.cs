@@ -44,7 +44,7 @@ namespace Telegram.Controls.Cells
             TitleLabel.Text = topic.Info.Name;
         }
 
-        public void UpdateCell(IClientService clientService, FeedbackChatTopic topic)
+        public void UpdateCell(IClientService clientService, DirectMessagesChatTopic topic)
         {
             Animated.Source = null;
             IconRoot.Visibility = Visibility.Collapsed;

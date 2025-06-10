@@ -8,35 +8,35 @@ namespace Telegram.Services
 {
     public partial interface ICacheService
     {
-        Task<Topics> GetFeedbackChatTopicsAsync(long chatId, int offset, int limit);
+        Task<Topics> GetDirectMessagesChatTopicsAsync(long chatId, int offset, int limit);
 
-        bool TryGetFeedbackChatTopic(long chatId, long id, out FeedbackChatTopic topic);
-        bool TryGetFeedbackChatTopic(long chatId, MessageTopic messageTopic, out FeedbackChatTopic topic);
+        bool TryGetDirectMessagesChatTopic(long chatId, long id, out DirectMessagesChatTopic topic);
+        bool TryGetDirectMessagesChatTopic(long chatId, MessageTopic messageTopic, out DirectMessagesChatTopic topic);
 
-        IEnumerable<FeedbackChatTopic> GetFeedbackChatTopics(long chatId, IEnumerable<long> ids);
-        FeedbackChatTopic GetFeedbackChatTopic(long chatId, long id);
+        IEnumerable<DirectMessagesChatTopic> GetDirectMessagesChatTopics(long chatId, IEnumerable<long> ids);
+        DirectMessagesChatTopic GetDirectMessagesChatTopic(long chatId, long id);
     }
 
     public partial class ClientService
     {
-        private readonly ConcurrentDictionary<long, FeedbackChatTopicService> _feedbackChats = new();
+        private readonly ConcurrentDictionary<long, DirectMessagesChatTopicService> _directMessagesChats = new();
 
-        public Task<Topics> GetFeedbackChatTopicsAsync(long chatId, int offset, int limit)
+        public Task<Topics> GetDirectMessagesChatTopicsAsync(long chatId, int offset, int limit)
         {
-            _feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager);
+            _directMessagesChats.TryGetValue(chatId, out DirectMessagesChatTopicService manager);
 
             if (manager == null)
             {
-                manager = new FeedbackChatTopicService(this, _aggregator, chatId);
-                _feedbackChats[chatId] = manager;
+                manager = new DirectMessagesChatTopicService(this, _aggregator, chatId);
+                _directMessagesChats[chatId] = manager;
             }
 
-            return manager.GetFeedbackChatTopicsAsync(offset, limit);
+            return manager.GetDirectMessagesChatTopicsAsync(offset, limit);
         }
 
-        public FeedbackChatTopic GetFeedbackChatTopic(long chatId, long id)
+        public DirectMessagesChatTopic GetDirectMessagesChatTopic(long chatId, long id)
         {
-            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
+            if (_directMessagesChats.TryGetValue(chatId, out DirectMessagesChatTopicService manager))
             {
                 return manager.GetTopic(id);
             }
@@ -44,9 +44,9 @@ namespace Telegram.Services
             return null;
         }
 
-        public bool TryGetFeedbackChatTopic(long chatId, long id, out FeedbackChatTopic topic)
+        public bool TryGetDirectMessagesChatTopic(long chatId, long id, out DirectMessagesChatTopic topic)
         {
-            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
+            if (_directMessagesChats.TryGetValue(chatId, out DirectMessagesChatTopicService manager))
             {
                 topic = manager.GetTopic(id);
                 return topic != null;
@@ -56,37 +56,37 @@ namespace Telegram.Services
             return false;
         }
 
-        public bool TryGetFeedbackChatTopic(long chatId, MessageTopic messageTopic, out FeedbackChatTopic topic)
+        public bool TryGetDirectMessagesChatTopic(long chatId, MessageTopic messageTopic, out DirectMessagesChatTopic topic)
         {
-            if (messageTopic is MessageTopicFeedbackChat topicFeedbackChat)
+            if (messageTopic is MessageTopicDirectMessages topicDirectMessagesChat)
             {
-                return TryGetFeedbackChatTopic(chatId, topicFeedbackChat.FeedbackChatTopicId, out topic);
+                return TryGetDirectMessagesChatTopic(chatId, topicDirectMessagesChat.DirectMessagesChatTopicId, out topic);
             }
 
             topic = null;
             return false;
         }
 
-        public IEnumerable<FeedbackChatTopic> GetFeedbackChatTopics(long chatId, IEnumerable<long> ids)
+        public IEnumerable<DirectMessagesChatTopic> GetDirectMessagesChatTopics(long chatId, IEnumerable<long> ids)
         {
-            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
+            if (_directMessagesChats.TryGetValue(chatId, out DirectMessagesChatTopicService manager))
             {
                 return manager.GetTopics(ids);
             }
 
-            return Array.Empty<FeedbackChatTopic>();
+            return Array.Empty<DirectMessagesChatTopic>();
         }
 
-        private void UpdateFeedbackChatTopic(long chatId, Action<FeedbackChatTopicService> update)
+        private void UpdateDirectMessagesChatTopic(long chatId, Action<DirectMessagesChatTopicService> update)
         {
-            if (_feedbackChats.TryGetValue(chatId, out FeedbackChatTopicService manager))
+            if (_directMessagesChats.TryGetValue(chatId, out DirectMessagesChatTopicService manager))
             {
                 update(manager);
             }
             else
             {
-                manager = new FeedbackChatTopicService(this, _aggregator, chatId);
-                _feedbackChats[chatId] = manager;
+                manager = new DirectMessagesChatTopicService(this, _aggregator, chatId);
+                _directMessagesChats[chatId] = manager;
 
                 update(manager);
             }

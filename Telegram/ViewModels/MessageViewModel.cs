@@ -37,18 +37,18 @@ namespace Telegram.ViewModels
         private readonly WeakReference _delegate;
 
         protected readonly ForumTopic _forumTopic;
-        protected readonly FeedbackChatTopic _feedbackChatTopic;
+        protected readonly DirectMessagesChatTopic _directMessagesChatTopic;
 
         private Action _updateSelection;
 
-        public MessageViewModel(IClientService clientService, IPlaybackService playbackService, IMessageDelegate delegato, Chat chat, ForumTopic forumTopic, FeedbackChatTopic feedbackChatTopic, Message message, bool processText = false)
+        public MessageViewModel(IClientService clientService, IPlaybackService playbackService, IMessageDelegate delegato, Chat chat, ForumTopic forumTopic, DirectMessagesChatTopic directMessagesChatTopic, Message message, bool processText = false)
             : base(clientService, message, chat)
         {
             _playbackService = playbackService;
             _delegate = new WeakReference(delegato);
 
             _forumTopic = forumTopic;
-            _feedbackChatTopic = feedbackChatTopic;
+            _directMessagesChatTopic = directMessagesChatTopic;
 
             if (processText)
             {
@@ -57,7 +57,7 @@ namespace Telegram.ViewModels
         }
 
         public long LastReadOutboxMessageId => _forumTopic?.LastReadOutboxMessageId
-            ?? _feedbackChatTopic?.LastReadOutboxMessageId
+            ?? _directMessagesChatTopic?.LastReadOutboxMessageId
             ?? Chat.LastReadOutboxMessageId;
 
         public void SelectionChanged()
@@ -291,14 +291,14 @@ namespace Telegram.ViewModels
             return false;
         }
 
-        public bool IsFeedbackChatTopicMessage => _feedbackChatTopic != null;
+        public bool IsDirectMessagesChatTopicMessage => _directMessagesChatTopic != null;
 
         private bool? _hasSenderPhoto;
         public bool HasSenderPhoto => _hasSenderPhoto ??= GetHasSenderPhoto();
 
         private bool GetHasSenderPhoto()
         {
-            if (IsService || IsFeedbackChatTopicMessage)
+            if (IsService || IsDirectMessagesChatTopicMessage)
             {
                 return false;
             }

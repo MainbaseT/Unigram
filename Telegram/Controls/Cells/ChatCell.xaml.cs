@@ -138,7 +138,7 @@ namespace Telegram.Controls.Cells
         private Border OnlineHeart;
         private StackPanel Folders;
 
-        private BadgeControl FeedbackGroup;
+        private BadgeControl DirectMessagesGroup;
 
         private Border CompactBadgeRoot;
         private BadgeControl CompactBadge;
@@ -822,20 +822,20 @@ namespace Telegram.Controls.Cells
                 verification = user.VerificationStatus?.BotVerificationIconCustomEmojiId;
                 Identity.SetStatus(_clientService, user, true);
 
-                UnloadObject(ref FeedbackGroup);
+                UnloadObject(ref DirectMessagesGroup);
             }
             else if (_clientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 verification = supergroup.VerificationStatus?.BotVerificationIconCustomEmojiId;
                 Identity.SetStatus(supergroup);
 
-                if (supergroup.IsFeedbackGroup)
+                if (supergroup.IsDirectMessagesGroup)
                 {
-                    LoadObject(ref FeedbackGroup, nameof(FeedbackGroup));
+                    LoadObject(ref DirectMessagesGroup, nameof(DirectMessagesGroup));
                 }
                 else
                 {
-                    UnloadObject(ref FeedbackGroup);
+                    UnloadObject(ref DirectMessagesGroup);
                 }
             }
             else
@@ -843,7 +843,7 @@ namespace Telegram.Controls.Cells
                 verification = null;
                 Identity.ClearStatus();
 
-                UnloadObject(ref FeedbackGroup);
+                UnloadObject(ref DirectMessagesGroup);
             }
 
             if (verification is not null and not 0)

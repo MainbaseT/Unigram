@@ -147,7 +147,7 @@ namespace Telegram.Services
         bool IsSavedMessages(Chat chat);
 
         bool IsForum(Chat chat);
-        bool IsFeedbackGroup(Chat chat);
+        bool IsDirectMessagesGroup(Chat chat);
         bool HasTabs(Chat chat);
 
         bool IsPaid(Chat chat);
@@ -1609,11 +1609,11 @@ namespace Telegram.Services
             return false;
         }
 
-        public bool IsFeedbackGroup(Chat chat)
+        public bool IsDirectMessagesGroup(Chat chat)
         {
             if (TryGetSupergroup(chat, out Supergroup supergroup))
             {
-                return supergroup.IsFeedbackGroup;
+                return supergroup.IsDirectMessagesGroup;
             }
 
             return false;
@@ -1623,7 +1623,7 @@ namespace Telegram.Services
         {
             if (TryGetSupergroup(chat, out Supergroup supergroup))
             {
-                return supergroup.HasForumTabs || supergroup.IsFeedbackGroup;
+                return supergroup.HasForumTabs || supergroup.IsDirectMessagesGroup;
             }
 
             return false;
@@ -2965,8 +2965,8 @@ namespace Telegram.Services
                 case UpdateForumTopicInfo updateForumTopicInfo:
                     UpdateForumTopic(updateForumTopicInfo.Info.ChatId, true, manager => manager.UpdateForumTopicInfo(updateForumTopicInfo.Info));
                     break;
-                case UpdateFeedbackChatTopic updateFeedbackChatTopic:
-                    UpdateFeedbackChatTopic(updateFeedbackChatTopic.Topic.ChatId, manager => manager.UpdateFeedbackChatTopic(updateFeedbackChatTopic.Topic));
+                case UpdateDirectMessagesChatTopic updateDirectMessagesChatTopic:
+                    UpdateDirectMessagesChatTopic(updateDirectMessagesChatTopic.Topic.ChatId, manager => manager.UpdateDirectMessagesChatTopic(updateDirectMessagesChatTopic.Topic));
                     break;
                 case UpdateInstalledStickerSets updateInstalledStickerSets:
                     switch (updateInstalledStickerSets.StickerType)

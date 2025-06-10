@@ -2148,7 +2148,7 @@ namespace Telegram.Views
 
             flyout.CreateFlyoutItem(Search, Strings.Search, Icons.Search, VirtualKey.F);
 
-            if (ViewModel.SavedMessagesTopic != null || ViewModel.FeedbackChatTopic != null)
+            if (ViewModel.SavedMessagesTopic != null || ViewModel.DirectMessagesChatTopic != null)
             {
                 flyout.CreateFlyoutItem(ViewModel.DeleteTopic, Strings.DeleteChatUser, Icons.Delete, destructive: true);
 
@@ -2303,7 +2303,7 @@ namespace Telegram.Views
 
             flyout.CreateFlyoutItem(() => TextField.Send(true), Strings.SendWithoutSound, Icons.AlertOff);
 
-            if (!ViewModel.ClientService.IsPaid(chat) && !ViewModel.ClientService.IsFeedbackGroup(chat))
+            if (!ViewModel.ClientService.IsPaid(chat) && !ViewModel.ClientService.IsDirectMessagesGroup(chat))
             {
                 if (ViewModel.ClientService.TryGetUser(chat, out Td.Api.User user) && user.Type is UserTypeRegular && user.Status is not UserStatusRecently && !self)
                 {
@@ -3434,7 +3434,7 @@ namespace Telegram.Views
         {
             if (ViewModel.Type is not DialogType.History and not DialogType.Pinned)
             {
-                if (ViewModel.Type is not DialogType.Thread || (ViewModel.ForumTopic == null && ViewModel.FeedbackChatTopic == null))
+                if (ViewModel.Type is not DialogType.Thread || (ViewModel.ForumTopic == null && ViewModel.DirectMessagesChatTopic == null))
                 {
                     return false;
                 }
@@ -4717,9 +4717,9 @@ namespace Telegram.Views
             {
                 ChatTitle = ViewModel.ForumTopic.Info.Name;
             }
-            else if (ViewModel.FeedbackChatTopic != null)
+            else if (ViewModel.DirectMessagesChatTopic != null)
             {
-                ChatTitle = ViewModel.ClientService.GetTitle(ViewModel.FeedbackChatTopic.SenderId);
+                ChatTitle = ViewModel.ClientService.GetTitle(ViewModel.DirectMessagesChatTopic.SenderId);
             }
             else if (ViewModel.Thread != null)
             {
@@ -4825,13 +4825,13 @@ namespace Telegram.Views
                     TopicIconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
                 }
             }
-            else if (ViewModel.FeedbackChatTopic != null)
+            else if (ViewModel.DirectMessagesChatTopic != null)
             {
                 TopicIconRoot.Visibility = Visibility.Collapsed;
                 TopicIconGeneral.Visibility = Visibility.Collapsed;
 
                 Icon.Source = null;
-                Photo.SetMessageSender(ViewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId, 36);
+                Photo.SetMessageSender(ViewModel.ClientService, ViewModel.DirectMessagesChatTopic.SenderId, 36);
             }
             else if (ViewModel.Thread != null)
             {
@@ -4898,9 +4898,9 @@ namespace Telegram.Views
                     Identity.SetStatus(_viewModel.ClientService, savedChat, BotVerified);
                 }
             }
-            else if (ViewModel.FeedbackChatTopic != null)
+            else if (ViewModel.DirectMessagesChatTopic != null)
             {
-                Identity.SetStatus(_viewModel.ClientService, ViewModel.FeedbackChatTopic.SenderId);
+                Identity.SetStatus(_viewModel.ClientService, ViewModel.DirectMessagesChatTopic.SenderId);
             }
             else
             {
@@ -5089,9 +5089,9 @@ namespace Telegram.Views
             {
                 return Strings.SendAnonymously;
             }
-            else if (supergroup.IsFeedbackGroup)
+            else if (supergroup.IsDirectMessagesGroup)
             {
-                if (supergroup.IsAdministeredFeedbackGroup)
+                if (supergroup.IsAdministeredDirectMessagesGroup)
                 {
                     return Strings.TypeMessage;
                 }
@@ -6110,7 +6110,7 @@ namespace Telegram.Views
                 }
                 else if (group.Status is ChatMemberStatusCreator || group.Status is ChatMemberStatusAdministrator administrator)
                 {
-                    if (ViewModel.Type != DialogType.Thread && group.IsFeedbackGroup && group.IsAdministeredFeedbackGroup)
+                    if (ViewModel.Type != DialogType.Thread && group.IsDirectMessagesGroup && group.IsAdministeredDirectMessagesGroup)
                     {
                         ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
                     }
@@ -6148,13 +6148,13 @@ namespace Telegram.Views
                 {
                     ShowAction(Strings.GlobalSendMessageRestricted, fullInfo != null && fullInfo.UnrestrictBoostCount > 0);
                 }
-                else if (ViewModel.Type != DialogType.Thread && group.IsFeedbackGroup && group.IsAdministeredFeedbackGroup)
+                else if (ViewModel.Type != DialogType.Thread && group.IsDirectMessagesGroup && group.IsAdministeredDirectMessagesGroup)
                 {
                     ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
                 }
                 else
                 {
-                    ShowArea(group.IsAdministeredFeedbackGroup ? 0 : group.PaidMessageStarCount);
+                    ShowArea(group.IsAdministeredDirectMessagesGroup ? 0 : group.PaidMessageStarCount);
                 }
             }
 
@@ -6180,7 +6180,7 @@ namespace Telegram.Views
                 ViewModel.UpdateLastSeen(null as string);
             }
 
-            ButtonFeedback.Visibility = group.HasFeedbackGroup
+            ButtonFeedback.Visibility = group.HasDirectMessagesGroup
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
@@ -6241,7 +6241,7 @@ namespace Telegram.Views
 
         public void UpdateSupergroupEmptyState(Chat chat, Supergroup supergroup)
         {
-            var show = supergroup.IsFeedbackGroup && chat.LastMessage == null;
+            var show = supergroup.IsDirectMessagesGroup && chat.LastMessage == null;
 
             if (_restrictsNewChatsCollapsed != show)
             {
@@ -6787,11 +6787,11 @@ namespace Telegram.Views
                     ViewModel.NavigationService.NavigateToChat(chat, force: false);
                 }
             }
-            else if (e.ClickedItem is FeedbackChatTopic feedbackChatTopic && ViewModel.ClientService.TryGetChat(feedbackChatTopic.ChatId, out chat))
+            else if (e.ClickedItem is DirectMessagesChatTopic directMessagesChatTopic && ViewModel.ClientService.TryGetChat(directMessagesChatTopic.ChatId, out chat))
             {
-                if (feedbackChatTopic.Id != 0)
+                if (directMessagesChatTopic.Id != 0)
                 {
-                    NavigateToMessageTopic(chat, new MessageTopicFeedbackChat(feedbackChatTopic.Id));
+                    NavigateToMessageTopic(chat, new MessageTopicDirectMessages(directMessagesChatTopic.Id));
                 }
                 else
                 {
@@ -7217,7 +7217,7 @@ namespace Telegram.Views
         {
             if (ViewModel.ClientService.TryGetSupergroupFull(ViewModel.Chat, out SupergroupFullInfo fullInfo))
             {
-                ViewModel.NavigationService.NavigateToChat(fullInfo.FeedbackChatId);
+                ViewModel.NavigationService.NavigateToChat(fullInfo.DirectMessagesChatId);
             }
         }
 

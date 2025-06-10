@@ -188,7 +188,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public long FeedbackChatTopicId => FeedbackChatTopic?.Id ?? 0;
+        public long DirectMessagesChatTopicId => DirectMessagesChatTopic?.Id ?? 0;
 
         public MessageTopic Topic { get; set; }
 
@@ -213,11 +213,11 @@ namespace Telegram.ViewModels
             set => Set(ref _savedMessagesTopic, value);
         }
 
-        protected FeedbackChatTopic _feedbackChatTopic;
-        public FeedbackChatTopic FeedbackChatTopic
+        protected DirectMessagesChatTopic _directMessagesChatTopic;
+        public DirectMessagesChatTopic DirectMessagesChatTopic
         {
-            get => _feedbackChatTopic;
-            set => Set(ref _feedbackChatTopic, value);
+            get => _directMessagesChatTopic;
+            set => Set(ref _directMessagesChatTopic, value);
         }
 
         protected QuickReplyShortcut _quickReplyShortcut;
@@ -233,7 +233,7 @@ namespace Telegram.ViewModels
 
         public bool IsForum { get; private set; }
 
-        public bool IsFeedbackGroup { get; private set; }
+        public bool IsDirectMessagesGroup { get; private set; }
 
         protected Chat _chat;
         public override Chat Chat
@@ -254,7 +254,7 @@ namespace Telegram.ViewModels
             {
                 if (Type == DialogType.History)
                 {
-                    return IsFeedbackGroup ? Strings.ChatMessageSuggestions : _lastSeen;
+                    return IsDirectMessagesGroup ? Strings.ChatMessageSuggestions : _lastSeen;
                 }
                 else if (Type == DialogType.Thread)
                 {
@@ -520,7 +520,7 @@ namespace Telegram.ViewModels
         {
             get
             {
-                if (Type != DialogType.History || IsFeedbackGroup)
+                if (Type != DialogType.History || IsDirectMessagesGroup)
                 {
                     return 0;
                 }
@@ -794,9 +794,9 @@ namespace Telegram.ViewModels
                 {
                     func = new GetSavedMessagesTopicHistory(SavedMessagesTopic.Id, fromMessageId, offset, 50);
                 }
-                else if (FeedbackChatTopic != null)
+                else if (DirectMessagesChatTopic != null)
                 {
-                    func = new GetFeedbackChatTopicHistory(chat.Id, FeedbackChatTopic.Id, fromMessageId, offset, 50);
+                    func = new GetDirectMessagesChatTopicHistory(chat.Id, DirectMessagesChatTopic.Id, fromMessageId, offset, 50);
                 }
                 else if (ForumTopic != null)
                 {
@@ -1342,9 +1342,9 @@ namespace Telegram.ViewModels
             {
                 func = ClientService.SendAsync(new GetSavedMessagesTopicHistory(SavedMessagesTopic.Id, maxId, -25, 50));
             }
-            else if (FeedbackChatTopic != null)
+            else if (DirectMessagesChatTopic != null)
             {
-                func = ClientService.SendAsync(new GetFeedbackChatTopicHistory(chat.Id, FeedbackChatTopic.Id, maxId, -25, 50));
+                func = ClientService.SendAsync(new GetDirectMessagesChatTopicHistory(chat.Id, DirectMessagesChatTopic.Id, maxId, -25, 50));
             }
             else if (ForumTopic != null)
             {
@@ -1748,7 +1748,7 @@ namespace Telegram.ViewModels
                 return null;
             }
 
-            var model = new MessageViewModel(ClientService, _playbackService, _messageDelegate, _chat, _forumTopic, _feedbackChatTopic, message, true);
+            var model = new MessageViewModel(ClientService, _playbackService, _messageDelegate, _chat, _forumTopic, _directMessagesChatTopic, message, true);
 
             if (forLanguageStatistics)
             {
@@ -2114,17 +2114,17 @@ namespace Telegram.ViewModels
                         return;
                     }
                 }
-                else if (chatMessageTopic.MessageTopic is MessageTopicFeedbackChat feedbackChat)
+                else if (chatMessageTopic.MessageTopic is MessageTopicDirectMessages directMessagesChat)
                 {
-                    if (ClientService.TryGetFeedbackChatTopic(chatMessageTopic.ChatId, feedbackChat.FeedbackChatTopicId, out FeedbackChatTopic feedbeckChatTopic))
+                    if (ClientService.TryGetDirectMessagesChatTopic(chatMessageTopic.ChatId, directMessagesChat.DirectMessagesChatTopicId, out DirectMessagesChatTopic feedbeckChatTopic))
                     {
-                        FeedbackChatTopic = feedbeckChatTopic;
-                        Topic = new MessageTopicFeedbackChat(FeedbackChatTopic.Id);
+                        DirectMessagesChatTopic = feedbeckChatTopic;
+                        Topic = new MessageTopicDirectMessages(DirectMessagesChatTopic.Id);
                     }
                     else
                     {
-                        FeedbackChatTopic = await ClientService.SendAsync(new GetFeedbackChatTopic(chatMessageTopic.ChatId, feedbackChat.FeedbackChatTopicId)) as FeedbackChatTopic;
-                        Topic = new MessageTopicFeedbackChat(FeedbackChatTopic.Id);
+                        DirectMessagesChatTopic = await ClientService.SendAsync(new GetDirectMessagesChatTopic(chatMessageTopic.ChatId, directMessagesChat.DirectMessagesChatTopicId)) as DirectMessagesChatTopic;
+                        Topic = new MessageTopicDirectMessages(DirectMessagesChatTopic.Id);
                     }
                 }
             }
@@ -2150,7 +2150,7 @@ namespace Telegram.ViewModels
 
             Chat = chat;
             IsForum = Type == DialogType.History && ClientService.IsForum(chat);
-            IsFeedbackGroup = Type == DialogType.History && ClientService.IsFeedbackGroup(chat);
+            IsDirectMessagesGroup = Type == DialogType.History && ClientService.IsDirectMessagesGroup(chat);
 
             SetScrollMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
             SetTranslating();
@@ -2383,11 +2383,11 @@ namespace Telegram.ViewModels
                 lastMessageId = SavedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
                 lastReadInboxMessageId = SavedMessagesTopic.LastMessage?.Id ?? long.MaxValue;
             }
-            else if (FeedbackChatTopic != null)
+            else if (DirectMessagesChatTopic != null)
             {
-                messageThreadId = FeedbackChatTopic.Id;
-                lastMessageId = FeedbackChatTopic.LastMessage?.Id ?? long.MaxValue;
-                lastReadInboxMessageId = FeedbackChatTopic.LastReadInboxMessageId;
+                messageThreadId = DirectMessagesChatTopic.Id;
+                lastMessageId = DirectMessagesChatTopic.LastMessage?.Id ?? long.MaxValue;
+                lastReadInboxMessageId = DirectMessagesChatTopic.LastReadInboxMessageId;
             }
             else if (ForumTopic != null)
             {
@@ -2583,9 +2583,9 @@ namespace Telegram.ViewModels
             {
                 draft = ForumTopic.DraftMessage;
             }
-            else if (FeedbackChatTopic != null)
+            else if (DirectMessagesChatTopic != null)
             {
-                draft = FeedbackChatTopic.DraftMessage;
+                draft = DirectMessagesChatTopic.DraftMessage;
             }
             else if (Thread != null)
             {
@@ -2772,9 +2772,9 @@ namespace Telegram.ViewModels
 
             _draft = draft;
 
-            if (FeedbackChatTopic != null)
+            if (DirectMessagesChatTopic != null)
             {
-                ClientService.Send(new SetFeedbackChatTopicDraftMessage(_chat.Id, FeedbackChatTopic.Id, draft));
+                ClientService.Send(new SetDirectMessagesChatTopicDraftMessage(_chat.Id, DirectMessagesChatTopic.Id, draft));
             }
             else
             {
@@ -2878,7 +2878,7 @@ namespace Telegram.ViewModels
             var chatId = embedded.ReplyToMessage.ChatId;
             if (chatId == _chat?.Id || chatId == 0)
             {
-                if (embedded.ReplyToMessage.TopicId != null && (IsForum || IsFeedbackGroup))
+                if (embedded.ReplyToMessage.TopicId != null && (IsForum || IsDirectMessagesGroup))
                 {
                     return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, embedded.ReplyToMessage.TopicId, embedded.ReplyToQuote);
                 }
@@ -2969,7 +2969,7 @@ namespace Telegram.ViewModels
             var factory = header.EditingMessageMedia;
             if (factory is InputMessageContent input)
             {
-                var options = new MessageSendOptions(FeedbackChatTopicId, false, false, false, false, 0, false, null, 0, 0, true);
+                var options = new MessageSendOptions(DirectMessagesChatTopicId, false, false, false, false, 0, false, null, 0, 0, true);
 
                 var response = await ClientService.SendAsync(new SendMessage(editing.ChatId, editing.MessageThreadId, null, options, null, input));
                 if (response is Message preview)
@@ -3387,13 +3387,13 @@ namespace Telegram.ViewModels
             {
                 navigationService.Navigate(typeof(ProfilePage), new ChatMessageTopic(chat.Id, Topic), infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
             }
-            else if (FeedbackChatTopic != null)
+            else if (DirectMessagesChatTopic != null)
             {
-                navigationService.NavigateToSender(FeedbackChatTopic.SenderId, infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+                navigationService.NavigateToSender(DirectMessagesChatTopic.SenderId, infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
             }
-            else if (IsFeedbackGroup && ClientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
+            else if (IsDirectMessagesGroup && ClientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
             {
-                navigationService.Navigate(typeof(ProfilePage), fullInfo.FeedbackChatId, infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+                navigationService.Navigate(typeof(ProfilePage), fullInfo.DirectMessagesChatId, infoOverride: new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
             }
             else
             {
@@ -3407,9 +3407,9 @@ namespace Telegram.ViewModels
             {
                 DeleteSavedMessagesTopic(SavedMessagesTopic);
             }
-            else if (FeedbackChatTopic != null)
+            else if (DirectMessagesChatTopic != null)
             {
-                DeleteFeedbackChatTopic(FeedbackChatTopic);
+                DeleteDirectMessagesChatTopic(DirectMessagesChatTopic);
             }
         }
 
@@ -3442,7 +3442,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        private async void DeleteFeedbackChatTopic(FeedbackChatTopic topic)
+        private async void DeleteDirectMessagesChatTopic(DirectMessagesChatTopic topic)
         {
             var message = string.Format(Strings.AreYouSureClearHistoryWithUser, ClientService.GetTitle(topic.SenderId));
             var title = Strings.ClearHistory;
@@ -3451,7 +3451,7 @@ namespace Telegram.ViewModels
             if (confirm == ContentDialogResult.Primary)
             {
                 NavigationService.GoBack();
-                ClientService.Send(new DeleteFeedbackChatTopicHistory(ChatId, topic.Id));
+                ClientService.Send(new DeleteDirectMessagesChatTopicHistory(ChatId, topic.Id));
             }
         }
 
@@ -3972,9 +3972,9 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (FeedbackChatTopic != null)
+            if (DirectMessagesChatTopic != null)
             {
-                ClientService.Send(new ReadAllFeedbackChatTopicReactions(chat.Id, FeedbackChatTopic.Id));
+                ClientService.Send(new ReadAllDirectMessagesChatTopicReactions(chat.Id, DirectMessagesChatTopic.Id));
             }
             else if (ThreadId != 0)
             {
@@ -4213,9 +4213,9 @@ namespace Telegram.ViewModels
                     var confirm = await ShowPopupAsync(Strings.UnpinMessageAlert, Strings.AppName, Strings.OK, Strings.Cancel);
                     if (confirm == ContentDialogResult.Primary)
                     {
-                        if (FeedbackChatTopic != null)
+                        if (DirectMessagesChatTopic != null)
                         {
-                            ClientService.Send(new UnpinAllFeedbackChatTopicMessages(chat.Id, FeedbackChatTopic.Id));
+                            ClientService.Send(new UnpinAllDirectMessagesChatTopicMessages(chat.Id, DirectMessagesChatTopic.Id));
                         }
                         else if (ForumTopic != null)
                         {

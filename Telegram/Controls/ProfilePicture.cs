@@ -455,7 +455,7 @@ namespace Telegram.Controls
                 {
                     shape = ProfilePictureShape.Superellipse;
                 }
-                else if (supergroup.IsFeedbackGroup)
+                else if (supergroup.IsDirectMessagesGroup)
                 {
                     shape = ProfilePictureShape.Tail;
                 }

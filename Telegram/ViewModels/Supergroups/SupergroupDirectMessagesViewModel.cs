@@ -8,9 +8,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels.Supergroups
 {
-    public partial class SupergroupFeedbackGroupViewModel : SupergroupViewModelBase
+    public partial class SupergroupDirectMessagesViewModel : SupergroupViewModelBase
     {
-        public SupergroupFeedbackGroupViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
+        public SupergroupDirectMessagesViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
         }
@@ -50,18 +50,18 @@ namespace Telegram.ViewModels.Supergroups
 
             if (ClientService.TryGetSupergroup(chat, out Supergroup supergroup) && ClientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
             {
-                if (ClientService.TryGetChat(fullInfo.FeedbackChatId, out Chat feedbackChat))
+                if (ClientService.TryGetChat(fullInfo.DirectMessagesChatId, out Chat directMessagesChat))
                 {
-                    _cached = new SetChatFeedbackGroup(chat.Id, true, ClientService.PaidMessageStarCount(feedbackChat));
+                    _cached = new SetChatDirectMessagesGroup(chat.Id, true, ClientService.PaidMessageStarCount(directMessagesChat));
                 }
                 else
                 {
-                    _cached = new SetChatFeedbackGroup(chat.Id, false, ClientService.Options.DirectChannelMessageStarCountDefault);
+                    _cached = new SetChatDirectMessagesGroup(chat.Id, false, ClientService.Options.DirectChannelMessageStarCountDefault);
                 }
             }
             else
             {
-                _cached = new SetChatFeedbackGroup(chat.Id, false, ClientService.Options.DirectChannelMessageStarCountDefault);
+                _cached = new SetChatDirectMessagesGroup(chat.Id, false, ClientService.Options.DirectChannelMessageStarCountDefault);
             }
 
             IsEnabled = _cached.IsEnabled;
@@ -125,10 +125,10 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
-        private SetChatFeedbackGroup _cached;
-        private SetChatFeedbackGroup GetSettings()
+        private SetChatDirectMessagesGroup _cached;
+        private SetChatDirectMessagesGroup GetSettings()
         {
-            return new SetChatFeedbackGroup
+            return new SetChatDirectMessagesGroup
             {
                 ChatId = Chat.Id,
                 IsEnabled = IsEnabled,

@@ -241,7 +241,7 @@ namespace Telegram.ViewModels
 
             if (chat.Type is ChatTypeSupergroup super && super.SupergroupId == update.Supergroup.Id)
             {
-                if (IsFeedbackGroup)
+                if (IsDirectMessagesGroup)
                 {
                     UpdateEmptyState(update.Supergroup);
                 }
@@ -586,7 +586,7 @@ namespace Telegram.ViewModels
                 {
                     BeginOnUIThread(() => Delegate?.UpdateChatLastMessage(_chat));
                 }
-                else if (IsFeedbackGroup && ClientService.TryGetSupergroup(_chat, out Supergroup supergroup))
+                else if (IsDirectMessagesGroup && ClientService.TryGetSupergroup(_chat, out Supergroup supergroup))
                 {
                     UpdateEmptyState(supergroup);
                 }

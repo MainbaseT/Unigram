@@ -432,6 +432,7 @@ namespace Telegram.Services
                 UpdateLastReadInboxMessageId(topic, newTopic.LastReadInboxMessageId);
                 UpdateLastReadOutboxMessageId(topic, newTopic.LastReadOutboxMessageId);
 
+                // TODO: Not sure this is right
                 if (newTopic.LastMessage != null)
                 {
                     UpdateLastMessage(topic, newTopic.LastMessage);

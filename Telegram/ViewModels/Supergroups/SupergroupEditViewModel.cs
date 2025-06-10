@@ -129,7 +129,7 @@ namespace Telegram.ViewModels.Supergroups
             set => Set(ref _inviteLinksCount, value);
         }
 
-        public long FeedbackChatId { get; private set; }
+        public long DirectMessagesChatId { get; private set; }
 
         #region Initialize
 
@@ -160,7 +160,7 @@ namespace Telegram.ViewModels.Supergroups
                 }
                 else
                 {
-                    FeedbackChatId = cache.FeedbackChatId;
+                    DirectMessagesChatId = cache.DirectMessagesChatId;
                 }
             }
             else if (chat.Type is ChatTypeBasicGroup basic)
@@ -417,19 +417,19 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
-        public void FeedbackGroup()
+        public void DirectMessagesGroup()
         {
             if (_chat is Chat chat)
             {
-                NavigationService.Navigate(typeof(SupergroupFeedbackGroupPage), chat.Id);
+                NavigationService.Navigate(typeof(SupergroupDirectMessagesPage), chat.Id);
             }
         }
 
-        public void OpenFeedbackGroup()
+        public void OpenDirectMessagesGroup()
         {
             if (_chat is Chat chat && ClientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
             {
-                NavigationService.NavigateToChat(fullInfo.FeedbackChatId);
+                NavigationService.NavigateToChat(fullInfo.DirectMessagesChatId);
             }
         }
 

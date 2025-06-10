@@ -110,7 +110,7 @@ namespace Telegram.Views
             var minDateValue = DateTime.MaxValue;
             var minDateScheduled = false;
 
-            var minMessageTopic = ViewModel.IsForum || ViewModel.IsFeedbackGroup;
+            var minMessageTopic = ViewModel.IsForum || ViewModel.IsDirectMessagesGroup;
             var minMessageTopicIndex = panel.FirstVisibleIndex;
             var minMessageTopicValue = default(MessageTopic);
 
@@ -159,7 +159,7 @@ namespace Telegram.Views
 
                     if (minItem == 2 && point.Y + container.ActualHeight >= 0)
                     {
-                        minItem = ViewModel.IsForum || ViewModel.IsFeedbackGroup ? 1 : 0;
+                        minItem = ViewModel.IsForum || ViewModel.IsDirectMessagesGroup ? 1 : 0;
 
                         if (message.Content is MessageHeaderUnread)
                         {
@@ -369,11 +369,11 @@ namespace Telegram.Views
                     DialogType.EventLog => new MessageSourceChatEventLog(),
                     DialogType.Thread => ViewModel.ForumTopic != null
                         ? new MessageSourceForumTopicHistory()
-                        : ViewModel.FeedbackChatTopic != null
-                        ? new MessageSourceFeedbackChatTopicHistory()
+                        : ViewModel.DirectMessagesChatTopic != null
+                        ? new MessageSourceDirectMessagesChatTopicHistory()
                         : new MessageSourceMessageThreadHistory(),
-                    _ => ViewModel.IsFeedbackGroup
-                    ? new MessageSourceFeedbackChatTopicHistory()
+                    _ => ViewModel.IsDirectMessagesGroup
+                    ? new MessageSourceDirectMessagesChatTopicHistory()
                     : new MessageSourceChatHistory()
                 };
 
@@ -564,10 +564,10 @@ namespace Telegram.Views
                     ForumTopicHeaderIconText.Text = InitialNameStringConverter.Convert(forumTopic.Info.Name);
                 }
             }
-            else if (ViewModel.ClientService.TryGetFeedbackChatTopic(ViewModel.ChatId, messageTopic, out FeedbackChatTopic feedbackChatTopic))
+            else if (ViewModel.ClientService.TryGetDirectMessagesChatTopic(ViewModel.ChatId, messageTopic, out DirectMessagesChatTopic directMessagesChatTopic))
             {
-                ForumTopicHeaderLabel.Text = ViewModel.ClientService.GetTitle(feedbackChatTopic.SenderId);
-                ForumTopicHeaderPhoto.SetMessageSender(ViewModel.ClientService, feedbackChatTopic.SenderId, 16);
+                ForumTopicHeaderLabel.Text = ViewModel.ClientService.GetTitle(directMessagesChatTopic.SenderId);
+                ForumTopicHeaderPhoto.SetMessageSender(ViewModel.ClientService, directMessagesChatTopic.SenderId, 16);
 
                 ForumTopicHeaderTypeIcon.ClearStatus();
                 ForumTopicHeaderIconRoot.Visibility = Visibility.Collapsed;

@@ -17,7 +17,7 @@ using WinRT;
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Td.Api.CloseBirthdayUser[]))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Td.Api.ClosedVectorPath[]))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Td.Api.Emojis[]))]
-[assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Td.Api.FeedbackChatTopic[]))]
+[assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Td.Api.DirectMessagesChatTopic[]))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Td.Api.ForumTopic[]))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Td.Api.GroupCallParticipant[]))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Td.Api.MessageEffect[]))]

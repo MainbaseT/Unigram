@@ -492,7 +492,7 @@ namespace Telegram.Controls.Cells
                 else if (result.Chat != null && result.Chat.Type is ChatTypeSupergroup super)
                 {
                     var supergroup = clientService.GetSupergroup(super.SupergroupId);
-                    if (supergroup.IsFeedbackGroup)
+                    if (supergroup.IsDirectMessagesGroup)
                     {
                         SubtitleLabel.Text = Strings.MonoforumMessages;
                     }

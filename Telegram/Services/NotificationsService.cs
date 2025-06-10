@@ -717,9 +717,9 @@ namespace Telegram.Services
             {
                 launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;saved_messages_topic_id={1}", launch, messageTopicSavedMessages.SavedMessagesTopicId);
             }
-            else if (message.TopicId is MessageTopicFeedbackChat messageTopicFeedbackChat)
+            else if (message.TopicId is MessageTopicDirectMessages messageTopicDirectMessagesChat)
             {
-                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;feedback_chat_topic_id={1}", launch, messageTopicFeedbackChat.FeedbackChatTopicId);
+                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;feedback_chat_topic_id={1}", launch, messageTopicDirectMessagesChat.DirectMessagesChatTopicId);
             }
 
             return launch;

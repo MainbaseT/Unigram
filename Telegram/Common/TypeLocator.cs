@@ -384,8 +384,8 @@ namespace Telegram.Views
                         _clientService,
                         _settingsService,
                         _eventAggregator);
-                case "Telegram.ViewModels.Supergroups.SupergroupFeedbackGroupViewModel":
-                    return (T)(object)new Telegram.ViewModels.Supergroups.SupergroupFeedbackGroupViewModel(
+                case "Telegram.ViewModels.Supergroups.SupergroupDirectMessagesGroupViewModel":
+                    return (T)(object)new Telegram.ViewModels.Supergroups.SupergroupDirectMessagesViewModel(
                         _clientService,
                         _settingsService,
                         _eventAggregator);

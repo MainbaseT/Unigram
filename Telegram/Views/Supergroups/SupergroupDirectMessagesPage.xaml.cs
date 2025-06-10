@@ -4,11 +4,11 @@ using Telegram.ViewModels.Supergroups;
 
 namespace Telegram.Views.Supergroups
 {
-    public sealed partial class SupergroupFeedbackGroupPage : HostedPage
+    public sealed partial class SupergroupDirectMessagesPage : HostedPage
     {
-        public SupergroupFeedbackGroupViewModel ViewModel => DataContext as SupergroupFeedbackGroupViewModel;
+        public SupergroupDirectMessagesViewModel ViewModel => DataContext as SupergroupDirectMessagesViewModel;
 
-        public SupergroupFeedbackGroupPage()
+        public SupergroupDirectMessagesPage()
         {
             InitializeComponent();
             Title = Strings.PostSuggestions;

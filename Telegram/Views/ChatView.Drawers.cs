@@ -45,7 +45,7 @@ namespace Telegram.Views
                 flyout.CreateFlyoutItem(ViewModel.RemoveRecentSticker, sticker, Strings.DeleteFromRecent, Icons.Delete, destructive: true);
             }
 
-            if (ViewModel.Type is DialogType.History or DialogType.Thread && !ViewModel.ClientService.IsPaid(ViewModel.Chat) && !ViewModel.ClientService.IsFeedbackGroup(ViewModel.Chat))
+            if (ViewModel.Type is DialogType.History or DialogType.Thread && !ViewModel.ClientService.IsPaid(ViewModel.Chat) && !ViewModel.ClientService.IsDirectMessagesGroup(ViewModel.Chat))
             {
                 var chat = ViewModel.Chat;
                 if (chat == null)
@@ -84,7 +84,7 @@ namespace Telegram.Views
                 flyout.CreateFlyoutItem(ViewModel.SaveAnimation, animation, Strings.SaveToGIFs, Icons.Gif);
             }
 
-            if (ViewModel.Type is DialogType.History or DialogType.Thread && !ViewModel.ClientService.IsPaid(ViewModel.Chat) && !ViewModel.ClientService.IsFeedbackGroup(ViewModel.Chat))
+            if (ViewModel.Type is DialogType.History or DialogType.Thread && !ViewModel.ClientService.IsPaid(ViewModel.Chat) && !ViewModel.ClientService.IsDirectMessagesGroup(ViewModel.Chat))
             {
                 var chat = ViewModel.Chat;
                 if (chat == null)

@@ -1529,9 +1529,9 @@ namespace Telegram.Views
                 {
                     messageTopic = new MessageTopicSavedMessages(savedMessagesTopicId);
                 }
-                else if (long.TryParse(feedback_chat_topic_id, out long feedbackChatTopicId))
+                else if (long.TryParse(feedback_chat_topic_id, out long directMessagesChatTopicId))
                 {
-                    messageTopic = new MessageTopicFeedbackChat(feedbackChatTopicId);
+                    messageTopic = new MessageTopicDirectMessages(directMessagesChatTopicId);
                 }
 
                 if (_clientService.TryGetChat(chatId, out Chat chat))

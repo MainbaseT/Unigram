@@ -139,7 +139,7 @@
                                                        VerticalAlignment="Bottom"
                                                        Margin="4,0,0,0"
                                                        Grid.Column="2" />
-                                <controls:BadgeControl x:Name="FeedbackGroup"
+                                <controls:BadgeControl x:Name="DirectMessagesGroup"
                                                        x:Load="False"
                                                        Text="{CustomResource MonoforumSpan}"
                                                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"

@@ -626,12 +626,12 @@ namespace Telegram.ViewModels
         {
             SelectedTopics.TryGetValue(chat.Id, out MessageTopic topic);
 
-            long feedbackChatTopicId = 0;
+            long directMessagesChatTopicId = 0;
             long messageThreadId = 0;
 
-            if (topic is MessageTopicFeedbackChat feedbackChat)
+            if (topic is MessageTopicDirectMessages directMessagesChat)
             {
-                feedbackChatTopicId = feedbackChat.FeedbackChatTopicId;
+                directMessagesChatTopicId = directMessagesChat.DirectMessagesChatTopicId;
             }
             else if (topic is MessageTopicForum forum && ClientService.TryGetForumTopic(chat.Id, forum.ForumTopicId, out ForumTopic forumTopic))
             {
@@ -639,7 +639,7 @@ namespace Telegram.ViewModels
             }
 
             var starCount = ClientService.PaidMessageStarCount(chat);
-            var options = new MessageSendOptions(feedbackChatTopicId, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+            var options = new MessageSendOptions(directMessagesChatTopicId, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
 
             action(options, messageThreadId);
         }

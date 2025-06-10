@@ -162,10 +162,10 @@ namespace Telegram.Controls.Messages
                         iconText.Text = InitialNameStringConverter.Convert(topic.Info.Name);
                     }
                 }
-                else if (message.ClientService.TryGetFeedbackChatTopic(message.ChatId, message.TopicId, out FeedbackChatTopic feedbackChatTopic))
+                else if (message.ClientService.TryGetDirectMessagesChatTopic(message.ChatId, message.TopicId, out DirectMessagesChatTopic directMessagesChatTopic))
                 {
-                    title.Text = message.ClientService.GetTitle(feedbackChatTopic.SenderId);
-                    photo.SetMessageSender(message.ClientService, feedbackChatTopic.SenderId, 16);
+                    title.Text = message.ClientService.GetTitle(directMessagesChatTopic.SenderId);
+                    photo.SetMessageSender(message.ClientService, directMessagesChatTopic.SenderId, 16);
 
                     typeIcon.ClearStatus();
                     iconRoot.Visibility = Visibility.Collapsed;
@@ -540,7 +540,7 @@ namespace Telegram.Controls.Messages
                 MessageChatUpgradeTo chatUpgradeTo => UpdateChatUpgradeTo(message, chatUpgradeTo, history),
                 MessageContactRegistered contactRegistered => UpdateContactRegistered(message, contactRegistered, history),
                 MessageCustomServiceAction customServiceAction => UpdateCustomServiceAction(message, customServiceAction, history),
-                MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged => UpdateFeedbackMessagePriceChanged(message, feedbackMessagePriceChanged, history),
+                MessageDirectMessagePriceChanged directMessagePriceChanged => UpdateDirectMessagePriceChanged(message, directMessagePriceChanged, history),
                 MessageForumTopicCreated forumTopicCreated => UpdateForumTopicCreated(message, forumTopicCreated, history),
                 MessageForumTopicEdited forumTopicEdited => UpdateForumTopicEdited(message, forumTopicEdited, history),
                 MessageForumTopicIsClosedToggled forumTopicIsClosedToggled => UpdateForumTopicIsClosedToggled(message, forumTopicIsClosedToggled, history),
@@ -1976,13 +1976,13 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private static FormattedText UpdateFeedbackMessagePriceChanged(MessageWithOwner message, MessageFeedbackMessagePriceChanged feedbackMessagePriceChanged, bool history)
+        private static FormattedText UpdateDirectMessagePriceChanged(MessageWithOwner message, MessageDirectMessagePriceChanged directMessagePriceChanged, bool history)
         {
-            if (feedbackMessagePriceChanged.IsEnabled)
+            if (directMessagePriceChanged.IsEnabled)
             {
-                if (feedbackMessagePriceChanged.PaidMessageStarCount > 0)
+                if (directMessagePriceChanged.PaidMessageStarCount > 0)
                 {
-                    return ReplaceWithLink(Locale.Declension(Strings.R.PostSuggestionsPriceUpdated, feedbackMessagePriceChanged.PaidMessageStarCount), message.GetSender());
+                    return ReplaceWithLink(Locale.Declension(Strings.R.PostSuggestionsPriceUpdated, directMessagePriceChanged.PaidMessageStarCount), message.GetSender());
                 }
                 else
                 {

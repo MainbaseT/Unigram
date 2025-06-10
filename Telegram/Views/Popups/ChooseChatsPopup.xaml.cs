@@ -1266,9 +1266,9 @@ namespace Telegram.Views.Popups
                 {
                     topicCell.UpdateCell(ViewModel.ClientService, forumTopic);
                 }
-                else if (args.Item is FeedbackChatTopic feedbackChatTopic)
+                else if (args.Item is DirectMessagesChatTopic directMessagesChatTopic)
                 {
-                    topicCell.UpdateCell(ViewModel.ClientService, feedbackChatTopic);
+                    topicCell.UpdateCell(ViewModel.ClientService, directMessagesChatTopic);
                 }
 
                 args.Handled = true;
@@ -1410,7 +1410,7 @@ namespace Telegram.Views.Popups
             }
             else
             {
-                ForumList.ItemsSource = new TopicListViewModel.FeedbackChatTopicsCollection(ViewModel.ClientService, ViewModel.Aggregator, null, chat);
+                ForumList.ItemsSource = new TopicListViewModel.DirectMessagesChatTopicsCollection(ViewModel.ClientService, ViewModel.Aggregator, null, chat);
             }
         }
 
@@ -1573,10 +1573,10 @@ namespace Telegram.Views.Popups
                 ViewModel.SelectedTopics[forumTopicCollection.Chat.Id] = forumTopic.ToId();
                 ShowHideForum(null);
             }
-            else if (item is FeedbackChatTopic feedbackChatTopic && ForumList.ItemsSource is TopicListViewModel.FeedbackChatTopicsCollection feedbackChatTopicCollection)
+            else if (item is DirectMessagesChatTopic directMessagesChatTopic && ForumList.ItemsSource is TopicListViewModel.DirectMessagesChatTopicsCollection directMessagesChatTopicCollection)
             {
-                item = feedbackChatTopicCollection.Chat;
-                ViewModel.SelectedTopics[feedbackChatTopicCollection.Chat.Id] = feedbackChatTopic.ToId();
+                item = directMessagesChatTopicCollection.Chat;
+                ViewModel.SelectedTopics[directMessagesChatTopicCollection.Chat.Id] = directMessagesChatTopic.ToId();
                 ShowHideForum(null);
             }
 
@@ -1600,7 +1600,7 @@ namespace Telegram.Views.Popups
             }
 
             var chat = item as Chat;
-            if (chat == null || ItemClick(chat, e.ClickedItem is not ForumTopic and not FeedbackChatTopic))
+            if (chat == null || ItemClick(chat, e.ClickedItem is not ForumTopic and not DirectMessagesChatTopic))
             {
                 return;
             }
@@ -1659,7 +1659,7 @@ namespace Telegram.Views.Popups
                 ConfirmPaidMessages();
                 return true;
             }
-            else if (ViewModel.Options.CanPostMessages && origin && (ViewModel.ClientService.IsForum(chat) || ViewModel.ClientService.IsFeedbackGroup(chat)))
+            else if (ViewModel.Options.CanPostMessages && origin && (ViewModel.ClientService.IsForum(chat) || ViewModel.ClientService.IsDirectMessagesGroup(chat)))
             {
                 if (ViewModel.SelectedItems.Contains(chat))
                 {

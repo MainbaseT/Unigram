@@ -127,10 +127,10 @@ namespace Telegram.Services
 
                     //manager.GetForumTopicsAsync(0, 20);
                 }
-                else if (supergroup.IsFeedbackGroup && !_feedbackChats.ContainsKey(chat.Id))
+                else if (supergroup.IsDirectMessagesGroup && !_directMessagesChats.ContainsKey(chat.Id))
                 {
-                    var manager = new FeedbackChatTopicService(this, _aggregator, chat.Id);
-                    _feedbackChats[chat.Id] = manager;
+                    var manager = new DirectMessagesChatTopicService(this, _aggregator, chat.Id);
+                    _directMessagesChats[chat.Id] = manager;
                 }
             }
         }

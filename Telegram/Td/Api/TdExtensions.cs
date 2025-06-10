@@ -203,7 +203,7 @@ namespace Telegram.Td.Api
             return string.Equals(x.ToString(), y.ToString());
         }
 
-        public static bool AreTheSame(this SetChatFeedbackGroup x, SetChatFeedbackGroup y)
+        public static bool AreTheSame(this SetChatDirectMessagesGroup x, SetChatDirectMessagesGroup y)
         {
             if (x == null || y == null)
             {
@@ -378,10 +378,10 @@ namespace Telegram.Td.Api
             {
                 return oldSavedMessages.SavedMessagesTopicId == newSavedMessages.SavedMessagesTopicId;
             }
-            else if (x is MessageTopicFeedbackChat oldFeedbackChat
-                && y is MessageTopicFeedbackChat newFeedbackChat)
+            else if (x is MessageTopicDirectMessages oldDirectMessagesChat
+                && y is MessageTopicDirectMessages newDirectMessagesChat)
             {
-                return oldFeedbackChat.FeedbackChatTopicId == newFeedbackChat.FeedbackChatTopicId;
+                return oldDirectMessagesChat.DirectMessagesChatTopicId == newDirectMessagesChat.DirectMessagesChatTopicId;
             }
 
             return false;
@@ -397,9 +397,9 @@ namespace Telegram.Td.Api
             return messageTopic is MessageTopicForum forum && forum.ForumTopicId == forumTopicId;
         }
 
-        public static bool IsFeedbackChat(this MessageTopic messageTopic, long feedbackChatTopicId)
+        public static bool IsDirectMessagesChat(this MessageTopic messageTopic, long directMessagesChatTopicId)
         {
-            return messageTopic is MessageTopicFeedbackChat feedbackChat && feedbackChat.FeedbackChatTopicId == feedbackChatTopicId;
+            return messageTopic is MessageTopicDirectMessages directMessagesChat && directMessagesChat.DirectMessagesChatTopicId == directMessagesChatTopicId;
         }
 
         public static MessageTopic TopicIdNotGeneral(this Message message)
@@ -422,9 +422,9 @@ namespace Telegram.Td.Api
             return new MessageTopicSavedMessages(topic.Id);
         }
 
-        public static MessageTopic ToId(this FeedbackChatTopic topic)
+        public static MessageTopic ToId(this DirectMessagesChatTopic topic)
         {
-            return new MessageTopicFeedbackChat(topic.Id);
+            return new MessageTopicDirectMessages(topic.Id);
         }
 
         public static bool AreTheSame(this MessageSelfDestructType x, MessageSelfDestructType y)
@@ -2918,13 +2918,13 @@ namespace Telegram.Td.Api
         }
 
         // TODO: remove once exposed by TDLib
-        public static bool IsFeedbackChatAdministrator(this Chat chat, IClientService clientService)
+        public static bool IsDirectMessagesChatAdministrator(this Chat chat, IClientService clientService)
         {
             if (clientService.TryGetSupergroup(chat, out Supergroup supergroup) && clientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
             {
-                if (supergroup.IsFeedbackGroup && clientService.TryGetChat(fullInfo.FeedbackChatId, out chat))
+                if (supergroup.IsDirectMessagesGroup && clientService.TryGetChat(fullInfo.DirectMessagesChatId, out chat))
                 {
-                    clientService.TryGetChat(fullInfo.FeedbackChatId, out chat);
+                    clientService.TryGetChat(fullInfo.DirectMessagesChatId, out chat);
                 }
 
                 var status = clientService.GetChatMemberStatus(chat, out bool channel);
@@ -2947,10 +2947,10 @@ namespace Telegram.Td.Api
                     return true;
                 }
 
-                if (supergroup.IsFeedbackGroup)
+                if (supergroup.IsDirectMessagesGroup)
                 {
                     isForum = false;
-                    return supergroup.IsAdministeredFeedbackGroup;
+                    return supergroup.IsAdministeredDirectMessagesGroup;
                 }
             }
 

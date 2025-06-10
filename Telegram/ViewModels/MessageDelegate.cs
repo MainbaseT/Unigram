@@ -47,7 +47,7 @@ namespace Telegram.ViewModels
 
         public bool IsForum => _viewModel is DialogViewModel { IsForum: true };
 
-        public bool IsFeedbackGroup => _viewModel is DialogViewModel { IsFeedbackGroup: true };
+        public bool IsDirectMessagesGroup => _viewModel is DialogViewModel { IsDirectMessagesGroup: true };
 
         public override INavigationService NavigationService
         {

@@ -144,9 +144,9 @@
                                           Glyph="&#xEA67;"
                                           IsChevronVisible="True" />
 
-                    <controls:BadgeButton x:Name="ChannelFeedbackGroup"
+                    <controls:BadgeButton x:Name="ChannelDirectMessagesGroup"
                                           Content="{CustomResource PostSuggestions}"
-                                          Click="{x:Bind ViewModel.FeedbackGroup}"
+                                          Click="{x:Bind ViewModel.DirectMessagesGroup}"
                                           Style="{StaticResource GlyphBadgeButtonStyle}"
                                           Glyph="&#xE992;"
                                           IsChevronVisible="True">
@@ -156,11 +156,11 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <controls:PremiumStarCount x:Name="ChannelFeedbackGroupStars"
+                                <controls:PremiumStarCount x:Name="ChannelDirectMessagesGroupStars"
                                                            Visibility="Collapsed"
                                                            Margin="8,-4,4,-6"
                                                            Width="20" />
-                                <TextBlock x:Name="ChannelFeedbackGroupStarCount"
+                                <TextBlock x:Name="ChannelDirectMessagesGroupStarCount"
                                            VerticalAlignment="Center"
                                            Grid.Column="1" />
                             </Grid>
@@ -168,12 +168,12 @@
                     </controls:BadgeButton>
                 </controls:HeaderedControl>
 
-                <controls:HeaderedControl x:Name="ChannelFeedbackGroupRoot"
+                <controls:HeaderedControl x:Name="ChannelDirectMessagesGroupRoot"
                                           Visibility="Collapsed">
-                    <Button Click="{x:Bind ViewModel.OpenFeedbackGroup}"
+                    <Button Click="{x:Bind ViewModel.OpenDirectMessagesGroup}"
                             Style="{StaticResource EmptyButtonStyle}"
                             AutomationProperties.Name="{CustomResource ProfileChannel}">
-                        <cells:ChatCell x:Name="ChannelFeedbackGroupCell"
+                        <cells:ChatCell x:Name="ChannelDirectMessagesGroupCell"
                                         Stroke="{ThemeResource ChatLastMessageStateBrush}" />
                     </Button>
                 </controls:HeaderedControl>
