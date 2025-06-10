@@ -16,18 +16,20 @@
     <StackPanel>
         <Grid>
             <chats:ChatBackgroundControl x:Name="BackgroundControl" />
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          VerticalScrollMode="Auto">
+                <StackPanel Padding="12,8"
+                            Spacing="8">
+                    <messages:MessageService>
+                        <TextBlock Text="{CustomResource BotShareMessagePreview}"
+                                   Foreground="#FFFFFF"
+                                   FontSize="12" />
+                    </messages:MessageService>
 
-            <StackPanel Padding="12,8"
-                        Spacing="8">
-                <messages:MessageService>
-                    <TextBlock Text="{CustomResource BotShareMessagePreview}"
-                               Foreground="#FFFFFF"
-                               FontSize="12" />
-                </messages:MessageService>
-
-                <messages:MessageBubble x:Name="Message"
-                                        HorizontalAlignment="Left" />
-            </StackPanel>
+                    <messages:MessageBubble x:Name="Message"
+                                            HorizontalAlignment="Left" />
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
 
         <TextBlock x:Name="CaptionInfo"
