@@ -324,6 +324,32 @@ namespace Telegram.Controls
             return ShowActionAsync(xamlRoot, target, text, action, animated, placement, requestedTheme, dismissAfter);
         }
 
+        public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, string text, string action, AnimatedImageSource icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
+        {
+            return ShowActionAsync(xamlRoot, ClientEx.ParseMarkdown(text), action, icon, requestedTheme, dismissAfter);
+        }
+
+        public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FormattedText text, string action, AnimatedImageSource icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
+        {
+            AnimatedImage animated = null;
+            if (icon != null)
+            {
+                animated = new AnimatedImage
+                {
+                    Source = icon,
+                    Width = 32,
+                    Height = 32,
+                    AutoPlay = true,
+                    LoopCount = 1,
+                    IsCachingEnabled = false,
+                    FrameSize = new Size(32, 32),
+                    DecodeFrameType = DecodePixelType.Logical,
+                    Margin = new Thickness(-4, -12, 8, -12)
+                };
+            }
+
+            return ShowActionAsync(xamlRoot, null, text, action, animated, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+        }
         public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, string text, string action, FrameworkElement icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
             return ShowActionAsync(xamlRoot, null, ClientEx.ParseMarkdown(text), action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);

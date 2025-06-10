@@ -278,7 +278,7 @@ namespace Telegram.Controls.Messages.Content
                 {
                     if (Interactions?.Children.Count > 0)
                     {
-                        _message.Delegate.OpenSticker(sticker);
+                        ShowToast(_message, sticker);
                     }
                     else
                     {
@@ -292,6 +292,19 @@ namespace Telegram.Controls.Messages.Content
                 else
                 {
                     Player.Play();
+                }
+            }
+        }
+
+        private async void ShowToast(MessageViewModel message, Sticker sticker)
+        {
+            var response = await message.ClientService.SendAsync(new GetStickerSet(sticker.SetId));
+            if (response is StickerSet stickerSet)
+            {
+                var confirm = await ToastPopup.ShowActionAsync(XamlRoot, string.Format("**{0}**\n{1}", stickerSet.Title, Strings.PremiumStickerTooltip), Strings.ViewAction, new DelayedFileSource(message.ClientService, sticker));
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    message.Delegate.OpenSticker(sticker);
                 }
             }
         }
