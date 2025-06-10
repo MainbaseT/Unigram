@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -14,7 +15,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels.Supergroups
 {
-    public partial class SupergroupPermissionsViewModel : SupergroupMembersViewModelBase
+    public partial class SupergroupPermissionsViewModel : SupergroupMembersViewModelBase, IHandle
     {
         public SupergroupPermissionsViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator, new SupergroupMembersFilterRestricted(), query => new SupergroupMembersFilterRestricted(query))
@@ -52,6 +53,34 @@ namespace Telegram.ViewModels.Supergroups
                 {
                     UnrestrictBoosters = fullInfo.UnrestrictBoostCount > 0;
                     UnrestrictBoostCount = fullInfo.UnrestrictBoostCount;
+                }
+            }
+        }
+
+        public override void Subscribe()
+        {
+            Aggregator.Subscribe<UpdateChatMember>(this, Handle);
+        }
+
+        private void Handle(UpdateChatMember update)
+        {
+            if (update.ChatId == _chat.Id)
+            {
+                var item = Members.FirstOrDefault(x => x.MemberId.AreTheSame(update.NewChatMember.MemberId));
+                if (item != null)
+                {
+                    if (update.NewChatMember.Status is ChatMemberStatusRestricted)
+                    {
+                        item.Status = update.NewChatMember.Status;
+                    }
+                    else
+                    {
+                        Members.Remove(item);
+                    }
+                }
+                else if (update.NewChatMember.Status is ChatMemberStatusRestricted)
+                {
+                    Members.Insert(0, update.NewChatMember);
                 }
             }
         }

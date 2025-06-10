@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System.Linq;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.Views;
@@ -11,11 +12,39 @@ using Telegram.Views.Supergroups.Popups;
 
 namespace Telegram.ViewModels.Supergroups
 {
-    public partial class SupergroupAdministratorsViewModel : SupergroupMembersViewModelBase
+    public partial class SupergroupAdministratorsViewModel : SupergroupMembersViewModelBase, IHandle
     {
         public SupergroupAdministratorsViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator, new SupergroupMembersFilterAdministrators(), query => new SupergroupMembersFilterAdministrators())
         {
+        }
+
+        public override void Subscribe()
+        {
+            Aggregator.Subscribe<UpdateChatMember>(this, Handle);
+        }
+
+        private void Handle(UpdateChatMember update)
+        {
+            if (update.ChatId == _chat.Id)
+            {
+                var item = Members.FirstOrDefault(x => x.MemberId.AreTheSame(update.NewChatMember.MemberId));
+                if (item != null)
+                {
+                    if (update.NewChatMember.Status is ChatMemberStatusAdministrator or ChatMemberStatusCreator)
+                    {
+                        item.Status = update.NewChatMember.Status;
+                    }
+                    else
+                    {
+                        Members.Remove(item);
+                    }
+                }
+                else if (update.NewChatMember.Status is ChatMemberStatusAdministrator or ChatMemberStatusCreator)
+                {
+                    Members.Insert(0, update.NewChatMember);
+                }
+            }
         }
 
         private bool _isAggressiveAntiSpamEnabled;

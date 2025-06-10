@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Services;
@@ -13,11 +14,39 @@ using Telegram.Views.Supergroups.Popups;
 
 namespace Telegram.ViewModels.Supergroups
 {
-    public partial class SupergroupBannedViewModel : SupergroupMembersViewModelBase
+    public partial class SupergroupBannedViewModel : SupergroupMembersViewModelBase, IHandle
     {
         public SupergroupBannedViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator, new SupergroupMembersFilterBanned(), query => new SupergroupMembersFilterBanned(query))
         {
+        }
+
+        public override void Subscribe()
+        {
+            Aggregator.Subscribe<UpdateChatMember>(this, Handle);
+        }
+
+        private void Handle(UpdateChatMember update)
+        {
+            if (update.ChatId == _chat.Id)
+            {
+                var item = Members.FirstOrDefault(x => x.MemberId.AreTheSame(update.NewChatMember.MemberId));
+                if (item != null)
+                {
+                    if (update.NewChatMember.Status is ChatMemberStatusBanned)
+                    {
+                        item.Status = update.NewChatMember.Status;
+                    }
+                    else
+                    {
+                        Members.Remove(item);
+                    }
+                }
+                else if (update.NewChatMember.Status is ChatMemberStatusBanned)
+                {
+                    Members.Insert(0, update.NewChatMember);
+                }
+            }
         }
 
         public void Add()
