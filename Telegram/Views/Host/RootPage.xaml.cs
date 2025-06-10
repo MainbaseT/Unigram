@@ -403,15 +403,14 @@ namespace Telegram.Views.Host
                 }
             }
 
-            var hasArchived = true;
-            var hasPremium = true;
+            var hasArchived = SettingsService.Current.HideArchivedChats;
+            var hasPremium = clientService.IsPremium;
 
-            if (SettingsService.Current.HideArchivedChats is false)
+            if (!hasArchived)
             {
                 if (_navigationViewItems[1] is RootDestination.ArchivedChats)
                 {
                     _navigationViewItems.RemoveAt(1);
-                    hasArchived = false;
                 }
             }
             else if (_navigationViewItems[1] is not RootDestination.ArchivedChats)
@@ -421,12 +420,11 @@ namespace Telegram.Views.Host
 
             var index = hasArchived ? 4 : 3;
 
-            if (clientService.IsPremium is false)
+            if (!hasPremium)
             {
                 if (_navigationViewItems[index] is RootDestination.Status)
                 {
                     _navigationViewItems.RemoveAt(index);
-                    hasPremium = false;
                 }
             }
             else if (_navigationViewItems[index] is not RootDestination.Status)
