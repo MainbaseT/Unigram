@@ -575,11 +575,6 @@ namespace Telegram.Services
                 var level = Client.Execute(new GetLogTagVerbosityLevel(tag)) as LogVerbosityLevel;
 
                 var saved = _settings.Diagnostics.GetValueOrDefault(tag, -1);
-                if (tag == "td_init")
-                {
-                    saved = 1;
-                }
-
                 if (saved != level.VerbosityLevel && saved > -1)
                 {
                     Client.Execute(new SetLogTagVerbosityLevel(tag, saved));

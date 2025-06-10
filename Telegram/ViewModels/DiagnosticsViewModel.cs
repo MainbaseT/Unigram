@@ -119,7 +119,6 @@ namespace Telegram.ViewModels
                 {
                     Name = x,
                     Default = ((LogVerbosityLevel)Client.Execute(new GetLogTagVerbosityLevel(x))).VerbosityLevel,
-                    Value = (VerbosityLevel)Settings.Diagnostics.GetValueOrDefault(x, -1)
                 }));
             }
         }
@@ -395,52 +394,46 @@ namespace Telegram.ViewModels
             _settings = settings;
         }
 
-        private VerbosityLevel _value;
-        public VerbosityLevel Value
+        public int Verbosity
         {
-            get => _value;
-            set => Set(ref _value, value);
-        }
-
-        public string Text
-        {
-            get
+            get => Array.IndexOf(_verbosityIndexer, _settings.Diagnostics.GetValueOrDefault(Name, -1));
+            set
             {
-                if ((int)Value == -1 || (int)Value == Default)
+                if (value >= 0 && value < _verbosityIndexer.Length && SettingsService.Current.VerbosityLevel != _verbosityIndexer[value])
                 {
-                    return "Default";
+                    var level = _verbosityIndexer[value];
+                    if (level == -1)
+                    {
+                        level = Default;
+                    }
+
+                    _settings.Diagnostics.AddOrUpdateValue(Name, _verbosityIndexer[value]);
+                    Client.Execute(new SetLogTagVerbosityLevel(Name, _verbosityIndexer[value]));
+                    RaisePropertyChanged();
                 }
-
-                return Enum.GetName(typeof(VerbosityLevel), Value);
             }
         }
 
-        public async void Change()
+        private readonly int[] _verbosityIndexer = new[]
         {
-            var items = new[]
-            {
-                new ChooseOptionItem(VerbosityLevel.Assert, nameof(VerbosityLevel.Assert), _value == VerbosityLevel.Assert),
-                new ChooseOptionItem(VerbosityLevel.Error, nameof(VerbosityLevel.Error), _value == VerbosityLevel.Error),
-                new ChooseOptionItem(VerbosityLevel.Warning, nameof(VerbosityLevel.Warning), _value == VerbosityLevel.Warning),
-                new ChooseOptionItem(VerbosityLevel.Info, nameof(VerbosityLevel.Info), _value == VerbosityLevel.Info),
-                new ChooseOptionItem(VerbosityLevel.Debug, nameof(VerbosityLevel.Assert), _value == VerbosityLevel.Debug),
-                new ChooseOptionItem(VerbosityLevel.Verbose, nameof(VerbosityLevel.Assert), _value == VerbosityLevel.Verbose),
-            };
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+        };
 
-            var popup = new ChooseOptionPopup(items);
-            popup.Title = Name;
-            popup.PrimaryButtonText = Strings.OK;
-            popup.SecondaryButtonText = Strings.Cancel;
-
-            var confirm = await _navigationService.ShowPopupAsync(popup);
-            if (confirm == ContentDialogResult.Primary && popup.SelectedIndex is VerbosityLevel index)
-            {
-                Value = index;
-                RaisePropertyChanged(nameof(Text));
-
-                _settings.Diagnostics.AddOrUpdateValue(Name, (int)index);
-                Client.Execute(new SetLogTagVerbosityLevel(Name, (int)index));
-            }
-        }
+        public List<SettingsOptionItem<int>> VerbosityOptions { get; } = new()
+        {
+            new SettingsOptionItem<int>(-1, "Default"),
+            new SettingsOptionItem<int>(0, nameof(VerbosityLevel.Assert)),
+            new SettingsOptionItem<int>(1, nameof(VerbosityLevel.Error)),
+            new SettingsOptionItem<int>(2, nameof(VerbosityLevel.Warning)),
+            new SettingsOptionItem<int>(3, nameof(VerbosityLevel.Info)),
+            new SettingsOptionItem<int>(4, nameof(VerbosityLevel.Debug)),
+            new SettingsOptionItem<int>(5, nameof(VerbosityLevel.Verbose)),
+        };
     }
 }

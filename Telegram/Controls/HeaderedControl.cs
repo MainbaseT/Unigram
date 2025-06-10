@@ -129,7 +129,7 @@ namespace Telegram.Controls
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (ContentRoot == null)
+            if (ContentRoot == null || ItemsSource != null)
             {
                 return base.MeasureOverride(availableSize);
             }
@@ -146,7 +146,7 @@ namespace Telegram.Controls
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            if (ContentRoot == null)
+            if (ContentRoot == null || ItemsSource != null)
             {
                 return base.ArrangeOverride(finalSize);
             }

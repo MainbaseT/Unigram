@@ -127,9 +127,13 @@
                                           ItemsSource="{x:Bind ViewModel.Tags}">
                     <controls:HeaderedControl.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:DiagnosticsTag">
-                            <controls:BadgeButton Click="{x:Bind Change}"
-                                                  Content="{x:Bind Name}"
-                                                  Badge="{x:Bind Text, Mode=OneWay}" />
+                            <controls:BadgeButton Content="{x:Bind Name}">
+                                <controls:BadgeButton.Badge>
+                                    <controls:SettingsComboBox ItemsSource="{x:Bind VerbosityOptions}"
+                                                               SelectedIndex="{x:Bind Verbosity, Mode=TwoWay}"
+                                                               DisplayMemberPath="Text" />
+                                </controls:BadgeButton.Badge>
+                            </controls:BadgeButton>
                         </DataTemplate>
                     </controls:HeaderedControl.ItemTemplate>
                 </controls:HeaderedControl>
