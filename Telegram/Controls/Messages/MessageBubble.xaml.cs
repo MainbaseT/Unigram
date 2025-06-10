@@ -2189,15 +2189,20 @@ namespace Telegram.Controls.Messages
         private bool _corners;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UpdateClip()
+        private void UpdateClip(Size newSize)
         {
-            if (_bottomLeft != 0 && _bottomRight != 0)
+            var width = (float)Math.Truncate(newSize.Width);
+            var height = (float)Math.Truncate(newSize.Height);
+
+            var radius = _topLeft == 0 && _topRight == 0 && _bottomRight == 0 && _bottomLeft == 0;
+            radius |= _bottomLeft != 0 && _bottomRight != 0;
+            radius |= width == 0 && height == 0;
+
+            if (radius)
             {
                 return;
             }
 
-            var width = (float)Math.Truncate(ContentPanel.ActualWidth);
-            var height = (float)Math.Truncate(ContentPanel.ActualHeight);
             var compositor = BootStrapper.Current.Compositor;
 
             _tail ??= compositor.CreatePathGeometry();
@@ -2440,7 +2445,7 @@ namespace Telegram.Controls.Messages
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            UpdateClip();
+            UpdateClip(e.NewSize);
 
             var message = _message;
             if (message == null || _ignoreSizeChanged || e.PreviousSize.Width < 1 || e.PreviousSize.Height < 1)
