@@ -37,11 +37,16 @@ namespace Telegram.ViewModels
 
         public async void LoadSlice(long maxId, PanelScrollingDirection direction = PanelScrollingDirection.None)
         {
-            await Task.Yield();
             using var disposable = await _loadMoreLock.WaitAsync();
 
             var chat = _viewModel.Chat;
-            if (chat == null || (_viewModel.Type != DialogType.History && (_viewModel.Type == DialogType.Thread && _viewModel.ForumTopic == null && _viewModel.DirectMessagesChatTopic == null)))
+            if (chat == null || (_viewModel.Type is not DialogType.History and not DialogType.Thread))
+            {
+                _viewModel.Delegate?.UpdatePinnedMessage(chat, false);
+                return;
+            }
+
+            if (_viewModel.Type == DialogType.Thread && _viewModel.Thread == null)
             {
                 _viewModel.Delegate?.UpdatePinnedMessage(chat, false);
                 return;

@@ -267,6 +267,15 @@ namespace Telegram.ViewModels
                 {
                     return Strings.EventLog;
                 }
+                else if (Type == DialogType.Pinned)
+                {
+                    if (MessagesCount > 0)
+                    {
+                        return Locale.Declension(Strings.R.PinnedMessagesCount, MessagesCount);
+                    }
+
+                    return Strings.PinnedMessages;
+                }
 
                 return _lastSeen;
             }
@@ -320,6 +329,13 @@ namespace Telegram.ViewModels
                 Set(ref _onlineCount, value);
                 RaisePropertyChanged(nameof(Subtitle));
             }
+        }
+
+        private int _messagesCount;
+        public int MessagesCount
+        {
+            get => _messagesCount;
+            set => Set(ref _messagesCount, value);
         }
 
         public virtual string Subtitle
@@ -1229,7 +1245,13 @@ namespace Telegram.ViewModels
                     ProcessMessages(chat, replied);
                     Items.RawReplaceWith(replied);
 
+                    MessagesCount = slice.TotalCount;
                     HasUnreadMessages = slice.IsUnread;
+
+                    if (Type == DialogType.Pinned)
+                    {
+                        RaisePropertyChanged(nameof(LastSeen));
+                    }
 
                     NotifyMessageSliceLoaded();
 
@@ -1324,7 +1346,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            return new Messages(0, foundChatMessages.Messages);
+            return new Messages(foundChatMessages.TotalCount, foundChatMessages.Messages);
         }
 
         private async Task<LoadSliceResult> LoadMessageSliceImpl(Chat chat, long maxId, VerticalAlignment alignment, ScrollIntoViewAlignment? direction, double? pixel)
@@ -1555,7 +1577,7 @@ namespace Telegram.ViewModels
                 }
 
                 var replied = new MessageCollection(this, null, values, false, Type);
-                return new LoadSliceResult(replied, maxId, scrollMode, alignment, pixel, unread);
+                return new LoadSliceResult(replied, maxId, scrollMode, alignment, pixel, unread, messages.TotalCount);
             }
 
             return null;
@@ -1563,7 +1585,7 @@ namespace Telegram.ViewModels
 
         private class LoadSliceResult
         {
-            public LoadSliceResult(MessageCollection items, long fromMessageId, ItemsUpdatingScrollMode scrollMode, VerticalAlignment alignment, double? pixel, bool unread)
+            public LoadSliceResult(MessageCollection items, long fromMessageId, ItemsUpdatingScrollMode scrollMode, VerticalAlignment alignment, double? pixel, bool unread, int totalCount)
             {
                 Items = items;
                 FromMessageId = fromMessageId;
@@ -1571,6 +1593,7 @@ namespace Telegram.ViewModels
                 Alignment = alignment;
                 Pixel = pixel;
                 IsUnread = unread;
+                TotalCount = totalCount;
             }
 
             public MessageCollection Items { get; }
@@ -1584,6 +1607,8 @@ namespace Telegram.ViewModels
             public double? Pixel { get; }
 
             public bool IsUnread { get; }
+
+            public int TotalCount { get; }
         }
 
         private async Task AddSponsoredMessagesAsync()
