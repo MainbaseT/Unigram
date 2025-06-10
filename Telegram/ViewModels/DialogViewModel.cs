@@ -4075,53 +4075,6 @@ namespace Telegram.ViewModels
             }
         }
 
-        public static async Task<(ReportReason Reason, string Text)> GetReportFormAsync(INavigationService navigation)
-        {
-            var items = new[]
-            {
-                new ChooseOptionItem(new ReportReasonSpam(), Strings.ReportChatSpam, true),
-                new ChooseOptionItem(new ReportReasonViolence(), Strings.ReportChatViolence, false),
-                new ChooseOptionItem(new ReportReasonChildAbuse(), Strings.ReportChatChild, false),
-                new ChooseOptionItem(new ReportReasonIllegalDrugs(), Strings.ReportChatIllegalDrugs, false),
-                new ChooseOptionItem(new ReportReasonPersonalDetails(), Strings.ReportChatPersonalDetails, false),
-                new ChooseOptionItem(new ReportReasonPornography(), Strings.ReportChatPornography, false),
-                new ChooseOptionItem(new ReportReasonCustom(), Strings.ReportChatOther, false)
-            };
-
-            var popup = new ChooseOptionPopup(items);
-            popup.Title = Strings.ReportChat;
-            popup.PrimaryButtonText = Strings.OK;
-            popup.SecondaryButtonText = Strings.Cancel;
-
-            var confirm = await navigation.ShowPopupAsync(popup);
-            if (confirm != ContentDialogResult.Primary)
-            {
-                return (null, string.Empty);
-            }
-
-            var reason = popup.SelectedIndex as ReportReason;
-            if (reason is not ReportReasonCustom)
-            {
-                return (reason, string.Empty);
-            }
-
-            var input = new InputPopup();
-            input.Title = Strings.ReportChat;
-            input.PlaceholderText = Strings.ReportChatDescription;
-            input.IsPrimaryButtonEnabled = true;
-            input.IsSecondaryButtonEnabled = true;
-            input.PrimaryButtonText = Strings.OK;
-            input.SecondaryButtonText = Strings.Cancel;
-
-            var inputResult = await navigation.ShowPopupAsync(input);
-            if (inputResult == ContentDialogResult.Primary)
-            {
-                return (reason, input.Text);
-            }
-
-            return (null, string.Empty);
-        }
-
         #endregion
 
         #region Set timer
