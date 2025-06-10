@@ -462,12 +462,15 @@ namespace Telegram.Controls.Messages
             var bottomRight = radius;
             var bottomLeft = radius;
 
+            var bottomOutgoing = false;
+            var bottomIncoming = false;
+
             var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
             if (outgoing)
             {
                 if (message.IsFirst && message.IsLast)
                 {
-                    bottomRight = SettingsService.Current.Diagnostics.BubbleTailDebug ? 0 : bottomRight;
+                    bottomOutgoing = SettingsService.Current.Diagnostics.BubbleTailDebug;
                 }
                 else if (message.IsFirst)
                 {
@@ -476,7 +479,7 @@ namespace Telegram.Controls.Messages
                 else if (message.IsLast)
                 {
                     topRight = small;
-                    bottomRight = SettingsService.Current.Diagnostics.BubbleTailDebug ? 0 : bottomRight;
+                    bottomOutgoing = SettingsService.Current.Diagnostics.BubbleTailDebug;
                 }
                 else
                 {
@@ -488,7 +491,7 @@ namespace Telegram.Controls.Messages
             {
                 if (message.IsFirst && message.IsLast)
                 {
-                    bottomLeft = SettingsService.Current.Diagnostics.BubbleTailDebug ? 0 : bottomLeft;
+                    bottomIncoming = SettingsService.Current.Diagnostics.BubbleTailDebug;
                 }
                 else if (message.IsFirst)
                 {
@@ -497,7 +500,7 @@ namespace Telegram.Controls.Messages
                 else if (message.IsLast)
                 {
                     topLeft = small;
-                    bottomLeft = SettingsService.Current.Diagnostics.BubbleTailDebug ? 0 : bottomLeft;
+                    bottomIncoming = SettingsService.Current.Diagnostics.BubbleTailDebug;
                 }
                 else
                 {
@@ -515,7 +518,7 @@ namespace Telegram.Controls.Messages
             else if (content is MessageInvoice invoice && invoice.PaidMedia is not PaidMediaUnsupported and not null)
             {
                 _hasReplyMarkup = false;
-                SetCorners(topLeft, topRight, bottomRight, bottomLeft);
+                SetCorners(topLeft, topRight, bottomOutgoing ? 0 : bottomRight, bottomIncoming ? 0 : bottomLeft);
             }
             else if (message.ReplyMarkup is ReplyMarkupInlineKeyboard)
             {
@@ -530,7 +533,7 @@ namespace Telegram.Controls.Messages
             else
             {
                 _hasReplyMarkup = false;
-                SetCorners(topLeft, topRight, bottomRight, bottomLeft);
+                SetCorners(topLeft, topRight, bottomOutgoing ? 0 : bottomRight, bottomIncoming ? 0 : bottomLeft);
             }
 
             if (message.Delegate != null && message.Delegate.IsDialog)
