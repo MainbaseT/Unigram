@@ -108,12 +108,12 @@ namespace Telegram.Services.Factories
             return new InputMessageVideoNote(generated, thumbnail, duration, (int)generation.Width, null);
         }
 
-        public static async Task<BaseObject> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool asFile)
+        public static async Task<BaseObject> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool forceDocument)
         {
             var file = media.File;
             var generated = await file.ToGeneratedAsync(media.IsScreenshot ? ConversionType.Screenshot : ConversionType.Copy);
 
-            if (!asFile && media is StorageAudio audio)
+            if (!forceDocument && media is StorageAudio audio)
             {
                 var duration = audio.TotalSeconds;
 
@@ -127,7 +127,7 @@ namespace Telegram.Services.Factories
 
             var thumbnail = new InputThumbnail(await file.ToGeneratedAsync(ConversionType.DocumentThumbnail), 0, 0);
 
-            if (!asFile && file.FileType.Equals(".webp", StringComparison.OrdinalIgnoreCase))
+            if (!forceDocument && file.FileType.Equals(".webp", StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
@@ -144,7 +144,7 @@ namespace Telegram.Services.Factories
                     // Not really a sticker, go on sending as a file
                 }
             }
-            else if (!asFile && file.FileType.Equals(".tgs", StringComparison.OrdinalIgnoreCase))
+            else if (!forceDocument && file.FileType.Equals(".tgs", StringComparison.OrdinalIgnoreCase))
             {
                 // TODO
             }

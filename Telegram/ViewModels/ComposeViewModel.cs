@@ -432,7 +432,7 @@ namespace Telegram.ViewModels
                 reply = null;
             }
 
-            var itemsView = GetItemsView(popup.Items, popup.IsAlbum, permissions.CanSendPhotos, permissions.CanSendVideos, permissions.CanSendAudios, permissions.CanSendDocuments);
+            var itemsView = GetItemsView(popup.Items, popup.IsAlbum, popup.IsFilesSelected, permissions.CanSendPhotos, permissions.CanSendVideos, permissions.CanSendAudios, permissions.CanSendDocuments);
 
             for (int i = 0; i < itemsView.Count; i++)
             {
@@ -457,10 +457,11 @@ namespace Telegram.ViewModels
             }
         }
 
-        public static IList<StorageMedia> GetItemsView(IList<StorageMedia> items, bool albumAllowed, bool photoAllowed, bool videoAllowed, bool audioAllowed, bool documentAllowed)
+        public static IList<StorageMedia> GetItemsView(IList<StorageMedia> items, bool albumAllowed, bool forceDocuments, bool photoAllowed, bool videoAllowed, bool audioAllowed, bool documentAllowed)
         {
             var view = new List<StorageMedia>();
             var album = new List<StorageMedia>();
+            var albumType = StorageAlbumType.None;
 
             void AddAlbum()
             {
@@ -477,11 +478,19 @@ namespace Telegram.ViewModels
                 {
                     if (albumAllowed)
                     {
-                        if (album.Count > 9)
+                        var type = item switch
+                        {
+                            StorageDocument => StorageAlbumType.Documents,
+                            StorageAudio => StorageAlbumType.Audio,
+                            _ => forceDocuments ? StorageAlbumType.Documents : StorageAlbumType.Media
+                        };
+
+                        if (album.Count > 9 || (type != albumType && albumType != StorageAlbumType.None))
                         {
                             AddAlbum();
                         }
 
+                        albumType = type;
                         album.Add(item);
                     }
                     else
@@ -786,7 +795,7 @@ namespace Telegram.ViewModels
             await SendMessageAsync(reply, input, options);
         }
 
-        private async Task<BaseObject> SendGroupedAsync(IList<StorageMedia> items, InputMessageReplyTo reply, FormattedText caption, MessageSendOptions options, bool asFile, bool captionAboveMedia, bool hasSpoiler, bool highQuality, long starCount = 0)
+        private async Task<BaseObject> SendGroupedAsync(IList<StorageMedia> items, InputMessageReplyTo reply, FormattedText caption, MessageSendOptions options, bool forceDocuments, bool captionAboveMedia, bool hasSpoiler, bool highQuality, long starCount = 0)
         {
             if (Chat is not Chat chat)
             {
@@ -803,9 +812,9 @@ namespace Telegram.ViewModels
             {
                 var item = items[i];
 
-                if (asFile || audio)
+                if (forceDocuments || item is StorageAudio)
                 {
-                    var factory = await MessageFactory.CreateDocumentAsync(item, i == items.Count - 1 ? caption : null, false);
+                    var factory = await MessageFactory.CreateDocumentAsync(item, i == items.Count - 1 ? caption : null, !audio || item is not StorageAudio);
                     if (factory is InputMessageContent input)
                     {
                         operations.Add(input);

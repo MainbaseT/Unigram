@@ -115,7 +115,7 @@ namespace Telegram.Controls.Views
 
         private async void Initialize(List<Chat> chats, SendWithChat action, IList<StorageMedia> media, FormattedText caption)
         {
-            var itemsView = ComposeViewModel.GetItemsView(media, true, true, true, true, true);
+            var itemsView = ComposeViewModel.GetItemsView(media, true, false, true, true, true, true);
             var content = new List<object>();
 
             for (int i = 0; i < itemsView.Count; i++)

@@ -6,6 +6,14 @@ using Windows.Foundation;
 
 namespace Telegram.Entities
 {
+    public enum StorageAlbumType
+    {
+        None,
+        Media,
+        Audio,
+        Documents
+    }
+
     public partial class StorageAlbum : StorageMedia
     {
         public IList<StorageMedia> Media { get; }
