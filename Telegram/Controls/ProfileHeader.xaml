@@ -204,17 +204,17 @@
                 </Button>
             </Grid>
 
-            <Grid x:Name="Buttons"
-                  ColumnSpacing="8"
-                  Margin="0,16,0,0"
-                  Grid.Row="3">
-                <Grid.ColumnDefinitions>
+            <controls:ProfileButtonsGrid x:Name="Buttons"
+                                         ColumnSpacing="8"
+                                         Margin="0,16,0,0"
+                                         Grid.Row="3">
+                <controls:ProfileButtonsGrid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+                </controls:ProfileButtonsGrid.ColumnDefinitions>
                 <controls:BadgeButton x:Name="OpenChat"
                                       Content="{CustomResource VoipGroupOpenChat}"
                                       Click="{x:Bind ViewModel.SendMessage}"
@@ -270,24 +270,26 @@
                                       Glyph="&#xEA56;"
                                       Grid.Column="2" />
 
-                <Border x:Name="NotificationsTarget"
-                        Grid.Column="3" />
-                <controls:BadgeButton x:Name="Notifications"
-                                      Click="Notifications_Click"
-                                      Content="Mute"
-                                      Style="{StaticResource GlyphGridBadgeButtonStyle}"
-                                      Glyph="&#xEA54;"
-                                      Grid.Column="3" />
+                <Grid x:Name="NotificationsRoot"
+                      Grid.Column="3">
+                    <Border x:Name="NotificationsTarget" />
+                    <controls:BadgeButton x:Name="Notifications"
+                                          Click="Notifications_Click"
+                                          Content="Mute"
+                                          Style="{StaticResource GlyphGridBadgeButtonStyle}"
+                                          Glyph="&#xEA54;" />
+                </Grid>
 
-                <Border x:Name="MenuTarget"
-                        Grid.Column="4" />
-                <controls:BadgeButton x:Name="Menu"
-                                      Content="{CustomResource PremiumMore}"
-                                      Click="Menu_ContextRequested"
-                                      Style="{StaticResource GlyphGridBadgeButtonStyle}"
-                                      Glyph="&#xEA59;"
-                                      Grid.Column="4" />
-            </Grid>
+                <Grid x:Name="MenuRoot"
+                      Grid.Column="4">
+                    <Border x:Name="MenuTarget" />
+                    <controls:BadgeButton x:Name="Menu"
+                                          Content="{CustomResource PremiumMore}"
+                                          Click="Menu_ContextRequested"
+                                          Style="{StaticResource GlyphGridBadgeButtonStyle}"
+                                          Glyph="&#xEA59;" />
+                </Grid>
+            </controls:ProfileButtonsGrid>
         </Grid>
 
         <StackPanel x:Name="ControlsRoot">

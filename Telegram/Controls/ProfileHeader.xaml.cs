@@ -778,11 +778,11 @@ namespace Telegram.Controls
 
             if (user.Type is UserTypeBot userTypeBot)
             {
+                Call.Visibility = Visibility.Collapsed;
+                VideoCall.Visibility = Visibility.Collapsed;
+
                 if (userTypeBot.CanBeEdited)
                 {
-                    Call.Visibility = Visibility.Collapsed;
-                    VideoCall.Visibility = Visibility.Collapsed;
-
                     Edit.Visibility = Visibility.Visible;
                     Search.Visibility = Visibility.Visible;
                     Grid.SetColumn(Search, 2);
@@ -869,8 +869,11 @@ namespace Telegram.Controls
             }
             else
             {
-                Call.Visibility = Visibility.Visible;
-                Call.Content = Strings.Call;
+                if (user.Type is not UserTypeBot)
+                {
+                    Call.Visibility = Visibility.Visible;
+                    Call.Content = Strings.Call;
+                }
                 VideoCall.Visibility = fullInfo.CanBeCalled && fullInfo.SupportsVideoCalls ? Visibility.Visible : Visibility.Collapsed;
                 Search.Visibility = fullInfo.CanBeCalled && fullInfo.SupportsVideoCalls ? Visibility.Collapsed : Visibility.Visible;
                 Grid.SetColumn(Search, 2);
@@ -1911,6 +1914,60 @@ namespace Telegram.Controls
         {
             var subtitle = ElementComposition.GetElementVisual(SubtitleRoot);
             subtitle.CenterPoint = new Vector3(SubtitleRoot.ActualSize.X / 2, 0, 0);
+        }
+    }
+
+    public class ProfileButtonsGrid : Grid
+    {
+        private int _columns;
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            var columns = 0;
+
+            foreach (var child in Children)
+            {
+                if (child.Visibility == Visibility.Collapsed)
+                {
+                    continue;
+                }
+
+                columns++;
+            }
+
+            var column = new Size((availableSize.Width - ColumnSpacing * columns) / columns, availableSize.Height);
+            var height = 0d;
+
+            foreach (var child in Children)
+            {
+                child.Measure(column);
+
+                if (child.Visibility == Visibility.Visible)
+                {
+                    height = Math.Max(height, child.DesiredSize.Height);
+                }
+            }
+
+            _columns = columns;
+            return new Size(availableSize.Width, height);
+        }
+
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            var x = 0d;
+            var column = (finalSize.Width - ColumnSpacing * _columns) / _columns;
+
+            foreach (var child in Children)
+            {
+                child.Arrange(new Rect(x, 0, column, finalSize.Height));
+
+                if (child.Visibility == Visibility.Visible)
+                {
+                    x += column + ColumnSpacing;
+                }
+            }
+
+            return finalSize;
         }
     }
 }
