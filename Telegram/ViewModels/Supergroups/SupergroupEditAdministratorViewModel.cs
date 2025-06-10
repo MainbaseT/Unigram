@@ -504,7 +504,7 @@ namespace Telegram.ViewModels.Supergroups
             var response = await ClientService.SendAsync(new SetChatMemberStatus(chat.Id, member.MemberId, status));
             if (response is Ok)
             {
-                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, Member, new ChatMember(member.MemberId, member.InviterUserId, member.JoinedChatDate, status)));
+                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, Member, new ChatMember(member.MemberId, ClientService.Options.MyId, member.JoinedChatDate, status)));
                 Delegate?.Hide();
             }
             else
@@ -605,6 +605,7 @@ namespace Telegram.ViewModels.Supergroups
             var response = await ClientService.SendAsync(new SetChatMemberStatus(chat.Id, member.MemberId, new ChatMemberStatusMember()));
             if (response is Ok)
             {
+                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, Member, new ChatMember(member.MemberId, ClientService.Options.MyId, member.JoinedChatDate, new ChatMemberStatusMember())));
                 Delegate?.Hide();
             }
             else
