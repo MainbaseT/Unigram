@@ -143,6 +143,7 @@ namespace Telegram.Views
             ElementCompositionPreview.SetIsTranslationEnabled(TextFieldPanel, true);
             ElementCompositionPreview.SetIsTranslationEnabled(btnAttach, true);
             ElementCompositionPreview.SetIsTranslationEnabled(ListAutocomplete, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(Messages, true);
 
             _rootVisual = ElementComposition.GetElementVisual(TextArea);
 
@@ -5441,7 +5442,7 @@ namespace Telegram.Views
                 composer.Clip = null;
                 //messages.Clip = null;
                 composer.Offset = new Vector3();
-                messages.Offset = new Vector3();
+                messages.Properties.InsertVector3("Translation", Vector3.Zero);
 
                 ContentPanel.Margin = new Thickness();
 
@@ -5468,26 +5469,26 @@ namespace Telegram.Views
             animClip2.InsertKeyFrame(1, show ? -44 + 48 : -44);
             animClip2.Duration = Constants.FastAnimation;
 
-            var animClip3 = textArea.Compositor.CreateVector2KeyFrameAnimation();
-            animClip3.InsertKeyFrame(0, new Vector2(0, show ? 48 : 0));
-            animClip3.InsertKeyFrame(1, new Vector2(0, show ? 0 : 48));
+            var animClip3 = textArea.Compositor.CreateScalarKeyFrameAnimation();
+            animClip3.InsertKeyFrame(0, show ? 48 : 0);
+            animClip3.InsertKeyFrame(1, show ? 0 : 48);
             animClip3.Duration = Constants.FastAnimation;
 
-            var anim1 = textArea.Compositor.CreateVector3KeyFrameAnimation();
-            anim1.InsertKeyFrame(0, new Vector3(0, show ? 48 : 0, 0));
-            anim1.InsertKeyFrame(1, new Vector3(0, show ? 0 : 48, 0));
+            var anim1 = textArea.Compositor.CreateScalarKeyFrameAnimation();
+            anim1.InsertKeyFrame(0, show ? 48 : 0);
+            anim1.InsertKeyFrame(1, show ? 0 : 48);
             anim1.Duration = Constants.FastAnimation;
 
-            rect.StartAnimation("Offset", animClip3);
+            rect.StartAnimation("Offset.Y", animClip3);
 
             if (!sendout)
             {
                 messages.Clip.StartAnimation("TopInset", animClip2);
-                messages.StartAnimation("Offset", anim1);
+                messages.StartAnimation("Translation.Y", anim1);
             }
 
             composer.Clip.StartAnimation("BottomInset", animClip);
-            composer.StartAnimation("Offset", anim1);
+            composer.StartAnimation("Offset.Y", anim1);
 
             batch.End();
 
