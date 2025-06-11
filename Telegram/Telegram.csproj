@@ -368,6 +368,7 @@
     <Compile Include="Services\ClientService.FeedbackChatTopics.cs" />
     <Compile Include="Services\ClientService.ForumTopics.cs" />
     <Compile Include="Services\FeedbackChatTopicService.cs" />
+    <Compile Include="Td\Api\MessageAlbumLastMessage.cs" />
     <Compile Include="Services\PaidReactionService.cs" />
     <Compile Include="Controls\Messages\ReactionAsPaidButton.cs" />
     <Compile Include="Controls\Messages\ReactionAsTagButton.cs" />
@@ -2156,7 +2157,7 @@
     <Content Include="Assets\Animations\SupergroupTopics.tgs" />
     <Content Include="Assets\Animations\SupergroupTopicsList.tgs" />
     <Content Include="Assets\Animations\SupergroupTopicsTabs.tgs" />
-    <Content Include="Assets\Animations\SupergroupFeedbackGroup.tgs" />
+    <Content Include="Assets\Animations\SupergroupDirectMessages.tgs" />
     <Content Include="Assets\Animations\SendMessagesCompleted.tgs" />
     <Content Include="Assets\Animations\SendMessagesProgress.tgs" />
     <None Include="Assets\i420.hlsl" />

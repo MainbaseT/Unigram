@@ -786,7 +786,7 @@ namespace Telegram.ViewModels
                 {
                     fromMessage = null;
                     fromMessageId = Items.LastId;
-                    offset = -49;
+                    offset = -50;
                 }
 
                 if (fromMessageId == long.MaxValue || fromMessageId == long.MinValue)
@@ -1326,7 +1326,21 @@ namespace Telegram.ViewModels
                     continue;
                 }
 
-                var response = await ClientService.SendAsync(new GetChatHistory(chatId, message.Id, -10, 10, false));
+                Function func;
+                if (DirectMessagesChatTopic != null)
+                {
+                    func = new GetDirectMessagesChatTopicHistory(chatId, DirectMessagesChatTopic.Id, message.Id, -10, 10);
+                }
+                else if (ForumTopic != null)
+                {
+                    func = new GetMessageThreadHistory(chatId, _forumTopic.Info.MessageThreadId, message.Id, -10, 10);
+                }
+                else
+                {
+                    func = new GetChatHistory(chatId, message.Id, -10, 10, false);
+                }
+
+                var response = await ClientService.SendAsync(func);
                 if (response is Messages album
                     && album.MessagesValue.Count > 1
                     && album.MessagesValue[^1].Id == message.Id)

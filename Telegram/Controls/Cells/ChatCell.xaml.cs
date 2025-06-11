@@ -1384,6 +1384,11 @@ namespace Telegram.Controls.Cells
             var topMessage = chat.LastMessage;
             if (topMessage != null)
             {
+                if (_clientService.TryGetMediaAlbum(chat.Id, topMessage.MediaAlbumId, out MessageAlbumLastMessage album))
+                {
+                    return UpdateBriefLabel(album, topMessage.IsOutgoing, chat.DraftMessage, false, out thumbnail);
+                }
+
                 return UpdateBriefLabel(topMessage.Content, topMessage.IsOutgoing, chat.DraftMessage, false, out thumbnail);
             }
             else if (chat.Type is ChatTypeSecret secretType)
@@ -1587,6 +1592,39 @@ namespace Telegram.Controls.Cells
                 }
 
                 return Text1(Icons.Premium + "\u2004", paidMedia.Caption, Locale.Declension(Strings.R.Media, paidMedia.Media.Count));
+            }
+            else if (content is MessageAlbumLastMessage album)
+            {
+                if (album.Media.All(x => x.Content is MessagePhoto))
+                {
+                    if (album.Media[0].Content is MessagePhoto albumPhoto && albumPhoto.Photo.Minithumbnail != null)
+                    {
+                        thumbnail = new MinithumbnailId(albumPhoto.Photo.Sizes[^1].Photo.Id, albumPhoto.Photo.Minithumbnail, false);
+                        return Text1(string.Empty, album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, album.Media.Count) : Strings.AttachPhoto);
+                    }
+
+                    return Text1("\U0001F5BC ", album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, album.Media.Count) : Strings.AttachPhoto);
+                }
+                else if (album.Media.All(x => x.Content is MessageVideo))
+                {
+                    if (album.Media[0].Content is MessageVideo albumVideo && (albumVideo.Video.Minithumbnail != null || albumVideo.Cover.Minithumbnail != null))
+                    {
+                        if (albumVideo.Cover != null)
+                        {
+                            thumbnail = new MinithumbnailId(albumVideo.Video.VideoValue.Id, albumVideo.Cover.Minithumbnail, false);
+                        }
+                        else
+                        {
+                            thumbnail = new MinithumbnailId(albumVideo.Video.VideoValue.Id, albumVideo.Video.Minithumbnail, false);
+                        }
+
+                        return Text1(string.Empty, album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, album.Media.Count) : Strings.AttachVideo);
+                    }
+
+                    return Text1("\U0001F4F9 ", album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, album.Media.Count) : Strings.AttachVideo);
+                }
+
+                return Text1("\U0001F5BC ", album.Caption, Locale.Declension(Strings.R.Media, album.Media.Count));
             }
 
             return content switch

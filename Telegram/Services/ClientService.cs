@@ -230,6 +230,8 @@ namespace Telegram.Services
         bool IsStickerFavorite(int id);
         bool IsStickerSetInstalled(long id);
 
+        bool TryGetMediaAlbum(long chatId, long mediaAlbumId, out MessageAlbumLastMessage album);
+
         ICollection<ChatListUnreadCount> UnreadCounts { get; }
         ChatListUnreadCount GetUnreadCount(ChatList chatList);
 
@@ -293,6 +295,8 @@ namespace Telegram.Services
         private readonly ConcurrentDictionary<int, ChatListUnreadCount> _unreadCounts = new();
 
         private readonly Dictionary<int, File> _files = new();
+
+        private readonly Dictionary<long, MessageAlbumLastMessage> _lastMessageAlbums = new();
 
         private UnconfirmedSession _unconfirmedSession;
 
@@ -2403,7 +2407,53 @@ namespace Telegram.Services
 
         #endregion
 
+        public bool TryGetMediaAlbum(long chatId, long mediaAlbumId, out MessageAlbumLastMessage album)
+        {
+            if (_lastMessageAlbums.TryGetValue(chatId, out album))
+            {
+                if (album.MediaAlbumId == mediaAlbumId && album.Media.Count > 0)
+                {
+                    return true;
+                }
+            }
 
+            return false;
+        }
+
+        private void UpdateChatLastMessage(Chat chat, Message lastMessage)
+        {
+            chat.LastMessage = lastMessage;
+
+            if (lastMessage == null || lastMessage.MediaAlbumId == 0 || lastMessage.Content is not MessagePhoto and not MessageVideo)
+            {
+                _lastMessageAlbums.Remove(chat.Id);
+                return;
+            }
+
+            if (_lastMessageAlbums.TryGetValue(chat.Id, out MessageAlbumLastMessage album2))
+            {
+                if (album2.MediaAlbumId == lastMessage.MediaAlbumId)
+                {
+                    album2.LoadMore(lastMessage.Id);
+                    return;
+                }
+            }
+
+            _lastMessageAlbums[chat.Id] = new MessageAlbumLastMessage(this, _aggregator, chat, lastMessage);
+        }
+
+        private void UpdateChatLastMessage(UpdateDeleteMessages update)
+        {
+            if (update.FromCache)
+            {
+                return;
+            }
+
+            if (_lastMessageAlbums.TryGetValue(update.ChatId, out MessageAlbumLastMessage album))
+            {
+                album.DeleteMessages(update.MessageIds);
+            }
+        }
 
         public void OnResult(BaseObject update)
         {
@@ -2468,7 +2518,7 @@ namespace Telegram.Services
                         {
                             Monitor.Enter(value);
 
-                            value.LastMessage = updateChatLastMessage.LastMessage;
+                            UpdateChatLastMessage(value, updateChatLastMessage.LastMessage);
                             SetChatPositions(value, updateChatLastMessage.Positions);
 
                             Monitor.Exit(value);
@@ -2499,7 +2549,10 @@ namespace Telegram.Services
                         _chats[updateNewChat.Chat.Id] = updateNewChat.Chat;
 
                         Monitor.Enter(updateNewChat.Chat);
+
+                        UpdateChatLastMessage(updateNewChat.Chat, updateNewChat.Chat.LastMessage);
                         SetChatPositions(updateNewChat.Chat, updateNewChat.Chat.Positions);
+
                         Monitor.Exit(updateNewChat.Chat);
 
                         if (updateNewChat.Chat.Type is ChatTypePrivate privata)
@@ -3232,6 +3285,7 @@ namespace Telegram.Services
                     UpdateForumTopic(updateNewMessage.Message.ChatId, false, manager => manager.UpdateNewMessage(updateNewMessage.Message));
                     break;
                 case UpdateDeleteMessages updateDeleteMessages:
+                    UpdateChatLastMessage(updateDeleteMessages);
                     UpdateForumTopic(updateDeleteMessages.ChatId, false, manager => manager.UpdateDeleteMessages(updateDeleteMessages.MessageIds, updateDeleteMessages.IsPermanent, updateDeleteMessages.FromCache));
                     break;
                 case UpdateMessageSendSucceeded updateMessageSendSucceeded:
