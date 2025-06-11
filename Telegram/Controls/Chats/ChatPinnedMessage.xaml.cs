@@ -472,7 +472,6 @@ namespace Telegram.Controls.Chats
             visual.Shapes.Add(backShape);
             visual.Shapes.Add(foreShape);
             visual.Clip = maskShape;
-            visual.IsPixelSnappingEnabled = false;
 
             _back = backShape;
             _fore = foreShape;
