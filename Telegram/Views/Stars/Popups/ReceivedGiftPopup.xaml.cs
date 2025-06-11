@@ -7,6 +7,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Media;
@@ -41,6 +42,8 @@ namespace Telegram.Views.Stars.Popups
         private readonly MessageSender _receiverId;
 
         private readonly MessageSender _sendGiftTo;
+
+        private TaskCompletionSource<long> _resaleStarCount;
 
         private GiftUpgradePreview _preview;
         private int _index;
@@ -215,6 +218,35 @@ namespace Telegram.Views.Stars.Popups
 
         private void InitializeUpgraded(IClientService clientService, ReceivedGift receivedGift, UpgradedGift gift)
         {
+            _resaleStarCount = new();
+            _clientService.Send(new GetAvailableGifts(), result =>
+            {
+                if (result is not AvailableGifts availableGifts)
+                {
+                    _resaleStarCount.TrySetResult(0);
+                    return;
+                }
+
+                var availableGift = availableGifts.Gifts.FirstOrDefault(x => x.Title == gift.Title);
+                if (availableGift == null)
+                {
+                    _resaleStarCount.TrySetResult(0);
+                    return;
+                }
+
+                _clientService.Send(new SearchGiftsForResale(availableGift.Gift.Id, new GiftForResaleOrderPrice(), Array.Empty<UpgradedGiftAttributeId>(), string.Empty, 1), result =>
+                {
+                    if (result is GiftsForResale gifts && gifts.Gifts.Count > 0)
+                    {
+                        _resaleStarCount.TrySetResult(gifts.Gifts[0].Gift.ResaleStarCount);
+                    }
+                    else
+                    {
+                        _resaleStarCount.TrySetResult(0);
+                    }
+                });
+            });
+
             DismissButtonRequestedTheme = ElementTheme.Dark;
             Header.Visibility = Visibility.Collapsed;
             RegularRoot.Visibility = Visibility.Collapsed;
@@ -799,8 +831,14 @@ namespace Telegram.Views.Stars.Popups
                 return;
             }
 
+            var resaleStarCount = upgraded.Gift.ResaleStarCount;
+            if (resaleStarCount == 0)
+            {
+                resaleStarCount = await _resaleStarCount.Task;
+            }
+
             var popup = new InputTeachingTip(InputPopupType.Stars);
-            popup.Value = Math.Clamp(upgraded.Gift.ResaleStarCount, _clientService.Options.GiftResaleStarCountMin, _clientService.Options.GiftResaleStarCountMax);
+            popup.Value = Math.Clamp(resaleStarCount, _clientService.Options.GiftResaleStarCountMin, _clientService.Options.GiftResaleStarCountMax);
             //popup.Minimum = _clientService.Options.GiftResaleStarCountMin;
             popup.Maximum = _clientService.Options.GiftResaleStarCountMax;
 
