@@ -28,7 +28,7 @@
                       VerticalScrollMode="Auto">
             <controls:SettingsPanel>
                 <controls:SettingsHeadline Text="{CustomResource PostSuggestionsInfo}"
-                                           Source="ms-appx:///Assets/Animations/SupergroupDirectMessagesGroup.tgs" />
+                                           Source="ms-appx:///Assets/Animations/SupergroupDirectMessages.tgs" />
 
                 <controls:HeaderedControl>
                     <controls:FauxCheckBox IsChecked="{x:Bind ViewModel.IsEnabled, Mode=TwoWay}"
