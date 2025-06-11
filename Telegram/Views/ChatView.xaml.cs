@@ -6733,6 +6733,41 @@ namespace Telegram.Views
             }
         }
 
+        public float AnimatedHeight => GroupCall.AnimatedHeight
+            + JoinRequests.AnimatedHeight
+            + TranslateHeader.AnimatedHeight
+            + ActionBar.AnimatedHeight
+            + ConnectedBot.AnimatedHeight
+            + PinnedMessage.AnimatedHeight
+            + AccountInfoHeader.AnimatedHeight
+            + Sponsored.AnimatedHeight;
+
+        private EffectiveViewportChangedEventArgs _headerUnreadViewport;
+        private bool _headerUnreadNotReady = true;
+        private bool _headerUnreadRetry = false;
+
+        private void HeaderUnread_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+        {
+            var padding = GroupCall.AnimatedHeight
+                + JoinRequests.AnimatedHeight
+                + TranslateHeader.AnimatedHeight
+                + ActionBar.AnimatedHeight
+                + ConnectedBot.AnimatedHeight
+                + PinnedMessage.AnimatedHeight
+                + AccountInfoHeader.AnimatedHeight
+                + Sponsored.AnimatedHeight;
+
+            if (args.EffectiveViewport.Top < 4 && Math.Truncate(args.EffectiveViewport.Top) >= -padding && args.BringIntoViewDistanceY <= 28 && !Messages.HasBeenScrolled)
+            {
+                _headerUnreadViewport = args;
+                UpdateMessagesHeaderPadding(padding, true, padding);
+            }
+            else
+            {
+                _headerUnreadViewport = null;
+            }
+        }
+
         public void UpdateMessagesHeaderPadding()
         {
             if (_headerUnreadNotReady)
@@ -6753,7 +6788,7 @@ namespace Telegram.Views
                 + Sponsored.AnimatedHeight;
 
             var args = _headerUnreadViewport;
-            if (args?.EffectiveViewport.Top < 4 && args.EffectiveViewport.Top >= -padding && args.BringIntoViewDistanceY <= 28 && !Messages.HasBeenScrolled)
+            if (args?.EffectiveViewport.Top < 4 && Math.Truncate(args.EffectiveViewport.Top) >= -padding && args.BringIntoViewDistanceY <= 28 && !Messages.HasBeenScrolled)
             {
                 UpdateMessagesHeaderPadding(padding, true, padding);
             }
@@ -6821,43 +6856,6 @@ namespace Telegram.Views
                     visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, -32 + padding);
                     visual.Properties.InsertVector3("Translation", Vector3.Zero);
                 }
-            }
-        }
-
-        public float AnimatedHeight => GroupCall.AnimatedHeight
-            + JoinRequests.AnimatedHeight
-            + TranslateHeader.AnimatedHeight
-            + ActionBar.AnimatedHeight
-            + ConnectedBot.AnimatedHeight
-            + PinnedMessage.AnimatedHeight
-            + AccountInfoHeader.AnimatedHeight
-            + Sponsored.AnimatedHeight;
-
-        private EffectiveViewportChangedEventArgs _headerUnreadViewport;
-        private bool _headerUnreadNotReady = true;
-        private bool _headerUnreadRetry = false;
-
-        private void HeaderUnread_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
-        {
-            //_headerUnreadNotReady = args.EffectiveViewport.Top > 8000 || args.EffectiveViewport.Top < -8000;
-
-            var padding = GroupCall.AnimatedHeight
-                + JoinRequests.AnimatedHeight
-                + TranslateHeader.AnimatedHeight
-                + ActionBar.AnimatedHeight
-                + ConnectedBot.AnimatedHeight
-                + PinnedMessage.AnimatedHeight
-                + AccountInfoHeader.AnimatedHeight
-                + Sponsored.AnimatedHeight;
-
-            if (args.EffectiveViewport.Top < 4 && args.EffectiveViewport.Top >= -padding && args.BringIntoViewDistanceY <= 28 && !Messages.HasBeenScrolled)
-            {
-                _headerUnreadViewport = args;
-                UpdateMessagesHeaderPadding(padding, true, padding);
-            }
-            else
-            {
-                _headerUnreadViewport = null;
             }
         }
 
