@@ -1643,7 +1643,7 @@ namespace Telegram.Views.Popups
 
         private bool ItemClick(Chat chat, bool origin)
         {
-            if (ViewModel.Options.CanPostMessages && ViewModel.ClientService.IsSavedMessages(chat))
+            if (ViewModel.Options.CanPostMessages && ViewModel.Configuration is not ChooseChatsConfigurationShareOperation && ViewModel.ClientService.IsSavedMessages(chat))
             {
                 if (ViewModel.SelectedItems.Empty())
                 {
