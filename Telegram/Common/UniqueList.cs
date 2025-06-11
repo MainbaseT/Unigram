@@ -15,10 +15,10 @@ namespace Telegram.Common
         private readonly Func<TValue, TKey> _selector;
         private readonly SortedList<TKey, TValue> _inner;
 
-        public UniqueList(Func<TValue, TKey> selector)
+        public UniqueList(Func<TValue, TKey> selector, IComparer<TKey> comparer = null)
         {
             _selector = selector;
-            _inner = new SortedList<TKey, TValue>();
+            _inner = new SortedList<TKey, TValue>(comparer);
         }
 
         public IList<TKey> Keys => _inner.Keys;
