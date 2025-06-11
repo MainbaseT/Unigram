@@ -1587,7 +1587,7 @@ namespace Telegram.Views
                 return;
             }
 
-            TryGetWebPagePreview(viewModel.ClientService, viewModel.Chat, text, result =>
+            TryGetWebPagePreview(viewModel.ClientService, viewModel.Chat, text, embedded?.LinkPreviewOptions?.Url, result =>
             {
                 this.BeginOnUIThread(() =>
                 {
@@ -1633,15 +1633,19 @@ namespace Telegram.Views
             });
         }
 
-        private void TryGetWebPagePreview(IClientService clientService, Chat chat, string text, Action<BaseObject> result)
+        private void TryGetWebPagePreview(IClientService clientService, Chat chat, string text, string url, Action<BaseObject> result)
         {
             if (chat == null || string.IsNullOrWhiteSpace(text))
             {
                 result(null);
                 return;
             }
-
-            if (chat.Type is ChatTypeSecret)
+            
+            if (url?.Length > 0)
+            {
+                clientService.Send(new GetLinkPreview(new FormattedText(url, Array.Empty<TextEntity>()), null), result);
+            }
+            else if (chat.Type is ChatTypeSecret)
             {
                 var entities = ClientEx.GetTextEntities(text);
                 var urls = string.Empty;
@@ -2479,6 +2483,75 @@ namespace Telegram.Views
                 if (header.LinkPreview.HasLargeMedia)
                 {
                     flyout.CreateFlyoutItem(ChangeForceMedia, header, header.LinkPreviewOptions.ForceSmallMedia ? Strings.LinkMediaLarger : Strings.LinkMediaSmaller, header.LinkPreviewOptions.ForceSmallMedia ? Icons.Enlarge : Icons.Shrink);
+                }
+
+                var text = TextField.GetFormattedText();
+                var entities = ClientEx.GetTextEntities(text.Text);
+
+                var links = new List<string>();
+
+                foreach (var entity in text.Entities.Union(entities).OrderBy(x => x.Offset))
+                {
+                    if (entity.Type is TextEntityTypeTextUrl textUrl)
+                    {
+                        if (!links.Contains(textUrl.Url))
+                        {
+                            links.Add(textUrl.Url);
+                        }
+                    }
+                    else if (entity.Type is TextEntityTypeUrl)
+                    {
+                        var url = text.Text.Substring(entity.Offset, entity.Length);
+                        if (!links.Contains(url))
+                        {
+                            links.Add(url);
+                        }
+                    }
+                }
+
+                if (links.Count > 0)
+                {
+                    var item = new MenuFlyoutSubItem
+                    {
+                        Text = Strings.MessageOptionsLinkTitle,
+                        Icon = MenuFlyoutHelper.CreateIcon(Icons.LinkDiagonal)
+                    };
+
+                    var target = header.LinkPreviewOptions.Url;
+                    if (target.Length == 0)
+                    {
+                        target = header.LinkPreviewUrl;
+                    }
+
+                    void handler(object sender, RoutedEventArgs e)
+                    {
+                        if (sender is ToggleMenuFlyoutItem item && item.CommandParameter is string link)
+                        {
+                            item.Click -= handler;
+
+                            var header = ViewModel.ComposerHeader;
+                            if (header?.LinkPreviewOptions != null)
+                            {
+                                header.LinkPreviewOptions.Url = link;
+                                CheckMessageBoxEmpty();
+                            }
+                        }
+                    }
+
+                    foreach (var link in links)
+                    {
+                        var toggle = new ToggleMenuFlyoutItem
+                        {
+                            Text = link,
+                            CommandParameter = link,
+                            IsChecked = target == link
+                        };
+
+                        toggle.Click += handler;
+                        item.Items.Add(toggle);
+                    }
+
+                    flyout.Items.Add(item);
                 }
 
                 flyout.CreateFlyoutSeparator();

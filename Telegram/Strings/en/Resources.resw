@@ -8295,6 +8295,9 @@ Minimum length is 5 characters.</value>
     <value>{0} must pay ⭐️ {1} for each message to you.
 **Remove Fee**</value>
   </data>
+  <data name="MessageOptionsLinkTitle" xml:space="preserve">
+    <value>Link Preview</value>
+  </data>
   <data name="MessageOptionsReplySubtitle" xml:space="preserve">
     <value>You can select a specific part to quote</value>
   </data>
