@@ -2573,8 +2573,8 @@ namespace Telegram.Controls.Messages
                     }
                 }
 
-                source.Text = source.Text.Remove(start, param.Length);
-                source.Text = source.Text.Insert(start, names.ToString());
+                source.Text = source.Text.Remove(index, param.Length);
+                source.Text = source.Text.Insert(index, names.ToString());
 
                 source.Entities.AddRange(entities);
             }
