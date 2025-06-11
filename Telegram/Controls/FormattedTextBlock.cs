@@ -595,7 +595,11 @@ namespace Telegram.Controls
                                     MessageHelper.SetEntityType(hyperlink, entity.Type);
 
                                     _links.Add(hyperlink);
-                                    ToolTipService.SetToolTip(hyperlink, textUrl.Url);
+
+                                    if (textUrl.Url.StartsWith("http"))
+                                    {
+                                        ToolTipService.SetToolTip(hyperlink, textUrl.Url);
+                                    }
                                 }
                                 else if (entity.Type is TextEntityTypeMentionName mentionName)
                                 {
