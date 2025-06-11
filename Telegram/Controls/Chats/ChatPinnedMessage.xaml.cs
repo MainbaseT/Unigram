@@ -39,6 +39,8 @@ namespace Telegram.Controls.Chats
         private long _chatId;
         private new MessageViewModel _message;
 
+        private bool _animate;
+
         private string _alternativeText;
 
         public ChatPinnedMessage()
@@ -46,6 +48,8 @@ namespace Telegram.Controls.Chats
             InitializeComponent();
 
             this.CreateInsetClip();
+
+            ElementCompositionPreview.SetIsTranslationEnabled(ContentRoot, true);
 
             _textVisual1 = ElementComposition.GetElementVisual(TextLabel1);
             _textVisual2 = ElementComposition.GetElementVisual(TextLabel2);
@@ -74,6 +78,7 @@ namespace Telegram.Controls.Chats
             _chatId = 0;
             _message = null;
             _loading = false;
+            _animate = false;
 
             _collapsed = true;
             Visibility = Visibility.Collapsed;
@@ -127,15 +132,16 @@ namespace Telegram.Controls.Chats
 
             if (_loading || (_chatId == chat.Id && _message == null))
             {
+                _chatId = chat.Id;
+                _message = message;
+
+                _animate = _loading != (_message == null);
+                _loading = known;
+
                 _textVisual = _textVisual == _textVisual1 ? _textVisual2 : _textVisual1;
                 UpdateMessage(message, message == null, title);
 
                 Line.UpdateIndex(value, maximum, 0);
-
-                _chatId = chat.Id;
-                _message = message;
-
-                _loading = known;
                 return;
             }
             else if (_chatId == chat.Id && _message?.Id == message?.Id)
@@ -341,12 +347,18 @@ namespace Telegram.Controls.Chats
             }
 
             _collapsedThumbnail = !show;
-            ThumbRoot.Visibility = Visibility.Visible;
-
-            ElementCompositionPreview.SetIsTranslationEnabled(ContentRoot, true);
+            ThumbRoot.Visibility = _animate ? Visibility.Visible : show ? Visibility.Visible : Visibility.Collapsed;
 
             var visual = ElementComposition.GetElementVisual(ThumbRoot);
             var content = ElementComposition.GetElementVisual(ContentRoot);
+
+            if (!_animate)
+            {
+                visual.Opacity = 1;
+                content.Properties.InsertVector3("Translation", Vector3.Zero);
+
+                return;
+            }
 
             var batch = visual.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
