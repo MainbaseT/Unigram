@@ -321,6 +321,7 @@ namespace Telegram.Controls.Messages
             _dateLabel = Formatter.Time(date);
             UpdateLabel();
             UpdateTicks(outgoing, outgoing ? MessageTicksState.Read : MessageTicksState.None);
+            UpdateMessageOutgoing(outgoing);
         }
 
         public void UpdateMessageInteractionInfo(MessageViewModel message)
