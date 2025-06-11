@@ -67,6 +67,7 @@ namespace Telegram.Controls
         private double _fontSize;
 
         private IXamlDirectObject _fastRun;
+        private double _fastFontSize;
 
         private string _query;
 
@@ -410,11 +411,22 @@ namespace Telegram.Controls
                 return;
             }
 
+            if (AutoFontSize && fontSize == 0)
+            {
+                fontSize = Theme.Current.MessageFontSize;
+            }
+
             var direct = XamlDirect.GetDefault();
 
             // PERF: fast path if both model and view have one paragraph with one run
             if (_fastRun != null && styled != null && prevPlain && styled.IsPlain && prevDirection == styled.Paragraphs[0].Direction && !HasCodeBlocks)
             {
+                if (_fastFontSize != fontSize)
+                {
+                    _fastFontSize = fontSize;
+                    direct.SetDoubleProperty(_fastRun, XamlPropertyIndex.TextElement_FontSize, fontSize);
+                }
+
                 direct.SetStringProperty(_fastRun, XamlPropertyIndex.Run_Text, styled.Text);
                 return;
             }
@@ -431,6 +443,7 @@ namespace Telegram.Controls
 
             _links.Clear();
             _codeBlocks.Clear();
+            _fastFontSize = fontSize;
             direct.ClearCollection(blocks);
 
             if (string.IsNullOrEmpty(styled?.Text))
@@ -462,11 +475,6 @@ namespace Telegram.Controls
 
                 var paragraph = direct.CreateInstance(XamlTypeIndex.Paragraph);
                 var inlines = direct.GetXamlDirectObjectProperty(paragraph, XamlPropertyIndex.Paragraph_Inlines);
-
-                if (AutoFontSize)
-                {
-                    direct.SetDoubleProperty(paragraph, XamlPropertyIndex.TextElement_FontSize, Theme.Current.MessageFontSize);
-                }
 
                 // TODO: we use DetectFromContent, but this could be used too:
                 //direct.SetEnumProperty(paragraph, XamlPropertyIndex.Block_TextAlignment, part.Direction switch
