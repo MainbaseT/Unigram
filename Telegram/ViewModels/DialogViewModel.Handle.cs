@@ -1044,10 +1044,9 @@ namespace Telegram.ViewModels
                     }
 
                     // Let's not reorder text messages 
-                    if (message.Content is not MessageText and not MessageAnimatedEmoji)
+                    if (message.Content is not MessageText)
                     {
-                        // TODO: InsertMessage?
-                        InsertMessageInOrder(message, update.OldMessageId);
+                        InsertMessage(message, update.OldMessageId);
                     }
 
                     return true; //MoveMessageInOrder(Items, message);
