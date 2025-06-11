@@ -99,6 +99,8 @@ namespace Telegram.ViewModels.Settings
             set => SetChatTheme(value);
         }
 
+        public bool SelectionChanged { get; private set; }
+
         private void SetChatTheme(ChatThemeViewModel chatTheme)
         {
             if (chatTheme == null || chatTheme.Name == _selectedChatTheme?.Name)
@@ -125,6 +127,7 @@ namespace Telegram.ViewModels.Settings
             Settings.Appearance.UpdateNightMode(updateBackground: false);
 
             _selectedChatTheme = chatTheme;
+            SelectionChanged = true;
             RaisePropertyChanged(nameof(SelectedChatTheme));
         }
 

@@ -126,7 +126,7 @@ namespace Telegram.Views.Settings
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (List.SelectedItem is ChatThemeViewModel chatTheme)
+            if (List.SelectedItem is ChatThemeViewModel chatTheme && ViewModel.SelectionChanged)
             {
                 // Speed up background preview by manually applying it
                 if (ActualTheme == ElementTheme.Light)
