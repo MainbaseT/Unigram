@@ -144,7 +144,7 @@ namespace Telegram.Td.Api
 
         public (Rect[], Size) GetPositionsForWidth(double w, bool final)
         {
-            var positions = _positions ??= MosaicAlbumLayout.chatMessageBubbleMosaicLayout(new Size(MAX_WIDTH, MAX_HEIGHT), GetSizes());
+            var positions = _positions ??= MosaicAlbumLayout.chatMessageBubbleMosaicLayout(MAX_WIDTH, MAX_HEIGHT, GetSizes());
 
             var ratioX = w / positions.Item2.Width;
             var ratioY = w / positions.Item2.Height;

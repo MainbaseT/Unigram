@@ -24,8 +24,7 @@
                 <ControlTemplate TargetType="local:VideoContent">
                     <controls:AspectView x:Name="LayoutRoot"
                                          Background="Black">
-                        <Image x:Name="Texture"
-                               Stretch="UniformToFill" />
+                        <Border x:Name="Texture" />
 
                         <controls:AnimatedImage x:Name="Particles"
                                                 IsViewportAware="True"

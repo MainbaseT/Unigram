@@ -2042,6 +2042,11 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
+            TextEntityClick(message, Message, e);
+        }
+
+        public static void TextEntityClick(MessageViewModel message, FormattedTextBlock textBlock, TextEntityClickEventArgs e)
+        {
             void OpenUrl(string url, bool trust)
             {
                 if (message.Content is MessageText text && text.LinkPreview?.InstantViewVersion != 0 && MessageHelper.AreTheSame(text.LinkPreview?.Url, url, out _))
@@ -2126,11 +2131,11 @@ namespace Telegram.Controls.Messages
             }
             else if (e.Type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode && e.Data is string code)
             {
-                MessageHelper.CopyText(XamlRoot, code);
+                MessageHelper.CopyText(textBlock.XamlRoot, code);
             }
             else if (e.Type is TextEntityTypeSpoiler)
             {
-                Message.IgnoreSpoilers = true;
+                textBlock.IgnoreSpoilers = true;
             }
         }
 

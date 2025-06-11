@@ -153,7 +153,7 @@ namespace Telegram.Controls.Messages.Content
                 }
                 else if (pos.Content is MessageVideo)
                 {
-                    element = new VideoContent(pos);
+                    element = new VideoContent(pos, null, true);
                 }
                 else if (pos.Content is MessageAudio)
                 {
@@ -178,38 +178,50 @@ namespace Telegram.Controls.Messages.Content
                     element.MinHeight = 0;
                     element.MaxWidth = double.PositiveInfinity;
                     element.MaxHeight = double.PositiveInfinity;
-                    //element.Margin = new Thickness(0, 0, MessageAlbum.ITEM_MARGIN, MessageAlbum.ITEM_MARGIN);
-                    element.Tag = true;
-
                     continue;
                 }
                 else if (pos == album.Messages.Last())
                 {
-                    element.Margin = new Thickness(0, 0, 0, 2);
                     return;
                 }
 
                 element.Margin = new Thickness(0, 0, 0, 2);
                 selector.Margin = new Thickness(0, 0, 0, 6);
 
-                var caption = pos.GetCaption();
-                if (string.IsNullOrEmpty(caption?.Text))
+                if (pos.Text == null)
                 {
                     continue;
                 }
 
-                var span = new Span();
-                var paragraph = new Paragraph();
-                paragraph.Inlines.Add(span);
+                var textBlock = new FormattedTextBlock
+                {
+                    AdjustLineEnding = true,
+                    Margin = new Thickness(0, 0, 0, 12)
+                };
 
-                var rich = new RichTextBlock();
-                rich.Style = BootStrapper.Current.Resources["EmojiRichTextBlockStyle"] as Style;
-                rich.Blocks.Add(paragraph);
-                rich.Margin = new Thickness(0, 0, 0, 8);
+                textBlock.SetText(message.ClientService, pos.Text);
 
-                ReplaceEntities(message, rich, span, caption, out _);
-                Children.Add(rich);
+                textBlock.Tag = pos;
+                textBlock.ContextMenuOpening += Message_ContextMenuOpening;
+                textBlock.TextEntityClick += Message_TextEntityClick;
+
+                Children.Add(textBlock);
             }
+        }
+
+        private void Message_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Message_TextEntityClick(object sender, TextEntityClickEventArgs e)
+        {
+            if (sender is not FormattedTextBlock textBlock || textBlock.Tag is not MessageViewModel message || message.Delegate == null || message.PlaybackService == null)
+            {
+                return;
+            }
+
+            MessageBubble.TextEntityClick(message, textBlock, e);
         }
 
         public void UpdateMessageContentOpened(MessageViewModel message)
@@ -226,247 +238,6 @@ namespace Telegram.Controls.Messages.Content
                 }
             }
         }
-
-        #region Caption
-
-        private bool ReplaceEntities(MessageViewModel message, RichTextBlock rich, Span span, FormattedText text, out bool adjust)
-        {
-            if (text == null)
-            {
-                adjust = false;
-                return false;
-            }
-
-            return ReplaceEntities(message, rich, span, text.Text, text.Entities, out adjust);
-        }
-
-        private bool ReplaceEntities(MessageViewModel message, RichTextBlock rich, Span span, string text, IList<TextEntity> entities, out bool adjust)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                adjust = false;
-                return false;
-            }
-
-            var runs = TextStyleRun.GetRuns(text, entities);
-            var previous = 0;
-
-            foreach (var entity in runs)
-            {
-                if (entity.Offset > previous)
-                {
-                    span.Inlines.Add(new Run { Text = text.Substring(previous, entity.Offset - previous) });
-                }
-
-                if (entity.Length + entity.Offset > text.Length)
-                {
-                    previous = entity.Offset + entity.Length;
-                    continue;
-                }
-
-                if (entity.HasFlag(TextStyle.Monospace))
-                {
-                    span.Inlines.Add(new Run { Text = text.Substring(entity.Offset, entity.Length), FontFamily = new FontFamily("Consolas") });
-                }
-                else
-                {
-                    var local = span;
-
-                    if (entity.HasFlag(TextStyle.Mention) || entity.HasFlag(TextStyle.Url))
-                    {
-                        if (entity.Type is TextEntityTypeMentionName or TextEntityTypeTextUrl)
-                        {
-                            var hyperlink = new Hyperlink();
-                            object data;
-                            if (entity.Type is TextEntityTypeTextUrl textUrl)
-                            {
-                                data = textUrl.Url;
-                                MessageHelper.SetEntityData(hyperlink, textUrl.Url);
-                                MessageHelper.SetEntityType(hyperlink, entity.Type);
-
-                                Extensions.SetToolTip(hyperlink, textUrl.Url);
-                            }
-                            else if (entity.Type is TextEntityTypeMentionName mentionName)
-                            {
-                                data = mentionName.UserId;
-                            }
-
-                            hyperlink.Click += (s, args) => Entity_Click(message, entity.Type, null);
-                            hyperlink.Foreground = GetBrush("MessageForegroundLinkBrush");
-                            //hyperlink.Foreground = foreground;
-
-                            span.Inlines.Add(hyperlink);
-                            local = hyperlink;
-                        }
-                        else
-                        {
-                            var hyperlink = new Hyperlink();
-                            var original = entities.FirstOrDefault(x => x.Offset <= entity.Offset && x.Offset + x.Length >= entity.End);
-
-                            var data = text.Substring(entity.Offset, entity.Length);
-
-                            if (original != null)
-                            {
-                                data = text.Substring(original.Offset, original.Length);
-                            }
-
-                            hyperlink.Click += (s, args) => Entity_Click(message, entity.Type, data);
-                            hyperlink.Foreground = GetBrush("MessageForegroundLinkBrush");
-                            //hyperlink.Foreground = foreground;
-
-                            //if (entity.Type is TextEntityTypeUrl || entity.Type is TextEntityTypeEmailAddress || entity.Type is TextEntityTypeBankCardNumber)
-                            {
-                                MessageHelper.SetEntityData(hyperlink, data);
-                                MessageHelper.SetEntityType(hyperlink, entity.Type);
-                            }
-
-                            span.Inlines.Add(hyperlink);
-                            local = hyperlink;
-                        }
-                    }
-
-                    var run = new Run { Text = text.Substring(entity.Offset, entity.Length) };
-
-                    if (entity.HasFlag(TextStyle.Bold))
-                    {
-                        run.FontWeight = FontWeights.SemiBold;
-                    }
-                    if (entity.HasFlag(TextStyle.Italic))
-                    {
-                        run.FontStyle |= FontStyle.Italic;
-                    }
-                    if (entity.HasFlag(TextStyle.Underline))
-                    {
-                        run.TextDecorations |= TextDecorations.Underline;
-                    }
-                    if (entity.HasFlag(TextStyle.Strikethrough))
-                    {
-                        run.TextDecorations |= TextDecorations.Strikethrough;
-                    }
-
-                    local.Inlines.Add(run);
-
-                    if (entity.Type is TextEntityTypeHashtag)
-                    {
-                        var data = text.Substring(entity.Offset, entity.Length);
-                        var hex = data.TrimStart('#');
-
-                        if ((hex.Length == 6 || hex.Length == 8) && int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int rgba))
-                        {
-                            byte r, g, b, a;
-                            if (hex.Length == 8)
-                            {
-                                r = (byte)((rgba & 0xff000000) >> 24);
-                                g = (byte)((rgba & 0x00ff0000) >> 16);
-                                b = (byte)((rgba & 0x0000ff00) >> 8);
-                                a = (byte)(rgba & 0x000000ff);
-                            }
-                            else
-                            {
-                                r = (byte)((rgba & 0xff0000) >> 16);
-                                g = (byte)((rgba & 0x00ff00) >> 8);
-                                b = (byte)(rgba & 0x0000ff);
-                                a = 0xFF;
-                            }
-
-                            var color = Color.FromArgb(a, r, g, b);
-                            var border = new Border
-                            {
-                                Width = 12,
-                                Height = 12,
-                                Margin = new Thickness(4, 4, 0, -2),
-                                Background = new SolidColorBrush(color)
-                            };
-
-                            span.Inlines.Add(new InlineUIContainer { Child = border });
-                        }
-                    }
-                }
-
-                previous = entity.Offset + entity.Length;
-            }
-
-            if (text.Length > previous)
-            {
-                span.Inlines.Add(new Run { Text = text.Substring(previous) });
-            }
-
-            var direction = NativeUtils.GetDirectionality(text);
-            if (direction == TextDirectionality.RightToLeft && LocaleService.Current.FlowDirection == FlowDirection.LeftToRight)
-            {
-                //Footer.HorizontalAlignment = HorizontalAlignment.Left;
-                //span.Inlines.Add(new LineBreak());
-                rich.FlowDirection = FlowDirection.RightToLeft;
-                adjust = true;
-            }
-            else if (direction == TextDirectionality.LeftToRight && LocaleService.Current.FlowDirection == FlowDirection.RightToLeft)
-            {
-                //Footer.HorizontalAlignment = HorizontalAlignment.Left;
-                //span.Inlines.Add(new LineBreak());
-                rich.FlowDirection = FlowDirection.LeftToRight;
-                adjust = true;
-            }
-            else
-            {
-                //Footer.HorizontalAlignment = HorizontalAlignment.Right;
-                rich.FlowDirection = LocaleService.Current.FlowDirection;
-                adjust = false;
-            }
-
-            return true;
-        }
-
-        private Brush GetBrush(string key)
-        {
-            if (Resources.TryGetValue(key, out object value))
-            {
-                return value as SolidColorBrush;
-            }
-
-            return BootStrapper.Current.Resources[key] as SolidColorBrush;
-        }
-
-        private void Entity_Click(MessageViewModel message, TextEntityType type, string data)
-        {
-            if (type is TextEntityTypeBotCommand)
-            {
-                message.Delegate.SendBotCommand(data);
-            }
-            else if (type is TextEntityTypeEmailAddress)
-            {
-                message.Delegate.OpenUrl("mailto:" + data, false);
-            }
-            else if (type is TextEntityTypePhoneNumber)
-            {
-                message.Delegate.OpenUrl("tel:" + data, false);
-            }
-            else if (type is TextEntityTypeHashtag or TextEntityTypeCashtag)
-            {
-                message.Delegate.OpenHashtag(data);
-            }
-            else if (type is TextEntityTypeMention)
-            {
-                message.Delegate.OpenUsername(data);
-            }
-            else if (type is TextEntityTypeMentionName mentionName)
-            {
-                message.Delegate.OpenUser(mentionName.UserId);
-            }
-            else if (type is TextEntityTypeTextUrl textUrl)
-            {
-                message.Delegate.OpenUrl(textUrl.Url, true, new OpenUrlSourceChat(message.ChatId, message.SenderId));
-            }
-            else if (type is TextEntityTypeUrl)
-            {
-                message.Delegate.OpenUrl(data, false, new OpenUrlSourceChat(message.ChatId, message.SenderId));
-            }
-            else if (type is TextEntityTypeBankCardNumber)
-            {
-                message.Delegate.OpenBankCardNumber(data);
-            }
-        }
-
-        #endregion
 
         public void Recycle()
         {

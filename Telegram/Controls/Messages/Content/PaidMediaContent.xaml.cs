@@ -223,7 +223,7 @@ namespace Telegram.Controls.Messages.Content
                 }
                 else if (pos is PaidMediaVideo extendedVideo)
                 {
-                    element = new VideoContent(message, extendedVideo);
+                    element = new VideoContent(message, extendedVideo, true);
                 }
                 else if (pos is PaidMediaPreview extendedPreview)
                 {
@@ -244,7 +244,6 @@ namespace Telegram.Controls.Messages.Content
                 element.MinHeight = 0;
                 element.MaxWidth = MessageAlbum.MAX_WIDTH;
                 element.MaxHeight = MessageAlbum.MAX_HEIGHT;
-                element.Tag = true;
             }
         }
 
