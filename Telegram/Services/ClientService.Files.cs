@@ -647,6 +647,12 @@ namespace Telegram.Services
                         ProcessFiles(diceStickersSlotMachine.RightReel);
                     }
                     break;
+                case DirectMessagesChatTopic directMessagesChatTopic:
+                    if (directMessagesChatTopic.LastMessage != null)
+                    {
+                        ProcessFiles(directMessagesChatTopic.LastMessage);
+                    }
+                    break;
                 case Document document:
                     if (document.DocumentValue != null)
                     {
@@ -719,12 +725,6 @@ namespace Telegram.Services
                     foreach (var item in encryptedPassportElement.Translation)
                     {
                         ProcessFiles(item);
-                    }
-                    break;
-                case DirectMessagesChatTopic directMessagesChatTopic:
-                    if (directMessagesChatTopic.LastMessage != null)
-                    {
-                        ProcessFiles(directMessagesChatTopic.LastMessage);
                     }
                     break;
                 case FileDownload fileDownload:
