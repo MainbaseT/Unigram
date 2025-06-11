@@ -349,7 +349,7 @@ namespace Telegram.Common
                     return;
                 }
 
-                if (supergroup.Status is ChatMemberStatusLeft && !supergroup.IsPublic() && !_clientService.IsChatAccessible(chat))
+                if (supergroup.Status is ChatMemberStatusLeft && !supergroup.IsDirectMessagesGroup && !supergroup.IsPublic() && !_clientService.IsChatAccessible(chat))
                 {
                     await ShowPopupAsync(Strings.ChannelCantOpenPrivate, Strings.AppName, Strings.OK);
                     return;

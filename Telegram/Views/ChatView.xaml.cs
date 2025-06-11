@@ -6099,6 +6099,10 @@ namespace Telegram.Views
                             ShowArea(group.PaidMessageStarCount);
                         }
                     }
+                    else if (group.IsDirectMessagesGroup)
+                    {
+                        ShowArea(group.PaidMessageStarCount);
+                    }
                     else if (group.JoinByRequest)
                     {
                         ShowAction(Strings.ChannelJoinRequest, true);
@@ -6136,13 +6140,21 @@ namespace Telegram.Views
                             ShowAction(string.Format(Strings.SendMessageRestricted, Formatter.BannedUntil(restrictedSend.RestrictedUntilDate)), false);
                         }
                     }
+                    else
                     {
                         ShowArea(group.PaidMessageStarCount);
                     }
                 }
                 else if (group.Status is ChatMemberStatusLeft or ChatMemberStatusBanned)
                 {
-                    ShowAction(Strings.DeleteChat, true);
+                    if (group.IsDirectMessagesGroup)
+                    {
+                        ShowArea(group.PaidMessageStarCount);
+                    }
+                    else
+                    {
+                        ShowAction(Strings.DeleteChat, true);
+                    }
                 }
                 else if (!chat.Permissions.CanSendBasicMessages && (fullInfo == null || fullInfo.MyBoostCount < fullInfo.UnrestrictBoostCount))
                 {
@@ -6256,14 +6268,15 @@ namespace Telegram.Views
                 if (supergroup.PaidMessageStarCount > 0)
                 {
                     TextBlockHelper.SetMarkdown(RestrictsNewChatsText, string.Format(Strings.SuggestionLockedStars.Replace("\u2B50", Icons.Premium + "\u200A"), chat.Title, supergroup.PaidMessageStarCount.ToString("N0")));
+                    RestrictsNewChatsButton.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     TextBlockHelper.SetMarkdown(RestrictsNewChatsText, string.Format(Strings.SuggestionUnlockedStars, chat.Title));
+                    RestrictsNewChatsButton.Visibility = Visibility.Collapsed;
                 }
 
                 RestrictsNewChats.Visibility = Visibility.Visible;
-                RestrictsNewChatsButton.Visibility = Visibility.Visible;
                 RestrictsNewChatsButtonText.Text = Strings.MessageStarsUnlock;
             }
             else
