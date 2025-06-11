@@ -34,7 +34,7 @@ namespace Telegram.Controls.Messages.Content
             UpdateMessage(message);
 
             // I don't like this much, but it's the easier way to add margins between children
-            Margin = new Thickness(0, 0, -MessageAlbum.ITEM_MARGIN, -MessageAlbum.ITEM_MARGIN);
+            //Margin = new Thickness(0, 0, -MessageAlbum.ITEM_MARGIN, -MessageAlbum.ITEM_MARGIN);
         }
 
         private (Rect[], Size) _positions;
@@ -62,7 +62,7 @@ namespace Telegram.Controls.Messages.Content
                 return new Size(width, height);
             }
 
-            var positions = album.GetPositionsForWidth(availableSize.Width);
+            var positions = album.GetPositionsForWidth(availableSize.Width, true);
 
             for (int i = 0; i < Math.Min(positions.Item1.Length, Children.Count); i++)
             {
@@ -178,7 +178,7 @@ namespace Telegram.Controls.Messages.Content
                     element.MinHeight = 0;
                     element.MaxWidth = double.PositiveInfinity;
                     element.MaxHeight = double.PositiveInfinity;
-                    element.Margin = new Thickness(0, 0, MessageAlbum.ITEM_MARGIN, MessageAlbum.ITEM_MARGIN);
+                    //element.Margin = new Thickness(0, 0, MessageAlbum.ITEM_MARGIN, MessageAlbum.ITEM_MARGIN);
                     element.Tag = true;
 
                     continue;

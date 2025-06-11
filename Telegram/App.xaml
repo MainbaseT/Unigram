@@ -200,8 +200,8 @@
             <x:Double x:Key="TelegramLightMediaMaxWidth">180</x:Double>
             <x:Double x:Key="TelegramLightMediaMaxHeight">180</x:Double>
 
-            <x:Double x:Key="TelegramMediaMaxWidth">420</x:Double>
-            <x:Double x:Key="TelegramMediaMaxHeight">420</x:Double>
+            <x:Double x:Key="TelegramMediaMaxWidth">432</x:Double>
+            <x:Double x:Key="TelegramMediaMaxHeight">432</x:Double>
 
             <x:Double x:Key="TelegramMediaMinWidth">96</x:Double>
             <x:Double x:Key="TelegramMediaMinHeight">96</x:Double>

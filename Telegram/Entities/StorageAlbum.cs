@@ -25,7 +25,7 @@ namespace Telegram.Entities
         }
 
         public const double ITEM_MARGIN = 2;
-        public const double MAX_WIDTH = 320 + ITEM_MARGIN;
+        public const double MAX_WIDTH = 420 + ITEM_MARGIN;
         public const double MAX_HEIGHT = 420 + ITEM_MARGIN;
 
         private ((Rect, MosaicItemPosition)[], Size)? _positions;
@@ -46,16 +46,18 @@ namespace Telegram.Entities
                 positions = (new[] { (rect, MosaicItemPosition.None) }, size);
             }
 
-            var ratio = w / positions.Item2.Width;
+            var ratioX = w / positions.Item2.Width;
+            var ratioY = positions.Item2.Height * ratioX > MAX_HEIGHT ? MAX_HEIGHT / positions.Item2.Height : ratioX;
+
             var rects = new Rect[positions.Item1.Length];
 
             for (int i = 0; i < rects.Length; i++)
             {
                 var rect = positions.Item1[i].Item1;
-                var x = Sanitize(rect.X * ratio);
-                var y = Sanitize(rect.Y * ratio);
-                var width = Sanitize(rect.Width * ratio);
-                var height = Sanitize(rect.Height * ratio);
+                var x = Sanitize(rect.X * ratioX);
+                var y = Sanitize(rect.Y * ratioY);
+                var width = Sanitize(rect.Width * ratioX);
+                var height = Sanitize(rect.Height * ratioY);
 
                 if (rects.Length == 1)
                 {
@@ -65,8 +67,8 @@ namespace Telegram.Entities
                 rects[i] = new Rect(x, y, width, height);
             }
 
-            var finalWidth = Sanitize(positions.Item2.Width * ratio);
-            var finalHeight = Sanitize(positions.Item2.Height * ratio);
+            var finalWidth = Sanitize(positions.Item2.Width * ratioX);
+            var finalHeight = Sanitize(positions.Item2.Height * ratioY);
 
             if (rects.Length == 1)
             {

@@ -137,12 +137,6 @@ namespace Telegram.Controls.Messages.Content
         public MessageViewModel Message => _message;
         private MessageViewModel _message;
 
-        public PaidMediaContentPanel()
-        {
-            // I don't like this much, but it's the easier way to add margins between children
-            Margin = new Thickness(0, 0, -MessageAlbum.ITEM_MARGIN, -MessageAlbum.ITEM_MARGIN);
-        }
-
         private (Rect[], Size) _positions;
 
         protected override Size MeasureOverride(Size availableSize)
@@ -153,7 +147,7 @@ namespace Telegram.Controls.Messages.Content
                 return base.MeasureOverride(availableSize);
             }
 
-            var positions = album.GetPositionsForWidth(availableSize.Width);
+            var positions = album.GetPositionsForWidth(availableSize.Width, true);
 
             for (int i = 0; i < Math.Min(positions.Item1.Length, Children.Count); i++)
             {
@@ -250,7 +244,6 @@ namespace Telegram.Controls.Messages.Content
                 element.MinHeight = 0;
                 element.MaxWidth = MessageAlbum.MAX_WIDTH;
                 element.MaxHeight = MessageAlbum.MAX_HEIGHT;
-                element.Margin = new Thickness(0, 0, MessageAlbum.ITEM_MARGIN, MessageAlbum.ITEM_MARGIN);
                 element.Tag = true;
             }
         }

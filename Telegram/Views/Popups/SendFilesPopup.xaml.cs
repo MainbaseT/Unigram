@@ -1468,7 +1468,7 @@ namespace Telegram.Views.Popups
         public StorageAlbumPanel()
         {
             // I don't like this much, but it's the easier way to add margins between children
-            Margin = new Thickness(0, 0, -MessageAlbum.ITEM_MARGIN, -MessageAlbum.ITEM_MARGIN);
+            Margin = new Thickness(0, 0, -StorageAlbum.ITEM_MARGIN, -StorageAlbum.ITEM_MARGIN);
         }
 
         private (Rect[], Size) _positions;
@@ -1539,9 +1539,9 @@ namespace Telegram.Views.Popups
                     VerticalContentAlignment = VerticalAlignment.Stretch,
                     MinWidth = 0,
                     MinHeight = 0,
-                    MaxWidth = MessageAlbum.MAX_WIDTH,
-                    MaxHeight = MessageAlbum.MAX_HEIGHT,
-                    Margin = new Thickness(0, 0, MessageAlbum.ITEM_MARGIN, MessageAlbum.ITEM_MARGIN),
+                    MaxWidth = StorageAlbum.MAX_WIDTH,
+                    MaxHeight = StorageAlbum.MAX_HEIGHT,
+                    Margin = new Thickness(0, 0, StorageAlbum.ITEM_MARGIN, StorageAlbum.ITEM_MARGIN),
                     Padding = new Thickness(0),
                     Style = BootStrapper.Current.Resources["EmptyButtonStyle"] as Style
                 };

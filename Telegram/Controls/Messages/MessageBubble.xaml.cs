@@ -3523,8 +3523,8 @@ namespace Telegram.Controls.Messages
                 }
                 else if (album.IsMedia)
                 {
-                    var positions = album.GetPositionsForWidth(availableWidth + MessageAlbum.ITEM_MARGIN);
-                    width = positions.Item2.Width - MessageAlbum.ITEM_MARGIN;
+                    var positions = album.GetPositionsForWidth(availableWidth, false);
+                    width = positions.Item2.Width;
                     height = positions.Item2.Height;
 
                     goto Calculate;
@@ -3552,8 +3552,8 @@ namespace Telegram.Controls.Messages
                 }
                 else
                 {
-                    var positions = paidAlbum.GetPositionsForWidth(availableWidth + MessageAlbum.ITEM_MARGIN);
-                    width = positions.Item2.Width - MessageAlbum.ITEM_MARGIN;
+                    var positions = paidAlbum.GetPositionsForWidth(availableWidth, false);
+                    width = positions.Item2.Width;
                     height = positions.Item2.Height;
 
                     goto Calculate;
