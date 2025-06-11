@@ -123,10 +123,6 @@ namespace Telegram.Controls.Chats
 
         public void UpdateSource(IClientService clientService, Background background, bool thumbnail)
         {
-            BackgroundSizing = background.IsDark
-                ? BackgroundSizing.InnerBorderEdge
-                : BackgroundSizing.OuterBorderEdge;
-
             UpdateManager.Unsubscribe(this, ref _fileToken, true);
 
             var clear = _background == null;
@@ -248,8 +244,13 @@ namespace Telegram.Controls.Chats
                         : chatTheme.DarkSettings?.Background;
 
                     UpdateSource(clientService, background, thumbnail);
+                    return;
                 }
             }
+
+            BackgroundSizing = _negative
+                ? BackgroundSizing.InnerBorderEdge
+                : BackgroundSizing.OuterBorderEdge;
         }
 
         private void UpdateWallpaper(File file)
