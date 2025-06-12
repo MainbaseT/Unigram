@@ -92,6 +92,8 @@ namespace Telegram.Services
 
         private WM.SystemMediaTransportControls _transport;
 
+        private int _sessionId;
+        private long _chatId;
         private MessageTopic _topic;
 
         private List<PlaybackItem> _items;
@@ -582,7 +584,7 @@ namespace Telegram.Services
             }
 
             var previous = _items;
-            if (previous != null && _topic.AreTheSame(topic))
+            if (previous != null && _sessionId == message.ClientService.SessionId && _chatId == message.ChatId && _topic.AreTheSame(topic))
             {
                 var already = previous.FirstOrDefault(x => x.Message.Id == message.Id && x.Message.ChatId == message.ChatId);
                 if (already != null)
@@ -598,6 +600,9 @@ namespace Telegram.Services
             var items = _items = new List<PlaybackItem>();
 
             _items.Add(item);
+
+            _sessionId = message.ClientService.SessionId;
+            _chatId = message.ChatId;
             _topic = topic;
 
             SetSource(null, item);
@@ -610,7 +615,6 @@ namespace Telegram.Services
             var offset = -49;
             var filter = message.Content is MessageAudio ? new SearchMessagesFilterAudio() : (SearchMessagesFilter)new SearchMessagesFilterVoiceNote();
 
-            // TODO: 172 savedMessagesTopic
             var response = await message.ClientService.SendAsync(new SearchChatMessages(message.ChatId, _topic, string.Empty, null, message.Id, offset, 100, filter));
             if (response is FoundChatMessages messages)
             {
