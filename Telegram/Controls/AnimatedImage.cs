@@ -200,17 +200,20 @@ namespace Telegram.Controls
 
         private void OnViewportAwareChanged(bool newValue, bool oldValue)
         {
-            if (newValue)
+            if (newValue && Source != null)
             {
+                _effectiveViewportRegistered = true;
                 EffectiveViewportChanged += OnEffectiveViewportChanged;
             }
-            else
+            else if (_effectiveViewportRegistered)
             {
+                _effectiveViewportRegistered = false;
                 EffectiveViewportChanged -= OnEffectiveViewportChanged;
             }
         }
 
         private bool _withinViewport;
+        private bool _effectiveViewportRegistered;
 
         private void OnEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
         {
@@ -423,6 +426,12 @@ namespace Telegram.Controls
             if (e.NewValue is AnimatedImageSource newValue && IsConnected && IsOutlineEnabled)
             {
                 newValue.OutlineChanged += OnOutlineChanged;
+            }
+
+            if (e.NewValue != null && IsViewportAware && !_effectiveViewportRegistered)
+            {
+                _effectiveViewportRegistered = true;
+                EffectiveViewportChanged += OnEffectiveViewportChanged;
             }
         }
 
