@@ -1641,7 +1641,7 @@ namespace Telegram.Views
                 result(null);
                 return;
             }
-            
+
             if (url?.Length > 0)
             {
                 clientService.Send(new GetLinkPreview(new FormattedText(url, Array.Empty<TextEntity>()), null), result);
@@ -7191,26 +7191,34 @@ namespace Telegram.Views
             ChatFooter.Margin = new Thickness(12 + margin, 0, 12 + margin, 8);
 
             var visual = ElementComposition.GetElementVisual(ChatFooter);
-            visual.Clip = visual.Compositor.CreateRectangleClip(0, 0, ActualSize.X - 24, ChatFooter.ActualSize.Y, radius, radius, radius, radius);
+
+            if (ApiInfo.CanCreateRectangleClip)
+            {
+                var clipLeft = visual.Compositor.CreateScalarKeyFrameAnimation();
+                clipLeft.InsertKeyFrame(0, collapse ? 0 : 36);
+                clipLeft.InsertKeyFrame(1, collapse ? 36 : 0);
+                clipLeft.Duration = duration;
+
+                var clipRight = visual.Compositor.CreateScalarKeyFrameAnimation();
+                clipRight.InsertKeyFrame(0, collapse ? ActualSize.X - 24 : ActualSize.X - 24 - 36);
+                clipRight.InsertKeyFrame(1, collapse ? ActualSize.X - 24 - 36 : ActualSize.X - 24);
+                clipRight.Duration = duration;
+
+                visual.Clip = visual.Compositor.CreateRectangleClip(0, 0, ActualSize.X - 24, ChatFooter.ActualSize.Y, radius, radius, radius, radius);
+                visual.Clip.StartAnimation("Left", clipLeft);
+                visual.Clip.StartAnimation("Right", clipRight);
+            }
+            else
+            {
+                // TODO: alternative animation
+            }
 
             var translation = visual.Compositor.CreateScalarKeyFrameAnimation();
             translation.InsertKeyFrame(0, collapse ? -36 : 36);
             translation.InsertKeyFrame(1, 0);
             translation.Duration = duration;
 
-            var clipLeft = visual.Compositor.CreateScalarKeyFrameAnimation();
-            clipLeft.InsertKeyFrame(0, collapse ? 0 : 36);
-            clipLeft.InsertKeyFrame(1, collapse ? 36 : 0);
-            clipLeft.Duration = duration;
-
-            var clipRight = visual.Compositor.CreateScalarKeyFrameAnimation();
-            clipRight.InsertKeyFrame(0, collapse ? ActualSize.X - 24 : ActualSize.X - 24 - 36);
-            clipRight.InsertKeyFrame(1, collapse ? ActualSize.X - 24 - 36 : ActualSize.X - 24);
-            clipRight.Duration = duration;
-
             visual.StartAnimation("Translation.X", translation);
-            visual.Clip.StartAnimation("Left", clipLeft);
-            visual.Clip.StartAnimation("Right", clipRight);
         }
 
         private void ManagePanelAnimateWidth(bool collapse, TimeSpan duration)
@@ -7229,7 +7237,21 @@ namespace Telegram.Views
             var delete = ElementComposition.GetElementVisual(ButtonDelete);
             var forward = ElementComposition.GetElementVisual(ButtonForward);
             var visual = ElementComposition.GetElementVisual(ManagePanel);
-            visual.Clip = visual.Compositor.CreateRectangleClip(0, 0, ActualSize.X - 24, ManagePanel.ActualSize.Y, radius, radius, radius, radius);
+
+            if (ApiInfo.CanCreateRectangleClip)
+            {
+                var clipRight = visual.Compositor.CreateScalarKeyFrameAnimation();
+                clipRight.InsertKeyFrame(0, collapse ? ActualSize.X - 24 : ActualSize.X - 24 - 72);
+                clipRight.InsertKeyFrame(1, collapse ? ActualSize.X - 24 - 72 : ActualSize.X - 24);
+                clipRight.Duration = duration;
+
+                visual.Clip = visual.Compositor.CreateRectangleClip(0, 0, ActualSize.X - 24, ManagePanel.ActualSize.Y, radius, radius, radius, radius);
+                visual.Clip.StartAnimation("Right", clipRight);
+            }
+            else
+            {
+                // TODO: alternative animation
+            }
 
             var translation = visual.Compositor.CreateScalarKeyFrameAnimation();
             translation.InsertKeyFrame(0, collapse ? -72 : 72);
@@ -7241,16 +7263,9 @@ namespace Telegram.Views
             button.InsertKeyFrame(1, collapse ? -72 : 0);
             button.Duration = duration;
 
-            var clipRight = visual.Compositor.CreateScalarKeyFrameAnimation();
-            clipRight.InsertKeyFrame(0, collapse ? ActualSize.X - 24 : ActualSize.X - 24 - 72);
-            clipRight.InsertKeyFrame(1, collapse ? ActualSize.X - 24 - 72 : ActualSize.X - 24);
-            clipRight.Duration = duration;
-
             delete.StartAnimation("Translation.X", button);
             forward.StartAnimation("Translation.X", button);
             visual.StartAnimation("Translation.X", translation);
-            //visual.Clip.StartAnimation("Left", clipLeft);
-            visual.Clip.StartAnimation("Right", clipRight);
         }
 
         private void TextAreaAnimateWidth(bool collapse, TimeSpan duration)
@@ -7269,7 +7284,6 @@ namespace Telegram.Views
 
             var delete = ElementComposition.GetElementVisual(ButtonsRoot);
             var visual = ElementComposition.GetElementVisual(TextArea);
-            visual.Clip = visual.Compositor.CreateRectangleClip(0, 0, ActualSize.X - 24, TextArea.ActualSize.Y, radius, radius, radius, radius);
 
             var translation = visual.Compositor.CreateScalarKeyFrameAnimation();
             translation.InsertKeyFrame(0, collapse ? -72 : 72);
@@ -7281,16 +7295,23 @@ namespace Telegram.Views
             button.InsertKeyFrame(1, collapse ? -72 : 0);
             button.Duration = duration;
 
-            var clipRight = visual.Compositor.CreateScalarKeyFrameAnimation();
-            clipRight.InsertKeyFrame(0, collapse ? ActualSize.X - 24 : ActualSize.X - 24 - 72);
-            clipRight.InsertKeyFrame(1, collapse ? ActualSize.X - 24 - 72 : ActualSize.X - 24);
-            clipRight.Duration = duration;
+            if (ApiInfo.CanCreateRectangleClip)
+            {
+                var clipRight = visual.Compositor.CreateScalarKeyFrameAnimation();
+                clipRight.InsertKeyFrame(0, collapse ? ActualSize.X - 24 : ActualSize.X - 24 - 72);
+                clipRight.InsertKeyFrame(1, collapse ? ActualSize.X - 24 - 72 : ActualSize.X - 24);
+                clipRight.Duration = duration;
+
+                visual.Clip = visual.Compositor.CreateRectangleClip(0, 0, ActualSize.X - 24, TextArea.ActualSize.Y, radius, radius, radius, radius);
+                visual.Clip.StartAnimation("Right", clipRight);
+            }
+            else
+            {
+                // TODO: alternative animation
+            }
 
             delete.StartAnimation("Translation.X", button);
-            //forward.StartAnimation("Translation.X", button);
             visual.StartAnimation("Translation.X", translation);
-            //visual.Clip.StartAnimation("Left", clipLeft);
-            visual.Clip.StartAnimation("Right", clipRight);
         }
 
         private void ForumTopic_SizeChanged(object sender, SizeChangedEventArgs e)

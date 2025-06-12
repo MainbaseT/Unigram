@@ -41,6 +41,9 @@ namespace Telegram.Common
         private static bool? _isVoipSupported;
         public static bool IsVoipSupported => _isVoipSupported ??= ApiInformation.IsApiContractPresent("Windows.ApplicationModel.Calls.CallsVoipContract", 1);
 
+        private static bool? _canCreateRectangleClip;
+        public static bool CanCreateRectangleClip => _canCreateRectangleClip ??= ApiInformation.IsMethodPresent("Windows.UI.Composition.Compositor", "CreateRectangleClip");
+
         private static bool? _canAnimatePaths;
         public static bool CanAnimatePaths => _canAnimatePaths ??= IsBuildOrGreater(19043);
 

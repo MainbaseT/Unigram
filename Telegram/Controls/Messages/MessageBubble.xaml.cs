@@ -2808,7 +2808,7 @@ namespace Telegram.Controls.Messages
                     solid.CenterPoint = new Vector3(new Windows.Foundation.Point(maxX - (wwidth / 2), maxY - (hheight / 2)).ToVector2(), 0);
                     solid.CenterPoint = new Vector3(new Windows.Foundation.Point(minX + 16, minY + 8).ToVector2(), 0);
 
-                    if (ApiInfo.IsWindows11)
+                    if (ApiInfo.CanCreateRectangleClip)
                     {
                         solid.Clip = BootStrapper.Current.Compositor.CreateRectangleClip(0, 0, (float)target.ActualWidth, (float)target.ActualHeight, new Vector2(_topLeft), new Vector2(_topRight), new Vector2(_bottomRight), new Vector2(_bottomLeft));
                     }
