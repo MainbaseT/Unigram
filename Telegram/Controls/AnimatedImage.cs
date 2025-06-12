@@ -1846,9 +1846,9 @@ namespace Telegram.Controls
                             }
                         }
                     }
-                    else if (work.Presentation.Source is ParticlesImageSource)
+                    else if (work.Presentation.Source is ParticlesImageSource particles)
                     {
-                        LoadParticles(work);
+                        LoadParticles(work, particles);
                     }
                     else
                     {
@@ -1862,9 +1862,9 @@ namespace Telegram.Controls
             }
         }
 
-        private void LoadParticles(WorkItem work)
+        private void LoadParticles(WorkItem work, ParticlesImageSource particles)
         {
-            var animation = new ParticlesAnimation(work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.RasterizationScale);
+            var animation = new ParticlesAnimation(work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.RasterizationScale, particles.IsText, particles.Foreground, particles.Background);
             NotifyDelegate(work.CorrelationId, null, new ParticlesAnimatedImageTask(animation, work.Presentation));
         }
 
