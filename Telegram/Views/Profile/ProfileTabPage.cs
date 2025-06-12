@@ -15,15 +15,23 @@ using Telegram.ViewModels.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Profile
 {
     public partial class ProfileTabPage : PageEx, INavigablePage
     {
-        public ProfileViewModel ViewModel => DataContext as ProfileViewModel;
+        public MediaTabsViewModelBase ViewModel => DataContext as MediaTabsViewModelBase;
+
+        public bool IsProfile { get; private set; }
 
         public ProfileTabPage()
         {
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            IsProfile = DataContext is ProfileViewModel;
         }
 
         public void OnBackRequested(BackRequestedRoutedEventArgs args)

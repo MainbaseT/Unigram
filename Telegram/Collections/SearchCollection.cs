@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Data;
 
 namespace Telegram.Collections
 {
-    public partial class SearchCollection<T, TSource> : DiffObservableCollection<T>, ISupportIncrementalLoading where TSource : IEnumerable<T>
+    public partial class SearchCollection<T, TSource> : DiffObservableCollection<T>, ISupportIncrementalLoading where TSource : IList<T>
     {
         private readonly Func<object, string, TSource> _factory;
         private object _sender;
@@ -107,7 +107,10 @@ namespace Telegram.Collections
                         return;
                     }
 
+                    _replacingDiff = true;
                     ReplaceDiff(diff);
+
+                    _replacingDiff = false;
                     UpdateEmpty();
 
                     _loading = false;
@@ -119,13 +122,26 @@ namespace Telegram.Collections
                     }
                 }
             }
+            else
+            {
+                _source = default;
+                _incrementalSource = null;
+
+                Cancel();
+
+                _replacingDiff = true;
+                Clear();
+
+                _replacingDiff = false;
+                UpdateEmpty();
+            }
         }
 
         public IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
         {
             return AsyncInfo.Run(async _ =>
             {
-                if (_loading)
+                if (_loading || _source == null)
                 {
                     return new LoadMoreItemsResult
                     {
@@ -148,7 +164,10 @@ namespace Telegram.Collections
                         return result;
                     }
 
+                    _replacingDiff = true;
                     ReplaceDiff(diff);
+
+                    _replacingDiff = false;
                     UpdateEmpty();
                 }
 
@@ -157,6 +176,20 @@ namespace Telegram.Collections
 
                 return result;
             });
+        }
+
+        private bool _replacingDiff;
+
+        protected override void RemoveItem(int index)
+        {
+            base.RemoveItem(index);
+
+            if (_replacingDiff)
+            {
+                return;
+            }
+
+            _source?.RemoveAt(index);
         }
 
         public bool HasMoreItems

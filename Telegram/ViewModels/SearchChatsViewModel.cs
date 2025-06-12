@@ -13,17 +13,35 @@ using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Collections.Handlers;
 using Telegram.Common;
-using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
+using Telegram.ViewModels.Profile;
+using Telegram.Views;
 using Telegram.Views.Popups;
+using Telegram.Views.Profile;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
 namespace Telegram.ViewModels
 {
-    public partial class SearchChatsViewModel : ViewModelBase, IIncrementalCollectionOwner
+    public partial class SearchChatsTabItem
+    {
+        public SearchChatsTabItem(string text, Type type, SearchCollection<MessageWithOwner, MediaCollection> items)
+        {
+            Text = text;
+            Type = type;
+            Items = items;
+        }
+
+        public string Text { get; }
+
+        public Type Type { get; }
+
+        public SearchCollection<MessageWithOwner, MediaCollection> Items { get; }
+    }
+
+    public partial class SearchChatsViewModel : MediaTabsViewModelBase, IIncrementalCollectionOwner
     {
         private readonly KeyedCollection<SearchResult> _recent = new(Strings.Recent, new SearchResultDiffHandler());
         private readonly KeyedCollection<SearchResult> _chatsAndContacts1 = new(Strings.ChatsAndContacts, new SearchResultDiffHandler());
@@ -42,7 +60,7 @@ namespace Telegram.ViewModels
         private string _nextOffset;
 
         public SearchChatsViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
-            : base(clientService, settingsService, aggregator)
+            : base(clientService, settingsService, TypeResolver.Current.Resolve<IStorageService>(clientService.SessionId), aggregator, TypeResolver.Current.Playback)
         {
             _channels = new SearchChannelsViewModel(clientService, settingsService, aggregator);
             _webApps = new SearchWebAppsViewModel(clientService, settingsService, aggregator);
@@ -54,7 +72,21 @@ namespace Telegram.ViewModels
 
             TopChats = new DiffObservableCollection<Chat>(new ChatDiffHandler(), Constants.DiffOptions);
             Items = new FlatteningCollection(this, _recent, _chatsAndContacts1, _chatsAndContacts2, _globalSearch, _messages);
+
+            Tabs = new List<SearchChatsTabItem>
+            {
+                new SearchChatsTabItem(Strings.FilterChats, typeof(BlankPage), null),
+                new SearchChatsTabItem(Strings.FilterChannels, typeof(BlankPage), null),
+                new SearchChatsTabItem(Strings.AppsTab, typeof(BlankPage), null),
+                new SearchChatsTabItem(Strings.SharedMediaTab2, typeof(ProfileMediaTabPage), Media),
+                new SearchChatsTabItem(Strings.SharedFilesTab2, typeof(ProfileFilesTabPage), Files),
+                new SearchChatsTabItem(Strings.SharedLinksTab2, typeof(ProfileLinksTabPage), Links),
+                new SearchChatsTabItem(Strings.SharedMusicTab2, typeof(ProfileMusicTabPage), Music),
+                new SearchChatsTabItem(Strings.SharedVoiceTab2, typeof(ProfileVoiceTabPage), Voice)
+            };
         }
+
+        public List<SearchChatsTabItem> Tabs { get; }
 
         public ChooseChatsOptions Options
         {
@@ -73,9 +105,10 @@ namespace Telegram.ViewModels
 
         public FlatteningCollection ItemsView => SelectedTab switch
         {
+            0 => Items,
             1 => _channels.Items,
             2 => _webApps.Items,
-            _ => Items,
+            _ => null,
         };
 
         private readonly DebouncedProperty<string> _query;
@@ -91,7 +124,17 @@ namespace Telegram.ViewModels
 
                 SynchronizeQuery(value);
 
-                if (SelectedTab == 1)
+                if (SelectedTab >= Tabs.Count)
+                {
+                    return;
+                }
+
+                var tab = Tabs[SelectedTab];
+                if (tab.Items != null)
+                {
+                    tab.Items.UpdateQuery(value);
+                }
+                else if (SelectedTab == 1)
                 {
                     _channels.Query = value;
                     _webApps.SynchronizeQuery(value);
@@ -133,6 +176,18 @@ namespace Telegram.ViewModels
             {
                 if (Set(ref _selectedTab, value))
                 {
+                    if (value >= Tabs.Count)
+                    {
+                        return;
+                    }
+
+                    var tab = Tabs[value];
+                    if (tab.Items != null)
+                    {
+                        tab.Items.UpdateQuery(Query);
+                        return;
+                    }
+
                     RaisePropertyChanged(nameof(ItemsView));
                     RaisePropertyChanged(nameof(IsTopChatsVisible));
 
@@ -150,6 +205,24 @@ namespace Telegram.ViewModels
                     }
                 }
             }
+        }
+
+        public void Activate()
+        {
+            IsDeactivated = false;
+        }
+
+        public void Deactivate()
+        {
+            IsDeactivated = true;
+            SelectedTab = 0;
+
+            Media.UpdateQuery(string.Empty);
+            Files.UpdateQuery(string.Empty);
+            Links.UpdateQuery(string.Empty);
+            Music.UpdateQuery(string.Empty);
+            Voice.UpdateQuery(string.Empty);
+            Animations.UpdateQuery(string.Empty);
         }
 
         private bool _isEmpty;

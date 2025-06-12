@@ -50,7 +50,7 @@ namespace Telegram.Controls
                 return;
             }
 
-            if (args.ItemContainer.ContentTemplateRoot is Grid content)
+            if (args.ItemContainer.ContentTemplateRoot is Grid content && CornerRadius.TopLeft > 0)
             {
                 // TODO: some day would be great to get rid of this
                 content.CornerRadius = new CornerRadius(4);

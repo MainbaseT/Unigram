@@ -7,7 +7,6 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -828,7 +827,7 @@ namespace Telegram.Views
             batch.End();
         }
 
-        public void OnBackRequesting(HandledEventArgs args)
+        public void OnBackRequesting(BackRequestedRoutedEventArgs args)
         {
             if (Root?.IsPaneOpen is true)
             {
@@ -837,6 +836,13 @@ namespace Telegram.Views
             }
             else if (!_searchCollapsed)
             {
+                DialogsSearchPanel.OnBackRequested(args);
+
+                if (args.Handled)
+                {
+                    return;
+                }
+
                 Search_LostFocus(null, null);
                 args.Handled = true;
             }
@@ -2048,7 +2054,7 @@ namespace Telegram.Views
 
             if (show)
             {
-                DialogsSearchPanel.Update();
+                DialogsSearchPanel.Activate();
                 SearchField.ControlledList = DialogsSearchPanel.Root;
                 Stories.Collapse();
             }
@@ -2063,6 +2069,11 @@ namespace Telegram.Views
             {
                 DialogsPanel.Visibility = _searchCollapsed ? Visibility.Visible : Visibility.Collapsed;
                 DialogsSearchPanel.Visibility = _searchCollapsed ? Visibility.Collapsed : Visibility.Visible;
+
+                if (_searchCollapsed)
+                {
+                    DialogsSearchPanel.Deactivate();
+                }
             };
 
             var scale1 = panel.Compositor.CreateVector3KeyFrameAnimation();
@@ -3455,7 +3466,7 @@ namespace Telegram.Views
                     TopicListPresenter.Visibility = Visibility.Collapsed;
 
                     dialogs.Properties.InsertVector3("Translation", Vector3.Zero);
-                    DialogsPanel.Margin = new Thickness(0, 0, 0, 0);
+                    DialogsPanel.Margin = new Thickness(0);
                 }
                 else
                 {

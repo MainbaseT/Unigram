@@ -6,9 +6,13 @@
 //
 using Telegram.Common;
 using Telegram.Controls.Cells;
+using Telegram.Navigation;
 using Telegram.ViewModels;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Profile
 {
@@ -19,17 +23,44 @@ namespace Telegram.Views.Profile
             InitializeComponent();
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if (IsProfile)
+            {
+                FindName(nameof(SearchRoot));
+            }
+            else
+            {
+                ScrollingHost.Style = BootStrapper.Current.Resources["DefaultListViewStyle"] as Style;
+                ScrollingHost.Padding = new Thickness(0);
+                ScrollingHost.CornerRadius = new CornerRadius(0);
+            }
+
+            if (ViewModel.Media.Empty())
+            {
+                ScrollingHost.ItemContainerTransitions.Add(new EntranceThemeTransition { IsStaggeringEnabled = false });
+            }
+        }
+
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.InRecycleQueue)
             {
                 return;
             }
-            else if (args.ItemContainer.ContentTemplateRoot is SharedVoiceCell voiceCell && args.Item is MessageWithOwner message)
+            else if (args.ItemContainer.ContentTemplateRoot is SharedVoiceCell cell && args.Item is MessageWithOwner message)
             {
                 AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
 
-                voiceCell.UpdateMessage(ViewModel.PlaybackService, message);
+                if (!IsProfile)
+                {
+                    args.ItemContainer.Padding = new Thickness(4, 0, 4, 0);
+                    cell.Background = null;
+                }
+
+                cell.UpdateMessage(ViewModel.PlaybackService, message);
                 args.Handled = true;
             }
         }

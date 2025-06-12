@@ -9,6 +9,7 @@ using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -19,6 +20,8 @@ namespace Telegram.Views.Profile
 {
     public sealed partial class ProfileSavedChatsTabPage : ProfileTabPage, ISavedMessagesChatsDelegate
     {
+        public new ProfileViewModel ViewModel => DataContext as ProfileViewModel;
+
         public ProfileSavedChatsTabPage()
         {
             InitializeComponent();

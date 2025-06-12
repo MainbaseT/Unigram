@@ -119,7 +119,7 @@ namespace Telegram.Views
 
         public void OnBackRequested(BackRequestedRoutedEventArgs args)
         {
-            if (MediaFrame.Content is ProfileTabPage tabPage)
+            if (MediaFrame.Content is INavigablePage tabPage)
             {
                 tabPage.OnBackRequested(args);
             }

@@ -8,12 +8,15 @@ using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Profile
 {
     public sealed partial class ProfileBotsTabPage : ProfileTabPage
     {
+        public new ProfileViewModel ViewModel => DataContext as ProfileViewModel;
+
         public ProfileBotsTabPage()
         {
             InitializeComponent();

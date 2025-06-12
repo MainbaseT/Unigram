@@ -12,6 +12,8 @@ using Telegram.ViewModels.Chats;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Profile
 {
@@ -20,6 +22,21 @@ namespace Telegram.Views.Profile
         public ProfileMediaTabPage()
         {
             InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if (!IsProfile)
+            {
+                ScrollingHost.Padding = new Thickness(12, 0, 8, 8);
+            }
+
+            if (ViewModel.Media.Empty())
+            {
+                ScrollingHost.ItemContainerTransitions.Add(new EntranceThemeTransition { IsStaggeringEnabled = false });
+            }
         }
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)

@@ -70,8 +70,7 @@ namespace Telegram.ViewModels
             set => Set(ref _members, value);
         }
 
-        private double _headerHeight;
-        public double HeaderHeight
+        public override double HeaderHeight
         {
             get => _headerHeight;
             set

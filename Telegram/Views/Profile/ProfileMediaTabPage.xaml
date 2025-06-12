@@ -42,6 +42,13 @@
                     </Border>
                 </ControlTemplate>
             </GridView.Template>
+            <GridView.ItemContainerTransitions>
+                <TransitionCollection>
+                    <AddDeleteThemeTransition />
+                    <ContentThemeTransition />
+                    <ReorderThemeTransition />
+                </TransitionCollection>
+            </GridView.ItemContainerTransitions>
             <GridView.ItemContainerStyle>
                 <Style TargetType="GridViewItem"
                        BasedOn="{StaticResource DefaultGridViewItemStyle}">

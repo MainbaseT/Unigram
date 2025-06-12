@@ -41,6 +41,11 @@ namespace Telegram.Views
             }
             else if (Theme.Current.Update(ActualTheme, null, null))
             {
+                if (_clientService == null)
+                {
+                    return;
+                }
+
                 var forDarkTheme = Frame.ActualTheme == ElementTheme.Dark;
                 var background = _clientService.GetDefaultBackground(forDarkTheme);
                 _aggregator.Publish(new UpdateDefaultBackground(forDarkTheme, background));

@@ -4,25 +4,18 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using Rg.DiffUtils;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Common;
-using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.ViewModels.Delegates;
 using Telegram.Views;
 using Telegram.Views.Chats;
-using Telegram.Views.Popups;
 using Telegram.Views.Profile;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using WinRT;
 
@@ -50,13 +43,8 @@ namespace Telegram.ViewModels.Profile
 
     }
 
-    public partial class ProfileTabsViewModel : MultiViewModelBase, IHandle
+    public partial class ProfileTabsViewModel : MediaTabsViewModelBase, IHandle
     {
-        private readonly IPlaybackService _playbackService;
-        private readonly IStorageService _storageService;
-
-        private readonly IMessageDelegate _messageDelegate;
-
         protected readonly ProfileSavedChatsTabViewModel _savedChatsViewModel;
         protected readonly ProfileStoriesTabViewModel _pinnedStoriesTabViewModel;
         protected readonly ProfileStoriesTabViewModel _archivedStoriesTabViewModel;
@@ -67,13 +55,8 @@ namespace Telegram.ViewModels.Profile
         protected readonly ProfileMembersTabViewModel _membersTabVieModel;
 
         public ProfileTabsViewModel(IClientService clientService, ISettingsService settingsService, IStorageService storageService, IEventAggregator aggregator, IPlaybackService playbackService)
-            : base(clientService, settingsService, aggregator)
+            : base(clientService, settingsService, storageService, aggregator, playbackService)
         {
-            _playbackService = playbackService;
-            _storageService = storageService;
-
-            _messageDelegate = new MessageDelegate(this);
-
             _savedChatsViewModel = TypeResolver.Current.Resolve<ProfileSavedChatsTabViewModel>(clientService.SessionId);
             _pinnedStoriesTabViewModel = TypeResolver.Current.Resolve<ProfileStoriesTabViewModel>(clientService.SessionId);
             _archivedStoriesTabViewModel = TypeResolver.Current.Resolve<ProfileStoriesTabViewModel>(clientService.SessionId);
@@ -97,32 +80,9 @@ namespace Telegram.ViewModels.Profile
             Children.Add(_membersTabVieModel);
 
             Items = new ObservableCollection<ProfileTabItem>();
-
-            SelectedItems = new MvxObservableCollection<MessageWithOwner>();
-            SelectedItems.CollectionChanged += OnCollectionChanged;
-
-            Media = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterPhotoAndVideo(), new MessageDiffHandler());
-            Files = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterDocument(), new MessageDiffHandler());
-            Links = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterUrl(), new MessageDiffHandler());
-            Music = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterAudio(), new MessageDiffHandler());
-            Voice = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterVoiceNote(), new MessageDiffHandler());
-            Animations = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterAnimation(), new MessageDiffHandler());
-        }
-
-        private async void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            var selectedItems = SelectedItems.ToList();
-            var properties = await ClientService.GetMessagePropertiesAsync(selectedItems.Select(x => new MessageId(x)));
-
-            CanDeleteSelectedMessages = properties.Count > 0 && properties.Values.All(x => x.CanBeDeletedForAllUsers || x.CanBeDeletedOnlyForSelf);
-            CanForwardSelectedMessages = properties.Count > 0 && properties.Values.All(x => x.CanBeForwarded);
         }
 
         public ObservableCollection<ProfileTabItem> Items { get; }
-
-        public IPlaybackService PlaybackService => _playbackService;
-
-        public IStorageService StorageService => _storageService;
 
         protected ForumTopic _forumTopic;
         public ForumTopic ForumTopic
@@ -137,8 +97,6 @@ namespace Telegram.ViewModels.Profile
             get => _savedMessagesTopic;
             set => Set(ref _savedMessagesTopic, value);
         }
-
-        public MessageTopic Topic { get; set; }
 
         public bool MyProfile { get; private set; }
 
@@ -175,8 +133,6 @@ namespace Telegram.ViewModels.Profile
             Music.UpdateQuery(string.Empty);
             Voice.UpdateQuery(string.Empty);
             Animations.UpdateQuery(string.Empty);
-
-            Aggregator.Subscribe<UpdateDeleteMessages>(this, Handle);
 
             if (Items.Empty())
             {
@@ -357,37 +313,9 @@ namespace Telegram.ViewModels.Profile
             }
         }
 
-        public void Handle(UpdateDeleteMessages update)
+        protected override bool ShouldHandleDeleteMessages(UpdateDeleteMessages update)
         {
-            if (update.ChatId == _chat?.Id && !update.FromCache)
-            {
-                var table = update.MessageIds.ToHashSet();
-
-                BeginOnUIThread(() =>
-                {
-                    UpdateDeleteMessages(Media, table);
-                    UpdateDeleteMessages(Files, table);
-                    UpdateDeleteMessages(Links, table);
-                    UpdateDeleteMessages(Music, table);
-                    UpdateDeleteMessages(Voice, table);
-                    UpdateDeleteMessages(Animations, table);
-                });
-            }
-        }
-
-        private void UpdateDeleteMessages(SearchCollection<MessageWithOwner, MediaCollection> target, HashSet<long> table)
-        {
-            target.Cancel();
-
-            for (int i = 0; i < target.Count; i++)
-            {
-                var message = target[i];
-                if (table.Contains(message.Id))
-                {
-                    target.RemoveAt(i);
-                    i--;
-                }
-            }
+            return update.ChatId == _chat?.Id;
         }
 
         protected Chat _chat;
@@ -404,14 +332,7 @@ namespace Telegram.ViewModels.Profile
             set => Set(ref _selectedIndex, value);
         }
 
-        public SearchCollection<MessageWithOwner, MediaCollection> Media { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Files { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Links { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Music { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Voice { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Animations { get; private set; }
-
-        public MediaCollection SetSearch(object sender, string query)
+        public override MediaCollection SetSearch(object sender, string query)
         {
             if (sender is SearchMessagesFilter filter)
             {
@@ -420,262 +341,5 @@ namespace Telegram.ViewModels.Profile
 
             return null;
         }
-
-        public partial class MessageDiffHandler : IDiffHandler<MessageWithOwner>
-        {
-            public bool CompareItems(MessageWithOwner oldItem, MessageWithOwner newItem)
-            {
-                return oldItem?.Id == newItem?.Id && oldItem?.ChatId == newItem?.ChatId;
-            }
-
-            public void UpdateItem(MessageWithOwner oldItem, MessageWithOwner newItem)
-            {
-            }
-        }
-
-        public ObservableCollection<MessageWithOwner> SelectedItems { get; }
-
-        #region View
-
-        public void ViewMessage(MessageWithOwner message)
-        {
-            var chat = _chat;
-            if (chat == null)
-            {
-                return;
-            }
-
-            NavigationService.NavigateToChat(chat, message.Id, Topic);
-        }
-
-        #endregion
-
-        #region Save file as
-
-        public async void SaveMessageMedia(MessageWithOwner message)
-        {
-            var file = message.GetFile();
-            if (file != null)
-            {
-                await _storageService.SaveFileAsAsync(file);
-            }
-        }
-
-        #endregion
-
-        #region Open with
-
-        public async void OpenMessageWith(MessageWithOwner message)
-        {
-            var file = message.GetFile();
-            if (file != null)
-            {
-                await _storageService.OpenFileWithAsync(file);
-            }
-        }
-
-        #endregion
-
-        #region Show in folder
-
-        public async void OpenMessageFolder(MessageWithOwner message)
-        {
-            var file = message.GetFile();
-            if (file != null)
-            {
-                await _storageService.OpenFolderAsync(file);
-            }
-        }
-
-        #endregion
-
-        #region Delete
-
-        public void DeleteMessage(MessageWithOwner message)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            var chat = ClientService.GetChat(message.ChatId);
-            if (chat == null)
-            {
-                return;
-            }
-
-            //if (message != null && message.Media is TLMessageMediaGroup groupMedia)
-            //{
-            //    ExpandSelection(new[] { message });
-            //    MessagesDeleteExecute();
-            //    return;
-            //}
-
-            DeleteMessages(chat, new[] { message });
-        }
-
-        private async void DeleteMessages(Chat chat, IList<MessageWithOwner> messages)
-        {
-            var first = messages.FirstOrDefault();
-            if (first == null)
-            {
-                return;
-            }
-
-            var items = messages
-                .DistinctBy(x => x.Id)
-                .ToList();
-
-            var properties = await ClientService.GetMessagePropertiesAsync(items.Select(x => new MessageId(x)));
-
-            var updated = items
-                .Where(x => properties.ContainsKey(new MessageId(x)))
-                .ToList();
-
-            if (updated.Empty())
-            {
-                return;
-            }
-
-            var popup = new DeleteMessagesPopup(ClientService, chat, Topic, updated, properties);
-
-            var confirm = await ShowPopupAsync(popup);
-            if (confirm != ContentDialogResult.Primary)
-            {
-                return;
-            }
-
-            UnselectMessages();
-
-            ClientService.Send(new DeleteMessages(chat.Id, messages.Select(x => x.Id).ToList(), popup.Revoke));
-
-            foreach (var sender in popup.DeleteAll)
-            {
-                ClientService.Send(new DeleteChatMessagesBySender(chat.Id, sender));
-            }
-
-            foreach (var sender in popup.BanUser)
-            {
-                ClientService.Send(new SetChatMemberStatus(chat.Id, sender, popup.SelectedStatus));
-            }
-
-            if (chat.Type is ChatTypeSupergroup supertype)
-            {
-                foreach (var sender in popup.ReportSpam)
-                {
-                    var messageIds = messages
-                        .Where(x => x.SenderId.AreTheSame(sender))
-                        .Select(x => x.Id)
-                        .ToList();
-
-                    ClientService.Send(new ReportSupergroupSpam(supertype.SupergroupId, messageIds));
-                }
-            }
-        }
-
-        #endregion
-
-        #region Forward
-
-        public async void ForwardMessage(MessageWithOwner message)
-        {
-            UnselectMessages();
-            await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessage(message.ChatId, message.Id));
-        }
-
-        #endregion
-
-        #region Multiple Delete
-
-        public void DeleteSelectedMessages()
-        {
-            var messages = new List<MessageWithOwner>(SelectedItems);
-
-            var first = messages.FirstOrDefault();
-            if (first == null)
-            {
-                return;
-            }
-
-            var chat = ClientService.GetChat(first.ChatId);
-            if (chat == null)
-            {
-                return;
-            }
-
-            DeleteMessages(chat, messages);
-        }
-
-        private bool _canDeleteSelectedMessages;
-        public bool CanDeleteSelectedMessages
-        {
-            get => _canDeleteSelectedMessages;
-            set => Set(ref _canDeleteSelectedMessages, value);
-        }
-
-        #endregion
-
-        #region Multiple Forward
-
-        public async void ForwardSelectedMessages()
-        {
-            var selectedItems = SelectedItems.ToList();
-            var properties = await ClientService.GetMessagePropertiesAsync(selectedItems.Select(x => new MessageId(x)));
-
-            var messages = properties.Where(x => x.Value.CanBeForwarded).OrderBy(x => x.Key.Id).ToList();
-            if (messages.Count > 0)
-            {
-                UnselectMessages();
-                await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(messages.Select(x => x.Key)));
-            }
-        }
-
-        private bool _canForwardSelectedMessages;
-        public bool CanForwardSelectedMessages
-        {
-            get => _canForwardSelectedMessages;
-            set => Set(ref _canForwardSelectedMessages, value);
-        }
-
-        #endregion
-
-        #region Select
-
-        public void SelectMessage(MessageWithOwner message)
-        {
-            SelectedItems.Add(message);
-        }
-
-        #endregion
-
-        #region Unselect
-
-        public void UnselectMessages()
-        {
-            SelectedItems.Clear();
-        }
-
-        #endregion
-
-        #region Delegate
-
-        public IMessageDelegate MessageDelegate => _messageDelegate;
-
-        public void OpenUsername(string username)
-        {
-            _messageDelegate.OpenUsername(username);
-        }
-
-        public void OpenUser(long userId)
-        {
-            _messageDelegate.OpenUser(userId);
-        }
-
-        public void OpenUrl(string url, bool untrust)
-        {
-            _messageDelegate.OpenUrl(url, untrust);
-        }
-
-        #endregion
     }
 }

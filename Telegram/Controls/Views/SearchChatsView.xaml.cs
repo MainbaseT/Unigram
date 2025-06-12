@@ -1,14 +1,22 @@
 ﻿using System;
+using System.Numerics;
 using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
+using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.Views.Profile;
 using Windows.Foundation;
+using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Controls.Views
 {
@@ -25,7 +33,7 @@ namespace Telegram.Controls.Views
         public ContextRequestedEventArgs EventArgs { get; }
     }
 
-    public sealed partial class SearchChatsView : UserControl
+    public sealed partial class SearchChatsView : UserControl, INavigablePage
     {
         private SearchChatsViewModel _viewModel;
         public SearchChatsViewModel ViewModel => _viewModel ??= DataContext as SearchChatsViewModel;
@@ -35,8 +43,10 @@ namespace Telegram.Controls.Views
             InitializeComponent();
         }
 
-        public void Update()
+        public void Activate()
         {
+            ViewModel.Activate();
+
             TopChats.ForEach<Chat>((selector, chat) =>
             {
                 var content = selector.ContentTemplateRoot as StackPanel;
@@ -55,11 +65,16 @@ namespace Telegram.Controls.Views
             });
         }
 
+        public void Deactivate()
+        {
+            ViewModel.Deactivate();
+        }
+
         public event ItemClickEventHandler ItemClick;
 
         public event TypedEventHandler<UIElement, ItemContextRequestedEventArgs> ItemContextRequested;
 
-        public ListView Root => ScrollingHost;
+        public ListView Root => ItemsHost;
 
         public bool AreTabsVisible
         {
@@ -186,7 +201,7 @@ namespace Telegram.Controls.Views
 
         private void OnContextRequested(UIElement sender, ContextRequestedEventArgs args)
         {
-            var result = ScrollingHost.ItemFromContainer(sender) as SearchResult;
+            var result = ItemsHost.ItemFromContainer(sender) as SearchResult;
             if (result != null)
             {
                 if (result.Type == SearchResultType.Recent && ViewModel.SelectedTab == 0)
@@ -297,5 +312,315 @@ namespace Telegram.Controls.Views
                 textBlock.Text = string.Format(Strings.NoResultFoundFor2, ViewModel.Query);
             }
         }
+
+        private int _prevSelectedIndex;
+
+        private void ChatFolders_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ChatFolders.SelectedItem is SearchChatsTabItem page /*&& page.Type != MediaFrame.Content?.GetType()*/)
+            {
+                NavigationTransitionInfo transition = _prevSelectedIndex == -1
+                ? new SuppressNavigationTransitionInfo()
+                : new SlideNavigationTransitionInfo
+                {
+                    Effect = _prevSelectedIndex < ChatFolders.SelectedIndex
+                        ? SlideNavigationTransitionEffect.FromRight
+                        : SlideNavigationTransitionEffect.FromLeft
+                };
+
+                _prevSelectedIndex = ChatFolders.SelectedIndex;
+                MediaFrame.Navigate(page.Type, null, transition);
+                ShowHideSearch(page.Items == null);
+            }
+        }
+
+        public void OnBackRequested(BackRequestedRoutedEventArgs args)
+        {
+            if (MediaFrame.Content is INavigablePage tabPage)
+            {
+                tabPage.OnBackRequested(args);
+            }
+        }
+
+        private bool _searchCollapsed;
+
+        private void ShowHideSearch(bool show)
+        {
+            if (_searchCollapsed != show)
+            {
+                return;
+            }
+
+            _searchCollapsed = !show;
+            SearchRoot.Visibility = Visibility.Visible;
+            MediaRoot.Visibility = Visibility.Visible;
+
+            var effect = show
+                ? SlideNavigationTransitionEffect.FromLeft
+                : SlideNavigationTransitionEffect.FromRight;
+
+            // Ported from https://github.com/microsoft/microsoft-ui-xaml/blob/d37afef65a0fc3219ba6b349301d685099fb129d/src/dxaml/phone/lib/ThemeTransitions.cpp#L1543
+            float translationExitOffset = 150;
+            float translationEntranceOffset = -200;
+            var inControlPoint1 = new Vector2(0.1f, 0.9f);
+            var inControlPoint2 = new Vector2(0.2f, 1.0f);
+            var outControlPoint1 = new Vector2(0.7f, 0.0f);
+            var outControlPoint2 = new Vector2(1.0f, .5f);
+            uint outDuration = 150;
+            uint inDuration = 300;
+            float reverseTranslationFactor = effect == SlideNavigationTransitionEffect.FromLeft ? 1 : -1;
+
+            ElementCompositionPreview.SetIsTranslationEnabled(SearchRoot, true);
+            var visual = ElementComposition.GetElementVisual(SearchRoot);
+
+            var compositor = BootStrapper.Current.Compositor;
+
+            var opacity = compositor.CreateScalarKeyFrameAnimation();
+            var translation = compositor.CreateScalarKeyFrameAnimation();
+
+            if (show)
+            {
+                var easing = compositor.CreateCubicBezierEasingFunction(inControlPoint1, inControlPoint2);
+
+                opacity.InsertKeyFrame(0, 0);
+                opacity.InsertKeyFrame(1, 1);
+                opacity.Duration = TimeSpan.FromMilliseconds(outDuration);
+
+                translation.InsertKeyFrame(0, translationEntranceOffset * reverseTranslationFactor);
+                translation.InsertKeyFrame(1, 0, easing);
+                translation.Duration = TimeSpan.FromMilliseconds(outDuration + inDuration);
+
+                opacity.DelayTime = TimeSpan.FromMilliseconds(outDuration);
+                opacity.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
+
+                translation.DelayTime = TimeSpan.FromMilliseconds(outDuration);
+                translation.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
+            }
+            else
+            {
+                var easing = compositor.CreateCubicBezierEasingFunction(outControlPoint1, outControlPoint2);
+
+                opacity.InsertKeyFrame(0, 1);
+                opacity.InsertKeyFrame(1, 0);
+                opacity.Duration = TimeSpan.FromMilliseconds(outDuration);
+
+                translation.InsertKeyFrame(0, 0);
+                translation.InsertKeyFrame(1, translationExitOffset * reverseTranslationFactor, easing);
+                translation.Duration = TimeSpan.FromMilliseconds(outDuration);
+            }
+
+            var batch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            batch.Completed += (s, args) =>
+            {
+                if (_searchCollapsed)
+                {
+                    SearchRoot.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    MediaRoot.Visibility = Visibility.Collapsed;
+                }
+            };
+
+            visual.StartAnimation("Opacity", opacity);
+            visual.StartAnimation("Translation.X", translation);
+        }
+
+        #region Media
+
+        private long _itemsSourceToken;
+        private long _selectionModeToken;
+
+        private void OnNavigating(object sender, NavigatingCancelEventArgs e)
+        {
+            if (MediaFrame.Content is ProfileTabPage tabPage)
+            {
+                tabPage.ScrollingHost.UnregisterPropertyChangedCallback(ItemsControl.ItemsSourceProperty, ref _itemsSourceToken);
+                tabPage.ScrollingHost.UnregisterPropertyChangedCallback(ListViewBase.SelectionModeProperty, ref _selectionModeToken);
+            }
+        }
+
+        private void OnNavigated(object sender, NavigationEventArgs e)
+        {
+            if (e.Content is not ProfileTabPage tabPage)
+            {
+                return;
+            }
+
+            if (tabPage.ScrollingHost.ItemsSource != null)
+            {
+                LoadMore(tabPage.ScrollingHost);
+            }
+            else
+            {
+                tabPage.ScrollingHost.RegisterPropertyChangedCallback(ItemsControl.ItemsSourceProperty, OnItemsSourceChanged, ref _itemsSourceToken);
+            }
+
+            tabPage.ScrollingHost.RegisterPropertyChangedCallback(ListViewBase.SelectionModeProperty, OnSelectionModeChanged, ref _selectionModeToken);
+        }
+
+        private void OnItemsSourceChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
+            {
+                return;
+            }
+
+            LoadMore(scrollingHost);
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            MediaFrame.MinHeight = e.NewSize.Height;
+
+            if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
+            {
+                return;
+            }
+
+            LoadMore(scrollingHost);
+        }
+
+        private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            //BackButton.RequestedTheme = ScrollingHost.VerticalOffset < ProfileHeader.ActualHeight - 16
+            //    ? ProfileHeader.HeaderTheme
+            //    : ElementTheme.Default;
+
+            //if (ProfileHeader.Visibility == Visibility.Visible)
+            //{
+            //    ProfileHeader.ViewChanged(ScrollingHost.VerticalOffset);
+            //}
+
+            if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
+            {
+                return;
+            }
+
+            LoadMore(scrollingHost);
+
+            var index = scrollingHost.ItemsPanelRoot switch
+            {
+                ItemsStackPanel stackPanel => stackPanel.FirstVisibleIndex,
+                ItemsWrapGrid wrapGrid => wrapGrid.FirstVisibleIndex,
+                _ => -1
+            };
+
+            if (index < 0 || index >= scrollingHost.Items.Count)
+            {
+                return;
+            }
+
+            //var container = scrollingHost.Items[index];
+            //if (container is MessageWithOwner message)
+            //{
+            //    DateHeaderLabel.Text = Formatter.Date(message.Date, Strings.formatterMonthYear);
+            //}
+            //else if (container is StoryViewModel story)
+            //{
+            //    DateHeaderLabel.Text = Formatter.Date(story.Date, Strings.formatterMonthYear);
+            //}
+            //else
+            //{
+            //    return;
+            //}
+
+            //_dateHeaderTimer.Stop();
+            //_dateHeaderTimer.Start();
+            //ShowHideDateHeader(ScrollingHost.VerticalOffset > ProfileHeader.ActualHeight, true);
+        }
+
+        private bool _loadingMore;
+
+        private async void LoadMore(ListViewBase scrollingHost)
+        {
+            if (_loadingMore)
+            {
+                return;
+            }
+
+            _loadingMore = true;
+
+            uint loadedMore = 0;
+            int lastCacheIndex = scrollingHost.ItemsPanelRoot switch
+            {
+                ItemsStackPanel stackPanel => stackPanel.LastCacheIndex,
+                ItemsWrapGrid wrapGrid => wrapGrid.LastCacheIndex,
+                _ => -1
+            };
+
+            var needsMore = lastCacheIndex == scrollingHost.Items.Count - 1;
+            needsMore |= scrollingHost.ActualHeight < ScrollingHost.ActualHeight;
+
+            if (needsMore && scrollingHost.ItemsSource is ISupportIncrementalLoading supportIncrementalLoading && supportIncrementalLoading.HasMoreItems)
+            {
+                var result = await supportIncrementalLoading.LoadMoreItemsAsync(50);
+                loadedMore = result.Count;
+            }
+
+            _loadingMore = false;
+
+            if (loadedMore > 0)
+            {
+                LoadMore(scrollingHost);
+            }
+        }
+
+        #endregion
+
+        #region Selection
+
+        private string ConvertSelection(int count)
+        {
+            return Locale.Declension(Strings.R.messages, count);
+        }
+
+        private void OnSelectionModeChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (sender is ListViewBase selector)
+            {
+                ShowHideManagePanel(selector.SelectionMode == ListViewSelectionMode.Multiple);
+            }
+        }
+
+        private bool _manageCollapsed = true;
+
+        private void ShowHideManagePanel(bool show)
+        {
+            if (_manageCollapsed != show)
+            {
+                return;
+            }
+
+            _manageCollapsed = !show;
+            ManagePanel.Visibility = Visibility.Visible;
+
+            var manage = ElementComposition.GetElementVisual(ManagePanel);
+            ElementCompositionPreview.SetIsTranslationEnabled(ManagePanel, true);
+            manage.Opacity = show ? 0 : 1;
+
+            var batch = manage.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            batch.Completed += (s, args) =>
+            {
+                ManagePanel.Visibility = _manageCollapsed
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            };
+
+            var offset1 = manage.Compositor.CreateVector3KeyFrameAnimation();
+            offset1.InsertKeyFrame(show ? 0 : 1, new Vector3(0, 48, 0));
+            offset1.InsertKeyFrame(show ? 1 : 0, new Vector3(0, 0, 0));
+
+            var opacity1 = manage.Compositor.CreateScalarKeyFrameAnimation();
+            opacity1.InsertKeyFrame(show ? 0 : 1, 0);
+            opacity1.InsertKeyFrame(show ? 1 : 0, 1);
+
+            manage.StartAnimation("Translation", offset1);
+            manage.StartAnimation("Opacity", opacity1);
+
+            batch.End();
+        }
+
+        #endregion
     }
 }

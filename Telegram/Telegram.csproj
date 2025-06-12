@@ -615,6 +615,7 @@
     <Compile Include="ViewModels\Delegates\IForumTopicDelegate.cs" />
     <Compile Include="ViewModels\Dialogs\MessageCollection.cs" />
     <Compile Include="ViewModels\Dialogs\MessageComposerHeader.cs" />
+    <Compile Include="ViewModels\Profile\MediaTabsViewModelBase.cs" />
     <Compile Include="ViewModels\Profile\ProfileBotsTabViewModel.cs" />
     <Compile Include="ViewModels\Profile\ProfileGiftsTabViewModel.cs" />
     <Compile Include="ViewModels\RevenueViewModel.cs" />
