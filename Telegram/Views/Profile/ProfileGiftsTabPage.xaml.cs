@@ -84,7 +84,7 @@ namespace Telegram.Views.Profile
         {
             try
             {
-                if (e.Items[0] is ReceivedGift gift && gift.IsPinned)
+                if (e.Items[0] is ReceivedGift gift && gift.IsPinned && ViewModel.GiftsTab.IsOwned())
                 {
                     ScrollingHost.CanReorderItems = true;
                 }
