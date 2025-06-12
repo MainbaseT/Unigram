@@ -51,7 +51,7 @@ namespace Telegram.Controls
     public partial class FormattedTextBox : RichEditBox
     {
         private readonly FormattedTextFlyout _selectionFlyout;
-        private readonly MenuFlyoutSubItem _proofingFlyout;
+        private readonly MenuFlyoutSubItem _formattingFlyout;
 
         private bool _updateLocked;
         private bool _fromTextChanging;
@@ -78,9 +78,10 @@ namespace Telegram.Controls
             Paste += OnPaste;
             PreviewKeyDown += OnPreviewKeyDown;
 
-            _proofingFlyout = new MenuFlyoutSubItem
+            _formattingFlyout = new MenuFlyoutSubItem
             {
-                Text = Strings.Spelling
+                Text = Strings.Formatting,
+                Icon = MenuFlyoutHelper.CreateIcon(Icons.TextFont)
             };
 
             SelectionFlyout = new Flyout
@@ -422,58 +423,52 @@ namespace Telegram.Controls
             var entities = AllowedEntities & ~FormattedTextEntity.CustomEmoji;
             if (entities != FormattedTextEntity.None)
             {
-                var formatting = new MenuFlyoutSubItem
-                {
-                    Text = Strings.Formatting,
-                    Icon = MenuFlyoutHelper.CreateIcon(Icons.TextFont)
-                };
-
                 if ((entities & FormattedTextEntity.Quote) != 0)
                 {
-                    formatting.CreateFlyoutItem(length, ToggleQuote, Strings.Quote, Icons.QuoteBlock);
+                    _formattingFlyout.CreateFlyoutItem(length, ToggleQuote, Strings.Quote, Icons.QuoteBlock);
                 }
 
                 if ((entities & FormattedTextEntity.Bold) != 0)
                 {
-                    formatting.CreateFlyoutItem(length, ToggleBold, Strings.Bold, Icons.TextBold, VirtualKey.B);
+                    _formattingFlyout.CreateFlyoutItem(length, ToggleBold, Strings.Bold, Icons.TextBold, VirtualKey.B);
                 }
 
                 if ((entities & FormattedTextEntity.Italic) != 0)
                 {
-                    formatting.CreateFlyoutItem(length, ToggleItalic, Strings.Italic, Icons.TextItalic, VirtualKey.I);
+                    _formattingFlyout.CreateFlyoutItem(length, ToggleItalic, Strings.Italic, Icons.TextItalic, VirtualKey.I);
                 }
 
                 if ((entities & FormattedTextEntity.Underline) != 0)
                 {
-                    formatting.CreateFlyoutItem(length, ToggleUnderline, Strings.Underline, Icons.TextUnderline, VirtualKey.U);
+                    _formattingFlyout.CreateFlyoutItem(length, ToggleUnderline, Strings.Underline, Icons.TextUnderline, VirtualKey.U);
                 }
 
                 if ((entities & FormattedTextEntity.Strikethrough) != 0)
                 {
-                    formatting.CreateFlyoutItem(length, ToggleStrikethrough, Strings.Strike, Icons.TextStrikethrough, VirtualKey.X, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
+                    _formattingFlyout.CreateFlyoutItem(length, ToggleStrikethrough, Strings.Strike, Icons.TextStrikethrough, VirtualKey.X, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
                 }
 
                 if ((entities & FormattedTextEntity.Mono) != 0)
                 {
-                    formatting.CreateFlyoutItem(length && format.Name != "Consolas", ToggleMonospace, Strings.Mono, Icons.Code, VirtualKey.M, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
+                    _formattingFlyout.CreateFlyoutItem(length && format.Name != "Consolas", ToggleMonospace, Strings.Mono, Icons.Code, VirtualKey.M, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
                 }
 
                 if ((entities & FormattedTextEntity.Spoiler) != 0)
                 {
-                    formatting.CreateFlyoutItem(length, ToggleSpoiler, Strings.Spoiler, Icons.Spoiler, VirtualKey.P, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
+                    _formattingFlyout.CreateFlyoutItem(length, ToggleSpoiler, Strings.Spoiler, Icons.Spoiler, VirtualKey.P, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
                 }
 
-                formatting.CreateFlyoutSeparator();
+                _formattingFlyout.CreateFlyoutSeparator();
 
                 if ((entities & FormattedTextEntity.TextUrl) != 0)
                 {
-                    formatting.CreateFlyoutItem(!mention, CreateLink, clone.Link.Length > 0 ? Strings.EditLink : Strings.CreateLink, Icons.Link, VirtualKey.K);
+                    _formattingFlyout.CreateFlyoutItem(!mention, CreateLink, clone.Link.Length > 0 ? Strings.EditLink : Strings.CreateLink, Icons.Link, VirtualKey.K);
                 }
 
-                formatting.CreateFlyoutSeparator();
-                formatting.CreateFlyoutItem(length && !IsDefaultFormat(selection), ToggleRegular, Strings.Regular, null, VirtualKey.N, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
+                _formattingFlyout.CreateFlyoutSeparator();
+                _formattingFlyout.CreateFlyoutItem(length && !IsDefaultFormat(selection), ToggleRegular, Strings.Regular, null, VirtualKey.N, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
 
-                flyout.Items.Add(formatting);
+                flyout.Items.Add(_formattingFlyout);
             }
 
             flyout.CreateFlyoutSeparator();
@@ -493,7 +488,7 @@ namespace Telegram.Controls
 
         private void OnContextFlyoutClosing(FlyoutBase sender, FlyoutBaseClosingEventArgs args)
         {
-            _proofingFlyout.Items.Clear();
+            _formattingFlyout.Items.Clear();
 
             if (sender is MenuFlyout flyout)
             {
