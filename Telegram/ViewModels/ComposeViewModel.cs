@@ -19,12 +19,9 @@ using Telegram.Td.Api;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
 using Windows.Media.Capture;
-using Windows.Media.Effects;
-using Windows.Media.MediaProperties;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml.Controls;
-using static Telegram.Services.GenerationService;
 
 namespace Telegram.ViewModels
 {

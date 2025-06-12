@@ -1,9 +1,9 @@
 ﻿using System;
+#if NET9_0_OR_GREATER
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using WinRT;
 
-#if NET9_0_OR_GREATER
 [assembly: GeneratedWinRTExposedExternalType(typeof(byte[]))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(int[]))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(long[]))]

@@ -101,7 +101,7 @@ namespace Telegram.Controls.Views
                     }
 
                     content.Add(new InputMessageText(link.AbsoluteUri.AsFormattedText(), null, false));
-                    
+
                     Initialize(chats, action, content);
                 }
 

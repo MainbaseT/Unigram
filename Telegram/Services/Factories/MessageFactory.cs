@@ -11,10 +11,6 @@ using Telegram.Common;
 using Telegram.Entities;
 using Telegram.Native;
 using Telegram.Td.Api;
-using Windows.Media.Effects;
-using Windows.Media.MediaProperties;
-using Windows.Storage;
-using Windows.Storage.FileProperties;
 
 namespace Telegram.Services.Factories
 {

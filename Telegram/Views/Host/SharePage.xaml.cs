@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
@@ -8,7 +7,6 @@ using Telegram.Td.Api;
 using Telegram.Views.Popups;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;

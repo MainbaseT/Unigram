@@ -2240,7 +2240,7 @@ namespace Telegram.Td.Api
             return sender.ParticipantId.AreTheSame(compare.ParticipantId);
         }
 
-        public static bool AreTheSame(this ChatNotificationSettings x,  ChatNotificationSettings y)
+        public static bool AreTheSame(this ChatNotificationSettings x, ChatNotificationSettings y)
         {
             if (x == null || y == null)
             {

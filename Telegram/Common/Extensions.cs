@@ -34,7 +34,6 @@ using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Media;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Pickers;
@@ -52,8 +51,6 @@ using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using WinRT;
-using static Telegram.Services.GenerationService;
 using Point = Windows.Foundation.Point;
 
 namespace Telegram.Common
@@ -1091,7 +1088,7 @@ namespace Telegram.Common
             relative = null;
             return string.Equals(relativeFull, pathFull, StringComparison.OrdinalIgnoreCase);
         }
-        
+
         public static unsafe void Buffer(this WriteableBitmap bitmap, out byte* imageBytes)
         {
 #if NET9_0_OR_GREATER

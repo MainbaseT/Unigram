@@ -7,7 +7,9 @@ using Telegram.Common;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
+#if NET9_0_OR_GREATER
 using WinRT;
+#endif
 
 namespace Windows.UI.Xaml.Hosting
 {

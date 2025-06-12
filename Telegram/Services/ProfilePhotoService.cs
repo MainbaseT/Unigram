@@ -16,7 +16,6 @@ using Telegram.Views.Popups;
 using Windows.Foundation;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml.Controls;
-using static Telegram.Services.GenerationService;
 
 namespace Telegram.Services
 {

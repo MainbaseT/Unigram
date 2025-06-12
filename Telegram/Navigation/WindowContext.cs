@@ -32,7 +32,9 @@ using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+#if NET9_0_OR_GREATER
 using WinRT;
+#endif
 
 namespace Telegram.Navigation
 {

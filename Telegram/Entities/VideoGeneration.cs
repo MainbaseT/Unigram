@@ -1,6 +1,5 @@
 ﻿using System;
 using Windows.Foundation;
-using Windows.Media.MediaProperties;
 
 namespace Telegram.Entities
 {

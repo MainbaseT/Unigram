@@ -703,7 +703,7 @@ namespace Telegram.Controls.Stories
             _collapsed = true;
             Collapsing?.Invoke(this, EventArgs.Empty);
 
-            ControlledList.Padding = new Thickness(0, 0, 0, 0);
+            ControlledList.Padding = new Thickness(0);
             _progressAnimation.Properties.InsertBoolean("Collapsed", true);
             _scrollViewer.SetVerticalPadding(0, 0);
 

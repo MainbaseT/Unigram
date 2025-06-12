@@ -156,7 +156,7 @@ namespace Telegram.Controls.Messages.Content
                     Grid.SetColumn(MediaPanel, 0);
 
                     OverflowArea.Margin = new Thickness(0, 0, 0, 8);
-                    ButtonLine.Margin = new Thickness(0, 0, 0, 0);
+                    ButtonLine.Margin = new Thickness(0);
 
                     UpdateContent(message, linkPreview, false);
                     UpdateInstantView(linkPreview, _instantViewToken.Token);
@@ -401,7 +401,7 @@ namespace Telegram.Controls.Messages.Content
             UpdateWebPage(linkPreview);
 
             MediaPanel.Visibility = Visibility.Collapsed;
-            OverflowArea.Margin = new Thickness(0, 0, 0, 0);
+            OverflowArea.Margin = new Thickness(0);
 
             ButtonLine.Visibility = Visibility.Collapsed;
         }

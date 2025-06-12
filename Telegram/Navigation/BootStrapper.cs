@@ -771,7 +771,7 @@ namespace Telegram.Navigation
 
     public interface INavigatingPage : INavigablePage
     {
-        void OnBackRequesting(HandledEventArgs args);
+        void OnBackRequesting(BackRequestedRoutedEventArgs args);
     }
 
     public interface ISearchablePage

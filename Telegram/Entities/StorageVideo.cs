@@ -11,7 +11,6 @@ using Telegram.Native;
 using Windows.Foundation;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
-using static Telegram.Services.GenerationService;
 
 namespace Telegram.Entities
 {

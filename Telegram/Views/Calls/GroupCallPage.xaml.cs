@@ -446,8 +446,8 @@ namespace Telegram.Views.Calls
                 }
 
                 BottomShadow.Visibility = Visibility.Visible;
-                BottomPanel.Padding = new Thickness(0, 0, 0, 0);
-                BottomRoot.Padding = new Thickness(0, 0, 0, 0);
+                BottomPanel.Padding = new Thickness(0);
+                BottomRoot.Padding = new Thickness(0);
                 BottomBackground.Background = null;
                 BottomRoot.RowDefinitions[0].Height = new GridLength(24, GridUnitType.Pixel);
 

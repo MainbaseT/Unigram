@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using Telegram.Common;
 using Telegram.Services;
-using Telegram.ViewModels;
 
 namespace Telegram.Td.Api
 {
