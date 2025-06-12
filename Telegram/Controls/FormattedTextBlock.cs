@@ -4,6 +4,9 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Effects;
+using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -17,12 +20,15 @@ using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Windows.Devices.Input;
+using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Composition;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Core.Direct;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
@@ -78,6 +84,27 @@ namespace Telegram.Controls
 
         private readonly List<FormattedParagraph> _codeBlocks = new();
         private readonly List<Hyperlink> _links = new();
+        private readonly List<TextStyleSpoiler> _spoilers = new();
+
+        readonly struct TextStyleSpoiler
+        {
+            public readonly int Offset;
+            public readonly int Length;
+
+            public readonly int ParagraphOffset;
+            public readonly int ParagraphLength;
+            public readonly int ParagraphIndex;
+
+            public TextStyleSpoiler(int offset, int length, int paragraphOffset, int paragraphLength, int paragraphIndex)
+            {
+                Offset = offset;
+                Length = length;
+
+                ParagraphOffset = paragraphOffset;
+                ParagraphLength = paragraphLength;
+                ParagraphIndex = paragraphIndex;
+            }
+        }
 
         private TextHighlighter _spoiler;
         private bool _invalidateSpoilers;
@@ -255,12 +282,18 @@ namespace Telegram.Controls
             _query = null;
             _spoiler = null;
 
+            ClearEntities();
+        }
+
+        private void ClearEntities()
+        {
             foreach (var link in _links)
             {
                 ToolTipService.SetToolTip(link, null);
             }
 
             _links.Clear();
+            _spoilers.Clear();
             _codeBlocks.Clear();
         }
 
@@ -280,6 +313,20 @@ namespace Telegram.Controls
                 {
                     SetText(_clientService, _text, _fontSize);
                     SetQuery(string.Empty);
+
+                    if (Below == null)
+                    {
+                        return;
+                    }
+
+                    for (int i = 0; i < Below.Children.Count; i++)
+                    {
+                        if (Below.Children[i] is AnimatedImage)
+                        {
+                            Below.Children.RemoveAt(i);
+                            i--;
+                        }
+                    }
                 }
             }
         }
@@ -359,14 +406,7 @@ namespace Telegram.Controls
 
                 if (_templateApplied)
                 {
-                    foreach (var link in _links)
-                    {
-                        ToolTipService.SetToolTip(link, null);
-                    }
-
-                    _links.Clear();
-                    _codeBlocks.Clear();
-                    TextBlock.Blocks.Clear();
+                    ClearEntities();
                 }
             }
         }
@@ -385,14 +425,7 @@ namespace Telegram.Controls
 
                 if (_templateApplied)
                 {
-                    foreach (var link in _links)
-                    {
-                        ToolTipService.SetToolTip(link, null);
-                    }
-
-                    _links.Clear();
-                    _codeBlocks.Clear();
-                    TextBlock.Blocks.Clear();
+                    ClearEntities();
                 }
             }
         }
@@ -436,13 +469,8 @@ namespace Telegram.Controls
             var directBlock = direct.GetXamlDirectObject(TextBlock);
             var blocks = direct.GetXamlDirectObjectProperty(directBlock, XamlPropertyIndex.RichTextBlock_Blocks);
 
-            foreach (var link in _links)
-            {
-                ToolTipService.SetToolTip(link, null);
-            }
+            ClearEntities();
 
-            _links.Clear();
-            _codeBlocks.Clear();
             _fastFontSize = fontSize;
             direct.ClearCollection(blocks);
 
@@ -569,6 +597,8 @@ namespace Telegram.Controls
                             hyperlink.UnderlineStyle = UnderlineStyle.None;
                             hyperlink.FontFamily = BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily;
                             //hyperlink.Foreground = foreground;
+
+                            _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, part.Offset, part.Length, i));
 
                             spoiler ??= new TextHighlighter();
                             spoiler.Ranges.Add(new TextRange { StartIndex = part.Offset + entity.Offset - workaround, Length = entity.Length });
@@ -753,7 +783,7 @@ namespace Telegram.Controls
             if (spoiler?.Ranges.Count > 0)
             {
                 spoiler.Foreground = new SolidColorBrush(Colors.Transparent);
-                spoiler.Background = new SolidColorBrush(Colors.Black);
+                spoiler.Background = new SolidColorBrush(Colors.Transparent);
 
                 _invalidateSpoilers = _spoiler != null;
                 _spoiler = spoiler;
@@ -831,6 +861,128 @@ namespace Telegram.Controls
                     Below.Children.Add(rect);
                 }
             }
+
+            if (_ignoreSpoilers || _spoilers.Empty())
+            {
+                return;
+            }
+
+            var fontSize = Theme.Current.MessageFontSize * BootStrapper.Current.TextScaleFactor;
+            var quoteSize = Theme.Current.CaptionFontSize * BootStrapper.Current.TextScaleFactor;
+
+            var width = Math.Ceiling(TextBlock.ActualWidth + 1);
+            var inset = 0;
+
+            var position = new Windows.Foundation.Point(0, 0);
+
+            var shapes = new List<List<Rect>>();
+            var current = new List<Rect>();
+            var last = default(Rect);
+
+            var minX = double.MaxValue;
+            var minY = double.MaxValue;
+            var maxX = double.MinValue;
+            var maxY = double.MinValue;
+
+            // Would be cool to optimize this for contiguous paragraphs
+            foreach (var hyperlink in _spoilers)
+            {
+                StyledParagraph styled = _text.Paragraphs[hyperlink.ParagraphIndex];
+                Paragraph paragraph = TextBlock.Blocks[hyperlink.ParagraphIndex] as Paragraph;
+
+                if (hyperlink.ParagraphIndex == 0)
+                {
+                    inset = styled.Type switch
+                    {
+                        TextParagraphTypeMonospace { Language.Length: > 0 } => 22 + 6,
+                        not null => 6,
+                        _ => 0
+                    };
+                }
+
+                int xoffset = hyperlink.Offset;
+                int xlength = hyperlink.Length;
+
+                var partial = _text.Text.Substring(styled.Offset, styled.Length);
+                var entities = styled.Entities ?? Array.Empty<TextEntity>();
+
+                var size = styled.Type is TextParagraphTypeQuote
+                    ? quoteSize
+                    : fontSize;
+
+                var rectangles = PlaceholderImageHelper.Current.RangeMetrics(partial, xoffset, xlength, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft);
+                var relative = paragraph.ContentStart.GetCharacterRect(paragraph.ContentStart.LogicalDirection);
+
+                var point = new Windows.Foundation.Point(paragraph.Margin.Left + position.X, relative.Y + position.Y + inset);
+
+                for (int i = 0; i < rectangles.Count; i++)
+                {
+                    var rect = rectangles[i];
+                    rect = new Rect(rect.X, rect.Y, rect.Width, rect.Height);
+                    rect.X += point.X;
+                    rect.Y += point.Y;
+
+                    if (current.Count > 0 && !rect.IntersectsWith(last))
+                    {
+                        shapes.Add(current);
+                        current = new List<Rect>();
+                    }
+
+                    current.Add(rect);
+                    last = rect;
+
+                    minX = Math.Min(minX, rect.Left);
+                    minY = Math.Min(minY, rect.Top);
+                    maxX = Math.Max(maxX, rect.Right);
+                    maxY = Math.Max(maxY, rect.Bottom);
+                }
+            }
+
+            if (current.Count > 0)
+            {
+                shapes.Add(current);
+            }
+
+            CanvasGeometry result;
+            using (var builder = new CanvasPathBuilder(null))
+            {
+                for (int j = 0; j < shapes.Count; j++)
+                {
+                    var rectangles = shapes[j];
+
+                    for (int i = 0; i < rectangles.Count; i++)
+                    {
+                        var rectangle = rectangles[i];
+                        rectangle.X -= minX;
+                        rectangle.Y -= minY;
+
+                        builder.AddGeometry(CanvasGeometry.CreateRectangle(null, rectangle));
+                    }
+                }
+
+                result = CanvasGeometry.CreatePath(builder);
+            }
+
+            var spoiler = new AnimatedImage
+            {
+                IsViewportAware = true,
+                FrameSize = new Size(0, 0),
+                FitToSize = true,
+                DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
+                Stretch = Stretch.UniformToFill,
+                Source = new ParticlesImageSource(Colors.Black),
+                Width = maxX - minX,
+                Height = maxY - minY
+            };
+
+            Canvas.SetLeft(spoiler, minX);
+            Canvas.SetTop(spoiler, minY);
+
+            var visual = ElementComposition.GetElementVisual(spoiler);
+            var geometry = visual.Compositor.CreatePathGeometry(new CompositionPath(result));
+            visual.Clip = visual.Compositor.CreateGeometricClip(geometry);
+
+            Below.Children.Add(spoiler);
         }
 
         private void OnActualThemeChanged(FrameworkElement sender, object args)

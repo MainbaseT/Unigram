@@ -2683,7 +2683,8 @@ namespace Telegram.Controls.Messages
                         {
                             var rect = rectangles[i];
                             rect = new Rect(rect.X - 2, rect.Y, rect.Width + 4, rect.Height);
-                            rect = new Rect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height);
+                            rect.X += point.X;
+                            rect.Y += point.Y;
 
                             if (current.Count > 0 && !rect.IntersectsWith(last))
                             {
