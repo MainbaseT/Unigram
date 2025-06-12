@@ -348,6 +348,14 @@ namespace Telegram.Views
                 }
             }
 
+            _oldestItem = null;
+            _oldestItemAsHeader = null;
+            _oldestItemAsHeaderNeeded = false;
+
+            _newestItem = null;
+            _newestItemAsFooter = null;
+            _oldestItemAsHeaderNeeded = false;
+
             ButtonStickers.Collapse();
         }
 
@@ -5410,6 +5418,7 @@ namespace Telegram.Views
 
             var composer = ElementComposition.GetElementVisual(ComposerHeader);
             var messages = ElementComposition.GetElementVisual(Messages);
+            var messagesRoot = ElementComposition.GetElementVisual(MessagesRoot);
             var textArea = ElementComposition.GetElementVisual(TextArea);
 
             var value = show ? 48 : 0;
@@ -5442,7 +5451,7 @@ namespace Telegram.Views
                 composer.Clip = null;
                 //messages.Clip = null;
                 composer.Offset = new Vector3();
-                messages.Properties.InsertVector3("Translation", Vector3.Zero);
+                messagesRoot.Properties.InsertVector3("Translation", Vector3.Zero);
 
                 ContentPanel.Margin = new Thickness();
 
@@ -5484,7 +5493,7 @@ namespace Telegram.Views
             if (!sendout)
             {
                 messages.Clip.StartAnimation("TopInset", animClip2);
-                messages.StartAnimation("Translation.Y", anim1);
+                messagesRoot.StartAnimation("Translation.Y", anim1);
             }
 
             composer.Clip.StartAnimation("BottomInset", animClip);
@@ -6396,36 +6405,25 @@ namespace Telegram.Views
         {
             if (_messageIdToSelector.TryGetValue(message.Id, out ChatHistoryViewItem selector))
             {
-                AnimateSizeChanged(message, selector);
+                var next = new Vector2(0, 0);
+                var prev = selector.ActualSize;
+
+                var diff = next.Y - prev.Y;
+
+                var panel = Messages.ItemsPanelRoot as ItemsStackPanel;
+                if (panel == null || prev.Y == next.Y || Math.Abs(diff) <= 2)
+                {
+                    return;
+                }
+
+                var index = Messages.IndexFromContainer(selector);
+                //if (index < panel.LastVisibleIndex)
+                //{
+                //    return;
+                //}
+
+                AnimateSizeChanged(panel, selector, index, prev, next);
             }
-        }
-
-        private void AnimateSizeChanged(MessageViewModel message, ChatHistoryViewItem selector)
-        {
-            var next = new Vector2(0, 0);
-            var prev = selector.ActualSize;
-
-            var diff = next.Y - prev.Y;
-
-            var panel = Messages.ItemsPanelRoot as ItemsStackPanel;
-            if (panel == null || prev.Y == next.Y || Math.Abs(diff) <= 2)
-            {
-                return;
-            }
-
-            if (selector.SuppressSizeChanged)
-            {
-                selector.SuppressSizeChanged = false;
-                return;
-            }
-
-            var index = Messages.IndexFromContainer(selector);
-            //if (index < panel.LastVisibleIndex)
-            //{
-            //    return;
-            //}
-
-            AnimateSizeChanged(panel, selector, index, prev, next);
         }
 
         #endregion

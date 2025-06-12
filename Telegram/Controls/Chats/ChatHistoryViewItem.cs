@@ -52,8 +52,6 @@ namespace Telegram.Controls.Chats
             return new ChatListViewAutomationPeer(this);
         }
 
-        public bool SuppressSizeChanged { get; set; }
-
         private double _paddingTop;
         private double _paddingBottom;
 
@@ -67,7 +65,6 @@ namespace Telegram.Controls.Chats
                 _paddingTop = newTop;
                 _paddingBottom = newBottom;
 
-                SuppressSizeChanged = true;
                 Padding = new Thickness(0, newTop, 0, newBottom);
             }
         }

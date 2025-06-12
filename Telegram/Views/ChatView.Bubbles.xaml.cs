@@ -843,11 +843,11 @@ namespace Telegram.Views
                 if (args.ItemContainer.ContentTemplateRoot is MessageSelector selector)
                 {
                     selector.Recycle();
-                }
 
-                if (_sizeChangedHandler != null)
-                {
-                    args.ItemContainer.SizeChanged -= _sizeChangedHandler;
+                    if (_sizeChangedHandler != null)
+                    {
+                        selector.SizeChanged -= _sizeChangedHandler;
+                    }
                 }
 
                 if (message.Content is MessageHeaderUnread)
@@ -860,6 +860,8 @@ namespace Telegram.Views
                     _oldestItem = null;
                     _oldestItemAsHeader = null;
                     container.UpdatePadding(0, -1);
+
+                    UpdateOldestItemAsHeader(false);
                 }
 
                 if (_newestItem == container)
@@ -867,6 +869,8 @@ namespace Telegram.Views
                     _newestItem = null;
                     _newestItemAsFooter = null;
                     container.UpdatePadding(-1, 0);
+
+                    UpdateNewestItemAsFooter(false);
                 }
 
                 return;
@@ -954,6 +958,8 @@ namespace Telegram.Views
 
         private void RegisterEvents(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
+            args.Handled = true;
+
             if (args.Item is MessageViewModel { Content: MessageHeaderUnread })
             {
                 _headerUnreadNotReady = false;
@@ -963,15 +969,12 @@ namespace Telegram.Views
                     UpdateMessagesHeaderPadding();
                 }
 
-                args.Handled = true;
                 return;
             }
 
-            args.ItemContainer.SizeChanged += _sizeChangedHandler ??= new SizeChangedEventHandler(Item_SizeChanged);
-            args.Handled = true;
-
             if (args.ItemContainer.ContentTemplateRoot is MessageSelector selector && selector.Content is MessageBubble bubble)
             {
+                selector.SizeChanged += _sizeChangedHandler ??= new SizeChangedEventHandler(Item_SizeChanged);
                 bubble.RegisterEvents();
             }
         }
@@ -997,13 +1000,9 @@ namespace Telegram.Views
                 return;
             }
 
-            var index = Messages.IndexFromContainer(sender as SelectorItem);
-            if (index < panel.LastVisibleIndex && e.PreviousSize.Width < 1 && e.PreviousSize.Height < 1)
-            {
-                return;
-            }
+            var selector = sender as MessageSelector;
 
-            var message = Messages.ItemFromContainer(sender as SelectorItem) as MessageViewModel;
+            var message = selector?.Message;
             if (message == null || message.IsInitial)
             {
                 if (message != null && e.PreviousSize.Width > 0 && e.PreviousSize.Height > 0)
@@ -1016,7 +1015,19 @@ namespace Telegram.Views
                 }
             }
 
-            AnimateSizeChanged(panel, sender as SelectorItem, index, prev, next);
+            var index = _messages.IndexOf(message);
+            if (index < panel.LastVisibleIndex && e.PreviousSize.Width < 1 && e.PreviousSize.Height < 1)
+            {
+                return;
+            }
+
+            var container = ContainerFromItem(message.Id);
+            if (container == null)
+            {
+                return;
+            }
+
+            AnimateSizeChanged(panel, container, index, prev, next);
         }
 
         private void AnimateSizeChanged(ItemsStackPanel panel, SelectorItem selector, int index, Vector2 prev, Vector2 next)
