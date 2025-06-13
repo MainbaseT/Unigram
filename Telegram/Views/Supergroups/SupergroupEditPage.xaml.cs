@@ -153,6 +153,8 @@ namespace Telegram.Views.Supergroups
                 ChannelDirectMessagesGroupRoot.Visibility = Visibility.Collapsed;
                 ChannelDirectMessagesGroupStars.Visibility = Visibility.Collapsed;
                 ChannelDirectMessagesGroupStarCount.Text = string.Empty;
+
+                ChatLinked.Badge = group.HasLinkedChat ? string.Empty : Strings.DiscussionInfoShort;
             }
 
             TitleLabel.PlaceholderText = group.IsChannel ? Strings.EnterChannelName : Strings.GroupName;
@@ -194,6 +196,10 @@ namespace Telegram.Views.Supergroups
                         ? Strings.TypePrivateGroupRestrictedForwards
                         : Strings.TypePrivateGroup;
 
+            ChatType.Visibility = group.Status is ChatMemberStatusCreator
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             ChatHistory.Visibility = canChangeInfo && !hasActiveUsername && !group.IsChannel && !group.HasLinkedChat
                 ? Visibility.Visible
                 : Visibility.Collapsed;
@@ -231,10 +237,9 @@ namespace Telegram.Views.Supergroups
                 ChannelColor.Visibility = Visibility.Collapsed;
             }
 
-            ChatLinked.Visibility = group.IsChannel ? Visibility.Visible : group.HasLinkedChat ? Visibility.Visible : Visibility.Collapsed;
+            ChatLinked.Visibility = group.Status is ChatMemberStatusCreator ? group.IsChannel ? Visibility.Visible : group.HasLinkedChat ? Visibility.Visible : Visibility.Collapsed : Visibility.Collapsed;
             ChatLinked.Content = group.IsChannel ? Strings.Discussion : Strings.LinkedChannel;
             ChatLinked.Glyph = group.IsChannel ? Icons.ChatEmpty : Icons.Megaphone;
-            ChatLinked.Badge = group.HasLinkedChat ? string.Empty : Strings.DiscussionInfoShort;
 
             Permissions.Badge = string.Format("{0}/{1}", chat.Permissions.Count(), chat.Permissions.Total());
             Permissions.Visibility = group.IsChannel || !canRestrictMembers ? Visibility.Collapsed : Visibility.Visible;
