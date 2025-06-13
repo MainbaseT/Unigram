@@ -31,6 +31,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Telegram.Controls
 {
@@ -598,7 +599,10 @@ namespace Telegram.Controls
                             hyperlink.FontFamily = BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily;
                             //hyperlink.Foreground = foreground;
 
-                            _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, part.Offset, part.Length, i));
+                            if (SettingsService.Current.Diagnostics.SpoilerEffectDebug)
+                            {
+                                _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, part.Offset, part.Length, i));
+                            }
 
                             spoiler ??= new TextHighlighter();
                             spoiler.Ranges.Add(new TextRange { StartIndex = part.Offset + entity.Offset - workaround, Length = entity.Length });
@@ -783,7 +787,7 @@ namespace Telegram.Controls
             if (spoiler?.Ranges.Count > 0)
             {
                 spoiler.Foreground = new SolidColorBrush(Colors.Transparent);
-                spoiler.Background = new SolidColorBrush(Colors.Transparent);
+                spoiler.Background = new SolidColorBrush(SettingsService.Current.Diagnostics.SpoilerEffectDebug ? Colors.Transparent : Colors.Black);
 
                 _invalidateSpoilers = _spoiler != null;
                 _spoiler = spoiler;
@@ -963,14 +967,20 @@ namespace Telegram.Controls
                 result = CanvasGeometry.CreatePath(builder);
             }
 
+            Color foreground = Colors.Black;
+            if (Foreground is SolidColorBrush brush)
+            {
+                foreground = brush.Color;
+            }
+
             var spoiler = new AnimatedImage
             {
                 IsViewportAware = true,
                 FrameSize = new Size(0, 0),
                 FitToSize = true,
-                DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
+                DecodeFrameType = DecodePixelType.Logical,
                 Stretch = Stretch.UniformToFill,
-                Source = new ParticlesImageSource(Colors.Black),
+                Source = new ParticlesImageSource(foreground),
                 Width = maxX - minX,
                 Height = maxY - minY
             };

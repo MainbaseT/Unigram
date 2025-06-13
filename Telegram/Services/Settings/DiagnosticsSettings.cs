@@ -168,6 +168,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _bubbleTailDebug, "BubbleTailDebug", value);
         }
 
+        private bool? _spoilerEffectDebug;
+        public bool SpoilerEffectDebug
+        {
+            get => _spoilerEffectDebug ??= GetValueOrDefault("SpoilerEffectDebug", Constants.DEBUG);
+            set => AddOrUpdateValue(ref _spoilerEffectDebug, "SpoilerEffectDebug", value);
+        }
+
         public bool IsLastErrorDiskFull { get; set; }
     }
 }
