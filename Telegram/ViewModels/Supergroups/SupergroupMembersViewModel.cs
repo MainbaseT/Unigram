@@ -16,11 +16,39 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.ViewModels.Supergroups
 {
-    public partial class SupergroupMembersViewModel : SupergroupMembersViewModelBase, IDelegable<ISupergroupDelegate>
+    public partial class SupergroupMembersViewModel : SupergroupMembersViewModelBase, IDelegable<ISupergroupDelegate>, IHandle
     {
         public SupergroupMembersViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator, new SupergroupMembersFilterRecent(), query => new SupergroupMembersFilterSearch(query))
         {
+        }
+
+        public override void Subscribe()
+        {
+            Aggregator.Subscribe<UpdateChatMember>(this, Handle);
+        }
+
+        private void Handle(UpdateChatMember update)
+        {
+            if (update.ChatId == _chat.Id)
+            {
+                var item = Members.FirstOrDefault(x => x.MemberId.AreTheSame(update.NewChatMember.MemberId));
+                if (item != null)
+                {
+                    if (update.NewChatMember.Status is ChatMemberStatusMember or ChatMemberStatusAdministrator or ChatMemberStatusCreator)
+                    {
+                        item.Status = update.NewChatMember.Status;
+                    }
+                    else
+                    {
+                        Members.Remove(item);
+                    }
+                }
+                else if (update.NewChatMember.Status is ChatMemberStatusMember or ChatMemberStatusAdministrator or ChatMemberStatusCreator)
+                {
+                    Members.Insert(0, update.NewChatMember);
+                }
+            }
         }
 
         public bool IsEmbedded { get; set; }
@@ -110,10 +138,19 @@ namespace Telegram.ViewModels.Supergroups
                 if (chat.Type is ChatTypeBasicGroup)
                 {
                     var response = await ClientService.SendAsync(new AddChatMember(chat.Id, selected[0].Id, 100));
-                    if (response is FailedToAddMembers failed && failed.FailedToAddMembersValue.Count > 0)
+                    if (response is FailedToAddMembers failed)
                     {
-                        var popup = new ChatInviteFallbackPopup(ClientService, chat.Id, failed.FailedToAddMembersValue);
-                        await ShowPopupAsync(popup);
+                        if (failed.FailedToAddMembersValue.Count > 0)
+                        {
+                            ShowPopup(new ChatInviteFallbackPopup(ClientService, chat.Id, failed.FailedToAddMembersValue));
+                        }
+                        else
+                        {
+                            foreach (var user in selected)
+                            {
+                                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, null, new ChatMember(new MessageSenderUser(user.Id), ClientService.Options.MyId, DateTime.Now.ToTimestamp(), new ChatMemberStatusMember())));
+                            }
+                        }
                     }
                     else if (response is Error error)
                     {
@@ -123,10 +160,19 @@ namespace Telegram.ViewModels.Supergroups
                 else
                 {
                     var response = await ClientService.SendAsync(new AddChatMembers(chat.Id, selected.Select(x => x.Id).ToArray()));
-                    if (response is FailedToAddMembers failed && failed.FailedToAddMembersValue.Count > 0)
+                    if (response is FailedToAddMembers failed)
                     {
-                        var popup = new ChatInviteFallbackPopup(ClientService, chat.Id, failed.FailedToAddMembersValue);
-                        await ShowPopupAsync(popup);
+                        if (failed.FailedToAddMembersValue.Count > 0)
+                        {
+                            ShowPopup(new ChatInviteFallbackPopup(ClientService, chat.Id, failed.FailedToAddMembersValue));
+                        }
+                        else
+                        {
+                            foreach (var user in selected)
+                            {
+                                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, null, new ChatMember(new MessageSenderUser(user.Id), ClientService.Options.MyId, DateTime.Now.ToTimestamp(), new ChatMemberStatusMember())));
+                            }
+                        }
                     }
                     else if (response is Error error)
                     {
