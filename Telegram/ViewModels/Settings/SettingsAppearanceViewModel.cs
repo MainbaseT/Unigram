@@ -84,9 +84,16 @@ namespace Telegram.ViewModels.Settings
             var defaultTheme = new ChatThemeViewModel(ClientService, "\U0001F3E0", defaultLight, defaultDark, false);
             var themes = ClientService.ChatThemes.Select(x => new ChatThemeViewModel(ClientService, x, false));
 
+            var selectedTheme = themes.FirstOrDefault(x => x.Name == Settings.Appearance.ChatTheme?.Name) ?? defaultTheme;
+            if (selectedTheme != null)
+            {
+                selectedTheme.LightSettings.Background = ClientService.GetDefaultBackground(false);
+                selectedTheme.DarkSettings.Background = ClientService.GetDefaultBackground(true);
+            }
+
             ChatThemes.AddRange(new[] { defaultTheme }.Union(themes));
 
-            _selectedChatTheme = ChatThemes.FirstOrDefault(x => x.Name == Settings.Appearance.ChatTheme?.Name) ?? defaultTheme;
+            _selectedChatTheme = selectedTheme;
             RaisePropertyChanged(nameof(SelectedChatTheme));
 
             return Task.CompletedTask;
@@ -476,10 +483,20 @@ namespace Telegram.ViewModels.Settings
         public ChatThemeViewModel(IClientService clientService, ChatTheme chatTheme, bool isChannel)
         {
             ClientService = clientService;
-            DarkSettings = chatTheme.DarkSettings;
-            LightSettings = chatTheme.LightSettings;
+            DarkSettings = Copy(chatTheme.DarkSettings);
+            LightSettings = Copy(chatTheme.LightSettings);
             Name = chatTheme.Name;
             IsChannel = IsChannel;
+        }
+
+        private ThemeSettings Copy(ThemeSettings x)
+        {
+            if (x == null)
+            {
+                return null;
+            }
+
+            return new ThemeSettings(x.AccentColor, x.Background, x.OutgoingMessageFill, x.AnimateOutgoingMessageFill, x.OutgoingMessageAccentColor);
         }
 
         public ChatThemeViewModel(IClientService clientService, string name, ThemeSettings lightSettings, ThemeSettings darkSettings, bool isChannel)
