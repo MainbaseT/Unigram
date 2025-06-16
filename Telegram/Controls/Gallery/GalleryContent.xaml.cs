@@ -404,7 +404,10 @@ namespace Telegram.Controls.Gallery
 
                 _fileId = file.Id;
 
-                TypeResolver.Current.Playback.Pause();
+                if (!item.IsLoopingEnabled)
+                {
+                    TypeResolver.Current.Playback.Pause();
+                }
 
                 // Always recreate HLS player for now, try to reuse native one
                 if ((SettingsService.Current.Diagnostics.ForceWebView2 || item.IsHls()) && ChromiumWebPresenter.IsSupported())
