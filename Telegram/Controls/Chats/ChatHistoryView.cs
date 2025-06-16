@@ -15,6 +15,7 @@ using Telegram.Navigation;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Windows.Devices.Input;
+using Windows.Foundation;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -346,10 +347,25 @@ namespace Telegram.Controls.Chats
             }
             else if (alignment == VerticalAlignment.Center)
             {
-                var occludedHeight = Delegate.AnimatedHeight;
-                if (selectorItem.ActualHeight < ActualHeight - occludedHeight)
+                Rect GetHighlightArea()
                 {
-                    position.Y -= (ActualHeight - selectorItem.ActualHeight) / 2d + occludedHeight / 2;
+                    if (options != null && options.Highlight)
+                    {
+                        if (selectorItem.ContentTemplateRoot is MessageSelector selector && selector.Content is MessageBubble bubble)
+                        {
+                            return bubble.Highlight(options);
+                        }
+                    }
+
+                    return new Rect(0, 0, selectorItem.ActualWidth, selectorItem.ActualHeight);
+                }
+
+                var occludedHeight = Delegate.AnimatedHeight;
+                var highlightArea = GetHighlightArea();
+
+                if (highlightArea.Height < ActualHeight - occludedHeight)
+                {
+                    position.Y -= (ActualHeight - highlightArea.Height - highlightArea.Y) / 2d + occludedHeight / 2;
                 }
                 else
                 {
@@ -363,14 +379,6 @@ namespace Telegram.Controls.Chats
                 if (pixel is double adjust)
                 {
                     position.Y += adjust;
-                }
-            }
-
-            if (options != null && options.Highlight)
-            {
-                if (selectorItem.ContentTemplateRoot is MessageSelector selector && selector.Content is MessageBubble bubble)
-                {
-                    bubble.Highlight(options);
                 }
             }
 

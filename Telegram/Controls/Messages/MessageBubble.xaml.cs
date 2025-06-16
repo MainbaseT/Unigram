@@ -2550,12 +2550,12 @@ namespace Telegram.Controls.Messages
 
         private ContainerVisual _highlight;
 
-        public void Highlight(MessageBubbleHighlightOptions options)
+        public Rect Highlight(MessageBubbleHighlightOptions options)
         {
             var message = _message;
             if (message == null)
             {
-                return;
+                return new Rect(0, 0, ActualWidth, ActualHeight);
             }
 
             _highlight = BootStrapper.Current.Compositor.CreateContainerVisual();
@@ -2828,7 +2828,7 @@ namespace Telegram.Controls.Messages
                     solid.StartAnimation("Opacity", opacity1);
                     visual.StartAnimation("Opacity", opacity2);
 
-                    return;
+                    return new Rect(minX, minY, maxX - minX, maxY - minY);
                 }
             }
 
@@ -2839,6 +2839,8 @@ namespace Telegram.Controls.Messages
             animation.InsertKeyFrame(1, 0);
 
             solid.StartAnimation("Opacity", animation);
+
+            return new Rect(0, 0, ActualWidth, ActualHeight);
         }
 
         #region Actions
