@@ -56,11 +56,14 @@ namespace Telegram.Common
         public void UpdateEmojiSet()
         {
             var xamlAutoFontFamilyValue = SettingsService.Current.Appearance.FontFamily;
+            var xamlAutoFontFamilyDefault = false;
+
             var comma = ", ";
 
             if (string.IsNullOrEmpty(xamlAutoFontFamilyValue))
             {
                 xamlAutoFontFamilyValue = FontFamily.XamlAutoFontFamily.Source;
+                xamlAutoFontFamilyDefault = true;
             }
 
             if (xamlAutoFontFamilyValue == "Segoe UI Variable")
@@ -100,6 +103,16 @@ namespace Telegram.Common
                 default:
                     XamlAutoFontFamily = "ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji";
                     break;
+            }
+
+            if (xamlAutoFontFamilyDefault)
+            {
+                this["EmojiTextThemeFontFamily"] = new FontFamily(XamlAutoFontFamily + comma + xamlAutoFontFamilyValue);
+            }
+            else
+            {
+                XamlAutoFontFamily += comma + xamlAutoFontFamilyValue;
+                this["EmojiTextThemeFontFamily"] = new FontFamily(XamlAutoFontFamily + comma + xamlAutoFontFamilyValue);
             }
 
             this["ContentControlThemeFontFamily"] = new FontFamily(XamlAutoFontFamily);
