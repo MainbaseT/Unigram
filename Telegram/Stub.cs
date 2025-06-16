@@ -6267,11 +6267,11 @@ public static class PlaceholderImageHelper_stub
             throw new RuntimeException(ex);
         }
     }
-    public static System.Collections.Generic.IList<Windows.Foundation.Rect> RangeMetrics_stub(this Telegram.Native.PlaceholderImageHelper sender, string text, int offset, int length, System.Collections.Generic.IList<Telegram.Td.Api.TextEntity> entities, double fontSize, double width, bool rtl)
+    public static System.Collections.Generic.IList<Windows.Foundation.Rect> RangeMetrics_stub(this Telegram.Native.PlaceholderImageHelper sender, string text, int offset, int length, System.Collections.Generic.IList<Telegram.Td.Api.TextEntity> entities, double fontSize, double width, bool rtl, bool wrap)
     {
         try
         {
-            return sender.RangeMetrics(text, offset, length, entities, fontSize, width, rtl);
+            return sender.RangeMetrics(text, offset, length, entities, fontSize, width, rtl, wrap);
         }
         catch (Exception ex)
         {

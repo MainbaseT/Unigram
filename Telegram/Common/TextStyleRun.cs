@@ -351,12 +351,12 @@ namespace Telegram.Common
                 return null;
             }
 
-            return new StyledText(text.Text, GetParagraphs(text.Text, text.Entities));
+            return new StyledText(text.Text, text.Entities, GetParagraphs(text.Text, text.Entities));
         }
 
         public static StyledText GetText(string text, IList<TextEntity> entities)
         {
-            return new StyledText(text, GetParagraphs(text, entities ?? Array.Empty<TextEntity>()));
+            return new StyledText(text, entities, GetParagraphs(text, entities ?? Array.Empty<TextEntity>()));
         }
 
         struct Break
@@ -546,9 +546,10 @@ namespace Telegram.Common
 
     public partial class StyledText
     {
-        public StyledText(string text, IList<StyledParagraph> paragraphs)
+        public StyledText(string text, IList<TextEntity> entities, IList<StyledParagraph> paragraphs)
         {
             Text = text;
+            Entities = entities;
             Paragraphs = paragraphs;
 
             if (paragraphs.Count == 1)
@@ -562,6 +563,8 @@ namespace Telegram.Common
         }
 
         public string Text { get; }
+
+        public IList<TextEntity> Entities { get; }
 
         public IList<StyledParagraph> Paragraphs { get; }
 

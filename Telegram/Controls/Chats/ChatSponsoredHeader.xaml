@@ -112,7 +112,7 @@
         </Grid>
 
         <controls:FormattedTextBlock x:Name="MessageText"
-                                     TextStyle="{StaticResource CaptionRichTextBlockStyle}"
+                                     Style="{StaticResource CaptionFormattedTextBlockStyle}"
                                      Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
                                      AutoFontSize="False"
                                      IsTextSelectionEnabled="False"

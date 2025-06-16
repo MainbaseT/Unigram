@@ -132,15 +132,19 @@
                             </Border>
                         </Border>
 
-                        <RichTextBlock x:Name="Label"
-                                       Margin="8,0,8,2"
-                                       VerticalAlignment="Center"
-                                       MaxLines="2"
-                                       IsTextSelectionEnabled="False"
-                                       Foreground="{TemplateBinding Foreground}"
-                                       FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
-                                       Style="{StaticResource ReplyBodyRichTextBlockStyle}"
-                                       Grid.Column="2">
+                        <controls:FormattedTextBlock x:Name="Label"
+                                                     Margin="8,0,8,2"
+                                                     VerticalAlignment="Center"
+                                                     MaxLines="2"
+                                                     IsTextSelectionEnabled="False"
+                                                     TextTrimming="CharacterEllipsis"
+                                                     TextWrapping="NoWrap"
+                                                     Foreground="{TemplateBinding Foreground}"
+                                                     FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                                                     Style="{StaticResource ReplyBodyFormattedTextBlockStyle}"
+                                                     EmojiStyle="{StaticResource MessageCustomEmojiStyle}"
+                                                     AutoFontSize="False"
+                                                     Grid.Column="2">
                             <Paragraph>
                                 <Run x:Name="TitleLabel"
                                      Foreground="{Binding HeaderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
@@ -150,7 +154,7 @@
                                 <Run x:Name="ServiceLabel"
                                      Foreground="{Binding SubtleBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}" /><Span x:Name="MessageLabel" />
                             </Paragraph>
-                        </RichTextBlock>
+                        </controls:FormattedTextBlock>
 
                         <TextBlock x:Name="Quote"
                                    Visibility="Collapsed"

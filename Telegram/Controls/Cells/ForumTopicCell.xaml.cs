@@ -92,7 +92,7 @@ namespace Telegram.Controls.Cells
         private TextBlock UnreadMentionsLabel;
         private Run FromLabel;
         private Run DraftLabel;
-        private RichTextBlock BriefText;
+        private FormattedTextBlock BriefText;
         private Span BriefLabel;
         private ImageBrush Minithumbnail;
         private Grid IconRoot;
@@ -118,7 +118,7 @@ namespace Telegram.Controls.Cells
             UnreadMentionsLabel = GetTemplateChild(nameof(UnreadMentionsLabel)) as TextBlock;
             FromLabel = GetTemplateChild(nameof(FromLabel)) as Run;
             DraftLabel = GetTemplateChild(nameof(DraftLabel)) as Run;
-            BriefText = GetTemplateChild(nameof(BriefText)) as RichTextBlock;
+            BriefText = GetTemplateChild(nameof(BriefText)) as FormattedTextBlock;
             BriefLabel = GetTemplateChild(nameof(BriefLabel)) as Span;
             Minithumbnail = GetTemplateChild(nameof(Minithumbnail)) as ImageBrush;
             IconRoot = GetTemplateChild(nameof(IconRoot)) as Grid;
@@ -556,7 +556,8 @@ namespace Telegram.Controls.Cells
 
         private void UpdateBriefLabel(FormattedText message)
         {
-            CustomEmojiIcon.Add(BriefText, BriefLabel.Inlines, _viewModel.ClientService, message, "InfoCustomEmojiStyle");
+            BriefText.SetText(_viewModel.ClientService, message);
+            BriefText.SetQuery(string.Empty);
         }
 
 

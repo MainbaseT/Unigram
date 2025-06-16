@@ -351,6 +351,11 @@ namespace Telegram.Common
 
         private static bool OffsetToIndex(RichTextBlock textBlock, InlineCollection inlines, TextPointer pointer, ref int index)
         {
+            if (inlines.Empty())
+            {
+                index--;
+            }
+
             foreach (var element in inlines)
             {
                 if (pointer.Offset == element.ElementStart.Offset)
@@ -393,6 +398,11 @@ namespace Telegram.Common
                 return -1;
             }
 
+            return OffsetToIndex(pointer, textBlock);
+        }
+
+        public static int OffsetToIndex(this TextPointer pointer, RichTextBlock textBlock)
+        {
             var index = 0;
 
             for (int i = 0; i < textBlock.Blocks.Count; i++)

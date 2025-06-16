@@ -16,7 +16,7 @@ namespace Telegram.ViewModels
     public partial class PinnedMessageViewModel : MessageViewModel
     {
         public PinnedMessageViewModel(IClientService clientService, IPlaybackService playbackService, IMessageDelegate delegato, Chat chat, Message message, int index)
-            : base(clientService, playbackService, delegato, chat, null, null, message)
+            : base(clientService, playbackService, delegato, chat, null, null, message, true)
         {
             Index = index;
         }

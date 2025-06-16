@@ -128,7 +128,7 @@ namespace Telegram.Controls.Cells
         private TextBlock UnreadMentionsLabel;
         private Run FromLabel;
         private Run DraftLabel;
-        private RichTextBlock BriefText;
+        private FormattedTextBlock BriefText;
         private Span BriefLabel;
         private ImageBrush Minithumbnail;
         private Rectangle SelectionOutline;
@@ -165,7 +165,7 @@ namespace Telegram.Controls.Cells
             UnreadMentionsLabel = GetTemplateChild(nameof(UnreadMentionsLabel)) as TextBlock;
             FromLabel = GetTemplateChild(nameof(FromLabel)) as Run;
             DraftLabel = GetTemplateChild(nameof(DraftLabel)) as Run;
-            BriefText = GetTemplateChild(nameof(BriefText)) as RichTextBlock;
+            BriefText = GetTemplateChild(nameof(BriefText)) as FormattedTextBlock;
             BriefLabel = GetTemplateChild(nameof(BriefLabel)) as Span;
             Minithumbnail = GetTemplateChild(nameof(Minithumbnail)) as ImageBrush;
             SelectionOutline = GetTemplateChild(nameof(SelectionOutline)) as Rectangle;
@@ -1368,9 +1368,9 @@ namespace Telegram.Controls.Cells
                 }
             }
 
-            CustomEmojiIcon.Add(BriefText, BriefLabel.Inlines, _clientService, message, "InfoCustomEmojiStyle");
+            BriefText.SetText(_clientService, message);
+            BriefText.SetQuery(string.Empty);
         }
-
 
         private FormattedText UpdateBriefLabel(Chat chat, ChatPosition position, out MinithumbnailId thumbnail)
         {

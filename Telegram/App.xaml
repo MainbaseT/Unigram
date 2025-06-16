@@ -4,6 +4,7 @@
                          xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                          xmlns:media="using:Microsoft.UI.Xaml.Media"
                          xmlns:common="using:Telegram.Common"
+                         xmlns:controls="using:Telegram.Controls"
                          xmlns:converters="using:Telegram.Converters"
                          xmlns:navigation="using:Telegram.Navigation"
                          xmlns:themes="using:Telegram.Themes">
@@ -188,6 +189,23 @@
                         Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
             </Style>
 
+            <Style x:Key="CaptionFormattedTextBlockStyle"
+                   TargetType="controls:FormattedTextBlock">
+                <Setter Property="FontFamily"
+                        Value="{ThemeResource EmojiThemeFontFamily}" />
+                <Setter Property="FontSize"
+                        Value="12" />
+                <Setter Property="FontWeight"
+                        Value="Normal" />
+            </Style>
+
+            <Style x:Key="InfoCaptionFormattedTextBlockStyle"
+                   TargetType="controls:FormattedTextBlock"
+                   BasedOn="{StaticResource CaptionFormattedTextBlockStyle}">
+                <Setter Property="Foreground"
+                        Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+            </Style>
+
             <Style TargetType="PivotItem">
                 <Setter Property="Margin"
                         Value="0" />
@@ -291,6 +309,17 @@
                         Value="CharacterEllipsis" />
             </Style>
 
+            <Style x:Key="ReplyBodyFormattedTextBlockStyle"
+                   TargetType="controls:FormattedTextBlock"
+                   BasedOn="{StaticResource CaptionFormattedTextBlockStyle}">
+                <Setter Property="TextWrapping"
+                        Value="NoWrap" />
+                <Setter Property="MaxLines"
+                        Value="1" />
+                <Setter Property="TextTrimming"
+                        Value="CharacterEllipsis" />
+            </Style>
+
             <Style x:Key="DisabledBodyTextBlockStyle"
                    TargetType="TextBlock"
                    BasedOn="{StaticResource BodyTextBlockStyle}">
@@ -339,6 +368,14 @@
                    BasedOn="{StaticResource BodyRichTextBlockStyle}">
                 <Setter Property="Foreground"
                         Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+            </Style>
+
+            <Style x:Key="InfoBodyFormattedTextBlockStyle"
+                   TargetType="controls:FormattedTextBlock">
+                <Setter Property="Foreground"
+                        Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+                <Setter Property="FontWeight"
+                        Value="Normal" />
             </Style>
 
             <Style x:Key="InfoCaptionTextBlockStyle"

@@ -370,7 +370,7 @@ namespace Telegram.ViewModels
             if (item.Action is ChatEventDescriptionChanged descriptionChanged)
             {
                 var text = new FormattedText(descriptionChanged.NewDescription, Array.Empty<TextEntity>());
-                var linkPreview = string.IsNullOrEmpty(descriptionChanged.OldDescription) ? null : new LinkPreview { SiteName = Strings.EventLogPreviousGroupDescription, Description = new FormattedText { Text = descriptionChanged.OldDescription } };
+                var linkPreview = string.IsNullOrEmpty(descriptionChanged.OldDescription) ? null : new LinkPreview { SiteName = Strings.EventLogPreviousGroupDescription, Description = descriptionChanged.OldDescription.AsFormattedText() };
 
                 return new MessageText(text, linkPreview, null);
             }
@@ -379,7 +379,7 @@ namespace Telegram.ViewModels
                 var link = string.IsNullOrEmpty(usernameChanged.NewUsername) ? string.Empty : MeUrlPrefixConverter.Convert(ClientService, usernameChanged.NewUsername);
 
                 var text = new FormattedText(link, new[] { new TextEntity(0, link.Length, new TextEntityTypeUrl()) });
-                var linkPreview = string.IsNullOrEmpty(usernameChanged.OldUsername) ? null : new LinkPreview { SiteName = Strings.EventLogPreviousLink, Description = new FormattedText { Text = MeUrlPrefixConverter.Convert(ClientService, usernameChanged.OldUsername) } };
+                var linkPreview = string.IsNullOrEmpty(usernameChanged.OldUsername) ? null : new LinkPreview { SiteName = Strings.EventLogPreviousLink, Description = MeUrlPrefixConverter.Convert(ClientService, usernameChanged.OldUsername).AsFormattedText() };
 
                 return new MessageText(text, linkPreview, null);
             }

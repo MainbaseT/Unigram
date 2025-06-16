@@ -395,7 +395,7 @@ namespace Telegram.Controls.Chats
             }
         }
 
-        protected override void SetText(IClientService clientService, bool outgoing, MessageSender sender, string title, string service, FormattedText text, bool quote, bool white)
+        protected override void SetText(MessageViewModel message, bool outgoing, MessageSender sender, string title, string service, FormattedText quote, bool manual, bool white)
         {
             _alternativeText = title + ": ";
             TitleLabel.Text = title;
@@ -407,17 +407,17 @@ namespace Telegram.Controls.Chats
             {
                 _alternativeText += service;
 
-                if (!string.IsNullOrEmpty(text?.Text))
+                if (!string.IsNullOrEmpty(quote?.Text ?? message?.Text?.Text))
                 {
-                    _alternativeText += ", " + text.Text;
+                    _alternativeText += ", " + quote.Text;
                 }
             }
-            else if (!string.IsNullOrEmpty(text?.Text))
+            else if (!string.IsNullOrEmpty(quote?.Text ?? message?.Text?.Text))
             {
-                _alternativeText += text.Text;
+                _alternativeText += quote?.Text ?? message?.Text?.Text;
             }
 
-            if (!string.IsNullOrEmpty(text?.Text) && !string.IsNullOrEmpty(service))
+            if (!string.IsNullOrEmpty(quote?.Text ?? message?.Text?.Text) && !string.IsNullOrEmpty(service))
             {
                 serviceShow.Text += ", ";
             }
@@ -425,7 +425,16 @@ namespace Telegram.Controls.Chats
             var messageShow = _textVisual == _textVisual1 ? MessageLabel2 : MessageLabel1;
             var labelShow = _textVisual == _textVisual1 ? TextLabel2 : TextLabel1;
 
-            CustomEmojiIcon.Add(labelShow, messageShow.Inlines, clientService, text, "MessageCustomEmojiStyle");
+            if (quote != null)
+            {
+                labelShow.SetText(message?.ClientService, quote);
+            }
+            else
+            {
+                labelShow.SetText(message?.ClientService, message?.Text);
+            }
+
+            labelShow.SetQuery(string.Empty);
         }
 
         #endregion

@@ -21,13 +21,14 @@ namespace Telegram.Controls.Cells.Business
 
             if (string.IsNullOrEmpty(chatLink.Text.Text))
             {
-                BriefLabel.Inlines.Clear();
-                BriefLabel.Inlines.Add(Strings.NoText);
+                BriefText.SetText(clientService, Strings.NoText.AsFormattedText());
             }
             else
             {
-                CustomEmojiIcon.Add(BriefText, BriefLabel.Inlines, clientService, chatLink.Text, "InfoCustomEmojiStyle");
+                BriefText.SetText(clientService, chatLink.Text);
             }
+
+            BriefText.SetQuery(string.Empty);
 
             ViewCountLabel.Text = chatLink.ViewCount > 0
                 ? Locale.Declension(Strings.R.Clicks, chatLink.ViewCount)

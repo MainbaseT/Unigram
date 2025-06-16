@@ -1652,10 +1652,10 @@
     <Style TargetType="local:FormattedTextBlock">
         <Setter Property="IsTabStop"
                 Value="False" />
+        <Setter Property="FontSize"
+                Value="14" />
         <Setter Property="FontFamily"
                 Value="{ThemeResource EmojiThemeFontFamily}" />
-        <Setter Property="TextStyle"
-                Value="{StaticResource BodyRichTextBlockStyle}" />
         <Setter Property="TextAlignment"
                 Value="DetectFromContent" />
         <Setter Property="EmojiStyle">
@@ -1673,10 +1673,10 @@
                         <Canvas x:Name="Below" />
                         <RichTextBlock x:Name="TextBlock"
                                        Foreground="{TemplateBinding Foreground}"
-                                       Style="{TemplateBinding TextStyle}"
                                        Padding="{TemplateBinding Padding}"
                                        IsTextSelectionEnabled="{TemplateBinding IsTextSelectionEnabled}"
                                        FontFamily="{TemplateBinding FontFamily}"
+                                       FontSize="{TemplateBinding FontSize}"
                                        TextAlignment="{TemplateBinding TextAlignment}"
                                        TextTrimming="{TemplateBinding TextTrimming}"
                                        MaxLines="{TemplateBinding MaxLines}"

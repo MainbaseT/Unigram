@@ -1020,18 +1020,18 @@ namespace winrt::Telegram::Native::implementation
     IVector<Windows::Foundation::Rect> PlaceholderImageHelper::LineMetrics(hstring text, IVector<TextEntity> entities, double fontSize, double width, bool rtl)
     {
         IVector<Windows::Foundation::Rect> rects;
-        RangeMetricsImpl(text, 0, text.size(), entities, fontSize, width, rtl, rects);
+        RangeMetricsImpl(text, 0, text.size(), entities, fontSize, width, rtl, true, rects);
         return rects;
     }
 
-    IVector<Windows::Foundation::Rect> PlaceholderImageHelper::RangeMetrics(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl)
+    IVector<Windows::Foundation::Rect> PlaceholderImageHelper::RangeMetrics(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, bool wrap)
     {
         IVector<Windows::Foundation::Rect> rects;
-        RangeMetricsImpl(text, offset, length, entities, fontSize, width, rtl, rects);
+        RangeMetricsImpl(text, offset, length, entities, fontSize, width, rtl, wrap, rects);
         return rects;
     }
 
-    HRESULT PlaceholderImageHelper::RangeMetricsImpl(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, IVector<Windows::Foundation::Rect>& rects)
+    HRESULT PlaceholderImageHelper::RangeMetricsImpl(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, bool wrap, IVector<Windows::Foundation::Rect>& rects)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
@@ -1053,6 +1053,7 @@ namespace winrt::Telegram::Native::implementation
         ReturnIfFailed(result, textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
         ReturnIfFailed(result, textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
         ReturnIfFailed(result, textFormat->SetReadingDirection(rtl ? DWRITE_READING_DIRECTION_RIGHT_TO_LEFT : DWRITE_READING_DIRECTION_LEFT_TO_RIGHT));
+        ReturnIfFailed(result, textFormat->SetWordWrapping(wrap ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP));
 
         winrt::com_ptr<IDWriteTextLayout> textLayout;
         ReturnIfFailed(result, m_dwriteFactory->CreateTextLayout(
