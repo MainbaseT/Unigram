@@ -130,6 +130,11 @@ namespace Telegram.Streams
                 //Logger.Debug($"Next chunk is available, offset: {_offset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
                 _event.Set();
             }
+            else if (!file.Local.IsDownloadingActive)
+            {
+                Logger.Info("Download was canceled for " + file.Id);
+                _event.Set();
+            }
             //else
             //{
             //    Logger.Debug($"Next chunk is not available, offset: {_offset}, real: {file.Local.DownloadOffset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}, completed: {file.Local.IsDownloadingCompleted}");
