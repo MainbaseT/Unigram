@@ -518,14 +518,6 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            if (hasSpoiler && _hidden)
-            {
-                _hidden = false;
-                UpdateMessage(_message);
-
-                return;
-            }
-
             var file = video.VideoValue;
             if (file.Local.IsDownloadingActive)
             {
@@ -552,6 +544,11 @@ namespace Telegram.Controls.Messages.Content
                 {
                     _message.ClientService.DownloadFile(file.Id, 30);
                 }
+            }
+            else if (hasSpoiler && _hidden)
+            {
+                _hidden = false;
+                UpdateMessage(_message);
             }
             else
             {
@@ -609,6 +606,11 @@ namespace Telegram.Controls.Messages.Content
                         _message.ClientService.DownloadFile(file.Id, 30);
                     }
                 }
+                else if (hasSpoiler && _hidden)
+                {
+                    _hidden = false;
+                    UpdateMessage(_message);
+                }
                 else
                 {
                     _message.Delegate.OpenMedia(_message, this);
@@ -636,6 +638,13 @@ namespace Telegram.Controls.Messages.Content
                 {
                     if (_message.SendingState is MessageSendingStatePending)
                     {
+                        return;
+                    }
+                    else if (hasSpoiler && _hidden)
+                    {
+                        _hidden = false;
+                        UpdateMessage(_message);
+
                         return;
                     }
 
