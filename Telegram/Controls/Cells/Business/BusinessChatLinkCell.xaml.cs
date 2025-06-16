@@ -1,5 +1,4 @@
-﻿using System;
-using Telegram.Common;
+﻿using Telegram.Common;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.UI.Xaml.Controls;

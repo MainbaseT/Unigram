@@ -11,7 +11,6 @@ using Telegram.Common;
 using Telegram.Composition;
 using Telegram.Controls.Messages;
 using Telegram.Navigation;
-using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views;

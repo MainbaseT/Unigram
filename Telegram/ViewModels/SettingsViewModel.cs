@@ -141,7 +141,7 @@ namespace Telegram.ViewModels
 
                 if (fullInfo != null)
                 {
-                    await ShowPopupAsync(new GiftPopup(ClientService, NavigationService, user, fullInfo));
+                    ShowPopup(new GiftPopup(ClientService, NavigationService, user, fullInfo));
                 }
             }
         }

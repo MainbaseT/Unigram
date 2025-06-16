@@ -7,7 +7,6 @@
 using System;
 using System.Numerics;
 using System.Text;
-using Telegram.Common;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;

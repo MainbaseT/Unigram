@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Native;
-using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Storage.Streams;
