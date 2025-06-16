@@ -279,7 +279,7 @@ namespace Telegram.Controls.Messages
             TitleLabel.Text = title ?? string.Empty;
             ServiceLabel.Text = service ?? string.Empty;
 
-            if (!string.IsNullOrEmpty(text?.Text ?? message.Text?.Text) && !string.IsNullOrEmpty(service))
+            if (!string.IsNullOrEmpty(text?.Text ?? message?.Text?.Text) && !string.IsNullOrEmpty(service))
             {
                 ServiceLabel.Text += ", ";
             }
@@ -363,7 +363,7 @@ namespace Telegram.Controls.Messages
             }
             else
             {
-                Label.SetText(message.ClientService, message.Text);
+                Label.SetText(message?.ClientService, message?.Text);
             }
 
             Label.SetQuery(string.Empty);

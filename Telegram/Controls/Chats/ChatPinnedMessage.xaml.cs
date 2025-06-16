@@ -409,7 +409,7 @@ namespace Telegram.Controls.Chats
 
                 if (!string.IsNullOrEmpty(quote?.Text ?? message?.Text?.Text))
                 {
-                    _alternativeText += ", " + quote.Text;
+                    _alternativeText += ", " + quote?.Text ?? message?.Text?.Text;
                 }
             }
             else if (!string.IsNullOrEmpty(quote?.Text ?? message?.Text?.Text))
