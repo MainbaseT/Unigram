@@ -2119,7 +2119,7 @@ namespace Telegram.Controls.Messages
 
         private static FormattedText UpdatePinMessage(MessageWithOwner message, MessagePinMessage pinMessage, bool history)
         {
-            if (message is MessageViewModel { ReplyTo: MessageViewModel reply })
+            if (message is MessageViewModel { ReplyToItem: MessageViewModel reply })
             {
                 if (reply.Content is MessageAnimatedEmoji animatedEmoji)
                 {
