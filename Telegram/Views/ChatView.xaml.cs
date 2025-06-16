@@ -144,6 +144,7 @@ namespace Telegram.Views
             ElementCompositionPreview.SetIsTranslationEnabled(btnAttach, true);
             ElementCompositionPreview.SetIsTranslationEnabled(ListAutocomplete, true);
             ElementCompositionPreview.SetIsTranslationEnabled(Messages, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(MessagesRoot, true);
 
             _rootVisual = ElementComposition.GetElementVisual(TextArea);
 
@@ -6830,7 +6831,6 @@ namespace Telegram.Views
 
                 if (animate)
                 {
-                    ElementCompositionPreview.SetIsTranslationEnabled(MessagesRoot, true);
                     var visual = ElementComposition.GetElementVisual(MessagesRoot);
                     visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, 0);
 
