@@ -162,11 +162,14 @@ namespace Telegram.Controls
 
         protected override void OnPointerPressed(PointerRoutedEventArgs e)
         {
-            _pressed = true;
-            CapturePointer(e.Pointer);
-
             var point = e.GetCurrentPoint(this);
-            Value = point.Position.X / ActualWidth * Maximum;
+            if (point.Properties.IsLeftButtonPressed)
+            {
+                _pressed = true;
+                CapturePointer(e.Pointer);
+
+                Value = point.Position.X / ActualWidth * Maximum;
+            }
 
             base.OnPointerPressed(e);
         }
@@ -196,10 +199,13 @@ namespace Telegram.Controls
 
         protected override void OnPointerReleased(PointerRoutedEventArgs e)
         {
-            _pressed = false;
-            ReleasePointerCapture(e.Pointer);
+            if (_pressed)
+            {
+                _pressed = false;
+                ReleasePointerCapture(e.Pointer);
 
-            ValueChanged?.Invoke(this, new ProgressVoiceValueChanged(Value));
+                ValueChanged?.Invoke(this, new ProgressVoiceValueChanged(Value));
+            }
 
             base.OnPointerReleased(e);
         }
