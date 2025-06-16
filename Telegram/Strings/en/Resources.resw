@@ -11737,6 +11737,24 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SponsoredMessageSponsorReportable" xml:space="preserve">
     <value>Sponsor Info</value>
   </data>
+  <data name="StarGiftTransactionGiftPurchase" xml:space="preserve">
+    <value>Gift Purchase</value>
+  </data>
+  <data name="StarGiftTransactionGiftPurchaseRefund" xml:space="preserve">
+    <value>Refunded Gift Purchase</value>
+  </data>
+  <data name="StarGiftTransactionGiftSale" xml:space="preserve">
+    <value>Gift Sale</value>
+  </data>
+  <data name="StarGiftTransactionGiftSaleRefund" xml:space="preserve">
+    <value>Refunded Gift Sale</value>
+  </data>
+  <data name="StarGiftTransactionGiftTransfer" xml:space="preserve">
+    <value>Gift Transfer</value>
+  </data>
+  <data name="StarGiftTransactionGiftTransferRefund" xml:space="preserve">
+    <value>Refunded Gift Transfer</value>
+  </data>
   <data name="StarMediaPurchase" xml:space="preserve">
     <value>Media Purchase</value>
   </data>
@@ -12000,6 +12018,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="StarsTransactionMessageFee_other" xml:space="preserve">
     <value>Fee for {0} Messages</value>
+  </data>
+  <data name="StarsTransactionPremiumGift" xml:space="preserve">
+    <value>Telegram Premium</value>
+  </data>
+  <data name="StarsTransactionPremiumGiftDuration" xml:space="preserve">
+    <value>Duration</value>
   </data>
   <data name="StarsTransactionRecipient" xml:space="preserve">
     <value>From</value>

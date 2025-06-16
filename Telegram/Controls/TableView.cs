@@ -170,7 +170,7 @@ namespace Telegram.Controls
             var content = Children[1];
 
             header.Arrange(new Rect(0, 0, header.DesiredSize.Width, header.DesiredSize.Height));
-            content.Arrange(new Rect(0, 0, content.DesiredSize.Width, content.DesiredSize.Height));
+            content.Arrange(new Rect(0, 0, finalSize.Width, Math.Max(32, Math.Max(header.DesiredSize.Height, content.DesiredSize.Height))));
 
             return finalSize;
         }

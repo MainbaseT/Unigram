@@ -194,6 +194,10 @@
     </Style>
 
     <Style TargetType="local:TableViewItem">
+        <Setter Property="HorizontalContentAlignment"
+                Value="Left" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Top" />
         <Setter Property="Padding"
                 Value="8,5,4,6" />
         <Setter Property="Template">
@@ -210,6 +214,8 @@
                             <ContentPresenter x:Name="Presenter"
                                               Margin="{TemplateBinding ContentMargin}"
                                               Padding="{TemplateBinding Padding}"
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                               VerticalAlignment="Top" />
                         </local:TableViewItemPresenter>
                     </Border>
