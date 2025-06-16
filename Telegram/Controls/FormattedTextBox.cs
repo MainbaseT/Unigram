@@ -1517,6 +1517,7 @@ namespace Telegram.Controls
                 plain.Delete(TextRangeUnit.Hidden, 1);
             }
 
+            range.CharacterFormat.Name = Document.GetDefaultCharacterFormat().Name;
             range.SetText(TextSetOptions.None, $"{emoji};{customEmojiId:X16}\uEA4F");
             range.SetRange(range.StartPosition, range.EndPosition - 1);
             range.CharacterFormat.Hidden = FormatEffect.On;
