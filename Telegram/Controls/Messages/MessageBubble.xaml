@@ -293,11 +293,12 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <!-- TODO: Migrate to RecentUserHeads -->
-                                    <StackPanel x:Name="RecentRepliers"
-                                                Orientation="Horizontal"
-                                                Height="28" />
+                                    <controls:RecentUserHeads x:Name="RecentRepliers"
+                                                              BorderBrush="{ThemeResource MessageBackgroundBrush}"
+                                                              ItemSize="24"
+                                                              ItemOverlap="12" />
                                     <TextBlock x:Name="ThreadGlyph"
                                                Text="&#xE9BF;"
                                                FontFamily="{StaticResource SymbolThemeFontFamily}"
@@ -313,7 +314,7 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                FontSize="20"
-                                               Grid.Column="1" />
+                                               Grid.Column="2" />
                                 </Grid>
                             </HyperlinkButton>
                         </Grid>

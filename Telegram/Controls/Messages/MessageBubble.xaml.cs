@@ -142,7 +142,7 @@ namespace Telegram.Controls.Messages
         private MessageReply Reply;
 
         private HyperlinkButton Thread;
-        private StackPanel RecentRepliers;
+        private RecentUserHeads RecentRepliers;
         private TextBlock ThreadGlyph;
         private TextBlock ThreadLabel;
 
@@ -1387,14 +1387,14 @@ namespace Telegram.Controls.Messages
                     if (Thread == null)
                     {
                         Thread = GetTemplateChild(nameof(Thread)) as HyperlinkButton;
-                        RecentRepliers = GetTemplateChild(nameof(RecentRepliers)) as StackPanel;
+                        RecentRepliers = GetTemplateChild(nameof(RecentRepliers)) as RecentUserHeads;
                         ThreadGlyph = GetTemplateChild(nameof(ThreadGlyph)) as TextBlock;
                         ThreadLabel = GetTemplateChild(nameof(ThreadLabel)) as TextBlock;
 
                         Thread.Click += Thread_Click;
                     }
 
-                    RecentRepliers.Children.Clear();
+                    RecentRepliers.Items.Clear();
                     ThreadGlyph.Visibility = Visibility.Visible;
                     ThreadLabel.Text = Strings.ViewInChat;
 
@@ -1412,40 +1412,17 @@ namespace Telegram.Controls.Messages
                 if (Thread == null)
                 {
                     Thread = GetTemplateChild(nameof(Thread)) as HyperlinkButton;
-                    RecentRepliers = GetTemplateChild(nameof(RecentRepliers)) as StackPanel;
+                    RecentRepliers = GetTemplateChild(nameof(RecentRepliers)) as RecentUserHeads;
                     ThreadGlyph = GetTemplateChild(nameof(ThreadGlyph)) as TextBlock;
                     ThreadLabel = GetTemplateChild(nameof(ThreadLabel)) as TextBlock;
 
                     Thread.Click += Thread_Click;
+                    RecentRepliers.RecentUserHeadChanged += RecentRepliers_RecentUserHeadChanged;
                 }
 
-                RecentRepliers.Children.Clear();
+                RecentRepliers.Items.ReplaceDiff(info.RecentReplierIds);
 
-                foreach (var sender in info.RecentReplierIds)
-                {
-                    var picture = new ProfilePicture();
-                    picture.Width = 24;
-                    picture.Height = 24;
-
-                    if (message.ClientService.TryGetUser(sender, out User senderUser))
-                    {
-                        picture.SetUser(message.ClientService, senderUser, 24);
-                    }
-                    else if (message.ClientService.TryGetChat(sender, out Chat senderChat))
-                    {
-                        picture.SetChat(message.ClientService, senderChat, 24);
-                    }
-
-                    if (RecentRepliers.Children.Count > 0)
-                    {
-                        picture.Margin = new Thickness(-10, 0, 0, 0);
-                    }
-
-                    Canvas.SetZIndex(picture, -RecentRepliers.Children.Count);
-                    RecentRepliers.Children.Add(picture);
-                }
-
-                ThreadGlyph.Visibility = RecentRepliers.Children.Count > 0
+                ThreadGlyph.Visibility = info.RecentReplierIds.Count > 0
                     ? Visibility.Collapsed
                     : Visibility.Visible;
 
@@ -1462,6 +1439,18 @@ namespace Telegram.Controls.Messages
                 AutomationProperties.SetName(Thread, commentsText);
 
                 Thread.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void RecentRepliers_RecentUserHeadChanged(ProfilePicture sender, MessageSender messageSender)
+        {
+            if (_message.ClientService.TryGetUser(messageSender, out User user))
+            {
+                sender.SetUser(_message.ClientService, user, 24);
+            }
+            else if (_message.ClientService.TryGetChat(messageSender, out Chat chat))
+            {
+                sender.SetChat(_message.ClientService, chat, 24);
             }
         }
 
