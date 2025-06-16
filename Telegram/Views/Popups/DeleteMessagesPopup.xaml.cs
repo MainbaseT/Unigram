@@ -52,7 +52,7 @@ namespace Telegram.Views.Popups
                 .Where(x => !x.IsUser(clientService.Options.MyId))
                 .ToList();
 
-            if (senders.Count > 1 && supergroup?.IsChannel is false)
+            if (senders.Count > 1 && supergroup?.IsChannel is false && supergroup?.IsDirectMessagesGroup is false)
             {
                 ReportSpamCheck.Content = Strings.DeleteReportSpam;
                 DeleteAllCheck.Content = Strings.DeleteAllFromUsers;
@@ -68,7 +68,7 @@ namespace Telegram.Views.Popups
                     ? Visibility.Visible
                     : Visibility.Collapsed;
             }
-            else if (senders.Count > 0 && supergroup?.IsChannel is false)
+            else if (senders.Count > 0 && supergroup?.IsChannel is false && supergroup?.IsDirectMessagesGroup is false)
             {
                 ReportSpamCheck.Content = Strings.DeleteReportSpam;
                 DeleteAllCheck.Content = string.Format(Strings.DeleteAllFrom, clientService.GetTitle(senders[0]));
