@@ -473,20 +473,11 @@
                   Visibility="Collapsed"
                   MaxWidth="1000"
                   Margin="24,8,24,8">
-                <RichTextBlock Style="{StaticResource InfoCaptionRichTextBlockStyle}"
-                               IsTextSelectionEnabled="False">
-                    <Paragraph>
-                        <InlineUIContainer>
-                            <controls:CustomEmojiIcon x:Name="BotVerifiedInfo"
-                                                      ReplacementColor="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
-                                                      Width="16"
-                                                      Height="16"
-                                                      FrameSize="16,16"
-                                                      Margin="0,0,0,-4" />
-                        </InlineUIContainer>
-                        <Span x:Name="BotVerifiedText" />
-                    </Paragraph>
-                </RichTextBlock>
+                <controls:FormattedTextBlock x:Name="BotVerifiedText"
+                                             Style="{StaticResource InfoCaptionFormattedTextBlockStyle}"
+                                             EmojiStyle="{StaticResource InfoCustomEmojiStyle}"
+                                             IsTextSelectionEnabled="False"
+                                             AutoFontSize="False" />
             </Grid>
 
             <controls:HeaderedControl x:Name="AffiliateProgramRoot">

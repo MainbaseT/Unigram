@@ -938,10 +938,11 @@ namespace Telegram.Controls
                 var emoji = new CustomEmojiFileSource(ViewModel.ClientService, fullInfo.BotVerification.IconCustomEmojiId);
                 var text = fullInfo.BotVerification.CustomDescription.Text.Length > 0
                     ? fullInfo.BotVerification.CustomDescription
-                    : Strings.BotVerifierRepresentatives.AsFormattedText();
+                    : string.Format(Strings.BotVerifierRepresentatives, verifierBotUser.FirstName).AsFormattedText();
 
-                TextBlockHelper.SetFormattedText(BotVerifiedText, text);
-                BotVerifiedInfo.Source = emoji;
+                BotVerifiedText.SetText(ViewModel.ClientService, ClientEx.Format("{0} {1}", ClientEx.CustomEmoji(fullInfo.BotVerification.IconCustomEmojiId), text));
+                BotVerifiedText.SetQuery(string.Empty);
+
                 BotVerifiedRoot.Visibility = Visibility.Visible;
             }
             else
@@ -1214,10 +1215,10 @@ namespace Telegram.Controls
                 var emoji = new CustomEmojiFileSource(ViewModel.ClientService, fullInfo.BotVerification.IconCustomEmojiId);
                 var text = fullInfo.BotVerification.CustomDescription.Text.Length > 0
                     ? fullInfo.BotVerification.CustomDescription
-                    : Strings.BotVerifierRepresentatives.AsFormattedText();
+                    : string.Format(Strings.BotVerifierRepresentatives, verifierBotUser.FirstName).AsFormattedText();
 
-                TextBlockHelper.SetFormattedText(BotVerifiedText, text);
-                BotVerifiedInfo.Source = emoji;
+                BotVerifiedText.SetText(ViewModel.ClientService, ClientEx.Format("{0} {1}", ClientEx.CustomEmoji(fullInfo.BotVerification.IconCustomEmojiId), text));
+                BotVerifiedText.SetQuery(string.Empty);
                 BotVerifiedRoot.Visibility = Visibility.Visible;
             }
             else
