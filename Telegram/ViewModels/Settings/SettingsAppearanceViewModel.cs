@@ -87,8 +87,8 @@ namespace Telegram.ViewModels.Settings
             var selectedTheme = themes.FirstOrDefault(x => x.Name == Settings.Appearance.ChatTheme?.Name) ?? defaultTheme;
             if (selectedTheme != null)
             {
-                selectedTheme.LightSettings.Background = ClientService.GetDefaultBackground(false);
-                selectedTheme.DarkSettings.Background = ClientService.GetDefaultBackground(true);
+                selectedTheme.LightSettings.Background = ClientService.GetDefaultBackground(false) ?? defaultLight.Background;
+                selectedTheme.DarkSettings.Background = ClientService.GetDefaultBackground(true) ?? defaultDark.Background;
             }
 
             ChatThemes.AddRange(new[] { defaultTheme }.Union(themes));
