@@ -2979,11 +2979,11 @@ public static class Frame_stub
             throw new RuntimeException(ex);
         }
     }
-    public static bool Navigate_stub(this Windows.UI.Xaml.Controls.Frame sender, System.Type sourcePageType)
+    public static bool Navigate_stub(this Windows.UI.Xaml.Controls.Frame sender, System.Type sourcePageType, object parameter, Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo infoOverride)
     {
         try
         {
-            return sender.Navigate(sourcePageType);
+            return sender.Navigate(sourcePageType, parameter, infoOverride);
         }
         catch (Exception ex)
         {
@@ -2991,11 +2991,11 @@ public static class Frame_stub
             throw new RuntimeException(ex);
         }
     }
-    public static bool Navigate_stub(this Windows.UI.Xaml.Controls.Frame sender, System.Type sourcePageType, object parameter, Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo infoOverride)
+    public static bool Navigate_stub(this Windows.UI.Xaml.Controls.Frame sender, System.Type sourcePageType)
     {
         try
         {
-            return sender.Navigate(sourcePageType, parameter, infoOverride);
+            return sender.Navigate(sourcePageType);
         }
         catch (Exception ex)
         {
@@ -3904,6 +3904,21 @@ public static class CryptographicBuffer_stub
         }
     }
 }
+public static class BindingOperations_stub
+{
+    public static void SetBinding_stub(Windows.UI.Xaml.DependencyObject target, Windows.UI.Xaml.DependencyProperty dp, Windows.UI.Xaml.Data.BindingBase binding)
+    {
+        try
+        {
+            Windows.UI.Xaml.Data.BindingOperations.SetBinding(target, dp, binding);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class Clipboard_stub
 {
     public static void Flush_stub()
@@ -4526,6 +4541,18 @@ public static class CanvasGeometry_stub
         try
         {
             return Microsoft.Graphics.Canvas.Geometry.CanvasGeometry.CreateRectangle(resourceCreator, x, y, w, h);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Microsoft.Graphics.Canvas.Geometry.CanvasGeometry CreateRectangle_stub(Microsoft.Graphics.Canvas.ICanvasResourceCreator resourceCreator, Windows.Foundation.Rect rect)
+    {
+        try
+        {
+            return Microsoft.Graphics.Canvas.Geometry.CanvasGeometry.CreateRectangle(resourceCreator, rect);
         }
         catch (Exception ex)
         {
@@ -5768,6 +5795,18 @@ public static class ApiInformation_stub
         try
         {
             return Windows.Foundation.Metadata.ApiInformation.IsEnumNamedValuePresent(enumTypeName, valueName);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static bool IsMethodPresent_stub(string typeName, string methodName)
+    {
+        try
+        {
+            return Windows.Foundation.Metadata.ApiInformation.IsMethodPresent(typeName, methodName);
         }
         catch (Exception ex)
         {
