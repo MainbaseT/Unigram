@@ -12,6 +12,7 @@ using Telegram.ViewModels;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Point = Windows.Foundation.Point;
 
 namespace Telegram.Controls.Messages.Content
 {
@@ -99,6 +100,23 @@ namespace Telegram.Controls.Messages.Content
             }
 
             return finalSize;
+        }
+
+        public Rect Highlight(MessageBubbleHighlightOptions options)
+        {
+            foreach (var child in Children)
+            {
+                if (child is MessageSelector selector
+                    && selector.Message.Id == options.MessageId)
+                {
+                    var transform = child.TransformToVisual(this);
+                    var point = transform.TransformPoint(new Point());
+
+                    return new Rect(point.X, point.Y, selector.ActualWidth, selector.ActualHeight);
+                }
+            }
+
+            return Rect.Empty;
         }
 
         public void UpdateMessage(MessageViewModel message)

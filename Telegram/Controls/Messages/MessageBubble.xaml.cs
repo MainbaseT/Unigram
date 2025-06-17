@@ -42,8 +42,9 @@ namespace Telegram.Controls.Messages
 {
     public partial class MessageBubbleHighlightOptions
     {
-        public MessageBubbleHighlightOptions(TextQuote quote, bool moveFocus = true, bool highlight = true)
+        public MessageBubbleHighlightOptions(long messageId, TextQuote quote, bool moveFocus = true, bool highlight = true)
         {
+            MessageId = messageId;
             Quote = quote;
             MoveFocus = moveFocus;
             Highlight = highlight;
@@ -54,6 +55,8 @@ namespace Telegram.Controls.Messages
             MoveFocus = moveFocus;
             Highlight = highlight;
         }
+
+        public long MessageId { get; }
 
         public TextQuote Quote { get; }
 
@@ -2829,6 +2832,16 @@ namespace Telegram.Controls.Messages
                     visual.StartAnimation("Opacity", opacity2);
 
                     return new Rect(minX, minY, maxX - minX, maxY - minY);
+                }
+            }
+
+            if (Media.Child is AlbumContent album)
+            {
+                var area = album.Highlight(options);
+                if (!area.IsEmpty)
+                {
+                    solid.Offset = area.ToOffset();
+                    solid.Size = area.ToSizeF();
                 }
             }
 

@@ -878,6 +878,16 @@ namespace Telegram.Common
             return new Size(rectangle.Width, rectangle.Height);
         }
 
+        public static Vector2 ToSizeF(this Rect rectangle)
+        {
+            return new Vector2((float)rectangle.Width, (float)rectangle.Height);
+        }
+
+        public static Vector3 ToOffset(this Rect rectangle)
+        {
+            return new Vector3((float)rectangle.X, (float)rectangle.Y, 0);
+        }
+
         public static bool IntersectsWith(this Rect a, Rect b)
         {
             return (b.X <= a.X + a.Width) &&

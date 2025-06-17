@@ -1201,7 +1201,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(highlight) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
+                HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(maxId, highlight) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
 
                 if (previousId.HasValue && !_repliesStack.Contains(previousId.Value))
                 {
@@ -1260,7 +1260,7 @@ namespace Telegram.ViewModels
 
                     if (Items.TryGetValue(maxId, out already))
                     {
-                        HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(highlight) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
+                        HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(maxId, highlight) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
 
                         if (previousId.HasValue && !_repliesStack.Contains(previousId.Value))
                         {
