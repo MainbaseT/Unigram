@@ -182,6 +182,8 @@ namespace Telegram.ViewModels
                     {
                         return _chat.LastMessage.MessageThreadId;
                     }
+
+                    return ForumTopicService.GeneralId;
                 }
 
                 return 0;
@@ -2923,6 +2925,11 @@ namespace Telegram.ViewModels
             {
                 if (embedded.ReplyToMessage.TopicId != null && (IsForum || IsDirectMessagesGroup))
                 {
+                    if (embedded.ReplyToMessage.TopicId.IsForum(ForumTopicService.GeneralId))
+                    {
+                        return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, new MessageTopicForum(embedded.ReplyToMessage.MessageThreadId), embedded.ReplyToQuote);
+                    }
+
                     return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, embedded.ReplyToMessage.TopicId, embedded.ReplyToQuote);
                 }
                 else if (clean && embedded.ReplyToMessage.ReplyMarkup is ReplyMarkupForceReply)
