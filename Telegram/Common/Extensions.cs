@@ -343,7 +343,7 @@ namespace Telegram.Common
             // Adjust the offset if the selection ends on the text block itself
             if (pointer.Offset == textBlock.ContentEnd.Offset && pointer.Parent is RichTextBlock)
             {
-                index += 2;
+                index++;
             }
 
             return pointer.Offset - index;
