@@ -512,20 +512,18 @@ namespace Telegram.Controls.Messages
             }
 
             var content = message.GeneratedContent ?? message.Content;
-            if (content is MessageSticker or MessageDice or MessageVideoNote or MessageBigEmoji)
+            if (message.ReplyMarkup is ReplyMarkupInlineKeyboard)
             {
-                _hasReplyMarkup = false;
-                SetCorners(0, 0, 0, 0);
-            }
-            else if (content is MessageInvoice invoice && invoice.PaidMedia is not PaidMediaUnsupported and not null)
-            {
-                _hasReplyMarkup = false;
-                SetCorners(topLeft, topRight, bottomOutgoing ? 0 : bottomRight, bottomIncoming ? 0 : bottomLeft);
-            }
-            else if (message.ReplyMarkup is ReplyMarkupInlineKeyboard)
-            {
-                _hasReplyMarkup = true;
-                SetCorners(topLeft, topRight, small, small);
+                if (content is MessageSticker or MessageDice or MessageVideoNote or MessageBigEmoji)
+                {
+                    _hasReplyMarkup = false;
+                    SetCorners(0, 0, 0, 0);
+                }
+                else
+                {
+                    _hasReplyMarkup = true;
+                    SetCorners(topLeft, topRight, small, small);
+                }
 
                 if (Markup != null)
                 {
