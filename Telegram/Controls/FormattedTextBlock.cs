@@ -790,9 +790,13 @@ namespace Telegram.Controls
                             // the first custom emoji in a paragraph with reading order different from the one of the app, would appear on the
                             // wrong side of the block, thus we add a RTL/LTR mark right before, and the RichTextBlock seems to respect this.
 
-                            if (entity.Offset == 0 && direction != locale)
+                            if (entity.Offset == 0)
                             {
-                                direct.AddToCollection(inlines, CreateDirectRun(direct, direction == FlowDirection.RightToLeft ? Icons.RTL : Icons.LTR, direction));
+                                var character = direction != locale
+                                    ? direction == FlowDirection.RightToLeft ? Icons.RTL : Icons.LTR
+                                    : Icons.ZWNJ;
+
+                                direct.AddToCollection(inlines, CreateDirectRun(direct, character, direction, fontSize: fontSize, transparent: true));
                                 workaround++;
                             }
 
@@ -883,27 +887,30 @@ namespace Telegram.Controls
             var topPadding = 0d;
             var bottomPadding = false;
 
-            if (firstType is TextParagraphTypeMonospace { Language.Length: > 0 })
+            if (_spanForInlines == null)
             {
-                topPadding = 22 + 6;
-            }
-            else if (firstType is not null)
-            {
-                topPadding = 6;
-            }
-
-            if (AdjustLineEnding && styled.Paragraphs.Count > 0)
-            {
-                var direction = styled.Paragraphs[^1].Direction switch
+                if (firstType is TextParagraphTypeMonospace { Language.Length: > 0 })
                 {
-                    TextDirectionality.LeftToRight => FlowDirection.LeftToRight,
-                    TextDirectionality.RightToLeft => FlowDirection.RightToLeft,
-                    _ => locale
-                };
-
-                if (direction != locale || lastType is not null)
+                    topPadding = 22 + 6;
+                }
+                else if (firstType is not null)
                 {
-                    bottomPadding = true;
+                    topPadding = 6;
+                }
+
+                if (AdjustLineEnding && styled.Paragraphs.Count > 0)
+                {
+                    var direction = styled.Paragraphs[^1].Direction switch
+                    {
+                        TextDirectionality.LeftToRight => FlowDirection.LeftToRight,
+                        TextDirectionality.RightToLeft => FlowDirection.RightToLeft,
+                        _ => locale
+                    };
+
+                    if (direction != locale || lastType is not null)
+                    {
+                        bottomPadding = true;
+                    }
                 }
             }
 
