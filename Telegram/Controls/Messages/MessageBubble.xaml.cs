@@ -1382,7 +1382,7 @@ namespace Telegram.Controls.Messages
             var info = message.InteractionInfo?.ReplyInfo;
             if (info == null || !message.IsChannelPost)
             {
-                if (message.ChatId == message.ClientService.Options.RepliesBotChatId)
+                if (message.ChatId == message.ClientService.Options.RepliesBotChatId && message.Id != 0)
                 {
                     if (Thread == null)
                     {
