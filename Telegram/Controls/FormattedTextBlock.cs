@@ -81,6 +81,8 @@ namespace Telegram.Controls
         private bool _isHighlighted;
         private bool _ignoreSpoilers = false;
 
+        private AnimatedImage _spoilerPresenter;
+
         private Span _spanForInlines;
 
         private ulong _expandSelectionDeadline;
@@ -328,19 +330,13 @@ namespace Telegram.Controls
                     SetText(_clientService, _text, _fontSize);
                     SetQuery(string.Empty);
 
-                    if (Below == null)
+                    if (Below == null || _spoilerPresenter == null)
                     {
                         return;
                     }
 
-                    for (int i = 0; i < Below.Children.Count; i++)
-                    {
-                        if (Below.Children[i] is AnimatedImage)
-                        {
-                            Below.Children.RemoveAt(i);
-                            i--;
-                        }
-                    }
+                    Below.Children.Remove(_spoilerPresenter);
+                    _spoilerPresenter = null;
                 }
             }
         }
@@ -918,9 +914,41 @@ namespace Telegram.Controls
 
             Below.Margin = new Thickness(0, topPadding, 0, 0);
             TextBlock.Margin = new Thickness(0, topPadding, 0, 0);
+
+            if (!_layoutUpdated)
+            {
+                _layoutUpdated = true;
+                TextBlock.LayoutUpdated += OnLayoutUpdated;
+            }
+        }
+
+        private bool _sizeChanged;
+        private bool _layoutUpdated;
+
+        private void OnLayoutUpdated(object sender, object e)
+        {
+            _sizeChanged = true;
+
+            _layoutUpdated = false;
+            TextBlock.LayoutUpdated -= OnLayoutUpdated;
+
+            UpdateBelow();
+            UpdateSpoilers();
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_sizeChanged)
+            {
+                _sizeChanged = false;
+                return;
+            }
+
+            UpdateBelow();
+            UpdateSpoilers();
+        }
+
+        private void UpdateBelow()
         {
             Below.Children.Clear();
 
@@ -955,8 +983,22 @@ namespace Telegram.Controls
                 }
             }
 
+            if (_spoilerPresenter != null)
+            {
+                Below.Children.Add(_spoilerPresenter);
+            }
+        }
+
+        private void UpdateSpoilers()
+        {
             if (_ignoreSpoilers || _spoilers.Empty())
             {
+                if (_spoilerPresenter != null)
+                {
+                    Below.Children.Remove(_spoilerPresenter);
+                    _spoilerPresenter = null;
+                }
+
                 return;
             }
 
@@ -1108,26 +1150,34 @@ namespace Telegram.Controls
                 foreground = brush.Color;
             }
 
-            var spoiler = new AnimatedImage
+            if (_spoilerPresenter == null)
             {
-                IsViewportAware = true,
-                FrameSize = new Size(0, 0),
-                FitToSize = true,
-                DecodeFrameType = DecodePixelType.Logical,
-                Stretch = Stretch.UniformToFill,
-                Source = new ParticlesImageSource(foreground),
-                Width = maxX - minX,
-                Height = maxY - minY
-            };
+                _spoilerPresenter = new AnimatedImage
+                {
+                    IsViewportAware = true,
+                    FrameSize = new Size(0, 0),
+                    FitToSize = true,
+                    DecodeFrameType = DecodePixelType.Logical,
+                    Stretch = Stretch.UniformToFill,
+                    Source = new ParticlesImageSource(foreground),
+                    Width = maxX - minX,
+                    Height = maxY - minY
+                };
 
-            Canvas.SetLeft(spoiler, minX);
-            Canvas.SetTop(spoiler, minY);
+                Below.Children.Add(_spoilerPresenter);
+            }
+            else
+            {
+                _spoilerPresenter.Width = maxX - minX;
+                _spoilerPresenter.Height = maxY - minY;
+            }
 
-            var visual = ElementComposition.GetElementVisual(spoiler);
+            Canvas.SetLeft(_spoilerPresenter, minX);
+            Canvas.SetTop(_spoilerPresenter, minY);
+
+            var visual = ElementComposition.GetElementVisual(_spoilerPresenter);
             var geometry = visual.Compositor.CreatePathGeometry(new CompositionPath(result));
             visual.Clip = visual.Compositor.CreateGeometricClip(geometry);
-
-            Below.Children.Add(spoiler);
         }
 
         private void OnActualThemeChanged(FrameworkElement sender, object args)
@@ -1390,19 +1440,6 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty TextAlignmentProperty =
             DependencyProperty.Register("TextAlignment", typeof(TextAlignment), typeof(FormattedTextBlock), new PropertyMetadata(TextAlignment.Left));
-
-        #endregion
-
-        #region TextStyle
-
-        public Style TextStyle
-        {
-            get { return (Style)GetValue(TextStyleProperty); }
-            set { SetValue(TextStyleProperty, value); }
-        }
-
-        public static readonly DependencyProperty TextStyleProperty =
-            DependencyProperty.Register("TextStyle", typeof(Style), typeof(FormattedTextBlock), new PropertyMetadata(null));
 
         #endregion
 
