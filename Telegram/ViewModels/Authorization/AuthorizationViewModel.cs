@@ -68,8 +68,8 @@ namespace Telegram.ViewModels.Authorization
                 {
                     if (result is JsonValueObject json)
                     {
-                        var camera = json.GetNamedBoolean("qr_login_camera", false);
-                        var code = json.GetNamedString("qr_login_code", "disabled");
+                        var camera = json.GetNamedBoolean("qr_login_camera", true);
+                        var code = json.GetNamedString("qr_login_code", "primary");
 
                         if (camera && Enum.TryParse(code, true, out QrCodeMode mode))
                         {
