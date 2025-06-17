@@ -105,6 +105,13 @@ namespace Telegram.Controls.Chats
                 HideButton.Visibility = Visibility.Collapsed;
                 ListButton.Visibility = Visibility.Collapsed;
             }
+            else if (message?.Content is MessageText { LinkPreview: LinkPreview { Type: LinkPreviewTypeGroupCall } })
+            {
+                ActionButton.Content = Strings.VoipChatJoin;
+                ActionButton.Visibility = Visibility.Visible;
+                HideButton.Visibility = Visibility.Collapsed;
+                ListButton.Visibility = Visibility.Collapsed;
+            }
             else
             {
                 ActionButton.Visibility = Visibility.Collapsed;
@@ -316,6 +323,10 @@ namespace Telegram.Controls.Chats
             if (Message?.ReplyMarkup is ReplyMarkupInlineKeyboard inlineKeyboard)
             {
                 ViewModel.OpenInlineButton(Message, inlineKeyboard.Rows[0][0]);
+            }
+            else if (Message?.Content is MessageText { LinkPreview: LinkPreview linkPreview } && linkPreview.Type is LinkPreviewTypeGroupCall)
+            {
+                MessageHelper.NavigateToGroupCall(ViewModel.ClientService, ViewModel.NavigationService, new InputGroupCallLink(linkPreview.Url));
             }
         }
 
