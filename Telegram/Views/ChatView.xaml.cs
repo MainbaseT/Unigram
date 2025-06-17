@@ -346,6 +346,7 @@ namespace Telegram.Views
                     _albumIdToSelector.Clear();
                     _messageIdToSelector.Clear();
                     _messageIdToMessageIds.Clear();
+                    _messageTopicToSelectors.Clear();
                 }
             }
 
@@ -367,6 +368,7 @@ namespace Telegram.Views
             _albumIdToSelector.Clear();
             _messageIdToSelector.Clear();
             _messageIdToMessageIds.Clear();
+            _messageTopicToSelectors.Clear();
 
             _oldestItem = null;
             _oldestItemAsHeader = null;

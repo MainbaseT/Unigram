@@ -542,6 +542,11 @@ namespace Telegram.Views
 
             if (ViewModel.ClientService.TryGetForumTopic(ViewModel.ChatId, messageTopic, out ForumTopic forumTopic))
             {
+                if (string.IsNullOrEmpty(forumTopic.Info.Name))
+                {
+                    _forumTopicHeaderTopic = null;
+                }
+
                 ForumTopicHeaderLabel.Text = forumTopic.Info.Name;
                 ForumTopicHeaderPhoto.Clear();
 
@@ -711,6 +716,8 @@ namespace Telegram.Views
         private readonly Dictionary<long, ChatHistoryViewItem> _albumIdToSelector = new();
         private readonly Dictionary<long, ChatHistoryViewItem> _messageIdToSelector = new();
         private readonly MultiValueDictionary<long, long> _messageIdToMessageIds = new();
+
+        private readonly MultiValueDictionary<long, ChatHistoryViewItem> _messageTopicToSelectors = new();
 
         private readonly Dictionary<ChatHistoryViewItemType, ChoosingItemStrategy> _typeToStrategy = new();
 
@@ -1197,6 +1204,20 @@ namespace Telegram.Views
             }
         }
 
+        public void UpdateServiceWithForumTopic(long forumTopicId, Action<MessageService> action)
+        {
+            if (_messageTopicToSelectors.TryGetValue(forumTopicId, out var containers))
+            {
+                foreach (var container in containers)
+                {
+                    if (container.ContentTemplateRoot is MessageService service)
+                    {
+                        action(service);
+                    }
+                }
+            }
+        }
+
         public void ForEach(Action<MessageBubble, MessageViewModel> action)
         {
             foreach (var item in _messageIdToSelector)
@@ -1249,6 +1270,9 @@ namespace Telegram.Views
 
                 if (message.ReplyTo is MessageReplyToMessage replyToMessage)
                     _messageIdToMessageIds.Remove(replyToMessage.MessageId, message.Id);
+
+                if (message.Content is MessageHeaderMessageTopic && message.TopicId is MessageTopicForum messageTopicForum)
+                    _messageTopicToSelectors.Remove(messageTopicForum.ForumTopicId, container);
             }
             else
             {
@@ -1260,6 +1284,9 @@ namespace Telegram.Views
 
                 if (message.ReplyTo is MessageReplyToMessage replyToMessage)
                     _messageIdToMessageIds.Add(replyToMessage.MessageId, message.Id);
+
+                if (message.Content is MessageHeaderMessageTopic && message.TopicId is MessageTopicForum messageTopicForum)
+                    _messageTopicToSelectors.Add(messageTopicForum.ForumTopicId, container);
             }
         }
     }
