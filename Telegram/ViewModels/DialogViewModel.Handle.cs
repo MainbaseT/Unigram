@@ -1013,9 +1013,22 @@ namespace Telegram.ViewModels
                 Handle(update.OldMessageId, message =>
                 {
                     message.Replace(update.Message);
+                    message.GeneratedContentUnread = true;
+
+                    if (message.Content is MessagePaidMedia paidMedia)
+                    {
+                        message.Content = new MessagePaidAlbum(paidMedia);
+                    }
+
+                    InsertMessage(message, update.OldMessageId);
+
                     return true;
                 },
-                (bubble, message) => bubble.UpdateMessage(message));
+                (bubble, message) =>
+                {
+                    bubble.UpdateMessage(message);
+                    Delegate?.ViewVisibleMessages();
+                }, newMessageId: update.Message.Id);
             }
         }
 
@@ -1042,13 +1055,9 @@ namespace Telegram.ViewModels
                         message.Content = new MessagePaidAlbum(paidMedia);
                     }
 
-                    // Let's not reorder text messages 
-                    if (message.Content is not MessageText)
-                    {
-                        InsertMessage(message, update.OldMessageId);
-                    }
+                    InsertMessage(message, update.OldMessageId);
 
-                    return true; //MoveMessageInOrder(Items, message);
+                    return true;
                 },
                 (bubble, message) =>
                 {
