@@ -459,7 +459,7 @@ namespace Telegram.Controls.Messages
 
         private void GetStoryTemplate(MessageViewModel message, Story story, string title, bool outgoing, bool white)
         {
-            SetText(message,
+            SetText(null,
                 outgoing,
                 new MessageSenderChat(story.PosterChatId),
                 GetFromLabel(message, story, title),
