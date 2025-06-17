@@ -942,7 +942,11 @@ namespace Telegram.Common
                 {
                     if (info.MessageThreadId != 0)
                     {
-                        navigation.NavigateToChat(chat, info.Message.Id, topic: new MessageTopicForum(info.MessageThreadId));
+                        var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, info.Message.Id));
+                        if (thread is MessageThreadInfo)
+                        {
+                            navigation.NavigateToChat(chat, info.Message.Id, topic: new MessageTopicForum(info.MessageThreadId));
+                        }
                     }
                     else
                     {
