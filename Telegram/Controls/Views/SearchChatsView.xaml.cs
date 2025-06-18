@@ -353,7 +353,10 @@ namespace Telegram.Controls.Views
 
             _searchCollapsed = !show;
             SearchRoot.Visibility = Visibility.Visible;
+            SearchRoot.IsHitTestVisible = false;
+
             MediaRoot.Visibility = Visibility.Visible;
+            MediaRoot.IsHitTestVisible = false;
 
             var effect = show
                 ? SlideNavigationTransitionEffect.FromLeft
@@ -415,15 +418,19 @@ namespace Telegram.Controls.Views
                 if (_searchCollapsed)
                 {
                     SearchRoot.Visibility = Visibility.Collapsed;
+                    MediaRoot.IsHitTestVisible = true;
                 }
                 else
                 {
                     MediaRoot.Visibility = Visibility.Collapsed;
+                    SearchRoot.IsHitTestVisible = true;
                 }
             };
 
             visual.StartAnimation("Opacity", opacity);
             visual.StartAnimation("Translation.X", translation);
+
+            batch.End();
         }
 
         #region Media
