@@ -180,6 +180,18 @@ namespace Telegram.Collections
 
         private bool _replacingDiff;
 
+        protected override void InsertItem(int index, T item)
+        {
+            base.InsertItem(index, item);
+
+            if (_replacingDiff)
+            {
+                return;
+            }
+
+            _source?.Insert(index, item);
+        }
+
         protected override void RemoveItem(int index)
         {
             base.RemoveItem(index);
