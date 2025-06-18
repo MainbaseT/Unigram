@@ -219,6 +219,11 @@ namespace Telegram.ViewModels.Settings
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return nameof(FileTypeNotes);
+        }
     }
 
     public partial class FileTypeOther : FileType
@@ -227,6 +232,11 @@ namespace Telegram.ViewModels.Settings
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return nameof(FileTypeOther);
+        }
     }
 
     public partial class FileTypeTotal : FileType
@@ -234,6 +244,11 @@ namespace Telegram.ViewModels.Settings
         public NativeObject ToUnmanaged()
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return nameof(FileTypeTotal);
         }
     }
 
