@@ -386,11 +386,11 @@ namespace Telegram.Controls
                         });
                     }
 
-                    if (HasMaster)
+                    if (HasMaster && !NavigationService.IsNavigating)
                     {
-                        if (DetailFrame.CurrentSourcePageType == null)
+                        if (NavigationService.CurrentPageType == null)
                         {
-                            DetailFrame.Navigate(BlankPageType);
+                            NavigationService.Navigate(BlankPageType);
                         }
                         else
                         {
@@ -441,6 +441,11 @@ namespace Telegram.Controls
             if (!_templateApplied)
             {
                 return;
+            }
+
+            if (HasMaster && !NavigationService.CanGoBack)
+            {
+                NavigationService.InsertToBackStack(0, BlankPageType);
             }
 
             if (e.Content is HostedPage hosted)
