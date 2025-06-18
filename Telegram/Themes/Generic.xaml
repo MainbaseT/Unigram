@@ -422,7 +422,8 @@
                                 </Border>
                             </Grid>
 
-                            <ContentControl Content="{TemplateBinding Banner}"
+                            <ContentControl x:Name="BannerPresenter"
+                                            Content="{TemplateBinding Banner}"
                                             IsTabStop="False"
                                             TabIndex="3"
                                             HorizontalContentAlignment="Stretch"
