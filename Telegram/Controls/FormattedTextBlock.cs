@@ -548,7 +548,7 @@ namespace Telegram.Controls
                     direct.SetEnumProperty(paragraph, XamlPropertyIndex.Block_TextAlignment, (uint)alignment);
                 }
 
-                var direction = part.Direction switch
+                var direction = paragraph == null ? locale : part.Direction switch
                 {
                     TextDirectionality.LeftToRight => FlowDirection.LeftToRight,
                     TextDirectionality.RightToLeft => FlowDirection.RightToLeft,
