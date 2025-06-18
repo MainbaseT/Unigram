@@ -1446,193 +1446,157 @@ namespace Telegram.Controls.Cells
                 return Text(text + fallback);
             }
 
-            if (content is MessageGame gameMedia)
+            switch (content)
             {
-                return Text("\U0001F3AE " + gameMedia.Game.Title);
-            }
-            else if (content is MessageVideoNote videoNote)
-            {
-                if (videoNote.VideoNote.Minithumbnail == null || videoNote.IsSecret || forceEmoji /*|| message.SelfDestructType is not null*/)
-                {
-                    return Text("\U0001F4F9 " + Strings.AttachRound);
-                }
-
-                thumbnail = new MinithumbnailId(videoNote.VideoNote.Video.Id, videoNote.VideoNote.Minithumbnail, true);
-                return Text(Strings.AttachRound);
-            }
-            else if (content is MessageSticker sticker)
-            {
-                if (string.IsNullOrEmpty(sticker.Sticker.Emoji))
-                {
-                    return Text(Strings.AttachSticker);
-                }
-
-                return Text($"{sticker.Sticker.Emoji} {Strings.AttachSticker}");
-            }
-            else if (content is MessageVoiceNote voiceNote)
-            {
-                return Text1("\U0001F3A4 ", voiceNote.Caption, Strings.AttachAudio);
-            }
-            else if (content is MessageVideo video)
-            {
-                if ((video.Cover?.Minithumbnail == null && video.Video.Minithumbnail == null) || video.IsSecret || forceEmoji)
-                {
-                    return Text1("\U0001F4F9 ", video.Caption, Strings.AttachVideo);
-                }
-
-                if (video.Cover != null)
-                {
-                    thumbnail = new MinithumbnailId(video.Video.VideoValue.Id, video.Cover.Minithumbnail, false);
-                }
-                else
-                {
-                    thumbnail = new MinithumbnailId(video.Video.VideoValue.Id, video.Video.Minithumbnail, false);
-                }
-
-                return Text1(string.Empty, video.Caption, Strings.AttachVideo);
-            }
-            else if (content is MessageAnimation animation)
-            {
-                if (animation.Animation.Minithumbnail == null || animation.IsSecret || forceEmoji)
-                {
-                    return Text1("\U0001F47E ", animation.Caption, Strings.AttachGif);
-                }
-
-                thumbnail = new MinithumbnailId(animation.Animation.AnimationValue.Id, animation.Animation.Minithumbnail, false);
-                return Text1(string.Empty, animation.Caption, Strings.AttachGif);
-            }
-            else if (content is MessageAudio audio)
-            {
-                return Text1("\U0001F3B5 ", audio.Caption, audio.Audio.GetTitle());
-            }
-            else if (content is MessageDocument document)
-            {
-                if (string.IsNullOrEmpty(document.Document.FileName))
-                {
-                    return Text1("\U0001F4CE ", document.Caption, Strings.AttachDocument);
-                }
-
-                return Text1("\U0001F4CE ", document.Caption, document.Document.FileName);
-            }
-            else if (content is MessageInvoice invoice)
-            {
-                return Text1("\U0001F4CB ", invoice.PaidMediaCaption, invoice.ProductInfo.Title);
-            }
-            else if (content is MessageContact)
-            {
-                return Text("\U0001F464 " + Strings.AttachContact);
-            }
-            else if (content is MessageLocation location)
-            {
-                return Text("\U0001F4CD " + (location.LivePeriod > 0 ? Strings.AttachLiveLocation : Strings.AttachLocation));
-            }
-            else if (content is MessageVenue)
-            {
-                return Text("\U0001F4CD " + Strings.AttachLocation);
-            }
-            else if (content is MessagePhoto photo)
-            {
-                if (photo.Photo.Minithumbnail == null || photo.IsSecret || forceEmoji)
-                {
-                    return Text1("\U0001F5BC ", photo.Caption, Strings.AttachPhoto);
-                }
-
-                thumbnail = new MinithumbnailId(photo.Photo.Sizes[^1].Photo.Id, photo.Photo.Minithumbnail, false);
-                return Text1(string.Empty, photo.Caption, Strings.AttachPhoto);
-            }
-            else if (content is MessagePoll poll)
-            {
-                return Text1("\U0001F4CA ", poll.Poll.Question, Strings.Poll);
-            }
-            else if (content is MessageCall call)
-            {
-                return Text("\u260E " + call.ToOutcomeText(outgoing));
-            }
-            else if (content is MessageGroupCall groupCall)
-            {
-                return Text("\u260E " + groupCall.ToOutcomeText(outgoing));
-            }
-            else if (content is MessageStory story && !story.ViaMention)
-            {
-                return Text(Strings.Story);
-            }
-            else if (content is MessageUnsupported)
-            {
-                return Text(Strings.UnsupportedAttachment);
-            }
-            else if (content is MessageAnimatedEmoji animatedEmoji)
-            {
-                if (animatedEmoji.AnimatedEmoji?.Sticker?.FullType is StickerFullTypeCustomEmoji customEmoji)
-                {
-                    return new FormattedText(animatedEmoji.Emoji, new[]
+                case MessageGame gameMedia:
+                    return Text("\U0001F3AE " + gameMedia.Game.Title);
+                case MessageVideoNote videoNote:
+                    if (videoNote.VideoNote.Minithumbnail == null || videoNote.IsSecret || forceEmoji /*|| message.SelfDestructType is not null*/)
                     {
+                        return Text("\U0001F4F9 " + Strings.AttachRound);
+                    }
+
+                    thumbnail = new MinithumbnailId(videoNote.VideoNote.Video.Id, videoNote.VideoNote.Minithumbnail, true);
+                    return Text(Strings.AttachRound);
+                case MessageSticker sticker:
+                    if (string.IsNullOrEmpty(sticker.Sticker.Emoji))
+                    {
+                        return Text(Strings.AttachSticker);
+                    }
+
+                    return Text($"{sticker.Sticker.Emoji} {Strings.AttachSticker}");
+                case MessageVoiceNote voiceNote:
+                    return Text1("\U0001F3A4 ", voiceNote.Caption, Strings.AttachAudio);
+                case MessageVideo video:
+                    if (video.Cover?.Minithumbnail == null && video.Video.Minithumbnail == null || video.IsSecret || forceEmoji)
+                    {
+                        return Text1("\U0001F4F9 ", video.Caption, Strings.AttachVideo);
+                    }
+
+                    if (video.Cover != null)
+                    {
+                        thumbnail = new MinithumbnailId(video.Video.VideoValue.Id, video.Cover.Minithumbnail, false);
+                    }
+                    else
+                    {
+                        thumbnail = new MinithumbnailId(video.Video.VideoValue.Id, video.Video.Minithumbnail, false);
+                    }
+
+                    return Text1(string.Empty, video.Caption, Strings.AttachVideo);
+                case MessageAnimation animation:
+                    if (animation.Animation.Minithumbnail == null || animation.IsSecret || forceEmoji)
+                    {
+                        return Text1("\U0001F47E ", animation.Caption, Strings.AttachGif);
+                    }
+
+                    thumbnail = new MinithumbnailId(animation.Animation.AnimationValue.Id, animation.Animation.Minithumbnail, false);
+                    return Text1(string.Empty, animation.Caption, Strings.AttachGif);
+                case MessageAudio audio:
+                    return Text1("\U0001F3B5 ", audio.Caption, audio.Audio.GetTitle());
+                case MessageDocument document:
+                    if (string.IsNullOrEmpty(document.Document.FileName))
+                    {
+                        return Text1("\U0001F4CE ", document.Caption, Strings.AttachDocument);
+                    }
+
+                    return Text1("\U0001F4CE ", document.Caption, document.Document.FileName);
+                case MessageInvoice invoice:
+                    return Text1("\U0001F4CB ", invoice.PaidMediaCaption, invoice.ProductInfo.Title);
+                case MessageContact:
+                    return Text("\U0001F464 " + Strings.AttachContact);
+                case MessageLocation location:
+                    return Text("\U0001F4CD " + (location.LivePeriod > 0 ? Strings.AttachLiveLocation : Strings.AttachLocation));
+                case MessageVenue:
+                    return Text("\U0001F4CD " + Strings.AttachLocation);
+                case MessagePhoto photo:
+                    if (photo.Photo.Minithumbnail == null || photo.IsSecret || forceEmoji)
+                    {
+                        return Text1("\U0001F5BC ", photo.Caption, Strings.AttachPhoto);
+                    }
+
+                    thumbnail = new MinithumbnailId(photo.Photo.Sizes[^1].Photo.Id, photo.Photo.Minithumbnail, false);
+                    return Text1(string.Empty, photo.Caption, Strings.AttachPhoto);
+                case MessagePoll poll:
+                    return Text1("\U0001F4CA ", poll.Poll.Question, Strings.Poll);
+                case MessageCall call:
+                    return Text("\u260E " + call.ToOutcomeText(outgoing));
+                case MessageGroupCall groupCall:
+                    return Text("\u260E " + groupCall.ToOutcomeText(outgoing));
+                case MessageStory story when !story.ViaMention:
+                    return Text(Strings.Story);
+                case MessageUnsupported:
+                    return Text(Strings.UnsupportedAttachment);
+                case MessageAnimatedEmoji animatedEmoji:
+                    {
+                        if (animatedEmoji.AnimatedEmoji?.Sticker?.FullType is StickerFullTypeCustomEmoji customEmoji)
+                        {
+                            return new FormattedText(animatedEmoji.Emoji, new[]
+                            {
                         new TextEntity(0, animatedEmoji.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId))
                     });
-                }
-
-                return new FormattedText(animatedEmoji.Emoji, Array.Empty<TextEntity>());
-            }
-            else if (content is MessageGiveaway)
-            {
-                return Text(Strings.BoostingGiveaway);
-            }
-            else if (content is MessageGiveawayWinners)
-            {
-                return Text(Strings.BoostingGiveawayResults);
-            }
-            else if (content is MessagePaidMedia paidMedia)
-            {
-                if (paidMedia.Media.All(x => x.IsPhoto()))
-                {
-                    return Text1(Icons.Premium + "\u2004", paidMedia.Caption, paidMedia.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, paidMedia.Media.Count) : Strings.AttachPhoto);
-                }
-                else if (paidMedia.Media.All(x => x.IsVideo()))
-                {
-                    return Text1(Icons.Premium + "\u2004", paidMedia.Caption, paidMedia.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, paidMedia.Media.Count) : Strings.AttachVideo);
-                }
-
-                return Text1(Icons.Premium + "\u2004", paidMedia.Caption, Locale.Declension(Strings.R.Media, paidMedia.Media.Count));
-            }
-            else if (content is MessageAlbumLastMessage album)
-            {
-                if (album.Media.All(x => x.Content is MessagePhoto))
-                {
-                    if (album.Media[0].Content is MessagePhoto albumPhoto && albumPhoto.Photo.Minithumbnail != null)
-                    {
-                        thumbnail = new MinithumbnailId(albumPhoto.Photo.Sizes[^1].Photo.Id, albumPhoto.Photo.Minithumbnail, false);
-                        return Text1(string.Empty, album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, album.Media.Count) : Strings.AttachPhoto);
-                    }
-
-                    return Text1("\U0001F5BC ", album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, album.Media.Count) : Strings.AttachPhoto);
-                }
-                else if (album.Media.All(x => x.Content is MessageVideo))
-                {
-                    if (album.Media[0].Content is MessageVideo albumVideo && (albumVideo.Video.Minithumbnail != null || albumVideo.Cover.Minithumbnail != null))
-                    {
-                        if (albumVideo.Cover != null)
-                        {
-                            thumbnail = new MinithumbnailId(albumVideo.Video.VideoValue.Id, albumVideo.Cover.Minithumbnail, false);
-                        }
-                        else
-                        {
-                            thumbnail = new MinithumbnailId(albumVideo.Video.VideoValue.Id, albumVideo.Video.Minithumbnail, false);
                         }
 
-                        return Text1(string.Empty, album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, album.Media.Count) : Strings.AttachVideo);
+                        return new FormattedText(animatedEmoji.Emoji, Array.Empty<TextEntity>());
                     }
 
-                    return Text1("\U0001F4F9 ", album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, album.Media.Count) : Strings.AttachVideo);
-                }
+                case MessageGiveaway:
+                    return Text(Strings.BoostingGiveaway);
+                case MessageGiveawayWinners:
+                    return Text(Strings.BoostingGiveawayResults);
+                case MessagePaidMedia paidMedia:
+                    {
+                        if (paidMedia.Media.All(x => x.IsPhoto()))
+                        {
+                            return Text1(Icons.Premium + "\u2004", paidMedia.Caption, paidMedia.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, paidMedia.Media.Count) : Strings.AttachPhoto);
+                        }
+                        else if (paidMedia.Media.All(x => x.IsVideo()))
+                        {
+                            return Text1(Icons.Premium + "\u2004", paidMedia.Caption, paidMedia.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, paidMedia.Media.Count) : Strings.AttachVideo);
+                        }
 
-                return Text1("\U0001F5BC ", album.Caption, Locale.Declension(Strings.R.Media, album.Media.Count));
+                        return Text1(Icons.Premium + "\u2004", paidMedia.Caption, Locale.Declension(Strings.R.Media, paidMedia.Media.Count));
+                    }
+
+                case MessageAlbumLastMessage album:
+                    {
+                        if (album.Media.All(x => x.Content is MessagePhoto))
+                        {
+                            if (album.Media[0].Content is MessagePhoto albumPhoto && albumPhoto.Photo.Minithumbnail != null)
+                            {
+                                thumbnail = new MinithumbnailId(albumPhoto.Photo.Sizes[^1].Photo.Id, albumPhoto.Photo.Minithumbnail, false);
+                                return Text1(string.Empty, album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, album.Media.Count) : Strings.AttachPhoto);
+                            }
+
+                            return Text1("\U0001F5BC ", album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, album.Media.Count) : Strings.AttachPhoto);
+                        }
+                        else if (album.Media.All(x => x.Content is MessageVideo))
+                        {
+                            if (album.Media[0].Content is MessageVideo albumVideo && (albumVideo.Video.Minithumbnail != null || albumVideo.Cover.Minithumbnail != null))
+                            {
+                                if (albumVideo.Cover != null)
+                                {
+                                    thumbnail = new MinithumbnailId(albumVideo.Video.VideoValue.Id, albumVideo.Cover.Minithumbnail, false);
+                                }
+                                else
+                                {
+                                    thumbnail = new MinithumbnailId(albumVideo.Video.VideoValue.Id, albumVideo.Video.Minithumbnail, false);
+                                }
+
+                                return Text1(string.Empty, album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, album.Media.Count) : Strings.AttachVideo);
+                            }
+
+                            return Text1("\U0001F4F9 ", album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, album.Media.Count) : Strings.AttachVideo);
+                        }
+
+                        return Text1("\U0001F5BC ", album.Caption, Locale.Declension(Strings.R.Media, album.Media.Count));
+                    }
+                case MessageText text:
+                    return text.Text;
+                case MessageDice dice:
+                    return dice.Emoji.AsFormattedText();
+                default:
+                    return string.Empty.AsFormattedText();
             }
-
-            return content switch
-            {
-                MessageText text => text.Text,
-                MessageDice dice => new FormattedText(dice.Emoji, Array.Empty<TextEntity>()),
-                _ => new FormattedText(string.Empty, Array.Empty<TextEntity>()),
-            };
         }
 
         private string UpdateFromLabel(Chat chat, ChatPosition position, out bool draft)
