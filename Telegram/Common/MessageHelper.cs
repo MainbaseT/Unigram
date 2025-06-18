@@ -929,7 +929,7 @@ namespace Telegram.Common
             var response = await clientService.SendAsync(new SearchBackground(slug));
             if (response is Background background)
             {
-                await navigation.ShowPopupAsync(new BackgroundPopup(), new BackgroundParameters(background));
+                navigation.ShowPopup(new BackgroundPopup(), new BackgroundParameters(background));
             }
         }
 
@@ -946,6 +946,10 @@ namespace Telegram.Common
                         if (thread is MessageThreadInfo)
                         {
                             navigation.NavigateToChat(chat, info.Message.Id, topic: new MessageTopicForum(info.MessageThreadId));
+                        }
+                        else
+                        {
+                            navigation.ShowPopup(Strings.LinkNotFound, Strings.AppName, Strings.OK);
                         }
                     }
                     else
@@ -964,13 +968,13 @@ namespace Telegram.Common
             }
             else
             {
-                await navigation.ShowPopupAsync(Strings.LinkNotFound, Strings.AppName, Strings.OK);
+                navigation.ShowPopup(Strings.LinkNotFound, Strings.AppName, Strings.OK);
             }
         }
 
-        private static async void NavigateToTheme(IClientService clientService, INavigationService navigation, string slug)
+        private static void NavigateToTheme(IClientService clientService, INavigationService navigation, string slug)
         {
-            await navigation.ShowPopupAsync(Strings.ThemeNotSupported, Strings.Theme, Strings.OK);
+            navigation.ShowPopup(Strings.ThemeNotSupported, Strings.Theme, Strings.OK);
         }
 
         private static void NavigateToInvoice(INavigationService navigation, string invoiceName)
@@ -995,7 +999,7 @@ namespace Telegram.Common
                 }
                 else if (info.TotalStringCount == 0)
                 {
-                    await navigation.ShowPopupAsync(string.Format(Strings.LanguageUnknownCustomAlert, info.Name), Strings.LanguageUnknownTitle, Strings.OK);
+                    navigation.ShowPopup(string.Format(Strings.LanguageUnknownCustomAlert, info.Name), Strings.LanguageUnknownTitle, Strings.OK);
                 }
                 else
                 {
@@ -1067,31 +1071,31 @@ namespace Telegram.Common
                 {
                     if (error.MessageEquals(ErrorType.PHONE_NUMBER_INVALID))
                     {
-                        await navigation.ShowPopupAsync(error.Message, Strings.InvalidPhoneNumber, Strings.OK);
+                        navigation.ShowPopup(error.Message, Strings.InvalidPhoneNumber, Strings.OK);
                     }
                     else if (error.MessageEquals(ErrorType.PHONE_CODE_EMPTY) || error.MessageEquals(ErrorType.PHONE_CODE_INVALID))
                     {
-                        await navigation.ShowPopupAsync(error.Message, Strings.InvalidCode, Strings.OK);
+                        navigation.ShowPopup(error.Message, Strings.InvalidCode, Strings.OK);
                     }
                     else if (error.MessageEquals(ErrorType.PHONE_CODE_EXPIRED))
                     {
-                        await navigation.ShowPopupAsync(error.Message, Strings.CodeExpired, Strings.OK);
+                        navigation.ShowPopup(error.Message, Strings.CodeExpired, Strings.OK);
                     }
                     else if (error.MessageEquals(ErrorType.FIRSTNAME_INVALID))
                     {
-                        await navigation.ShowPopupAsync(error.Message, Strings.InvalidFirstName, Strings.OK);
+                        navigation.ShowPopup(error.Message, Strings.InvalidFirstName, Strings.OK);
                     }
                     else if (error.MessageEquals(ErrorType.LASTNAME_INVALID))
                     {
-                        await navigation.ShowPopupAsync(error.Message, Strings.InvalidLastName, Strings.OK);
+                        navigation.ShowPopup(error.Message, Strings.InvalidLastName, Strings.OK);
                     }
                     else if (error.Message.StartsWith("FLOOD_WAIT"))
                     {
-                        await navigation.ShowPopupAsync(Strings.FloodWait, Strings.AppName, Strings.OK);
+                        navigation.ShowPopup(Strings.FloodWait, Strings.AppName, Strings.OK);
                     }
                     else if (error.Code != -1000)
                     {
-                        await navigation.ShowPopupAsync(error.Message, Strings.AppName, Strings.OK);
+                        navigation.ShowPopup(error.Message, Strings.AppName, Strings.OK);
                     }
 
                     Logger.Error("account.signIn error " + error);
@@ -1104,7 +1108,7 @@ namespace Telegram.Common
                     phoneCode = phoneCode.Substring(0, 3) + "-" + phoneCode.Substring(3);
                 }
 
-                await navigation.ShowPopupAsync(string.Format(Strings.OtherLoginCode, phoneCode), Strings.AppName, Strings.OK);
+                navigation.ShowPopup(string.Format(Strings.OtherLoginCode, phoneCode), Strings.AppName, Strings.OK);
             }
         }
 
@@ -1143,7 +1147,7 @@ namespace Telegram.Common
             }
         }
 
-        public static async void NavigateToConfirmPhone(IClientService clientService, string phone, string hash)
+        public static void NavigateToConfirmPhone(IClientService clientService, string phone, string hash)
         {
             //var response = await clientService.SendConfirmPhoneCodeAsync(hash, false);
             //if (response.IsSucceeded)
@@ -1229,7 +1233,7 @@ namespace Telegram.Common
             {
                 if (group)
                 {
-                    await navigation.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationStartBot(user, startParameter));
+                    navigation.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationStartBot(user, startParameter));
                 }
                 else if (autoStart)
                 {
@@ -1336,7 +1340,7 @@ namespace Telegram.Common
                     {
                         if (error.MessageEquals(ErrorType.INVITE_REQUEST_SENT))
                         {
-                            await navigation.ShowPopupAsync(info.Type is InviteLinkChatTypeChannel ? Strings.RequestToJoinChannelSentDescription : Strings.RequestToJoinGroupSentDescription, Strings.RequestToJoinSent, Strings.OK);
+                            navigation.ShowPopup(info.Type is InviteLinkChatTypeChannel ? Strings.RequestToJoinChannelSentDescription : Strings.RequestToJoinGroupSentDescription, Strings.RequestToJoinSent, Strings.OK);
                             return;
 
                             var message = Strings.RequestToJoinSent + Environment.NewLine + (info.Type is InviteLinkChatTypeChannel ? Strings.RequestToJoinChannelSentDescription : Strings.RequestToJoinGroupSentDescription);
@@ -1348,15 +1352,15 @@ namespace Telegram.Common
                         }
                         else if (error.MessageEquals(ErrorType.FLOOD_WAIT))
                         {
-                            await navigation.ShowPopupAsync(Strings.FloodWait, Strings.AppName, Strings.OK);
+                            navigation.ShowPopup(Strings.FloodWait, Strings.AppName, Strings.OK);
                         }
                         else if (error.MessageEquals(ErrorType.USERS_TOO_MUCH))
                         {
-                            await navigation.ShowPopupAsync(Strings.JoinToGroupErrorFull, Strings.AppName, Strings.OK);
+                            navigation.ShowPopup(Strings.JoinToGroupErrorFull, Strings.AppName, Strings.OK);
                         }
                         else
                         {
-                            await navigation.ShowPopupAsync(Strings.JoinToGroupErrorNotExist, Strings.AppName, Strings.OK);
+                            navigation.ShowPopup(Strings.JoinToGroupErrorNotExist, Strings.AppName, Strings.OK);
                         }
                     }
                 }
@@ -1365,11 +1369,11 @@ namespace Telegram.Common
             {
                 if (error.MessageEquals(ErrorType.FLOOD_WAIT))
                 {
-                    await navigation.ShowPopupAsync(Strings.FloodWait, Strings.AppName, Strings.OK);
+                    navigation.ShowPopup(Strings.FloodWait, Strings.AppName, Strings.OK);
                 }
                 else
                 {
-                    await navigation.ShowPopupAsync(Strings.JoinToGroupErrorNotExist, Strings.AppName, Strings.OK);
+                    navigation.ShowPopup(Strings.JoinToGroupErrorNotExist, Strings.AppName, Strings.OK);
                 }
             }
         }
@@ -1406,7 +1410,7 @@ namespace Telegram.Common
                                 }
                                 else
                                 {
-                                    await navigation.ShowPopupAsync(Strings.FolderLinkExpiredAlert, Strings.AppName, Strings.OK);
+                                    navigation.ShowPopup(Strings.FolderLinkExpiredAlert, Strings.AppName, Strings.OK);
                                 }
                             }
                         }
@@ -1419,7 +1423,7 @@ namespace Telegram.Common
             }
             else if (response is Error error)
             {
-                await navigation.ShowPopupAsync(Strings.FolderLinkExpiredAlert, Strings.AppName, Strings.OK);
+                navigation.ShowPopup(Strings.FolderLinkExpiredAlert, Strings.AppName, Strings.OK);
             }
         }
 
