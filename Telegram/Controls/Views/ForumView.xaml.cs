@@ -22,7 +22,6 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using VirtualKey = Windows.System.VirtualKey;
 
 namespace Telegram.Controls.Views
 {

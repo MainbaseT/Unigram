@@ -17,7 +17,6 @@ using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Storage;
-using TimeZone = Telegram.Td.Api.TimeZone;
 
 namespace Telegram.Services
 {
@@ -28,14 +27,14 @@ namespace Telegram.Services
 
         //void Send(Function function);
         //void Send(Function function, ClientResultHandler handler);
-        void Send(Function function, Action<BaseObject> handler = null);
-        Task<BaseObject> SendAsync(Function function);
-        Task<BaseObject> SendPaymentAsync(long starCount, Function function);
+        void Send(Function function, Action<Object> handler = null);
+        Task<Object> SendAsync(Function function);
+        Task<Object> SendPaymentAsync(long starCount, Function function);
 
-        void GetReplyTo(MessageViewModel message, Action<BaseObject> handler);
-        void GetStory(long storyPosterChatId, int storyId, Action<BaseObject> handler);
+        void GetReplyTo(MessageViewModel message, Action<Object> handler);
+        void GetStory(long storyPosterChatId, int storyId, Action<Object> handler);
 
-        Task<BaseObject> CheckChatInviteLinkAsync(string inviteLink);
+        Task<Object> CheckChatInviteLinkAsync(string inviteLink);
 
         Task<File> GetFileAsync(int fileId);
         Task<StorageFile> GetFileAsync(File file, bool completed = true);
@@ -54,7 +53,7 @@ namespace Telegram.Services
 
         void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
 
-        Task<BaseObject> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, StarTransactionDirection direction, string offset, int limit);
+        Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, StarTransactionDirection direction, string offset, int limit);
 
         Sticker NextGreetingSticker();
 
@@ -160,8 +159,8 @@ namespace Telegram.Services
         bool CanPostMessages(Chat chat);
         bool CanInviteUsers(Chat chat);
 
-        BaseObject GetMessageSender(MessageSender sender);
-        bool TryGetMessageSender(MessageSender sender, out BaseObject value);
+        Object GetMessageSender(MessageSender sender);
+        bool TryGetMessageSender(MessageSender sender, out Object value);
 
         bool TryGetChat(long chatId, out Chat chat);
         bool TryGetChat(MessageSender sender, out Chat value);
@@ -273,7 +272,7 @@ namespace Telegram.Services
 
         private readonly ConcurrentDictionary<long, MessageEffect> _effects = new();
 
-        private readonly Action<BaseObject> _processFilesDelegate;
+        private readonly Action<Object> _processFilesDelegate;
 
         private readonly Dictionary<long, Chat> _chats = new();
         private readonly ConcurrentDictionary<long, ConcurrentDictionary<MessageSender, ChatAction>> _chatActions = new();
@@ -362,7 +361,7 @@ namespace Telegram.Services
             _options = new OptionsService(this);
             _aggregator = aggregator;
 
-            _processFilesDelegate = new Action<BaseObject>(ProcessFiles);
+            _processFilesDelegate = new Action<Object>(ProcessFiles);
 
             Initialize(online);
         }
@@ -640,7 +639,7 @@ namespace Telegram.Services
             });
         }
 
-        private void UpdateConfig(BaseObject value)
+        private void UpdateConfig(Object value)
         {
             if (value is JsonValueObject obj)
             {
@@ -877,7 +876,7 @@ namespace Telegram.Services
 
 
 
-        public void Send(Function function, Action<BaseObject> handler = null)
+        public void Send(Function function, Action<Object> handler = null)
         {
             if (handler != null)
             {
@@ -889,12 +888,12 @@ namespace Telegram.Services
             }
         }
 
-        public Task<BaseObject> SendAsync(Function function)
+        public Task<Object> SendAsync(Function function)
         {
             return _client.SendAsync(function, _processFilesDelegate);
         }
 
-        public async Task<BaseObject> SendPaymentAsync(long starCount, Function function)
+        public async Task<Object> SendPaymentAsync(long starCount, Function function)
         {
             if (OwnedStarCount.StarCount < starCount)
             {
@@ -910,7 +909,7 @@ namespace Telegram.Services
 
 
 
-        public void GetReplyTo(MessageViewModel message, Action<BaseObject> handler)
+        public void GetReplyTo(MessageViewModel message, Action<Object> handler)
         {
             if (message.ReplyTo is MessageReplyToMessage replyToMessage ||
                 message.Content is MessagePinMessage ||
@@ -925,7 +924,7 @@ namespace Telegram.Services
             }
         }
 
-        public void GetStory(long storyPosterChatId, int storyId, Action<BaseObject> handler)
+        public void GetStory(long storyPosterChatId, int storyId, Action<Object> handler)
         {
             Send(new GetStory(storyPosterChatId, storyId, true), result =>
             {
@@ -944,7 +943,7 @@ namespace Telegram.Services
 
         private readonly Dictionary<long, DateTime> _chatAccessibleUntil = new();
 
-        public async Task<BaseObject> CheckChatInviteLinkAsync(string inviteLink)
+        public async Task<Object> CheckChatInviteLinkAsync(string inviteLink)
         {
             var response = await SendAsync(new CheckChatInviteLink(inviteLink));
             if (response is ChatInviteLinkInfo info)
@@ -981,7 +980,7 @@ namespace Telegram.Services
         }
 
 
-        public async Task<BaseObject> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, StarTransactionDirection direction, string offset, int limit)
+        public async Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, StarTransactionDirection direction, string offset, int limit)
         {
             var response = await SendAsync(new GetStarTransactions(ownerId, subscriptionId, direction, offset, limit));
             if (response is StarTransactions transactions)
@@ -1720,7 +1719,7 @@ namespace Telegram.Services
             return true;
         }
 
-        public BaseObject GetMessageSender(MessageSender sender)
+        public Object GetMessageSender(MessageSender sender)
         {
             if (sender is MessageSenderUser user)
             {
@@ -1734,7 +1733,7 @@ namespace Telegram.Services
             return null;
         }
 
-        public bool TryGetMessageSender(MessageSender sender, out BaseObject value)
+        public bool TryGetMessageSender(MessageSender sender, out Object value)
         {
             if (sender is MessageSenderUser user && TryGetUser(user.UserId, out User resultUser))
             {

@@ -46,7 +46,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using Point = Windows.Foundation.Point;
 
 namespace Telegram.Views
 {

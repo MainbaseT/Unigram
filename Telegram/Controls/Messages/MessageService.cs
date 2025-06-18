@@ -1800,14 +1800,14 @@ namespace Telegram.Controls.Messages
             {
                 return ReplaceWithLink(Strings.ActionGiftOutbound, "un2", gift);
             }
-            else if (message.ClientService.TryGetMessageSender(gift.SenderId, out BaseObject sender))
+            else if (message.ClientService.TryGetMessageSender(gift.SenderId, out Object sender))
             {
                 if (gift.ReceiverId.IsUser(message.ClientService.Options.MyId))
                 {
                     return ReplaceWithLink(Strings.ActionGiftInbound, sender, gift);
 
                 }
-                else if (message.ClientService.TryGetMessageSender(gift.ReceiverId, out BaseObject outboundUser))
+                else if (message.ClientService.TryGetMessageSender(gift.ReceiverId, out Object outboundUser))
                 {
                     return ReplaceWithLink(Locale.Declension(Strings.R.ActionGiftChannel, gift.Gift.StarCount + gift.PrepaidUpgradeStarCount), sender, outboundUser);
                 }
@@ -2321,7 +2321,7 @@ namespace Telegram.Controls.Messages
             {
                 if (upgradedGift.ReceiverId.IsUser(message.ClientService.Options.MyId))
                 {
-                    if (message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out BaseObject outboundUser))
+                    if (message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out Object outboundUser))
                     {
                         return ReplaceWithLink(Strings.ActionUniqueGiftUpgradeOutbound, outboundUser);
                     }
@@ -2330,14 +2330,14 @@ namespace Telegram.Controls.Messages
                         return Strings.ActionUniqueGiftUpgradeSelf.AsFormattedText();
                     }
                 }
-                else if (message.ClientService.TryGetMessageSender(upgradedGift.ReceiverId, out BaseObject inboundUser))
+                else if (message.ClientService.TryGetMessageSender(upgradedGift.ReceiverId, out Object inboundUser))
                 {
                     return ReplaceWithLink(Strings.ActionUniqueGiftUpgradeInbound, inboundUser);
                 }
             }
             else if (upgradedGift.ReceiverId.IsUser(message.ClientService.Options.MyId))
             {
-                if (message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out BaseObject inboundUser))
+                if (message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out Object inboundUser))
                 {
                     return ReplaceWithLink(Strings.ActionUniqueGiftTransferInbound, inboundUser);
                 }
@@ -2346,8 +2346,8 @@ namespace Telegram.Controls.Messages
             {
                 return ReplaceWithLink(Strings.ActionUniqueGiftTransferOutbound, message.ClientService.GetMessageSender(upgradedGift.ReceiverId));
             }
-            else if (message.ClientService.TryGetMessageSender(upgradedGift.ReceiverId, out BaseObject outboundUser)
-                && message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out BaseObject inboundUser))
+            else if (message.ClientService.TryGetMessageSender(upgradedGift.ReceiverId, out Object outboundUser)
+                && message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out Object inboundUser))
             {
                 return ReplaceWithLink(Strings.ActionUniqueGiftTransferService, inboundUser, outboundUser);
             }

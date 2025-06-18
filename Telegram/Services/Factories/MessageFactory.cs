@@ -16,7 +16,7 @@ namespace Telegram.Services.Factories
 {
     public static class MessageFactory
     {
-        public static async Task<BaseObject> CreatePhotoAsync(StoragePhoto photo, FormattedText caption, bool highQuality, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount)
+        public static async Task<Object> CreatePhotoAsync(StoragePhoto photo, FormattedText caption, bool highQuality, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount)
         {
             var conversionType = ConversionType.Compress;
             var file = photo.File;
@@ -51,7 +51,7 @@ namespace Telegram.Services.Factories
             return new InputMessagePhoto(generated, thumbnail, Array.Empty<int>(), size.Width, size.Height, caption, captionAboveMedia, ttl, spoiler);
         }
 
-        public static async Task<BaseObject> CreateVideoAsync(StorageVideo video, FormattedText caption, bool animated, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount)
+        public static async Task<Object> CreateVideoAsync(StorageVideo video, FormattedText caption, bool animated, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount)
         {
             var duration = video.TotalSeconds;
             var videoWidth = video.Width;
@@ -104,7 +104,7 @@ namespace Telegram.Services.Factories
             return new InputMessageVideoNote(generated, thumbnail, duration, (int)generation.Width, null);
         }
 
-        public static async Task<BaseObject> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool forceDocument)
+        public static async Task<Object> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool forceDocument)
         {
             var file = media.File;
             var generated = await file.ToGeneratedAsync(media.IsScreenshot ? ConversionType.Screenshot : ConversionType.Copy);

@@ -642,7 +642,7 @@ namespace Telegram.ViewModels
             WatchDog.TrackEvent("SendContact");
         }
 
-        public Task<BaseObject> SendContactAsync(Contact contact, MessageSendOptions options)
+        public Task<Object> SendContactAsync(Contact contact, MessageSendOptions options)
         {
             var reply = GetReply(true);
             var input = new InputMessageContact(contact);
@@ -650,7 +650,7 @@ namespace Telegram.ViewModels
             return SendMessageAsync(reply, input, options);
         }
 
-        public async Task<BaseObject> SendContentAsync(InputMessageContent input)
+        public async Task<Object> SendContentAsync(InputMessageContent input)
         {
             var reply = GetReply(true);
 
@@ -683,7 +683,7 @@ namespace Telegram.ViewModels
 
         public abstract Task<MessageSendOptions> PickMessageSendOptionsAsync(int messageCount = 1, SchedulingState schedulingState = SchedulingState.None, bool? disableNotification = null, bool reorder = false);
 
-        protected async Task<BaseObject> SendMessageAsync(InputMessageReplyTo replyTo, InputMessageContent inputMessageContent, MessageSendOptions options)
+        protected async Task<Object> SendMessageAsync(InputMessageReplyTo replyTo, InputMessageContent inputMessageContent, MessageSendOptions options)
         {
             if (Chat is not Chat chat)
             {
@@ -792,7 +792,7 @@ namespace Telegram.ViewModels
             await SendMessageAsync(reply, input, options);
         }
 
-        private async Task<BaseObject> SendGroupedAsync(IList<StorageMedia> items, InputMessageReplyTo reply, FormattedText caption, MessageSendOptions options, bool forceDocuments, bool captionAboveMedia, bool hasSpoiler, bool highQuality, long starCount = 0)
+        private async Task<Object> SendGroupedAsync(IList<StorageMedia> items, InputMessageReplyTo reply, FormattedText caption, MessageSendOptions options, bool forceDocuments, bool captionAboveMedia, bool hasSpoiler, bool highQuality, long starCount = 0)
         {
             if (Chat is not Chat chat)
             {
@@ -882,12 +882,12 @@ namespace Telegram.ViewModels
 
         public HashSet<long> InsertedCustomEmojiIds = new();
 
-        public Task<BaseObject> SendMessageAsync(FormattedText formattedText, LinkPreviewOptions linkPreview = null, MessageSendOptions options = null, InputMessageReplyTo reply = null)
+        public Task<Object> SendMessageAsync(FormattedText formattedText, LinkPreviewOptions linkPreview = null, MessageSendOptions options = null, InputMessageReplyTo reply = null)
         {
             return SendMessageAsync(formattedText?.Text, formattedText?.Entities, linkPreview, options, reply);
         }
 
-        public async Task<BaseObject> SendMessageAsync(string text, IList<TextEntity> entities = null, LinkPreviewOptions linkPreview = null, MessageSendOptions options = null, InputMessageReplyTo reply = null)
+        public async Task<Object> SendMessageAsync(string text, IList<TextEntity> entities = null, LinkPreviewOptions linkPreview = null, MessageSendOptions options = null, InputMessageReplyTo reply = null)
         {
             text ??= string.Empty;
             text = text.Replace('\v', '\n').Replace('\r', '\n');
@@ -926,7 +926,7 @@ namespace Telegram.ViewModels
 
             reply ??= GetReply(options.OnlyPreview == false, options.SchedulingState != null);
 
-            BaseObject response = null;
+            Object response = null;
 
             if (ClientService.IsDiceEmoji(text, out string dice))
             {

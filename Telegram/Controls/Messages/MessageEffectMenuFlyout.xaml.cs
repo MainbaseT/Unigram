@@ -23,7 +23,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
-using Point = Windows.Foundation.Point;
 
 namespace Telegram.Controls.Messages
 {

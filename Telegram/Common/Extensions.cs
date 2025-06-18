@@ -51,7 +51,6 @@ using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using Point = Windows.Foundation.Point;
 
 namespace Telegram.Common
 {

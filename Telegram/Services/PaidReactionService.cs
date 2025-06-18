@@ -36,7 +36,7 @@ namespace Telegram.Services
         [ThreadStatic]
         private static PaidReactionService _toast;
 
-        public static Task<BaseObject> AddPendingAsync(XamlRoot xamlRoot, MessageViewModel message, int starCount, PaidReactionType type)
+        public static Task<Object> AddPendingAsync(XamlRoot xamlRoot, MessageViewModel message, int starCount, PaidReactionType type)
         {
             if (_toast == null || !_toast.IsValid || !_toast.Equals(message))
             {
@@ -62,7 +62,7 @@ namespace Telegram.Services
             _messageId = message.Id;
         }
 
-        private async Task<BaseObject> AddPendingImpl(XamlRoot xamlRoot, MessageViewModel message, int starCount, PaidReactionType type)
+        private async Task<Object> AddPendingImpl(XamlRoot xamlRoot, MessageViewModel message, int starCount, PaidReactionType type)
         {
             if (message.ClientService.OwnedStarCount.StarCount < _pendingCount + starCount)
             {

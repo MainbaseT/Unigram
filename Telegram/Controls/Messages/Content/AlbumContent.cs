@@ -12,7 +12,6 @@ using Telegram.ViewModels;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Point = Windows.Foundation.Point;
 
 namespace Telegram.Controls.Messages.Content
 {

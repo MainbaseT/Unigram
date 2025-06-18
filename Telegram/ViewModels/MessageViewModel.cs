@@ -465,7 +465,7 @@ namespace Telegram.ViewModels
             AutoDeleteIn = message.AutoDeleteIn;
         }
 
-        public BaseObject GetSender()
+        public Object GetSender()
         {
             if (SenderId is MessageSenderUser user)
             {

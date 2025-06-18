@@ -565,7 +565,7 @@ namespace Telegram.ViewModels.Settings
             }
         }
 
-        public Task<BaseObject> SendAsync()
+        public Task<Object> SendAsync()
         {
             var rules = new List<UserPrivacySettingRule>();
 

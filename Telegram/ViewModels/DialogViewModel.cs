@@ -34,7 +34,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using Point = Windows.Foundation.Point;
 
 namespace Telegram.ViewModels
 {
@@ -830,7 +829,7 @@ namespace Telegram.ViewModels
                 }
 
                 var tsc = new TaskCompletionSource<MessageCollection>();
-                async void handler(BaseObject result)
+                async void handler(Object result)
                 {
                     if (result is FoundChatMessages foundChatMessages)
                     {
@@ -1367,7 +1366,7 @@ namespace Telegram.ViewModels
 
         private async Task<LoadSliceResult> LoadMessageSliceImpl(Chat chat, long maxId, VerticalAlignment alignment, ScrollIntoViewAlignment? direction, double? pixel)
         {
-            Task<BaseObject> func;
+            Task<Object> func;
             if (Type == DialogType.Pinned)
             {
                 func = ClientService.SendAsync(new SearchChatMessages(chat.Id, Topic, string.Empty, null, maxId, -25, 50, new SearchMessagesFilterPinned()));
@@ -1402,7 +1401,7 @@ namespace Telegram.ViewModels
             }
             else
             {
-                async Task<BaseObject> GetChatHistoryAsync(long chatId, long fromMessageId, int offset, int limit, bool onlyLocal)
+                async Task<Object> GetChatHistoryAsync(long chatId, long fromMessageId, int offset, int limit, bool onlyLocal)
                 {
                     var response = await ClientService.SendAsync(new GetChatHistory(chatId, fromMessageId, offset, limit, onlyLocal));
                     if (response is Messages messages && onlyLocal)

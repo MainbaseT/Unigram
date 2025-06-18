@@ -32,7 +32,6 @@ using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Point = Windows.Foundation.Point;
 
 namespace Telegram.Controls.Messages
 {
@@ -763,7 +762,7 @@ namespace Telegram.Controls.Messages
             }
             else
             {
-                BaseObject added;
+                Object added;
                 if (reaction is ReactionTypePaid)
                 {
                     var popup = new ReactPopup(_message.ClientService, _message);

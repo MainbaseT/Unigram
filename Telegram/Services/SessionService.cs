@@ -32,7 +32,7 @@ namespace Telegram.Services
         ISettingsService Settings { get; }
         IEventAggregator Aggregator { get; }
 
-        Task<BaseObject> SetAuthenticationPhoneNumberAsync(SetAuthenticationPhoneNumber function);
+        Task<Object> SetAuthenticationPhoneNumberAsync(SetAuthenticationPhoneNumber function);
     }
 
     public partial class SessionService : ViewModelBase, ISessionService
@@ -157,14 +157,14 @@ namespace Telegram.Services
         private bool _loggingOut;
         private bool _continueOnLogOut;
         private SetAuthenticationPhoneNumber _continueOnLogOutAction;
-        private TaskCompletionSource<BaseObject> _continueResult;
+        private TaskCompletionSource<Object> _continueResult;
 
-        public Task<BaseObject> SetAuthenticationPhoneNumberAsync(SetAuthenticationPhoneNumber function)
+        public Task<Object> SetAuthenticationPhoneNumberAsync(SetAuthenticationPhoneNumber function)
         {
             _loggingOut = false;
             _continueOnLogOut = true;
             _continueOnLogOutAction = function;
-            _continueResult = new TaskCompletionSource<BaseObject>();
+            _continueResult = new TaskCompletionSource<Object>();
 
             ClientService.Send(new LogOut());
 

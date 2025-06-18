@@ -425,7 +425,7 @@ namespace Telegram.ViewModels
             var hasSpoiler = popup.SendWithSpoiler && !popup.IsFilesSelected;
             var highQuality = popup.SendHighQuality && !popup.IsFilesSelected;
 
-            Task<BaseObject> request = null;
+            Task<Object> request = null;
             if (popup.IsFilesSelected)
             {
                 request = MessageFactory.CreateDocumentAsync(storage, popup.Caption, false);

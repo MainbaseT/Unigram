@@ -120,7 +120,7 @@ namespace Telegram.ViewModels
             var func = new SearchChatMessages(chat.Id, messageTopic, string.Empty, null, maxId, offset, limit, filter);
 
             var tsc = new TaskCompletionSource<List<PinnedMessageViewModel>>();
-            async void handler(BaseObject result)
+            async void handler(Object result)
             {
                 if (result is FoundChatMessages foundChatMessages && foundChatMessages.Messages.Count > 0)
                 {

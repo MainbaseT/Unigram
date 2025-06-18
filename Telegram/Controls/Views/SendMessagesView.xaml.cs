@@ -164,7 +164,7 @@ namespace Telegram.Controls.Views
             }
         }
 
-        private void Track(BaseObject result)
+        private void Track(Object result)
         {
             if (result is Message message)
             {

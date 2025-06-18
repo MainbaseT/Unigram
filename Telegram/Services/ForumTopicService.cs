@@ -256,9 +256,9 @@ namespace Telegram.Services
         private long _nextOffsetMessageId;
         private long _nextOffsetMessageThreadId;
 
-        private Task<BaseObject> LoadForumTopicsAsync(int count)
+        private Task<Object> LoadForumTopicsAsync(int count)
         {
-            var tsc = new TaskCompletionSource<BaseObject>();
+            var tsc = new TaskCompletionSource<Object>();
             var request = new GetForumTopics(_chatId, string.Empty, _nextOffsetDate, _nextOffsetMessageId, _nextOffsetMessageThreadId, count);
 
             _clientService.Send(request, response =>
@@ -409,7 +409,7 @@ namespace Telegram.Services
             }
         }
 
-        private void UpdateNewTopic(BaseObject response)
+        private void UpdateNewTopic(Object response)
         {
             ForumTopic topic;
             ForumTopic newTopic = response as ForumTopic;

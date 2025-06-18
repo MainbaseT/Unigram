@@ -11,9 +11,9 @@ namespace Telegram.Td
 {
     partial class TdHandler : ClientResultHandler
     {
-        private readonly Action<BaseObject> _callback;
+        private readonly Action<Object> _callback;
 
-        public TdHandler(Action<BaseObject> callback)
+        public TdHandler(Action<Object> callback)
         {
             _callback = callback;
         }
@@ -22,7 +22,7 @@ namespace Telegram.Td
         {
             try
             {
-                _callback(result);
+                _callback(result as Object);
             }
             catch
             {

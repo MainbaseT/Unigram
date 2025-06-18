@@ -847,7 +847,7 @@ namespace Telegram.ViewModels
             return new MessageChatEvent(item);
         }
 
-        private string GetUserName(BaseObject sender, List<TextEntity> entities, int offset)
+        private string GetUserName(Object sender, List<TextEntity> entities, int offset)
         {
             if (sender is User user)
             {

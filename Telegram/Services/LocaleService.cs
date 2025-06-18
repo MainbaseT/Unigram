@@ -23,7 +23,7 @@ namespace Telegram.Services
 {
     public interface ILocaleService
     {
-        Task<BaseObject> SetLanguageAsync(LanguagePackInfo info, bool refresh);
+        Task<Object> SetLanguageAsync(LanguagePackInfo info, bool refresh);
 
         CultureInfo CurrentCulture { get; }
         string Id { get; }
@@ -135,7 +135,7 @@ namespace Telegram.Services
             ? FlowDirection.RightToLeft
             : FlowDirection.LeftToRight;
 
-        public async Task<BaseObject> SetLanguageAsync(LanguagePackInfo info, bool refresh)
+        public async Task<Object> SetLanguageAsync(LanguagePackInfo info, bool refresh)
         {
             _languageCode = info.Id;
             _languageBase = info.BaseLanguagePackId;

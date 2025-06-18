@@ -254,7 +254,7 @@ namespace Telegram.ViewModels.Authorization
             IsLoading = true;
 
             var function = new SetAuthenticationPhoneNumber(phoneNumber, new PhoneNumberAuthenticationSettings(false, false, false, false, false, null, Array.Empty<string>()));
-            Task<BaseObject> request;
+            Task<Object> request;
             if (ClientService.AuthorizationState is AuthorizationStateWaitOtherDeviceConfirmation)
             {
                 request = _sessionService.SetAuthenticationPhoneNumberAsync(function);

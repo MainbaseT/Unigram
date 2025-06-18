@@ -42,8 +42,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
-using Point = Windows.Foundation.Point;
-using User = Telegram.Td.Api.User;
 
 namespace Telegram.Common
 {
@@ -426,7 +424,7 @@ namespace Telegram.Common
             }
         }
 
-        private static async void OpenLoginUrl(IClientService clientService, INavigationService navigation, string url, BaseObject info)
+        private static async void OpenLoginUrl(IClientService clientService, INavigationService navigation, string url, Object info)
         {
             if (info is LoginUrlInfoOpen infoOpen)
             {

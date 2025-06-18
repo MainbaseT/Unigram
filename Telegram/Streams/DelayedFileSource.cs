@@ -159,7 +159,7 @@ namespace Telegram.Streams
             }
         }
 
-        private void OutlineRequested(BaseObject response)
+        private void OutlineRequested(Object response)
         {
             if (response is Outline outline)
             {

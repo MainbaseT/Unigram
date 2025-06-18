@@ -366,7 +366,7 @@ namespace Telegram.ViewModels.Drawers
             InstalledSets.ReplaceWith(installedSets);
         }
 
-        private Task<BaseObject> GetDefaultStickersAsync(EmojiDrawerMode mode)
+        private Task<Object> GetDefaultStickersAsync(EmojiDrawerMode mode)
         {
             if (mode == EmojiDrawerMode.EmojiStatus)
             {
@@ -391,10 +391,10 @@ namespace Telegram.ViewModels.Drawers
                 return ClientService.SendAsync(func);
             }
 
-            return Task.FromResult<BaseObject>(null);
+            return Task.FromResult<Object>(null);
         }
 
-        private async Task<BaseObject> GetDefaultStatusAsync()
+        private async Task<Object> GetDefaultStatusAsync()
         {
             var themedResponse = await ClientService.SendAsync(new GetThemedEmojiStatuses()) as EmojiStatusCustomEmojis;
             var recentResponse = await ClientService.SendAsync(new GetRecentEmojiStatuses()) as EmojiStatusCustomEmojis;
@@ -428,7 +428,7 @@ namespace Telegram.ViewModels.Drawers
             return await ClientService.SendAsync(new GetCustomEmojiStickers(emoji));
         }
 
-        private async Task<BaseObject> GetDefaultChatStatusAsync()
+        private async Task<Object> GetDefaultChatStatusAsync()
         {
             var themedResponse = await ClientService.SendAsync(new GetThemedChatEmojiStatuses()) as EmojiStatusCustomEmojis;
             var recentResponse = await ClientService.SendAsync(new GetRecentEmojiStatuses()) as EmojiStatusCustomEmojis;

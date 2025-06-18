@@ -13,7 +13,6 @@ using Telegram.ViewModels.Drawers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Point = Windows.Foundation.Point;
 
 namespace Telegram.Controls.Drawers
 {

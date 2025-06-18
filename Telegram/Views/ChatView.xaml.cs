@@ -56,9 +56,6 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Point = Windows.Foundation.Point;
-using VirtualKey = Windows.System.VirtualKey;
-using VirtualKeyModifiers = Windows.System.VirtualKeyModifiers;
 
 namespace Telegram.Views
 {
@@ -1645,7 +1642,7 @@ namespace Telegram.Views
             });
         }
 
-        private void TryGetWebPagePreview(IClientService clientService, Chat chat, string text, string url, Action<BaseObject> result)
+        private void TryGetWebPagePreview(IClientService clientService, Chat chat, string text, string url, Action<Object> result)
         {
             if (chat == null || string.IsNullOrWhiteSpace(text))
             {

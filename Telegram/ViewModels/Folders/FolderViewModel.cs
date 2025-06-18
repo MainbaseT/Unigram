@@ -405,7 +405,7 @@ namespace Telegram.ViewModels.Folders
             }
         }
 
-        public Task<BaseObject> SendAsync()
+        public Task<Object> SendAsync()
         {
             Function function;
             if (Id is int id)

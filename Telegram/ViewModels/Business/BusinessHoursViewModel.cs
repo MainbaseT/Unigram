@@ -11,7 +11,6 @@ using Telegram.Views.Business.Popups;
 using Telegram.Views.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using TimeZone = Telegram.Td.Api.TimeZone;
 
 namespace Telegram.ViewModels.Business
 {
