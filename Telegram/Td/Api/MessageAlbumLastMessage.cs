@@ -72,6 +72,11 @@ namespace Telegram.Td.Api
                 return;
             }
 
+            if (Media.Empty())
+            {
+                return;
+            }
+
             _loading = true;
 
             var count = 10 - Media.Count;
@@ -103,7 +108,7 @@ namespace Telegram.Td.Api
                         continue;
                     }
 
-                    _messages.Add(message);
+                    Media.Add(message);
                     found = true;
                 }
                 else if (found)
@@ -119,10 +124,13 @@ namespace Telegram.Td.Api
 
             if (needFromMessage)
             {
-                _messages.Add(fromMessage);
+                Media.Add(fromMessage);
             }
 
-            Caption = _messages[^1].GetCaption();
+            if (Media.Count > 0)
+            {
+                Caption = Media[^1].GetCaption();
+            }
 
             _hasOldestMessage = hasOldestMessage || Media.Count == 10;
             _hasNewestMessage = hasNewestMessage || Media.Count == 10;
