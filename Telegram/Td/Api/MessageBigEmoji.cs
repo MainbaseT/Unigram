@@ -25,14 +25,14 @@ namespace Telegram.Td.Api
             Count = count;
         }
 
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(MessageBigEmoji);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }

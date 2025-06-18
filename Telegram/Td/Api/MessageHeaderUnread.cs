@@ -10,14 +10,14 @@ namespace Telegram.Td.Api
 {
     public partial class MessageHeaderUnread : MessageContent
     {
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(MessageHeaderUnread);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }

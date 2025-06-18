@@ -10,14 +10,14 @@ namespace Telegram.Td.Api
 {
     public partial class PremiumLimitTypeConnectedAccounts : PremiumLimitType
     {
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(PremiumLimitTypeConnectedAccounts);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }

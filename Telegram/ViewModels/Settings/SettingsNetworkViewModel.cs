@@ -215,40 +215,40 @@ namespace Telegram.ViewModels.Settings
 
     public partial class FileTypeNotes : FileType
     {
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(FileTypeNotes);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 
     public partial class FileTypeOther : FileType
     {
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(FileTypeOther);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 
     public partial class FileTypeTotal : FileType
     {
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(FileTypeTotal);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 

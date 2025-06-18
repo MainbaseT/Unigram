@@ -10,14 +10,14 @@ namespace Telegram.Td.Api
 {
     public partial class MessageHeaderDate : MessageContent
     {
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(MessageHeaderDate);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }

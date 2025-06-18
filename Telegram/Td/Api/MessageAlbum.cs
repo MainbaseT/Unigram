@@ -66,7 +66,7 @@ namespace Telegram.Td.Api
 
         public NativeObject ToUnmanaged()
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 
@@ -126,7 +126,7 @@ namespace Telegram.Td.Api
 
         public NativeObject ToUnmanaged()
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 

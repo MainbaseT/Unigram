@@ -10,14 +10,14 @@ namespace Telegram.Td.Api
 {
     public partial class MessageHeaderMessageTopic : MessageContent
     {
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(MessageHeaderMessageTopic);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }

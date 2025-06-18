@@ -38,14 +38,14 @@ namespace Telegram.Td.Api
             Id = chatEvent.Id;
         }
 
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(MessageChatEvent);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }

@@ -36,14 +36,14 @@ namespace Telegram.Td.Api
 
         public Story Story { get; set; }
 
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(MessageAsyncStory);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }

@@ -46,14 +46,14 @@ namespace Telegram.Td.Api
         /// </summary>
         public long MessageId { get; set; }
 
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(MessageSponsored);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }

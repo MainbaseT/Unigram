@@ -25,14 +25,14 @@ namespace Telegram.Td.Api
         /// </summary>
         public InputTextQuote Quote { get; set; }
 
-        public NativeObject ToUnmanaged()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return nameof(MessageBigEmoji);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            return null;
         }
     }
 }
