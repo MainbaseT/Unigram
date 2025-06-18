@@ -574,7 +574,7 @@ namespace Telegram.Controls.Messages
             }
 
             var share = SettingsService.Current.SwipeToShare && properties.CanBeForwarded;
-            var reply = SettingsService.Current.SwipeToReply && (canReply || properties.CanBeRepliedInAnotherChat);
+            var reply = SettingsService.Current.SwipeToReply && (properties.CanBeReplied || properties.CanBeRepliedInAnotherChat);
 
             if (_tracker != null)
             {
