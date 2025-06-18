@@ -1559,19 +1559,19 @@ namespace Telegram.Controls.Cells
 
                 case MessageAlbumLastMessage album:
                     {
-                        if (album.Media.All(x => x.Content is MessagePhoto))
+                        if (album.PhotosCount > 0 && album.VideosCount == 0)
                         {
-                            if (album.Media[0].Content is MessagePhoto albumPhoto && albumPhoto.Photo.Minithumbnail != null)
+                            if (album.LastMessage is MessagePhoto albumPhoto && albumPhoto.Photo.Minithumbnail != null)
                             {
                                 thumbnail = new MinithumbnailId(albumPhoto.Photo.Sizes[^1].Photo.Id, albumPhoto.Photo.Minithumbnail, false);
-                                return Text1(string.Empty, album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, album.Media.Count) : Strings.AttachPhoto);
+                                return Text1(string.Empty, album.Caption, album.PhotosCount > 1 ? Locale.Declension(Strings.R.Photos, album.PhotosCount) : Strings.AttachPhoto);
                             }
 
-                            return Text1("\U0001F5BC ", album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Photos, album.Media.Count) : Strings.AttachPhoto);
+                            return Text1("\U0001F5BC ", album.Caption, album.PhotosCount > 1 ? Locale.Declension(Strings.R.Photos, album.PhotosCount) : Strings.AttachPhoto);
                         }
-                        else if (album.Media.All(x => x.Content is MessageVideo))
+                        else if (album.VideosCount > 0 && album.PhotosCount == 0)
                         {
-                            if (album.Media[0].Content is MessageVideo albumVideo && (albumVideo.Video.Minithumbnail != null || albumVideo.Cover.Minithumbnail != null))
+                            if (album.LastMessage is MessageVideo albumVideo && (albumVideo.Video.Minithumbnail != null || albumVideo.Cover.Minithumbnail != null))
                             {
                                 if (albumVideo.Cover != null)
                                 {
@@ -1582,13 +1582,13 @@ namespace Telegram.Controls.Cells
                                     thumbnail = new MinithumbnailId(albumVideo.Video.VideoValue.Id, albumVideo.Video.Minithumbnail, false);
                                 }
 
-                                return Text1(string.Empty, album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, album.Media.Count) : Strings.AttachVideo);
+                                return Text1(string.Empty, album.Caption, album.VideosCount > 1 ? Locale.Declension(Strings.R.Videos, album.VideosCount) : Strings.AttachVideo);
                             }
 
-                            return Text1("\U0001F4F9 ", album.Caption, album.Media.Count > 1 ? Locale.Declension(Strings.R.Videos, album.Media.Count) : Strings.AttachVideo);
+                            return Text1("\U0001F4F9 ", album.Caption, album.VideosCount > 1 ? Locale.Declension(Strings.R.Videos, album.VideosCount) : Strings.AttachVideo);
                         }
 
-                        return Text1("\U0001F5BC ", album.Caption, Locale.Declension(Strings.R.Media, album.Media.Count));
+                        return Text1("\U0001F5BC ", album.Caption, Locale.Declension(Strings.R.Media, album.PhotosCount + album.VideosCount));
                     }
                 case MessageText text:
                     return text.Text;

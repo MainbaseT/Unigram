@@ -45,15 +45,16 @@ namespace Telegram.Common
             }
         }
 
-        public void Add(TValue item)
+        public bool Add(TValue item)
         {
             var key = _selector(item);
             if (_inner.ContainsKey(key))
             {
-                return;
+                return false;
             }
 
             _inner.Add(key, item);
+            return true;
         }
 
         public void Clear()
@@ -117,9 +118,25 @@ namespace Telegram.Common
             _inner.RemoveAt(index);
         }
 
+        public bool TryRemove(TKey key, out TValue value)
+        {
+            if (_inner.TryGetValue(key, out value))
+            {
+                _inner.Remove(key);
+                return true;
+            }
+
+            return false;
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _inner.Values.GetEnumerator();
+        }
+
+        void ICollection<TValue>.Add(TValue item)
+        {
+            Add(item);
         }
     }
 }

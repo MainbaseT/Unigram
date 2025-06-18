@@ -2410,7 +2410,7 @@ namespace Telegram.Services
         {
             if (_lastMessageAlbums.TryGetValue(chatId, out album))
             {
-                if (album.MediaAlbumId == mediaAlbumId && album.Media.Count > 0)
+                if (album.MediaAlbumId == mediaAlbumId && album.LastMessage != null)
                 {
                     return true;
                 }

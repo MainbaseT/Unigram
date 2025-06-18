@@ -4,7 +4,6 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using System;
 using System.Collections.Generic;
 using Telegram.Common;
 using Telegram.Services;
@@ -27,7 +26,11 @@ namespace Telegram.Td.Api
 
         public long MediaAlbumId { get; }
 
-        public IList<Message> Media => _messages;
+        public int PhotosCount { get; private set; }
+
+        public int VideosCount { get; private set; }
+
+        public MessageContent LastMessage { get; private set; }
 
         public FormattedText Caption { get; private set; }
 
@@ -72,15 +75,15 @@ namespace Telegram.Td.Api
                 return;
             }
 
-            if (Media.Empty())
+            if (_messages.Empty())
             {
                 return;
             }
 
             _loading = true;
 
-            var count = 10 - Media.Count;
-            var fromMessage = Media[0];
+            var count = 10 - _messages.Count;
+            var fromMessage = _messages[0];
 
             var response = await _clientService.SendAsync(new GetChatHistory(_chat.Id, fromMessage.Id, -count, count, false));
             if (response is Messages album && album.MessagesValue.Count > 0)
@@ -98,6 +101,24 @@ namespace Telegram.Td.Api
             var hasNewestMessage = false;
             var found = false;
 
+            var photosCount = 0;
+            var videosCount = 0;
+
+            void AddMessage(Message message)
+            {
+                if (_messages.Add(message))
+                {
+                    if (message.Content is MessagePhoto)
+                    {
+                        photosCount++;
+                    }
+                    else
+                    {
+                        videosCount++;
+                    }
+                }
+            }
+
             for (int i = 0; i < album.MessagesValue.Count; i++)
             {
                 var message = album.MessagesValue[i];
@@ -108,7 +129,7 @@ namespace Telegram.Td.Api
                         continue;
                     }
 
-                    Media.Add(message);
+                    AddMessage(message);
                     found = true;
                 }
                 else if (found)
@@ -124,18 +145,18 @@ namespace Telegram.Td.Api
 
             if (needFromMessage)
             {
-                Media.Add(fromMessage);
+                AddMessage(fromMessage);
             }
 
-            if (Media.Count > 0)
-            {
-                Caption = Media[^1].GetCaption();
-            }
+            PhotosCount += photosCount;
+            VideosCount += videosCount;
 
-            _hasOldestMessage = hasOldestMessage || Media.Count == 10;
-            _hasNewestMessage = hasNewestMessage || Media.Count == 10;
+            UpdateInfo();
 
-            if (Media.Count > 0 && _chat.LastMessage?.MediaAlbumId == MediaAlbumId)
+            _hasOldestMessage = hasOldestMessage || _messages.Count == 10;
+            _hasNewestMessage = hasNewestMessage || _messages.Count == 10;
+
+            if (_messages.Count > 0 && _chat.LastMessage?.MediaAlbumId == MediaAlbumId)
             {
                 _aggregator.Publish(new UpdateChatLastMessage(_chat.Id, _chat.LastMessage, _chat.Positions));
             }
@@ -164,23 +185,65 @@ namespace Telegram.Td.Api
         {
             var found = false;
 
+            var photosCount = 0;
+            var videosCount = 0;
+
             foreach (var messageId in messageIds)
             {
-                if (_messages.Remove(messageId))
+                if (_messages.TryRemove(messageId, out Message message))
                 {
                     found = true;
+
+                    if (message.Content is MessagePhoto)
+                    {
+                        photosCount++;
+                    }
+                    else
+                    {
+                        videosCount++;
+                    }
                 }
             }
 
-            if (found && Media.Count > 0 && _chat.LastMessage?.MediaAlbumId == MediaAlbumId)
+            PhotosCount -= photosCount;
+            VideosCount -= videosCount;
+
+            UpdateInfo();
+
+            if (found && _messages.Count > 0 && _chat.LastMessage?.MediaAlbumId == MediaAlbumId)
             {
                 _aggregator.Publish(new UpdateChatLastMessage(_chat.Id, _chat.LastMessage, _chat.Positions));
             }
         }
 
-        public NativeObject ToUnmanaged()
+        private void UpdateInfo()
         {
-            throw new NotImplementedException();
+            if (_messages.Count > 1)
+            {
+                var first = _messages[^1].GetCaption();
+                var last = _messages[0].GetCaption();
+
+                if (first?.Text.Length > 0)
+                {
+                    Caption = first;
+                }
+                else
+                {
+                    Caption = last;
+                }
+
+                LastMessage = _messages[0].Content;
+            }
+            else if (_messages.Count > 0)
+            {
+                Caption = _messages[0].GetCaption();
+                LastMessage = _messages[0].Content;
+            }
+            else
+            {
+                Caption = null;
+                LastMessage = null;
+            }
         }
 
         public override string ToString()
