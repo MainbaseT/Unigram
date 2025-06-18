@@ -5,7 +5,9 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -135,51 +137,60 @@ namespace Telegram.ViewModels.Supergroups
                     return;
                 }
 
-                if (chat.Type is ChatTypeBasicGroup)
+                var response = await AddChatMembers(chat, selected.Select(x => x.Id));
+                if (response is FailedToAddMembers failed)
                 {
-                    var response = await ClientService.SendAsync(new AddChatMember(chat.Id, selected[0].Id, 100));
-                    if (response is FailedToAddMembers failed)
+                    if (failed.FailedToAddMembersValue.Count > 0)
                     {
-                        if (failed.FailedToAddMembersValue.Count > 0)
-                        {
-                            ShowPopup(new ChatInviteFallbackPopup(ClientService, chat.Id, failed.FailedToAddMembersValue));
-                        }
-                        else
-                        {
-                            foreach (var user in selected)
-                            {
-                                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, null, new ChatMember(new MessageSenderUser(user.Id), ClientService.Options.MyId, DateTime.Now.ToTimestamp(), new ChatMemberStatusMember())));
-                            }
-                        }
+                        ShowPopup(new ChatInviteFallbackPopup(ClientService, chat.Id, failed.FailedToAddMembersValue));
                     }
-                    else if (response is Error error)
+
+                    var failedUserIds = failed.FailedToAddMembersValue
+                        .Select(x => x.UserId)
+                        .ToHashSet();
+
+                    foreach (var user in selected)
                     {
-                        ShowPopup(error.Message, Strings.AppName);
+                        if (failedUserIds.Contains(user.Id))
+                        {
+                            continue;
+                        }
+
+                        Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, null, new ChatMember(new MessageSenderUser(user.Id), ClientService.Options.MyId, DateTime.Now.ToTimestamp(), new ChatMemberStatusMember())));
                     }
                 }
-                else
+                else if (response is Error error)
                 {
-                    var response = await ClientService.SendAsync(new AddChatMembers(chat.Id, selected.Select(x => x.Id).ToArray()));
-                    if (response is FailedToAddMembers failed)
-                    {
-                        if (failed.FailedToAddMembersValue.Count > 0)
-                        {
-                            ShowPopup(new ChatInviteFallbackPopup(ClientService, chat.Id, failed.FailedToAddMembersValue));
-                        }
-                        else
-                        {
-                            foreach (var user in selected)
-                            {
-                                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, null, new ChatMember(new MessageSenderUser(user.Id), ClientService.Options.MyId, DateTime.Now.ToTimestamp(), new ChatMemberStatusMember())));
-                            }
-                        }
-                    }
-                    else if (response is Error error)
-                    {
-                        ShowPopup(error.Message, Strings.AppName);
-                    }
+                    ShowPopup(error.Message, Strings.AppName);
                 }
             }
+        }
+
+        private async Task<Object> AddChatMembers(Chat chat, IEnumerable<long> users)
+        {
+            if (chat.Type is ChatTypeSupergroup)
+            {
+                return await ClientService.SendAsync(new AddChatMembers(chat.Id, users.ToArray()));
+            }
+
+            IList<FailedToAddMember> members = null;
+
+            foreach (var userId in users)
+            {
+                var response = await ClientService.SendAsync(new AddChatMember(chat.Id, userId, 100));
+                if (response is FailedToAddMembers failed)
+                {
+                    members ??= new List<FailedToAddMember>();
+                    members.AddRange(failed.FailedToAddMembersValue);
+                }
+                else if (response is Error)
+                {
+                    // TODO: this is not ideal as the app will not try to add subsequent users
+                    return response;
+                }
+            }
+
+            return new FailedToAddMembers(members ?? Array.Empty<FailedToAddMember>());
         }
 
         #region Context menu
