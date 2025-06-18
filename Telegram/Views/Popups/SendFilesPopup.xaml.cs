@@ -1135,7 +1135,12 @@ namespace Telegram.Views.Popups
 
                 var flyout = new MenuFlyout();
 
-                flyout.CreateFlyoutItem(SendWithoutGrouping, Strings.SendWithoutGrouping, "\uE90C");
+                // If number of items is different from the view then there's some album
+                if (Items.Count > ItemsView.Count)
+                {
+                    flyout.CreateFlyoutItem(SendWithoutGrouping, Strings.SendWithoutGrouping, "\uE90C");
+                }
+
                 flyout.CreateFlyoutItem(SendWithoutSound, Strings.SendWithoutSound, Icons.AlertOff);
                 flyout.CreateFlyoutItem(SendScheduled, self ? Strings.SetReminder : Strings.ScheduleMessage, Icons.CalendarClock);
 
