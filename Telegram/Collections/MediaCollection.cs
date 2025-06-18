@@ -57,7 +57,7 @@ namespace Telegram.Collections
                 }
                 else
                 {
-                    func = new SearchMessages(null, _query, _nextOffset ?? string.Empty, 50, _filter, null, 0, 0);
+                    func = new SearchMessages(new ChatListMain(), _query, _nextOffset ?? string.Empty, 50, _filter, null, 0, 0);
                 }
 
                 var response = await _clientService.SendAsync(func);
