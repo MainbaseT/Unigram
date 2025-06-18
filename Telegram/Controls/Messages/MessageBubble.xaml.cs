@@ -532,8 +532,16 @@ namespace Telegram.Controls.Messages
             }
             else
             {
-                _hasReplyMarkup = false;
-                SetCorners(topLeft, topRight, bottomOutgoing ? 0 : bottomRight, bottomIncoming ? 0 : bottomLeft);
+                if (content is MessageSticker or MessageDice or MessageVideoNote or MessageBigEmoji)
+                {
+                    _hasReplyMarkup = false;
+                    SetCorners(0, 0, 0, 0);
+                }
+                else
+                {
+                    _hasReplyMarkup = false;
+                    SetCorners(topLeft, topRight, bottomOutgoing ? 0 : bottomRight, bottomIncoming ? 0 : bottomLeft);
+                }
             }
 
             if (message.Delegate != null && message.Delegate.IsDialog)
