@@ -213,8 +213,8 @@ namespace Telegram.ViewModels.Drawers
 
             if (_mode is EmojiDrawerMode.Chat or EmojiDrawerMode.Text)
             {
-                var recents = Emoji.GetRecents(SettingsService.Current.Stickers.SkinTone);
-                var emojiGroups = Emoji.Get(SettingsService.Current.Stickers.SkinTone);
+                var recents = Emoji.GetRecents();
+                var emojiGroups = Emoji.Get();
 
                 var source = new List<object>();
                 var customEmoji = new List<long>();
@@ -757,18 +757,6 @@ namespace Telegram.ViewModels.Drawers
             if (oldItem is RecentEmoji oldRecent && newItem is RecentEmoji newRecent)
             {
                 oldRecent.Stickers.ReplaceWith(newRecent.Stickers);
-            }
-            else if (oldItem is EmojiGroup oldGroup && newItem is EmojiGroup newGroup)
-            {
-                if (oldGroup.SkinTone != newGroup.SkinTone)
-                {
-                    oldGroup.SkinTone = newGroup.SkinTone;
-
-                    foreach (var item in oldGroup.Stickers.OfType<EmojiSkinData>())
-                    {
-                        item.SetValue(newGroup.SkinTone);
-                    }
-                }
             }
         }
     }

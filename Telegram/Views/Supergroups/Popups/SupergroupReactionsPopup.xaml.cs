@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Controls.Drawers;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Drawers;
@@ -200,7 +201,7 @@ namespace Telegram.Views.Supergroups.Popups
             EmojiFlyout.ShowAt(CaptionInput, new FlyoutShowOptions { ShowMode = FlyoutShowMode.Transient });
         }
 
-        private void Emoji_ItemClick(object sender, ItemClickEventArgs e)
+        private void Emoji_ItemClick(object sender, EmojiDrawerItemClickEventArgs e)
         {
             if (e.ClickedItem is StickerViewModel sticker)
             {

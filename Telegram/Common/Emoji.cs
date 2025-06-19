@@ -60,12 +60,12 @@ namespace Telegram.Common
 
     public enum EmojiSkinTone
     {
-        Default,
-        Fitz12,
-        Fitz3,
-        Fitz4,
-        Fitz5,
-        Fitz6
+        Default = 0,
+        Fitz12 = 1,
+        Fitz3 = 2,
+        Fitz4 = 3,
+        Fitz5 = 4,
+        Fitz6 = 5
     }
 
     public partial class EmojiData
@@ -86,6 +86,8 @@ namespace Telegram.Common
     public partial class EmojiSkinData : EmojiData, INotifyPropertyChanged
     {
         private readonly string _value;
+        private EmojiSkinTone _tone1;
+        private EmojiSkinTone _tone2;
 
         public EmojiSkinData(string value, EmojiSkinTone tone)
         {
@@ -93,9 +95,33 @@ namespace Telegram.Common
             SetValue(tone);
         }
 
+        public EmojiSkinData(string value, EmojiSkinTone tone1, EmojiSkinTone tone2)
+        {
+            _value = value;
+            SetValue(tone1, tone2);
+        }
+
+        public EmojiSkinData(string value, EmojiSkinTone tone1, EmojiSkinTone tone2, string outline)
+        {
+            _value = value;
+            Outline = outline;
+            SetValue(tone1, tone2);
+        }
+
+        public string Emoji => _value;
+
+        public EmojiSkinTone Tone1 => _tone1;
+        public EmojiSkinTone Tone2 => _tone2;
+
+        public string Outline { get; }
+
         public void SetValue(EmojiSkinTone tone)
         {
-            if (tone == EmojiSkinTone.Default)
+            if (tone == _tone1 && Value != null)
+            {
+                return;
+            }
+            else if (tone == EmojiSkinTone.Default)
             {
                 Value = _value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
@@ -122,29 +148,58 @@ namespace Telegram.Common
                 emoji = emoji.Substring(1);
             }
 
-            switch (tone)
-            {
-                case EmojiSkinTone.Fitz12:
-                    result += "\uD83C\uDFFB";
-                    break;
-                case EmojiSkinTone.Fitz3:
-                    result += "\uD83C\uDFFC";
-                    break;
-                case EmojiSkinTone.Fitz4:
-                    result += "\uD83C\uDFFD";
-                    break;
-                case EmojiSkinTone.Fitz5:
-                    result += "\uD83C\uDFFE";
-                    break;
-                case EmojiSkinTone.Fitz6:
-                    result += "\uD83C\uDFFF";
-                    break;
-            }
+            _tone1 = tone;
+            _tone2 = EmojiSkinTone.Default;
 
-            Value = result + emoji;
+            Value = result + GetTone(tone);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
         }
 
+        public void SetValue(EmojiSkinTone tone1, EmojiSkinTone tone2)
+        {
+            if (tone1 == _tone1 && tone2 == _tone2 && Value != null)
+            {
+                return;
+            }
+            else if (tone1 == EmojiSkinTone.Default && tone2 == EmojiSkinTone.Default)
+            {
+                Value = _value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
+
+                return;
+            }
+
+            var emoji = _value;
+            var result = string.Empty;
+
+            result = emoji.TrimEnd('\uFE0F');
+            result = result.Substring(0, 2) + GetTone(tone1) + result.Substring(2) + GetTone(tone2);
+
+            _tone1 = tone1;
+            _tone2 = tone2;
+
+            Value = result;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
+        }
+
+        private string GetTone(EmojiSkinTone tone)
+        {
+            switch (tone)
+            {
+                case EmojiSkinTone.Fitz12:
+                    return "\uD83C\uDFFB";
+                case EmojiSkinTone.Fitz3:
+                    return "\uD83C\uDFFC";
+                case EmojiSkinTone.Fitz4:
+                    return "\uD83C\uDFFD";
+                case EmojiSkinTone.Fitz5:
+                    return "\uD83C\uDFFE";
+                case EmojiSkinTone.Fitz6:
+                    return "\uD83C\uDFFF";
+                default:
+                    return string.Empty;
+            }
+        }
 
 
         #region INotifyPropertyChanged
@@ -161,8 +216,6 @@ namespace Telegram.Common
         public string Glyph { get; set; }
 
         public EmojiData[] Stickers { get; set; }
-
-        public EmojiSkinTone SkinTone { get; set; }
 
         public bool IsInstalled { get; } = true;
 
@@ -181,18 +234,17 @@ namespace Telegram.Common
 
             public string[] Items { get; set; }
 
-            public EmojiGroup ToGroup(EmojiSkinTone tone)
+            public EmojiGroup ToGroup()
             {
                 return new EmojiGroup
                 {
                     Title = Title,
                     Glyph = Glyph,
-                    SkinTone = tone,
                     Stickers = Items.Select(x =>
                     {
                         if (_skinEmojis.Contains(x))
                         {
-                            return new EmojiSkinData(x, tone);
+                            return SettingsService.Current.Emoji.GetEmojiSkinTone(x);
                         }
 
                         return new EmojiData(x);
@@ -202,13 +254,13 @@ namespace Telegram.Common
             }
         }
 
-        public static IList<EmojiData> GetRecents(EmojiSkinTone skin)
+        public static IList<EmojiData> GetRecents()
         {
             return SettingsService.Current.Emoji.RecentEmoji.Select(x =>
             {
                 if (EmojiGroupInternal._skinEmojis.Contains(x))
                 {
-                    return new EmojiSkinData(x, skin);
+                    return SettingsService.Current.Emoji.GetEmojiSkinTone(x);
                 }
 
                 return new EmojiData(x);
@@ -216,19 +268,18 @@ namespace Telegram.Common
             }).ToArray();
         }
 
-        public static List<EmojiGroup> Get(EmojiSkinTone skin)
+        public static List<EmojiGroup> Get()
         {
             var results = new List<EmojiGroup>();
             var recent = new EmojiGroup
             {
                 Title = Strings.RecentStickers,
                 Glyph = Icons.EmojiRecents,
-                SkinTone = skin,
                 Stickers = SettingsService.Current.Emoji.RecentEmoji.Select(x =>
                 {
                     if (EmojiGroupInternal._skinEmojis.Contains(x))
                     {
-                        return new EmojiSkinData(x, skin);
+                        return SettingsService.Current.Emoji.GetEmojiSkinTone(x);
                     }
 
                     return new EmojiData(x);
@@ -236,7 +287,7 @@ namespace Telegram.Common
                 }).ToArray()
             };
 
-            results.AddRange(Items.Select(x => x.ToGroup(skin)));
+            results.AddRange(Items.Select(x => x.ToGroup()));
             return results;
         }
 

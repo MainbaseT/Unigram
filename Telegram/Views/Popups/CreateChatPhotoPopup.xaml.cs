@@ -57,7 +57,7 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private void Emojis_ItemClick(object sender, ItemClickEventArgs e)
+        private void Emojis_ItemClick(object sender, EmojiDrawerItemClickEventArgs e)
         {
             if (e.ClickedItem is EmojiData emoji)
             {

@@ -53,13 +53,6 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _selectedTab, "SelectedTab", (int)value);
         }
 
-        private int? _skinTone;
-        public EmojiSkinTone SkinTone
-        {
-            get => (EmojiSkinTone)(_skinTone ??= GetValueOrDefault("SkinTone", 0));
-            set => AddOrUpdateValue(ref _skinTone, "SkinTone", (int)value);
-        }
-
         private bool? _dynamicPackOrder;
         public bool DynamicPackOrder
         {

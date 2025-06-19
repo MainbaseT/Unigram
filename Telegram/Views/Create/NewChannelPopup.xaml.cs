@@ -6,6 +6,7 @@
 //
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Controls.Drawers;
 using Telegram.Controls.Media;
 using Telegram.ViewModels.Create;
 using Telegram.ViewModels.Drawers;
@@ -63,7 +64,7 @@ namespace Telegram.Views.Create
             EmojiFlyout.ShowAt(TitleLabel, new FlyoutShowOptions { ShowMode = FlyoutShowMode.Transient });
         }
 
-        private void Emoji_ItemClick(object sender, ItemClickEventArgs e)
+        private void Emoji_ItemClick(object sender, EmojiDrawerItemClickEventArgs e)
         {
             if (e.ClickedItem is EmojiData emoji)
             {

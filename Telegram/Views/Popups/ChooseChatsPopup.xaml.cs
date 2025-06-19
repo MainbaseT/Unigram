@@ -15,6 +15,7 @@ using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
+using Telegram.Controls.Drawers;
 using Telegram.Controls.Media;
 using Telegram.Controls.Views;
 using Telegram.Navigation;
@@ -1776,7 +1777,7 @@ namespace Telegram.Views.Popups
             EmojiFlyout.ShowAt(CommentPanel, new FlyoutShowOptions { ShowMode = FlyoutShowMode.Transient });
         }
 
-        private void Emoji_ItemClick(object sender, ItemClickEventArgs e)
+        private void Emoji_ItemClick(object sender, EmojiDrawerItemClickEventArgs e)
         {
             if (e.ClickedItem is EmojiData emoji)
             {

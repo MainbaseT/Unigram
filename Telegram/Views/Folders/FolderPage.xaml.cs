@@ -8,6 +8,7 @@ using System.ComponentModel;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
+using Telegram.Controls.Drawers;
 using Telegram.Controls.Media;
 using Telegram.Td;
 using Telegram.Td.Api;
@@ -137,7 +138,7 @@ namespace Telegram.Views.Folders
             });
         }
 
-        private void Emoji_ItemClick(object sender, ItemClickEventArgs e)
+        private void Emoji_ItemClick(object sender, EmojiDrawerItemClickEventArgs e)
         {
             if (e.ClickedItem is EmojiData emoji)
             {

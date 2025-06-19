@@ -523,7 +523,7 @@ namespace Telegram.Controls.Messages
             args.ShowAt(flyout, element);
         }
 
-        private void OnStatusClick(object sender, ItemClickEventArgs e)
+        private void OnStatusClick(object sender, EmojiDrawerItemClickEventArgs e)
         {
             if (e.ClickedItem is StickerViewModel sticker)
             {

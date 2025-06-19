@@ -15,14 +15,12 @@ namespace Telegram.Collections
     {
         private readonly IClientService _clientService;
         private readonly string _query;
-        private readonly EmojiSkinTone _skin;
         private readonly EmojiDrawerMode _mode;
 
-        public SearchEmojiCollection(IClientService clientService, string query, EmojiSkinTone skin, EmojiDrawerMode mode)
+        public SearchEmojiCollection(IClientService clientService, string query, EmojiDrawerMode mode)
         {
             _clientService = clientService;
             _query = query;
-            _skin = skin;
             _mode = mode;
         }
 
@@ -54,7 +52,7 @@ namespace Telegram.Collections
                             var emoji = item.Emoji;
                             if (Emoji.EmojiGroupInternal._skinEmojis.Contains(emoji) || Emoji.EmojiGroupInternal._skinEmojis.Contains(emoji.TrimEnd('\uFE0F')))
                             {
-                                Add(new EmojiSkinData(emoji, _skin));
+                                Add(SettingsService.Current.Emoji.GetEmojiSkinTone(emoji));
                             }
                             else
                             {

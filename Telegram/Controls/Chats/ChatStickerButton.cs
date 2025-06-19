@@ -89,7 +89,7 @@ namespace Telegram.Controls.Chats
 
                     foreach (var popup in popups)
                     {
-                        if (popup.Child is MenuFlyoutPresenter or ZoomableMediaPopup)
+                        if (popup.Child is FlyoutPresenter or MenuFlyoutPresenter or ZoomableMediaPopup)
                         {
                             return;
                         }

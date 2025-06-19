@@ -65,7 +65,7 @@ namespace Telegram.Controls
             header.Clip = header.Compositor.CreateInsetClip(0, -40, 0, 40);
         }
 
-        private void Emojis_ItemClick(object sender, ItemClickEventArgs e)
+        private void Emojis_ItemClick(object sender, EmojiDrawerItemClickEventArgs e)
         {
             if (e.ClickedItem is EmojiData emoji)
             {

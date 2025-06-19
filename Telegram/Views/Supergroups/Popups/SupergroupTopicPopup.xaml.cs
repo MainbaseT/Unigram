@@ -8,6 +8,7 @@ using System;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
+using Telegram.Controls.Drawers;
 using Telegram.Converters;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -99,7 +100,7 @@ namespace Telegram.Views.Supergroups.Popups
         public string SelectedName => NameLabel.Text;
         public ForumTopicIcon SelectedIcon => new ForumTopicIcon(ForumTopicCell.ServerSupportedColors[_colorIndex % ForumTopicCell.ServerSupportedColors.Length].ToValue(), _customEmojiId);
 
-        private void OnItemClick(object sender, ItemClickEventArgs e)
+        private void OnItemClick(object sender, EmojiDrawerItemClickEventArgs e)
         {
             if (e.ClickedItem is StickerViewModel sticker && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
