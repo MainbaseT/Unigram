@@ -23,6 +23,7 @@ namespace Telegram.Controls.Cells
         private MessageWithOwner _message;
 
         private long _fileToken;
+        private long _thumbnailToken;
 
         public SharedFileCell()
         {
@@ -74,7 +75,7 @@ namespace Telegram.Controls.Cells
 
             if (data.Thumbnail != null)
             {
-                UpdateThumbnail(message, data.Thumbnail, data.Thumbnail.File);
+                UpdateThumbnail(message, data.Thumbnail, data.Thumbnail.File, true);
             }
             else
             {
@@ -101,7 +102,7 @@ namespace Telegram.Controls.Cells
 
             if (data.Thumbnail != null && data.Thumbnail.File.Id == file.Id)
             {
-                UpdateThumbnail(message, data.Thumbnail, file);
+                UpdateThumbnail(message, data.Thumbnail, file, false);
                 return;
             }
             else if (data.File.Id != file.Id)
@@ -144,7 +145,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private void UpdateThumbnail(MessageWithOwner message, Thumbnail thumbnail, File file)
+        private void UpdateThumbnail(MessageWithOwner message, Thumbnail thumbnail, File file, bool download)
         {
             if (file.Local.IsDownloadingCompleted)
             {
@@ -171,9 +172,14 @@ namespace Telegram.Controls.Cells
                 Texture.Background = null;
                 Button.Style = BootStrapper.Current.Resources["InlineFileButtonStyle"] as Style;
 
-                if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
+                if (download)
                 {
-                    message.ClientService.DownloadFile(file.Id, 1);
+                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
+                    {
+                        message.ClientService.DownloadFile(file.Id, 1);
+                    }
+
+                    UpdateManager.Subscribe(this, message, file, ref _thumbnailToken, UpdateFile, true);
                 }
             }
         }
