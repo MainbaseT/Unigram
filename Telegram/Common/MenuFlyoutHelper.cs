@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using Telegram.Controls;
 using Telegram.Controls.Drawers;
 using Telegram.Navigation;
-using Windows.Foundation;
-using Windows.System;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;

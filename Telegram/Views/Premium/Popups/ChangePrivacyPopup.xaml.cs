@@ -7,7 +7,6 @@
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Streams;
-using Telegram.Td.Api;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 

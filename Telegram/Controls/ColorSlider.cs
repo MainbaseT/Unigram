@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Navigation;
-using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;

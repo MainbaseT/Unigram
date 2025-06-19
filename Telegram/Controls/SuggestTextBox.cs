@@ -6,7 +6,6 @@
 //
 using System;
 using Telegram.Common;
-using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;

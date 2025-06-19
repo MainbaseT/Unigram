@@ -25,7 +25,6 @@ using Telegram.Views.Calls.Popups;
 using Telegram.Views.Host;
 using Telegram.Views.Popups;
 using Windows.Foundation;
-using Windows.System;
 using Windows.System.Display;
 using Windows.UI;
 using Windows.UI.Composition;

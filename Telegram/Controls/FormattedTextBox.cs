@@ -20,7 +20,6 @@ using Telegram.Td.Api;
 using Telegram.Views.Popups;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
-using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Text;

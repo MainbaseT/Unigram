@@ -11,7 +11,6 @@ using Telegram.Composition;
 using Telegram.Navigation;
 using Windows.Devices.Input;
 using Windows.Foundation;
-using Windows.System;
 using Windows.UI.Composition;
 using Windows.UI.Composition.Interactions;
 using Windows.UI.Xaml;

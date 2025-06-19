@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Telegram.Td.Api
+﻿namespace Telegram.Td.Api
 {
     public class InputMessageReplyToTopicMessage : InputMessageReplyTo
     {

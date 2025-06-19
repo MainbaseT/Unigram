@@ -12,7 +12,6 @@ using Telegram.Collections;
 using Telegram.Navigation;
 using Windows.Data.Json;
 using Windows.Storage;
-using Windows.System;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Services
