@@ -380,7 +380,7 @@ namespace Telegram.ViewModels
             FormattedText formattedText = null;
             if (caption == null)
             {
-                formattedText = GetFormattedText(true, true);
+                formattedText = GetFormattedText(true, false);
                 caption = formattedText.Substring(0, ClientService.Options.MessageCaptionLengthMax);
             }
 

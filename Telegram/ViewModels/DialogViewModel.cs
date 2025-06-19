@@ -2642,7 +2642,7 @@ namespace Telegram.ViewModels
 
             if (!force)
             {
-                var current = GetFormattedText();
+                var current = GetFormattedText(false, false);
 
                 var prev = _draft?.InputMessageText as InputMessageText;
                 var next = draft?.InputMessageText as InputMessageText;

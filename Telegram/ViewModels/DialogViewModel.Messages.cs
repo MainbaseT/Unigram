@@ -121,7 +121,7 @@ namespace Telegram.ViewModels
             if (inAnotherChat || await ShouldReplyInAnotherChatAsync(message))
             {
                 var header = ComposerHeader;
-                var text = GetFormattedText(true);
+                var text = GetFormattedText(true, false);
 
                 GetReply(true);
 
@@ -171,7 +171,7 @@ namespace Telegram.ViewModels
             if (inAnotherChat || await ShouldReplyInAnotherChatAsync(message))
             {
                 var header = ComposerHeader;
-                var text = GetFormattedText(true);
+                var text = GetFormattedText(true, false);
 
                 GetReply(true);
 

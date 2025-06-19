@@ -398,7 +398,7 @@ namespace Telegram.ViewModels
             }
 
             var linkPreview = GetLinkPreviewOptions();
-            var formattedText = GetFormattedText(true);
+            var formattedText = GetFormattedText(true, false);
 
             var mediaSelected = header.EditingMessage.Content is not MessageDocument;
             var permissions = ClientService.GetPermissions(chat, out _);
