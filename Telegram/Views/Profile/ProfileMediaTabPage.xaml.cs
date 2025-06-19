@@ -6,6 +6,7 @@
 //
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Chats;
@@ -54,25 +55,34 @@ namespace Telegram.Views.Profile
                 // TODO: justified because of Photo_Click
                 photo.Tag = message;
 
-                var panel = content.Children[1] as Border;
-                var duration = panel.Child as TextBlock;
+                var particles = content.Children[1] as AnimatedImage;
+                var overlay = content.Children[2] as Border;
+                var duration = overlay.Child as TextBlock;
 
                 if (message.Content is MessagePhoto photoMessage)
                 {
                     var small = photoMessage.Photo.GetSmall();
 
-                    photo.SetSource(ViewModel.ClientService, small.Photo);
-                    panel.Visibility = Visibility.Collapsed;
+                    photo.SetSource(ViewModel.ClientService, small.Photo, blurRadius: photoMessage.HasSpoiler ? 15 : 0);
+                    overlay.Visibility = Visibility.Collapsed;
+
+                    particles.Source = photoMessage.HasSpoiler
+                        ? new ParticlesImageSource()
+                        : null;
                 }
                 else if (message.Content is MessageVideo videoMessage)
                 {
                     var thumbnail = videoMessage.Cover?.GetThumbnail();
                     thumbnail ??= videoMessage.Video.Thumbnail;
 
-                    photo.SetSource(ViewModel.ClientService, thumbnail?.File);
-                    panel.Visibility = Visibility.Visible;
+                    photo.SetSource(ViewModel.ClientService, thumbnail?.File, blurRadius: videoMessage.HasSpoiler ? 15 : 0);
+                    overlay.Visibility = Visibility.Visible;
 
                     duration.Text = videoMessage.Video.GetDuration();
+
+                    particles.Source = videoMessage.HasSpoiler
+                        ? new ParticlesImageSource()
+                        : null;
                 }
 
                 args.Handled = true;

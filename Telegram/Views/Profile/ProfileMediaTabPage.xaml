@@ -82,6 +82,14 @@
                                                VerticalAlignment="Bottom"
                                                Margin="4" />-->
 
+                        <controls:AnimatedImage x:Name="Particles"
+                                                IsHitTestVisible="False"
+                                                IsViewportAware="True"
+                                                FrameSize="0,0"
+                                                FitToSize="True"
+                                                DecodeFrameType="Logical"
+                                                Stretch="UniformToFill" />
+
                         <Border x:Name="Overlay"
                                 Background="{ThemeResource MessageOverlayBackgroundBrush}"
                                 CornerRadius="{ThemeResource MessageOverlayCornerRadius}"

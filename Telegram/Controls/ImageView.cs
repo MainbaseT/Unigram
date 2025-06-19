@@ -378,20 +378,22 @@ namespace Telegram.Controls
         private File _file;
         private int _width;
         private int _height;
+        private int _blurRadius;
 
         private long _fileToken;
 
-        public void SetSource(IClientService clientService, File file, int width = 0, int height = 0)
+        public void SetSource(IClientService clientService, File file, int width = 0, int height = 0, int blurRadius = 0)
         {
             _clientService = clientService;
             _file = file;
             _width = width;
             _height = height;
+            _blurRadius = blurRadius;
 
-            Source = GetSource(clientService, file, width, height, true);
+            Source = GetSource(clientService, file, width, height, blurRadius, true);
         }
 
-        private ImageSource GetSource(IClientService clientService, File file, int width, int height, bool download)
+        private ImageSource GetSource(IClientService clientService, File file, int width, int height, int blurRadius, bool download)
         {
             if (file == null)
             {
@@ -399,6 +401,13 @@ namespace Telegram.Controls
             }
             else if (file.Local.IsDownloadingCompleted)
             {
+                if (blurRadius > 0)
+                {
+                    var source = new BitmapImage();
+                    PlaceholderHelper.GetBlurred(source, file.Local.Path, blurRadius);
+                    return source;
+                }
+
                 return UriEx.ToBitmap(file.Local.Path, width, height);
             }
             else if (download)
@@ -416,7 +425,7 @@ namespace Telegram.Controls
 
         private void UpdateSource(object target, File file)
         {
-            Source = GetSource(_clientService, _file, _width, _height, false);
+            Source = GetSource(_clientService, _file, _width, _height, _blurRadius, false);
         }
 
         #endregion
