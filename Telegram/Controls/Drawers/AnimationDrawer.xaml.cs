@@ -6,6 +6,7 @@
 //
 using System;
 using Telegram.Common;
+using Telegram.Controls.Media;
 using Telegram.Services.Settings;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -202,6 +203,35 @@ namespace Telegram.Controls.Drawers
         private void Player_Ready(object sender, EventArgs e)
         {
             _handler.ThrottleVisibleItems();
+        }
+
+        private void Toolbar_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.InRecycleQueue)
+            {
+                return;
+            }
+            else if (args.Item is AnimationsCollection collection)
+            {
+                Automation.SetToolTip(args.ItemContainer, collection.Title);
+
+                var content = args.ItemContainer.ContentTemplateRoot as Grid;
+                if (content?.Children[0] is FontIcon icon)
+                {
+                    icon.Glyph = collection.Name switch
+                    {
+                        "tg/recentlyUsed" => Icons.EmojiRecents,
+                        "tg/trending" => Icons.Trending,
+                        _ => string.Empty
+                    };
+                }
+                else if (content?.Children[0] is TextBlock textBlock)
+                {
+                    textBlock.Text = collection.Name;
+                }
+
+                args.Handled = true;
+            }
         }
     }
 }

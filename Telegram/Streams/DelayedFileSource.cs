@@ -125,7 +125,7 @@ namespace Telegram.Streams
                 };
             }
 
-            if (stickerSet.Covers?.Count > 0)
+            if (stickerSet?.Covers?.Count > 0)
             {
                 return DelayedFileSource.FromSticker(clientService, stickerSet.Covers[0]);
             }

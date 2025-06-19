@@ -11,6 +11,7 @@ using System.Numerics;
 using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls.Cells;
+using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Services;
 using Telegram.Services.Settings;
@@ -768,14 +769,19 @@ namespace Telegram.Controls.Drawers
                 Automation.SetToolTip(args.ItemContainer, sticker.Title);
 
                 var content = args.ItemContainer.ContentTemplateRoot as Grid;
-
-                if (content == null || sticker == null || (sticker.Thumbnail == null && sticker.Covers == null))
+                if (content?.Children[0] is FontIcon icon)
                 {
-                    return;
+                    icon.Glyph = sticker.Name switch
+                    {
+                        "tg/recentlyUsed" => Icons.EmojiRecents,
+                        "tg/collectibles" => Icons.Diamond,
+                        _ => string.Empty
+                    };
                 }
-
-                var animation = content.Children[0] as AnimatedImage;
-                animation.Source = DelayedFileSource.FromStickerSetInfo(ViewModel.ClientService, sticker);
+                else if (content?.Children[0] is AnimatedImage animated)
+                {
+                    animated.Source = DelayedFileSource.FromStickerSetInfo(ViewModel.ClientService, sticker);
+                }
 
                 args.Handled = true;
             }

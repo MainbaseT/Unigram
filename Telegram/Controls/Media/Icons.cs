@@ -327,6 +327,9 @@ namespace Telegram.Controls.Media
         public const string ChatSparkeFilled = "\uEA90";
         public const string BuildingShopFilled = "\uEA86";
 
+        public const string Diamond = "\uEABD";
+        public const string Trending = "\uE989";
+
         public const string EmojiRecents = "\uE911";
         public const string Emoji1 = "\uE920";
         public const string Emoji2 = "\uE921";

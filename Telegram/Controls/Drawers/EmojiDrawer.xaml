@@ -489,22 +489,13 @@
                                 <controls:ProfilePicture Margin="6" />
                             </DataTemplate>
                         </selectors:StickerSetTemplateSelector.GroupTemplate>
-                        <selectors:StickerSetTemplateSelector.RecentsTemplate>
+                        <selectors:StickerSetTemplateSelector.IconTemplate>
                             <DataTemplate>
-                                <Border Background="Transparent">
-                                    <FontIcon Glyph="&#xE911;"
-                                              FontFamily="{StaticResource TelegramThemeFontFamily}" />
-                                </Border>
+                                <Grid Background="Transparent">
+                                    <FontIcon FontFamily="{StaticResource TelegramThemeFontFamily}" />
+                                </Grid>
                             </DataTemplate>
-                        </selectors:StickerSetTemplateSelector.RecentsTemplate>
-                        <selectors:StickerSetTemplateSelector.FavedTemplate>
-                            <DataTemplate>
-                                <Border Background="Transparent">
-                                    <FontIcon Glyph="&#xE734;"
-                                              Style="{StaticResource DefaultFontIconStyle}" />
-                                </Border>
-                            </DataTemplate>
-                        </selectors:StickerSetTemplateSelector.FavedTemplate>
+                        </selectors:StickerSetTemplateSelector.IconTemplate>
                     </selectors:StickerSetTemplateSelector>
                 </GridView.ItemTemplateSelector>
                 <!--<GridView.Footer>
