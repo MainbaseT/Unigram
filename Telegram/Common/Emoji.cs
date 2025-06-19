@@ -123,6 +123,9 @@ namespace Telegram.Common
             }
             else if (tone == EmojiSkinTone.Default)
             {
+                _tone1 = tone;
+                _tone2 = EmojiSkinTone.Default;
+
                 Value = _value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
 
@@ -163,6 +166,9 @@ namespace Telegram.Common
             }
             else if (tone1 == EmojiSkinTone.Default && tone2 == EmojiSkinTone.Default)
             {
+                _tone1 = tone1;
+                _tone2 = tone2;
+
                 Value = _value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
 
