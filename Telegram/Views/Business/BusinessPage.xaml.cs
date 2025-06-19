@@ -77,8 +77,6 @@ namespace Telegram.Views.Business
             var feature = args.Item as BusinessFeature;
             var content = args.ItemContainer.ContentTemplateRoot as Grid;
 
-            var badge = false;
-
             var iconValue = string.Empty;
             var titleValue = string.Empty;
             var subtitleValue = string.Empty;

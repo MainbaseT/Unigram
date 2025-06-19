@@ -72,7 +72,7 @@ namespace Telegram.ViewModels.Chats
             }
         }
 
-        protected override async void LoadPrevious()
+        protected override void LoadPrevious()
         {
             //using (await _loadMoreLock.WaitAsync())
             //{
@@ -109,7 +109,7 @@ namespace Telegram.ViewModels.Chats
             //}
         }
 
-        protected override async void LoadNext()
+        protected override void LoadNext()
         {
             //using (await _loadMoreLock.WaitAsync())
             //{

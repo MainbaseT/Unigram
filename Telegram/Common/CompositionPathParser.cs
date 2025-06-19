@@ -231,7 +231,6 @@ namespace Telegram.Common
         {
             Vector2? currentPoint = null;
             Vector2? cubicPoint = null;
-            Vector2? quadrPoint = null;
             Vector2? initialPoint = null;
 
             void M(float x, float y)
@@ -384,18 +383,10 @@ namespace Telegram.Common
                 //context.fillPath();
             }
 
-            void setQuadrPoint(Vector2 p, Vector2 quadr)
-            {
-                currentPoint = p;
-                quadrPoint = quadr;
-                cubicPoint = null;
-            }
-
             void setCubicPoint(Vector2 p, Vector2 cubic)
             {
                 currentPoint = p;
                 cubicPoint = cubic;
-                quadrPoint = null;
             }
 
             void setInitPoint(Vector2 p)
@@ -408,7 +399,6 @@ namespace Telegram.Common
             {
                 currentPoint = p;
                 cubicPoint = null;
-                quadrPoint = null;
             }
 
             foreach (var segment in segments)

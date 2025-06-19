@@ -119,7 +119,7 @@ namespace Telegram.Views.Popups
         {
         }
 
-        private async void Share_Click(object sender, RoutedEventArgs e)
+        private void Share_Click(object sender, RoutedEventArgs e)
         {
             var builder = new List<string>();
             if (Server != null)

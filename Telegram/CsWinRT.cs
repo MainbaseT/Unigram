@@ -1,11 +1,10 @@
-﻿global using Point = Windows.Foundation.Point;
+﻿global using DispatcherQueue = Windows.System.DispatcherQueue;
 global using Object = Telegram.Td.Api.Object;
-global using User = Telegram.Td.Api.User;
+global using Point = Windows.Foundation.Point;
 global using TimeZone = Telegram.Td.Api.TimeZone;
-global using DispatcherQueue = Windows.System.DispatcherQueue;
+global using User = Telegram.Td.Api.User;
 global using VirtualKey = Windows.System.VirtualKey;
 global using VirtualKeyModifiers = Windows.System.VirtualKeyModifiers;
-
 using System;
 #if NET9_0_OR_GREATER
 using System.Runtime.CompilerServices;

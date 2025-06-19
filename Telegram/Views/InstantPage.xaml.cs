@@ -1177,7 +1177,7 @@ namespace Telegram.Views
 
             var view = new WebViewer();
 
-            async void loaded(object sender, RoutedEventArgs e)
+            void loaded(object sender, RoutedEventArgs e)
             {
                 view.Loaded -= loaded;
 

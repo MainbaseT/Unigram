@@ -281,7 +281,7 @@ namespace Telegram.ViewModels
         #region Multiple Delete
 
         public RelayCommand ChatsDeleteCommand { get; }
-        private async void ChatsDeleteExecute()
+        private void ChatsDeleteExecute()
         {
             //var chats = SelectedItems.ToList();
 
@@ -327,7 +327,7 @@ namespace Telegram.ViewModels
 
         #region Clear
 
-        public async void ClearTopic(ForumTopic chat)
+        public void ClearTopic(ForumTopic chat)
         {
             //var updated = await ClientService.SendAsync(new GetChat(chat.Id)) as Chat ?? chat;
             //var dialog = new DeleteChatPopup(ClientService, updated, Items.ChatList, true);
@@ -372,7 +372,7 @@ namespace Telegram.ViewModels
         #region Multiple Clear
 
         public RelayCommand ChatsClearCommand { get; }
-        private async void ChatsClearExecute()
+        private void ChatsClearExecute()
         {
             //var chats = SelectedItems.ToList();
 

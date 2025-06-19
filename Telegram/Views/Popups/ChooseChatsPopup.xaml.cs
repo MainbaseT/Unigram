@@ -968,6 +968,7 @@ namespace Telegram.Views.Popups
 
         #region Show
 
+        [Obsolete]
         public static async Task<Chat> PickChatAsync(INavigationService navigationService, string title, ChooseChatsOptions options)
         {
             var popup = new ChooseChatsPopup();
@@ -985,6 +986,7 @@ namespace Telegram.Views.Popups
             return popup.ViewModel.SelectedItems.FirstOrDefault();
         }
 
+        [Obsolete]
         public static async Task<User> PickUserAsync(IClientService clientService, INavigationService navigationService, string title, bool contact)
         {
             return clientService.GetUser(await PickChatAsync(navigationService, title, contact ? ChooseChatsOptions.Contacts : new ChooseChatsOptions()
@@ -1003,6 +1005,7 @@ namespace Telegram.Views.Popups
             }));
         }
 
+        [Obsolete]
         public static async Task<IList<Chat>> PickChatsAsync(INavigationService navigationService, string title, long[] selected, ChooseChatsOptions options, ListViewSelectionMode selectionMode = ListViewSelectionMode.Multiple, bool allowEmptySelection = false)
         {
             var popup = new ChooseChatsPopup();
@@ -1022,6 +1025,7 @@ namespace Telegram.Views.Popups
             return popup.ViewModel.SelectedItems.ToList();
         }
 
+        [Obsolete]
         public static async Task<IList<User>> PickUsersAsync(IClientService clientService, INavigationService navigationService, string title, ListViewSelectionMode selectionMode = ListViewSelectionMode.Multiple, bool allowEmptySelection = false)
         {
             return (await PickChatsAsync(navigationService, title, Array.Empty<long>(), ChooseChatsOptions.InviteUsers, selectionMode, allowEmptySelection))?.Select(x => clientService.GetUser(x)).Where(x => x != null).ToList();
@@ -1059,6 +1063,7 @@ namespace Telegram.Views.Popups
 
         #region PickFiltersAsync
 
+        [Obsolete]
         public static async Task<IList<ChatFolderElement>> AddExecute(INavigationService navigationService, bool include, bool allowFilters, bool business, IList<ChatFolderElement> target)
         {
             if (allowFilters)

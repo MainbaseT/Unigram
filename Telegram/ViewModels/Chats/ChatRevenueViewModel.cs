@@ -290,7 +290,7 @@ namespace Telegram.ViewModels.Chats
             RaisePropertyChanged(nameof(WithdrawalEnabled));
         }
 
-        public async void Transfer()
+        public void Transfer()
         {
             //if (!IsAddressValid)
             //{

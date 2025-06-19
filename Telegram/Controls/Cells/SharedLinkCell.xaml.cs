@@ -164,7 +164,7 @@ namespace Telegram.Controls.Cells
                             }
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         //FileLog.e(e);
                     }
@@ -302,7 +302,7 @@ namespace Telegram.Controls.Cells
             _navigationService.NavigateToInstant(link);
         }
 
-        private async void Hyperlink_Click(Hyperlink sender, Uri uri)
+        private void Hyperlink_Click(Hyperlink sender, Uri uri)
         {
             MessageHelper.OpenUrl(_message.ClientService, _navigationService, uri.ToString());
         }
