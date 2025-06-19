@@ -176,7 +176,11 @@ namespace Telegram.ViewModels.Profile
                     if (cached != null && cached.GiftCount > 0)
                     {
                         AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
-                        _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+
+                        if (Items.Count > 1)
+                        {
+                            _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+                        }
                     }
                 }
                 else
@@ -197,7 +201,11 @@ namespace Telegram.ViewModels.Profile
                     if (user.Id != ClientService.Options.MyId && cached != null && cached.GiftCount > 0)
                     {
                         AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
-                        _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+
+                        if (Items.Count > 1)
+                        {
+                            _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+                        }
                     }
 
                     await UpdateSharedCountAsync(chat);
@@ -234,7 +242,11 @@ namespace Telegram.ViewModels.Profile
                 if (ForumTopic == null && cached?.GiftCount > 0)
                 {
                     AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage)));
-                    _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+
+                    if (Items.Count > 1)
+                    {
+                        _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+                    }
                 }
 
                 if (typeSupergroup.IsChannel)
