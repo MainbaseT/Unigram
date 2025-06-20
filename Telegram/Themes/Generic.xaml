@@ -308,6 +308,8 @@
     </Style>
 
     <Style TargetType="local:MasterDetailView">
+        <Setter Property="BackgroundMargin"
+                Value="0,0,-8,-8" />
         <Setter Property="CornerRadius"
                 Value="{ThemeResource NavigationViewContentGridCornerRadius}" />
         <Setter Property="IsTabStop"
@@ -1769,17 +1771,22 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="chats:ChatBackgroundPresenter">
-                    <Grid BackgroundSizing="{TemplateBinding BackgroundSizing}"
-                          Background="{TemplateBinding Background}"
-                          BorderThickness="{TemplateBinding BorderThickness}"
-                          CornerRadius="{TemplateBinding CornerRadius}">
+                    <Grid CornerRadius="{TemplateBinding CornerRadius}">
+                        <Border BackgroundSizing="{TemplateBinding BackgroundSizing}"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8" />
                         <Border x:Name="Canvas"
+                                BackgroundSizing="{TemplateBinding BackgroundSizing}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
                                 Background="{TemplateBinding Foreground}"
-                                CornerRadius="{TemplateBinding CornerRadius}">
+                                CornerRadius="8">
                         </Border>
                         <Border x:Name="Negative"
-                                Background="{TemplateBinding BorderBrush}"
-                                CornerRadius="{TemplateBinding CornerRadius}" />
+                                BackgroundSizing="{TemplateBinding BackgroundSizing}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding NegativeBrush}"
+                                CornerRadius="8" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

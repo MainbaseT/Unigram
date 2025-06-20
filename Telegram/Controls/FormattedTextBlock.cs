@@ -574,8 +574,9 @@ namespace Telegram.Controls
                     return monospaceFontFamily ?? new FontFamily("Consolas, " + Theme.Current.XamlAutoFontFamily);
                 }
 
-                foreach (var entity in runs)
+                for (int j = 0; j < runs.Count; j++)
                 {
+                    var entity = runs[j];
                     if (entity.Offset > previous)
                     {
                         direct.AddToCollection(inlines, CreateDirectRun(direct, text.Substring(previous, entity.Offset - previous), direction, fontSize: partFontSize));
@@ -855,7 +856,7 @@ namespace Telegram.Controls
                     direct.AddToCollection(blocks, paragraph);
                     workaround += part.Padding;
                 }
-                else
+                else if (i < styled.Paragraphs.Count - 1)
                 {
                     direct.AddToCollection(inlines, CreateDirectRun(direct, " ", direction));
                 }
