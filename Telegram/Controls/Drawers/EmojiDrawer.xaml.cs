@@ -330,7 +330,7 @@ namespace Telegram.Controls.Drawers
         public void InsertEmoji(EmojiSkinData emoji)
         {
             SettingsService.Current.Emoji.SetEmojiSkinTone(emoji);
-            SettingsService.Current.Emoji.AddRecentEmoji(emoji.Value);
+            SettingsService.Current.Emoji.AddRecentEmoji(emoji);
             ItemClick?.Invoke(this, new EmojiDrawerItemClickEventArgs(emoji));
         }
 
@@ -354,7 +354,7 @@ namespace Telegram.Controls.Drawers
                     }
                 }
 
-                SettingsService.Current.Emoji.AddRecentEmoji(data.Value);
+                SettingsService.Current.Emoji.AddRecentEmoji(data);
                 ItemClick?.Invoke(this, new EmojiDrawerItemClickEventArgs(e.ClickedItem));
             }
             else if (e.ClickedItem is StickerViewModel sticker)
@@ -384,7 +384,7 @@ namespace Telegram.Controls.Drawers
                 {
                     if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
                     {
-                        SettingsService.Current.Emoji.AddRecentEmoji($"{sticker.Emoji};{customEmoji.CustomEmojiId}");
+                        SettingsService.Current.Emoji.AddRecentEmoji(sticker.Emoji, customEmoji.CustomEmojiId);
                     }
 
                     ItemClick?.Invoke(this, new EmojiDrawerItemClickEventArgs(e.ClickedItem));

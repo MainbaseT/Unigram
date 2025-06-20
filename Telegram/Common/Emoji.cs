@@ -70,60 +70,52 @@ namespace Telegram.Common
 
     public partial class EmojiData
     {
-        protected EmojiData()
-        {
-
-        }
-
         public EmojiData(string value)
         {
             Value = value;
+            Emoji = value;
         }
 
         public string Value { get; protected set; }
+
+        public string Emoji { get; protected set; }
     }
 
     public partial class EmojiSkinData : EmojiData, INotifyPropertyChanged
     {
-        private readonly string _value;
-        private EmojiSkinTone _tone1;
-        private EmojiSkinTone _tone2;
-
         public EmojiSkinData(string value, EmojiSkinTone tone)
+            : base(value)
         {
-            _value = value;
             SetValue(tone);
         }
 
         public EmojiSkinData(string value, EmojiSkinTone tone1, EmojiSkinTone tone2)
+            : base(value)
         {
-            _value = value;
             SetValue(tone1, tone2);
         }
 
-        public string Emoji => _value;
-
-        public EmojiSkinTone Tone1 => _tone1;
-        public EmojiSkinTone Tone2 => _tone2;
+        public EmojiSkinTone Tone1 { get; private set; }
+        public EmojiSkinTone Tone2 { get; private set; }
 
         public void SetValue(EmojiSkinTone tone)
         {
-            if (tone == _tone1 && Value != null)
+            if (tone == Tone1)
             {
                 return;
             }
             else if (tone == EmojiSkinTone.Default)
             {
-                _tone1 = tone;
-                _tone2 = EmojiSkinTone.Default;
+                Tone1 = EmojiSkinTone.Default;
+                Tone2 = EmojiSkinTone.Default;
 
-                Value = _value;
+                Value = Emoji;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
 
                 return;
             }
 
-            var emoji = _value;
+            var emoji = Emoji;
             var result = string.Empty;
 
             if (char.IsSurrogatePair(emoji, 0))
@@ -142,8 +134,8 @@ namespace Telegram.Common
                 emoji = emoji.Substring(1);
             }
 
-            _tone1 = tone;
-            _tone2 = EmojiSkinTone.Default;
+            Tone1 = tone;
+            Tone2 = EmojiSkinTone.Default;
 
             Value = result + GetTone(tone);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
@@ -151,40 +143,40 @@ namespace Telegram.Common
 
         public void SetValue(EmojiSkinTone tone1, EmojiSkinTone tone2)
         {
-            if (tone1 == _tone1 && tone2 == _tone2 && Value != null)
+            if (tone1 == Tone1 && tone2 == Tone2 && Value != null)
             {
                 return;
             }
             else if (tone1 == EmojiSkinTone.Default || tone2 == EmojiSkinTone.Default)
             {
-                _tone1 = EmojiSkinTone.Default;
-                _tone2 = EmojiSkinTone.Default;
+                Tone1 = EmojiSkinTone.Default;
+                Tone2 = EmojiSkinTone.Default;
 
-                Value = _value;
+                Value = Emoji;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
 
                 return;
             }
 
-            var result = _value switch
+            var result = Emoji switch
             {
-                "\U0001F91D" => tone1 != tone2 ? "\U0001FAF1{0}\u200D\U0001FAF2{1}" : _value + "{0}",
-                "\U0001F46B" => tone1 != tone2 ? "\U0001F469{0}\u200D\U0001F91D\u200D\U0001F468{1}" : _value + "{0}",
-                "\U0001F46D" => tone1 != tone2 ? "\U0001F469{0}\u200D\U0001F91D\u200D\U0001F469{1}" : _value + "{0}",
-                "\U0001F46C" => tone1 != tone2 ? "\U0001F468{0}\u200D\U0001F91D\u200D\U0001F468{1}" : _value + "{0}",
+                "\U0001F91D" => tone1 != tone2 ? "\U0001FAF1{0}\u200D\U0001FAF2{1}" : Emoji + "{0}",
+                "\U0001F46B" => tone1 != tone2 ? "\U0001F469{0}\u200D\U0001F91D\u200D\U0001F468{1}" : Emoji + "{0}",
+                "\U0001F46D" => tone1 != tone2 ? "\U0001F469{0}\u200D\U0001F91D\u200D\U0001F469{1}" : Emoji + "{0}",
+                "\U0001F46C" => tone1 != tone2 ? "\U0001F468{0}\u200D\U0001F91D\u200D\U0001F468{1}" : Emoji + "{0}",
                 //"\U0001F469\u200D\u2764\uFE0F\u200D\U0001F468" => "\U0001F469{0}\u200D\u2764\uFE0F\u200D\U0001F468{1}",
                 //"\U0001F469\u200D\u2764\uFE0F\u200D\U0001F469" => "\U0001F469{0}\u200D\u2764\uFE0F\u200D\U0001F469{1}",
-                "\U0001F491" => tone1 != tone2 ? "\U0001F9D1{0}\u200D\u2764\uFE0F\u200D\U0001F9D1{1}" : _value + "{0}",
+                "\U0001F491" => tone1 != tone2 ? "\U0001F9D1{0}\u200D\u2764\uFE0F\u200D\U0001F9D1{1}" : Emoji + "{0}",
                 //"\U0001F468\u200D\u2764\uFE0F\u200D\U0001F468" => "\U0001F468{0}\u200D\u2764\uFE0F\u200D\U0001F468{1}",
                 //"\U0001F469\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F468" => "\U0001F469{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F468{1}",
                 //"\U0001F469\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F469" => "\U0001F469{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F469{1}",
-                "\U0001F48F" => tone1 != tone2 ? "\U0001F9D1{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F9D1{1}" : _value + "{0}",
+                "\U0001F48F" => tone1 != tone2 ? "\U0001F9D1{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F9D1{1}" : Emoji + "{0}",
                 //"\U0001F468\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F468" => "\U0001F468{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F468{1}",
-                _ => _value.Insert(2, "{0}") + "{1}"
+                _ => Emoji.Insert(2, "{0}") + "{1}"
             };
 
-            _tone1 = tone1;
-            _tone2 = tone2;
+            Tone1 = tone1;
+            Tone2 = tone2;
 
             Value = string.Format(result, GetTone(tone1), GetTone(tone2));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));

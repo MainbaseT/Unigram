@@ -135,6 +135,18 @@ namespace Telegram.Common
                 emoji = emoji.Replace(modifier, string.Empty);
             }
 
+            // TODO: should them rather be added to raw emojis?
+            emoji = emoji switch
+            {
+                "\U0001FAF1\u200D\U0001FAF2" => "\U0001F91D",
+                "\U0001F469\u200D\U0001F91D\u200D\U0001F468" => "\U0001F46B",
+                "\U0001F469\u200D\U0001F91D\u200D\U0001F469" => "\U0001F46D",
+                "\U0001F468\u200D\U0001F91D\u200D\U0001F468" => "\U0001F46C",
+                "\U0001F9D1\u200D\u2764\uFE0F\u200D\U0001F9D1" => "\U0001F491",
+                "\U0001F9D1\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F9D1" => "\U0001F48F",
+                _ => emoji
+            };
+
             return emoji;
         }
     }

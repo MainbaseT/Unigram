@@ -47,36 +47,17 @@ namespace Telegram.Services.Settings
 
         public bool HasSkinTone(EmojiSkinData data)
         {
-            var code = data.Value;
-
-            foreach (var modifier in _modifiers)
-            {
-                code = code.Replace(modifier, string.Empty);
-            }
-
-            return _container.Values.ContainsKey("Skin" + code);
+            return _container.Values.ContainsKey("Skin" + data.Emoji);
         }
 
         public void SetEmojiSkinTone(EmojiSkinData data)
         {
-            var code = data.Value;
-
-            foreach (var modifier in _modifiers)
-            {
-                code = code.Replace(modifier, string.Empty);
-            }
-
-            AddOrUpdateValue("Skin" + code, ((long)data.Tone1 << 32) | (uint)data.Tone2);
+            AddOrUpdateValue("Skin" + data.Emoji, ((long)data.Tone1 << 32) | (uint)data.Tone2);
         }
 
         public EmojiSkinData GetEmojiSkinTone(string code)
         {
             // TODO: does it make sense to cache values for fast access?
-
-            foreach (var modifier in _modifiers)
-            {
-                code = code.Replace(modifier, string.Empty);
-            }
 
             var tones = GetValueOrDefault("Skin" + code, (0L << 32) | 0u);
             int tone1 = (int)(tones >> 32);
@@ -90,16 +71,21 @@ namespace Telegram.Services.Settings
             return new EmojiSkinData(code, (EmojiSkinTone)tone1);
         }
 
-        public void AddRecentEmoji(string code)
+        public void AddRecentEmoji(EmojiData emoji)
+        {
+            AddRecentEmoji(emoji.Emoji);
+        }
+
+        public void AddRecentEmoji(string emoji, long customEmojiId)
+        {
+            AddRecentEmoji($"{emoji};{customEmojiId}");
+        }
+
+        private void AddRecentEmoji(string code)
         {
             lock (_recentEmojiLock)
             {
                 LoadRecentEmoji();
-
-                foreach (var modifier in _modifiers)
-                {
-                    code = code.Replace(modifier, string.Empty);
-                }
 
                 _emojiUseHistory.TryGetValue(code, out int count);
 
