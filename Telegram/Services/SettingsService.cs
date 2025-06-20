@@ -131,8 +131,6 @@ namespace Telegram.Services
             _container = container ?? ApplicationData.Current.LocalSettings;
         }
 
-
-
         public bool AddOrUpdateValue(string key, object value)
         {
             return AddOrUpdateValue(_container, key, value);

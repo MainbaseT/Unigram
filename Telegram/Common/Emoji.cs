@@ -101,19 +101,10 @@ namespace Telegram.Common
             SetValue(tone1, tone2);
         }
 
-        public EmojiSkinData(string value, EmojiSkinTone tone1, EmojiSkinTone tone2, string outline)
-        {
-            _value = value;
-            Outline = outline;
-            SetValue(tone1, tone2);
-        }
-
         public string Emoji => _value;
 
         public EmojiSkinTone Tone1 => _tone1;
         public EmojiSkinTone Tone2 => _tone2;
-
-        public string Outline { get; }
 
         public void SetValue(EmojiSkinTone tone)
         {
@@ -164,10 +155,10 @@ namespace Telegram.Common
             {
                 return;
             }
-            else if (tone1 == EmojiSkinTone.Default && tone2 == EmojiSkinTone.Default)
+            else if (tone1 == EmojiSkinTone.Default || tone2 == EmojiSkinTone.Default)
             {
-                _tone1 = tone1;
-                _tone2 = tone2;
+                _tone1 = EmojiSkinTone.Default;
+                _tone2 = EmojiSkinTone.Default;
 
                 Value = _value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
@@ -175,16 +166,27 @@ namespace Telegram.Common
                 return;
             }
 
-            var emoji = _value;
-            var result = string.Empty;
-
-            result = emoji.TrimEnd('\uFE0F');
-            result = result.Substring(0, 2) + GetTone(tone1) + result.Substring(2) + GetTone(tone2);
+            var result = _value switch
+            {
+                "\U0001F91D" => tone1 != tone2 ? "\U0001FAF1{0}\u200D\U0001FAF2{1}" : _value + "{0}",
+                "\U0001F46B" => tone1 != tone2 ? "\U0001F469{0}\u200D\U0001F91D\u200D\U0001F468{1}" : _value + "{0}",
+                "\U0001F46D" => tone1 != tone2 ? "\U0001F469{0}\u200D\U0001F91D\u200D\U0001F469{1}" : _value + "{0}",
+                "\U0001F46C" => tone1 != tone2 ? "\U0001F468{0}\u200D\U0001F91D\u200D\U0001F468{1}" : _value + "{0}",
+                //"\U0001F469\u200D\u2764\uFE0F\u200D\U0001F468" => "\U0001F469{0}\u200D\u2764\uFE0F\u200D\U0001F468{1}",
+                //"\U0001F469\u200D\u2764\uFE0F\u200D\U0001F469" => "\U0001F469{0}\u200D\u2764\uFE0F\u200D\U0001F469{1}",
+                "\U0001F491" => tone1 != tone2 ? "\U0001F9D1{0}\u200D\u2764\uFE0F\u200D\U0001F9D1{1}" : _value + "{0}",
+                //"\U0001F468\u200D\u2764\uFE0F\u200D\U0001F468" => "\U0001F468{0}\u200D\u2764\uFE0F\u200D\U0001F468{1}",
+                //"\U0001F469\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F468" => "\U0001F469{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F468{1}",
+                //"\U0001F469\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F469" => "\U0001F469{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F469{1}",
+                "\U0001F48F" => tone1 != tone2 ? "\U0001F9D1{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F9D1{1}" : _value + "{0}",
+                //"\U0001F468\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F468" => "\U0001F468{0}\u200D\u2764\uFE0F\u200D\U0001F48B\u200D\U0001F468{1}",
+                _ => _value.Insert(2, "{0}") + "{1}"
+            };
 
             _tone1 = tone1;
             _tone2 = tone2;
 
-            Value = result;
+            Value = string.Format(result, GetTone(tone1), GetTone(tone2));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
         }
 

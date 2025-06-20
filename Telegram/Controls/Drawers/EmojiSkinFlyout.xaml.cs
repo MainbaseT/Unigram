@@ -53,20 +53,20 @@ namespace Telegram.Controls.Drawers
 
                 var tone1 = new[]
                 {
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz12, EmojiSkinTone.Fitz6, _outlines.Item2),
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz3, EmojiSkinTone.Fitz6, _outlines.Item2),
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz4, EmojiSkinTone.Fitz6, _outlines.Item2),
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz5, EmojiSkinTone.Fitz6, _outlines.Item2),
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz6, _outlines.Item2),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz12, EmojiSkinTone.Fitz6),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz3, EmojiSkinTone.Fitz6),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz4, EmojiSkinTone.Fitz6),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz5, EmojiSkinTone.Fitz6),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz6),
                 };
 
                 var tone2 = new[]
                 {
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz12, _outlines.Item1),
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz3, _outlines.Item1),
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz4, _outlines.Item1),
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz5, _outlines.Item1),
-                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz6, _outlines.Item1),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz12),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz3),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz4),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz5),
+                    new EmojiSkinData(emoji.Emoji, EmojiSkinTone.Fitz6, EmojiSkinTone.Fitz6),
                 };
 
                 DoubleRoot.Visibility = Visibility.Visible;
@@ -148,7 +148,9 @@ namespace Telegram.Controls.Drawers
                 var outline = content.Children[1] as TextBlock;
 
                 textBlock.Text = emoji.Value;
-                outline.Text = emoji.Outline;
+                outline.Text = sender == ScrollingHost1
+                    ? _outlines.Item2 ?? string.Empty
+                    : _outlines.Item1 ?? string.Empty;
             }
 
             args.Handled = true;
@@ -182,12 +184,12 @@ namespace Telegram.Controls.Drawers
             if (tone1 != null)
             {
                 Outline1.Text = tone1.Value;
-                Outline2.Text = tone1.Outline;
+                Outline2.Text = _outlines.Item2;
             }
             else if (tone2 != null)
             {
                 Outline1.Text = tone2.Value;
-                Outline2.Text = tone2.Outline;
+                Outline2.Text = _outlines.Item1;
             }
             else
             {
