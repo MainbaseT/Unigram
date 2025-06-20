@@ -935,7 +935,7 @@ namespace Telegram.Views
                         _newestItemAsFooter?.UpdatePadding(-1, 0);
 
                         _newestItemAsFooter = container;
-                        _newestItemAsFooter.UpdatePadding(-1, _messagesScrollBarPadding);
+                        _newestItemAsFooter.UpdatePadding(-1, _messagesHeaderRootPadding);
                     }
                 }
                 else

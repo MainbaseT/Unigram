@@ -714,7 +714,7 @@ namespace Telegram.Views
                     _newestItemAsFooter?.UpdatePadding(-1, 0);
 
                     _newestItemAsFooter = container;
-                    _newestItemAsFooter.UpdatePadding(-1, _messagesScrollBarPadding);
+                    _newestItemAsFooter.UpdatePadding(-1, _messagesHeaderRootPadding);
                 }
 
                 if (container == _oldestItemAsHeader && !message.IsFirst)
@@ -6722,7 +6722,7 @@ namespace Telegram.Views
                 }
 
                 _newestItemAsFooter = _newestItem;
-                _newestItemAsFooter?.UpdatePadding(-1, _messagesScrollBarPadding);
+                _newestItemAsFooter?.UpdatePadding(-1, _messagesHeaderRootPadding);
             }
             else if (_newestItemAsFooter != null && clear)
             {
@@ -6798,8 +6798,8 @@ namespace Telegram.Views
 
         public void UpdateMessagesHeaderPadding(float padding, bool animate, float scrollBar)
         {
-            var changed = _messagesScrollBarPadding != scrollBar;
-            if (changed || _messageScrollBarPaddingBottom != animate)
+            var scrollBarChanged = _messagesScrollBarPadding != scrollBar;
+            if (scrollBarChanged || _messageScrollBarPaddingBottom != animate)
             {
                 _messagesScrollBarPadding = scrollBar;
                 _messageScrollBarPaddingBottom = animate;
@@ -6807,19 +6807,8 @@ namespace Telegram.Views
                 Messages.ScrollingHost.SetVerticalPadding(animate ? 0 : scrollBar, animate ? scrollBar : 0);
             }
 
-            if (_oldestItemAsHeaderNeeded != !animate || changed)
-            {
-                _oldestItemAsHeaderNeeded = !animate;
-                UpdateOldestItemAsHeader();
-            }
-
-            if (_newestItemAsFooterNeeded != animate || changed)
-            {
-                _newestItemAsFooterNeeded = animate;
-                UpdateNewestItemAsFooter();
-            }
-
-            if (_messagesHeaderRootPadding != padding)
+            var changed = _messagesHeaderRootPadding != padding;
+            if (changed)
             {
                 var diff = _messagesHeaderRootPadding - padding;
 
@@ -6853,6 +6842,18 @@ namespace Telegram.Views
                     visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, -32 + padding);
                     visual.Properties.InsertVector3("Translation", Vector3.Zero);
                 }
+            }
+
+            if (_oldestItemAsHeaderNeeded != !animate || scrollBarChanged)
+            {
+                _oldestItemAsHeaderNeeded = !animate;
+                UpdateOldestItemAsHeader();
+            }
+
+            if (_newestItemAsFooterNeeded != animate || changed)
+            {
+                _newestItemAsFooterNeeded = animate;
+                UpdateNewestItemAsFooter();
             }
         }
 
