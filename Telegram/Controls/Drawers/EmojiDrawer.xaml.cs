@@ -338,6 +338,22 @@ namespace Telegram.Controls.Drawers
         {
             if (e.ClickedItem is EmojiData data)
             {
+                if (data is EmojiSkinData skin && !SettingsService.Current.Emoji.HasSkinTone(skin))
+                {
+                    var container = ScrollingHost.ContainerFromItem(e.ClickedItem);
+                    if (container != null)
+                    {
+                        var flyout = new Flyout
+                        {
+                            FlyoutPresenterStyle = BootStrapper.Current.Resources["CommandFlyoutPresenterStyle"] as Style,
+                        };
+
+                        flyout.Content = new EmojiSkinFlyout(this, flyout, skin);
+                        flyout.ShowAt(container as UIElement, FlyoutPlacementMode.Top);
+                        return;
+                    }
+                }
+
                 SettingsService.Current.Emoji.AddRecentEmoji(data.Value);
                 ItemClick?.Invoke(this, new EmojiDrawerItemClickEventArgs(e.ClickedItem));
             }
