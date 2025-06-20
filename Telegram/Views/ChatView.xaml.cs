@@ -2989,17 +2989,17 @@ namespace Telegram.Views
                             }
 
                             ViewModel.ClientService.CancelDownloadFile(file);
-                            ViewModel.ClientService.Send(new DeleteFileW(file.Id));
+                            ViewModel.ClientService.Send(new DeleteFile(file.Id));
 
                             if (x.Content is MessageVideo video)
                             {
                                 foreach (var vid in video.AlternativeVideos)
                                 {
                                     ViewModel.ClientService.CancelDownloadFile(vid.HlsFile);
-                                    ViewModel.ClientService.Send(new DeleteFileW(vid.HlsFile.Id));
+                                    ViewModel.ClientService.Send(new DeleteFile(vid.HlsFile.Id));
 
                                     ViewModel.ClientService.CancelDownloadFile(vid.Video);
-                                    ViewModel.ClientService.Send(new DeleteFileW(vid.Video.Id));
+                                    ViewModel.ClientService.Send(new DeleteFile(vid.Video.Id));
                                 }
                             }
 

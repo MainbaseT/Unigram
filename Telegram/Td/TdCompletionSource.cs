@@ -6,7 +6,6 @@
 //
 using System;
 using System.Threading.Tasks;
-using Telegram.Td.Api;
 
 namespace Telegram.Td
 {

@@ -353,7 +353,7 @@ namespace Telegram.Services
                     else if (set.Document.Local.IsDownloadingCompleted)
                     {
                         // Delete the file from chat cache as it isn't needed anymore
-                        _clientService.Send(new DeleteFileW(set.Document.Id));
+                        _clientService.Send(new DeleteFile(set.Document.Id));
                     }
                 }
             }

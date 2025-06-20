@@ -250,5 +250,10 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageAlbumLastMessage);
         }
+
+        public NativeObject ToUnmanaged()
+        {
+            throw null;
+        }
     }
 }

@@ -113,7 +113,7 @@ namespace Telegram.Services
                 }
                 catch (System.IO.FileNotFoundException)
                 {
-                    Send(new DeleteFileW(file.Id));
+                    Send(new DeleteFile(file.Id));
                 }
                 catch { }
 
@@ -278,7 +278,7 @@ namespace Telegram.Services
 
                 if (file.Local.IsDownloadingCompleted && !NativeUtils.FileExists(file.Local.Path))
                 {
-                    Send(new DeleteFileW(file.Id));
+                    Send(new DeleteFile(file.Id));
                 }
 
                 return file;
