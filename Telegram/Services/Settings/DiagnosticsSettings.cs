@@ -171,7 +171,7 @@ namespace Telegram.Services.Settings
         private bool? _spoilerEffectDebug;
         public bool SpoilerEffectDebug
         {
-            get => _spoilerEffectDebug ??= GetValueOrDefault("SpoilerEffectDebug", Constants.DEBUG);
+            get => _spoilerEffectDebug ??= GetValueOrDefault("SpoilerEffectDebug", true);
             set => AddOrUpdateValue(ref _spoilerEffectDebug, "SpoilerEffectDebug", value);
         }
 
