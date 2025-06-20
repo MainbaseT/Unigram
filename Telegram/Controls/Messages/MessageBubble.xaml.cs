@@ -2846,7 +2846,9 @@ namespace Telegram.Controls.Messages
                 var area = album.Highlight(options);
                 if (!area.IsEmpty)
                 {
-                    solid.Offset = area.ToOffset();
+                    var point = Media.TransformToVector2(ContentPanel);
+                    var offset = area.ToOffset();
+                    solid.Offset = new Vector3(offset.X, point.Y + offset.Y, 0);
                     solid.Size = area.ToSizeF();
                 }
             }
