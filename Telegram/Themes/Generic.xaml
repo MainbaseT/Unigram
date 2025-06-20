@@ -1686,10 +1686,11 @@
                                        FontSize="{TemplateBinding FontSize}"
                                        TextAlignment="{TemplateBinding TextAlignment}"
                                        TextTrimming="{TemplateBinding TextTrimming}"
+                                       TextWrapping="{TemplateBinding TextWrapping}"
                                        MaxLines="{TemplateBinding MaxLines}"
                                        OverflowContentTarget="{TemplateBinding OverflowContentTarget}"
-                                       HorizontalTextAlignment="DetectFromContent"
-                                       TextReadingOrder="UseFlowDirection"
+                                       HorizontalTextAlignment="{TemplateBinding HorizontalTextAlignment}"
+                                       TextReadingOrder="{TemplateBinding TextReadingOrder}"
                                        OpticalMarginAlignment="None" />
                     </Grid>
                 </ControlTemplate>

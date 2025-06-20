@@ -1517,6 +1517,32 @@ namespace Telegram.Controls
 
         #endregion
 
+        #region TextAlignment HorizontalTextAlignment
+
+        public TextAlignment HorizontalTextAlignment
+        {
+            get { return (TextAlignment)GetValue(HorizontalTextAlignmentProperty); }
+            set { SetValue(HorizontalTextAlignmentProperty, value); }
+        }
+
+        public static readonly DependencyProperty HorizontalTextAlignmentProperty =
+            DependencyProperty.Register("HorizontalTextAlignment", typeof(TextAlignment), typeof(FormattedTextBlock), new PropertyMetadata(TextAlignment.Left));
+
+        #endregion
+
+        #region TextReadingOrder TextReadingOrder
+
+        public TextReadingOrder TextReadingOrder
+        {
+            get { return (TextReadingOrder)GetValue(TextReadingOrderProperty); }
+            set { SetValue(TextReadingOrderProperty, value); }
+        }
+
+        public static readonly DependencyProperty TextReadingOrderProperty =
+            DependencyProperty.Register("TextReadingOrder", typeof(TextReadingOrder), typeof(FormattedTextBlock), new PropertyMetadata(TextReadingOrder.DetectFromContent));
+
+        #endregion
+
         #region MaxLines
 
         public int MaxLines
