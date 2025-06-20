@@ -367,26 +367,6 @@ namespace Telegram.Common
             Debug.Assert(count == _rawEmojis.Count);
         }
 
-        public static bool IsEmoji(string text)
-        {
-            var high = text[0];
-
-            // Surrogate pair (U+1D000-1F77F)
-            if (0xd800 <= high && high <= 0xdbff && text.Length >= 2)
-            {
-                var low = text[1];
-                var codepoint = (high - 0xd800) * 0x400 + (low - 0xdc00) + 0x10000;
-
-                return codepoint is >= 0x1d000 and <= 0x1f77f;
-
-            }
-            else
-            {
-                // Not surrogate pair (U+2100-27BF)
-                return high is >= (char)0x2100 and <= (char)0x27bf;
-            }
-        }
-
         public static IEnumerable<string> EnumerateByComposedCharacterSequence(string text)
         {
             var last = string.Empty;
@@ -410,7 +390,7 @@ namespace Telegram.Common
                         last += text[i + 1];
                     }
 
-                    joiner = IsRegionalIndicator(text, i) && last.Length == 2;
+                    joiner = last.Length == 2 && IsRegionalIndicator(text, i);
                     joiner = joiner || IsTagIndicator(text, i + 2) || IsTagIndicator(text, i);
                     i++;
                 }
@@ -435,6 +415,7 @@ namespace Telegram.Common
                 else if (i > 0 && text[i - 1] == 0x200D)
                 {
                     last += text[i];
+                    joiner = false;
                 }
                 else
                 {
@@ -468,16 +449,98 @@ namespace Telegram.Common
             }
         }
 
-        public static bool IsSkinModifierCharacter(string s, int index)
+        public static IEnumerable<string> EnumerateByComposedCharacterSequenceReverse(string text)
         {
-            if (index + 2 <= s.Length)
+            var last = string.Empty;
+            var joiner = true;
+
+            for (int i = text.Length - 1; i >= 0; i--)
             {
-                char c1 = s[index + 0];
-                char c2 = s[index + 1];
-                return c1 == '\uD83C' && c2 >= '\uDFFB' && c2 <= '\uDFFF';
+                if (i > 0 && (char.IsSurrogatePair(text, i - 1) || IsKeyCapCharacter(text, i - 1) || IsModifierCharacter(text, i - 1)))
+                {
+                    // skin modifier for emoji diversity acts as a joiner
+                    var skin = IsSkinModifierCharacter(text, i - i);
+                    if (!joiner && !skin)
+                    {
+                        yield return last;
+                        last = string.Empty;
+                    }
+
+                    if (!skin)
+                    {
+                        last = text[i] + last;
+                        last = text[i - 1] + last;
+                    }
+
+                    joiner = last.Length == 2 && IsRegionalIndicator(text, i - 3);
+                    joiner = joiner || IsTagIndicator(text, i - 3) || IsTagIndicator(text, i - 1);
+                    i--;
+                }
+                else if (text[i] == 0x200D) // zero width joiner
+                {
+                    last = text[i] + last;
+                    joiner = true;
+                }
+                else if (text[i] == 0xFE0F) // variation selector
+                {
+                    last = text[i] + last;
+
+                    if (i + 1 < text.Length && text[i + 1] == 0x200D)
+                    {
+                        joiner = true;
+                    }
+                }
+                else if (text[i] == 0x20E3)
+                {
+                    last = text[i] + last;
+                }
+                else if (i < text.Length - 1 && text[i + 1] == 0x200D)
+                {
+                    last = text[i] + last;
+                    joiner = false;
+                }
+                else
+                {
+                    if (last.Length > 0)
+                    {
+                        yield return last;
+                        last = string.Empty;
+                    }
+
+                    if (i - 3 > 0 && IsSkinModifierCharacter(text, i - 3))
+                    {
+                        last = text[i] + last;
+                    }
+                    else if (i > 0 && text[i - 1] == 0x200D)
+                    {
+                        last = text[i] + last;
+                    }
+                    else
+                    {
+                        yield return text[i].ToString();
+                        last = string.Empty;
+                    }
+
+                    joiner = true;
+                }
             }
 
-            return false;
+            if (last.Length > 0)
+            {
+                yield return last;
+            }
+        }
+
+        public static bool IsSkinModifierCharacter(string s, int index)
+        {
+            if (index < 0 || index + 1 >= s.Length)
+            {
+                return false;
+            }
+
+            char c1 = s[index + 0];
+            char c2 = s[index + 1];
+            return c1 == '\uD83C' && c2 >= '\uDFFB' && c2 <= '\uDFFF';
         }
 
         public static bool IsKeyCapCharacter(string s, int index)
@@ -492,7 +555,7 @@ namespace Telegram.Common
 
         public static bool IsTagIndicator(string s, int index)
         {
-            if (index + 2 > s.Length)
+            if (index < 0 || index + 1 >= s.Length)
             {
                 return false;
             }
@@ -518,7 +581,7 @@ namespace Telegram.Common
 
         public static bool IsRegionalIndicator(string s, int index)
         {
-            if (index + 4 > s.Length)
+            if (index < 0 || index + 3 >= s.Length)
             {
                 return false;
             }

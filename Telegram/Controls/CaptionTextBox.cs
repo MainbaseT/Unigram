@@ -201,10 +201,6 @@ namespace Telegram.Controls
                 return;
             }
 
-            Document.GetText(TextGetOptions.NoHidden, out string text);
-
-            var query = text.Substring(0, Math.Min(Document.Selection.EndPosition, text.Length));
-
             void ClearAutocomplete()
             {
                 _emojiQuery = null;
@@ -222,29 +218,29 @@ namespace Telegram.Controls
                 }
             }
 
-            if (AutocompleteEntityFinder.TrySearch(query, out AutocompleteEntity entity, out string result, out int index))
+            var selection = Document.Selection.GetClone();
+            var entity = AutocompleteEntityFinder.Search(selection, out string result, out int index);
+
+            if (entity == AutocompleteEntity.Username && viewModel is ComposeViewModel compose)
             {
-                if (entity == AutocompleteEntity.Username && viewModel is ComposeViewModel compose)
+                if (compose.Chat.Type is ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false })
                 {
-                    if (compose.Chat.Type is ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false })
-                    {
-                        ClearAutocomplete();
-                        SetAutocomplete(new ChatTextBox.UsernameCollection(viewModel.ClientService, compose.Chat.Id, compose.ThreadId, result, false, true, false));
-                        return;
-                    }
-                }
-                else if (entity == AutocompleteEntity.Sticker)
-                {
-                    ShowOrUpdateEmojiFlyout(index, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, result, ChatId));
-                    SetAutocomplete(null);
+                    ClearAutocomplete();
+                    SetAutocomplete(new ChatTextBox.UsernameCollection(viewModel.ClientService, compose.Chat.Id, compose.ThreadId, result, false, true, false));
                     return;
                 }
-                else if (entity == AutocompleteEntity.Emoji)
-                {
-                    ShowOrUpdateEmojiFlyout(index, new ChatTextBox.EmojiCollection(ViewModel.ClientService, result, ChatId));
-                    SetAutocomplete(null);
-                    return;
-                }
+            }
+            else if (entity == AutocompleteEntity.Sticker)
+            {
+                ShowOrUpdateEmojiFlyout(index, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, result, ChatId));
+                SetAutocomplete(null);
+                return;
+            }
+            else if (entity == AutocompleteEntity.Emoji)
+            {
+                ShowOrUpdateEmojiFlyout(index, new ChatTextBox.EmojiCollection(ViewModel.ClientService, result, ChatId));
+                SetAutocomplete(null);
+                return;
             }
 
             ClearAutocomplete();

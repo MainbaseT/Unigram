@@ -387,6 +387,8 @@ namespace Telegram.Controls.Chats
             }
 
             var query = text.Substring(0, Math.Min(Document.Selection.EndPosition, text.Length));
+            var selection = Document.Selection.GetClone();
+
             var prev = ViewModel.Autocomplete;
 
             if (prev is AutocompleteCollection collection)
@@ -394,7 +396,7 @@ namespace Telegram.Controls.Chats
                 prev = collection.Source;
             }
 
-            if (TryGetAutocomplete(text, query, prev, fromTextChanging, out var autocomplete, out bool recycle, out bool inline))
+            if (TryGetAutocomplete(selection, text, query, prev, fromTextChanging, out var autocomplete, out bool recycle, out bool inline))
             {
                 ClearInlineBotResults();
                 SetAutocomplete(autocomplete, recycle, inline);
@@ -424,33 +426,13 @@ namespace Telegram.Controls.Chats
             }
         }
 
-        private bool TryGetAutocomplete(string text, string query, IAutocompleteCollection prev, bool fromTextChanging, out IAutocompleteCollection autocomplete, out bool recycle, out bool inline)
+        private bool TryGetAutocomplete(ITextRange selection, string text, string query, IAutocompleteCollection prev, bool fromTextChanging, out IAutocompleteCollection autocomplete, out bool recycle, out bool inline)
         {
             autocomplete = null;
             recycle = false;
             inline = false;
 
-            if (Emoji.ContainsSingleEmoji(text) && ViewModel.ComposerHeader?.EditingMessage == null)
-            {
-                var chat = ViewModel.Chat;
-                if (chat == null || !chat.CanSendOtherMessages(ViewModel.ClientService))
-                {
-                    return false;
-                }
-
-                ShowOrUpdateEmojiFlyout(0, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, text, chat.Id));
-                inline = true;
-
-                if (prev is SearchStickersCollection collection && !collection.IsCustomEmoji && prev.Query.Equals(text.Trim()))
-                {
-                    autocomplete = prev;
-                    return true;
-                }
-
-                autocomplete = new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, false, text.Trim(), chat.Id);
-                return true;
-            }
-            else if (AutocompleteEntityFinder.TrySearch(query, out AutocompleteEntity entity, out string result, out int index))
+            if (AutocompleteEntityFinder.TrySearch(selection, out AutocompleteEntity entity, out string result, out int index))
             {
                 if (entity == AutocompleteEntity.Username)
                 {
@@ -484,11 +466,35 @@ namespace Telegram.Controls.Chats
                 }
                 else if (entity == AutocompleteEntity.Sticker)
                 {
-                    ShowOrUpdateEmojiFlyout(index, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, result, ViewModel.Chat?.Id ?? 0));
+                    if (index == 0 && ViewModel.ComposerHeader?.EditingMessage == null)
+                    {
+                        ShowOrUpdateEmojiFlyout(0, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, text, ViewModel.Chat?.Id ?? 0));
+                        inline = true;
 
-                    autocomplete = null;
-                    inline = true;
-                    return true;
+                        var chat = ViewModel.Chat;
+                        if (chat == null || !chat.CanSendOtherMessages(ViewModel.ClientService))
+                        {
+                            autocomplete = null;
+                            return true;
+                        }
+
+                        if (prev is SearchStickersCollection collection && !collection.IsCustomEmoji && prev.Query.Equals(text.Trim()))
+                        {
+                            autocomplete = prev;
+                            return true;
+                        }
+
+                        autocomplete = new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, false, text.Trim(), chat.Id);
+                        return true;
+                    }
+                    else
+                    {
+                        ShowOrUpdateEmojiFlyout(index, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, result, ViewModel.Chat?.Id ?? 0));
+
+                        autocomplete = null;
+                        inline = true;
+                        return true;
+                    }
                 }
                 else if (entity == AutocompleteEntity.Emoji && fromTextChanging)
                 {

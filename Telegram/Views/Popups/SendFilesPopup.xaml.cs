@@ -346,10 +346,8 @@ namespace Telegram.Views.Popups
                 return;
             }
 
-            CaptionInput.Document.GetText(TextGetOptions.None, out string text);
-
-            var query = text.Substring(0, Math.Min(CaptionInput.Document.Selection.EndPosition, text.Length));
-            var entity = AutocompleteEntityFinder.Search(query, out string result, out int index);
+            var selection = CaptionInput.Document.Selection.GetClone();
+            var entity = AutocompleteEntityFinder.Search(selection, out string result, out int index);
 
             if (e.ClickedItem is User user && entity == AutocompleteEntity.Username)
             {
