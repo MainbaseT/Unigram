@@ -7,6 +7,7 @@
 using Rg.DiffUtils;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
@@ -17,7 +18,7 @@ using Windows.UI.Xaml.Data;
 
 namespace Telegram.Collections
 {
-    public partial class SearchCollection<T, TSource> : DiffObservableCollection<T>, ISupportIncrementalLoading where TSource : IList<T>
+    public partial class SearchCollection<T, TSource> : MvxObservableCollection<T>, ISupportIncrementalLoading where TSource : IList<T>, ISupportIncrementalLoading, INotifyCollectionChanged
     {
         private readonly Func<object, string, TSource> _factory;
         private object _sender;
@@ -25,10 +26,10 @@ namespace Telegram.Collections
         private CancellationTokenSource _cancellation;
 
         private TSource _source;
-        private ISupportIncrementalLoading _incrementalSource;
 
         private bool _initialized;
         private bool _loading;
+        private bool _replacing;
 
         public SearchCollection(Func<object, string, TSource> factory, IDiffHandler<T> handler)
             : this(factory, null, handler)
@@ -87,14 +88,20 @@ namespace Telegram.Collections
 
         private async void UpdateImpl(TSource source, bool reentrancy)
         {
+            if (_source != null)
+            {
+                _source.CollectionChanged -= OnCollectionChanged;
+            }
+
             if (source is ISupportIncrementalLoading incremental && incremental.HasMoreItems)
             {
                 _source = source;
-                _incrementalSource = incremental;
+                _source.CollectionChanged += OnCollectionChanged;
 
                 if (_initialized)
                 {
                     _loading = true;
+                    _replacing = true;
 
                     var token = Cancel();
 
@@ -104,16 +111,15 @@ namespace Telegram.Collections
                     if (token.IsCancellationRequested)
                     {
                         _loading = false;
+                        _replacing = false;
                         return;
                     }
 
-                    _replacingDiff = true;
                     ReplaceDiff(diff);
-
-                    _replacingDiff = false;
                     UpdateEmpty();
 
                     _loading = false;
+                    _replacing = false;
 
                     // I'm not sure in what conditions this can happen, but it happens
                     if (Count < 1 && incremental.HasMoreItems && !reentrancy)
@@ -125,15 +131,20 @@ namespace Telegram.Collections
             else
             {
                 _source = default;
-                _incrementalSource = null;
 
                 Cancel();
 
-                _replacingDiff = true;
                 Clear();
-
-                _replacingDiff = false;
                 UpdateEmpty();
+            }
+        }
+
+        protected override void UpdateItems(IReadOnlyList<DiffItem<T>> items, IDiffHandler<T> diffHandler)
+        {
+            foreach (DiffItem<T> item in items)
+            {
+                // Swap new item with old one to have the same reference in both lists
+                _source[item.NewSeqIndex] = item.OldValue;
             }
         }
 
@@ -152,22 +163,22 @@ namespace Telegram.Collections
                 _loading = true;
 
                 var token = Cancel();
-                var result = await _incrementalSource?.LoadMoreItemsAsync(count);
+                var result = await _source?.LoadMoreItemsAsync(count);
 
                 if (result.Count > 0 && !token.IsCancellationRequested)
                 {
-                    var diff = await Task.Run(() => DiffUtil.CalculateDiff(this, _source, DefaultDiffHandler, DefaultOptions));
+                    //var diff = await Task.Run(() => DiffUtil.CalculateDiff(this, _source, DefaultDiffHandler, DefaultOptions));
 
-                    if (token.IsCancellationRequested)
-                    {
-                        _loading = false;
-                        return result;
-                    }
+                    //if (token.IsCancellationRequested)
+                    //{
+                    //    _loading = false;
+                    //    return result;
+                    //}
 
-                    _replacingDiff = true;
-                    ReplaceDiff(diff);
+                    //_replacingDiff = true;
+                    //ReplaceDiff(diff);
 
-                    _replacingDiff = false;
+                    //_replacingDiff = false;
                     UpdateEmpty();
                 }
 
@@ -178,39 +189,37 @@ namespace Telegram.Collections
             });
         }
 
-        private bool _replacingDiff;
-
-        protected override void InsertItem(int index, T item)
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            base.InsertItem(index, item);
-
-            if (_replacingDiff)
+            if (_replacing)
             {
                 return;
             }
 
-            _source?.Insert(index, item);
-        }
-
-        protected override void RemoveItem(int index)
-        {
-            base.RemoveItem(index);
-
-            if (_replacingDiff)
+            switch (e.Action)
             {
-                return;
+                case NotifyCollectionChangedAction.Add:
+                    InsertRange(e.NewStartingIndex, e.NewItems);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    Move(e.OldStartingIndex, e.NewStartingIndex);
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ReplaceWith(_source);
+                    break;
             }
-
-            _source?.RemoveAt(index);
         }
 
         public bool HasMoreItems
         {
             get
             {
-                if (_incrementalSource != null)
+                if (_source != null)
                 {
-                    return _incrementalSource.HasMoreItems;
+                    return _source.HasMoreItems;
                 }
 
                 _initialized = true;

@@ -78,14 +78,14 @@ namespace Telegram.ViewModels
                 {
                     if (update.CompleteDate != 0 && update.CompleteDate != fileDownload.CompleteDate)
                     {
-                        var first = Items.FirstOrDefault(x => x.IsFirst && x.CompleteDate != 0);
+                        var first = Items.Source.FirstOrDefault(x => x.IsFirst && x.CompleteDate != 0);
 
-                        var next = Items.IndexOf(first);
-                        var prev = Items.IndexOf(fileDownload);
+                        var next = Items.Source.IndexOf(first);
+                        var prev = Items.Source.IndexOf(fileDownload);
 
                         if (prev == 0 && next > 1)
                         {
-                            Items[1].IsFirst = true;
+                            Items.Source[1].IsFirst = true;
                         }
 
                         // If the future position is after the current(supposedly
@@ -98,8 +98,8 @@ namespace Telegram.ViewModels
 
                         if (next != prev)
                         {
-                            Items.Remove(fileDownload);
-                            Items.Insert(next >= 0 ? next : Items.Count, fileDownload);
+                            Items.Source.Remove(fileDownload);
+                            Items.Source.Insert(next >= 0 ? next : Items.Count, fileDownload);
                         }
 
                         if (first != null)

@@ -188,6 +188,8 @@ namespace Telegram.ViewModels
 
         public override void Subscribe()
         {
+            base.Subscribe();
+
             Aggregator.Subscribe<UpdateUser>(this, Handle)
                 .Subscribe<UpdateUserFullInfo>(Handle)
                 .Subscribe<UpdateBasicGroup>(Handle)

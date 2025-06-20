@@ -12,10 +12,10 @@
 //
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+using Rg.DiffUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace Telegram.Collections
     }
 
     public partial class MvxObservableCollection<T>
-        : ObservableCollection<T>
+        : DiffObservableCollection<T>
         , IMvxObservableCollection
         , IList<T>
     {
@@ -55,6 +55,21 @@ namespace Telegram.Collections
         /// Initializes a new instance of the <see cref="MvxObservableCollection{T}"/> class.
         /// </summary>
         public MvxObservableCollection()
+        {
+        }
+
+        public MvxObservableCollection(IDiffHandler<T> diffHandler)
+            : base(diffHandler, new DiffOptions())
+        {
+        }
+
+        public MvxObservableCollection(DiffOptions options)
+            : base((IDiffHandler<T>)DiffHandler<T>.Default, options)
+        {
+        }
+
+        public MvxObservableCollection(IDiffHandler<T> diffHandler, DiffOptions options)
+            : base(diffHandler, options)
         {
         }
 

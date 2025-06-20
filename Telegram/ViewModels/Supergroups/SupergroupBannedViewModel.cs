@@ -30,7 +30,7 @@ namespace Telegram.ViewModels.Supergroups
         {
             if (update.ChatId == _chat.Id)
             {
-                var item = Members.FirstOrDefault(x => x.MemberId.AreTheSame(update.NewChatMember.MemberId));
+                var item = Members.Source.FirstOrDefault(x => x.MemberId.AreTheSame(update.NewChatMember.MemberId));
                 if (item != null)
                 {
                     if (update.NewChatMember.Status is ChatMemberStatusBanned)
@@ -39,12 +39,12 @@ namespace Telegram.ViewModels.Supergroups
                     }
                     else
                     {
-                        Members.Remove(item);
+                        Members.Source.Remove(item);
                     }
                 }
                 else if (update.NewChatMember.Status is ChatMemberStatusBanned)
                 {
-                    Members.Insert(0, update.NewChatMember);
+                    Members.Source.Insert(0, update.NewChatMember);
                 }
             }
         }
@@ -85,18 +85,18 @@ namespace Telegram.ViewModels.Supergroups
                 return;
             }
 
-            var index = Members.IndexOf(member);
+            var index = Members.Source.IndexOf(member);
             if (index == -1)
             {
                 return;
             }
 
-            Members.Remove(member);
+            Members.Source.Remove(member);
 
             var response = await ClientService.SendAsync(new SetChatMemberStatus(chat.Id, member.MemberId, status));
-            if (response is Error && index < Members.Count)
+            if (response is Error && index < Members.Source.Count)
             {
-                Members.Insert(index, member);
+                Members.Source.Insert(index, member);
             }
         }
 

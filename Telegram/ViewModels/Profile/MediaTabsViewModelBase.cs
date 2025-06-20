@@ -111,12 +111,12 @@ namespace Telegram.ViewModels.Profile
 
                 BeginOnUIThread(() =>
                 {
-                    UpdateDeleteMessages(Media, table);
-                    UpdateDeleteMessages(Files, table);
-                    UpdateDeleteMessages(Links, table);
-                    UpdateDeleteMessages(Music, table);
-                    UpdateDeleteMessages(Voice, table);
-                    UpdateDeleteMessages(Animations, table);
+                    UpdateDeleteMessages(Media.Source, table);
+                    UpdateDeleteMessages(Files.Source, table);
+                    UpdateDeleteMessages(Links.Source, table);
+                    UpdateDeleteMessages(Music.Source, table);
+                    UpdateDeleteMessages(Voice.Source, table);
+                    UpdateDeleteMessages(Animations.Source, table);
                 });
             }
         }
@@ -126,9 +126,9 @@ namespace Telegram.ViewModels.Profile
             return true;
         }
 
-        private void UpdateDeleteMessages(SearchCollection<MessageWithOwner, MediaCollection> target, HashSet<long> table)
+        private void UpdateDeleteMessages(MediaCollection target, HashSet<long> table)
         {
-            target.Cancel();
+            //target.Cancel();
 
             for (int i = 0; i < target.Count; i++)
             {
@@ -137,6 +137,8 @@ namespace Telegram.ViewModels.Profile
                 {
                     target.RemoveAt(i);
                     i--;
+
+                    break;
                 }
             }
         }
