@@ -461,6 +461,8 @@ namespace Telegram.Views
 
                 BackButton.Visibility = Visibility.Collapsed;
                 Options.Visibility = Visibility.Collapsed;
+
+                // TODO: collapse this but provide a background for the header
                 ClipperOuter.Visibility = Visibility.Collapsed;
 
                 HeaderLeft.SizeChanged += Options_SizeChanged;
