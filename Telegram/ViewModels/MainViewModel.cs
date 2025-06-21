@@ -252,6 +252,7 @@ namespace Telegram.ViewModels
                 else
                 {
                     RaisePropertyChanged(nameof(SelectedFolder));
+                    RaisePropertyChanged(nameof(IsPrimaryFolderSelected));
                 }
 
                 foreach (var folder in _folders)
@@ -274,6 +275,8 @@ namespace Telegram.ViewModels
             {
                 Folders.Clear();
                 SelectedFolder = ChatFolderViewModel.Main;
+
+                RaisePropertyChanged(nameof(IsPrimaryFolderSelected));
             }
 
             Chats.Delegate?.UpdateChatFolders();
@@ -364,6 +367,7 @@ namespace Telegram.ViewModels
                 {
                     Logger.Info();
 
+                    RaisePropertyChanged(nameof(IsPrimaryFolderSelected));
                     Chats.SetChatList(value.ChatList);
                     Stories.SetList(value.ChatList is ChatListArchive
                         ? new StoryListArchive()
@@ -371,6 +375,8 @@ namespace Telegram.ViewModels
                 }
             }
         }
+
+        public bool IsPrimaryFolderSelected => Folders.Count > 0 ? _selectedFolder == Folders[0] : true;
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {

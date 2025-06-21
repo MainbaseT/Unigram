@@ -1710,6 +1710,15 @@ namespace Telegram.Views
             //    : Icons.Hamburger;
         }
 
+        private Visibility UpdateScrollingHostHeaderVisibility(MasterDetailState state, bool primaryFolderSelected)
+        {
+            return state == MasterDetailState.Compact
+                ? Visibility.Collapsed
+                : primaryFolderSelected
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
         private void UpdateListViewsSelectedItem(ChatMessageTopic openChat, bool fromSelection = false)
         {
             if (openChat.ChatId == 0 && ViewModel.Topics.Chat != null)

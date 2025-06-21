@@ -600,7 +600,7 @@
                                                        Grid.RowSpan="2">
                                 <ListView.Header>
                                     <StackPanel>
-                                        <Grid>
+                                        <Grid Visibility="{x:Bind UpdateScrollingHostHeaderVisibility(MasterDetail.CurrentState, ViewModel.IsPrimaryFolderSelected), Mode=OneWay}">
                                             <controls:SuggestedActionSetBirthdateCard x:Name="SetBirthdateCard"
                                                                                       x:Load="False"
                                                                                       Click="{x:Bind ViewModel.SetBirthdate}"
