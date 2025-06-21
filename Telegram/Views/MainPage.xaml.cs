@@ -3778,5 +3778,14 @@ namespace Telegram.Views
             LogoBasic = null;
             LogoEmoji = null;
         }
+
+        private void ChatFolders_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem == ViewModel.SelectedFolder)
+            {
+                var scrollViewer = ChatsList.GetScrollViewer();
+                scrollViewer?.ChangeView(null, 0, null);
+            }
+        }
     }
 }
