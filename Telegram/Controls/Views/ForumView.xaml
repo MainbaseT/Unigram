@@ -200,12 +200,6 @@
             <ItemsStackPanel Orientation="Horizontal" />
         </ItemsPanelTemplate>
 
-        <Style x:Name="VerticalBackgroundStyle"
-               TargetType="Border">
-            <Setter Property="Background"
-                    Value="{ThemeResource PageSubHeaderBackgroundBrush2}" />
-        </Style>
-
         <Style x:Name="VerticalListViewItemStyle"
                TargetType="controls:TopNavViewItem">
             <Setter Property="HorizontalAlignment"
@@ -373,6 +367,13 @@
                 CornerRadius="{ThemeResource NavigationViewContentGridCornerRadius}"
                 BorderThickness="{ThemeResource NavigationViewContentGridBorderThickness}"
                 BackgroundSizing="InnerBorderEdge"
+                Grid.RowSpan="2" />
+        <Border x:Name="VerticalBackgroundRoot"
+                Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
+                BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                BorderThickness="0,0,1,0"
+                BackgroundSizing="InnerBorderEdge"
+                Visibility="Collapsed"
                 Grid.RowSpan="2" />
 
         <Grid x:Name="Header"

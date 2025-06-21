@@ -10,7 +10,6 @@ using System.Linq;
 using Telegram.Common;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
-using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
@@ -21,7 +20,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Views
 {
@@ -76,10 +74,8 @@ namespace Telegram.Controls.Views
             {
                 ScrollingHost.Margin = new Thickness(0, 40, 0, 0);
 
-                // TODO: theming
-                BackgroundRoot.Background = BootStrapper.Current.Resources["PageSubHeaderBackgroundBrush2"] as Brush;
-                BackgroundRoot.CornerRadius = new CornerRadius(0);
-                BackgroundRoot.BorderThickness = new Thickness(0, 0, 1, 0);
+                BackgroundRoot.Visibility = Visibility.Collapsed;
+                VerticalBackgroundRoot.Visibility = Visibility.Visible;
                 Header.Visibility = Visibility.Collapsed;
 
                 Width = 72;
