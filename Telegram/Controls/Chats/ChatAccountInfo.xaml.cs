@@ -1,5 +1,8 @@
-﻿using System;
+﻿using LinqToVisualTree;
+using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Text;
 using Telegram.Common;
 using Telegram.Converters;
 using Telegram.Entities;
@@ -8,6 +11,8 @@ using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Controls.Chats
@@ -21,6 +26,11 @@ namespace Telegram.Controls.Chats
             InitializeComponent();
 
             DataContextChanged += OnDataContextChanged;
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new ChatAccountInfoAutomationPeer(this);
         }
 
         private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -139,6 +149,47 @@ namespace Telegram.Controls.Chats
 
                 BotVerifiedRoot.Visibility = Visibility.Visible;
             }
+        }
+    }
+
+    public partial class ChatAccountInfoAutomationPeer : FrameworkElementAutomationPeer
+    {
+        private readonly ChatAccountInfo _owner;
+
+        public ChatAccountInfoAutomationPeer(ChatAccountInfo owner)
+            : base(owner)
+        {
+            _owner = owner;
+        }
+
+        protected override string GetNameCore()
+        {
+            var builder = new StringBuilder();
+            var descendants = _owner.DescendantsAndSelf();
+
+            foreach (UIElement child in descendants.Where(x => x is TextBlock or RichTextBlock))
+            {
+                var view = AutomationProperties.GetAccessibilityView(child);
+                if (view == AccessibilityView.Raw)
+                {
+                    continue;
+                }
+
+                var peer = FrameworkElementAutomationPeer.FromElement(child);
+                if (peer == null)
+                {
+                    continue;
+                }
+
+                if (builder.Length > 0)
+                {
+                    builder.Append(", ");
+                }
+
+                builder.Append(peer.GetName());
+            }
+
+            return builder.ToString();
         }
     }
 }

@@ -649,7 +649,7 @@
         </DataTemplate>
 
         <DataTemplate x:Name="ServiceMessageAccountInfoTemplate">
-            <messages:MessageService AutomationProperties.Name="{CustomResource UnreadMessages}"
+            <messages:MessageService IsTabStop="False"
                                      HorizontalAlignment="Stretch"
                                      CornerRadius="0"
                                      Margin="0,4,0,0"
@@ -672,6 +672,7 @@
                 </messages:MessageService.Template>
 
                 <chats:ChatAccountInfo x:Name="AccountInfo"
+                                       IsTabStop="True"
                                        HorizontalAlignment="Stretch"
                                        VerticalAlignment="Stretch" />
             </messages:MessageService>
