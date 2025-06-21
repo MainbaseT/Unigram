@@ -146,7 +146,7 @@ namespace Telegram.Views
                 var slideOut2 = properties.Compositor.CreateExpressionAnimation($"vector3({expOut2}, {expOut2}, 1)");
                 slideOut2.SetReferenceParameter("scrollViewer", properties);
 
-                var expOut3y = "-clamp(((-(scrollViewer.Translation.Y + 164) / 32) * 16), 0, 16)";
+                var expOut3y = "scrollViewer.Translation.Y > 0 ? scrollViewer.Translation.Y : -clamp(((-(scrollViewer.Translation.Y + 164) / 32) * 16), 0, 16)";
                 var expOut3x = "-clamp(((-(scrollViewer.Translation.Y + properties.ActualHeight - 32) / 32) * 16), 0, 16)";
                 var slideOut3 = properties.Compositor.CreateExpressionAnimation($"vector3({expOut3x}, {expOut3y}, 0)");
                 slideOut3.SetReferenceParameter("scrollViewer", properties);
