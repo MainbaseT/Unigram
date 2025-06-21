@@ -455,13 +455,15 @@ namespace Telegram.Controls
                 return;
             }
 
+            var autoFontSize = fontSize;
+            var xamlFontSize = TextBlock.FontSize;
+
             if (AutoFontSize && fontSize == 0)
             {
                 fontSize = Theme.Current.MessageFontSize;
             }
 
             var direct = XamlDirect.GetDefault();
-            var xamlFontSize = TextBlock.FontSize;
 
             // PERF: fast path if both model and view have one paragraph with one run
             if (_fastRun != null && styled != null && prevPlain && styled.IsPlain && prevDirection == styled.Paragraphs[0].Direction && !HasCodeBlocks)
@@ -507,10 +509,16 @@ namespace Telegram.Controls
             TextParagraphType lastType = null;
             TextParagraphType firstType = null;
 
+            FontFamily monospaceFontFamily = null;
+            FontFamily GetMonospaceFontFamily()
+            {
+                return monospaceFontFamily ?? new FontFamily("Consolas, " + Theme.Current.XamlAutoFontFamily);
+            }
+
             var alignment = TextAlignment;
 
             var text = styled.Text;
-            var workaround = 0;
+            var offset = 0;
 
             for (int i = 0; i < styled.Paragraphs.Count; i++)
             {
@@ -569,18 +577,12 @@ namespace Telegram.Controls
                     _codeBlocks.Add(new FormattedParagraph(temp, part.Type));
                 }
 
-                FontFamily monospaceFontFamily = null;
-                FontFamily GetMonospaceFontFamily()
-                {
-                    return monospaceFontFamily ?? new FontFamily("Consolas, " + Theme.Current.XamlAutoFontFamily);
-                }
-
                 for (int j = 0; j < runs.Count; j++)
                 {
                     var entity = runs[j];
                     if (entity.Offset > previous)
                     {
-                        direct.AddToCollection(inlines, CreateDirectRun(direct, text.Substring(previous, entity.Offset - previous), direction, fontSize: partFontSize));
+                        direct.AddToCollection(inlines, CreateDirectRun(direct, text.Substring(previous, entity.Offset - previous), ref offset, direction, fontSize: partFontSize));
                     }
 
                     if (entity.Length + entity.Offset > text.Length)
@@ -606,13 +608,13 @@ namespace Telegram.Controls
                                     Source = this
                                 });
 
-                                hyperlink.Inlines.Add(CreateRun(data, direction, fontFamily: GetMonospaceFontFamily(), fontSize: partFontSize));
+                                hyperlink.Inlines.Add(CreateRun(data, ref offset, direction, fontFamily: GetMonospaceFontFamily(), fontSize: partFontSize));
                                 direct.AddToCollection(inlines, direct.GetXamlDirectObject(hyperlink));
                             }
                             else
                             {
                                 direct.SetObjectProperty(paragraph, XamlPropertyIndex.TextElement_FontFamily, GetMonospaceFontFamily());
-                                direct.AddToCollection(inlines, CreateDirectRun(direct, data, direction));
+                                direct.AddToCollection(inlines, CreateDirectRun(direct, data, ref offset, direction));
 
                                 preformatted = true;
 
@@ -635,7 +637,7 @@ namespace Telegram.Controls
                         }
                         else
                         {
-                            direct.AddToCollection(inlines, CreateDirectRun(direct, data, direction, fontFamily: GetMonospaceFontFamily()));
+                            direct.AddToCollection(inlines, CreateDirectRun(direct, data, ref offset, direction, fontFamily: GetMonospaceFontFamily()));
                         }
                     }
                     else
@@ -658,16 +660,12 @@ namespace Telegram.Controls
                                 }
 
                                 spoiler ??= new TextHighlighter();
-                                spoiler.Ranges.Add(new TextRange { StartIndex = part.Offset + entity.Offset - workaround, Length = entity.Length });
+                                spoiler.Ranges.Add(new TextRange { StartIndex = offset, Length = entity.Length });
 
                                 var temp = direct.GetXamlDirectObject(hyperlink);
 
                                 direct.AddToCollection(inlines, temp);
                                 local = direct.GetXamlDirectObjectProperty(temp, XamlPropertyIndex.Span_Inlines);
-
-                                // ZWNJ is needed because if a spoiler is followed by a custom emoji, the background will leak into it
-                                direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction, fontSize: partFontSize, transparent: true));
-                                workaround--;
                             }
                             else if ((entity.HasFlag(Common.TextStyle.Mention) || entity.HasFlag(Common.TextStyle.Url)))
                             {
@@ -749,9 +747,9 @@ namespace Telegram.Controls
                         }
                         else if (_ignoreSpoilers is false && entity.HasFlag(Common.TextStyle.Spoiler))
                         {
-                            var hyperlink = new Span();
-                            hyperlink.Foreground = null;
-                            hyperlink.FontFamily = BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily;
+                            var hyperlink = direct.CreateInstance(XamlTypeIndex.Span);
+                            direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_Foreground, null);
+                            direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_FontFamily, BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily);
 
                             if (SettingsService.Current.Diagnostics.SpoilerEffectDebug)
                             {
@@ -759,16 +757,10 @@ namespace Telegram.Controls
                             }
 
                             spoiler ??= new TextHighlighter();
-                            spoiler.Ranges.Add(new TextRange { StartIndex = textOffset + part.Offset + entity.Offset - workaround, Length = entity.Length });
+                            spoiler.Ranges.Add(new TextRange { StartIndex = textOffset + offset, Length = entity.Length });
 
-                            var temp = direct.GetXamlDirectObject(hyperlink);
-
-                            direct.AddToCollection(inlines, temp);
-                            local = direct.GetXamlDirectObjectProperty(temp, XamlPropertyIndex.Span_Inlines);
-
-                            // ZWNJ is needed because if a spoiler is followed by a custom emoji, the background will leak into it
-                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction, fontSize: partFontSize, transparent: true));
-                            workaround--;
+                            direct.AddToCollection(inlines, hyperlink);
+                            local = direct.GetXamlDirectObjectProperty(hyperlink, XamlPropertyIndex.Span_Inlines);
                         }
 
                         // TODO: still use a InlineUIContainer for emojis in spoilers to avoid text resizes
@@ -818,25 +810,25 @@ namespace Telegram.Controls
                             // Since InlineUIContainer doesn't have a FlowDirection property (and the child flow direction seems to be ignored)
                             // the first custom emoji in a paragraph with reading order different from the one of the app, would appear on the
                             // wrong side of the block, thus we add a RTL/LTR mark right before, and the RichTextBlock seems to respect this.
+                            // Additionally, we need to prepend a ZWNJ character if:
+                            // - the paragraph begins by an emoji, to prevent early text trimming in inline mode
+                            // - the emoji is preceded by a spoiler, to prevent text highlight to run over the emoji
 
-                            if (entity.Offset == 0)
+                            if (entity.Offset == 0 || (entity.Offset == previous && runs[j - 1].HasFlag(Common.TextStyle.Spoiler)))
                             {
                                 var character = direction != locale
                                     ? direction == FlowDirection.RightToLeft ? Icons.RTL : Icons.LTR
                                     : Icons.ZWNJ;
 
-                                direct.AddToCollection(inlines, CreateDirectRun(direct, character, direction, fontSize: partFontSize, transparent: true));
-                                workaround++;
+                                direct.AddToCollection(inlines, CreateDirectRun(direct, character, ref offset, direction, fontSize: partFontSize, transparent: true));
                             }
 
                             direct.AddToCollection(inlines, direct.GetXamlDirectObject(inline));
-                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, direction, fontSize: partFontSize, transparent: true));
-
-                            workaround += data.Length - 1;
+                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, ref offset, direction, fontSize: partFontSize, transparent: true));
                         }
                         else
                         {
-                            var run = CreateDirectRun(direct, text.Substring(entity.Offset, entity.Length), direction, fontSize: partFontSize);
+                            var run = CreateDirectRun(direct, text.Substring(entity.Offset, entity.Length), ref offset, direction, fontSize: partFontSize);
                             var decorations = TextDecorations.None;
 
                             if (entity.HasFlag(Common.TextStyle.Underline))
@@ -871,17 +863,16 @@ namespace Telegram.Controls
 
                 if (text.Length > previous)
                 {
-                    direct.AddToCollection(inlines, _fastRun = CreateDirectRun(direct, text.Substring(previous), direction, fontSize: partFontSize));
+                    direct.AddToCollection(inlines, _fastRun = CreateDirectRun(direct, text.Substring(previous), ref offset, direction, fontSize: partFontSize));
                 }
 
                 if (paragraph != null)
                 {
                     direct.AddToCollection(blocks, paragraph);
-                    workaround += part.Padding;
                 }
                 else if (i < styled.Paragraphs.Count - 1)
                 {
-                    direct.AddToCollection(inlines, CreateDirectRun(direct, " ", direction));
+                    direct.AddToCollection(inlines, CreateDirectRun(direct, " ", ref offset, direction));
                 }
 
                 if (part.Offset == 0)
@@ -1224,12 +1215,14 @@ namespace Telegram.Controls
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Run CreateRun(string text, FlowDirection direction, FontWeight? fontWeight = null, FontFamily fontFamily = null, double fontSize = 0)
+        private Run CreateRun(string text, ref int offset, FlowDirection direction, FontWeight? fontWeight = null, FontFamily fontFamily = null, double fontSize = 0)
         {
             var direct = XamlDirect.GetDefault();
             var run = direct.CreateInstance(XamlTypeIndex.Run);
             direct.SetStringProperty(run, XamlPropertyIndex.Run_Text, text);
             direct.SetEnumProperty(run, XamlPropertyIndex.Run_FlowDirection, (uint)direction);
+
+            offset += text.Length;
 
             if (fontWeight != null)
             {
@@ -1250,11 +1243,13 @@ namespace Telegram.Controls
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IXamlDirectObject CreateDirectRun(XamlDirect direct, string text, FlowDirection direction, FontWeight? fontWeight = null, FontFamily fontFamily = null, double fontSize = 0, bool transparent = false)
+        private IXamlDirectObject CreateDirectRun(XamlDirect direct, string text, ref int offset, FlowDirection direction, FontWeight? fontWeight = null, FontFamily fontFamily = null, double fontSize = 0, bool transparent = false)
         {
             var run = direct.CreateInstance(XamlTypeIndex.Run);
             direct.SetStringProperty(run, XamlPropertyIndex.Run_Text, text);
             direct.SetEnumProperty(run, XamlPropertyIndex.Run_FlowDirection, (uint)direction);
+
+            offset += text.Length;
 
             if (fontWeight != null)
             {
