@@ -1506,7 +1506,7 @@ namespace Telegram.Controls
 
         #endregion
 
-        #region TextAlignment HorizontalTextAlignment
+        #region HorizontalTextAlignment
 
         public TextAlignment HorizontalTextAlignment
         {
@@ -1519,7 +1519,7 @@ namespace Telegram.Controls
 
         #endregion
 
-        #region TextReadingOrder TextReadingOrder
+        #region TextReadingOrder
 
         public TextReadingOrder TextReadingOrder
         {
@@ -1528,7 +1528,7 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty TextReadingOrderProperty =
-            DependencyProperty.Register("TextReadingOrder", typeof(TextReadingOrder), typeof(FormattedTextBlock), new PropertyMetadata(TextReadingOrder.DetectFromContent));
+            DependencyProperty.Register("TextReadingOrder", typeof(TextReadingOrder), typeof(FormattedTextBlock), new PropertyMetadata(TextReadingOrder.UseFlowDirection));
 
         #endregion
 
