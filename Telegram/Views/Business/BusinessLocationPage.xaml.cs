@@ -59,6 +59,8 @@ namespace Telegram.Views.Business
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            UpdateLocation(ViewModel.IsLocationValid, ViewModel.Location);
+
             Address.Focus(FocusState.Pointer);
             Address.SelectionStart = int.MaxValue;
         }
