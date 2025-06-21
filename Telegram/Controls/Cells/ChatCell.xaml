@@ -183,7 +183,7 @@
                                                          FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                                          IsTextSelectionEnabled="False"
                                                          TextTrimming="CharacterEllipsis"
-                                                         TextWrapping="NoWrap"
+                                                         TextWrapping="Wrap"
                                                          VerticalAlignment="Top"
                                                          AutoFontSize="False"
                                                          MaxLines="1">

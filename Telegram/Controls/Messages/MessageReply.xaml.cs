@@ -173,7 +173,7 @@ namespace Telegram.Controls.Messages
         private Grid LayoutRoot;
         private Rectangle BackgroundOverlay;
         private FormattedTextBlock Label;
-        private Run TitleLabel;
+        private TextBlock TitleLabel;
         private Run ServiceLabel;
         private Span MessageLabel;
         private DashPath AccentDash;
@@ -190,18 +190,12 @@ namespace Telegram.Controls.Messages
             LayoutRoot = GetTemplateChild(nameof(LayoutRoot)) as Grid;
             BackgroundOverlay = GetTemplateChild(nameof(BackgroundOverlay)) as Rectangle;
             Label = GetTemplateChild(nameof(Label)) as FormattedTextBlock;
-            TitleLabel = GetTemplateChild(nameof(TitleLabel)) as Run;
+            TitleLabel = GetTemplateChild(nameof(TitleLabel)) as TextBlock;
             ServiceLabel = GetTemplateChild(nameof(ServiceLabel)) as Run;
             MessageLabel = GetTemplateChild(nameof(MessageLabel)) as Span;
             AccentDash = GetTemplateChild(nameof(AccentDash)) as DashPath;
             Pattern = GetTemplateChild(nameof(Pattern)) as MessageReplyPattern;
             Quote = GetTemplateChild(nameof(Quote)) as TextBlock;
-
-            BindingOperations.SetBinding(TitleLabel, Run.ForegroundProperty, new Binding
-            {
-                Path = new PropertyPath("HeaderBrush"),
-                Source = this
-            });
 
             BindingOperations.SetBinding(ServiceLabel, Run.ForegroundProperty, new Binding
             {

@@ -133,7 +133,7 @@
                                              Style="{StaticResource ReplyBodyFormattedTextBlockStyle}"
                                              EmojiStyle="{StaticResource MessageCustomEmojiStyle}"
                                              TextTrimming="CharacterEllipsis"
-                                             TextWrapping="NoWrap"
+                                             TextWrapping="Wrap"
                                              AutoFontSize="False">
                     <Paragraph>
                         <Run x:Name="ServiceLabel1"
@@ -149,7 +149,7 @@
                                              Style="{StaticResource ReplyBodyFormattedTextBlockStyle}"
                                              EmojiStyle="{StaticResource MessageCustomEmojiStyle}"
                                              TextTrimming="CharacterEllipsis"
-                                             TextWrapping="NoWrap"
+                                             TextWrapping="Wrap"
                                              AutoFontSize="False">
                     <Paragraph>
                         <Run x:Name="ServiceLabel2"
