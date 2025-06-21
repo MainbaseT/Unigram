@@ -53,6 +53,10 @@ namespace Telegram.Controls
                         var player = new CustomEmojiIcon();
                         player.LoopCount = 0;
                         player.Source = new CustomEmojiFileSource(clientService, customEmoji.CustomEmojiId);
+                        player.HorizontalAlignment = HorizontalAlignment.Left;
+                        player.FlowDirection = FlowDirection.LeftToRight;
+                        player.IsHitTestVisible = false;
+                        player.Margin = new Thickness(0, -2, 0, -6);
 
                         if (style != null)
                         {
@@ -68,7 +72,7 @@ namespace Telegram.Controls
                         };
 
                         var inline = new InlineUIContainer();
-                        inline.Child = new CustomEmojiContainer(parent, player, baseline: baseline);
+                        inline.Child = player;
 
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
                         if (inlines.Empty())
@@ -121,6 +125,21 @@ namespace Telegram.Controls
                         player.Height = size;
                         player.FrameSize = new Size(size, size);
                         player.Source = new CustomEmojiFileSource(clientService, customEmoji.CustomEmojiId);
+                        player.HorizontalAlignment = HorizontalAlignment.Left;
+                        player.FlowDirection = FlowDirection.LeftToRight;
+                        player.IsHitTestVisible = false;
+
+                        if (size == 20)
+                        {
+                            player.Margin = new Thickness(0, -2, 0, -6);
+                        }
+                        else
+                        {
+                            player.Margin = new Thickness(0, -4, 0, -4);
+                        }
+
+                        player.Width = size;
+                        player.Height = size;
 
                         //if (style != null)
                         //{
@@ -131,7 +150,7 @@ namespace Telegram.Controls
                         var baseline = parent.FontSize == 11 ? -3 : 0;
 
                         var inline = new InlineUIContainer();
-                        inline.Child = new CustomEmojiContainer(parent, player, size: size);
+                        inline.Child = player;
 
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
                         if (inlines.Empty())
@@ -150,97 +169,6 @@ namespace Telegram.Controls
                 {
                     inlines.Add(clean.Text.Substring(previous));
                 }
-            }
-        }
-    }
-
-    public partial class CustomEmojiContainer : Grid
-    {
-        private readonly RichTextBlock _parent;
-        private readonly CustomEmojiIcon _child;
-        private readonly double _baseline;
-
-        public CustomEmojiContainer(RichTextBlock parent, CustomEmojiIcon child, int baseline = 0)
-        {
-            _parent = parent;
-            _child = child;
-            _baseline = baseline + 0.01;
-
-            child.IsViewportAware = false;
-            child.IsHitTestVisible = false;
-            child.IsEnabled = false;
-
-            Children.Add(child);
-
-            HorizontalAlignment = HorizontalAlignment.Left;
-            FlowDirection = FlowDirection.LeftToRight;
-            Margin = new Thickness(0, -2, 0, -6);
-
-            Width = 20;
-            Height = 20;
-
-            EffectiveViewportChanged += OnEffectiveViewportChanged;
-        }
-
-        public CustomEmojiContainer(RichTextBlock parent, CustomEmojiIcon child, double size = 20)
-        {
-            _parent = parent;
-            _child = child;
-
-            //child.IsViewportAware = true;
-            child.IsHitTestVisible = false;
-            child.IsEnabled = false;
-
-            Children.Add(child);
-
-            HorizontalAlignment = HorizontalAlignment.Left;
-            FlowDirection = FlowDirection.LeftToRight;
-
-            if (size == 20)
-            {
-                Margin = new Thickness(0, -2, 0, -6);
-            }
-            else
-            {
-                Margin = new Thickness(0, -4, 0, -4);
-            }
-
-            Width = size;
-            Height = size;
-        }
-
-        private bool _withinViewport;
-
-        private void OnEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
-        {
-            var within = args.BringIntoViewDistanceX < sender.ActualWidth && args.BringIntoViewDistanceY < sender.ActualHeight;
-            if (within && !_withinViewport)
-            {
-                // TODO: performance here is a little concerning.
-                // TransformToVisual seems to be faster than GetCharacterRect,
-                // at least in some conditions. So at the moment we use it.
-                var transform = TransformToVisual(_parent);
-                var point = transform.TransformPoint(new Point());
-
-                // This is mostly heuristics, not sure it works in all scenarios.
-                // Does not seem to work when display scaling is set to 125%.
-                if (point.Y <= _baseline || point.X < 0)
-                {
-                    _child.Visibility = Visibility.Collapsed;
-                    return;
-                }
-                else
-                {
-                    _child.Visibility = Visibility.Visible;
-                }
-
-                _withinViewport = true;
-                _child.Play();
-            }
-            else if (_withinViewport && !within)
-            {
-                _withinViewport = false;
-                _child.Pause();
             }
         }
     }

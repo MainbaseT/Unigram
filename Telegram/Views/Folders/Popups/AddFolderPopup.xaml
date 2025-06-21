@@ -72,6 +72,9 @@
                                         IsFooter="True">
                     <RichTextBlock x:Name="SubtitleText"
                                    Style="{StaticResource BodyRichTextBlockStyle}"
+                                   TextWrapping="Wrap"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxLines="1"
                                    Margin="24,0"
                                    Grid.Row="1">
                         <Paragraph x:Name="SubtitleParagraph" />

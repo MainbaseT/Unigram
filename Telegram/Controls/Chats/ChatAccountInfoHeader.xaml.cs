@@ -83,6 +83,10 @@ namespace Telegram.Controls.Chats
                         player.Height = 20;
                         player.FrameSize = new Size(20, 20);
                         player.Source = new CustomEmojiFileSource(clientService, user.EmojiStatus.Type);
+                        player.HorizontalAlignment = HorizontalAlignment.Left;
+                        player.FlowDirection = FlowDirection.LeftToRight;
+                        player.IsHitTestVisible = false;
+                        player.Margin = new Thickness(0, -2, 0, -6);
 
                         //if (style != null)
                         //{
@@ -93,7 +97,7 @@ namespace Telegram.Controls.Chats
                         //var baseline = parent.FontSize == 11 ? -3 : 0;
 
                         var inline = new InlineUIContainer();
-                        inline.Child = new CustomEmojiContainer(PremiumUser, player, size: 20);
+                        inline.Child = player;
 
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
                         if (PremiumUserText.Inlines.Empty())

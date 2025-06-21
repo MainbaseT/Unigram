@@ -29,6 +29,9 @@
                                                Padding="0,0,0,8" />
                     <RichTextBlock x:Name="NameText"
                                    Style="{StaticResource InfoBodyRichTextBlockStyle}"
+                                   TextWrapping="Wrap"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxLines="1"
                                    TextAlignment="Center"
                                    Margin="12,0"
                                    MaxWidth="480">

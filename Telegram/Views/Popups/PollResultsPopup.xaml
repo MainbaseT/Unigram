@@ -36,6 +36,9 @@
                                 </Grid.RowDefinitions>
                                 <RichTextBlock Style="{StaticResource BaseRichTextBlockStyle}"
                                                FontFamily="{StaticResource EmojiThemeFontFamily}"
+                                               TextWrapping="Wrap"
+                                               TextTrimming="CharacterEllipsis"
+                                               MaxLines="1"
                                                Margin="24,12,24,2">
                                     <Paragraph>
                                         <Span />
