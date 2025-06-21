@@ -337,6 +337,7 @@ namespace Telegram.Controls
             DetailHeaderPresenter.ItemsSource = _backStack;
             DetailHeaderPresenter.ItemClicked += DetailHeaderPresenter_ItemClicked;
 
+            BackgroundPart.SizeChanged += BackgroundPart_SizeChanged;
             BackgroundPart.Update(ViewModel.ClientService, ViewModel.Aggregator);
             BackgroundPart.Visibility = _backgroundType == BackgroundKind.Background ? Visibility.Visible : Visibility.Collapsed;
             BorderPart.Visibility = _backgroundType != BackgroundKind.None ? Visibility.Visible : Visibility.Collapsed;
@@ -405,6 +406,16 @@ namespace Telegram.Controls
             {
                 OnViewStateChanged();
             }
+        }
+
+        private void BackgroundPart_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var newSize = e.NewSize.ToVector2();
+            var visual = ElementComposition.GetElementVisual(BackgroundPart);
+            var geometry = visual.Compositor.CreateRoundedRectangleGeometry();
+            geometry.Size = new Vector2(newSize.X + 9, newSize.Y + 9);
+            geometry.CornerRadius = new Vector2(9);
+            visual.Clip = visual.Compositor.CreateGeometricClip(geometry);
         }
 
         private void DetailHeaderPresenter_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)

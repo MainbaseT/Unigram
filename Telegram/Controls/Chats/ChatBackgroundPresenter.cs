@@ -62,6 +62,17 @@ namespace Telegram.Controls.Chats
         {
             Canvas = GetTemplateChild(nameof(Canvas)) as Border;
             Negative = GetTemplateChild(nameof(Negative)) as Border;
+
+            Canvas.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
+            Negative.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
+
+            RegisterPropertyChangedCallback(BorderThicknessProperty, OnBorderThicknessChanged);
+        }
+
+        private void OnBorderThicknessChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            Canvas.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
+            Negative.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -145,7 +156,7 @@ namespace Telegram.Controls.Chats
 
                 Background = typeFill.ToBrush(_freeform.Phase);
                 Foreground = null;
-                BorderBrush = null;
+                NegativeBrush = null;
 
                 UpdateBlurred(false);
             }
@@ -161,7 +172,7 @@ namespace Telegram.Controls.Chats
                 {
                     Background = typePattern.ToBrush(_freeform.Phase);
                     Foreground = null;
-                    BorderBrush = _negative
+                    NegativeBrush = _negative
                         ? new SolidColorBrush(Colors.Black)
                         : null;
                 }
@@ -247,16 +258,12 @@ namespace Telegram.Controls.Chats
                     return;
                 }
             }
-
-            BackgroundSizing = _negative
-                ? BackgroundSizing.InnerBorderEdge
-                : BackgroundSizing.OuterBorderEdge;
         }
 
         private void UpdateWallpaper(File file)
         {
             Foreground = null;
-            BorderBrush = null;
+            NegativeBrush = null;
 
             if (_wallpaperPath != file.Local.Path)
             {
@@ -291,14 +298,9 @@ namespace Telegram.Controls.Chats
 
             if (file.Local.IsDownloadingCompleted)
             {
-                if (_negative)
-                {
-                    BorderBrush = new SolidColorBrush(Colors.Black);
-                }
-                else
-                {
-                    BorderBrush = null;
-                }
+                NegativeBrush = _negative
+                    ? new SolidColorBrush(Colors.Black)
+                    : null;
 
                 _patternPath = file.Local.Path;
                 _rasterizationScale = scale;
@@ -466,5 +468,18 @@ namespace Telegram.Controls.Chats
                 this.BeginOnUIThread(() => UpdateSource(null, _background, _thumbnail));
             }
         }
+
+        #region NegativeBrush
+
+        public Brush NegativeBrush
+        {
+            get { return (Brush)GetValue(NegativeBrushProperty); }
+            set { SetValue(NegativeBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty NegativeBrushProperty =
+            DependencyProperty.Register("NegativeBrush", typeof(Brush), typeof(ChatBackgroundPresenter), new PropertyMetadata(null));
+
+        #endregion
     }
 }
