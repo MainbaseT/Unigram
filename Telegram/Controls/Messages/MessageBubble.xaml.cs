@@ -1949,6 +1949,7 @@ namespace Telegram.Controls.Messages
                 result = ReplaceEntities(message, bigEmoji.Text, 32);
             }
 
+            ContentPanel.MaxWidth = Message.HasCodeBlocks ? double.PositiveInfinity : 432;
             Message.Visibility = result ? Visibility.Visible : Visibility.Collapsed;
             //Footer.HorizontalAlignment = adjust ? HorizontalAlignment.Left : HorizontalAlignment.Right;
         }
