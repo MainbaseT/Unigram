@@ -454,7 +454,7 @@ namespace Telegram.Controls
                 return;
             }
 
-            if (HasMaster && !NavigationService.CanGoBack)
+            if (HasMaster && !NavigationService.CanGoBack && NavigationService.CurrentPageType != BlankPageType)
             {
                 NavigationService.InsertToBackStack(0, BlankPageType);
             }
