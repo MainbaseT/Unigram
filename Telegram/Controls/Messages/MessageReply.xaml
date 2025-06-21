@@ -142,6 +142,7 @@
                             <TextBlock x:Name="TitleLabel"
                                        Style="{StaticResource ReplyBaseTextBlockStyle}"
                                        Foreground="{TemplateBinding HeaderBrush}"
+                                       FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                        TextTrimming="CharacterEllipsis"
                                        TextWrapping="NoWrap"
                                        MaxLines="1" />
