@@ -25,6 +25,7 @@ using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Core.Direct;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
@@ -597,8 +598,13 @@ namespace Telegram.Controls
                             {
                                 var hyperlink = new Hyperlink();
                                 hyperlink.Click += (s, args) => Entity_Click(entity.Offset, entity.Length, entity.Type, data);
-                                hyperlink.Foreground = TextBlock.Foreground;
                                 hyperlink.UnderlineStyle = UnderlineStyle.None;
+
+                                BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, new Binding
+                                {
+                                    Path = new PropertyPath("Foreground"),
+                                    Source = this
+                                });
 
                                 hyperlink.Inlines.Add(CreateRun(data, direction, fontFamily: GetMonospaceFontFamily(), fontSize: partFontSize));
                                 direct.AddToCollection(inlines, direct.GetXamlDirectObject(hyperlink));
@@ -688,10 +694,15 @@ namespace Telegram.Controls
                                     }
 
                                     hyperlink.Click += (s, args) => Entity_Click(entity.Offset, entity.Length, entity.Type, null);
-                                    hyperlink.Foreground = HyperlinkForeground ?? GetBrush("MessageForegroundLinkBrush");
                                     hyperlink.UnderlineStyle = HyperlinkStyle;
                                     hyperlink.FontWeight = HyperlinkFontWeight;
                                     hyperlink.UnderlineStyle = UnderlineStyle.None;
+
+                                    BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, new Binding
+                                    {
+                                        Path = new PropertyPath("HyperlinkForeground"),
+                                        Source = this
+                                    });
 
                                     var temp = direct.GetXamlDirectObject(hyperlink);
 
@@ -711,12 +722,17 @@ namespace Telegram.Controls
                                     //}
 
                                     hyperlink.Click += (s, args) => Entity_Click(entity.Offset, entity.Length, entity.Type, data);
-                                    hyperlink.Foreground = HyperlinkForeground ?? GetBrush("MessageForegroundLinkBrush");
                                     hyperlink.UnderlineStyle = HyperlinkStyle;
                                     hyperlink.FontWeight = HyperlinkFontWeight;
                                     hyperlink.UnderlineStyle = entity.Type is TextEntityTypeUrl
                                         ? UnderlineStyle.Single
                                         : UnderlineStyle.None;
+
+                                    BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, new Binding
+                                    {
+                                        Path = new PropertyPath("HyperlinkForeground"),
+                                        Source = this
+                                    });
 
                                     //if (entity.Type is TextEntityTypeUrl || entity.Type is TextEntityTypeEmailAddress || entity.Type is TextEntityTypeBankCardNumber)
                                     {
@@ -1405,36 +1421,6 @@ namespace Telegram.Controls
 
         #endregion
 
-        private Brush GetBrush(string key)
-        {
-            //var message = _message;
-            //if (message == null)
-            //{
-            //    return null;
-            //}
-
-            //if (message.IsOutgoing && !message.IsChannelPost)
-            //{
-            //    if (ActualTheme == ElementTheme.Light)
-            //    {
-            //        return ThemeOutgoing.Light[key].Brush;
-            //    }
-            //    else
-            //    {
-            //        return ThemeOutgoing.Dark[key].Brush;
-            //    }
-            //}
-            //else
-            if (ActualTheme == ElementTheme.Light)
-            {
-                return ThemeIncoming.Light[key].Brush;
-            }
-            else
-            {
-                return ThemeIncoming.Dark[key].Brush;
-            }
-        }
-
         private void Entity_Click(int offset, int length, TextEntityType type, object data)
         {
             TextEntityClick?.Invoke(this, new TextEntityClickEventArgs(offset, length, type, data));
@@ -1563,9 +1549,20 @@ namespace Telegram.Controls
 
         public UnderlineStyle HyperlinkStyle { get; set; } = UnderlineStyle.Single;
 
-        public SolidColorBrush HyperlinkForeground { get; set; }
-
         public FontWeight HyperlinkFontWeight { get; set; } = FontWeights.Normal;
+
+        #endregion
+
+        #region HyperlinkForeground
+
+        public Brush HyperlinkForeground
+        {
+            get { return (Brush)GetValue(HyperlinkForegroundProperty); }
+            set { SetValue(HyperlinkForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty HyperlinkForegroundProperty =
+            DependencyProperty.Register("HyperlinkForeground", typeof(Brush), typeof(FormattedTextBlock), new PropertyMetadata(null));
 
         #endregion
 

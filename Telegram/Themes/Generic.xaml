@@ -1665,6 +1665,8 @@
                 Value="14" />
         <Setter Property="FontFamily"
                 Value="{ThemeResource EmojiThemeFontFamily}" />
+        <Setter Property="HyperlinkForeground"
+                Value="{ThemeResource MessageForegroundLinkBrush}" />
         <Setter Property="TextAlignment"
                 Value="DetectFromContent" />
         <Setter Property="EmojiStyle">
