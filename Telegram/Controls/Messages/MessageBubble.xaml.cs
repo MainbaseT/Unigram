@@ -1359,6 +1359,9 @@ namespace Telegram.Controls.Messages
             return Footer.PlayMessageEffect(message);
         }
 
+        private long _recentRepliersChatId;
+        private long _recentRepliersMessageId;
+
         public void UpdateMessageInteractionInfo(MessageViewModel message)
         {
             var chat = message?.Chat;
@@ -1429,11 +1432,22 @@ namespace Telegram.Controls.Messages
                     RecentRepliers.RecentUserHeadChanged += RecentRepliers_RecentUserHeadChanged;
                 }
 
-                RecentRepliers.Items.ReplaceDiff(info.RecentReplierIds);
+                if (RecentRepliers.Items.Count > 0 && _recentRepliersChatId == message.ChatId && _recentRepliersMessageId == message.Id)
+                {
+                    RecentRepliers.Items.ReplaceDiff(info.RecentReplierIds);
+                }
+                else
+                {
+                    RecentRepliers.Items.Clear();
+                    RecentRepliers.Items.AddRange(info.RecentReplierIds);
+                }
+
+                _recentRepliersChatId = message.ChatId;
+                _recentRepliersMessageId = message.Id;
 
                 ThreadGlyph.Visibility = info.RecentReplierIds.Count > 0
-                    ? Visibility.Collapsed
-                    : Visibility.Visible;
+                        ? Visibility.Collapsed
+                        : Visibility.Visible;
 
                 var commentsText = info.ReplyCount > 0
                     ? Locale.Declension(Strings.R.Comments, info.ReplyCount)
