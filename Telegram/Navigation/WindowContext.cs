@@ -311,6 +311,11 @@ namespace Telegram.Navigation
             Logger.Debug(sender.Bounds);
             Bounds = sender.Bounds;
 
+            if (SettingsService.Current.Diagnostics.WindowResizeDebug)
+            {
+                return;
+            }
+
             if (_window.Content is FrameworkElement element)
             {
                 element.Width = sender.Bounds.Width;
@@ -324,6 +329,11 @@ namespace Telegram.Navigation
         {
             Logger.Debug(sender.Bounds);
             Bounds = sender.Bounds;
+
+            if (SettingsService.Current.Diagnostics.WindowResizeDebug)
+            {
+                return;
+            }
 
             if (_window.Content is FrameworkElement element)
             {

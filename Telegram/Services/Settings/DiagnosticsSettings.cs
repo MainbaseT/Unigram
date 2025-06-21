@@ -175,6 +175,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _spoilerEffectDebug, "SpoilerEffectDebug", value);
         }
 
+        private bool? _windowResizeDebug;
+        public bool WindowResizeDebug
+        {
+            get => _windowResizeDebug ??= GetValueOrDefault("WindowResizeDebug", Constants.DEBUG);
+            set => AddOrUpdateValue(ref _windowResizeDebug, "WindowResizeDebug", value);
+        }
+
         public bool IsLastErrorDiskFull { get; set; }
     }
 }
