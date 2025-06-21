@@ -1865,7 +1865,26 @@ namespace Telegram.Controls.Messages
 
             if (textz != null)
             {
-                Message.SetText(message.ClientService, textz, message.GeneratedContent is MessageBigEmoji ? 32 : 0);
+                var fontSize = 0d;
+
+                if (message.GeneratedContent is MessageBigEmoji bigEmoji)
+                {
+                    if (bigEmoji.Text.Entities.Count > 0)
+                    {
+                        var height = 180 * message.ClientService.Config.GetNamedNumber("emojies_animated_zoom", 0.625f);
+                        var ratio = 14d / 20d;
+                        var scaledFontSize = height * ratio;
+                        var step = (scaledFontSize - 14) / 7;
+
+                        fontSize = scaledFontSize - step * Math.Min(7, bigEmoji.Count);
+                    }
+                    else
+                    {
+                        fontSize = 32;
+                    }
+                }
+
+                Message.SetText(message.ClientService, textz, fontSize);
                 Message.SetQuery(_query);
 
                 ContentPanel.MaxWidth = Message.HasCodeBlocks ? double.PositiveInfinity : 432;

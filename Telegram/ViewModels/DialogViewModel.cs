@@ -1915,9 +1915,13 @@ namespace Telegram.ViewModels
             {
                 message.Content = new MessagePaidAlbum(paidMedia);
             }
-            else if (message.Content is MessageText text && text.LinkPreview == null && text.Text.Entities.Count == 0)
+            else if (message.Content is MessageText text && text.LinkPreview == null)
             {
-                if (Emoji.TryCountEmojis(text.Text.Text, out int count, 3))
+                if (text.Text.Entities.Count == 0 && Emoji.TryCountEmojis(text.Text.Text, out int count, 3))
+                {
+                    message.GeneratedContent = new MessageBigEmoji(text.Text, count);
+                }
+                else if (text.Text.Entities.Count > 0 && Emoji.TryCountCustomEmojis(text.Text, out count))
                 {
                     message.GeneratedContent = new MessageBigEmoji(text.Text, count);
                 }

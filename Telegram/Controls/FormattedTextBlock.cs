@@ -786,11 +786,18 @@ namespace Telegram.Controls
                             player.IsEnabled = false;
                             player.Emoji = data;
 
-                            if (xamlFontSize == 14)
+                            if (autoFontSize != 0)
+                            {
+                                player.Width = autoFontSize * (20d / 14d);
+                                player.Height = autoFontSize * (20d / 14d);
+                                player.Margin = new Thickness(0, -2 * (20d / 14d), 0, -6 * (20d / 14d));
+                                player.FrameSize = new Size(autoFontSize * (20d / 14d), autoFontSize * (20d / 14d));
+                            }
+                            else if (xamlFontSize == 14)
                             {
                                 player.Margin = new Thickness(0, -2, 0, -6);
                             }
-                            else
+                            else if (xamlFontSize == 12)
                             {
                                 player.Margin = new Thickness(0, 0, 0, -4);
                                 player.Width = 16;

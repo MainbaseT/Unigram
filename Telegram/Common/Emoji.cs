@@ -321,6 +321,43 @@ namespace Telegram.Common
             return _rawEmojis.Contains(last);
         }
 
+        public static bool TryCountCustomEmojis(FormattedText text, out int count)
+        {
+            var previous = 0;
+            count = 0;
+            
+            for (int i = 0; i < text.Entities.Count; i++)
+            {
+                var entity = text.Entities[i];
+                if (entity.Offset - previous > 1)
+                {
+                    return false;
+                }
+                else if (entity.Offset - previous == 1)
+                {
+                    if (text.Text[entity.Offset - 1] != '\n')
+                    {
+                        return false;
+                    }
+                }
+
+                if (entity.Type is not TextEntityTypeCustomEmoji)
+                {
+                    return false;
+                }
+
+                count++;
+                previous = entity.Offset + entity.Length;
+            }
+
+            if (previous < text.Text.Length)
+            {
+                return false;
+            }
+
+            return previous > 0;
+        }
+
         public static bool TryCountEmojis(string text, out int count, int max = int.MaxValue)
         {
             count = 0;
