@@ -475,6 +475,14 @@ namespace Telegram.ViewModels
                 {
                     if (albumAllowed)
                     {
+                        if (item is StorageVideo { IsMuted: true } && !forceDocuments)
+                        {
+                            AddAlbum();
+
+                            albumType = StorageAlbumType.None;
+                            view.Add(item);
+                        }
+
                         var type = item switch
                         {
                             StorageDocument => StorageAlbumType.Documents,
