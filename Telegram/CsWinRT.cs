@@ -1,5 +1,4 @@
-﻿#define TD_CX
-global using DispatcherQueue = Windows.System.DispatcherQueue;
+﻿global using DispatcherQueue = Windows.System.DispatcherQueue;
 global using Object = Telegram.Td.Api.Object;
 global using Point = Windows.Foundation.Point;
 global using TimeZone = Telegram.Td.Api.TimeZone;
