@@ -2129,11 +2129,6 @@ namespace Telegram.Controls.Messages
             else if (e.Type is TextEntityTypeMediaTimestamp mediaTimestamp)
             {
                 var target = message.HasTimestampedMedia ? message : message.ReplyToItem;
-                if (target == null)
-                {
-                    return;
-                }
-
                 if (target is MessageViewModel targetMessage)
                 {
                     if (targetMessage.Content is MessageText text && text.LinkPreview != null)

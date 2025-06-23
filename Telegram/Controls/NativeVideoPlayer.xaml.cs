@@ -74,12 +74,12 @@ namespace Telegram.Controls
             if (_core == null)
             {
                 _video = video;
-                _initialPosition = (long)position;
+                _initialPosition = (long)(position * 1000);
             }
             else
             {
                 _core.Play(new RemoteFileStream(video.ClientService, video.File));
-                _core.Time = (long)position;
+                _core.Time = (long)(position * 1000);
             }
 
             UpdateManager.Subscribe(this, video.ClientService, video.File, ref _bufferedToken, UpdateBuffered);

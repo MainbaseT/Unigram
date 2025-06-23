@@ -59,7 +59,7 @@ namespace Telegram.Controls.Gallery
 
         private bool _unloaded;
 
-        private static readonly ConcurrentDictionary<int, double> _knownPositions = new();
+        private readonly ConcurrentDictionary<int, double> _knownPositions = new();
         private long? _initialPosition;
 
         public long InitialPosition
@@ -654,7 +654,7 @@ namespace Telegram.Controls.Gallery
                 _initialPosition = null;
                 position = initialPosition;
             }
-            else if (_knownPositions.TryRemove(file.Id, out double knownPosition))
+            else if (_knownPositions.TryGetValue(file.Id, out double knownPosition))
             {
                 position = knownPosition;
             }
@@ -681,7 +681,7 @@ namespace Telegram.Controls.Gallery
                 _current.Stop(out int fileId, out double position);
                 _current = null;
 
-                if (fileId != 0)
+                if (fileId != 0 && position > 0)
                 {
                     _knownPositions[fileId] = position;
                 }
