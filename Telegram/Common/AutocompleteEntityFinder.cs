@@ -48,7 +48,7 @@ namespace Telegram.Common
 
             text.SetRange(text.EndPosition - 1, text.EndPosition);
 
-            while (text.StartPosition >= 0)
+            while (text.StartPosition >= 0 && text.EndPosition > text.StartPosition)
             {
                 if (text.CharacterFormat.Hidden == FormatEffect.On)
                 {
