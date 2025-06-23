@@ -18,10 +18,14 @@ namespace Telegram.Td
             _closure = closure;
         }
 
+#if TD_CX
+        public void OnResult(BaseObject result)
+#else
         public void OnResult(Object result)
+#endif
         {
-            _closure(result);
-            SetResult(result);
+            _closure(result as Object);
+            SetResult(result as Object);
         }
     }
 }

@@ -404,7 +404,11 @@ namespace Telegram.Services
                 }
             }
 
+#if TD_CX
+            _client = Client.Create(this);
+#else
             _client = new Client(this);
+#endif
 
 #if MOCKUP
             ProfilePhoto ProfilePhoto(string name)
@@ -2454,7 +2458,11 @@ namespace Telegram.Services
             }
         }
 
+#if TD_CX
+        public void OnResult(BaseObject update)
+#else
         public void OnResult(Object update)
+#endif
         {
             ProcessFiles(update);
 

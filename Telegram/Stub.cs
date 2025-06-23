@@ -7569,7 +7569,7 @@ public static class DispatcherQueue_stub
 }
 public static class Client_stub
 {
-    public static Telegram.Td.Api.Object Execute_stub(Telegram.Td.Api.Function function)
+    public static Telegram.Td.Api.BaseObject Execute_stub(Telegram.Td.Api.Function function)
     {
         try
         {

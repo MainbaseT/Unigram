@@ -17,11 +17,15 @@ namespace Telegram.Td
             _callback = callback;
         }
 
+#if TD_CX
+        public void OnResult(BaseObject result)
+#else
         public void OnResult(Object result)
+#endif
         {
             try
             {
-                _callback(result);
+                _callback(result as Object);
             }
             catch
             {
