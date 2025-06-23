@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Messages.Content
 {
@@ -185,7 +186,13 @@ namespace Telegram.Controls.Messages.Content
             RecognizedIcon ??= GetTemplateChild(nameof(RecognizedIcon)) as Border;
             RecognizedIcon.Visibility = Visibility.Visible;
 
-            _previous = GetVisual(BootStrapper.Current.Compositor, Colors.Black, out _props);
+            Color foreground;
+            if (RecognizedText.Foreground is SolidColorBrush brush)
+            {
+                foreground = brush.Color;
+            }
+
+            _previous = GetVisual(BootStrapper.Current.Compositor, foreground, out _props);
             ElementCompositionPreview.SetElementChildVisual(RecognizedIcon, _previous.RootVisual);
         }
 
