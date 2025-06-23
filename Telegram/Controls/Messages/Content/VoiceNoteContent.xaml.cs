@@ -80,7 +80,7 @@ namespace Telegram.Controls.Messages.Content
             ButtonDrag = new AutomaticDragHelper(Button, true);
             ButtonDrag.StartDetectingDrag();
 
-            Progress.ValueChanged += Progress_ValueChanged;
+            Progress.PositionChanged += Progress_PositionChanged;
 
             Button.Click += Button_Click;
             Button.DragStarting += Button_DragStarting;
@@ -237,9 +237,7 @@ namespace Telegram.Controls.Messages.Content
         public void Mockup(MessageVoiceNote voiceNote)
         {
             Progress.UpdateWaveform(voiceNote.VoiceNote);
-            Progress.Minimum = 0;
-            Progress.Maximum = 1;
-            Progress.Value = 0.3;
+            Progress.UpdateValue(0.3, 1, PlaybackState.None);
 
             Subtitle.Text = FormatTime(TimeSpan.FromSeconds(1), 0) + " / " + FormatTime(TimeSpan.FromSeconds(3), 0);
 
@@ -267,8 +265,9 @@ namespace Telegram.Controls.Messages.Content
         {
             var position = args.Position;
             var duration = args.Duration;
+            var state = sender.PlaybackState;
 
-            this.BeginOnUIThread(() => UpdatePosition(position, duration));
+            this.BeginOnUIThread(() => UpdatePosition(position, duration, state));
         }
 
         private void UpdateDuration()
@@ -288,21 +287,19 @@ namespace Telegram.Controls.Messages.Content
             if (message.Content is MessageVoiceNote voiceNoteMessage)
             {
                 Subtitle.Text = voiceNote.GetDuration() + (voiceNoteMessage.IsListened ? string.Empty : " ●");
-                Progress.Maximum = voiceNote.Duration;
-                Progress.Value = message.IsOutgoing || voiceNoteMessage.IsListened ? 0 : voiceNote.Duration;
+                Progress.UpdateValue(message.IsOutgoing || voiceNoteMessage.IsListened ? 0 : voiceNote.Duration, voiceNote.Duration, PlaybackState.None);
             }
             else
             {
                 Subtitle.Text = voiceNote.GetDuration();
-                Progress.Maximum = voiceNote.Duration;
-                Progress.Value = 0;
+                Progress.UpdateValue(0, voiceNote.Duration, PlaybackState.None);
             }
         }
 
-        private void UpdatePosition(TimeSpan position, TimeSpan duration)
+        private void UpdatePosition(TimeSpan position, TimeSpan duration, PlaybackState state)
         {
             var message = _message;
-            if (message == null || Progress.IsChanging)
+            if (message == null || Progress.IsScrubbing)
             {
                 return;
             }
@@ -315,8 +312,7 @@ namespace Telegram.Controls.Messages.Content
                 }
 
                 Subtitle.Text = FormatTime(duration - position, duration.TotalHours);
-                Progress.Maximum = /*Slider.Maximum =*/ duration.TotalSeconds;
-                Progress.Value = /*Slider.Value =*/ position.TotalSeconds;
+                Progress.UpdateValue(position, duration, state);
             }
         }
 
@@ -400,7 +396,7 @@ namespace Telegram.Controls.Messages.Content
                         Button.SetGlyph(file.Id, MessageContentState.Pause);
                     }
 
-                    UpdatePosition(message.PlaybackService.Position, message.PlaybackService.Duration);
+                    UpdatePosition(message.PlaybackService.Position, message.PlaybackService.Duration, message.PlaybackService.PlaybackState);
 
                     message.PlaybackService.StateChanged += OnPlaybackStateChanged;
                     message.PlaybackService.PositionChanged += OnPositionChanged;
@@ -468,9 +464,9 @@ namespace Telegram.Controls.Messages.Content
             return null;
         }
 
-        private void Progress_ValueChanged(ProgressVoice sender, ProgressVoiceValueChanged args)
+        private void Progress_PositionChanged(PlaybackSlider sender, PlaybackSliderPositionChanged args)
         {
-            _message?.PlaybackService.Seek(TimeSpan.FromSeconds(args.NewValue));
+            _message?.PlaybackService.Seek(args.NewPosition);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

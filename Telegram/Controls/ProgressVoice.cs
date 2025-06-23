@@ -8,16 +8,14 @@ using System;
 using System.Collections.Generic;
 using Telegram.Td.Api;
 using Windows.Foundation;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls
 {
-    public record ProgressVoiceValueChanged(double NewValue);
+    public record PlaybackSliderPositionChanged(TimeSpan NewPosition);
 
-    public partial class ProgressVoice : ProgressBar
+    public partial class ProgressVoice : PlaybackSlider
     {
         private Path ProgressBarIndicator;
         private Path HorizontalTrackRect;
@@ -28,6 +26,9 @@ namespace Telegram.Controls
         public ProgressVoice()
         {
             DefaultStyleKey = typeof(ProgressVoice);
+
+            _group1 = new GeometryGroup();
+            _group2 = new GeometryGroup();
         }
 
         protected override void OnApplyTemplate()
@@ -35,8 +36,8 @@ namespace Telegram.Controls
             ProgressBarIndicator = GetTemplateChild("ProgressBarIndicator") as Path;
             HorizontalTrackRect = GetTemplateChild("HorizontalTrackRect") as Path;
 
-            ProgressBarIndicator.Data = _group1 = new GeometryGroup();
-            HorizontalTrackRect.Data = _group2 = new GeometryGroup();
+            ProgressBarIndicator.Data = _group1;
+            HorizontalTrackRect.Data = _group2;
 
             if (_deferred != null && _deferred.Duration != -1)
             {
@@ -62,12 +63,6 @@ namespace Telegram.Controls
         public void UpdateWaveform(VoiceNote voiceNote)
         {
             _deferred = voiceNote;
-
-            if (ProgressBarIndicator == null || HorizontalTrackRect == null)
-            {
-                //_deferred = voiceNote;
-                return;
-            }
 
             if (voiceNote.Duration == -1)
             {
@@ -151,62 +146,6 @@ namespace Telegram.Controls
             {
                 Width = waveformWidth;
             }
-        }
-
-        private bool _pressed;
-
-        public bool IsChanging => _pressed;
-
-        public new event TypedEventHandler<ProgressVoice, ProgressVoiceValueChanged> ValueChanged;
-
-        protected override void OnPointerPressed(PointerRoutedEventArgs e)
-        {
-            var point = e.GetCurrentPoint(this);
-            if (point.Properties.IsLeftButtonPressed)
-            {
-                _pressed = true;
-                CapturePointer(e.Pointer);
-
-                Value = point.Position.X / ActualWidth * Maximum;
-            }
-
-            base.OnPointerPressed(e);
-        }
-
-        protected override void OnPointerMoved(PointerRoutedEventArgs e)
-        {
-            if (_pressed)
-            {
-                var point = e.GetCurrentPoint(this);
-                Value = point.Position.X / ActualWidth * Maximum;
-            }
-
-            base.OnPointerMoved(e);
-        }
-
-        protected override void OnPointerCanceled(PointerRoutedEventArgs e)
-        {
-            _pressed = false;
-            base.OnPointerCanceled(e);
-        }
-
-        protected override void OnPointerCaptureLost(PointerRoutedEventArgs e)
-        {
-            _pressed = false;
-            base.OnPointerCaptureLost(e);
-        }
-
-        protected override void OnPointerReleased(PointerRoutedEventArgs e)
-        {
-            if (_pressed)
-            {
-                _pressed = false;
-                ReleasePointerCapture(e.Pointer);
-
-                ValueChanged?.Invoke(this, new ProgressVoiceValueChanged(Value));
-            }
-
-            base.OnPointerReleased(e);
         }
     }
 }

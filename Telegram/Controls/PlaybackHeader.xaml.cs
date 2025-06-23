@@ -43,10 +43,7 @@ namespace Telegram.Controls
             InitializeComponent();
 
             Slider.AddHandler(KeyDownEvent, new KeyEventHandler(Slider_KeyDown), true);
-            Slider.AddHandler(PointerPressedEvent, new PointerEventHandler(Slider_PointerPressed), true);
-            Slider.AddHandler(PointerReleasedEvent, new PointerEventHandler(Slider_PointerReleased), true);
-            Slider.AddHandler(PointerCanceledEvent, new PointerEventHandler(Slider_PointerCanceled), true);
-            Slider.AddHandler(PointerCaptureLostEvent, new PointerEventHandler(Slider_PointerCaptureLost), true);
+            Slider.PositionChanged += Slider_PositionChanged;
 
             _visual1 = ElementComposition.GetElementVisual(Label1);
             _visual2 = ElementComposition.GetElementVisual(Label2);
@@ -100,8 +97,9 @@ namespace Telegram.Controls
         {
             var position = args.Position;
             var duration = args.Duration;
+            var state = sender.PlaybackState;
 
-            this.BeginOnUIThread(() => UpdatePosition(position, duration));
+            this.BeginOnUIThread(() => UpdatePosition(position, duration, state));
         }
 
         private void OnPlaylistChanged(IPlaybackService sender, object args)
@@ -113,19 +111,20 @@ namespace Telegram.Controls
             });
         }
 
-        private void UpdatePosition(TimeSpan position, TimeSpan duration)
+        private void UpdatePosition(TimeSpan position, TimeSpan duration, PlaybackState state)
         {
-            if (_scrubbing)
+            if (Slider.IsScrubbing)
             {
                 return;
             }
 
-            Slider.Maximum = duration.TotalSeconds;
-            Slider.Value = position.TotalSeconds;
+            Slider.UpdateValue(position, duration, state);
         }
 
         private void UpdateGlyph()
         {
+            UpdatePosition(_playbackService.Position, _playbackService.Duration, _playbackService.PlaybackState);
+
             var message = _playbackService.CurrentItem;
             if (message == null)
             {
@@ -405,61 +404,37 @@ namespace Telegram.Controls
 
 
 
-        private bool _scrubbing;
-
         private void Slider_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Right || e.Key == VirtualKey.Up)
             {
-                Slider.Value += 5;
-                _playbackService?.Seek(TimeSpan.FromSeconds(Slider.Value));
+                _playbackService?.Seek(Slider.Position + TimeSpan.FromSeconds(5));
             }
             else if (e.Key == VirtualKey.Left || e.Key == VirtualKey.Down)
             {
-                Slider.Value -= 5;
-                _playbackService?.Seek(TimeSpan.FromSeconds(Slider.Value));
+                _playbackService?.Seek(Slider.Position - TimeSpan.FromSeconds(5));
             }
             else if (e.Key == VirtualKey.PageUp)
             {
-                Slider.Value += 30;
-                _playbackService?.Seek(TimeSpan.FromSeconds(Slider.Value));
+                _playbackService?.Seek(Slider.Position + TimeSpan.FromSeconds(30));
             }
             else if (e.Key == VirtualKey.PageDown)
             {
-                Slider.Value -= 30;
-                _playbackService?.Seek(TimeSpan.FromSeconds(Slider.Value));
+                _playbackService?.Seek(Slider.Position - TimeSpan.FromSeconds(30));
             }
             else if (e.Key == VirtualKey.Home)
             {
-                Slider.Value = Slider.Minimum;
-                _playbackService?.Seek(TimeSpan.FromSeconds(Slider.Value));
+                _playbackService?.Seek(TimeSpan.Zero);
             }
             else if (e.Key == VirtualKey.End)
             {
-                Slider.Value = Slider.Maximum;
-                _playbackService?.Seek(TimeSpan.FromSeconds(Slider.Value));
+                _playbackService?.Seek(Slider.Duration);
             }
         }
 
-        private void Slider_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void Slider_PositionChanged(object sender, PlaybackSliderPositionChanged e)
         {
-            _scrubbing = true;
-        }
-
-        private void Slider_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            _playbackService?.Seek(TimeSpan.FromSeconds(Slider.Value));
-            _scrubbing = false;
-        }
-
-        private void Slider_PointerCanceled(object sender, PointerRoutedEventArgs e)
-        {
-            _scrubbing = false;
-        }
-
-        private void Slider_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
-        {
-            _scrubbing = false;
+            _playbackService?.Seek(e.NewPosition);
         }
 
         private void Items_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)

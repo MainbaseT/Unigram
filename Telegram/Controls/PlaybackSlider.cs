@@ -5,18 +5,22 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using Telegram.Common;
+using Telegram.Services;
+using Windows.Foundation;
+using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Controls
 {
-    public partial class PlaybackSlider : RangeBase
+    public partial class PlaybackSlider : Control
     {
-        private Grid LayoutRoot;
+        private UIElement ProgressBarIndicator;
 
         public PlaybackSlider()
         {
@@ -25,10 +29,9 @@ namespace Telegram.Controls
 
         protected override void OnApplyTemplate()
         {
-            LayoutRoot = GetTemplateChild("LayoutRoot") as Grid;
+            ProgressBarIndicator = GetTemplateChild(nameof(ProgressBarIndicator)) as UIElement;
 
-            LayoutRoot.ColumnDefinitions[0].Width = new GridLength(Value, GridUnitType.Star);
-            LayoutRoot.ColumnDefinitions[1].Width = new GridLength(Maximum - Value, GridUnitType.Star);
+            UpdateValue(_position, _duration, _state);
 
             base.OnApplyTemplate();
         }
@@ -38,30 +41,73 @@ namespace Telegram.Controls
             return new PlaybackSliderAutomationPeer(this);
         }
 
-        protected override void OnValueChanged(double oldValue, double newValue)
-        {
-            base.OnValueChanged(oldValue, newValue);
-
-            if (LayoutRoot != null)
-            {
-                LayoutRoot.ColumnDefinitions[0].Width = new GridLength(newValue, GridUnitType.Star);
-                LayoutRoot.ColumnDefinitions[1].Width = new GridLength(Maximum - newValue, GridUnitType.Star);
-            }
-        }
-
-        protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
-        {
-            base.OnMaximumChanged(oldMaximum, newMaximum);
-
-            if (LayoutRoot != null)
-            {
-                LayoutRoot.ColumnDefinitions[0].Width = new GridLength(Value, GridUnitType.Star);
-                LayoutRoot.ColumnDefinitions[1].Width = new GridLength(newMaximum - Value, GridUnitType.Star);
-            }
-        }
-
         private bool _pressed;
         private bool _entered;
+
+        public bool IsScrubbing => _pressed;
+
+        public TimeSpan Position => _position;
+
+        public TimeSpan Duration => _duration;
+
+        public event TypedEventHandler<PlaybackSlider, PlaybackSliderPositionChanged> PositionChanged;
+
+        private TimeSpan _position;
+        private TimeSpan _duration;
+        private PlaybackState _state;
+
+        private CompositionPropertySet _props;
+
+        public void UpdateValue(double position, double duration, PlaybackState state)
+        {
+            UpdateValue(TimeSpan.FromSeconds(position), TimeSpan.FromSeconds(duration), state);
+        }
+
+        public void UpdateValue(TimeSpan position, TimeSpan duration, PlaybackState state)
+        {
+            _position = position;
+            _duration = duration;
+            _state = state;
+
+            if (ProgressBarIndicator == null || duration - position <= TimeSpan.Zero)
+            {
+                return;
+            }
+
+            var compositor = Window.Current.Compositor;
+
+            var visual = ElementComposition.GetElementVisual(ProgressBarIndicator);
+            var clip = (visual.Clip ??= compositor.CreateInsetClip()) as InsetClip;
+
+            var step = (float)(position.TotalSeconds / duration.TotalSeconds);
+
+            if (state == PlaybackState.Playing)
+            {
+                var linearEasing = compositor.CreateLinearEasingFunction();
+                var animation = compositor.CreateScalarKeyFrameAnimation();
+                animation.Duration = duration - position;
+                animation.InsertKeyFrame(0, step, linearEasing);
+                animation.InsertKeyFrame(1, 1, linearEasing);
+
+                if (_props == null)
+                {
+                    _props = compositor.CreatePropertySet();
+                    _props.InsertScalar("Progress", 0);
+                }
+
+                var progressAnimation = compositor.CreateExpressionAnimation("visual.Size.X - (_.Progress * visual.Size.X)");
+                progressAnimation.SetReferenceParameter("_", _props);
+                progressAnimation.SetReferenceParameter("visual", visual);
+
+                _props.StartAnimation("Progress", animation);
+                clip.StartAnimation("RightInset", progressAnimation);
+            }
+            else
+            {
+                clip.StopAnimation("RightInset");
+                clip.RightInset = visual.Size.X - step * visual.Size.X;
+            }
+        }
 
         protected override void OnPointerEntered(PointerRoutedEventArgs e)
         {
@@ -73,12 +119,15 @@ namespace Telegram.Controls
 
         protected override void OnPointerPressed(PointerRoutedEventArgs e)
         {
-            _pressed = true;
-            VisualStateManager.GoToState(this, "PointerOver", true);
-            CapturePointer(e.Pointer);
-
             var point = e.GetCurrentPoint(this);
-            Value = point.Position.X / ActualWidth * Maximum;
+            if (point.Properties.IsLeftButtonPressed)
+            {
+                _pressed = true;
+                VisualStateManager.GoToState(this, "PointerOver", true);
+                CapturePointer(e.Pointer);
+
+                UpdateValue(TimeSpan.FromSeconds(point.Position.X / ActualWidth * _duration.TotalSeconds), _duration, PlaybackState.None);
+            }
 
             base.OnPointerPressed(e);
         }
@@ -88,7 +137,7 @@ namespace Telegram.Controls
             if (_pressed)
             {
                 var point = e.GetCurrentPoint(this);
-                Value = point.Position.X / ActualWidth * Maximum;
+                UpdateValue(TimeSpan.FromSeconds(point.Position.X / ActualWidth * _duration.TotalSeconds), _duration, PlaybackState.None);
             }
 
             VisualStateManager.GoToState(this, "PointerOver", true);
@@ -130,6 +179,12 @@ namespace Telegram.Controls
 
         protected override void OnPointerReleased(PointerRoutedEventArgs e)
         {
+            if (_pressed)
+            {
+                var point = e.GetCurrentPoint(this);
+                SetValue(TimeSpan.FromSeconds(point.Position.X / ActualWidth * _duration.TotalSeconds));
+            }
+
             _pressed = false;
             ReleasePointerCapture(e.Pointer);
             UpdateVisualState(e);
@@ -151,9 +206,14 @@ namespace Telegram.Controls
                 VisualStateManager.GoToState(this, "Normal", true);
             }
         }
+
+        public void SetValue(TimeSpan position)
+        {
+            PositionChanged?.Invoke(this, new PlaybackSliderPositionChanged(position));
+        }
     }
 
-    public partial class PlaybackSliderAutomationPeer : RangeBaseAutomationPeer, IValueProvider
+    public partial class PlaybackSliderAutomationPeer : FrameworkElementAutomationPeer, IRangeValueProvider, IValueProvider
     {
         private readonly PlaybackSlider _owner;
 
@@ -175,7 +235,7 @@ namespace Telegram.Controls
 
         protected override object GetPatternCore(PatternInterface patternInterface)
         {
-            if (patternInterface == PatternInterface.Value)
+            if (patternInterface is PatternInterface.RangeValue or PatternInterface.Value)
             {
                 return this;
             }
@@ -183,46 +243,28 @@ namespace Telegram.Controls
             return base.GetPatternCore(patternInterface);
         }
 
-        protected override AutomationControlType GetAutomationControlTypeCore()
-        {
-            return AutomationControlType.Slider;
-        }
+        public bool IsReadOnly => false;
 
-        public string Value
+        public double LargeChange => 1;
+
+        public double SmallChange => 1;
+
+        public double Minimum => 0;
+
+        public double Maximum => _owner.Duration.TotalSeconds;
+
+        public double Value => _owner.Position.TotalSeconds;
+
+        string IValueProvider.Value => _owner.Position.ToDuration();
+
+        public void SetValue(double value)
         {
-            get
-            {
-                return ReadableTime((int)_owner.Value);
-            }
+            throw new NotImplementedException();
         }
 
         public void SetValue(string value)
         {
+            throw new NotImplementedException();
         }
-
-        public bool IsReadOnly
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        private static string ReadableTime(double seconds)
-        {
-            var duration = TimeSpan.FromSeconds(seconds);
-            if (duration.TotalHours >= 1)
-            {
-                return duration.ToString("h\\:mm\\:ss");
-            }
-            else
-            {
-                return duration.ToString("mm\\:ss");
-            }
-        }
-
-
-
-
     }
 }

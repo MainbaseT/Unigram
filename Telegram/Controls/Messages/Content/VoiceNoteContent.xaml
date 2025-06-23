@@ -158,8 +158,6 @@
                 Value="{ThemeResource ProgressBarBorderThemeThickness}" />
         <Setter Property="BorderBrush"
                 Value="{ThemeResource SystemControlHighlightTransparentBrush}" />
-        <Setter Property="Maximum"
-                Value="100" />
         <Setter Property="MinHeight"
                 Value="{ThemeResource ProgressBarThemeMinHeight}" />
         <Setter Property="IsTabStop"
