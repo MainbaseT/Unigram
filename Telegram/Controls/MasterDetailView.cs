@@ -7,6 +7,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using Telegram.Assets.Icons;
 using Telegram.Collections;
@@ -35,7 +36,7 @@ namespace Telegram.Controls
         Background
     }
 
-    public sealed partial class MasterDetailView : ContentControl, IDisposable
+    public sealed partial class MasterDetailView : ContentControl, INotifyPropertyChanged, IDisposable
     {
         private MasterDetailPanel AdaptivePanel;
         private Frame DetailFrame;
@@ -776,6 +777,7 @@ namespace Telegram.Controls
             {
                 _prevState = CurrentState;
                 ViewStateChanged?.Invoke(this, EventArgs.Empty);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentState)));
             }
 
             UpdateMasterVisibility();
@@ -1117,6 +1119,7 @@ namespace Telegram.Controls
         }
 
         public event EventHandler ViewStateChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
