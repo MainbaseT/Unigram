@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using System.Collections.Generic;
 using Telegram.Common;
 using Telegram.Services;
@@ -17,6 +18,8 @@ namespace Telegram.Td.Api
 
         private readonly Chat _chat;
         private readonly UniqueList<long, Message> _messages = new(x => x.Id, Comparer<long>.Create((x, y) => y.CompareTo(x)));
+
+        private readonly static FormattedText _emptyText = new FormattedText(string.Empty, Array.Empty<TextEntity>());
 
         private Queue<long> _queue = new();
         private bool _loading = true;
@@ -32,7 +35,7 @@ namespace Telegram.Td.Api
 
         public MessageContent LastMessage { get; private set; }
 
-        public FormattedText Caption { get; private set; }
+        public FormattedText Caption { get; private set; } = _emptyText;
 
         public MessageAlbumLastMessage(IClientService clientService, IEventAggregator aggregator, Chat chat, Message fromMessage)
         {
@@ -241,7 +244,7 @@ namespace Telegram.Td.Api
             }
             else
             {
-                Caption = null;
+                Caption = _emptyText;
                 LastMessage = null;
             }
         }
