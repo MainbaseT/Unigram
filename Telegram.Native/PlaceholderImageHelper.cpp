@@ -1055,6 +1055,17 @@ namespace winrt::Telegram::Native::implementation
         ReturnIfFailed(result, textFormat->SetReadingDirection(rtl ? DWRITE_READING_DIRECTION_RIGHT_TO_LEFT : DWRITE_READING_DIRECTION_LEFT_TO_RIGHT));
         ReturnIfFailed(result, textFormat->SetWordWrapping(wrap ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP));
 
+        if (wrap)
+        {
+            ReturnIfFailed(result, textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP));
+        }
+        else
+        {
+            //DWRITE_TRIMMING trimming = { DWRITE_TRIMMING_GRANULARITY_CHARACTER, '.', 3};
+            //ReturnIfFailed(result, textFormat->SetTrimming(&trimming, nullptr));
+            ReturnIfFailed(result, textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP));
+        }
+
         winrt::com_ptr<IDWriteTextLayout> textLayout;
         ReturnIfFailed(result, m_dwriteFactory->CreateTextLayout(
             text.data(),					// The string to be laid out and formatted.

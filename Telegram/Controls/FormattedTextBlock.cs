@@ -1101,6 +1101,18 @@ namespace Telegram.Controls
             }
             else
             {
+                var paragraph = TextBlock.Blocks[^1] as Paragraph;
+
+                Rect relative;
+                if (paragraph.Inlines.Count > 1)
+                {
+                    relative = paragraph.Inlines[^2].ContentEnd.GetCharacterRect(LogicalDirection.Forward);
+                }
+                else
+                {
+                    relative = paragraph.Inlines[^1].ContentStart.GetCharacterRect(LogicalDirection.Forward);
+                }
+
                 // Would be cool to optimize this for contiguous paragraphs
                 foreach (var hyperlink in _spoilers)
                 {
@@ -1114,9 +1126,7 @@ namespace Telegram.Controls
 
                     var size = fontSize;
 
-                    var relative = _spanForInlines.ContentStart.GetCharacterRect(_spanForInlines.ContentStart.LogicalDirection);
                     var rectangles = PlaceholderImageHelper.Current.RangeMetrics(partial, xoffset, xlength, entities, size, width - relative.X, styled.Direction == TextDirectionality.RightToLeft, false);
-
                     var point = new Windows.Foundation.Point(relative.X + position.X, relative.Y + position.Y + inset);
 
                     for (int i = 0; i < rectangles.Count; i++)
@@ -1142,6 +1152,9 @@ namespace Telegram.Controls
                     }
                 }
             }
+
+            //maxX = Math.Min(maxX, TextBlock.ActualWidth);
+            //maxY = Math.Min(maxY, TextBlock.ActualHeight);
 
             if (current.Count > 0)
             {
