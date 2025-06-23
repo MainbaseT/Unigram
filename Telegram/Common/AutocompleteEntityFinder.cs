@@ -103,7 +103,7 @@ namespace Telegram.Common
                     _ => AutocompleteEntity.None
                 };
 
-                if (entity != AutocompleteEntity.None)
+                if (entity != AutocompleteEntity.None && result.Length > 0)
                 {
                     result = result.Substring(1);
                 }
