@@ -481,6 +481,8 @@ namespace Telegram.ViewModels
 
                             albumType = StorageAlbumType.None;
                             view.Add(item);
+
+                            continue;
                         }
 
                         var type = item switch
@@ -936,7 +938,7 @@ namespace Telegram.ViewModels
 
             Object response = null;
 
-            if (ClientService.IsDiceEmoji(text, out string dice))
+            if (formattedText.Entities.Count == 0 && ClientService.IsDiceEmoji(text, out string dice))
             {
                 var input = new InputMessageDice(dice, true);
                 await SendMessageAsync(reply, input, options);
