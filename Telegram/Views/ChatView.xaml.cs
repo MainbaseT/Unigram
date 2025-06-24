@@ -4149,6 +4149,7 @@ namespace Telegram.Views
             TextArea.IsEnabled = !show;
 
             var manage = ElementComposition.GetElementVisual(ManagePanel);
+            manage.Clip = null;
             manage.StopAnimation("Opacity");
 
             var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
