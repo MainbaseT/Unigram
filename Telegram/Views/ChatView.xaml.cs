@@ -718,7 +718,7 @@ namespace Telegram.Views
 
                         item = null;
                     }
-                    else if (main && needed is true && loaded is true && ViewModel.Items[index] == message)
+                    else if (main && container != headerFooter && needed is true && loaded is true && ViewModel.Items[index] == message)
                     {
                         headerFooter?.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
 

@@ -708,7 +708,7 @@ namespace Telegram.ViewModels
 
                 BeginOnUIThread(() =>
                 {
-                    InsertMessage(message, 0);
+                    InsertMessage(message);
 
                     if (!update.Message.IsOutgoing && Settings.Notifications.InAppSounds)
                     {
@@ -1022,6 +1022,7 @@ namespace Telegram.ViewModels
                 Handle(update.OldMessageId, message =>
                 {
                     message.Replace(update.Message);
+                    message.IsInitial = true;
                     message.GeneratedContentUnread = true;
 
                     if (message.Content is MessagePaidMedia paidMedia)
@@ -1057,6 +1058,7 @@ namespace Telegram.ViewModels
                 Handle(update.OldMessageId, message =>
                 {
                     message.Replace(update.Message);
+                    message.IsInitial = true;
                     message.GeneratedContentUnread = true;
 
                     if (message.Content is MessagePaidMedia paidMedia)
@@ -1261,40 +1263,37 @@ namespace Telegram.ViewModels
             });
         }
 
-        private async void InsertMessage(MessageViewModel message, long oldMessageId)
+        private void InsertMessage(MessageViewModel message, long oldMessageId = 0)
         {
-            using (await _loadMoreLock.WaitAsync())
+            if (IsNewestSliceLoaded == true || Type == DialogType.ScheduledMessages)
             {
-                if (IsNewestSliceLoaded == true || Type == DialogType.ScheduledMessages)
+                if (IsTranslating)
                 {
-                    if (IsTranslating)
-                    {
-                        _translateService.Translate(message, Settings.Translate.To);
-                    }
-
-                    var result = new List<MessageViewModel> { message };
-                    ProcessMessages(_chat, result);
-
-                    if (result.Count > 0)
-                    {
-                        InsertMessageInOrder(result[0], oldMessageId);
-                    }
-                }
-                else if (message.IsOutgoing && message.SendingState is MessageSendingStatePending)
-                {
-                    if (_composerHeader == null)
-                    {
-                        ComposerHeader = null;
-                    }
-
-                    goto LoadMessage;
+                    _translateService.Translate(message, Settings.Translate.To);
                 }
 
-                return;
+                var result = new List<MessageViewModel> { message };
+                ProcessMessages(_chat, result, true);
+
+                if (result.Count > 0)
+                {
+                    InsertMessageInOrder(result[0], oldMessageId);
+                }
+            }
+            else if (message.IsOutgoing && message.SendingState is MessageSendingStatePending)
+            {
+                if (_composerHeader == null)
+                {
+                    ComposerHeader = null;
+                }
+
+                goto LoadMessage;
             }
 
+            return;
+
         LoadMessage:
-            await LoadMessageSliceAsync(null, message.Id, VerticalAlignment.Top);
+            _ = LoadMessageSliceAsync(null, message.Id, VerticalAlignment.Top);
         }
 
         private void InsertMessageInOrder(MessageViewModel message, long oldMessageId = 0, bool force = false)
@@ -1304,8 +1303,9 @@ namespace Telegram.ViewModels
             {
                 if (oldIndex != -1)
                 {
-                    //Items.RemoveAt(oldIndex);
-                    Items.Move(oldIndex, newIndex);
+                    // We can't use Move because ListView seems to mess up a lot with this operationg
+                    Items.RemoveAt(oldIndex);
+                    Items.Insert(newIndex, message);
                 }
                 else
                 {
@@ -1361,13 +1361,14 @@ namespace Telegram.ViewModels
                 }
             }
 
+            if (oldIndex != -1 && oldIndex < newIndex)
+            {
+                newIndex--;
+            }
+
             if (newIndex == oldIndex)
             {
                 return -1;
-            }
-            else if (oldIndex != -1 && oldIndex < newIndex)
-            {
-                newIndex--;
             }
 
             return newIndex;

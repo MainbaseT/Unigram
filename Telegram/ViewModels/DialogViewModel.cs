@@ -1809,9 +1809,9 @@ namespace Telegram.ViewModels
             return new PinnedMessageViewModel(ClientService, _playbackService, _messageDelegate, _chat, message, index);
         }
 
-        protected void ProcessMessages(Chat chat, IList<MessageViewModel> messages)
+        protected void ProcessMessages(Chat chat, IList<MessageViewModel> messages, bool returnAlbumRoot = false)
         {
-            ProcessAlbums(chat, messages);
+            ProcessAlbums(chat, messages, returnAlbumRoot);
 
             for (int i = 0; i < messages.Count; i++)
             {
@@ -1941,7 +1941,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        private void ProcessAlbums(Chat chat, IList<MessageViewModel> slice)
+        private void ProcessAlbums(Chat chat, IList<MessageViewModel> slice, bool returnAlbumRoot)
         {
             Dictionary<long, Tuple<MessageViewModel, long>> groups = null;
             Dictionary<long, long> newGroups = null;
@@ -1974,6 +1974,10 @@ namespace Telegram.ViewModels
                     newGroups ??= new();
                     newGroups[groupedId] = groupedId;
                     _groupedMessages[groupedId] = group;
+                }
+                else if (returnAlbumRoot)
+                {
+                    slice[i] = group;
                 }
                 else
                 {
