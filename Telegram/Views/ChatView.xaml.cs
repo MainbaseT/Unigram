@@ -2198,9 +2198,14 @@ namespace Telegram.Views
             {
                 flyout.CreateFlyoutItem(ViewModel.Report, Strings.ReportChat, Icons.ErrorCircle);
             }
-            if (supergroup != null && supergroup.IsForum && _viewModel.Type == DialogType.History)
+            if (supergroup != null && supergroup.IsForum && !chat.ViewAsTopics && (ViewModel.Type == DialogType.History || supergroup.HasForumTabs))
             {
                 flyout.CreateFlyoutItem(ViewModel.ViewAsTopics, Strings.TopicViewAsTopics, Icons.ChatEmpty);
+
+                if (ViewModel.Chat.CanCreateTopics(ViewModel.ClientService))
+                {
+                    flyout.CreateFlyoutItem(ViewModel.CreateTopic, Strings.CreateTopic, Icons.Compose);
+                }
             }
             if (user != null && user.Type is not UserTypeDeleted && user.Id != ViewModel.ClientService.Options.MyId)
             {

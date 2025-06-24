@@ -26,6 +26,7 @@ using Telegram.ViewModels.Delegates;
 using Telegram.Views;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
+using Telegram.Views.Supergroups.Popups;
 using Telegram.Views.Users;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Text;
@@ -3416,6 +3417,26 @@ namespace Telegram.ViewModels
 
             await ClientService.SendAsync(new ToggleChatViewAsTopics(chat.Id, true));
             NavigationService.GoBackAt(0);
+        }
+
+        public async void CreateTopic()
+        {
+            if (Chat is not Chat chat)
+            {
+                return;
+            }
+
+            var popup = new SupergroupTopicPopup(ClientService, null);
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                var response = await ClientService.SendAsync(new CreateForumTopic(chat.Id, popup.SelectedName, popup.SelectedIcon));
+                if (response is ForumTopicInfo info)
+                {
+                    NavigationService.NavigateToChat(chat, topic: new MessageTopicForum(info.ForumTopicId), force: false, clearBackStack: true);
+                }
+            }
         }
 
         public void OpenProfile(INavigationService navigationService)
