@@ -282,6 +282,8 @@ namespace Telegram.Controls.Messages
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
+            Label.MaxLines = quote ? 5 : 1;
+
             var sender = message?.ClientService.GetMessageSender(messageSender);
             var accent = outgoing ? null : sender switch
             {
