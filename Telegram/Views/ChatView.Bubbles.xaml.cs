@@ -926,39 +926,28 @@ namespace Telegram.Views
                         : HorizontalAlignment.Stretch;
                 }
 
-                if (args.ItemIndex == ViewModel.Items.Count - 1 && ViewModel.IsNewestSliceLoaded is true)
+                void UpdateNewestOldest(bool? needed, bool? loaded, ref ChatHistoryViewItem item, ref ChatHistoryViewItem headerFooter, Index index)
                 {
-                    _newestItem = container;
-
-                    if (_newestItemAsFooterNeeded is true)
+                    if (args.ItemIndex == (index.IsFromEnd ? ViewModel.Items.Count - index.Value : index.Value) && loaded is true)
                     {
-                        _newestItemAsFooter?.UpdatePadding(-1, 0);
+                        item = container;
 
-                        _newestItemAsFooter = container;
-                        _newestItemAsFooter.UpdatePadding(-1, _messagesHeaderRootPadding);
+                        if (needed is true)
+                        {
+                            headerFooter?.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
+
+                            headerFooter = container;
+                            headerFooter.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? _messagesHeaderRootPadding : _messagesScrollBarPadding);
+                        }
+                    }
+                    else
+                    {
+                        container.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
                     }
                 }
-                else
-                {
-                    container.UpdatePadding(-1, 0);
-                }
 
-                if (args.ItemIndex == 0 && ViewModel.IsOldestSliceLoaded is true)
-                {
-                    _oldestItem = container;
-
-                    if (_oldestItemAsHeaderNeeded is true)
-                    {
-                        _oldestItemAsHeader?.UpdatePadding(0, -1);
-
-                        _oldestItemAsHeader = container;
-                        _oldestItemAsHeader.UpdatePadding(_messagesScrollBarPadding, -1);
-                    }
-                }
-                else
-                {
-                    container.UpdatePadding(0, -1);
-                }
+                UpdateNewestOldest(_oldestItemAsHeaderNeeded, ViewModel.IsOldestSliceLoaded, ref _oldestItem, ref _oldestItemAsHeader, 0);
+                UpdateNewestOldest(_newestItemAsFooterNeeded, ViewModel.IsNewestSliceLoaded, ref _newestItem, ref _newestItemAsFooter, ^1);
             }
         }
 
