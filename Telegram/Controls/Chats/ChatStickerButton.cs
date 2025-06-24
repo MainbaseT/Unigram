@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Numerics;
 using Telegram.Assets.Icons;
+using Telegram.Controls.Drawers;
 using Telegram.Controls.Media;
 using Telegram.Navigation;
 using Telegram.Services;
@@ -89,7 +90,7 @@ namespace Telegram.Controls.Chats
 
                     foreach (var popup in popups)
                     {
-                        if (popup.Child is FlyoutPresenter or MenuFlyoutPresenter or ZoomableMediaPopup)
+                        if (popup.Child is FlyoutPresenter { Content: EmojiSkinFlyout } or MenuFlyoutPresenter or ZoomableMediaPopup)
                         {
                             return;
                         }
