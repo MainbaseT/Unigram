@@ -112,7 +112,7 @@ namespace Telegram.Controls.Chats
                 HideButton.Visibility = Visibility.Collapsed;
                 ListButton.Visibility = Visibility.Collapsed;
             }
-            else
+            else if (message != null || known)
             {
                 ActionButton.Visibility = Visibility.Collapsed;
                 HideButton.Visibility = maximum > 1 ? Visibility.Collapsed : Visibility.Visible;
