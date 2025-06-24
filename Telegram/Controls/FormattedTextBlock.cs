@@ -1071,7 +1071,7 @@ namespace Telegram.Controls
                         ? quoteSize
                         : fontSize;
 
-                    var rectangles = PlaceholderImageHelper.Current.RangeMetrics(partial, xoffset, xlength, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft, true);
+                    var rectangles = PlaceholderImageHelper.Foreground.RangeMetrics(partial, xoffset, xlength, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft, true);
                     var relative = paragraph.ContentStart.GetCharacterRect(paragraph.ContentStart.LogicalDirection);
 
                     var point = new Windows.Foundation.Point(paragraph.Margin.Left + position.X, relative.Y + position.Y + inset);
@@ -1126,7 +1126,7 @@ namespace Telegram.Controls
 
                     var size = fontSize;
 
-                    var rectangles = PlaceholderImageHelper.Current.RangeMetrics(partial, xoffset, xlength, entities, size, width - relative.X, styled.Direction == TextDirectionality.RightToLeft, false);
+                    var rectangles = PlaceholderImageHelper.Foreground.RangeMetrics(partial, xoffset, xlength, entities, size, width - relative.X, styled.Direction == TextDirectionality.RightToLeft, false);
                     var point = new Windows.Foundation.Point(relative.X + position.X, relative.Y + position.Y + inset);
 
                     for (int i = 0; i < rectangles.Count; i++)

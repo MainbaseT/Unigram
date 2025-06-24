@@ -85,7 +85,7 @@ namespace Telegram.Common
                     using (var stream = await item.OpenAsync(FileAccessMode.ReadWrite))
                     {
                         var text = await ProcessSvgXmlAsync(file.Local.Path);
-                        await PlaceholderImageHelper.Current.DrawSvgAsync(text, Colors.White, stream, rasterizationScale);
+                        await PlaceholderImageHelper.Background.DrawSvgAsync(text, Colors.White, stream, rasterizationScale);
 
                         bitmap = LoadedImageSurface.StartLoadFromStream(stream, new Size(360, 740));
                     }
@@ -202,7 +202,7 @@ namespace Telegram.Common
             {
                 try
                 {
-                    await Task.Run(() => PlaceholderImageHelper.Current.DrawThumbnailPlaceholder(path, amount, stream));
+                    await Task.Run(() => PlaceholderImageHelper.Background.DrawThumbnailPlaceholder(path, amount, stream));
                     await bitmap.SetSourceAsync(stream);
                 }
                 catch { }
@@ -215,7 +215,7 @@ namespace Telegram.Common
             {
                 try
                 {
-                    await Task.Run(() => PlaceholderImageHelper.Current.DrawThumbnailPlaceholder(bytes, amount, stream));
+                    await Task.Run(() => PlaceholderImageHelper.Background.DrawThumbnailPlaceholder(bytes, amount, stream));
                     await bitmap.SetSourceAsync(stream);
                 }
                 catch { }

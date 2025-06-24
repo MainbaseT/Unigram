@@ -41,17 +41,30 @@ namespace winrt::Telegram::Native::implementation
             return S_OK;
         }
 
-        static winrt::Telegram::Native::PlaceholderImageHelper Current()
+        static winrt::Telegram::Native::PlaceholderImageHelper Background()
         {
             std::lock_guard const guard(s_criticalSection);
 
-            if (s_current == nullptr)
+            if (s_background == nullptr)
             {
-                s_current = winrt::make_self<PlaceholderImageHelper>();
+                s_background = winrt::make_self<PlaceholderImageHelper>();
             }
 
-            s_current->HandleDeviceLost();
-            return s_current.as<winrt::Telegram::Native::PlaceholderImageHelper>();
+            s_background->HandleDeviceLost();
+            return s_background.as<winrt::Telegram::Native::PlaceholderImageHelper>();
+        }
+
+        static winrt::Telegram::Native::PlaceholderImageHelper Foreground()
+        {
+            std::lock_guard const guard(s_criticalSection);
+
+            if (s_foreground == nullptr)
+            {
+                s_foreground = winrt::make_self<PlaceholderImageHelper>();
+            }
+
+            s_foreground->HandleDeviceLost();
+            return s_foreground.as<winrt::Telegram::Native::PlaceholderImageHelper>();
         }
 
         static HRESULT WriteBytes(IVector<byte> hash, IRandomAccessStream randomAccessStream) noexcept;
@@ -95,7 +108,8 @@ namespace winrt::Telegram::Native::implementation
 
     public:
         static std::mutex s_criticalSection;
-        static winrt::com_ptr<PlaceholderImageHelper> s_current;
+        static winrt::com_ptr<PlaceholderImageHelper> s_foreground;
+        static winrt::com_ptr<PlaceholderImageHelper> s_background;
 
         winrt::com_ptr<ID2D1Factory1> m_d2dFactory;
         winrt::com_ptr<ID2D1Device> m_d2dDevice;

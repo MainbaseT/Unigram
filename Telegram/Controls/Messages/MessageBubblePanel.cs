@@ -287,7 +287,7 @@ namespace Telegram.Controls.Messages
             {
                 // TODO: this condition will be true whenever the message has more than a paragraph.
 
-                var bounds = PlaceholderImageHelper.Current.ContentEnd(text, entities, fontSize, width);
+                var bounds = PlaceholderImageHelper.Foreground.ContentEnd(text, entities, fontSize, width);
                 if (bounds.Y < block.DesiredSize.Height)
                 {
                     return bounds.X;

@@ -2701,7 +2701,7 @@ namespace Telegram.Controls.Messages
                             ? quoteSize
                             : fontSize;
 
-                        var rectangles = PlaceholderImageHelper.Current.RangeMetrics(partial, xoffset, xlength, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft, true);
+                        var rectangles = PlaceholderImageHelper.Foreground.RangeMetrics(partial, xoffset, xlength, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft, true);
                         var relative = paragraph.ContentStart.GetCharacterRect(paragraph.ContentStart.LogicalDirection);
 
                         var point = new Windows.Foundation.Point(paragraph.Margin.Left + position.X, relative.Y + position.Y + inset);

@@ -460,7 +460,7 @@ namespace Telegram.Common
                 await Task.Run(() => animation.RenderSync(frame, width, height, true, out _));
 
                 using var stream = new InMemoryRandomAccessStream();
-                PlaceholderImageHelper.Current.Encode(frame, stream, width, height, animation.Rotation);
+                PlaceholderImageHelper.Background.Encode(frame, stream, width, height, animation.Rotation);
 
                 return await CropAndPreviewAsync(stream, generation, maxSize);
             }
@@ -561,7 +561,7 @@ namespace Telegram.Common
                     var result = animation.RenderSync(frame, width, height, true, out _);
 
                     var stream = new InMemoryRandomAccessStream();
-                    PlaceholderImageHelper.Current.Encode(frame, stream, width, height, animation.Rotation);
+                    PlaceholderImageHelper.Background.Encode(frame, stream, width, height, animation.Rotation);
 
                     return stream;
                 });

@@ -30,7 +30,8 @@ using namespace winrt::Windows::UI::Xaml::Media::Imaging;
 namespace winrt::Telegram::Native::implementation
 {
     std::mutex PlaceholderImageHelper::s_criticalSection;
-    winrt::com_ptr<PlaceholderImageHelper> PlaceholderImageHelper::s_current{ nullptr };
+    winrt::com_ptr<PlaceholderImageHelper> PlaceholderImageHelper::s_foreground{ nullptr };
+    winrt::com_ptr<PlaceholderImageHelper> PlaceholderImageHelper::s_background{ nullptr };
 
     class CustomEmojiInlineObject
         : public winrt::implements<CustomEmojiInlineObject, IDWriteInlineObject>

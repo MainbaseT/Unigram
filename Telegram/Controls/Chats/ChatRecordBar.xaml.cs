@@ -290,7 +290,7 @@ namespace Telegram.Controls.Chats
                     {
                         try
                         {
-                            await Task.Run(() => PlaceholderImageHelper.Current.DrawThumbnailPlaceholder(file.Path, 3, stream));
+                            await Task.Run(() => PlaceholderImageHelper.Background.DrawThumbnailPlaceholder(file.Path, 3, stream));
                             await bitmap.SetSourceAsync(stream);
                         }
                         catch { }
