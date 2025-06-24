@@ -119,6 +119,7 @@ namespace Telegram.Views.Supergroups.Popups
             if (string.IsNullOrEmpty(NameLabel.Text))
             {
                 VisualUtilities.ShakeView(NameLabel);
+                NameLabel.Focus(FocusState.Keyboard);
                 args.Cancel = true;
             }
         }
