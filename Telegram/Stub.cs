@@ -6282,6 +6282,30 @@ public static class PlaceholderImageHelper_stub
             throw new RuntimeException(ex);
         }
     }
+    public static Windows.UI.Composition.CompositionPath GetOutline_stub(this Telegram.Native.PlaceholderImageHelper sender, System.Collections.Generic.IList<Telegram.Td.Api.ClosedVectorPath> contours)
+    {
+        try
+        {
+            return sender.GetOutline(contours);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.UI.Composition.CompositionPath GetTail_stub(this Telegram.Native.PlaceholderImageHelper sender, float width, float height, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
+    {
+        try
+        {
+            return sender.GetTail(width, height, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static bool IsWebP_stub(string fileName, out int pixelWidth, out int pixelHeight)
     {
         try
@@ -7569,6 +7593,18 @@ public static class DispatcherQueue_stub
 }
 public static class Client_stub
 {
+    public static Telegram.Td.Client Create_stub(Telegram.Td.ClientResultHandler updateHandler)
+    {
+        try
+        {
+            return Telegram.Td.Client.Create(updateHandler);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static Telegram.Td.Api.BaseObject Execute_stub(Telegram.Td.Api.Function function)
     {
         try
