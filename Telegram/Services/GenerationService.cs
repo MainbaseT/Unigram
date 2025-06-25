@@ -386,14 +386,19 @@ namespace Telegram.Services
                     }
 
                     var transcoder = new MediaTranscoder();
+                    //var clip = await MediaClip.CreateFromFileAsync(file);
+                    //var composition = new MediaComposition();
+                    //composition.Clips.Add(clip);
 
                     if (generation.TrimStartTime is TimeSpan trimStart)
                     {
                         transcoder.TrimStartTime = trimStart;
+                        //clip.TrimTimeFromStart = trimStart;
                     }
                     if (generation.TrimStopTime is TimeSpan trimStop)
                     {
                         transcoder.TrimStopTime = trimStop;
+                        //clip.TrimTimeFromEnd = trimStop;
                     }
 
                     if (generation.Transform)
@@ -421,19 +426,29 @@ namespace Telegram.Services
                         profile.Video.Height = (uint)generation.OutputSize.Height;
 
                         transcoder.AddVideoEffect(transform.ActivatableClassId, true, transform.Properties);
+                        //clip.VideoEffectDefinitions.Add(transform);
                     }
 
                     var prepare = await transcoder.PrepareFileTranscodeAsync(file, temp, profile);
                     if (prepare.CanTranscode)
                     {
                         var progress = prepare.TranscodeAsync();
-                        progress.Progress = (result, delta) =>
+                        //var progress = composition.RenderToFileAsync(temp, MediaTrimmingPreference.Precise, profile);
+                        progress.Progress = (info, delta) =>
                         {
                             _clientService.Send(new SetFileGenerationProgress(update.GenerationId, 100, (int)delta));
                         };
-                        progress.Completed = (result, delta) =>
+                        progress.Completed = (info, status) =>
                         {
-                            _clientService.Send(new FinishFileGeneration(update.GenerationId, prepare.FailureReason == TranscodeFailureReason.None ? null : new Error(500, prepare.FailureReason.ToString())));
+                            //var results = info.GetResults();
+                            //if (results != TranscodeFailureReason.None || status != AsyncStatus.Completed)
+                            //{
+                            //    _clientService.Send(new FinishFileGeneration(update.GenerationId, new Error(500, results.ToString())));
+                            //}
+                            //else
+                            {
+                                _clientService.Send(new FinishFileGeneration(update.GenerationId, null));
+                            }
                         };
                     }
                     else
