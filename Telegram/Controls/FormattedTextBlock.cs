@@ -486,16 +486,15 @@ namespace Telegram.Controls
             _fastFontSize = fontSize;
             ClearEntities();
 
-            int textOffset;
+            var textOffset = -1;
+
             if (_spanForInlines == null)
             {
                 direct.ClearCollection(blocks);
-                textOffset = 0;
             }
             else
             {
                 _spanForInlines.Inlines.Clear();
-                textOffset = _spanForInlines.ContentStart.OffsetToIndex(TextBlock);
             }
 
             if (string.IsNullOrEmpty(styled?.Text))
@@ -754,6 +753,11 @@ namespace Telegram.Controls
                             if (SettingsService.Current.Diagnostics.SpoilerEffectDebug)
                             {
                                 _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
+                            }
+
+                            if (textOffset == -1)
+                            {
+                                textOffset = _spanForInlines.ContentStart.OffsetToIndex(TextBlock);
                             }
 
                             spoiler ??= new TextHighlighter();
