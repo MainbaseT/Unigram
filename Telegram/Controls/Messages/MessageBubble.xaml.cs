@@ -634,7 +634,7 @@ namespace Telegram.Controls.Messages
                 var compositor = BootStrapper.Current.Compositor;
 
                 _tail ??= compositor.CreatePathGeometry();
-                _tail.Path = GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
+                _tail.Path = PlaceholderImageHelper.Foreground.GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
 
                 var visual = ElementComposition.GetElementVisual(ContentPanel);
                 visual.Clip ??= compositor.CreateGeometricClip(_tail);
@@ -2240,7 +2240,7 @@ namespace Telegram.Controls.Messages
             var compositor = BootStrapper.Current.Compositor;
 
             _tail ??= compositor.CreatePathGeometry();
-            _tail.Path = GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
+            _tail.Path = PlaceholderImageHelper.Foreground.GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
 
             var visual = ElementComposition.GetElementVisual(ContentPanel);
             visual.Clip ??= compositor.CreateGeometricClip(_tail);
@@ -2250,71 +2250,6 @@ namespace Telegram.Controls.Messages
                 _corners = false;
                 ContentPanel.CornerRadius = new CornerRadius();
             }
-        }
-
-        private CompositionPath GetTail(float width, float height, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
-        {
-            CanvasGeometry result;
-            using (var builder = new CanvasPathBuilder(null))
-            {
-                builder.BeginFigure(new Vector2(topLeftRadius, 0));
-
-                // Top edge
-                builder.AddLine(new Vector2(width - topRightRadius, 0));
-
-                // Top-right corner
-                if (topRightRadius > 0)
-                    builder.AddArc(new Vector2(width, topRightRadius), topRightRadius, topRightRadius, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-
-                // Right edge
-                builder.AddLine(new Vector2(width, height - (bottomRightRadius > 0 ? bottomRightRadius : 15)));
-
-                var xshift = width - 30;
-                var yshift = height - 30;
-
-                // Bottom-right corner
-                if (bottomRightRadius > 0)
-                {
-                    builder.AddArc(new Vector2(width - bottomRightRadius, height), bottomRightRadius, bottomRightRadius, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-                }
-                else
-                {
-                    builder.AddCubicBezier(new Vector2(xshift + 30f, yshift + 15f), new Vector2(xshift + 30f, yshift + 18.493f), new Vector2(xshift + 28.796f, yshift + 21.704f));
-                    builder.AddCubicBezier(new Vector2(xshift + 26.802f, yshift + 24.259f), new Vector2(xshift + 26.802f, yshift + 27.222f), new Vector2(xshift + 29.444f, yshift + 28.889f));
-                    builder.AddCubicBezier(new Vector2(xshift + 29.833f, yshift + 29.167f), new Vector2(xshift + 30f, yshift + 29.444f), new Vector2(xshift + 29.815f, yshift + 29.815f));
-                    builder.AddCubicBezier(new Vector2(xshift + 29.444f, yshift + 29.815f), new Vector2(xshift + 25.463f, yshift + 29.815f), new Vector2(xshift + 24.630f, yshift + 29.815f));
-                    builder.AddCubicBezier(new Vector2(xshift + 21.667f, yshift + 28.444f), new Vector2(xshift + 19.630f, yshift + 29.444f), new Vector2(xshift + 17.407f, yshift + 30f));
-                }
-
-                // Bottom edge
-                builder.AddLine(new Vector2(bottomLeftRadius > 0 ? bottomLeftRadius : 15, height));
-
-                // Bottom-left corner
-                if (bottomLeftRadius > 0)
-                {
-                    builder.AddArc(new Vector2(0, height - bottomLeftRadius), bottomLeftRadius, bottomLeftRadius, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-                }
-                else
-                {
-                    builder.AddCubicBezier(new Vector2(12.593f, yshift + 30f), new Vector2(10.370f, yshift + 29.444f), new Vector2(8.333f, yshift + 28.444f));
-                    builder.AddCubicBezier(new Vector2(5.370f, yshift + 29.815f), new Vector2(4.537f, yshift + 29.815f), new Vector2(0.556f, yshift + 29.815f));
-                    builder.AddCubicBezier(new Vector2(0.185f, yshift + 29.815f), new Vector2(0f, yshift + 29.444f), new Vector2(0.167f, yshift + 29.167f));
-                    builder.AddCubicBezier(new Vector2(0.556f, yshift + 28.889f), new Vector2(3.198f, yshift + 27.222f), new Vector2(3.198f, yshift + 24.259f));
-                    builder.AddCubicBezier(new Vector2(1.204f, yshift + 21.704f), new Vector2(0f, yshift + 18.493f), new Vector2(0f, yshift + 15f));
-                }
-
-                // Left edge
-                builder.AddLine(new Vector2(0, topLeftRadius));
-
-                // Top-left corner
-                if (topLeftRadius > 0)
-                    builder.AddArc(new Vector2(topLeftRadius, 0), topLeftRadius, topLeftRadius, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-
-                builder.EndFigure(CanvasFigureLoop.Closed);
-                result = CanvasGeometry.CreatePath(builder);
-            }
-
-            return new CompositionPath(result);
         }
 
         public void AnimateSendout(float xTranslate, float xScale, float yScale, float fontScale, double outer, double inner, double delay, bool reply)

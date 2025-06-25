@@ -27,6 +27,20 @@ using namespace Microsoft::WRL::Wrappers;
 		goto Cleanup; \
 	}
 
+#define ReturnNullIfFailed(result, method) \
+	if(FAILED(result = method)) \
+	{ \
+		OutputDebugStringFormat(_STRINGIFY_W("HRESULT 0x%08X at " __FUNCTION__  ", line " _STRINGIFY(__LINE__) ", file " _STRINGIFY(__FILE__) "\n"), result); \
+		return nullptr; \
+	}
+
+#define ReturnDefaultIfFailed(result, method) \
+	if(FAILED(result = method)) \
+	{ \
+		OutputDebugStringFormat(_STRINGIFY_W("HRESULT 0x%08X at " __FUNCTION__  ", line " _STRINGIFY(__LINE__) ", file " _STRINGIFY(__FILE__) "\n"), result); \
+		return {}; \
+	}
+
 #define ReturnIfFailed(result, method) \
 	if(FAILED(result = method)) \
 	{ \
@@ -46,6 +60,18 @@ using namespace Microsoft::WRL::Wrappers;
 	if(FAILED(result = method)) \
 	{ \
 		return result; \
+	}
+
+#define ReturnNullIfFailed(result, method) \
+	if(FAILED(result = method)) \
+	{ \
+		return nullptr; \
+	}
+
+#define ReturnDefaultIfFailed(result, method) \
+	if(FAILED(result = method)) \
+	{ \
+		return {}; \
 	}
 
 #define CleanupIfFailed(result, method) \
