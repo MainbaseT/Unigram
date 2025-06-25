@@ -38,7 +38,15 @@ namespace Telegram.Views.Users
 
                 FindName(nameof(UsernamePanel));
                 FindName(nameof(BotPanel));
-                FindName(nameof(BotPanel2));
+
+                if (fullInfo?.BotInfo?.VerificationParameters != null)
+                {
+                    FindName(nameof(BotPanel2));
+                }
+                else if (BotPanel2 != null)
+                {
+                    BotPanel2.Visibility = Visibility.Collapsed;
+                }
 
                 LayoutRoot.Footer = string.Empty;
 
