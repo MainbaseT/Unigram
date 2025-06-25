@@ -154,6 +154,7 @@
                             <TextBlock x:Name="IconLabel"
                                        Foreground="{ThemeResource MessageCallForegroundBrush}"
                                        FontFamily="{StaticResource TelegramThemeFontFamily}"
+                                       Margin="0,1,4,-1"
                                        Grid.Row="1" />
                             <TextBlock x:Name="DateLabel"
                                        Style="{StaticResource DisabledCaptionTextBlockStyle}"
