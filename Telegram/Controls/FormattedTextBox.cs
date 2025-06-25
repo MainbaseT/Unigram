@@ -932,7 +932,7 @@ namespace Telegram.Controls
                 flags = default;
 
                 var range = Document.GetRange(i, i + 1);
-                if (range.ParagraphFormat.SpaceAfter != 0)
+                if (range.ParagraphFormat.SpaceAfter != 0 && range.Character != '\r')
                 {
                     flags = TextStyle.Quote;
                 }
@@ -1542,7 +1542,7 @@ namespace Telegram.Controls
                 //Document.BatchDisplayUpdates();
             }
 
-            var range = Document.GetRange(start, end);
+            var range = textRange.GetClone();
             var moveStart = range.StartOf(TextRangeUnit.Paragraph, true);
             var moveEnd = range.EndOf(TextRangeUnit.Paragraph, true);
 
@@ -1554,7 +1554,10 @@ namespace Telegram.Controls
             else
             {
                 range.SetRange(range.EndPosition - 1, range.EndPosition);
-                range.Character = '\r';
+                if (range.Character == '\v')
+                {
+                    range.Character = '\r';
+                }
 
                 end -= (1 - moveEnd);
             }
@@ -1574,7 +1577,10 @@ namespace Telegram.Controls
             else if (start > 0)
             {
                 range.SetRange(start - 1, start);
-                range.Character = '\r';
+                if (range.Character == '\v')
+                {
+                    range.Character = '\r';
+                }
             }
 
             // Not sure about what's the logic exactly, but 14pt in XAML equals to 10.5pt in TOM.
