@@ -295,7 +295,7 @@ namespace Telegram.Services
 
         private readonly Dictionary<int, File> _files = new();
 
-        private readonly Dictionary<long, MessageAlbumLastMessage> _lastMessageAlbums = new();
+        private readonly ConcurrentDictionary<long, MessageAlbumLastMessageService> _lastMessageAlbums = new();
 
         private UnconfirmedSession _unconfirmedSession;
 
@@ -2412,14 +2412,16 @@ namespace Telegram.Services
 
         public bool TryGetMediaAlbum(long chatId, long mediaAlbumId, out MessageAlbumLastMessage album)
         {
-            if (_lastMessageAlbums.TryGetValue(chatId, out album))
+            if (_lastMessageAlbums.TryGetValue(chatId, out MessageAlbumLastMessageService service))
             {
-                if (album.MediaAlbumId == mediaAlbumId && album.LastMessage != null)
+                if (service.MediaAlbumId == mediaAlbumId && service.LastMessage != null)
                 {
+                    album = service.Info();
                     return true;
                 }
             }
 
+            album = null;
             return false;
         }
 
@@ -2429,20 +2431,20 @@ namespace Telegram.Services
 
             if (lastMessage == null || lastMessage.MediaAlbumId == 0 || lastMessage.Content is not MessagePhoto and not MessageVideo)
             {
-                _lastMessageAlbums.Remove(chat.Id);
+                _lastMessageAlbums.TryRemove(chat.Id, out _);
                 return;
             }
 
-            if (_lastMessageAlbums.TryGetValue(chat.Id, out MessageAlbumLastMessage album2))
+            if (_lastMessageAlbums.TryGetValue(chat.Id, out MessageAlbumLastMessageService service))
             {
-                if (album2.MediaAlbumId == lastMessage.MediaAlbumId)
+                if (service.MediaAlbumId == lastMessage.MediaAlbumId)
                 {
-                    album2.LoadMore(lastMessage.Id);
+                    service.LoadMore(lastMessage.Id);
                     return;
                 }
             }
 
-            _lastMessageAlbums[chat.Id] = new MessageAlbumLastMessage(this, _aggregator, chat, lastMessage);
+            _lastMessageAlbums[chat.Id] = new MessageAlbumLastMessageService(this, _aggregator, chat, lastMessage);
         }
 
         private void UpdateChatLastMessage(UpdateDeleteMessages update)
@@ -2452,9 +2454,9 @@ namespace Telegram.Services
                 return;
             }
 
-            if (_lastMessageAlbums.TryGetValue(update.ChatId, out MessageAlbumLastMessage album))
+            if (_lastMessageAlbums.TryGetValue(update.ChatId, out MessageAlbumLastMessageService service))
             {
-                album.DeleteMessages(update.MessageIds);
+                service.DeleteMessages(update.MessageIds);
             }
         }
 

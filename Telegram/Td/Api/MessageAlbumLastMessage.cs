@@ -13,11 +13,42 @@ namespace Telegram.Td.Api
 {
     public partial class MessageAlbumLastMessage : MessageContent
     {
+        public int PhotosCount { get; }
+
+        public int VideosCount { get; }
+
+        public MessageContent LastMessage { get; }
+
+        public FormattedText Caption { get; }
+
+        public MessageAlbumLastMessage(int photosCount, int videosCount, MessageContent lastMessage, FormattedText caption)
+        {
+            PhotosCount = photosCount;
+            VideosCount = videosCount;
+            LastMessage = lastMessage;
+            Caption = caption;
+        }
+
+        public override string ToString()
+        {
+            return nameof(MessageAlbumLastMessage);
+        }
+
+        public NativeObject ToUnmanaged()
+        {
+            throw null;
+        }
+    }
+
+    public partial class MessageAlbumLastMessageService
+    {
         private readonly IClientService _clientService;
         private readonly IEventAggregator _aggregator;
 
         private readonly Chat _chat;
         private readonly UniqueList<long, Message> _messages = new(x => x.Id, Comparer<long>.Create((x, y) => y.CompareTo(x)));
+
+        private readonly object _lock = new();
 
         private readonly static FormattedText _emptyText = new FormattedText(string.Empty, Array.Empty<TextEntity>());
 
@@ -37,7 +68,7 @@ namespace Telegram.Td.Api
 
         public FormattedText Caption { get; private set; } = _emptyText;
 
-        public MessageAlbumLastMessage(IClientService clientService, IEventAggregator aggregator, Chat chat, Message fromMessage)
+        public MessageAlbumLastMessageService(IClientService clientService, IEventAggregator aggregator, Chat chat, Message fromMessage)
         {
             _clientService = clientService;
             _aggregator = aggregator;
@@ -151,10 +182,13 @@ namespace Telegram.Td.Api
                 AddMessage(fromMessage);
             }
 
-            PhotosCount += photosCount;
-            VideosCount += videosCount;
+            lock (_lock)
+            {
+                PhotosCount += photosCount;
+                VideosCount += videosCount;
 
-            UpdateInfo();
+                UpdateInfo();
+            }
 
             _hasOldestMessage = hasOldestMessage || _messages.Count == 10;
             _hasNewestMessage = hasNewestMessage || _messages.Count == 10;
@@ -208,10 +242,13 @@ namespace Telegram.Td.Api
                 }
             }
 
-            PhotosCount -= photosCount;
-            VideosCount -= videosCount;
+            lock (_lock)
+            {
+                PhotosCount -= photosCount;
+                VideosCount -= videosCount;
 
-            UpdateInfo();
+                UpdateInfo();
+            }
 
             if (found && _messages.Count > 0 && _chat.LastMessage?.MediaAlbumId == MediaAlbumId)
             {
@@ -249,14 +286,12 @@ namespace Telegram.Td.Api
             }
         }
 
-        public override string ToString()
+        public MessageAlbumLastMessage Info()
         {
-            return nameof(MessageAlbumLastMessage);
-        }
-
-        public NativeObject ToUnmanaged()
-        {
-            throw null;
+            lock (_lock)
+            {
+                return new MessageAlbumLastMessage(PhotosCount, VideosCount, LastMessage, Caption);
+            }
         }
     }
 }
