@@ -120,13 +120,14 @@ namespace Telegram.ViewModels
             var limit = 50;
 
             var func = new SearchChatMessages(chat.Id, messageTopic, string.Empty, null, maxId, offset, limit, filter);
+            var totalCount = TotalCount;
 
             var tsc = new TaskCompletionSource<List<PinnedMessageViewModel>>();
             async void handler(Object result)
             {
                 if (result is FoundChatMessages foundChatMessages && foundChatMessages.Messages.Count > 0)
                 {
-                    TotalCount = foundChatMessages.TotalCount;
+                    totalCount = foundChatMessages.TotalCount;
 
                     var results = new List<PinnedMessageViewModel>();
 
@@ -150,6 +151,9 @@ namespace Telegram.ViewModels
             _viewModel.ClientService.Send(func, handler);
 
             var response = await tsc.Task;
+
+            TotalCount = totalCount;
+
             if (response is List<PinnedMessageViewModel> messages && messages.Count > 0)
             {
                 if (direction == PanelScrollingDirection.None)

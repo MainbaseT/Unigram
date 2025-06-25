@@ -134,6 +134,11 @@ namespace Telegram.Controls.Chats
                 ShowHide(chat.BusinessBotManageBar == null);
             }
 
+            if (maximum <= value)
+            {
+                maximum = value + 1;
+            }
+
             var title = Strings.PinnedMessage + (value >= 0 && maximum > 1 && value + 1 < maximum ? $" #{value + 1}" : "");
 
             if (_loading || (_chatId == chat.Id && _message == null))
