@@ -6740,6 +6740,8 @@ namespace Telegram.Views
             + AccountInfoHeader.AnimatedHeight
             + Sponsored.AnimatedHeight;
 
+        public bool HasMessagesPadding => _messagesHeaderRootPadding > 0;
+
         private EffectiveViewportChangedEventArgs _headerUnreadViewport;
         private bool _headerUnreadNotReady = true;
         private bool _headerUnreadRetry = false;
