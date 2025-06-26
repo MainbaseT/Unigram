@@ -26,7 +26,7 @@ namespace Telegram.Td.Api
         /// <summary>
         /// Information about the sponsor of the message.
         /// </summary>
-        public MessageSponsor Sponsor { get; set; }
+        public AdvertisementSponsor Sponsor { get; set; }
 
         /// <summary>
         /// Content of the message. Currently, can be only of the type messageText.

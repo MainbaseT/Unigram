@@ -289,6 +289,12 @@ namespace Telegram.Services
         {
             switch (target)
             {
+                case AdvertisementSponsor advertisementSponsor:
+                    if (advertisementSponsor.Photo != null)
+                    {
+                        ProcessFiles(advertisementSponsor.Photo);
+                    }
+                    break;
                 case AlternativeVideo alternativeVideo:
                     if (alternativeVideo.HlsFile != null)
                     {
@@ -1285,12 +1291,6 @@ namespace Telegram.Services
                     foreach (var item in messages.MessagesValue)
                     {
                         ProcessFiles(item);
-                    }
-                    break;
-                case MessageSponsor messageSponsor:
-                    if (messageSponsor.Photo != null)
-                    {
-                        ProcessFiles(messageSponsor.Photo);
                     }
                     break;
                 case MessageSticker messageSticker:
@@ -2607,6 +2607,18 @@ namespace Telegram.Services
                     if (video.VideoValue != null)
                     {
                         video.VideoValue = ProcessFile(video.VideoValue);
+                    }
+                    break;
+                case VideoMessageAdvertisement videoMessageAdvertisement:
+                    if (videoMessageAdvertisement.Sponsor != null)
+                    {
+                        ProcessFiles(videoMessageAdvertisement.Sponsor);
+                    }
+                    break;
+                case VideoMessageAdvertisements videoMessageAdvertisements:
+                    foreach (var item in videoMessageAdvertisements.Advertisements)
+                    {
+                        ProcessFiles(item);
                     }
                     break;
                 case VideoNote videoNote:

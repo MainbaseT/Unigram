@@ -106,8 +106,7 @@ namespace Telegram.Services
             {
                 if (id == long.MaxValue)
                 {
-                    // TODO: translate
-                    yield return new DirectMessagesChatTopic(_chatId, 0, null, long.MaxValue, false, 0, 0, 0, 0, null, null);
+                    yield return new DirectMessagesChatTopic(_chatId, 0, null, long.MaxValue, true, false, 0, 0, 0, 0, null, null);
                 }
 
                 var topic = GetTopic(id);
