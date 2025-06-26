@@ -19,6 +19,7 @@ using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.Views;
 using Telegram.Views.Popups;
+using Telegram.Views.Supergroups.Popups;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -278,6 +279,13 @@ namespace Telegram.ViewModels
                 IsChatSelection = false;
 
                 Title = Strings.NewCall;
+            }
+            else if (parameter is ChooseChatsConfigurationBotAddToChannel)
+            {
+                SelectionMode = ListViewSelectionMode.None;
+                Options = ChooseChatsOptions.ChannelsCanPromoteMembers;
+                IsCommentEnabled = false;
+                IsChatSelection = false;
             }
 
             #endregion
@@ -886,6 +894,14 @@ namespace Telegram.ViewModels
             else if (_configuration is ChooseChatsConfigurationCreateGroupCall)
             {
                 TypeResolver.Current.Resolve<IVoipService>(SessionId).CreateGroupCall(NavigationService, Array.Empty<long>());
+            }
+            else if (_configuration is ChooseChatsConfigurationBotAddToChannel botAddToChannel)
+            {
+                var response = await ClientService.SendAsync(new GetChatMember(chats[0].Id, new MessageSenderUser(botAddToChannel.BotUserId)));
+                if (response is ChatMember member && member.Status is not ChatMemberStatusAdministrator { CanBeEdited: false })
+                {
+                    NavigationService.ShowPopup(new SupergroupEditAdministratorPopup(), new SupergroupEditMemberArgs(chats[0].Id, member.MemberId, botAddToChannel.AdministratorRights));
+                }
             }
         }
 

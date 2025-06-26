@@ -586,6 +586,18 @@ namespace Telegram.Common
                 case InternalLinkTypeMyStars:
                     navigation.Navigate(typeof(StarsPage));
                     break;
+                case InternalLinkTypeBotAddToChannel botAddToChannel:
+                    NavigateToBotAddToChannel(clientService, navigation, botAddToChannel.BotUsername, botAddToChannel.AdministratorRights);
+                    break;
+            }
+        }
+
+        private static async void NavigateToBotAddToChannel(IClientService clientService, INavigationService navigation, string botUsername, ChatAdministratorRights administratorRights)
+        {
+            var response = await clientService.SendAsync(new SearchPublicChat(botUsername));
+            if (response is Chat chat && clientService.TryGetUser(chat, out User botUser))
+            {
+                navigation.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationBotAddToChannel(botUser.Id, administratorRights));
             }
         }
 

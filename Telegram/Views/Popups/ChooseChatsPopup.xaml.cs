@@ -61,6 +61,7 @@ namespace Telegram.Views.Popups
         public bool CanPostMessages { get; set; } = false;
         public bool CanInviteUsers { get; set; } = false;
         public bool CanShareContact { get; set; } = false;
+        public bool CanPromoteMembers { get; set; } = false;
 
         public ChooseChatsMode Mode { get; set; } = ChooseChatsMode.Chats;
 
@@ -81,6 +82,22 @@ namespace Telegram.Views.Popups
             CanShareContact = false,
             Mode = ChooseChatsMode.Chats,
             ShowMessages = true
+        };
+
+        public static readonly ChooseChatsOptions ChannelsCanPromoteMembers = new()
+        {
+            AllowChannelChats = true,
+            AllowGroupChats = false,
+            AllowBotChats = false,
+            AllowUserChats = false,
+            AllowSecretChats = false,
+            AllowSelf = false,
+            CanPostMessages = false,
+            CanInviteUsers = false,
+            CanPromoteMembers = true,
+            CanShareContact = false,
+            Mode = ChooseChatsMode.Chats,
+            ShowMessages = false
         };
 
         public static readonly ChooseChatsOptions GroupsAndChannels = new()
@@ -225,6 +242,10 @@ namespace Telegram.Views.Popups
                         {
                             return clientService.CanInviteUsers(chat);
                         }
+                        else if (CanPromoteMembers)
+                        {
+                            return clientService.CanPromoteMembers(chat);
+                        }
 
                         return true;
                     }
@@ -258,6 +279,10 @@ namespace Telegram.Views.Popups
                         else if (CanInviteUsers)
                         {
                             return clientService.CanInviteUsers(chat);
+                        }
+                        else if (CanPromoteMembers)
+                        {
+                            return clientService.CanPromoteMembers(chat);
                         }
 
                         return true;
@@ -482,6 +507,20 @@ namespace Telegram.Views.Popups
     {
 
     }
+
+    public partial class ChooseChatsConfigurationBotAddToChannel : ChooseChatsConfiguration
+    {
+        public ChooseChatsConfigurationBotAddToChannel(long botUserId, ChatAdministratorRights administratorRights)
+        {
+            BotUserId = botUserId;
+            AdministratorRights = administratorRights;
+        }
+
+        public long BotUserId { get; }
+
+        public ChatAdministratorRights AdministratorRights { get; }
+    }
+
 
     public partial class ChooseChatsConfigurationGroupCall : ChooseChatsConfiguration
     {

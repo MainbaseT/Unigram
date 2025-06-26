@@ -19,10 +19,19 @@ namespace Telegram.Views.Supergroups.Popups
 
         public MessageSender MemberId { get; }
 
+        public ChatAdministratorRights DefaultRights { get; }
+
         public SupergroupEditMemberArgs(long chatId, MessageSender memberId)
         {
             ChatId = chatId;
             MemberId = memberId;
+        }
+
+        public SupergroupEditMemberArgs(long chatId, MessageSender memberId, ChatAdministratorRights defaultRights)
+        {
+            ChatId = chatId;
+            MemberId = memberId;
+            DefaultRights = defaultRights;
         }
     }
 
