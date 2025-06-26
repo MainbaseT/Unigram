@@ -5281,7 +5281,7 @@ namespace Telegram.Views
 
         public void UpdatePinnedMessage(Chat chat, bool known)
         {
-            PinnedMessage.UpdateMessage(chat, null, known, 0, ViewModel.PinnedMessages.TotalCount, false);
+            PinnedMessage.UpdateMessage(chat, null, known, -1, ViewModel.PinnedMessages.TotalCount, false);
         }
 
         public void UpdateCallbackQueryAnswer(Chat chat, MessageViewModel message)

@@ -6,6 +6,7 @@
 //
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Td.Api;
 using Windows.UI.Xaml.Controls;
@@ -34,7 +35,7 @@ namespace Telegram.ViewModels
 
         public int TotalCount { get; private set; }
 
-        public async void LoadSlice(long maxId, PanelScrollingDirection direction = PanelScrollingDirection.None)
+        public async void LoadSlice(long fromMessageId, PanelScrollingDirection direction = PanelScrollingDirection.None)
         {
             using var disposable = await _loadMoreLock.WaitAsync();
 
@@ -60,39 +61,47 @@ namespace Telegram.ViewModels
 
             var hasHole = false;
 
+            var offset = direction == PanelScrollingDirection.Backward ? 0 : direction == PanelScrollingDirection.Forward ? -49 : -25;
+            var limit = 50;
+
             if (direction == PanelScrollingDirection.Backward && Count > 0)
             {
                 var item = this[0];
-                if (item.Id < maxId || (item.Index == 0 && _hasLoadedOldestSlice))
+                if (item.Id < fromMessageId || (item.Index == 0 && _hasLoadedOldestSlice))
                 {
                     return;
                 }
                 else if (item.Index == 0)
                 {
-                    maxId = 0;
+                    fromMessageId = 0;
                     hasHole = true;
                 }
                 else
                 {
-                    maxId = item.Id;
+                    fromMessageId = item.Id;
                 }
             }
             else if (direction == PanelScrollingDirection.Forward && Count > 0)
             {
                 var item = this[^1];
-                if (item.Id > maxId || (_hasLoadedNewestSlice && item.Index == TotalCount - 1))
+                if (item.Id > fromMessageId || (_hasLoadedNewestSlice && item.Index == TotalCount - 1))
                 {
                     return;
                 }
                 else if (item.Index == TotalCount - 1)
                 {
-                    maxId = 1;
+                    fromMessageId = 1;
                     hasHole = true;
                 }
                 else
                 {
-                    maxId = item.Id;
+                    fromMessageId = item.Id;
                 }
+            }
+            else if (direction == PanelScrollingDirection.None && _viewModel.IsNewestSliceLoaded is true)
+            {
+                fromMessageId = 0;
+                offset = 0;
             }
 
             var filter = new SearchMessagesFilterPinned();
@@ -116,28 +125,18 @@ namespace Telegram.ViewModels
                 }
             }
 
-            var offset = direction == PanelScrollingDirection.Backward ? 0 : direction == PanelScrollingDirection.Forward ? -49 : -25;
-            var limit = 50;
+            var func = new SearchChatMessages(chat.Id, messageTopic, string.Empty, null, fromMessageId, offset, limit, filter);
 
-            var func = new SearchChatMessages(chat.Id, messageTopic, string.Empty, null, maxId, offset, limit, filter);
-            var totalCount = TotalCount;
-
-            var tsc = new TaskCompletionSource<List<PinnedMessageViewModel>>();
-            async void handler(Object result)
+            var tsc = new TaskCompletionSource<ListWithTotalCount<PinnedMessageViewModel>>();
+            void handler(Object result)
             {
                 if (result is FoundChatMessages foundChatMessages && foundChatMessages.Messages.Count > 0)
                 {
-                    totalCount = foundChatMessages.TotalCount;
-
-                    var results = new List<PinnedMessageViewModel>();
-
-                    var response = await _viewModel.ClientService.SendAsync(new GetChatMessagePosition(chat.Id, messageTopic, filter, foundChatMessages.Messages[0].Id));
-                    if (response is Count count)
+                    var results = new ListWithTotalCount<PinnedMessageViewModel>(foundChatMessages.TotalCount);
+                    
+                    for (int i = 0; i < foundChatMessages.Messages.Count; i++)
                     {
-                        for (int i = 0; i < foundChatMessages.Messages.Count; i++)
-                        {
-                            results.Add(_viewModel.CreatePinnedMessage(foundChatMessages.Messages[i], foundChatMessages.TotalCount - count.CountValue - i));
-                        }
+                        results.Add(_viewModel.CreatePinnedMessage(foundChatMessages.Messages[i], -1));
                     }
 
                     tsc.SetResult(results);
@@ -152,10 +151,10 @@ namespace Telegram.ViewModels
 
             var response = await tsc.Task;
 
-            TotalCount = totalCount;
-
-            if (response is List<PinnedMessageViewModel> messages && messages.Count > 0)
+            if (response is ListWithTotalCount<PinnedMessageViewModel> messages && messages.Count > 0)
             {
+                TotalCount = messages.TotalCount;
+
                 if (direction == PanelScrollingDirection.None)
                 {
                     _messages.Clear();
@@ -167,7 +166,7 @@ namespace Telegram.ViewModels
 
                 if (insert)
                 {
-                    if (hasHole)
+                    if (hasHole && messages.Count > 0)
                     {
                         Insert(0, null);
                     }
@@ -187,7 +186,7 @@ namespace Telegram.ViewModels
                 }
                 else
                 {
-                    if (hasHole)
+                    if (hasHole && messages.Count > 0)
                     {
                         Add(null);
                     }
@@ -203,6 +202,17 @@ namespace Telegram.ViewModels
 
                         _messages.Add(message.Id, message);
                         Add(message);
+                    }
+                }
+
+                _viewModel.Delegate?.ViewVisibleMessages();
+
+                var position = await _viewModel.ClientService.SendAsync(new GetChatMessagePosition(chat.Id, messageTopic, filter, messages[0].Id));
+                if (position is Count count)
+                {
+                    for (int i = 0; i < messages.Count; i++)
+                    {
+                        messages[i].Index = messages.TotalCount - count.CountValue - i;
                     }
                 }
 

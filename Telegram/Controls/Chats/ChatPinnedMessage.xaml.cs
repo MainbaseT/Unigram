@@ -133,8 +133,12 @@ namespace Telegram.Controls.Chats
             {
                 ShowHide(chat.BusinessBotManageBar == null);
             }
-
-            if (maximum <= value)
+            
+            if (value < 0)
+            {
+                value = maximum - 1;
+            }
+            else if (maximum <= value)
             {
                 maximum = value + 1;
             }
@@ -182,7 +186,7 @@ namespace Telegram.Controls.Chats
             var cross = _chatId == chat.Id;
             var prev = _message?.Id < message?.Id;
 
-            Line.UpdateIndex(value, maximum, prev ? 1 : -1);
+            Line.UpdateIndex(value, maximum, cross ? prev ? 1 : -1 : 0);
             TitleLabel.Text = title;
 
             _chatId = chat.Id;
@@ -587,11 +591,12 @@ namespace Telegram.Controls.Chats
         private bool _playing;
 
         private int _nextValue;
+        private int _nextMaximum;
 
 
         public void UpdateIndex(int value, int maximum, int direction)
         {
-            if (_maskPath == null || _nextValue == value)
+            if (_maskPath == null || (_nextValue == value && _nextMaximum == maximum))
             {
                 return;
             }
@@ -604,6 +609,7 @@ namespace Telegram.Controls.Chats
 
             _playing = true;
             _nextValue = value;
+            _nextMaximum = maximum;
 
             var h = 12f;
             var m = 3f;
