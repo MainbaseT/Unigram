@@ -146,10 +146,7 @@ namespace Telegram.Td.Api
         {
             var positions = _positions ??= MosaicAlbumLayout.chatMessageBubbleMosaicLayout(MAX_WIDTH, MAX_HEIGHT, GetSizes());
 
-            var ratioX = w / positions.Item2.Width;
-            var ratioY = w / positions.Item2.Height;
-            var ratio = final ? ratioX : Math.Min(ratioX, ratioY);
-
+            var ratio = w / positions.Item2.Width;
             var rects = new Rect[positions.Item1.Length];
 
             for (int i = 0; i < rects.Length; i++)
