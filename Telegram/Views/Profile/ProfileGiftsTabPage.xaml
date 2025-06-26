@@ -24,7 +24,8 @@
                                  AllowDrop="True"
                                  CanDragItems="True"
                                  CanReorderItems="False"
-                                 Padding="24,0,20,8"
+                                 Padding="24,0,16,8"
+                                 common:FluidGridView.Padding="0,0,4,0"
                                  common:FluidGridView.MaxLength="1008">
             <!--<common:SelectedItemsBinder.Attached>
                 <common:SelectedItemsBinder SelectionMode="Auto"

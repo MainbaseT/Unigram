@@ -31,7 +31,7 @@ namespace Telegram.Views.Profile
 
             if (!IsProfile)
             {
-                ScrollingHost.Padding = new Thickness(12, 0, 8, 8);
+                ScrollingHost.Padding = new Thickness(12, 0, 4, 8);
             }
 
             if (ViewModel.Media.Empty())

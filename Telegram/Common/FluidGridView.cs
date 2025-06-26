@@ -535,7 +535,7 @@ namespace Telegram.Common
                 }
 
                 maximumRowsOrColumns = itemsCount;
-                return Math.Floor(parentLength / itemsCount);
+                return parentLength / itemsCount;
             }
         }
     }
