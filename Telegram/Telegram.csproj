@@ -277,6 +277,7 @@
     <Compile Include="Controls\Cells\PremiumGiftCell.xaml.cs">
       <DependentUpon>PremiumGiftCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ChatFoldersNavView.cs" />
     <Compile Include="Controls\Chats\ChatAccountInfo.xaml.cs">
       <DependentUpon>ChatAccountInfo.xaml</DependentUpon>
     </Compile>
