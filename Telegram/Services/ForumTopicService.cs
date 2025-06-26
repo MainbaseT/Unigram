@@ -166,6 +166,11 @@ namespace Telegram.Services
             {
                 return value;
             }
+            else if (!_pendingNewTopics.Contains(id))
+            {
+                _pendingNewTopics.Add(id);
+                _clientService.Send(new GetForumTopic(_chatId, id), UpdateNewTopic);
+            }
 
             return null;
         }
@@ -418,6 +423,8 @@ namespace Telegram.Services
             {
                 return;
             }
+
+            _pendingNewTopics.Remove(newTopic.Info.ForumTopicId);
 
             if (_topics.TryGetValue(newTopic.Info.MessageThreadId, out topic))
             {
