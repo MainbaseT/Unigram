@@ -35,11 +35,21 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="Title"
-                   MaxLines="1"
-                   TextWrapping="NoWrap"
-                   TextTrimming="CharacterEllipsis"
-                   Style="{StaticResource BaseTextBlockStyle}" />
+        <Grid HorizontalAlignment="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="Title"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"
+                       Style="{StaticResource BaseTextBlockStyle}" />
+            <TextBlock x:Name="TitleTrim"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"
+                       Style="{StaticResource BaseTextBlockStyle}"
+                       Grid.Column="1" />
+        </Grid>
 
         <TextBlock x:Name="Subtitle"
                    Style="{StaticResource BodyTextBlockStyle}"

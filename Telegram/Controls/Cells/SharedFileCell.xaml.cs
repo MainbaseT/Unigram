@@ -58,19 +58,32 @@ namespace Telegram.Controls.Cells
                 if (message.ClientService.TryGetUser(message.SenderId, out User user))
                 {
                     Title.Text = user.FullName();
+                    TitleTrim.Text = string.Empty;
                 }
                 else if (message.ClientService.TryGetChat(message.SenderId, out Chat chat))
                 {
                     Title.Text = chat.Title;
+                    TitleTrim.Text = string.Empty;
                 }
                 else
                 {
                     Title.Text = string.Empty;
+                    TitleTrim.Text = string.Empty;
                 }
             }
             else
             {
-                Title.Text = data.FileName;
+                var index = data.FileName.LastIndexOf('.');
+                if (index > 0)
+                {
+                    Title.Text = data.FileName.Substring(0, index + 1);
+                    TitleTrim.Text = data.FileName.Substring(index + 1);
+                }
+                else
+                {
+                    Title.Text = data.FileName;
+                    TitleTrim.Text = string.Empty;
+                }
             }
 
             if (data.Thumbnail != null)
