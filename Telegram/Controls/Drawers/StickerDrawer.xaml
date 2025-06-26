@@ -214,14 +214,6 @@
                         </selectors:StickerSetTemplateSelector.IconTemplate>
                     </selectors:StickerSetTemplateSelector>
                 </GridView.ItemTemplateSelector>
-                <GridView.Footer>
-                    <StackPanel Orientation="Horizontal">
-                        <controls:GlyphButton Click="Settings_Click"
-                                              Width="40"
-                                              Height="40"
-                                              Glyph="&#xE713;" />
-                    </StackPanel>
-                </GridView.Footer>
                 <GridView.ItemContainerTransitions>
                     <TransitionCollection />
                 </GridView.ItemContainerTransitions>

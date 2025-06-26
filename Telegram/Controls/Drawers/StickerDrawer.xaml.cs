@@ -37,7 +37,6 @@ namespace Telegram.Controls.Drawers
         public event EventHandler<StickerDrawerItemClickEventArgs> ItemClick;
         public event EventHandler<ItemContextRequestedEventArgs<Sticker>> ItemContextRequested;
         public event EventHandler ChoosingItem;
-        public event EventHandler SettingsClick;
 
         private readonly AnimatedListHandler _handler;
         private readonly ZoomableListHandler _zoomer;
@@ -215,11 +214,6 @@ namespace Telegram.Controls.Drawers
             {
                 ChoosingItem?.Invoke(this, EventArgs.Empty);
             }
-        }
-
-        private void Settings_Click(object sender, RoutedEventArgs e)
-        {
-            SettingsClick?.Invoke(this, EventArgs.Empty);
         }
 
         private async void OnChoosingGroupHeaderContainer(ListViewBase sender, ChoosingGroupHeaderContainerEventArgs args)
