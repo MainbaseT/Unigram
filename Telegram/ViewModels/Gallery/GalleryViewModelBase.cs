@@ -227,17 +227,21 @@ namespace Telegram.ViewModels.Gallery
         {
             if (_selectedItem is GalleryMessage message)
             {
-                await ShowPopupAsync(new ChooseChatsPopup { RequestedTheme = ElementTheme.Dark }, new ChooseChatsConfigurationShareMessage(message.ChatId, message.Id));
+                var response = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
+                if (response is MessageProperties properties && properties.CanBeForwarded)
+                {
+                    ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(new MessageToShare(message.ChatId, message.Id, properties.CanBeCopied, properties.CanBeCopiedToSecretChat, message.Content.HasCaption(), true)), ElementTheme.Dark);
+
+                }
+
             }
             else
             {
                 var input = _selectedItem?.ToInput();
-                if (input == null)
+                if (input != null)
                 {
-                    return;
+                    ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationPostMessage(input), ElementTheme.Dark);
                 }
-
-                await ShowPopupAsync(new ChooseChatsPopup { RequestedTheme = ElementTheme.Dark }, new ChooseChatsConfigurationPostMessage(input));
             }
         }
 

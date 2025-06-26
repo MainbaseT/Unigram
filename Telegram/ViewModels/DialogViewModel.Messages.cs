@@ -340,20 +340,18 @@ namespace Telegram.ViewModels
 
         #region Forward
 
-        public async void ForwardMessage(MessageViewModel message)
+        public void ForwardMessage(MessageViewModel message)
         {
             IsSelectionEnabled = false;
 
             if (message.Content is MessageAlbum album)
             {
-                await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(album.Messages.Select(x => new MessageId(x))));
+                ForwardMessages(album.Messages.ToDictionary(x => new MessageId(x)));
             }
             else
             {
-                await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessage(message.ChatId, message.Id));
+                ForwardMessages(new[] { message }.ToDictionary(x => new MessageId(x)));
             }
-
-            TextField?.Focus(FocusState.Programmatic);
         }
 
         #endregion
@@ -390,17 +388,32 @@ namespace Telegram.ViewModels
 
         #region Multiple Forward
 
-        public async void ForwardSelectedMessages()
+        public void ForwardSelectedMessages()
         {
-            var selectedItems = SelectedItems.Values.ToList();
-            var properties = await ClientService.GetMessagePropertiesAsync(selectedItems.Select(x => new MessageId(x)));
+            var selectedItems = SelectedItems.Values.ToDictionary(x => new MessageId(x));
+
+            IsSelectionEnabled = false;
+            ForwardMessages(selectedItems);
+        }
+
+        private async void ForwardMessages(Dictionary<MessageId, MessageViewModel> selectedItems)
+        {
+            var properties = await ClientService.GetMessagePropertiesAsync(selectedItems.Select(x => x.Key));
 
             var messages = properties.Where(x => x.Value.CanBeForwarded).OrderBy(x => x.Key.Id).ToList();
             if (messages.Count > 0)
             {
-                IsSelectionEnabled = false;
+                var messagesToShare = new List<MessageToShare>(messages.Count);
 
-                await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(messages.Select(x => x.Key)));
+                foreach (var property in messages)
+                {
+                    if (selectedItems.TryGetValue(property.Key, out var message))
+                    {
+                        messagesToShare.Add(new MessageToShare(message, property.Value, true));
+                    }
+                }
+
+                await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(messagesToShare));
                 TextField?.Focus(FocusState.Programmatic);
             }
         }

@@ -1621,6 +1621,18 @@ namespace Telegram.Td.Api
             return new FormattedText(sticker.Emoji, Array.Empty<TextEntity>());
         }
 
+        public static bool HasCaption(this Message message)
+        {
+            var caption = message.Content.GetCaption();
+            return caption != null && !string.IsNullOrEmpty(caption.Text);
+        }
+
+        public static bool HasCaption(this MessageWithOwner message)
+        {
+            var caption = message.Content.GetCaption();
+            return caption != null && !string.IsNullOrEmpty(caption.Text);
+        }
+
         public static bool HasCaption(this MessageContent content)
         {
             var caption = content.GetCaption();

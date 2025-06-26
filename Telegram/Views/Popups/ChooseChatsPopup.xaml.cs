@@ -550,9 +550,9 @@ namespace Telegram.Views.Popups
         public override int NumberOfSentMessages => 1;
     }
 
-    public partial class ChooseChatsConfigurationShareMessage : ChooseChatsConfiguration
+    public partial class ChooseChatsConfigurationShareGame : ChooseChatsConfiguration
     {
-        public ChooseChatsConfigurationShareMessage(long chatId, long messageId, bool withMyScore = false)
+        public ChooseChatsConfigurationShareGame(long chatId, long messageId, bool withMyScore = false)
         {
             ChatId = chatId;
             MessageId = messageId;
@@ -596,16 +596,56 @@ namespace Telegram.Views.Popups
         public override int NumberOfSentMessages => 1;
     }
 
-    public partial class ChooseChatsConfigurationShareMessages : ChooseChatsConfiguration
+    public partial class MessageToShare
     {
-        public ChooseChatsConfigurationShareMessages(IEnumerable<MessageId> messageIds)
+        public MessageToShare(long chatId, long id, bool canBeCopied, bool canBeCopiedtoSecretChat, bool hasCaption, bool hasSenderId)
         {
-            MessageIds = messageIds.ToArray();
+            ChatId = chatId;
+            Id = id;
+            CanBeCopied = canBeCopied;
+            CanBeCopiedToSecretChat = canBeCopiedtoSecretChat;
+            HasCaption = hasCaption;
+            HasSenderId = hasSenderId;
         }
 
-        public IList<MessageId> MessageIds { get; }
+        public MessageToShare(MessageWithOwner message, MessageProperties properties, bool hasSenderId)
+        {
+            ChatId = message.ChatId;
+            Id = message.Id;
+            CanBeCopied = properties.CanBeCopied;
+            CanBeCopiedToSecretChat = properties.CanBeCopiedToSecretChat;
+            HasCaption = message.HasCaption();
+            HasSenderId = hasSenderId;
+        }
 
-        public override int NumberOfSentMessages => MessageIds.Count;
+        public long ChatId { get; }
+
+        public long Id { get; }
+
+        public bool CanBeCopied { get; }
+
+        public bool CanBeCopiedToSecretChat { get; }
+
+        public bool HasCaption { get; }
+
+        public bool HasSenderId { get; }
+    }
+
+    public partial class ChooseChatsConfigurationShareMessages : ChooseChatsConfiguration
+    {
+        public ChooseChatsConfigurationShareMessages(MessageToShare message)
+        {
+            Messages = new[] { message };
+        }
+
+        public ChooseChatsConfigurationShareMessages(IEnumerable<MessageToShare> messages)
+        {
+            Messages = messages.ToArray();
+        }
+
+        public IList<MessageToShare> Messages { get; }
+
+        public override int NumberOfSentMessages => Messages.Count;
     }
 
     public partial class ChooseChatsConfigurationPostLink : ChooseChatsConfiguration

@@ -279,10 +279,12 @@ namespace Telegram.ViewModels.Profile
 
         #region Forward
 
-        public async void ForwardMessage(MessageWithOwner message)
+        public void ForwardMessage(MessageWithOwner message)
         {
+            var selectedItems = new[] { message }.ToDictionary(x => new MessageId(x));
+
             UnselectMessages();
-            await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessage(message.ChatId, message.Id));
+            ForwardMessages(selectedItems);
         }
 
         #endregion
@@ -319,16 +321,32 @@ namespace Telegram.ViewModels.Profile
 
         #region Multiple Forward
 
-        public async void ForwardSelectedMessages()
+        public void ForwardSelectedMessages()
         {
-            var selectedItems = SelectedItems.ToList();
-            var properties = await ClientService.GetMessagePropertiesAsync(selectedItems.Select(x => new MessageId(x)));
+            var selectedItems = SelectedItems.ToDictionary(x => new MessageId(x));
+
+            UnselectMessages();
+            ForwardMessages(selectedItems);
+        }
+
+        private async void ForwardMessages(Dictionary<MessageId, MessageWithOwner> selectedItems)
+        {
+            var properties = await ClientService.GetMessagePropertiesAsync(selectedItems.Select(x => x.Key));
 
             var messages = properties.Where(x => x.Value.CanBeForwarded).OrderBy(x => x.Key.Id).ToList();
             if (messages.Count > 0)
             {
-                UnselectMessages();
-                await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(messages.Select(x => x.Key)));
+                var messagesToShare = new List<MessageToShare>(messages.Count);
+
+                foreach (var property in messages)
+                {
+                    if (selectedItems.TryGetValue(property.Key, out var message))
+                    {
+                        messagesToShare.Add(new MessageToShare(message, property.Value, true));
+                    }
+                }
+
+                ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(messagesToShare));
             }
         }
 

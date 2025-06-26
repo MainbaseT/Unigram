@@ -124,7 +124,7 @@ namespace Telegram.ViewModels
                 IsCommentEnabled = false;
                 IsChatSelection = false;
             }
-            else if (parameter is ChooseChatsConfigurationShareMessage configurationShareMessage)
+            else if (parameter is ChooseChatsConfigurationShareGame configurationShareMessage)
             {
                 SelectionMode = ListViewSelectionMode.Multiple;
                 Options = ChooseChatsOptions.PostMessages;
@@ -678,11 +678,11 @@ namespace Telegram.ViewModels
             }
             else if (_configuration is ChooseChatsConfigurationShareMessages shareMessages)
             {
-                ShowForwardMessagesToast(chats, shareMessages.MessageIds.Count);
+                ShowForwardMessagesToast(chats, shareMessages.Messages.Count);
 
                 foreach (var chat in chats)
                 {
-                    foreach (var messages in shareMessages.MessageIds.GroupBy(x => x.ChatId))
+                    foreach (var messages in shareMessages.Messages.GroupBy(x => x.ChatId))
                     {
                         SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
                         {
@@ -691,7 +691,7 @@ namespace Telegram.ViewModels
                     }
                 }
             }
-            else if (_configuration is ChooseChatsConfigurationShareMessage shareMessage)
+            else if (_configuration is ChooseChatsConfigurationShareGame shareMessage)
             {
                 ShowForwardMessagesToast(chats, 1);
 

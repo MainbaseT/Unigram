@@ -737,7 +737,7 @@ namespace Telegram.Views
 
         private async void ProcessShareGame(bool withMyScore)
         {
-            await this.ShowPopupAsync(_clientService.SessionId, new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessage(_gameChatId, _gameMessageId, withMyScore));
+            await this.ShowPopupAsync(_clientService.SessionId, new ChooseChatsPopup(), new ChooseChatsConfigurationShareGame(_gameChatId, _gameMessageId, withMyScore));
         }
 
         private async void ProcessShareToStory(JsonObject eventData)
