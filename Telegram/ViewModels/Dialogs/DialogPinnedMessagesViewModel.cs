@@ -166,10 +166,7 @@ namespace Telegram.ViewModels
 
                 if (insert)
                 {
-                    if (hasHole && messages.Count > 0)
-                    {
-                        Insert(0, null);
-                    }
+                    var added = 0;
 
                     for (int i = 0; i < messages.Count; i++)
                     {
@@ -182,14 +179,18 @@ namespace Telegram.ViewModels
 
                         _messages.Add(message.Id, message);
                         Insert(0, message);
+
+                        added++;
+                    }
+
+                    if (hasHole && added > 0)
+                    {
+                        Insert(added, null);
                     }
                 }
                 else
                 {
-                    if (hasHole && messages.Count > 0)
-                    {
-                        Add(null);
-                    }
+                    var added = 0;
 
                     for (int i = messages.Count - 1; i >= 0; i--)
                     {
@@ -202,6 +203,13 @@ namespace Telegram.ViewModels
 
                         _messages.Add(message.Id, message);
                         Add(message);
+
+                        added++;
+                    }
+
+                    if (hasHole && added > 0)
+                    {
+                        Insert(Count - added, null);
                     }
                 }
 
