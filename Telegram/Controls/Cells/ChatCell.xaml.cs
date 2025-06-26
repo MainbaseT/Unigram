@@ -1574,7 +1574,7 @@ namespace Telegram.Controls.Cells
                         }
                         else if (album.VideosCount > 0 && album.PhotosCount == 0)
                         {
-                            if (album.LastMessage is MessageVideo albumVideo && (albumVideo.Video.Minithumbnail != null || albumVideo.Cover.Minithumbnail != null))
+                            if (album.LastMessage is MessageVideo albumVideo && (albumVideo.Cover?.Minithumbnail != null || albumVideo.Video.Minithumbnail != null))
                             {
                                 if (albumVideo.Cover != null)
                                 {
