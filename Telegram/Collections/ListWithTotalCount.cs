@@ -1,0 +1,31 @@
+﻿//
+// Copyright (c) Fela Ameghino 2015-2025
+//
+// Distributed under the GNU General Public License v3.0. (See accompanying
+// file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
+//
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Telegram.Collections
+{
+    public interface ICollectionWithTotalCount : INotifyPropertyChanged
+    {
+        public int TotalCount { get; }
+    }
+
+    public partial class ListWithTotalCount<T> : List<T>
+    {
+        public int TotalCount { get; set; }
+
+        public ListWithTotalCount(int totalCount)
+        {
+            TotalCount = totalCount;
+        }
+    }
+}

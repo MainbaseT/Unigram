@@ -44,12 +44,8 @@
 
     <StackPanel>
         <Grid x:Name="HeaderRoot"
-              BackgroundSizing="OuterBorderEdge"
-              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-              Style="{StaticResource HeaderRootStyle}"
-              Padding="0,16,0,0"
-              MaxWidth="1000"
-              Margin="24,16,24,-8"
+              Padding="8,16,8,8"
+              Margin="0,0,0,-8"
               Canvas.ZIndex="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -57,10 +53,19 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-
-            <Border Background="Transparent"
+            <Border x:Name="HeaderClipper"
+                    Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
                     Grid.RowSpan="4"
-                    Margin="-24" />
+                    Margin="-8,-16,-8,-8" />
+
+
+            <Grid x:Name="HeaderBackground"
+                  BackgroundSizing="OuterBorderEdge"
+                  Style="{StaticResource HeaderRootStyle}"
+                  BorderThickness="0,0,0,1"
+                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                  Grid.RowSpan="4"
+                  Margin="-8,-16,-8,-8" />
 
             <Grid Width="140"
                   Height="140"
@@ -69,10 +74,11 @@
                 <Border x:Name="HeaderGlow"
                         Width="1000"
                         Height="320"
-                        Margin="-430,-22,-430,-156" />
+                        Margin="-430,-20,-430,-156" />
 
                 <controls:ProfileHeaderPattern x:Name="Pattern"
-                                               Margin="-430,-22,-430,-156"
+                                               Loaded="Pattern_Loaded"
+                                               Margin="-430,-20,-430,-156"
                                                Width="1000"
                                                Height="320"
                                                Opacity="0"
@@ -133,6 +139,16 @@
                 </Grid>
             </Grid>
 
+            <Border x:Name="ClipperBackground"
+                    BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
+                    BorderThickness="0,0,0,1"
+                    BackgroundSizing="OuterBorderEdge"
+                    VerticalAlignment="Bottom"
+                    Margin="-8,0,-8,3"
+                    Height="96"
+                    Visibility="Collapsed"
+                    Grid.RowSpan="3" />
+
             <Grid x:Name="TitleRoot"
                   VerticalAlignment="Bottom"
                   HorizontalAlignment="Center"
@@ -172,41 +188,50 @@
                   Margin="0,0,0,8"
                   SizeChanged="SubtitleRoot_SizeChanged"
                   Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Name="Subtitle"
+                <Grid x:Name="SubtitleMain">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="Subtitle"
+                               Style="{StaticResource BodyTextBlockStyle}"
+                               Foreground="{ThemeResource PageHeaderDisabledBrush}"
+                               TextAlignment="Center" />
+
+                    <Button x:Name="SubtitleWhen"
+                            Visibility="Collapsed"
+                            Click="{x:Bind ViewModel.ShowLastSeen}"
+                            VerticalAlignment="Bottom"
+                            FontSize="11"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Padding="0"
+                            Margin="4,0,0,0"
+                            CornerRadius="8"
+                            Height="16"
+                            Grid.Column="1">
+                        <TextBlock Text="{CustomResource StatusHiddenShow}"
+                                   TextLineBounds="Tight"
+                                   TextAlignment="Center"
+                                   OpticalMarginAlignment="TrimSideBearings"
+                                   FontSize="11"
+                                   Padding="4,0,4,0"
+                                   VerticalAlignment="Center"
+                                   Typography.NumeralAlignment="Tabular" />
+                    </Button>
+                </Grid>
+                <TextBlock x:Name="SubtitleTab"
+                           Text="{x:Bind ViewModel.SelectedItem.Subtitle, Mode=OneWay}"
+                           TextAlignment="Center"
                            Style="{StaticResource BodyTextBlockStyle}"
                            Foreground="{ThemeResource PageHeaderDisabledBrush}"
-                           TextAlignment="Center" />
-
-                <Button x:Name="SubtitleWhen"
-                        Visibility="Collapsed"
-                        Click="{x:Bind ViewModel.ShowLastSeen}"
-                        VerticalAlignment="Bottom"
-                        FontSize="11"
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch"
-                        Padding="0"
-                        Margin="4,0,0,0"
-                        CornerRadius="8"
-                        Height="16"
-                        Grid.Column="1">
-                    <TextBlock Text="{CustomResource StatusHiddenShow}"
-                               TextLineBounds="Tight"
-                               TextAlignment="Center"
-                               OpticalMarginAlignment="TrimSideBearings"
-                               FontSize="11"
-                               Padding="4,0,4,0"
-                               VerticalAlignment="Center"
-                               Typography.NumeralAlignment="Tabular" />
-                </Button>
+                           Visibility="Collapsed" />
             </Grid>
 
             <controls:ProfileButtonsGrid x:Name="Buttons"
                                          ColumnSpacing="8"
-                                         Margin="0,16,0,0"
+                                         Margin="16,16,16,0"
+                                         MaxWidth="1000"
                                          Grid.Row="3">
                 <controls:ProfileButtonsGrid.ColumnDefinitions>
                     <ColumnDefinition />

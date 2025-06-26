@@ -54,7 +54,7 @@ namespace Telegram.ViewModels.Chats
 
         public bool IsPostedToChatPage => _type == ChatStoriesType.Pinned;
 
-        public ObservableCollection<StoryViewModel> Items { get; }
+        public IncrementalCollection<StoryViewModel> Items { get; }
         public ObservableCollection<StoryViewModel> SelectedItems { get; }
 
         public bool CanSelectedToggleIsPinned => SelectedItems.All(x => x.CanToggleIsPostedToChatPage);
@@ -258,6 +258,8 @@ namespace Telegram.ViewModels.Chats
                     Items.Add(new StoryViewModel(ClientService, story, botPreview));
                     totalCount++;
                 }
+
+                Items.TotalCount = stories.TotalCount;
             }
 
             IsEmpty = Items.Count == 0;

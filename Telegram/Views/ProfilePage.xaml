@@ -28,22 +28,23 @@
                             VerticalAlignment="Top"
                             Canvas.ZIndex="1">
                     <controls:ProfileHeader x:Name="ProfileHeader"
-                                            Margin="0,0,0,16" />
+                                            Margin="0,0,0,16"
+                                            Canvas.ZIndex="2" />
 
                     <Grid x:Name="HeaderPanel"
                           Opacity="{x:Bind ViewModel.Items.Count, Mode=OneWay}"
                           Canvas.ZIndex="1">
-                        <Border x:Name="ClipperBackground"
-                                Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
-                                BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
-                                BorderThickness="0,0,0,1"
-                                BackgroundSizing="OuterBorderEdge"
-                                Height="48" />
-
                         <Grid CornerRadius="4"
                               MaxWidth="1000"
                               Margin="24,0">
                             <Border x:Name="CardBackground"
+                                    BackgroundSizing="OuterBorderEdge"
+                                    Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4" />
+                            <Border x:Name="CardBackground2"
+                                    BackgroundSizing="OuterBorderEdge"
                                     Background="{ThemeResource SettingsItemBackground}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
@@ -56,7 +57,7 @@
                                                  SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}"
                                                  DisplayMemberPath="Text"
                                                  Height="40"
-                                                 Margin="16,4" />
+                                                 Margin="8,4" />
                         </Grid>
 
                         <controls:MoreButton x:Name="Menu"
@@ -86,7 +87,7 @@
         <Grid MaxWidth="1000"
               Margin="24,0">
             <controls:BackButton x:Name="BackButton"
-                                 Margin="0,18,0,0"
+                                 Margin="-20,18,0,0"
                                  CornerRadius="20"
                                  Glyph="&#xE93E;"
                                  Width="48"

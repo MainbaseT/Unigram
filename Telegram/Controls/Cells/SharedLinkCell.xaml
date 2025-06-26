@@ -8,6 +8,7 @@
       d:DesignHeight="300"
       d:DesignWidth="400"
       Padding="12,6"
+      BackgroundSizing="OuterBorderEdge"
       Background="{ThemeResource SettingsItemBackground}"
       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
 

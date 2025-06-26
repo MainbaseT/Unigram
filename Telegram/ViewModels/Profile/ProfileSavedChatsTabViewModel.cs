@@ -83,6 +83,8 @@ namespace Telegram.ViewModels.Profile
                     }
                 }
 
+                Items.TotalCount = topics.TotalCount;
+
                 HasMoreItems = topics.TotalCount >= 0;
                 Aggregator.Subscribe<UpdateSavedMessagesTopic>(this, Handle);
             }

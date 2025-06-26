@@ -246,8 +246,32 @@ namespace Telegram.Controls
             InitializeComponent();
             DescriptionLabel.AddHandler(ContextRequestedEvent, new TypedEventHandler<UIElement, ContextRequestedEventArgs>(About_ContextRequested), true);
 
+            HeaderRoot.CreateInsetClip();
+
             ActualThemeChanged += OnActualThemeChanged;
+            SizeChanged += OnSizeChanged;
+
+            Properties = BootStrapper.Current.Compositor.CreatePropertySet();
+            Properties.InsertScalar("HeaderActualHeight", HeaderRoot.ActualSize.Y);
+            Properties.InsertScalar("ActualHeight", ActualSize.Y - 48 + 16);
+            Properties.InsertScalar("RemovedHeight", 0);
         }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Properties.InsertScalar("HeaderActualHeight", HeaderRoot.ActualSize.Y);
+            Properties.InsertScalar("ActualHeight", ActualSize.Y - 48 + 16);
+
+            if (ViewModel.IsSavedMessages)
+            {
+                Properties.InsertScalar("RemovedHeight", HeaderRoot.ActualSize.Y - 48);
+                HeaderRoot.Margin = new Thickness(0, -HeaderRoot.ActualHeight + 48, 0, 0);
+            }
+        }
+
+        public CompositionPropertySet Properties { get; }
+
+        public double OccludedHeight => ViewModel.IsSavedMessages ? 0 : HeaderRoot.ActualHeight - 48;
 
         public ElementTheme HeaderTheme => HeaderRoot.RequestedTheme;
 
@@ -257,6 +281,11 @@ namespace Telegram.Controls
             {
                 return;
             }
+
+            ClipperBackground.RequestedTheme = sender.ActualTheme;
+            HeaderClipper.RequestedTheme = sender.ActualTheme;
+            TitleRoot.RequestedTheme = !_backgroundCollapsed ? sender.ActualTheme : HeaderTheme;
+            SubtitleRoot.RequestedTheme = !_backgroundCollapsed ? sender.ActualTheme : HeaderTheme;
 
             UpdateChatAccentColors(ViewModel.Chat);
         }
@@ -299,13 +328,75 @@ namespace Telegram.Controls
 
         public void ViewChanged(double verticalOffset)
         {
-            Pattern.Update((float)(verticalOffset / HeaderRoot.ActualHeight));
+            Pattern.Update((float)((verticalOffset) / HeaderRoot.ActualHeight));
+
+            ShowHideBackground(verticalOffset >= HeaderRoot.ActualHeight - 48);
+            ShowHideSubtitle(verticalOffset >= HeaderRoot.ActualHeight - 48);
+        }
+
+        private bool _subtitleCollapsed = true;
+
+        private void ShowHideSubtitle(bool show)
+        {
+            if (_subtitleCollapsed != show)
+            {
+                return;
+            }
+
+            _subtitleCollapsed = !show;
+            SubtitleTab.Visibility = Visibility.Visible;
+
+            var subtitleTab = ElementComposition.GetElementVisual(SubtitleTab);
+            var subtitlePro = ElementComposition.GetElementVisual(SubtitleMain);
+
+            var opacityIn = subtitlePro.Compositor.CreateScalarKeyFrameAnimation();
+            opacityIn.InsertKeyFrame(0, show ? 0 : 1);
+            opacityIn.InsertKeyFrame(1, show ? 1 : 0);
+
+            var opacityOut = subtitlePro.Compositor.CreateScalarKeyFrameAnimation();
+            opacityOut.InsertKeyFrame(0, show ? 1 : 0);
+            opacityOut.InsertKeyFrame(1, show ? 0 : 1);
+
+            subtitleTab.StartAnimation("Opacity", opacityIn);
+            subtitlePro.StartAnimation("Opacity", opacityOut);
+        }
+
+        private bool _backgroundCollapsed = true;
+
+        private void ShowHideBackground(bool show)
+        {
+            if (_backgroundCollapsed != show)
+            {
+                return;
+            }
+
+            _backgroundCollapsed = !show;
+            ClipperBackground.Visibility = Visibility.Visible;
+            ClipperBackground.RequestedTheme = ActualTheme;
+            HeaderClipper.RequestedTheme = ActualTheme;
+            TitleRoot.RequestedTheme = show ? ActualTheme : HeaderTheme;
+            SubtitleRoot.RequestedTheme = show ? ActualTheme : HeaderTheme;
+
+            var subtitleTab = ElementComposition.GetElementVisual(ClipperBackground);
+            var subtitlePro = ElementComposition.GetElementVisual(HeaderBackground);
+
+            var opacityIn = subtitleTab.Compositor.CreateScalarKeyFrameAnimation();
+            opacityIn.InsertKeyFrame(0, show ? 0 : 1);
+            opacityIn.InsertKeyFrame(1, show ? 1 : 0);
+
+            var opacityOut = subtitlePro.Compositor.CreateScalarKeyFrameAnimation();
+            opacityOut.InsertKeyFrame(0, show ? 1 : 0);
+            opacityOut.InsertKeyFrame(1, show ? 0 : 1);
+
+            subtitleTab.StartAnimation("Opacity", opacityIn);
+            subtitlePro.StartAnimation("Opacity", opacityOut);
         }
 
         public void InitializeScrolling(CompositionPropertySet properties)
         {
             var target = ElementComposition.GetElementVisual(this);
             var controls = ElementComposition.GetElementVisual(ControlsRoot);
+            var background = ElementComposition.GetElementVisual(ClipperBackground);
             var title = ElementComposition.GetElementVisual(TitleRoot);
             var subtitle = ElementComposition.GetElementVisual(SubtitleRoot);
             var buttons = ElementComposition.GetElementVisual(Buttons);
@@ -314,57 +405,69 @@ namespace Telegram.Controls
 
             ElementCompositionPreview.SetIsTranslationEnabled(Buttons, true);
             ElementCompositionPreview.SetIsTranslationEnabled(HeaderRoot, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(ClipperBackground, true);
             ElementCompositionPreview.SetIsTranslationEnabled(TitleRoot, true);
             ElementCompositionPreview.SetIsTranslationEnabled(SubtitleRoot, true);
 
+            var translationExp = "(scrollViewer.Translation.Y - _.RemovedHeight)";
+
             //var rootExp = "clamp(-scrollViewer.Translation.Y - (this.Target.Size.Y - 48 + 0), 0, target.Size.Y - this.Target.Size.Y)";
-            var rootExp = "clamp(-scrollViewer.Translation.Y - (this.Target.Size.Y - 48 + 16), 0, target.Size.Y - this.Target.Size.Y)";
+            var rootExp = $"{translationExp} < 0 ? clamp(-{translationExp} - (this.Target.Size.Y - 48), 0, 100000) : -{translationExp}";
             var rootTranslation = root.Compositor.CreateExpressionAnimation(rootExp);
             rootTranslation.SetReferenceParameter("scrollViewer", properties);
             rootTranslation.SetReferenceParameter("target", target);
+            rootTranslation.SetReferenceParameter("_", Properties);
 
-            var photoExp = "clamp(1 - -scrollViewer.Translation.Y / root.Size.Y, 0, 1.1)";
+            var photoExp = $"clamp(1 - -{translationExp} / root.Size.Y, 0, 1)";
             var photoScale = root.Compositor.CreateExpressionAnimation($"vector3({photoExp}, {photoExp}, 1)");
             photoScale.SetReferenceParameter("scrollViewer", properties);
             photoScale.SetReferenceParameter("root", root);
+            photoScale.SetReferenceParameter("_", Properties);
 
             //var rootExp = "clamp(-scrollViewer.Translation.Y - (this.Target.Size.Y - 48 + 0), 0, target.Size.Y - this.Target.Size.Y)";
-            var controlsExp = "-scrollViewer.Translation.Y - (target.Size.Y - 40)";
+            var controlsExp = $"-{translationExp} - (target.Size.Y - 40)";
             var controlsClip = root.Compositor.CreateExpressionAnimation(controlsExp);
             controlsClip.SetReferenceParameter("scrollViewer", properties);
             controlsClip.SetReferenceParameter("target", root);
+            controlsClip.SetReferenceParameter("_", Properties);
 
             //var buttonsExp = "clamp(-scrollViewer.Translation.Y - (target.Size.Y - this.Target.Size.Y - 56), 0, 72)";
-            var buttonsExp = "clamp(-scrollViewer.Translation.Y - (target.Size.Y - this.Target.Size.Y - 48), 0, 72)";
+            var buttonsExp = $"clamp(-{translationExp} - (target.Size.Y - this.Target.Size.Y - 56), 0, 72)";
             var buttonsTranslation = root.Compositor.CreateExpressionAnimation(buttonsExp);
             buttonsTranslation.SetReferenceParameter("scrollViewer", properties);
             buttonsTranslation.SetReferenceParameter("target", root);
+            buttonsTranslation.SetReferenceParameter("_", Properties);
 
             var buttonsOpacity = root.Compositor.CreateExpressionAnimation($"clamp(1 - {buttonsExp} / this.Target.Size.Y, 0, 1)");
             buttonsOpacity.SetReferenceParameter("scrollViewer", properties);
             buttonsOpacity.SetReferenceParameter("target", root);
+            buttonsOpacity.SetReferenceParameter("_", Properties);
 
             //var titleExp = "clamp(-scrollViewer.Translation.Y - 168 - 8, 0, 86)";
-            var titleExp = "clamp(-scrollViewer.Translation.Y - 188, 0, buttons.Size.Y > 0 ? 86 : 11)";
+            var titleExp = $"clamp(-{translationExp} - 170, 0, buttons.Size.Y > 0 ? 86 : 11)";
             var titleTranslation = root.Compositor.CreateExpressionAnimation(titleExp);
             titleTranslation.SetReferenceParameter("scrollViewer", properties);
             titleTranslation.SetReferenceParameter("buttons", buttons);
+            titleTranslation.SetReferenceParameter("_", Properties);
 
             //var titleScaleExp = "max(diff, 1 - clamp((-scrollViewer.Translation.Y - 184) / 32, 0, 1) * diff)";
-            var titleScaleExp = "clamp(1 - ((-scrollViewer.Translation.Y - 122) / 68) * 0.3, 0.7, 1)";
+            var titleScaleExp = $"clamp(1 - ((-{translationExp} - 112) / 68) * 0.3, 0.7, 1)";
             var titleScale = root.Compositor.CreateExpressionAnimation($"vector3({titleScaleExp}, {titleScaleExp}, 1)");
             titleScale.SetReferenceParameter("scrollViewer", properties);
+            titleScale.SetReferenceParameter("_", Properties);
 
             //var subtitleScaleExp = "max(diff, 1 - clamp((-scrollViewer.Translation.Y - 184) / 32, 0, 1) * diff)";
-            var subtitleScaleExp = "clamp(1 - ((-scrollViewer.Translation.Y - 122) / 68) * 0.143, 0.857, 1)";
+            var subtitleScaleExp = $"clamp(1 - ((-{translationExp} - 112) / 68) * 0.143, 0.857, 1)";
             var subtitleScale = root.Compositor.CreateExpressionAnimation($"vector3({subtitleScaleExp}, {subtitleScaleExp}, 1)");
             subtitleScale.SetReferenceParameter("scrollViewer", properties);
+            subtitleScale.SetReferenceParameter("_", Properties);
 
             controls.Clip = properties.Compositor.CreateInsetClip();
             controls.Clip.StartAnimation("TopInset", controlsClip);
             root.StartAnimation("Translation.Y", rootTranslation);
             buttons.StartAnimation("Translation.Y", buttonsTranslation);
             buttons.StartAnimation("Opacity", buttonsOpacity);
+            background.StartAnimation("Translation.Y", titleTranslation);
             title.StartAnimation("Translation.Y", titleTranslation);
             title.StartAnimation("Scale", titleScale);
             subtitle.StartAnimation("Translation.Y", titleTranslation);
@@ -397,14 +500,6 @@ namespace Telegram.Controls
                 Identity.Foreground = new SolidColorBrush(Colors.White);
                 BotVerified.ReplacementColor = new SolidColorBrush(Colors.White);
 
-                //HeaderRoot.BorderThickness = new Thickness(0, 0, 0, 1);
-                //HeaderRoot.CornerRadius = new CornerRadius(8, 0, 0, 0);
-                //HeaderRoot.Margin = new Thickness(0, 0, 0, -8);
-                //HeaderRoot.Padding = new Thickness(24, 16, 24, 8);
-                HeaderRoot.BorderThickness = new Thickness(1);
-                HeaderRoot.CornerRadius = new CornerRadius(4);
-                HeaderRoot.Margin = new Thickness(24, 16, 24, -8);
-                HeaderRoot.Padding = new Thickness(8, 16, 8, 8);
                 HeaderRoot.RequestedTheme = ElementTheme.Dark;
 
                 if (colors.BackgroundColors.Count > 1)
@@ -424,11 +519,11 @@ namespace Telegram.Controls
                         Offset = 1
                     });
 
-                    HeaderRoot.Background = gradient;
+                    HeaderBackground.Background = gradient;
                 }
                 else
                 {
-                    HeaderRoot.Background = new SolidColorBrush(colors.BackgroundColors[0]);
+                    HeaderBackground.Background = new SolidColorBrush(colors.BackgroundColors[0]);
                 }
 
                 UpdateProfileBackgroundCustomEmoji(colors);
@@ -439,17 +534,7 @@ namespace Telegram.Controls
                 Identity.ClearValue(ForegroundProperty);
                 BotVerified.ClearValue(AnimatedImage.ReplacementColorProperty);
 
-                //HeaderRoot.Background = null;
-                //HeaderRoot.BorderThickness = new Thickness(0);
-                //HeaderRoot.CornerRadius = new CornerRadius(0);
-                //HeaderRoot.Margin = new Thickness(24, 0, 24, -8);
-                //HeaderRoot.Padding = new Thickness(0, 32, 0, 0);
-                //HeaderRoot.RequestedTheme = ElementTheme.Default;
-                HeaderRoot.ClearValue(Panel.BackgroundProperty);
-                HeaderRoot.BorderThickness = new Thickness(1);
-                HeaderRoot.CornerRadius = new CornerRadius(4);
-                HeaderRoot.Margin = new Thickness(24, 16, 24, -8);
-                HeaderRoot.Padding = new Thickness(8, 16, 8, 8);
+                HeaderBackground.ClearValue(Panel.BackgroundProperty);
                 HeaderRoot.RequestedTheme = ElementTheme.Default;
 
                 UpdateProfileBackgroundCustomEmoji(null);
@@ -600,8 +685,10 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    Visibility = Visibility.Collapsed;
-                    return;
+                    Buttons.Visibility = Visibility.Collapsed;
+                    ControlsRoot.Visibility = Visibility.Collapsed;
+                    //Visibility = Visibility.Collapsed;
+                    //return;
                 }
             }
 
@@ -1915,6 +2002,17 @@ namespace Telegram.Controls
             var subtitle = ElementComposition.GetElementVisual(SubtitleRoot);
             subtitle.CenterPoint = new Vector3(SubtitleRoot.ActualSize.X / 2, 0, 0);
         }
+
+        private void Pattern_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.IsSavedMessages)
+            {
+                Pattern.Update(float.MaxValue);
+
+                ShowHideSubtitle(true);
+                ShowHideBackground(true);
+            }
+        }
     }
 
     public class ProfileButtonsGrid : Grid
@@ -1935,7 +2033,7 @@ namespace Telegram.Controls
                 columns++;
             }
 
-            var column = new Size((availableSize.Width - ColumnSpacing * columns) / columns, availableSize.Height);
+            var column = new Size(Math.Max(0, (availableSize.Width - ColumnSpacing * (columns - 1)) / columns), availableSize.Height);
             var height = 0d;
 
             foreach (var child in Children)
@@ -1955,7 +2053,7 @@ namespace Telegram.Controls
         protected override Size ArrangeOverride(Size finalSize)
         {
             var x = 0d;
-            var column = (finalSize.Width - ColumnSpacing * _columns) / _columns;
+            var column = (finalSize.Width - ColumnSpacing * (_columns - 1)) / _columns;
 
             foreach (var child in Children)
             {

@@ -39,8 +39,6 @@ namespace Telegram.Views
     {
         public ProfileViewModel ViewModel => DataContext as ProfileViewModel;
 
-        private CompositionPropertySet _properties;
-
         private readonly DispatcherTimer _dateHeaderTimer;
         private Visual _dateHeaderPanel;
         private bool _dateHeaderCollapsed = true;
@@ -87,34 +85,16 @@ namespace Telegram.Views
         {
             var properties = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
             var visual = ElementComposition.GetElementVisual(HeaderPanel);
-            var border = ElementComposition.GetElementVisual(CardBackground);
-            var clipper = ElementComposition.GetElementVisual(ClipperBackground);
 
             ElementCompositionPreview.SetIsTranslationEnabled(HeaderPanel, true);
             ElementCompositionPreview.SetIsTranslationEnabled(BackButton, true);
 
-            _properties = visual.Compositor.CreatePropertySet();
-            _properties.InsertScalar("ActualHeight", ProfileHeader.ActualSize.Y + 16);
-
             var translation = visual.Compositor.CreateExpressionAnimation(
-                "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -properties.ActualHeight ? 0 : -scrollViewer.Translation.Y - properties.ActualHeight : -scrollViewer.Translation.Y");
+                "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -(properties.ActualHeight - 8) ? 0 : -scrollViewer.Translation.Y - (properties.ActualHeight - 8) : -scrollViewer.Translation.Y");
             translation.SetReferenceParameter("scrollViewer", properties);
-            translation.SetReferenceParameter("properties", _properties);
-
-            var fadeOut = visual.Compositor.CreateExpressionAnimation(
-                "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -(properties.ActualHeight - 16) ? 1 : 1 - ((-scrollViewer.Translation.Y - (properties.ActualHeight - 16)) / 16) : 0");
-            fadeOut.SetReferenceParameter("scrollViewer", properties);
-            fadeOut.SetReferenceParameter("properties", _properties);
-
-            var fadeIn = visual.Compositor.CreateExpressionAnimation(
-                "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -(properties.ActualHeight - 16) ? 0 : ((-scrollViewer.Translation.Y - (properties.ActualHeight - 16)) / 16) : 1");
-            fadeIn.SetReferenceParameter("scrollViewer", properties);
-            fadeIn.SetReferenceParameter("properties", _properties);
+            translation.SetReferenceParameter("properties", ProfileHeader.Properties);
 
             visual.StartAnimation("Translation.Y", translation);
-
-            border.StartAnimation("Opacity", fadeOut);
-            clipper.StartAnimation("Opacity", fadeIn);
         }
 
         public void OnBackRequested(BackRequestedRoutedEventArgs args)
@@ -135,33 +115,30 @@ namespace Telegram.Views
                 MediaFrame.Navigate(tab.Type, tab.Parameter, new SuppressNavigationTransitionInfo());
             }
 
+            var properties = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
+
             var visual4 = ElementComposition.GetElementVisual(BackButton);
             visual4.CenterPoint = new Vector3(24, 16, 0);
 
-            if (ProfileHeader.Visibility == Visibility.Visible)
+            if (ProfileHeader.Visibility == Visibility.Visible && !ViewModel.IsSavedMessages)
             {
-                var properties = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
-
-                var expOut2 = "clamp(1 - ((-(scrollViewer.Translation.Y + 164) / 32) * 0.2), 0.8, 1)";
+                var expOut2 = "clamp(1 - ((-(scrollViewer.Translation.Y + 148) / 32) * 0.2), 0.8, 1)";
                 var slideOut2 = properties.Compositor.CreateExpressionAnimation($"vector3({expOut2}, {expOut2}, 1)");
                 slideOut2.SetReferenceParameter("scrollViewer", properties);
 
-                var expOut3y = "scrollViewer.Translation.Y > 0 ? scrollViewer.Translation.Y : -clamp(((-(scrollViewer.Translation.Y + 164) / 32) * 16), 0, 16)";
-                var expOut3x = "-clamp(((-(scrollViewer.Translation.Y + properties.ActualHeight - 32) / 32) * 16), 0, 16)";
-                var slideOut3 = properties.Compositor.CreateExpressionAnimation($"vector3({expOut3x}, {expOut3y}, 0)");
+                var slideOut3 = properties.Compositor.CreateExpressionAnimation("-clamp(((-(scrollViewer.Translation.Y + 148) / 32) * 16), 0, 16)");
                 slideOut3.SetReferenceParameter("scrollViewer", properties);
-                slideOut3.SetReferenceParameter("properties", _properties);
 
                 visual4.StartAnimation("Scale", slideOut2);
-                visual4.StartAnimation("Translation", slideOut3);
-
-                ProfileHeader.InitializeScrolling(properties);
+                visual4.StartAnimation("Translation.Y", slideOut3);
             }
             else
             {
                 visual4.Scale = new Vector3(0.8f);
                 visual4.Properties.InsertVector3("Translation", new Vector3(-12, -16, 0));
             }
+
+            ProfileHeader.InitializeScrolling(properties);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -224,6 +201,13 @@ namespace Telegram.Views
 
         #endregion
 
+        private void UpdateBackButton()
+        {
+            BackButton.RequestedTheme = ScrollingHost.VerticalOffset >= ProfileHeader.OccludedHeight
+                ? ElementTheme.Default
+                : ProfileHeader.HeaderTheme;
+        }
+
         #region Delegate
 
         public void UpdateChat(Chat chat)
@@ -234,9 +218,7 @@ namespace Telegram.Views
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
-            BackButton.RequestedTheme = ScrollingHost.VerticalOffset < ProfileHeader.ActualHeight - 16 || !ProfileHeader.IsLoaded
-                ? ProfileHeader.HeaderTheme
-                : ElementTheme.Default;
+            UpdateBackButton();
         }
 
         public void UpdateChatTitle(Chat chat)
@@ -263,9 +245,7 @@ namespace Telegram.Views
         {
             ProfileHeader.UpdateChatAccentColors(chat);
 
-            BackButton.RequestedTheme = ScrollingHost.VerticalOffset < ProfileHeader.ActualHeight - 16
-                ? ProfileHeader.HeaderTheme
-                : ElementTheme.Default;
+            UpdateBackButton();
         }
 
         public void UpdateChatActiveStories(Chat chat)
@@ -381,14 +361,15 @@ namespace Telegram.Views
 
         private void ProfileHeader_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _properties.InsertScalar("ActualHeight", ProfileHeader.ActualSize.Y + 16);
+            UpdateBackButton();
+
             ViewModel.HeaderHeight = Math.Max(e.NewSize.Height, 48 + 10);
-            MediaFrame.MinHeight = ScrollingHost.ActualHeight + e.NewSize.Height - 48;
+            MediaFrame.MinHeight = ScrollingHost.ActualHeight + e.NewSize.Height - 104;
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            MediaFrame.MinHeight = Header.ActualHeight + e.NewSize.Height - 48;
+            MediaFrame.MinHeight = Header.ActualHeight + e.NewSize.Height - 104;
 
             if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
             {
@@ -400,11 +381,9 @@ namespace Telegram.Views
 
         private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            BackButton.RequestedTheme = ScrollingHost.VerticalOffset < ProfileHeader.ActualHeight - 16
-                ? ProfileHeader.HeaderTheme
-                : ElementTheme.Default;
+            UpdateBackButton();
 
-            if (ProfileHeader.Visibility == Visibility.Visible)
+            if (ProfileHeader.Visibility == Visibility.Visible && !ViewModel.IsSavedMessages)
             {
                 ProfileHeader.ViewChanged(ScrollingHost.VerticalOffset);
             }

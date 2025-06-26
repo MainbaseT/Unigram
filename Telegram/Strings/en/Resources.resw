@@ -2598,6 +2598,12 @@ Do you want to revoke verification?</value>
   <data name="BotRestart" xml:space="preserve">
     <value>Restart Bot</value>
   </data>
+  <data name="Bots_one" xml:space="preserve">
+    <value>{0} bot</value>
+  </data>
+  <data name="Bots_other" xml:space="preserve">
+    <value>{0} bots</value>
+  </data>
   <data name="BotSentRevokeVerifyRequest" xml:space="preserve">
     <value>**{0}**&apos;s verification has been revoked.</value>
   </data>
@@ -4369,6 +4375,12 @@ Minimum length is 5 characters.</value>
   </data>
   <data name="Comments_other" xml:space="preserve">
     <value>{0} Comments</value>
+  </data>
+  <data name="CommonGroups_one" xml:space="preserve">
+    <value>{0} group in common</value>
+  </data>
+  <data name="CommonGroups_other" xml:space="preserve">
+    <value>{0} groups in common</value>
   </data>
   <data name="ConferenceCallIncoming" xml:space="preserve">
     <value>Incoming Group Call</value>
@@ -10355,6 +10367,12 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="ProfileGifts" xml:space="preserve">
     <value>Gifts</value>
   </data>
+  <data name="ProfileGiftsCount_one" xml:space="preserve">
+    <value>{0} gift</value>
+  </data>
+  <data name="ProfileGiftsCount_other" xml:space="preserve">
+    <value>{0} gifts</value>
+  </data>
   <data name="ProfileMyStories" xml:space="preserve">
     <value>My Stories</value>
   </data>
@@ -10367,8 +10385,20 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="ProfileStoriesArchiveChannelHint" xml:space="preserve">
     <value>Only admins of the channel can see archived stories unless they are posted to the channel page.</value>
   </data>
+  <data name="ProfileStoriesArchiveCount_one" xml:space="preserve">
+    <value>{0} archived story</value>
+  </data>
+  <data name="ProfileStoriesArchiveCount_other" xml:space="preserve">
+    <value>{0} archived stories</value>
+  </data>
   <data name="ProfileStoriesArchiveHint" xml:space="preserve">
     <value>Only you can see archived stories unless you choose to post them to your profile.</value>
+  </data>
+  <data name="ProfileStoriesCount_one" xml:space="preserve">
+    <value>{0} story</value>
+  </data>
+  <data name="ProfileStoriesCount_other" xml:space="preserve">
+    <value>{0} stories</value>
   </data>
   <data name="PromoteUrl" xml:space="preserve">
     <value>https://ads.telegram.org</value>
