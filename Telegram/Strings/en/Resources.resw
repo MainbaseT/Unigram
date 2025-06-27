@@ -12773,6 +12773,12 @@ in mini apps on Telegram.</value>
   <data name="TodoAllowMarkingDone" xml:space="preserve">
     <value>Allow Others to Mark As Done</value>
   </data>
+  <data name="TodoCantForward" xml:space="preserve">
+    <value>Sorry, to-do lists can’t be forwarded to channels.</value>
+  </data>
+  <data name="TodoCantForwardSecretChat" xml:space="preserve">
+    <value>Sorry, to-do lists can’t be forwarded to secret chats.</value>
+  </data>
   <data name="TodoCompleted_one" xml:space="preserve">
     <value>{1} of {0} completed</value>
   </data>

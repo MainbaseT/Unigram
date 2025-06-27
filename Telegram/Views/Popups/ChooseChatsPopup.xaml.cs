@@ -1619,6 +1619,12 @@ namespace Telegram.Views.Popups
 
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var hasSecretChats = false;
+            var hasChecklists = ViewModel.Configuration switch
+            {
+                ChooseChatsConfigurationShareMessages shareMessages => shareMessages.Messages.Any(x => x.ContentType == typeof(MessageChecklist)),
+                _ => false
+            };
             var maxQuantity = ViewModel.Configuration switch
             {
                 ChooseChatsConfigurationRequestUsers requestUsers => requestUsers.MaxQuantity,
@@ -1629,6 +1635,12 @@ namespace Telegram.Views.Popups
 
             foreach (var newItem in e.AddedItems.OfType<Chat>())
             {
+                if (hasChecklists && newItem.Type is ChatTypeSecret or ChatTypeSupergroup { IsChannel: true })
+                {
+                    hasSecretChats = newItem.Type is ChatTypeSecret;
+                    maxExceeded = true;
+                }
+
                 if (maxExceeded || (ViewModel.ClientService.IsForum(newItem) && !ViewModel.SelectedTopics.ContainsKey(newItem.Id)))
                 {
                     if (ChatsPanel.SelectionMode == ListViewSelectionMode.Multiple)
@@ -1644,7 +1656,14 @@ namespace Telegram.Views.Popups
 
             if (maxExceeded)
             {
-                ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.BotMultiContactsSelectorLimit, maxQuantity), ToastPopupIcon.Info);
+                if (hasChecklists)
+                {
+                    ToastPopup.Show(XamlRoot, hasSecretChats ? Strings.TodoCantForwardSecretChat : Strings.TodoCantForward, ToastPopupIcon.Info);
+                }
+                else
+                {
+                    ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.BotMultiContactsSelectorLimit, maxQuantity), ToastPopupIcon.Info);
+                }
             }
 
             var selection = ChatsPanel.SelectedItems
