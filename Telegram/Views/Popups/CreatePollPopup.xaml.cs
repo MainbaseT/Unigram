@@ -151,14 +151,6 @@ namespace Telegram.Views.Popups
 
         public ObservableCollection<PollOptionViewModel> Items { get; private set; }
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void AddAnOption_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (Items.Count < _viewModel.ClientService.Options.PollAnswerCountMax && !string.IsNullOrEmpty(AddAnOption.Text))

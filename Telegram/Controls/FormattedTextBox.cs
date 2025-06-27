@@ -1283,6 +1283,12 @@ namespace Telegram.Controls
             _undoGroup = false;
         }
 
+        public void ClearText()
+        {
+            Document.Clear();
+            SelectionFlyout.Hide();
+        }
+
         public void SetText(FormattedText formattedText)
         {
             if (formattedText != null)
@@ -1523,6 +1529,8 @@ namespace Telegram.Controls
 
             Document.ApplyDisplayUpdates();
             EndUndoGroup();
+
+            TextChangedForRealNoCap?.Invoke(this, EventArgs.Empty);
         }
 
         public void InsertBlockquote(string quote)

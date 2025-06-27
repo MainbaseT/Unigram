@@ -1764,6 +1764,11 @@ namespace Telegram.Views
                 if (pollRights && pollsAllowed)
                 {
                     flyout.CreateFlyoutItem(ViewModel.SendPoll, Strings.Poll, Icons.Poll);
+
+                    if (ViewModel.IsPremium || ViewModel.IsPremiumAvailable)
+                    {
+                        flyout.CreateFlyoutItem(ViewModel.SendChecklist, Strings.Todo, Icons.CheckmarkSquare);
+                    }
                 }
 
                 if (messageRights)
@@ -2879,7 +2884,12 @@ namespace Telegram.Views
 
                 if (MessageEdit_Loaded(message, properties))
                 {
-                    flyout.CreateFlyoutItem(ViewModel.EditMessage, message, Strings.Edit, Icons.Edit);
+                    flyout.CreateFlyoutItem(ViewModel.EditMessage, message, message.Content is MessageChecklist ? Strings.EditToDo : Strings.Edit, Icons.Edit);
+                }
+
+                if (properties.CanAddTasks)
+                {
+                    flyout.CreateFlyoutItem(ViewModel.AddChecklistTask, message, Strings.AddTasks, Icons.AddCircle);
                 }
 
                 if (ViewModel.IsForum)

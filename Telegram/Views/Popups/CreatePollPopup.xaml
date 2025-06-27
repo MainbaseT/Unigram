@@ -8,12 +8,6 @@
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                        mc:Ignorable="d"
-                       Background="{ThemeResource PageBackgroundDarkBrush}"
-                       Title="TITLE"
-                       PrimaryButtonText="Button1"
-                       SecondaryButtonText="Button2"
-                       PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-                       SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
                        DefaultButton="None"
                        Padding="0,16,0,0">
 
@@ -179,7 +173,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <controls:ScrollViewerScrim Background="{ThemeResource PageBackgroundDarkBrush}"
+        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogBackground}"
                                     ScrollingHost="{x:Bind ScrollingHost}" />
     </Grid>
 </controls:ContentPopup>
