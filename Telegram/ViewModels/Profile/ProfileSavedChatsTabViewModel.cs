@@ -27,10 +27,17 @@ namespace Telegram.ViewModels.Profile
             : base(clientService, settingsService, aggregator)
         {
             Items = new IncrementalCollection<SavedMessagesTopic>(this);
+            Items.TotalCount = clientService.SavedMessagesTopicCount;
         }
 
         public override void Subscribe()
         {
+            Aggregator.Subscribe<UpdateSavedMessagesTopicCount>(this, Handle);
+        }
+
+        private void Handle(UpdateSavedMessagesTopicCount update)
+        {
+            BeginOnUIThread(() => Items.TotalCount = update.TopicCount);
         }
 
         private void Handle(UpdateSavedMessagesTopic update)
@@ -46,7 +53,7 @@ namespace Telegram.ViewModels.Profile
 
             var totalCount = 0u;
 
-            var response = await ClientService.GetSavedMessagesChatsAsync(Items.Count, 20);
+            var response = await ClientService.GetSavedMessagesTopicsAsync(Items.Count, 20);
             if (response is Topics topics)
             {
                 foreach (var topic in ClientService.GetSavedMessagesTopics(topics.TopicIds))
@@ -82,8 +89,6 @@ namespace Telegram.ViewModels.Profile
                         _lastOrder = order;
                     }
                 }
-
-                Items.TotalCount = topics.TotalCount;
 
                 HasMoreItems = topics.TotalCount >= 0;
                 Aggregator.Subscribe<UpdateSavedMessagesTopic>(this, Handle);

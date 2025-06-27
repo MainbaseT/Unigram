@@ -3307,6 +3307,9 @@ namespace Telegram.Services
                 case UpdateFreezeState updateFreezeState:
                     _freezeState = updateFreezeState;
                     break;
+                case UpdateSavedMessagesTopicCount updateSavedMessagesTopicCount:
+                    SavedMessagesTopicCount = updateSavedMessagesTopicCount.TopicCount;
+                    break;
                 case UpdateNewMessage updateNewMessage:
                     UpdateForumTopic(updateNewMessage.Message.ChatId, false, manager => manager.UpdateNewMessage(updateNewMessage.Message));
                     break;

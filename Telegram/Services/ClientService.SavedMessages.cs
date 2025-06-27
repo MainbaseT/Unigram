@@ -15,7 +15,9 @@ namespace Telegram.Services
 {
     public partial interface ICacheService
     {
-        Task<Topics> GetSavedMessagesChatsAsync(int offset, int limit);
+        int SavedMessagesTopicCount { get; }
+
+        Task<Topics> GetSavedMessagesTopicsAsync(int offset, int limit);
 
         bool TryGetSavedMessagesTopic(long savedMessagesTopicId, out SavedMessagesTopic topic);
 
@@ -46,6 +48,8 @@ namespace Telegram.Services
 
             Monitor.Exit(_savedMessages);
         }
+
+        public int SavedMessagesTopicCount { get; private set; }
 
         public bool TryGetSavedMessagesTopic(long savedMessagesTopicId, out SavedMessagesTopic topic)
         {
@@ -92,7 +96,7 @@ namespace Telegram.Services
             return Strings.AnonymousForward;
         }
 
-        public Task<Topics> GetSavedMessagesChatsAsync(int offset, int limit)
+        public Task<Topics> GetSavedMessagesTopicsAsync(int offset, int limit)
         {
             return GetSavedMessagesChatsAsyncImpl(offset, limit, false);
         }
