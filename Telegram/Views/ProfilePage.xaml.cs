@@ -135,7 +135,7 @@ namespace Telegram.Views
             else
             {
                 visual4.Scale = new Vector3(0.8f);
-                visual4.Properties.InsertVector3("Translation", new Vector3(-12, -16, 0));
+                visual4.Properties.InsertVector3("Translation", new Vector3(0, -16, 0));
             }
 
             ProfileHeader.InitializeScrolling(properties);

@@ -60,11 +60,6 @@
                                                  Margin="8,4" />
                         </Grid>
 
-                        <controls:MoreButton x:Name="Menu"
-                                             Click="Menu_ContextRequested"
-                                             HorizontalAlignment="Right"
-                                             VerticalAlignment="Top" />
-
                         <messages:MessageService x:Name="DateHeader"
                                                  Visibility="Collapsed"
                                                  VerticalAlignment="Bottom"
@@ -92,6 +87,11 @@
                                  Glyph="&#xE93E;"
                                  Width="48"
                                  Height="48" />
+
+            <controls:MoreButton x:Name="Menu"
+                                 Click="Menu_ContextRequested"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Top" />
         </Grid>
 
 
