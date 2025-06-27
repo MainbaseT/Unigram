@@ -131,7 +131,6 @@ namespace Telegram.ViewModels
                 Options = ChooseChatsOptions.PostMessages;
                 PrimaryButtonText = Strings.Send;
                 IsCommentEnabled = true;
-                IsSendAsCopyEnabled = true;
                 IsChatSelection = false;
 
                 // TODO: sharing links isn't currently supported anyway
@@ -178,7 +177,6 @@ namespace Telegram.ViewModels
                 Options = ChooseChatsOptions.PostMessages;
                 PrimaryButtonText = Strings.Send;
                 IsCommentEnabled = true;
-                IsSendAsCopyEnabled = true;
                 IsChatSelection = false;
             }
             else if (parameter is ChooseChatsConfigurationShareMessages configurationShareMessages)
@@ -187,7 +185,6 @@ namespace Telegram.ViewModels
                 Options = ChooseChatsOptions.PostMessages;
                 PrimaryButtonText = Strings.Send;
                 IsCommentEnabled = true;
-                IsSendAsCopyEnabled = true;
                 IsChatSelection = false;
             }
             else if (parameter is ChooseChatsConfigurationPostLink configurationPostLink)
@@ -509,13 +506,6 @@ namespace Telegram.ViewModels
             set => Set(ref _isCommentEnabled, value);
         }
 
-        private bool _isSendCopyEnabled;
-        public bool IsSendAsCopyEnabled
-        {
-            get => _isSendCopyEnabled;
-            set => Set(ref _isSendCopyEnabled, value);
-        }
-
         public FormattedText SendMessage { get; set; }
 
         public bool IsChatSelection { get; set; }
@@ -684,6 +674,18 @@ namespace Telegram.ViewModels
                     { "reply_to_quote", replyToMessage.Quote }
                 });
             }
+            else if (_configuration is ChooseChatsConfigurationShareGame shareGame)
+            {
+                ShowForwardMessagesToast(chats, 1);
+
+                foreach (var chat in chats)
+                {
+                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    {
+                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageForwarded(shareGame.Messages[0].ChatId, shareGame.Messages[0].Id, shareGame.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
+                    });
+                }
+            }
             else if (_configuration is ChooseChatsConfigurationShareMessages shareMessages)
             {
                 ShowForwardMessagesToast(chats, shareMessages.Messages.Count);
@@ -697,18 +699,6 @@ namespace Telegram.ViewModels
                             ClientService.Send(new ForwardMessages(chat.Id, messageThreadId, messages.Key, messages.Select(x => x.Id).ToList(), options, _sendAsCopy || _removeCaptions, _removeCaptions));
                         });
                     }
-                }
-            }
-            else if (_configuration is ChooseChatsConfigurationShareGame shareMessage)
-            {
-                ShowForwardMessagesToast(chats, 1);
-
-                foreach (var chat in chats)
-                {
-                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
-                    {
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageForwarded(shareMessage.ChatId, shareMessage.MessageId, shareMessage.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
-                    });
                 }
             }
             else if (_configuration is ChooseChatsConfigurationShareStory shareStory)

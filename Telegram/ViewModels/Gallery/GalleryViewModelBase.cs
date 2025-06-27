@@ -230,10 +230,8 @@ namespace Telegram.ViewModels.Gallery
                 var response = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
                 if (response is MessageProperties properties && properties.CanBeForwarded)
                 {
-                    ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(new MessageToShare(message.ChatId, message.Id, properties.CanBeCopied, properties.CanBeCopiedToSecretChat, message.Content.HasCaption(), true)), ElementTheme.Dark);
-
+                    ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationShareMessages(new MessageToShare(message.ChatId, message.Id, message.Content.GetType(), properties.CanBeCopied, properties.CanBeCopiedToSecretChat, message.Content.HasCaption(), message.ChatId != ClientService.Options.MyId || message.ForwardInfo != null)), ElementTheme.Dark);
                 }
-
             }
             else
             {

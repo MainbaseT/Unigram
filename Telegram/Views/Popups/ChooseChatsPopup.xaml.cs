@@ -589,22 +589,15 @@ namespace Telegram.Views.Popups
         public override int NumberOfSentMessages => 1;
     }
 
-    public partial class ChooseChatsConfigurationShareGame : ChooseChatsConfiguration
+    public partial class ChooseChatsConfigurationShareGame : ChooseChatsConfigurationShareMessages
     {
         public ChooseChatsConfigurationShareGame(long chatId, long messageId, bool withMyScore = false)
+            : base(new MessageToShare(chatId, messageId, typeof(MessageGame), true, true, false, true))
         {
-            ChatId = chatId;
-            MessageId = messageId;
             WithMyScore = withMyScore;
         }
 
-        public long ChatId { get; }
-
-        public long MessageId { get; }
-
         public bool WithMyScore { get; }
-
-        public override int NumberOfSentMessages => 1;
     }
 
     public partial class ChooseChatsConfigurationReplyToMessage : ChooseChatsConfiguration
@@ -637,10 +630,11 @@ namespace Telegram.Views.Popups
 
     public partial class MessageToShare
     {
-        public MessageToShare(long chatId, long id, bool canBeCopied, bool canBeCopiedtoSecretChat, bool hasCaption, bool hasSenderId)
+        public MessageToShare(long chatId, long id, Type contentType, bool canBeCopied, bool canBeCopiedtoSecretChat, bool hasCaption, bool hasSenderId)
         {
             ChatId = chatId;
             Id = id;
+            ContentType = contentType;
             CanBeCopied = canBeCopied;
             CanBeCopiedToSecretChat = canBeCopiedtoSecretChat;
             HasCaption = hasCaption;
@@ -651,15 +645,18 @@ namespace Telegram.Views.Popups
         {
             ChatId = message.ChatId;
             Id = message.Id;
+            ContentType = message.Content.GetType();
             CanBeCopied = properties.CanBeCopied;
             CanBeCopiedToSecretChat = properties.CanBeCopiedToSecretChat;
-            HasCaption = message.HasCaption();
+            HasCaption = message.Content is not MessageText && message.HasCaption();
             HasSenderId = hasSenderId;
         }
 
         public long ChatId { get; }
 
         public long Id { get; }
+
+        public Type ContentType { get; }
 
         public bool CanBeCopied { get; }
 
@@ -953,15 +950,41 @@ namespace Telegram.Views.Popups
 
         private void Send_ContextRequested(object sender, ContextRequestedEventArgs args)
         {
-            if (ViewModel.IsSendAsCopyEnabled)
+            if (ViewModel.Configuration is ChooseChatsConfigurationShareMessages shareMessages)
             {
                 var flyout = new MenuFlyout();
-                flyout.CreateFlyoutItem(() => { ViewModel.SendAsCopy = true; Hide(ContentDialogResult.Primary); }, Strings.HideSenderNames, Icons.DocumentCopy);
-                flyout.CreateFlyoutItem(() => { ViewModel.RemoveCaptions = true; Hide(ContentDialogResult.Primary); }, Strings.HideCaption, Icons.Block);
+
+                if (shareMessages.Messages.Any(x => x.HasSenderId && x.CanBeCopied))
+                {
+                    void SendAsCopy()
+                    {
+                        ViewModel.SendAsCopy = true;
+                        Hide(ContentDialogResult.Primary);
+                    }
+
+                    flyout.CreateFlyoutItem(SendAsCopy, Strings.HideSenderNames, Icons.DocumentCopy);
+                }
+
+                if (shareMessages.Messages.Any(x => x.HasCaption && x.CanBeCopied))
+                {
+                    void RemoveCaptions()
+                    {
+                        ViewModel.RemoveCaptions = true;
+                        Hide(ContentDialogResult.Primary);
+                    }
+
+                    flyout.CreateFlyoutItem(RemoveCaptions, Strings.HideCaption, Icons.Block);
+                }
 
                 flyout.CreateFlyoutSeparator();
 
-                flyout.CreateFlyoutItem(() => { ViewModel.SendDisableNotifications = true; Hide(ContentDialogResult.Primary); }, Strings.SendWithoutSound, Icons.AlertOff);
+                void DisableNotifications()
+                {
+                    ViewModel.SendDisableNotifications = true;
+                    Hide(ContentDialogResult.Primary);
+                }
+
+                flyout.CreateFlyoutItem(DisableNotifications, Strings.SendWithoutSound, Icons.AlertOff);
 
                 if (ViewModel.SelectedItems.Count == 1)
                 {
@@ -1116,7 +1139,6 @@ namespace Telegram.Views.Popups
             ViewModel.SelectionMode = selectionMode;
             ViewModel.Options = options;
             ViewModel.IsCommentEnabled = false;
-            ViewModel.IsSendAsCopyEnabled = false;
             ViewModel.IsChatSelection = true;
 
             ViewModel.PreSelectedItems = selectedItems;
