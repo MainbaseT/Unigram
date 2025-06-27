@@ -919,7 +919,9 @@ namespace Telegram.Services
             if (message.ReplyTo is MessageReplyToMessage replyToMessage ||
                 message.Content is MessagePinMessage ||
                 message.Content is MessageGameScore ||
-                message.Content is MessagePaymentSuccessful)
+                message.Content is MessagePaymentSuccessful ||
+                message.Content is MessageChecklistTasksAdded ||
+                message.Content is MessageChecklistTasksDone)
             {
                 Send(new GetRepliedMessage(message.ChatId, message.Id), handler);
             }

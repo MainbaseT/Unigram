@@ -620,6 +620,8 @@ namespace Telegram.Controls.Messages
                 MessageExpiredVideoNote expiredVideoNote => UpdateExpiredVideoNote(message, expiredVideoNote, history),
                 MessageExpiredVoiceNote expiredVoiceNote => UpdateExpiredVoiceNote(message, expiredVoiceNote, history),
                 MessageChatBoost chatBoost => UpdateChatBoost(message, chatBoost, history),
+                MessageChecklistTasksAdded checklistTasksAdded => UpdateChecklistTasksAdded(message, checklistTasksAdded, history),
+                MessageChecklistTasksDone checklistTasksDone => UpdateChecklistTasksDone(message, checklistTasksDone, history),
                 MessageAsyncStory story => UpdateStory(message, story, history),
                 MessageStory story => UpdateStory(message, story, history),
                 // Local types:
@@ -2412,6 +2414,103 @@ namespace Telegram.Controls.Messages
         private static FormattedText UpdateExpiredVoiceNote(MessageWithOwner message, MessageExpiredVoiceNote expiredVoiceNote, bool history)
         {
             return Strings.AttachVoiceExpired.AsFormattedText();
+        }
+
+        private static FormattedText UpdateChecklistTasksAdded(MessageWithOwner message, MessageChecklistTasksAdded checklistTasksAdded, bool history)
+        {
+            FormattedText formatted;
+            if (checklistTasksAdded.Tasks.Count > 3)
+            {
+                var text = message.IsOutgoing
+                    ? Strings.TodoAddedMoreTasksOut
+                    : Strings.TodoAddedMoreTasks;
+                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text, checklistTasksAdded.Tasks[1].Text, checklistTasksAdded.Tasks[2].Text, checklistTasksAdded.Tasks.Count - 3);
+            }
+            else if (checklistTasksAdded.Tasks.Count > 2)
+            {
+                var text = message.IsOutgoing
+                    ? Strings.TodoAddedThreeTaskOut
+                    : Strings.TodoAddedThreeTask;
+                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text, checklistTasksAdded.Tasks[1].Text, checklistTasksAdded.Tasks[2].Text);
+            }
+            else if (checklistTasksAdded.Tasks.Count > 1)
+            {
+                var text = message.IsOutgoing
+                    ? Strings.TodoAddedTwoTaskOut
+                    : Strings.TodoAddedTwoTask;
+                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text, checklistTasksAdded.Tasks[1].Text);
+            }
+            else
+            {
+                var text = message.IsOutgoing
+                    ? Strings.TodoAddedOneTaskOut
+                    : Strings.TodoAddedOneTask;
+                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text);
+            }
+
+            if (message.IsOutgoing)
+            {
+                return formatted;
+            }
+
+            return ReplaceWithLink(formatted, message.GetSender());
+        }
+
+        private static FormattedText UpdateChecklistTasksDone(MessageWithOwner message, MessageChecklistTasksDone checklistTasksDone, bool history)
+        {
+            var taskId = checklistTasksDone.MarkedAsDoneTaskIds.Count > 0
+                ? checklistTasksDone.MarkedAsDoneTaskIds[0]
+                : checklistTasksDone.MarkedAsNotDoneTaskIds[0];
+
+            ChecklistTask task = null;
+            if (message is MessageViewModel { ReplyToItem: MessageViewModel { Content: MessageChecklist checklist } })
+            {
+                foreach (var item in checklist.List.Tasks)
+                {
+                    if (item.Id == taskId)
+                    {
+                        task = item;
+                        break;
+                    }
+                }
+            }
+
+            if (task != null)
+            {
+                string text;
+                if (checklistTasksDone.MarkedAsDoneTaskIds.Count > 0)
+                {
+                    text = message.IsOutgoing
+                        ? Strings.TodoTaskCompletedOut
+                        : Strings.TodoTaskCompleted;
+                }
+                else
+                {
+                    text = message.IsOutgoing
+                        ? Strings.TodoTaskNotCompletedOut
+                        : Strings.TodoTaskNotCompleted;
+                }
+
+                return ReplaceWithLink(ClientEx.Format(text, task.Text), message.GetSender());
+            }
+            else
+            {
+                string text;
+                if (checklistTasksDone.MarkedAsDoneTaskIds.Count > 0)
+                {
+                    text = message.IsOutgoing
+                        ? Strings.TodoTaskCompletedOutUnknown
+                        : Strings.TodoTaskCompletedUnknown;
+                }
+                else
+                {
+                    text = message.IsOutgoing
+                        ? Strings.TodoTaskNotCompletedOutUnknown
+                        : Strings.TodoTaskNotCompletedUnknown;
+                }
+
+                return ReplaceWithLink(text, message.GetSender());
+            }
         }
 
         private static FormattedText UpdateChatBoost(MessageWithOwner message, MessageChatBoost chatBoost, bool history)

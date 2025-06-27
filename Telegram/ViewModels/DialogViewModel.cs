@@ -2047,7 +2047,9 @@ namespace Telegram.ViewModels
             if (message.ReplyTo is not null ||
                 message.Content is MessagePinMessage ||
                 message.Content is MessageGameScore ||
-                message.Content is MessagePaymentSuccessful)
+                message.Content is MessagePaymentSuccessful ||
+                message.Content is MessageChecklistTasksAdded ||
+                message.Content is MessageChecklistTasksDone)
             {
                 message.ReplyToState = message.Content is MessageGiveawayWinners
                     ? MessageReplyToState.Hidden
