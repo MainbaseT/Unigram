@@ -381,11 +381,7 @@ namespace Telegram.ViewModels
             var next = index > 0 ? this[index - 1] : null;
             var previous = index < Count - 1 ? this[index + 1] : null;
 
-            if (UpdateForumTopicSeparatorOnRemove(next, previous, index))
-            {
-                index--;
-                next = index > 0 ? this[index - 1] : null;
-            }
+            UpdateForumTopicSeparatorOnRemove(ref next, ref previous, ref index);
 
             var hash2 = AttachHash(next);
             var hash3 = AttachHash(previous);
@@ -406,7 +402,7 @@ namespace Telegram.ViewModels
 
             base.RemoveItem(index);
 
-            UpdateSeparatorOnRemove(next, previous, index);
+            UpdateSeparatorOnRemove(ref next, ref previous, ref index);
         }
 
         // TODO: Support MoveItem to optimize UpdateMessageSendSucceeded
@@ -415,10 +411,7 @@ namespace Telegram.ViewModels
         {
             if (item != null && next != null && item.Content is not MessageHeaderDate && next.Content is not MessageHeaderDate)
             {
-                var itemDate = Formatter.ToLocalTime(GetMessageDate(item));
-                var previousDate = Formatter.ToLocalTime(GetMessageDate(next));
-
-                if (previousDate.Date != itemDate.Date)
+                if (!item.AreOnTheSameDay(next))
                 {
                     return new MessageViewModel(next.ClientService, next.PlaybackService, next.Delegate, next.Chat, _viewModel.ForumTopic, _viewModel.DirectMessagesChatTopic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, next.Date, 0, null, null, null, null, null, null, next.MessageThreadId, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
                 }
@@ -445,41 +438,52 @@ namespace Telegram.ViewModels
             return null;
         }
 
-        private void UpdateSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
+        private void UpdateSeparatorOnRemove(ref MessageViewModel next, ref MessageViewModel previous, ref int index)
         {
-            if (next != null && next.Content is MessageHeaderDate && previous != null)
+            if (next != null && next.Content is MessageHeaderDate)
             {
-                var itemDate = Formatter.ToLocalTime(GetMessageDate(next));
-                var previousDate = Formatter.ToLocalTime(GetMessageDate(previous));
-
-                if (previousDate.Date != itemDate.Date)
+                if (previous == null || !next.AreOnTheSameDay(previous))
                 {
                     base.RemoveItem(index - 1);
+
+                    index--;
+                    next = index > 0 ? this[index - 1] : null;
                 }
             }
-            else if (next != null && next.Content is MessageHeaderDate && previous == null)
+
+            if (previous != null && previous.Content is MessageHeaderDate)
             {
-                base.RemoveItem(index - 1);
+                if (next == null || next.AreOnTheSameDay(previous))
+                {
+                    base.RemoveItem(index + 1);
+
+                    previous = index < Count - 1 ? this[index + 1] : null;
+                }
             }
         }
 
-        private bool UpdateForumTopicSeparatorOnRemove(MessageViewModel next, MessageViewModel previous, int index)
+        private void UpdateForumTopicSeparatorOnRemove(ref MessageViewModel next, ref MessageViewModel previous, ref int index)
         {
-            if (next != null && next.Content is MessageHeaderMessageTopic forumTopic && previous != null)
+            if (next != null && next.Content is MessageHeaderMessageTopic forumTopic)
             {
-                if (!next.TopicId.AreTheSame(previous.TopicId))
+                if (previous == null || !next.TopicId.AreTheSame(previous.TopicId))
                 {
                     base.RemoveItem(index - 1);
-                    return true;
+
+                    index--;
+                    next = index > 0 ? this[index - 1] : null;
                 }
             }
-            else if (next != null && next.Content is MessageHeaderMessageTopic && previous == null)
-            {
-                base.RemoveItem(index - 1);
-                return true;
-            }
 
-            return false;
+            if (previous != null && previous.Content is MessageHeaderMessageTopic)
+            {
+                if (next == null || next.TopicId.AreTheSame(previous.TopicId))
+                {
+                    base.RemoveItem(index + 1);
+
+                    previous = index < Count - 1 ? this[index + 1] : null;
+                }
+            }
         }
 
         private int AttachHash(MessageViewModel item)
@@ -495,24 +499,6 @@ namespace Telegram.ViewModels
             }
 
             return hash;
-        }
-
-        private int GetMessageDate(MessageViewModel item)
-        {
-            if (item.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
-            {
-                return sendAtDate.SendDate;
-            }
-            else if (item.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
-            {
-                return sendWhenVideoProcessed.SendDate;
-            }
-            else if (item.SchedulingState is MessageSchedulingStateSendWhenOnline)
-            {
-                return int.MinValue;
-            }
-
-            return item.Date;
         }
 
         private void UpdateAttach(MessageViewModel item, MessageViewModel previous)
@@ -542,7 +528,7 @@ namespace Telegram.ViewModels
                 attach = !previousPost &&
                          //!(previous.IsService()) &&
                          AreTogether(item, previous) &&
-                         GetMessageDate(item) - GetMessageDate(previous) < 900;
+                         item.GetDate() - previous.GetDate() < 900;
             }
 
             item.IsFirst = !attach;
