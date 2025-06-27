@@ -616,11 +616,27 @@ namespace Telegram.ViewModels
                     }
                     else if (message.Content is MessagePoll poll)
                     {
-                        builder.AppendLine($"[{Strings.Poll}: {poll.Poll.Question.Text}");
+                        builder.AppendLine($"[{Strings.Poll}: {poll.Poll.Question.Text}]");
 
                         foreach (var option in poll.Poll.Options)
                         {
-                            builder.AppendLine($"- {option.Text}");
+                            builder.AppendLine($"- {option.Text.Text}");
+                        }
+                    }
+                    else if (message.Content is MessageChecklist checklist)
+                    {
+                        builder.AppendLine($"[{Strings.Todo}: {checklist.List.Title.Text}]");
+
+                        foreach (var task in checklist.List.Tasks)
+                        {
+                            if (task.CompletionDate != 0)
+                            {
+                                builder.AppendLine($"\u2611 {task.Text.Text}");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"\u2610 {task.Text.Text}");
+                            }
                         }
                     }
                     else if (message.Content is MessageText text)
@@ -1103,6 +1119,28 @@ namespace Telegram.ViewModels
                 {
                     builder.AppendLine();
                     builder.AppendFormat("\U0001F518 {0}", option.Text.Text);
+                }
+
+                text = builder.ToString();
+                chatId = 0;
+                messageId = 0;
+            }
+            else if (message.Content is MessageChecklist checklist)
+            {
+                var builder = new StringBuilder(checklist.List.Title.Text);
+
+                foreach (var task in checklist.List.Tasks)
+                {
+                    builder.AppendLine();
+
+                    if (task.CompletionDate != 0)
+                    {
+                        builder.AppendFormat("\u2611 {0}", task.Text.Text);
+                    }
+                    else
+                    {
+                        builder.AppendFormat("\u2610 {0}", task.Text.Text);
+                    }
                 }
 
                 text = builder.ToString();

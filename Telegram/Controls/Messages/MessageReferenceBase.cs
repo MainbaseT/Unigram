@@ -339,6 +339,9 @@ namespace Telegram.Controls.Messages
                 case MessagePoll poll:
                     SetPollTemplate(message, sender, poll, title, outgoing, white);
                     break;
+                case MessageChecklist checklist:
+                    SetChecklistTemplate(message, sender, checklist, title, outgoing, white);
+                    break;
                 case MessageSticker sticker:
                     SetStickerTemplate(message, sender, sticker, title, outgoing, white);
                     break;
@@ -418,6 +421,9 @@ namespace Telegram.Controls.Messages
                     break;
                 case MessagePoll poll:
                     SetPollTemplate(message, sender, poll, title, outgoing, white);
+                    break;
+                case MessageChecklist checklist:
+                    SetChecklistTemplate(message, sender, checklist, title, outgoing, white);
                     break;
                 case MessageSticker sticker:
                     SetStickerTemplate(message, sender, sticker, title, outgoing, white);
@@ -758,6 +764,20 @@ namespace Telegram.Controls.Messages
                 title,
                 $"\uD83D\uDCCA",
                 poll.Poll.Question,
+                false,
+                white);
+        }
+
+        private void SetChecklistTemplate(MessageViewModel message, MessageSender sender, MessageChecklist checklist, string title, bool outgoing, bool white)
+        {
+            HideThumbnail();
+
+            SetText(message,
+                outgoing,
+                sender,
+                title,
+                $"\u2611",
+                checklist.List.Title,
                 false,
                 white);
         }

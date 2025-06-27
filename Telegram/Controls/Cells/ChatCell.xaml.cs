@@ -1521,6 +1521,8 @@ namespace Telegram.Controls.Cells
                     return Text1(string.Empty, photo.Caption, Strings.AttachPhoto);
                 case MessagePoll poll:
                     return Text1("\U0001F4CA ", poll.Poll.Question, Strings.Poll);
+                case MessageChecklist checklist:
+                    return Text1("\u2611 ", checklist.List.Title, Strings.Todo);
                 case MessageCall call:
                     return Text("\u260E " + call.ToOutcomeText(outgoing));
                 case MessageGroupCall groupCall:

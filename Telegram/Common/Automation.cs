@@ -51,134 +51,6 @@ namespace Telegram.Common
             }
         }
 
-        public static string GetSummary2(Message message)
-        {
-            var builder = new StringBuilder();
-
-            if (message.Content is MessagePhoto photo)
-            {
-                builder.Append($"{Strings.AttachPhoto}");
-
-                if (photo.Caption != null && !string.IsNullOrEmpty(photo.Caption.Text))
-                {
-                    builder.Append($". {photo.Caption.Text}");
-                }
-            }
-            else if (message.Content is MessageVoiceNote voiceNote)
-            {
-                if (message.SelfDestructType is MessageSelfDestructTypeImmediately)
-                {
-                    builder.Append($"{Strings.AttachOnceAudio}");
-                }
-                else
-                {
-                    builder.Append($"{Strings.AttachAudio}");
-                }
-
-                if (voiceNote.Caption != null && !string.IsNullOrEmpty(voiceNote.Caption.Text))
-                {
-                    builder.Append($". {voiceNote.Caption.Text}");
-                }
-            }
-            else if (message.Content is MessageVideo video)
-            {
-                builder.Append($"{Strings.AttachVideo}");
-
-                if (video.Caption != null && !string.IsNullOrEmpty(video.Caption.Text))
-                {
-                    builder.Append($". {video.Caption.Text}");
-                }
-            }
-            else if (message.Content is MessageVideoNote)
-            {
-                if (message.SelfDestructType is MessageSelfDestructTypeImmediately)
-                {
-                    builder.Append($"{Strings.AttachOnceRound}");
-                }
-                else
-                {
-                    builder.Append($"{Strings.AttachRound}");
-                }
-            }
-            else if (message.Content is MessageAnimation animation)
-            {
-                builder.Append($". {Strings.AttachGif}");
-
-                if (animation.Caption != null && !string.IsNullOrEmpty(animation.Caption.Text))
-                {
-                    builder.Append($". {animation.Caption.Text}");
-                }
-            }
-            else if (message.Content is MessageSticker sticker)
-            {
-                if (!string.IsNullOrEmpty(sticker.Sticker.Emoji))
-                {
-                    builder.Append($"{sticker.Sticker.Emoji} {Strings.AttachSticker}");
-                }
-                else
-                {
-                    builder.Append($"{Strings.AttachSticker}");
-                }
-            }
-            else if (message.Content is MessageAudio audio)
-            {
-                builder.Append($"{Strings.AttachMusic}");
-
-                if (audio.Caption != null && !string.IsNullOrEmpty(audio.Caption.Text))
-                {
-                    builder.Append($". {audio.Caption.Text}");
-                }
-            }
-            else if (message.Content is MessageLocation)
-            {
-                builder.Append($"{Strings.AttachLocation}");
-            }
-            else if (message.Content is MessageVenue venue)
-            {
-                builder.Append($"{Strings.AttachLocation}");
-                builder.Append(venue.Venue.Title);
-                builder.Append(venue.Venue.Address);
-            }
-            else if (message.Content is MessageContact contact)
-            {
-                builder.Append($"{Strings.AttachContact}");
-                builder.Append(contact.Contact.GetFullName());
-                builder.Append(PhoneNumber.Format(contact.Contact.PhoneNumber));
-            }
-            else if (message.Content is MessagePoll poll)
-            {
-                builder.Append($"{Strings.Poll}. ");
-                builder.Append($"{poll.Poll.Question.Text}");
-            }
-            else if (message.Content is MessageCall call)
-            {
-                builder.Append(call.ToOutcomeText(message.IsOutgoing));
-            }
-            else if (message.Content is MessageText text)
-            {
-                builder.Append(text.Text.Text);
-            }
-            else if (message.Content is MessageDice dice)
-            {
-                builder.Append(dice.Emoji);
-            }
-            else if (message.Content is MessageAnimatedEmoji animatedEmoji)
-            {
-                builder.Append(animatedEmoji.Emoji);
-            }
-
-            if (builder.Length > 0 && builder[builder.Length - 1] != '.')
-            {
-                builder.Append(". ");
-            }
-            else
-            {
-                builder.Append(" ");
-            }
-
-            return builder.ToString();
-        }
-
         public static string GetSummaryWithName(MessageWithOwner message, bool details = false, bool addCaption = true)
         {
             var summary = GetSummary(message, details, addCaption);
@@ -502,6 +374,10 @@ namespace Telegram.Common
 
                 return Strings.Poll + ", " + poll.Poll.Question.Text + ", ";
             }
+            else if (message.Content is MessageChecklist checklist)
+            {
+                return Strings.Todo + ", " + checklist.List.Title.Text + ", ";
+            }
             else if (message.Content is MessageCall call)
             {
                 return call.ToOutcomeText(message.IsOutgoing) + ", ";
@@ -808,6 +684,10 @@ namespace Telegram.Common
                 }
 
                 return Strings.Poll + ", " + poll.Poll.Question.Text + ", ";
+            }
+            else if (message.Content is MessageChecklist checklist)
+            {
+                return Strings.Todo + ", " + checklist.List.Title.Text + ", ";
             }
             else if (message.Content is MessageCall call)
             {

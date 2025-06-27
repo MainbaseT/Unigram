@@ -3719,6 +3719,10 @@ namespace Telegram.Views
             {
                 return ViewModel.TranslateService.CanTranslateText(poll.Poll.Question.Text);
             }
+            else if (message.Content is MessageChecklist checklist)
+            {
+                return ViewModel.TranslateService.CanTranslateText(checklist.List.Title.Text);
+            }
 
             return false;
         }

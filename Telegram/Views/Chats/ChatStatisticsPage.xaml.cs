@@ -160,6 +160,10 @@ namespace Telegram.Views.Chats
                     {
                         title.Text = "\uD83D\uDCCA " + poll.Poll.Question.Text;
                     }
+                    else if (message.Content is MessageChecklist checklist)
+                    {
+                        title.Text = "\u2611 " + checklist.List.Title.Text;
+                    }
                     else if (message.Content is MessageCall call)
                     {
                         title.Text = call.ToOutcomeText(message.IsOutgoing);
