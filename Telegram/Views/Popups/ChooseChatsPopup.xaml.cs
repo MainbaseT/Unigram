@@ -1505,6 +1505,15 @@ namespace Telegram.Views.Popups
         {
             if (chat == null)
             {
+                if (ForumList.ItemsSource is TopicListViewModel.ForumTopicsCollection forumTopicCollection && !ViewModel.SelectedTopics.ContainsKey(forumTopicCollection.Chat.Id))
+                {
+                    ChatsPanel.SelectedItems.Remove(forumTopicCollection.Chat);
+                }
+                else if (ForumList.ItemsSource is TopicListViewModel.DirectMessagesChatTopicsCollection directMessagesChatTopicCollection && !ViewModel.SelectedTopics.ContainsKey(directMessagesChatTopicCollection.Chat.Id))
+                {
+                    ChatsPanel.SelectedItems.Remove(directMessagesChatTopicCollection.Chat);
+                }
+
                 ShowHideForum(false);
                 return;
             }
