@@ -421,15 +421,15 @@ namespace Telegram.ViewModels
             var hasSpoiler = popup.SendWithSpoiler && !popup.IsFilesSelected;
             var highQuality = popup.SendHighQuality && !popup.IsFilesSelected;
 
+            var itemsView = GetItemsView(popup.Items, popup.IsAlbum, popup.IsFilesSelected, permissions.CanSendPhotos, permissions.CanSendVideos, permissions.CanSendAudios, permissions.CanSendDocuments);
+
             // If we're sending more than one message, send the caption by itself.
-            if (popup.ItemsView.Count > 1 && captionz != null)
+            if (itemsView.Count > 1 && captionz != null)
             {
                 await SendMessageAsync(captionz, null, options, reply);
                 captionz = null;
                 reply = null;
             }
-
-            var itemsView = GetItemsView(popup.Items, popup.IsAlbum, popup.IsFilesSelected, permissions.CanSendPhotos, permissions.CanSendVideos, permissions.CanSendAudios, permissions.CanSendDocuments);
 
             for (int i = 0; i < itemsView.Count; i++)
             {
