@@ -135,7 +135,7 @@
                                                Text="NEW"
                                                HorizontalAlignment="Left"
                                                VerticalAlignment="Bottom"
-                                               Margin="4,-4,0,4"
+                                               Margin="4,-4,0,0"
                                                CornerRadius="4"
                                                Grid.Column="2" />
 

@@ -211,6 +211,14 @@ namespace Telegram.Common
             return Task.CompletedTask;
         }
 
+        public static void ShowPromo(this INavigationService service, PremiumFeature feature, PremiumSource source = null)
+        {
+            if (service is TLNavigationService serviceEx)
+            {
+                serviceEx.ShowPromo(feature, source);
+            }
+        }
+
         public static void RemoveChatFromStack(this INavigationService service, long target)
         {
             ChatMessageTopic peer;

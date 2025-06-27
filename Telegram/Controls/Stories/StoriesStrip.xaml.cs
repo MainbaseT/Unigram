@@ -208,13 +208,7 @@ namespace Telegram.Controls.Stories
             }
             else if (ViewModel.IsPremiumAvailable && !ViewModel.IsPremium)
             {
-                var popup = new Telegram.Views.Premium.Popups.FeaturesPopup(ViewModel.ClientService, null, new[] { new PremiumFeatureUpgradedStories() }, null, null, null, null, new PremiumFeatureUpgradedStories());
-                await ViewModel.ShowPopupAsync(popup);
-
-                if (popup.ShouldPurchase)
-                {
-                    await ViewModel.NavigationService.ShowPromoAsync(new PremiumSourceStoryFeature(new PremiumStoryFeatureStealthMode()));
-                }
+                ViewModel.NavigationService.ShowPromo(new PremiumFeatureUpgradedStories(), new PremiumSourceStoryFeature(new PremiumStoryFeatureStealthMode()));
             }
         }
 

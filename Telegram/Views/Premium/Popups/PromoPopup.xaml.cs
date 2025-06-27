@@ -306,7 +306,7 @@ namespace Telegram.Views.Premium.Popups
             }
         }
 
-        private readonly Color[] _gradient = new Color[]
+        public static readonly Color[] Gradient = new Color[]
         {
             Color.FromArgb(0xFF, 0xef, 0x69, 0x22),
             Color.FromArgb(0xFF, 0xe9, 0x5a, 0x2c),
@@ -459,6 +459,12 @@ namespace Telegram.Views.Premium.Popups
                     subtitleValue = Strings.PremiumPreviewEffectsDescription;
                     badge = true;
                     break;
+                case PremiumFeatureChecklists:
+                    iconValue = Icons.CheckmarkSquareFilled;
+                    titleValue = Strings.PremiumPreviewTodo;
+                    subtitleValue = Strings.PremiumPreviewTodoDescription;
+                    badge = true;
+                    break;
             }
 
             var title = content.FindName("Title") as TextBlock;
@@ -467,16 +473,14 @@ namespace Telegram.Views.Premium.Popups
             var iconPanel = content.FindName("IconPanel") as Border;
             var badgeControl = content.FindName("Badge") as BadgeControl;
 
-            var index = Math.Min(args.ItemIndex, _gradient.Length - 1);
-
             title.Text = titleValue;
             subtitle.Text = subtitleValue;
             icon.Text = iconValue;
-            iconPanel.Background = new SolidColorBrush(_gradient[index]);
+            iconPanel.Background = new SolidColorBrush(ColorsHelper.CalculateColor(Gradient, (float)args.ItemIndex / (sender.Items.Count - 1)));
 
             if (badge)
             {
-                badgeControl.Background = new SolidColorBrush(_gradient[index]);
+                badgeControl.Background = iconPanel.Background;
                 badgeControl.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
             else

@@ -188,19 +188,72 @@ namespace Telegram.Common
             }
         }
 
-        public async void ShowLimitReached(PremiumLimitType type)
+        public void ShowLimitReached(PremiumLimitType type)
         {
-            await new LimitReachedPopup(this, _clientService, type).ShowQueuedAsync(XamlRoot);
+            ShowPopup(new LimitReachedPopup(this, _clientService, type));
         }
 
-        public async void ShowPromo(PremiumSource source = null)
+        public void ShowPromo(PremiumSource source = null)
         {
-            await ShowPopupAsync(new PromoPopup(), source);
+            ShowPopup(new PromoPopup(), source);
         }
 
         public Task ShowPromoAsync(PremiumSource source = null, ElementTheme requestedTheme = ElementTheme.Default)
         {
             return ShowPopupAsync(new PromoPopup(), source, requestedTheme: requestedTheme);
+        }
+
+        public async void ShowPromo(PremiumFeature feature, PremiumSource source = null)
+        {
+            PremiumSource premiumSource = new PremiumSourceFeature(feature);
+
+            var features = await ClientService.SendAsync(new GetPremiumFeatures(premiumSource)) as PremiumFeatures;
+            if (features == null)
+            {
+                return;
+            }
+
+            var appIcons = features.Features.FirstOrDefault(x => x is PremiumFeatureAppIcons);
+            if (appIcons != null)
+            {
+                features.Features.Remove(appIcons);
+            }
+
+            var archivedChats = features.Limits.FirstOrDefault(x => x.Type is PremiumLimitTypePinnedArchivedChatCount);
+            if (archivedChats != null)
+            {
+                features.Limits.Remove(archivedChats);
+            }
+
+            features.Limits.Add(new PremiumLimit(new PremiumLimitTypeConnectedAccounts(), 3, 4));
+
+            var state = await ClientService.SendAsync(new GetPremiumState()) as PremiumState;
+            if (state == null)
+            {
+                return;
+            }
+
+            var option = state.PaymentOptions.LastOrDefault();
+
+            var animations = state.Animations
+                .DistinctBy(x => x.Feature.GetType())
+                .ToDictionary(x => x.Feature.GetType(), y => y.Animation);
+
+            var stickers = await ClientService.SendAsync(new GetPremiumStickerExamples()) as Stickers;
+
+            var businessFeatures = await ClientService.SendAsync(new GetBusinessFeatures()) as BusinessFeatures;
+            if (businessFeatures == null)
+            {
+                return;
+            }
+
+            var popup = new FeaturesPopup(ClientService, option?.PaymentOption, features.Features, businessFeatures.Features, features.Limits, animations, stickers, feature);
+            await ShowPopupAsync(popup);
+
+            if (popup.ShouldPurchase)
+            {
+                ShowPromo(source ?? premiumSource);
+            }
         }
 
         public void NavigateToInvoice(MessageViewModel message)

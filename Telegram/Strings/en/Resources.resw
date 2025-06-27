@@ -998,6 +998,9 @@ Your prize is **{0} Stars**.</value>
   <data name="AddSubscriber" xml:space="preserve">
     <value>Add subscribers</value>
   </data>
+  <data name="AddTasks" xml:space="preserve">
+    <value>Add Tasks</value>
+  </data>
   <data name="AddToChannel" xml:space="preserve">
     <value>Add to Channel</value>
   </data>
@@ -3399,6 +3402,12 @@ Do you want to revoke verification?</value>
   <data name="CancelSending" xml:space="preserve">
     <value>Cancel Sending</value>
   </data>
+  <data name="CancelTodoAlertText" xml:space="preserve">
+    <value>Are you sure you want to discard this To-Do List?</value>
+  </data>
+  <data name="CancelTodoAlertTitle" xml:space="preserve">
+    <value>Discard To-Do List</value>
+  </data>
   <data name="CanJoin_one" xml:space="preserve">
     <value>{0} can join</value>
   </data>
@@ -5254,6 +5263,9 @@ If the number above is correct, please wait for the verification code.</value>
   </data>
   <data name="EditProfileChannelTitle" xml:space="preserve">
     <value>Personal channel</value>
+  </data>
+  <data name="EditToDo" xml:space="preserve">
+    <value>Edit</value>
   </data>
   <data name="EditTopic" xml:space="preserve">
     <value>Edit Topic</value>
@@ -9897,6 +9909,13 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PremiumPreviewTagsDescription2" xml:space="preserve">
     <value>Organize your Saved Messages with tags for quicker access.</value>
   </data>
+  <data name="PremiumPreviewTodo" xml:space="preserve">
+    <value>To-Do Lists</value>
+  </data>
+  <data name="PremiumPreviewTodoDescription" xml:space="preserve">
+    <value>Plan, assign, and complete tasks –
+seamlessly and efficiently.</value>
+  </data>
   <data name="PremiumPreviewTranslations" xml:space="preserve">
     <value>Real-Time Translation</value>
   </data>
@@ -12711,6 +12730,117 @@ in mini apps on Telegram.</value>
   </data>
   <data name="TodayAtFormattedWithToday" xml:space="preserve">
     <value>today at {0}</value>
+  </data>
+  <data name="Todo" xml:space="preserve">
+    <value>To-Do List</value>
+  </data>
+  <data name="TodoAddedMoreTasks" xml:space="preserve">
+    <value>un1 added “{1}”, “{2}” and {0} more to To-Do list.</value>
+  </data>
+  <data name="TodoAddedMoreTasksOut" xml:space="preserve">
+    <value>You added “{1}”, “{2}” and {0} more to To-Do list.</value>
+  </data>
+  <data name="TodoAddedOneTask" xml:space="preserve">
+    <value>un1 added “{0}” to To-Do list.</value>
+  </data>
+  <data name="TodoAddedOneTaskOut" xml:space="preserve">
+    <value>You added “{0}” to To-Do list.</value>
+  </data>
+  <data name="TodoAddedThreeTask" xml:space="preserve">
+    <value>un1 added “{0}”, “{1}” and “{2}” to To-Do list.</value>
+  </data>
+  <data name="TodoAddedThreeTaskOut" xml:space="preserve">
+    <value>You added “{0}”, “{1}” and “{2}” to To-Do list.</value>
+  </data>
+  <data name="TodoAddedTwoTask" xml:space="preserve">
+    <value>un1 added “{0}” and “{1}” to To-Do list.</value>
+  </data>
+  <data name="TodoAddedTwoTaskOut" xml:space="preserve">
+    <value>You added “{0}” and “{1}” to To-Do list.</value>
+  </data>
+  <data name="TodoAddTaskInfoMax" xml:space="preserve">
+    <value>You have added the maximum number of tasks.</value>
+  </data>
+  <data name="TodoAddTasksButton" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="TodoAddTasksTitle" xml:space="preserve">
+    <value>New Tasks</value>
+  </data>
+  <data name="TodoAllowAddingTasks" xml:space="preserve">
+    <value>Allow Others to Add Tasks</value>
+  </data>
+  <data name="TodoAllowMarkingDone" xml:space="preserve">
+    <value>Allow Others to Mark As Done</value>
+  </data>
+  <data name="TodoCompleted_one" xml:space="preserve">
+    <value>{1} of {0} completed</value>
+  </data>
+  <data name="TodoCompleted_other" xml:space="preserve">
+    <value>{1} of {0} completed</value>
+  </data>
+  <data name="TodoCompletedDateTimeAt" xml:space="preserve">
+    <value>Completed {0} at {1}</value>
+  </data>
+  <data name="TodoCompletedTodayAt" xml:space="preserve">
+    <value>Completed at {0}</value>
+  </data>
+  <data name="TodoCompletedYesterdayAt" xml:space="preserve">
+    <value>Completed yesterday at {0}</value>
+  </data>
+  <data name="TodoCompleteForbidden" xml:space="preserve">
+    <value>**{0}** has restricted others from editing this to-do list.</value>
+  </data>
+  <data name="TodoEditTasksButton" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="TodoEditTitle" xml:space="preserve">
+    <value>Edit To-Do List</value>
+  </data>
+  <data name="TodoItemsTitle" xml:space="preserve">
+    <value>To-Do List</value>
+  </data>
+  <data name="TodoNewTask" xml:space="preserve">
+    <value>Add a Task</value>
+  </data>
+  <data name="TodoNewTaskInfo_one" xml:space="preserve">
+    <value>You can add {0} more task.</value>
+  </data>
+  <data name="TodoNewTaskInfo_other" xml:space="preserve">
+    <value>You can add {0} more tasks.</value>
+  </data>
+  <data name="TodoTaskCompleted" xml:space="preserve">
+    <value>un1 marked “{0}” as done</value>
+  </data>
+  <data name="TodoTaskCompletedOut" xml:space="preserve">
+    <value>You marked “{0}” as done</value>
+  </data>
+  <data name="TodoTaskCompletedOutUnknown" xml:space="preserve">
+    <value>You marked task as done</value>
+  </data>
+  <data name="TodoTaskCompletedUnknown" xml:space="preserve">
+    <value>un1 marked task as done</value>
+  </data>
+  <data name="TodoTaskNotCompleted" xml:space="preserve">
+    <value>un1 marked “{0}” as not done</value>
+  </data>
+  <data name="TodoTaskNotCompletedOut" xml:space="preserve">
+    <value>You marked “{0}” as not done</value>
+  </data>
+  <data name="TodoTaskNotCompletedOutUnknown" xml:space="preserve">
+    <value>You marked task as not done</value>
+  </data>
+  <data name="TodoTaskNotCompletedUnknown" xml:space="preserve">
+    <value>un1 marked task as not done</value>
+  </data>
+  <data name="TodoTaskPlaceholder" xml:space="preserve">
+    <value>Task</value>
+  </data>
+  <data name="TodoTitle" xml:space="preserve">
+    <value>New To-Do List</value>
+  </data>
+  <data name="TodoTitlePlaceholder" xml:space="preserve">
+    <value>Title</value>
   </data>
   <data name="TooManyTries" xml:space="preserve">
     <value>Too many tries.
