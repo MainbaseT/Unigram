@@ -1240,27 +1240,13 @@ namespace Telegram.ViewModels
                 var markedAsDone = new List<int>();
                 var markedAsNotDone = new List<int>();
 
-                foreach (var item in checklist.List.Tasks)
+                if (task.Task.CompletionDate != 0)
                 {
-                    if (item.Id == task.Task.Id)
-                    {
-                        if (item.CompletionDate != 0)
-                        {
-                            markedAsNotDone.Add(item.Id);
-                        }
-                        else
-                        {
-                            markedAsDone.Add(item.Id);
-                        }
-                    }
-                    else if (item.CompletionDate != 0)
-                    {
-                        markedAsDone.Add(item.Id);
-                    }
-                    else
-                    {
-                        markedAsNotDone.Add(item.Id);
-                    }
+                    markedAsNotDone.Add(task.Task.Id);
+                }
+                else
+                {
+                    markedAsDone.Add(task.Task.Id);
                 }
 
                 ClientService.Send(new MarkChecklistTasksAsDone(task.Message.ChatId, task.Message.Id, markedAsDone, markedAsNotDone));
