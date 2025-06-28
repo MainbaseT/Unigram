@@ -42,7 +42,19 @@
         </Style>
     </UserControl.Resources>
 
-    <StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Border x:Name="ClipperBackground"
+                Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
+                BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
+                BorderThickness="0,0,0,1"
+                BackgroundSizing="InnerBorderEdge"
+                VerticalAlignment="Stretch"
+                Margin="0,0,0,-8" />
+
         <Grid x:Name="HeaderRoot"
               Padding="8,16,8,8"
               Margin="0,0,0,-8"
@@ -53,12 +65,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Border x:Name="HeaderClipper"
-                    Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
-                    Grid.RowSpan="4"
-                    Margin="-8,-16,-8,-8" />
-
-
             <Grid x:Name="HeaderBackground"
                   BackgroundSizing="OuterBorderEdge"
                   Style="{StaticResource HeaderRootStyle}"
@@ -138,16 +144,6 @@
                           Stretch="Uniform" />
                 </Grid>
             </Grid>
-
-            <Border x:Name="ClipperBackground"
-                    BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
-                    BorderThickness="0,0,0,1"
-                    BackgroundSizing="OuterBorderEdge"
-                    VerticalAlignment="Bottom"
-                    Margin="-8,0,-8,3"
-                    Height="96"
-                    Visibility="Collapsed"
-                    Grid.RowSpan="3" />
 
             <Grid x:Name="TitleRoot"
                   VerticalAlignment="Bottom"
@@ -317,7 +313,9 @@
             </controls:ProfileButtonsGrid>
         </Grid>
 
-        <StackPanel x:Name="ControlsRoot">
+        <StackPanel x:Name="ControlsRoot"
+                    Canvas.ZIndex="-1"
+                    Grid.Row="1">
             <StackPanel x:Name="PersonalChannelRoot"
                         Visibility="Collapsed">
                 <Grid Margin="24,32,24,-8"
@@ -601,5 +599,5 @@
                 </controls:BadgeButton>
             </controls:HeaderedControl>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </UserControl>

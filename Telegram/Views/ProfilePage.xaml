@@ -33,23 +33,19 @@
 
                     <Grid x:Name="HeaderPanel"
                           Opacity="{x:Bind ViewModel.Items.Count, Mode=OneWay}"
-                          Canvas.ZIndex="1">
+                          Canvas.ZIndex="2">
                         <Grid CornerRadius="4"
                               MaxWidth="1000"
                               Margin="24,0">
                             <Border x:Name="CardBackground"
-                                    BackgroundSizing="OuterBorderEdge"
-                                    Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="4" />
-                            <Border x:Name="CardBackground2"
                                     BackgroundSizing="OuterBorderEdge"
                                     Background="{ThemeResource SettingsItemBackground}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
                                     CornerRadius="4" />
                             <controls:TopNavView x:Name="Navigation"
+                                                 IsItemClickEnabled="True"
+                                                 ItemClick="Navigation_ItemClick"
                                                  SelectionChanged="Navigation_SelectionChanged"
                                                  ItemContextRequested="Navigation_ItemContextRequested"
                                                  PrepareContainerForItem="Navigation_PrepareContainerForItem"
@@ -57,7 +53,14 @@
                                                  SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}"
                                                  DisplayMemberPath="Text"
                                                  Height="40"
-                                                 Margin="8,4" />
+                                                 Margin="8,4">
+                                <controls:TopNavView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Center" />
+                                    </ItemsPanelTemplate>
+                                </controls:TopNavView.ItemsPanel>
+                            </controls:TopNavView>
                         </Grid>
 
                         <messages:MessageService x:Name="DateHeader"

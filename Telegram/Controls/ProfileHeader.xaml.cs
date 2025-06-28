@@ -282,8 +282,6 @@ namespace Telegram.Controls
                 return;
             }
 
-            ClipperBackground.RequestedTheme = sender.ActualTheme;
-            HeaderClipper.RequestedTheme = sender.ActualTheme;
             TitleRoot.RequestedTheme = !_backgroundCollapsed ? sender.ActualTheme : HeaderTheme;
             SubtitleRoot.RequestedTheme = !_backgroundCollapsed ? sender.ActualTheme : HeaderTheme;
 
@@ -331,7 +329,7 @@ namespace Telegram.Controls
             Pattern.Update((float)((verticalOffset) / HeaderRoot.ActualHeight));
 
             ShowHideBackground(verticalOffset >= HeaderRoot.ActualHeight - 48);
-            ShowHideSubtitle(verticalOffset >= HeaderRoot.ActualHeight - 48);
+            ShowHideSubtitle(verticalOffset >= ActualHeight - 48);
         }
 
         private bool _subtitleCollapsed = true;
@@ -371,24 +369,15 @@ namespace Telegram.Controls
             }
 
             _backgroundCollapsed = !show;
-            ClipperBackground.Visibility = Visibility.Visible;
-            ClipperBackground.RequestedTheme = ActualTheme;
-            HeaderClipper.RequestedTheme = ActualTheme;
             TitleRoot.RequestedTheme = show ? ActualTheme : HeaderTheme;
             SubtitleRoot.RequestedTheme = show ? ActualTheme : HeaderTheme;
 
-            var subtitleTab = ElementComposition.GetElementVisual(ClipperBackground);
             var subtitlePro = ElementComposition.GetElementVisual(HeaderBackground);
-
-            var opacityIn = subtitleTab.Compositor.CreateScalarKeyFrameAnimation();
-            opacityIn.InsertKeyFrame(0, show ? 0 : 1);
-            opacityIn.InsertKeyFrame(1, show ? 1 : 0);
 
             var opacityOut = subtitlePro.Compositor.CreateScalarKeyFrameAnimation();
             opacityOut.InsertKeyFrame(0, show ? 1 : 0);
             opacityOut.InsertKeyFrame(1, show ? 0 : 1);
 
-            subtitleTab.StartAnimation("Opacity", opacityIn);
             subtitlePro.StartAnimation("Opacity", opacityOut);
         }
 
@@ -462,12 +451,22 @@ namespace Telegram.Controls
             subtitleScale.SetReferenceParameter("scrollViewer", properties);
             subtitleScale.SetReferenceParameter("_", Properties);
 
+            var clipperExpBranch1 = $"-{translationExp} - ((root.Size.Y - 88))";
+            var clipperExpBranch2 = $"-{translationExp} - (root.Size.Y - 48)";
+            var clipperExpDiff = $"{clipperExpBranch2} + -((target.Size.Y - 48) - -{translationExp}) / 64 * 256";
+            var clipperExpClamp = $"min(target.Size.Y - root.Size.Y + 64, {clipperExpDiff})";
+            var clipperTranslation = root.Compositor.CreateExpressionAnimation($"{translationExp} < 0 ? -{translationExp} > root.Size.Y - 48 && -{translationExp} < target.Size.Y - 48 ? {clipperExpBranch2} : -{translationExp} < target.Size.Y - 48 ? 0 : -{translationExp} < target.Size.Y - 24 ? {clipperExpClamp} : {clipperExpBranch1} : -{translationExp}");
+            clipperTranslation.SetReferenceParameter("scrollViewer", properties);
+            clipperTranslation.SetReferenceParameter("_", Properties);
+            clipperTranslation.SetReferenceParameter("root", root);
+            clipperTranslation.SetReferenceParameter("target", target);
+
             controls.Clip = properties.Compositor.CreateInsetClip();
             controls.Clip.StartAnimation("TopInset", controlsClip);
             root.StartAnimation("Translation.Y", rootTranslation);
             buttons.StartAnimation("Translation.Y", buttonsTranslation);
             buttons.StartAnimation("Opacity", buttonsOpacity);
-            background.StartAnimation("Translation.Y", titleTranslation);
+            background.StartAnimation("Translation.Y", clipperTranslation);
             title.StartAnimation("Translation.Y", titleTranslation);
             title.StartAnimation("Scale", titleScale);
             subtitle.StartAnimation("Translation.Y", titleTranslation);

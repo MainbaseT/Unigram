@@ -85,16 +85,24 @@ namespace Telegram.Views
         {
             var properties = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
             var visual = ElementComposition.GetElementVisual(HeaderPanel);
+            var border = ElementComposition.GetElementVisual(CardBackground);
 
             ElementCompositionPreview.SetIsTranslationEnabled(HeaderPanel, true);
             ElementCompositionPreview.SetIsTranslationEnabled(BackButton, true);
 
             var translation = visual.Compositor.CreateExpressionAnimation(
-                "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -(properties.ActualHeight - 8) ? 0 : -scrollViewer.Translation.Y - (properties.ActualHeight - 8) : -scrollViewer.Translation.Y");
+                "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -(properties.ActualHeight + 8) ? 0 : -scrollViewer.Translation.Y - (properties.ActualHeight + 8) : -scrollViewer.Translation.Y");
             translation.SetReferenceParameter("scrollViewer", properties);
             translation.SetReferenceParameter("properties", ProfileHeader.Properties);
 
+            //var fadeIn = visual.Compositor.CreateExpressionAnimation(
+            //    "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -(properties.ActualHeight - 16) ? 0 : ((-scrollViewer.Translation.Y - (properties.ActualHeight - 16)) / 16) : 1");
+            //fadeIn.SetReferenceParameter("scrollViewer", properties);
+            //fadeIn.SetReferenceParameter("properties", ProfileHeader.Properties);
+
             visual.StartAnimation("Translation.Y", translation);
+
+            //border.StartAnimation("Opacity", fadeOut);
         }
 
         public void OnBackRequested(BackRequestedRoutedEventArgs args)
@@ -113,6 +121,11 @@ namespace Telegram.Views
             if (ViewModel.SelectedItem is ProfileTabItem tab)
             {
                 MediaFrame.Navigate(tab.Type, tab.Parameter, new SuppressNavigationTransitionInfo());
+            }
+
+            if (ViewModel.IsSavedMessages)
+            {
+                ShowHideSubtitle(true);
             }
 
             var properties = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
@@ -364,12 +377,12 @@ namespace Telegram.Views
             UpdateBackButton();
 
             ViewModel.HeaderHeight = Math.Max(e.NewSize.Height, 48 + 10);
-            MediaFrame.MinHeight = ScrollingHost.ActualHeight + e.NewSize.Height - 104;
+            MediaFrame.MinHeight = ScrollingHost.ActualHeight + e.NewSize.Height - 88;
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            MediaFrame.MinHeight = Header.ActualHeight + e.NewSize.Height - 104;
+            MediaFrame.MinHeight = Header.ActualHeight + e.NewSize.Height - 88;
 
             if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
             {
@@ -386,6 +399,7 @@ namespace Telegram.Views
             if (ProfileHeader.Visibility == Visibility.Visible && !ViewModel.IsSavedMessages)
             {
                 ProfileHeader.ViewChanged(ScrollingHost.VerticalOffset);
+                ShowHideSubtitle(ScrollingHost.VerticalOffset >= ProfileHeader.ActualHeight - 48);
             }
 
             if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
@@ -426,6 +440,26 @@ namespace Telegram.Views
             ShowHideDateHeader(ScrollingHost.VerticalOffset > ProfileHeader.ActualHeight, true);
         }
 
+        private bool _subtitleCollapsed = true;
+
+        private void ShowHideSubtitle(bool show)
+        {
+            if (_subtitleCollapsed != show)
+            {
+                return;
+            }
+
+            _subtitleCollapsed = !show;
+
+            var cardBackground = ElementComposition.GetElementVisual(CardBackground);
+
+            var opacityOut = cardBackground.Compositor.CreateScalarKeyFrameAnimation();
+            opacityOut.InsertKeyFrame(0, show ? 1 : 0);
+            opacityOut.InsertKeyFrame(1, show ? 0 : 1);
+
+            cardBackground.StartAnimation("Opacity", opacityOut);
+        }
+
         private bool _loadingMore;
 
         private async void LoadMore(ListViewBase scrollingHost)
@@ -460,6 +494,11 @@ namespace Telegram.Views
             {
                 LoadMore(scrollingHost);
             }
+        }
+
+        private void Navigation_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            ScrollingHost.ChangeView(null, ProfileHeader.ActualHeight - 48 + 24, null);
         }
 
         private int _prevSelectedIndex = -1;
