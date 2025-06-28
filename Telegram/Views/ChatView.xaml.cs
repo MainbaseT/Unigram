@@ -25,6 +25,7 @@ using Telegram.Controls.Drawers;
 using Telegram.Controls.Gallery;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
+using Telegram.Controls.Messages.Content;
 using Telegram.Controls.Stories;
 using Telegram.Controls.Views;
 using Telegram.Converters;
@@ -2618,6 +2619,8 @@ namespace Telegram.Views
             var selectionStart = -1;
             var selectionEnd = -1;
 
+            ChecklistTask checklistTask = null;
+
             if (args.TryGetPosition(XamlRoot.Content, out Point point))
             {
                 var children = VisualTreeHelper.FindElementsInHostCoordinates(point, element);
@@ -2666,6 +2669,12 @@ namespace Telegram.Views
                 {
                     ProfilePhoto_ContextRequested(message, profilePicture, args);
                     return;
+                }
+
+                var checklistTaskControl = children.FirstOrDefault(x => x is ChecklistTaskContent) as ChecklistTaskContent;
+                if (checklistTaskControl != null)
+                {
+                    checklistTask = checklistTaskControl.Task;
                 }
 
                 if (message.Content is MessageAlbum album)
@@ -2889,11 +2898,6 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(ViewModel.EditMessage, message, message.Content is MessageChecklist ? Strings.EditToDo : Strings.Edit, Icons.Edit);
                 }
 
-                if (properties.CanAddTasks)
-                {
-                    flyout.CreateFlyoutItem(ViewModel.AddChecklistTask, message, Strings.AddTasks, Icons.AddCircle);
-                }
-
                 if (ViewModel.IsForum)
                 {
                     flyout.CreateFlyoutItem(NavigateToMessageTopic, message, Strings.ViewTopic, Icons.ChatMultiple);
@@ -2931,6 +2935,62 @@ namespace Telegram.Views
                 if (MessageFactCheck_Loaded(message, properties))
                 {
                     flyout.CreateFlyoutItem(ViewModel.FactCheckMessage, message, message.FactCheck == null ? Strings.AddFactCheck : Strings.EditFactCheck, Icons.CheckmarkStarburst);
+                }
+
+
+                // Polls
+                flyout.CreateFlyoutItem(MessageUnvotePoll_Loaded, ViewModel.UnvotePoll, message, Strings.Unvote, Icons.ArrowUndo);
+
+                if (MessageStopPoll_Loaded(message, properties))
+                {
+                    flyout.CreateFlyoutItem(ViewModel.StopPoll, message, Strings.StopPoll, Icons.LockClosed);
+                }
+
+                // Checklists
+                if (properties.CanAddTasks)
+                {
+                    flyout.CreateFlyoutItem(ViewModel.AddChecklistTask, message, Strings.AddTasks, Icons.AddCircle);
+                }
+
+                if (checklistTask != null)
+                {
+                    var checklistTaskItem = new MenuFlyoutSubItem();
+                    checklistTaskItem.Text = Strings.TodoMenuTabTask;
+                    checklistTaskItem.Icon = MenuFlyoutHelper.CreateIcon(Icons.CheckmarkSquare);
+
+                    if (checklistTask.CompletionDate != 0)
+                    {
+                        var textBlock = new TextBlock();
+                        textBlock.Text = Formatter.CompletedDate(checklistTask.CompletionDate);
+                        textBlock.FontSize = 12;
+
+                        var placeholder = new MenuFlyoutContent();
+                        placeholder.Content = textBlock;
+                        placeholder.FontSize = 12;
+                        placeholder.Padding = new Thickness(12, 4, 12, 4);
+                        placeholder.HorizontalAlignment = HorizontalAlignment.Left;
+
+                        checklistTaskItem.Items.Add(placeholder);
+                        checklistTaskItem.CreateFlyoutSeparator();
+                    }
+
+                    var messageTask = new MessageChecklistTask(message, checklistTask);
+
+                    if (properties.CanMarkTasksAsDone)
+                    {
+                        // TODO:
+                        checklistTaskItem.CreateFlyoutItem(ViewModel.MarkChecklistTask, messageTask, checklistTask.CompletionDate != 0 ? "Uncheck" : "Check", checklistTask.CompletionDate != 0 ? Icons.DismissCircle : Icons.CheckmarkCircle);
+                    }
+
+                    checklistTaskItem.CreateFlyoutItem(ViewModel.CopyText, checklistTask.Text, Strings.Copy, Icons.DocumentCopy);
+
+                    if (properties.CanBeEdited)
+                    {
+                        checklistTaskItem.CreateFlyoutItem(ViewModel.EditChecklistTask, messageTask, Strings.TodoEditItem, Icons.Edit);
+                        checklistTaskItem.CreateFlyoutItem(ViewModel.DeleteChecklistTask, messageTask, Strings.TodoDeleteItem, Icons.Delete, destructive: true);
+                    }
+
+                    flyout.Items.Add(checklistTaskItem);
                 }
 
                 if (MessageDelete_Loaded(message, properties))
@@ -2985,14 +3045,6 @@ namespace Telegram.Views
                 // Contacts
                 flyout.CreateFlyoutItem(MessageAddContact_Loaded, ViewModel.AddToContacts, message, Strings.AddContactTitle, Icons.Person);
                 //CreateFlyoutItem(ref flyout, MessageSaveDownload_Loaded, ViewModel.MessageSaveDownloadCommand, messageCommon, Strings.SaveToDownloads);
-
-                // Polls
-                flyout.CreateFlyoutItem(MessageUnvotePoll_Loaded, ViewModel.UnvotePoll, message, Strings.Unvote, Icons.ArrowUndo);
-
-                if (MessageStopPoll_Loaded(message, properties))
-                {
-                    flyout.CreateFlyoutItem(ViewModel.StopPoll, message, Strings.StopPoll, Icons.LockClosed);
-                }
 
                 if (Constants.DEBUG)
                 {

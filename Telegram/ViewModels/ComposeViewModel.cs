@@ -806,34 +806,29 @@ namespace Telegram.ViewModels
         {
             if (IsPremium)
             {
-                await SendChecklistAsync();
+                var popup = new CreateChecklistPopup(ClientService);
+
+                var confirm = await ShowPopupAsync(popup);
+                if (confirm != ContentDialogResult.Primary)
+                {
+                    return;
+                }
+
+                var options = await PickMessageSendOptionsAsync();
+                if (options == null)
+                {
+                    return;
+                }
+
+                var reply = GetReply(true);
+                var input = new InputMessageChecklist(new InputChecklist(popup.Title, popup.Tasks, popup.OthersCanAddTasks, popup.OthersCanMarkTasksAsDone));
+
+                await SendMessageAsync(reply, input, options);
             }
             else
             {
                 NavigationService.ShowPromo(new PremiumFeatureChecklists());
             }
-        }
-
-        protected async Task SendChecklistAsync()
-        {
-            var popup = new CreateChecklistPopup(ClientService, null, false, false);
-
-            var confirm = await ShowPopupAsync(popup);
-            if (confirm != ContentDialogResult.Primary)
-            {
-                return;
-            }
-
-            var options = await PickMessageSendOptionsAsync();
-            if (options == null)
-            {
-                return;
-            }
-
-            var reply = GetReply(true);
-            var input = new InputMessageChecklist(new InputChecklist(popup.Title, popup.Tasks, popup.OthersCanAddTasks, popup.OthersCanMarkTasksAsDone));
-
-            await SendMessageAsync(reply, input, options);
         }
 
         private async Task<Object> SendGroupedAsync(IList<StorageMedia> items, InputMessageReplyTo reply, FormattedText caption, MessageSendOptions options, bool forceDocuments, bool captionAboveMedia, bool hasSpoiler, bool highQuality, long starCount = 0)

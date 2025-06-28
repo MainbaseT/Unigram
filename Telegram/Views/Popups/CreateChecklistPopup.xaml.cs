@@ -40,11 +40,11 @@ namespace Telegram.Views.Popups
         private readonly Checklist _checklist;
 
         public CreateChecklistPopup(IClientService clientService)
-            : this(clientService, null, false, false)
+            : this(clientService, null, true, false, null)
         {
         }
 
-        public CreateChecklistPopup(IClientService clientService, Checklist checklist, bool canBeEdited, bool addTask)
+        public CreateChecklistPopup(IClientService clientService, Checklist checklist, bool canBeEdited, bool addTask, ChecklistTask taskToEdit)
         {
             InitializeComponent();
 
@@ -87,7 +87,7 @@ namespace Telegram.Views.Popups
 
                 foreach (var task in checklist.Tasks)
                 {
-                    Items.Add(new ChecklistTaskViewModel(task.Id, task.Text, !canBeEdited, false));
+                    Items.Add(new ChecklistTaskViewModel(task.Id, task.Text, !canBeEdited, task.Id == taskToEdit?.Id));
                 }
 
                 if (addTask)
@@ -126,30 +126,38 @@ namespace Telegram.Views.Popups
             }
         }
 
-        public IList<InputChecklistTask> Tasks
-        {
-            get
-            {
-                var tasks = new List<InputChecklistTask>();
-                var nextTaskId = Items.Max(x => x.Id);
+        public IList<InputChecklistTask> Tasks => GetTasks(false);
 
-                foreach (var item in Items)
+        public IList<InputChecklistTask> AddedTasks => GetTasks(true);
+
+        private IList<InputChecklistTask> GetTasks(bool addedTasksOnly)
+        {
+            var tasks = new List<InputChecklistTask>();
+            var nextTaskId = Items.Max(x => x.Id);
+
+            foreach (var item in Items)
+            {
+                if (string.IsNullOrEmpty(item.Text.Text))
                 {
-                    if (string.IsNullOrEmpty(item.Text.Text))
+                    continue;
+                }
+
+                if (item.Id == -1)
+                {
+                    tasks.Add(new InputChecklistTask(++nextTaskId, item.Text));
+                }
+                else
+                {
+                    if (addedTasksOnly)
                     {
                         continue;
                     }
 
-                    if (item.Id == -1)
-                    {
-                        item.Id = ++nextTaskId;
-                    }
-
                     tasks.Add(new InputChecklistTask(item.Id, item.Text));
                 }
-
-                return tasks;
             }
+
+            return tasks;
         }
 
         public bool OthersCanMarkTasksAsDone => OthersCanMarkTasksAsDoneButton.IsChecked == true;

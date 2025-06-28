@@ -48,6 +48,19 @@ namespace Telegram.ViewModels
         }
     }
 
+    public partial class MessageChecklistTask
+    {
+        public MessageViewModel Message { get; set; }
+
+        public ChecklistTask Task { get; set; }
+
+        public MessageChecklistTask(MessageViewModel message, ChecklistTask task)
+        {
+            Message = message;
+            Task = task;
+        }
+    }
+
     public partial class DialogViewModel
     {
         #region Reply
@@ -792,6 +805,11 @@ namespace Telegram.ViewModels
             }
         }
 
+        public void CopyText(FormattedText text)
+        {
+            MessageHelper.CopyText(XamlRoot, text);
+        }
+
         #endregion
 
         #region Copy media
@@ -869,7 +887,12 @@ namespace Telegram.ViewModels
 
         public void EditMessage(MessageViewModel message)
         {
-            if (message.Content is MessageAlbum album)
+            if (message.Content is MessageChecklist)
+            {
+                EditChecklist(message);
+                return;
+            }
+            else if (message.Content is MessageAlbum album)
             {
                 message = null;
 
@@ -1170,6 +1193,112 @@ namespace Telegram.ViewModels
             var language = LanguageIdentification.IdentifyLanguage(text);
             var popup = new TranslatePopup(_translateService, chatId, messageId, text, language, Settings.Translate.To, !message.CanBeSaved);
             await ShowPopupAsync(popup);
+        }
+
+        #endregion
+
+        #region Checklists
+
+        public void EditChecklist(MessageViewModel message)
+        {
+            if (message.Content is MessageChecklist checklist)
+            {
+                EditChecklist(message, checklist.List, false, null);
+            }
+        }
+
+        public void EditChecklistTask(MessageChecklistTask task)
+        {
+            if (task.Message.Content is MessageChecklist checklist)
+            {
+                EditChecklist(task.Message, checklist.List, false, task.Task);
+            }
+        }
+
+        public void DeleteChecklistTask(MessageChecklistTask task)
+        {
+            if (task.Message.Content is MessageChecklist checklist)
+            {
+                var tasks = new List<InputChecklistTask>();
+
+                foreach (var item in checklist.List.Tasks)
+                {
+                    if (item.Id != task.Task.Id)
+                    {
+                        tasks.Add(new InputChecklistTask(item.Id, item.Text));
+                    }
+                }
+
+                ClientService.Send(new EditMessageChecklist(task.Message.ChatId, task.Message.Id, null, new InputChecklist(checklist.List.Title, tasks, checklist.List.OthersCanAddTasks, checklist.List.OthersCanMarkTasksAsDone)));
+            }
+        }
+
+        public void MarkChecklistTask(MessageChecklistTask task)
+        {
+            if (task.Message.Content is MessageChecklist checklist)
+            {
+                var markedAsDone = new List<int>();
+                var markedAsNotDone = new List<int>();
+
+                foreach (var item in checklist.List.Tasks)
+                {
+                    if (item.Id == task.Task.Id)
+                    {
+                        if (item.CompletionDate != 0)
+                        {
+                            markedAsNotDone.Add(item.Id);
+                        }
+                        else
+                        {
+                            markedAsDone.Add(item.Id);
+                        }
+                    }
+                    else if (item.CompletionDate != 0)
+                    {
+                        markedAsDone.Add(item.Id);
+                    }
+                    else
+                    {
+                        markedAsNotDone.Add(item.Id);
+                    }
+                }
+
+                ClientService.Send(new MarkChecklistTasksAsDone(task.Message.ChatId, task.Message.Id, markedAsDone, markedAsNotDone));
+            }
+        }
+
+        public void AddChecklistTask(MessageViewModel message)
+        {
+            if (message.Content is MessageChecklist checklist)
+            {
+                EditChecklist(message, checklist.List, true, null);
+            }
+        }
+
+        private async void EditChecklist(MessageViewModel message, Checklist checklist, bool addTask, ChecklistTask taskToEdit)
+        {
+            var response = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
+            if (response is not MessageProperties properties)
+            {
+                return;
+            }
+
+            var popup = new CreateChecklistPopup(ClientService, checklist, properties.CanBeEdited, addTask, taskToEdit);
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            if (properties.CanBeEdited)
+            {
+                ClientService.Send(new EditMessageChecklist(message.ChatId, message.Id, null, new InputChecklist(popup.Title, popup.Tasks, popup.OthersCanAddTasks, popup.OthersCanMarkTasksAsDone)));
+            }
+            else
+            {
+                ClientService.Send(new AddChecklistTasks(message.ChatId, message.Id, popup.AddedTasks));
+            }
         }
 
         #endregion

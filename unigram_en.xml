@@ -12328,5 +12328,12 @@
     <string name="CancelTodoAlertTitle">Discard To-Do List</string>
     <string name="TodoCantForward">Sorry, to-do lists can’t be forwarded to channels.</string>
     <string name="TodoCantForwardSecretChat">Sorry, to-do lists can’t be forwarded to secret chats.</string>
+    <string name="TodoPremiumRequired">Only **Telegram Premium** subscribers can mark tasks as done.</string>
+    <string name="MessageTodo">To-Do</string>
+    <string name="MessageTodoList">To-Do List</string>
+    <string name="MessageGroupTodoList">Group To-Do List</string>
+    <string name="TodoMenuTabTask">Task</string>
+    <string name="TodoDeleteItem">Delete Item</string>
+    <string name="TodoEditItem">Edit Item</string>
 
 </resources>
