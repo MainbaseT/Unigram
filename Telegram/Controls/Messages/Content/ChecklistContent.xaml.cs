@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Telegram.Common;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
@@ -119,6 +120,23 @@ namespace Telegram.Controls.Messages.Content
             }
 
             Completed.Text = Locale.Declension(Strings.R.TodoCompleted, checklist.List.Tasks.Count, completed);
+        }
+
+        public Rect Highlight(MessageBubbleHighlightOptions options)
+        {
+            foreach (var child in Tasks.Children)
+            {
+                if (child is ChecklistTaskContent button
+                    && button.Task.Id == options.ChecklistTaskId)
+                {
+                    var transform = child.TransformToVisual(this);
+                    var point = transform.TransformPoint(new Point());
+
+                    return new Rect(point.X, point.Y, button.ActualWidth, button.ActualHeight);
+                }
+            }
+
+            return Rect.Empty;
         }
 
         public void Recycle()

@@ -42,10 +42,11 @@ namespace Telegram.Controls.Messages
 {
     public partial class MessageBubbleHighlightOptions
     {
-        public MessageBubbleHighlightOptions(long messageId, TextQuote quote, bool moveFocus = true, bool highlight = true)
+        public MessageBubbleHighlightOptions(long messageId, TextQuote quote, int checklistTaskId, bool moveFocus = true, bool highlight = true)
         {
             MessageId = messageId;
             Quote = quote;
+            ChecklistTaskId = checklistTaskId;
             MoveFocus = moveFocus;
             Highlight = highlight;
         }
@@ -57,6 +58,8 @@ namespace Telegram.Controls.Messages
         }
 
         public long MessageId { get; }
+
+        public int ChecklistTaskId { get; } = -1;
 
         public TextQuote Quote { get; }
 
@@ -2812,6 +2815,17 @@ namespace Telegram.Controls.Messages
             if (Media.Child is AlbumContent album)
             {
                 var area = album.Highlight(options);
+                if (!area.IsEmpty)
+                {
+                    var point = Media.TransformToVector2(ContentPanel);
+                    var offset = area.ToOffset();
+                    solid.Offset = new Vector3(offset.X, point.Y + offset.Y, 0);
+                    solid.Size = area.ToSizeF();
+                }
+            }
+            else if (Media.Child is ChecklistContent checklist && options.ChecklistTaskId != -1)
+            {
+                var area = checklist.Highlight(options);
                 if (!area.IsEmpty)
                 {
                     var point = Media.TransformToVector2(ContentPanel);
