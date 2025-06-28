@@ -1745,6 +1745,8 @@ namespace Telegram.Views
                     pollsAllowed = user.Type is UserTypeBot || user.Id == ViewModel.ClientService.Options.MyId;
                 }
 
+                var checklistsAllowed = chat.Type is not ChatTypeSecret and not ChatTypeSupergroup { IsChannel: true };
+
                 if (photoRights || videoRights)
                 {
                     flyout.CreateFlyoutItem(ViewModel.SendMedia, Strings.PhotoOrVideo, Icons.Image);
@@ -1764,11 +1766,11 @@ namespace Telegram.Views
                 if (pollRights && pollsAllowed)
                 {
                     flyout.CreateFlyoutItem(ViewModel.SendPoll, Strings.Poll, Icons.Poll);
+                }
 
-                    if (ViewModel.IsPremium || ViewModel.IsPremiumAvailable)
-                    {
-                        flyout.CreateFlyoutItem(ViewModel.SendChecklist, Strings.Todo, Icons.CheckmarkSquare);
-                    }
+                if (pollRights && checklistsAllowed && (ViewModel.IsPremium || ViewModel.IsPremiumAvailable))
+                {
+                    flyout.CreateFlyoutItem(ViewModel.SendChecklist, Strings.Todo, Icons.CheckmarkSquare);
                 }
 
                 if (messageRights)
