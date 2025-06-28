@@ -247,6 +247,8 @@ namespace Telegram.Common
                 return;
             }
 
+            feature = features.Features.FirstOrDefault(x => x.GetType() == feature.GetType());
+
             var popup = new FeaturesPopup(ClientService, option?.PaymentOption, features.Features, businessFeatures.Features, features.Limits, animations, stickers, feature);
             await ShowPopupAsync(popup);
 

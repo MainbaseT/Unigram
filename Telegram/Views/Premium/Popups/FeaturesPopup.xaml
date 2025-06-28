@@ -18,8 +18,9 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid VerticalAlignment="Top"
-              Width="320"
-              Height="320">
+              HorizontalAlignment="Stretch"
+              Height="320"
+              CornerRadius="8,8,0,0">
             <Grid.Background>
                 <LinearGradientBrush StartPoint="1,0"
                                      EndPoint="0,1">
