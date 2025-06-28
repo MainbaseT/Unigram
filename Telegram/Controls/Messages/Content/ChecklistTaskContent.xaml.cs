@@ -1,0 +1,283 @@
+//
+// Copyright Fela Ameghino & Contributors 2015-2025
+//
+// Distributed under the GNU General Public License v3.0. (See accompanying
+// file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
+//
+using Microsoft.UI.Xaml.Controls;
+using System.Numerics;
+using Telegram.Assets.Icons;
+using Telegram.Composition;
+using Telegram.Navigation;
+using Telegram.Td.Api;
+using Telegram.ViewModels;
+using Windows.UI.Composition;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
+
+namespace Telegram.Controls.Messages.Content
+{
+    public sealed partial class ChecklistTaskContent : ToggleButtonEx
+    {
+        private MessageViewModel _message;
+        private Checklist _checklist;
+        private ChecklistTask _task;
+
+        public ChecklistTaskContent()
+        {
+            DefaultStyleKey = typeof(ChecklistTaskContent);
+
+            Connected += OnLoaded;
+            Disconnected += OnUnloaded;
+        }
+
+        #region InitializeComponent
+
+        private ProfilePicture Photo;
+        private Ellipse CheckmarkNotDone;
+        private Path CheckmarkDone;
+        private Border CheckmarkIcon;
+        private RichTextBlock TextText;
+        private Paragraph Text;
+        private TextBlock UserText;
+        private bool _templateApplied;
+
+        protected override void OnApplyTemplate()
+        {
+            Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
+            CheckmarkNotDone = GetTemplateChild(nameof(CheckmarkNotDone)) as Ellipse;
+            CheckmarkDone = GetTemplateChild(nameof(CheckmarkDone)) as Path;
+            CheckmarkIcon = GetTemplateChild(nameof(CheckmarkIcon)) as Border;
+            TextText = GetTemplateChild(nameof(TextText)) as RichTextBlock;
+            Text = GetTemplateChild(nameof(Text)) as Paragraph;
+            UserText = GetTemplateChild(nameof(UserText)) as TextBlock;
+
+            ElementCompositionPreview.SetIsTranslationEnabled(Photo, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(TextText, true);
+
+            _templateApplied = true;
+
+            if (_message != null && _checklist != null && _task != null)
+            {
+                UpdateChecklistTask(_message, _checklist, _task);
+            }
+        }
+
+        #endregion
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _selectionStrokeBrush?.Register();
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            _selectionStrokeBrush?.Unregister();
+        }
+
+        public ChecklistTask Task { get; private set; }
+
+        private long _chatId;
+        private long _messageId;
+        private int _taskId;
+        private long _completedByUserId;
+
+        public void UpdateChecklistTask(MessageViewModel message, Checklist checklist, ChecklistTask task)
+        {
+            _message = message;
+            _checklist = checklist;
+            _task = task;
+
+            if (!_templateApplied)
+            {
+                return;
+            }
+
+            var recycled = _chatId == message.ChatId
+                && _messageId == message.Id
+                && _taskId == task.Id;
+
+            IsChecked = task.CompletionDate != 0;
+            IsEnabled = true;
+            Task = task;
+
+            if (checklist.CanMarkTasksAsDone || message.SchedulingState != null)
+            {
+                CreateIcon();
+
+                CheckmarkNotDone.Visibility = Visibility.Collapsed;
+                CheckmarkDone.Visibility = Visibility.Collapsed;
+                CheckmarkIcon.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CheckmarkNotDone.Visibility = task.CompletionDate != 0 ? Visibility.Collapsed : Visibility.Visible;
+                CheckmarkDone.Visibility = task.CompletionDate != 0 ? Visibility.Visible : Visibility.Collapsed;
+                CheckmarkIcon.Visibility = Visibility.Collapsed;
+            }
+
+            var show = checklist.CanMarkTasksAsDone && task.CompletedByUserId != 0;
+
+            if (show && message.ClientService.TryGetUser(task.CompletedByUserId, out User user))
+            {
+                Photo.SetUser(message.ClientService, user, 20);
+                UserText.Text = user.FullName();
+            }
+
+            var photo = ElementComposition.GetElementVisual(Photo);
+            var text = ElementComposition.GetElementVisual(TextText);
+            var userText = ElementComposition.GetElementVisual(UserText);
+
+            if (checklist.CanMarkTasksAsDone && recycled && _completedByUserId != task.CompletedByUserId)
+            {
+                var compositor = photo.Compositor;
+
+                var translationY = compositor.CreateScalarKeyFrameAnimation();
+                translationY.InsertKeyFrame(0, show ? 0 : -8);
+                translationY.InsertKeyFrame(1, show ? -8 : 0);
+
+                var translationX = compositor.CreateScalarKeyFrameAnimation();
+                translationX.InsertKeyFrame(0, show ? 0 : 12);
+                translationX.InsertKeyFrame(1, show ? 12 : 0);
+
+                var opacity = compositor.CreateScalarKeyFrameAnimation();
+                opacity.InsertKeyFrame(0, show ? 0 : 1);
+                opacity.InsertKeyFrame(1, show ? 1 : 0);
+
+                text.StartAnimation("Translation.Y", translationY);
+                photo.StartAnimation("Translation.X", translationX);
+                photo.StartAnimation("Opacity", opacity);
+                userText.StartAnimation("Opacity", opacity);
+
+                UpdateIcon(show, true);
+            }
+            else
+            {
+                text.Properties.InsertVector3("Translation", new Vector3(0, show ? -8 : 0, 0));
+                photo.Properties.InsertVector3("Translation", new Vector3(show ? 12 : 0, 0, 0));
+                photo.Opacity = show ? 1 : 0;
+                userText.Opacity = show ? 1 : 0;
+
+                UpdateIcon(show, false);
+            }
+
+            CustomEmojiIcon.Add(TextText, Text.Inlines, message.ClientService, task.Text);
+
+            if (checklist.CanMarkTasksAsDone || task.CompletionDate == 0)
+            {
+                TextText.TextDecorations = Windows.UI.Text.TextDecorations.None;
+            }
+            else
+            {
+                TextText.TextDecorations = Windows.UI.Text.TextDecorations.Strikethrough;
+            }
+
+            AutomationProperties.SetName(this, task.Text.Text);
+
+            _chatId = message.ChatId;
+            _messageId = message.Id;
+            _taskId = task.Id;
+            _completedByUserId = task.CompletedByUserId;
+        }
+
+        private void CreateIcon()
+        {
+            if (_source != null)
+            {
+                return;
+            }
+
+            var visual = GetVisual(BootStrapper.Current.Compositor, out var source, out _props);
+
+            _source = source;
+            _previous = visual;
+            _selectionStrokeBrush = new CompositionVisualColorSource(SelectionStroke, source, "Color_FF0000", IsConnected);
+
+            ElementCompositionPreview.SetElementChildVisual(CheckmarkIcon, visual?.RootVisual);
+        }
+
+        private void UpdateIcon(bool selected, bool animate)
+        {
+            if (_props != null && _previous != null)
+            {
+                if (animate)
+                {
+                    var linearEasing = _props.Compositor.CreateLinearEasingFunction();
+                    var animation = _props.Compositor.CreateScalarKeyFrameAnimation();
+                    animation.Duration = _previous.Duration;
+                    animation.InsertKeyFrame(1, selected ? 1 : 0, linearEasing);
+
+                    _props.StartAnimation("Progress", animation);
+                }
+                else
+                {
+                    _props.InsertScalar("Progress", selected ? 1.0F : 0.0F);
+                }
+            }
+        }
+
+        // This should be held in memory, or animation will stop
+        private CompositionPropertySet _props;
+
+        private IAnimatedVisual _previous;
+        private IAnimatedVisualSource2 _source;
+
+        private IAnimatedVisual GetVisual(Compositor compositor, out IAnimatedVisualSource2 source, out CompositionPropertySet properties)
+        {
+            source = new ChecklistSelect();
+
+            if (source == null)
+            {
+                properties = null;
+                return null;
+            }
+
+            var visual = source.TryCreateAnimatedVisual(compositor, out _);
+            if (visual == null)
+            {
+                properties = null;
+                return null;
+            }
+
+            properties = compositor.CreatePropertySet();
+            properties.InsertScalar("Progress", 1.0F);
+
+            var progressAnimation = compositor.CreateExpressionAnimation("_.Progress");
+            progressAnimation.SetReferenceParameter("_", properties);
+            visual.RootVisual.Properties.InsertScalar("Progress", 1.0F);
+            visual.RootVisual.Properties.StartAnimation("Progress", progressAnimation);
+
+            return visual;
+        }
+
+        #region SelectionStroke
+
+        private CompositionVisualColorSource _selectionStrokeBrush;
+
+        public SolidColorBrush SelectionStroke
+        {
+            get { return (SolidColorBrush)GetValue(SelectionStrokeProperty); }
+            set { SetValue(SelectionStrokeProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectionStrokeProperty =
+            DependencyProperty.Register("SelectionStroke", typeof(SolidColorBrush), typeof(ChecklistTaskContent), new PropertyMetadata(null, OnSelectionStrokeChanged));
+
+        private static void OnSelectionStrokeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ChecklistTaskContent)d).OnSelectionStrokeChanged(e.NewValue as SolidColorBrush, e.OldValue as SolidColorBrush);
+        }
+
+        private void OnSelectionStrokeChanged(SolidColorBrush newValue, SolidColorBrush oldValue)
+        {
+            _selectionStrokeBrush?.PropertyChanged(newValue, IsConnected);
+        }
+
+        #endregion
+    }
+}

@@ -1644,7 +1644,7 @@ namespace Telegram.Controls.Messages
                 Grid.SetRow(Message, 2);
                 Panel.Placeholder = false;
             }
-            else if (content is MessagePoll)
+            else if (content is MessagePoll or MessageChecklist)
             {
                 ContentPanel.Padding = new Thickness(0, 4, 0, 0);
                 Media.Margin = new Thickness(0);
@@ -1802,6 +1802,10 @@ namespace Telegram.Controls.Messages
             else if (content is MessagePoll)
             {
                 Media.Child = new PollContent(message);
+            }
+            else if (content is MessageChecklist)
+            {
+                Media.Child = new ChecklistContent(message);
             }
             else if (content is MessageSticker)
             {

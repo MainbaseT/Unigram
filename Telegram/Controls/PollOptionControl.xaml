@@ -50,16 +50,28 @@
                      Width="20"
                      Height="20"
                      UseLayoutRounding="False"
-                     Stroke="{ThemeResource MessageSubtleForegroundBrush}"
-                     StrokeThickness="{ThemeResource RadioButtonBorderThemeThickness}"
+                     Stroke="{ThemeResource MessageHeaderBorderBrush}"
+                     StrokeThickness="1.5"
                      VerticalAlignment="Top"
                      Margin="0,8,8,8" />
-            <FontIcon Visibility="{x:Bind ConvertCheckMark(IsChecked), Mode=OneWay}"
-                      Foreground="{ThemeResource MessageSubtleForegroundBrush}"
-                      Glyph="&#xEC61;"
-                      FontSize="20"
-                      VerticalAlignment="Top"
-                      Margin="0,8,8,8" />
+            <Grid Visibility="{x:Bind ConvertCheckMark(IsChecked), Mode=OneWay}"
+                  Width="20"
+                  Height="20"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Margin="0,8,8,8">
+                <Ellipse x:Name="CheckmarkCircle"
+                         Width="20"
+                         Height="20"
+                         UseLayoutRounding="False"
+                         Fill="{ThemeResource MessageHeaderBorderBrush}"
+                         StrokeThickness="0"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center" />
+                <Path x:Name="Checkmark"
+                      Fill="#FFFFFF"
+                      Data="M13.2197 6.96967L8.75 11.4393L6.78033 9.4697C6.48744 9.1768 6.01256 9.1768 5.71967 9.4697C5.42678 9.7626 5.42678 10.2374 5.71967 10.5303L8.2197 13.0303C8.5126 13.3232 8.9874 13.3232 9.2803 13.0303L14.2803 8.0303C14.5732 7.73744 14.5732 7.26256 14.2803 6.96967C13.9874 6.67678 13.5126 6.67678 13.2197 6.96967Z" />
+            </Grid>
 
 
             <muxc:ProgressRing x:Name="Loading"
@@ -68,7 +80,7 @@
                                Width="20"
                                Height="20"
                                UseLayoutRounding="False"
-                               Foreground="{ThemeResource MessageSubtleForegroundBrush}"
+                               Foreground="{ThemeResource MessageHeaderBorderBrush}"
                                VerticalAlignment="Top"
                                Margin="0,8,8,8" />
 

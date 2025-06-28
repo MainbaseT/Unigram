@@ -20,6 +20,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -76,19 +77,63 @@ namespace Telegram.Controls
             ShowPromo(navigationService, Strings.OptionPremiumRequiredMessage, Strings.OptionPremiumRequiredButton, null);
         }
 
-        public static void ShowFeaturePromo(INavigationService navigationService, PremiumFeature source)
+        public static void ShowFeaturePromo(INavigationService navigationService, PremiumFeature feature)
         {
-            var text = source switch
+            var text = feature switch
             {
                 PremiumFeatureAccentColor => Strings.UserColorApplyPremium,
                 PremiumFeatureRealTimeChatTranslation => Strings.ShowTranslateChatButtonLocked,
+                PremiumFeatureChecklists => Strings.TodoPremiumRequired,
                 _ => Strings.UnlockPremium
             };
 
-            ShowPromo(navigationService, text, Strings.OptionPremiumRequiredButton, new PremiumSourceFeature(source));
+            var label = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+                FontFamily = BootStrapper.Current.Resources["EmojiThemeFontFamilyWithSymbols"] as FontFamily
+            };
+
+            var markdown = ClientEx.ParseMarkdown(text);
+            if (markdown.Entities.Count == 1)
+            {
+                var e1 = markdown.Entities[0];
+                if (e1.Offset > 0)
+                {
+                    label.Inlines.Add(markdown.Text.Substring(0, e1.Offset));
+                }
+
+                if (e1.Type is TextEntityTypeBold)
+                {
+                    var hyperlink = new Hyperlink();
+
+                    void handler(object sender, object e)
+                    {
+                        hyperlink.Click -= handler;
+                        navigationService.ShowPromo(feature);
+                    }
+
+                    hyperlink.Click += handler;
+                    hyperlink.FontWeight = FontWeights.SemiBold;
+                    hyperlink.UnderlineStyle = UnderlineStyle.None;
+                    hyperlink.Inlines.Add(markdown.Text.Substring(e1.Offset, e1.Length));
+
+                    label.Inlines.Add(hyperlink);
+                }
+
+                if (e1.Offset + e1.Length < markdown.Text.Length)
+                {
+                    label.Inlines.Add(markdown.Text.Substring(e1.Offset + e1.Length));
+                }
+            }
+            else
+            {
+                TextBlockHelper.SetFormattedText(label, markdown);
+            }
+
+            Show(navigationService.XamlRoot, label, ToastPopupIcon.Premium);
         }
 
-        public static async void ShowPromo(INavigationService navigationService, string text, string action, PremiumSource source)
+        public static async void ShowPromo(INavigationService navigationService, string text, string action, PremiumSource source, PremiumFeature feature = null)
         {
             var markdown = ClientEx.ParseMarkdown(text);
 
@@ -104,7 +149,14 @@ namespace Telegram.Controls
                     }
                 }
 
-                navigationService.ShowPromo(source);
+                if (feature != null)
+                {
+                    navigationService.ShowPromo(feature);
+                }
+                else
+                {
+                    navigationService.ShowPromo(source);
+                }
             }
         }
 
@@ -128,6 +180,28 @@ namespace Telegram.Controls
             return Show(xamlRoot, text, null, requestedTheme, dismissAfter);
         }
 
+        public static ToastPopup Show(XamlRoot xamlRoot, FrameworkElement label, ToastPopupIcon icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
+        {
+            AnimatedImage animated = null;
+            if (icon != ToastPopupIcon.None)
+            {
+                animated = new AnimatedImage
+                {
+                    Source = new LocalFileSource($"ms-appx:///Assets/Toasts/{icon}.tgs"),
+                    Width = 32,
+                    Height = 32,
+                    AutoPlay = true,
+                    LoopCount = 1,
+                    IsCachingEnabled = false,
+                    FrameSize = new Size(32, 32),
+                    DecodeFrameType = DecodePixelType.Logical,
+                    Margin = new Thickness(-4, -12, 8, -12)
+                };
+            }
+
+            return ShowImpl(xamlRoot, label, animated, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+        }
+
         public static ToastPopup Show(XamlRoot xamlRoot, FormattedText text, ToastPopupIcon icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
             AnimatedImage animated = null;
@@ -147,7 +221,7 @@ namespace Telegram.Controls
                 };
             }
 
-            return ShowImpl(xamlRoot, null, text, animated, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+            return ShowImpl(xamlRoot, text, animated, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
         }
 
         public static ToastPopup Show(XamlRoot xamlRoot, FormattedText text, AnimatedImageSource icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
@@ -169,7 +243,7 @@ namespace Telegram.Controls
                 };
             }
 
-            return ShowImpl(xamlRoot, null, text, animated, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+            return ShowImpl(xamlRoot, text, animated, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
         }
 
         public static ToastPopup Show(FrameworkElement target, string text, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
@@ -206,13 +280,11 @@ namespace Telegram.Controls
                 };
             }
 
-            return ShowImpl(target.XamlRoot, target, text, animated, placement, requestedTheme, dismissAfter);
+            return ShowImpl(target.XamlRoot, text, animated, placement, requestedTheme, dismissAfter, target);
         }
 
-        public static ToastPopup ShowImpl(XamlRoot xamlRoot, FrameworkElement target, FormattedText text, FrameworkElement icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
+        public static ToastPopup ShowImpl(XamlRoot xamlRoot, FormattedText text, FrameworkElement icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null, FrameworkElement target = null)
         {
-            Logger.Info();
-
             var label = new TextBlock
             {
                 TextWrapping = TextWrapping.Wrap,
@@ -220,6 +292,12 @@ namespace Telegram.Controls
             };
 
             TextBlockHelper.SetFormattedText(label, text);
+            return ShowImpl(xamlRoot, label, icon, placement, requestedTheme, dismissAfter, target);
+        }
+
+        public static ToastPopup ShowImpl(XamlRoot xamlRoot, FrameworkElement label, FrameworkElement icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null, FrameworkElement target = null)
+        {
+            Logger.Info();
             Grid.SetColumn(label, 1);
 
             var content = new Grid();
@@ -294,15 +372,15 @@ namespace Telegram.Controls
 
         public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, string text, string action, ToastPopupIcon icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
-            return ShowActionAsync(xamlRoot, null, ClientEx.ParseMarkdown(text), action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+            return ShowActionAsync(xamlRoot, ClientEx.ParseMarkdown(text), action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
         }
 
         public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FormattedText text, string action, ToastPopupIcon icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
-            return ShowActionAsync(xamlRoot, null, text, action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+            return ShowActionAsync(xamlRoot, text, action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
         }
 
-        public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FrameworkElement target, FormattedText text, string action, ToastPopupIcon? icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
+        public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FormattedText text, string action, ToastPopupIcon? icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
             AnimatedImage animated = null;
             if (icon != null)
@@ -321,7 +399,7 @@ namespace Telegram.Controls
                 };
             }
 
-            return ShowActionAsync(xamlRoot, target, text, action, animated, placement, requestedTheme, dismissAfter);
+            return ShowActionAsync(xamlRoot, text, action, animated, placement, requestedTheme, dismissAfter);
         }
 
         public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, string text, string action, AnimatedImageSource icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
@@ -348,21 +426,21 @@ namespace Telegram.Controls
                 };
             }
 
-            return ShowActionAsync(xamlRoot, null, text, action, animated, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+            return ShowActionAsync(xamlRoot, text, action, animated, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
         }
         public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, string text, string action, FrameworkElement icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
-            return ShowActionAsync(xamlRoot, null, ClientEx.ParseMarkdown(text), action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+            return ShowActionAsync(xamlRoot, ClientEx.ParseMarkdown(text), action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
         }
 
         public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FormattedText text, string action, FrameworkElement icon, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
-            return ShowActionAsync(xamlRoot, null, text, action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
+            return ShowActionAsync(xamlRoot, text, action, icon, TeachingTipPlacementMode.Center, requestedTheme, dismissAfter);
         }
 
-        public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FrameworkElement target, FormattedText text, string action, FrameworkElement icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
+        public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FormattedText text, string action, FrameworkElement icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
-            var toast = ShowImpl(xamlRoot, target, text, icon, placement, requestedTheme, dismissAfter);
+            var toast = ShowImpl(xamlRoot, text, icon, placement, requestedTheme, dismissAfter);
             if (toast.Content is Grid content)
             {
                 var tsc = new TaskCompletionSource<ContentDialogResult>();
@@ -406,15 +484,15 @@ namespace Telegram.Controls
 
         public static Task<ContentDialogResult> ShowCountdownAsync(XamlRoot xamlRoot, string text, string action, TimeSpan dismissAfter, ElementTheme requestedTheme = ElementTheme.Dark)
         {
-            return ShowCountdownAsync(xamlRoot, null, ClientEx.ParseMarkdown(text), action, dismissAfter, TeachingTipPlacementMode.Center, requestedTheme);
+            return ShowCountdownAsync(xamlRoot, ClientEx.ParseMarkdown(text), action, dismissAfter, TeachingTipPlacementMode.Center, requestedTheme);
         }
 
         public static Task<ContentDialogResult> ShowCountdownAsync(XamlRoot xamlRoot, FormattedText text, string action, TimeSpan dismissAfter, ElementTheme requestedTheme = ElementTheme.Dark)
         {
-            return ShowCountdownAsync(xamlRoot, null, text, action, dismissAfter, TeachingTipPlacementMode.Center, requestedTheme);
+            return ShowCountdownAsync(xamlRoot, text, action, dismissAfter, TeachingTipPlacementMode.Center, requestedTheme);
         }
 
-        public static Task<ContentDialogResult> ShowCountdownAsync(XamlRoot xamlRoot, FrameworkElement target, FormattedText text, string action, TimeSpan dismissAfter, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark)
+        public static Task<ContentDialogResult> ShowCountdownAsync(XamlRoot xamlRoot, FormattedText text, string action, TimeSpan dismissAfter, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark)
         {
             var animated = new Grid
             {
@@ -470,7 +548,7 @@ namespace Telegram.Controls
             animated.Children.Add(slice);
             animated.Children.Add(value);
 
-            return ShowActionAsync(xamlRoot, target, text, action, animated, placement, requestedTheme, dismissAfter);
+            return ShowActionAsync(xamlRoot, text, action, animated, placement, requestedTheme, dismissAfter);
         }
 
         public event EventHandler<TextUrlClickEventArgs> Click;

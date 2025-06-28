@@ -20,6 +20,8 @@
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/AnimationContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/AudioContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/CallContent.xaml" />
+        <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/ChecklistContent.xaml" />
+        <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/ChecklistTaskContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/ContactContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/DiceContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/DocumentContent.xaml" />

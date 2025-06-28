@@ -128,6 +128,7 @@
     <Compile Include="Assets\Icons\Appearance.cs" />
     <Compile Include="Assets\Icons\AskQ.cs" />
     <Compile Include="Assets\Icons\Business.cs" />
+    <Compile Include="Assets\Icons\ChecklistSelect.cs" />
     <Compile Include="Assets\Icons\Data.cs" />
     <Compile Include="Assets\Icons\Devices.cs" />
     <Compile Include="Assets\Icons\Dots.cs" />
@@ -205,6 +206,7 @@
     <Compile Include="Common\MediaDeviceList.cs" />
     <Compile Include="Common\MediaDevicePermissions.cs" />
     <Compile Include="Common\SliderHelper.cs" />
+    <Compile Include="Composition\CompositionVisualColorSource.cs" />
     <Compile Include="Composition\WeakInteractionTrackerOwner.cs" />
     <Compile Include="Controls\Calls\MediaStateBadge.xaml.cs">
       <DependentUpon>MediaStateBadge.xaml</DependentUpon>
@@ -312,6 +314,9 @@
     <Compile Include="Controls\Messages\Content\PaidMediaContent.xaml.cs">
       <DependentUpon>PaidMediaContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Messages\Content\ChecklistContent.xaml.cs">
+      <DependentUpon>ChecklistContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Messages\Content\PreviewContent.xaml.cs">
       <DependentUpon>PreviewContent.xaml</DependentUpon>
     </Compile>
@@ -335,6 +340,9 @@
     </Compile>
     <Compile Include="Controls\PatternBackground.xaml.cs">
       <DependentUpon>PatternBackground.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Messages\Content\ChecklistTaskContent.xaml.cs">
+      <DependentUpon>ChecklistTaskContent.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PremiumStarHeader.cs" />
     <Compile Include="Controls\SlideTextBlock.cs" />
@@ -1231,6 +1239,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\CreateChecklistPopup.xaml.cs">
+      <DependentUpon>CreateChecklistPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\FrozenPopup.xaml.cs">
       <DependentUpon>FrozenPopup.xaml</DependentUpon>
     </Compile>
@@ -2727,6 +2738,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\Messages\Content\ChecklistContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\Messages\Content\PreviewContent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2874,6 +2889,10 @@
     <Page Include="Controls\PlaybackHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Messages\Content\ChecklistTaskContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\PollOptionControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -3188,6 +3207,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\BackgroundPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\CreateChecklistPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

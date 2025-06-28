@@ -1732,6 +1732,7 @@ namespace Telegram.Td.Api
                 case MessageBigEmoji:
                 case MessageCall:
                 case MessageGroupCall:
+                case MessageChecklist:
                 case MessageContact:
                 case MessageDice:
                 case MessageDocument:
@@ -1816,6 +1817,32 @@ namespace Telegram.Td.Api
                 default:
                     return null;
             }
+        }
+
+        public static bool AreOnTheSameDay(this MessageViewModel x, MessageViewModel y)
+        {
+            var xdate = Formatter.ToLocalTime(x.GetDate());
+            var ydate = Formatter.ToLocalTime(y.GetDate());
+
+            return xdate.Date == ydate.Date;
+        }
+
+        public static int GetDate(this MessageViewModel item)
+        {
+            if (item.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
+            {
+                return sendAtDate.SendDate;
+            }
+            else if (item.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
+            {
+                return sendWhenVideoProcessed.SendDate;
+            }
+            else if (item.SchedulingState is MessageSchedulingStateSendWhenOnline)
+            {
+                return int.MinValue;
+            }
+
+            return item.Date;
         }
 
         public static bool IsUnread(this Chat chat)

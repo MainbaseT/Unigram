@@ -8234,6 +8234,9 @@ Minimum length is 5 characters.</value>
   <data name="MessageContainsEmojiPacks_other" xml:space="preserve">
     <value>This message contains emoji from **{0} Packs**.</value>
   </data>
+  <data name="MessageGroupTodoList" xml:space="preserve">
+    <value>Group To-Do List</value>
+  </data>
   <data name="MessageLifetime" xml:space="preserve">
     <value>Self-Destruct Timer</value>
   </data>
@@ -8390,6 +8393,12 @@ Minimum length is 5 characters.</value>
   </data>
   <data name="MessageSuggestionsUnsavedChanges" xml:space="preserve">
     <value>You have changed the direct message settings. Apply changes?</value>
+  </data>
+  <data name="MessageTodo" xml:space="preserve">
+    <value>To-Do</value>
+  </data>
+  <data name="MessageTodoList" xml:space="preserve">
+    <value>To-Do List</value>
   </data>
   <data name="Meters_one" xml:space="preserve">
     <value>{0} meter</value>
@@ -12797,6 +12806,12 @@ in mini apps on Telegram.</value>
   <data name="TodoCompleteForbidden" xml:space="preserve">
     <value>**{0}** has restricted others from editing this to-do list.</value>
   </data>
+  <data name="TodoDeleteItem" xml:space="preserve">
+    <value>Delete Item</value>
+  </data>
+  <data name="TodoEditItem" xml:space="preserve">
+    <value>Edit Item</value>
+  </data>
   <data name="TodoEditTasksButton" xml:space="preserve">
     <value>Edit</value>
   </data>
@@ -12806,6 +12821,9 @@ in mini apps on Telegram.</value>
   <data name="TodoItemsTitle" xml:space="preserve">
     <value>To-Do List</value>
   </data>
+  <data name="TodoMenuTabTask" xml:space="preserve">
+    <value>Task</value>
+  </data>
   <data name="TodoNewTask" xml:space="preserve">
     <value>Add a Task</value>
   </data>
@@ -12814,6 +12832,9 @@ in mini apps on Telegram.</value>
   </data>
   <data name="TodoNewTaskInfo_other" xml:space="preserve">
     <value>You can add {0} more tasks.</value>
+  </data>
+  <data name="TodoPremiumRequired" xml:space="preserve">
+    <value>Only **Telegram Premium** subscribers can mark tasks as done.</value>
   </data>
   <data name="TodoTaskCompleted" xml:space="preserve">
     <value>un1 marked “{0}” as done</value>
