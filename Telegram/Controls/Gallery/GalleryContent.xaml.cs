@@ -24,7 +24,7 @@ namespace Telegram.Controls.Gallery
 {
     public sealed partial class GalleryContent : AspectView
     {
-        private IGalleryDelegate _delegate;
+        private GalleryWindow _window;
         private GalleryMedia _item;
 
         private int _itemId;
@@ -68,7 +68,7 @@ namespace Telegram.Controls.Gallery
             {
                 UpdateManager.Unsubscribe(this, ref _fileToken);
 
-                _delegate.ClientService?.Send(new OpenMessageContent(message.ChatId, message.Id));
+                _window.ClientService?.Send(new OpenMessageContent(message.ChatId, message.Id));
             }
         }
 
@@ -145,9 +145,9 @@ namespace Telegram.Controls.Gallery
             }
         }
 
-        public void UpdateItem(IGalleryDelegate delegato, GalleryMedia item)
+        public void UpdateItem(GalleryWindow window, GalleryMedia item)
         {
-            _delegate = delegato;
+            _window = window;
             _item = item;
 
             _appliedRotation = item?.RotationAngle switch
@@ -208,7 +208,7 @@ namespace Telegram.Controls.Gallery
                 UpdateThumbnail(item, thumbnail, null, true);
             }
 
-            UpdateManager.Subscribe(this, delegato.ClientService, file, ref _fileToken, UpdateFile);
+            UpdateManager.Subscribe(this, window.ClientService, file, ref _fileToken, UpdateFile);
             UpdateFile(item, file);
         }
 
@@ -315,10 +315,10 @@ namespace Telegram.Controls.Gallery
                     {
                         if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
                         {
-                            _delegate.ClientService.DownloadFile(file.Id, 1);
+                            _window.ClientService.DownloadFile(file.Id, 1);
                         }
 
-                        UpdateManager.Subscribe(this, _delegate.ClientService, file, ref _thumbnailToken, UpdateThumbnail, true);
+                        UpdateManager.Subscribe(this, _window.ClientService, file, ref _thumbnailToken, UpdateThumbnail, true);
                     }
 
                     if (minithumbnail != null)
@@ -359,7 +359,7 @@ namespace Telegram.Controls.Gallery
             {
                 if (SettingsService.Current.IsStreamingEnabled && item.IsVideo && item.IsStreamable)
                 {
-                    _delegate?.OpenFile(item, file);
+                    _window?.OpenFile(item, file);
                 }
                 else
                 {
@@ -368,11 +368,11 @@ namespace Telegram.Controls.Gallery
             }
             else if (item.IsVideo)
             {
-                _delegate?.OpenFile(item, file);
+                _window?.OpenFile(item, file);
             }
             else if (item is GalleryMessage message && !item.IsMedia)
             {
-                var service = TypeResolver.Current.Resolve<IStorageService>(_delegate.ClientService.SessionId);
+                var service = TypeResolver.Current.Resolve<IStorageService>(_window.ClientService.SessionId);
                 if (service != null)
                 {
                     _ = service.OpenFileAsync(file);

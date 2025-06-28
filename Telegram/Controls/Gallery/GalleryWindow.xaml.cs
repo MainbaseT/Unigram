@@ -669,6 +669,8 @@ namespace Telegram.Controls.Gallery
                 _current = content;
                 _current.Play(item, position, Controls);
             }
+
+            ViewModel.PlaybackStarted(item);
         }
 
         private void Dispose()
@@ -686,10 +688,18 @@ namespace Telegram.Controls.Gallery
                     _knownPositions[fileId] = position;
                 }
             }
+
+            ViewModel?.PlaybackStopped();
         }
 
-        private void Load(object parameter)
+        public void UpdateAdvertisement(VideoMessageAdvertisement advertisement)
         {
+            Sponsored.UpdateAdvertisement(advertisement);
+        }
+
+        private void Load(GalleryViewModelBase parameter)
+        {
+            parameter.Delegate = this;
             DataContext = parameter;
             Bindings.Update();
 
@@ -715,7 +725,12 @@ namespace Telegram.Controls.Gallery
 
             _unloaded = true;
 
-            ViewModel?.Aggregator.Unsubscribe(this);
+            if (ViewModel != null)
+            {
+                ViewModel.Delegate = null;
+                ViewModel.Aggregator.Unsubscribe(this);
+                ViewModel.PlaybackStopped();
+            }
 
             DataContext = null;
             Bindings.StopTracking();

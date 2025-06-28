@@ -69,6 +69,14 @@
                               Width="48"
                               Height="40" />
 
+        <local:GallerySponsoredContent x:Name="Sponsored"
+                                       Stroke="{ThemeResource AccentButtonBackground}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Top"
+                                       Visibility="Collapsed"
+                                       MaxWidth="320"
+                                       Margin="0,0,0,12" />
+
         <local:GalleryBottomPanel x:Name="BottomPanel"
                                   GotFocus="Transport_GotFocus"
                                   LostFocus="Transport_LostFocus">

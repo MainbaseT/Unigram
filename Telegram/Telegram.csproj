@@ -305,6 +305,9 @@
     <Compile Include="Controls\Chats\ChatTextFlyout.xaml.cs">
       <DependentUpon>ChatTextFlyout.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Gallery\GallerySponsoredContent.xaml.cs">
+      <DependentUpon>GallerySponsoredContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Gallery\GalleryCompactOverlay.xaml.cs">
       <DependentUpon>GalleryCompactOverlay.xaml</DependentUpon>
     </Compile>
@@ -2705,6 +2708,10 @@
     <Page Include="Controls\FormattedTextFlyout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Gallery\GallerySponsoredContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Gallery\GalleryCompactOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>

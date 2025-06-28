@@ -3666,8 +3666,8 @@ namespace Telegram.ViewModels
         {
             if (IsPremium)
             {
-                ClientService.Send(new ToggleHasSponsoredMessagesEnabled(false));
                 SponsoredMessage = null;
+                ClientService.Send(new ToggleHasSponsoredMessagesEnabled(false));
 
                 ToastPopup.Show(XamlRoot, Strings.AdHidden, ToastPopupIcon.AntiSpam);
             }

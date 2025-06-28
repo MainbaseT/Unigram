@@ -56,12 +56,18 @@ namespace Telegram.Views.Profile
             }
         }
 
-        private void Photo_Click(object sender, RoutedEventArgs e)
+        private async void Photo_Click(object sender, RoutedEventArgs e)
         {
             var element = sender as FrameworkElement;
             var message = element.Tag as MessageWithOwner;
 
-            var viewModel = new ChatGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, message.ChatId, ViewModel.Topic, message, true);
+            var response = await ViewModel.ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
+            if (response is not MessageProperties properties)
+            {
+                return;
+            }
+
+            var viewModel = new ChatGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, message.ChatId, ViewModel.Topic, message, properties, true);
             ViewModel.NavigationService.ShowGallery(viewModel, element);
         }
     }

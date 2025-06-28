@@ -14,13 +14,15 @@ namespace Telegram.ViewModels.Gallery
     public partial class GalleryMessage : GalleryMedia
     {
         protected readonly Message _message;
+        protected readonly MessageProperties _properties;
         protected readonly bool _hasProtectedContent;
 
-        public GalleryMessage(IClientService clientService, Message message)
+        public GalleryMessage(IClientService clientService, Message message, MessageProperties properties)
             : base(clientService)
         {
             // Create a copy so that content doesn't get updated while the gallery is open
             _message = new(message.Id, message.SenderId, message.ChatId, message.SendingState, message.SchedulingState, message.IsOutgoing, message.IsPinned, message.IsFromOffline, message.CanBeSaved, message.HasTimestampedMedia, message.IsChannelPost, message.ContainsUnreadMention, message.Date, message.EditDate, message.ForwardInfo, message.ImportInfo, message.InteractionInfo, message.UnreadReactions, message.FactCheck, message.ReplyTo, message.MessageThreadId, message.TopicId, message.SelfDestructType, message.SelfDestructIn, message.AutoDeleteIn, message.ViaBotUserId, message.SenderBusinessBotUserId, message.SenderBoostCount, message.PaidMessageStarCount, message.AuthorSignature, message.MediaAlbumId, message.EffectId, message.HasSensitiveContent, message.RestrictionReason, message.Content, message.ReplyMarkup);
+            _properties = properties;
 
             if (clientService.TryGetChat(message.ChatId, out Chat chat))
             {
@@ -51,14 +53,31 @@ namespace Telegram.ViewModels.Gallery
             }
         }
 
-        public GalleryMessage(IClientService clientService, MessageWithOwner message)
-            : this(clientService, message.Get())
+        public GalleryMessage(IClientService clientService, MessageWithOwner message, MessageProperties properties)
+            : this(clientService, message.Get(), properties)
         {
         }
 
         public MessageContent Content => _message.Content;
 
         public MessageForwardInfo ForwardInfo => _message.ForwardInfo;
+
+        public bool CanGetVideoAdvertisements => _properties?.CanGetVideoAdvertisements ?? false;
+
+        public VideoMessageAdvertisements Advertisements { get; set; }
+
+        public int AdvertisementsSelectedIndex { get; set; }
+
+        public VideoMessageAdvertisement GetNextAdvertisement()
+        {
+            var index = AdvertisementsSelectedIndex++;
+            if (index < Advertisements.Advertisements.Count)
+            {
+                return Advertisements.Advertisements[index % Advertisements.Advertisements.Count];
+            }
+
+            return null;
+        }
 
         public long ChatId => _message.ChatId;
         public long Id => _message.Id;

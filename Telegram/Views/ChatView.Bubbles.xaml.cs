@@ -589,11 +589,11 @@ namespace Telegram.Views
                     GalleryViewModelBase viewModel;
                     if (message.Content is MessageAnimation)
                     {
-                        viewModel = new ChatGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, message.ChatId, ViewModel.Topic, message);
+                        viewModel = new ChatGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, message.ChatId, ViewModel.Topic, message, null);
                     }
                     else
                     {
-                        viewModel = new StandaloneGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, new GalleryMessage(ViewModel.ClientService, message));
+                        viewModel = new StandaloneGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, new GalleryMessage(ViewModel.ClientService, message, null));
                     }
 
                     ViewModel.NavigationService.ShowGallery(viewModel, target);

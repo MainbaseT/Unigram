@@ -464,13 +464,19 @@ namespace Telegram.ViewModels
                             };
                         }
 
+                        var response = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
+                        if (response is not MessageProperties properties)
+                        {
+                            return;
+                        }
+
                         if (IsSingle(message.Content))
                         {
-                            viewModel = new StandaloneGalleryViewModel(ClientService, _storageService, Aggregator, new GalleryMessage(ClientService, message));
+                            viewModel = new StandaloneGalleryViewModel(ClientService, _storageService, Aggregator, new GalleryMessage(ClientService, message, properties));
                         }
                         else
                         {
-                            viewModel = new ChatGalleryViewModel(ClientService, _storageService, Aggregator, message.ChatId, Topic, message);
+                            viewModel = new ChatGalleryViewModel(ClientService, _storageService, Aggregator, message.ChatId, Topic, message, properties);
                         }
                     }
 
