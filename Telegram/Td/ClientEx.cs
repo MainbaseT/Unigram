@@ -143,7 +143,7 @@ namespace Telegram.Td
             return new FormattedText("\U0001F642", new[] { new TextEntity(0, 2, new TextEntityTypeCustomEmoji(customEmojiId)) });
         }
 
-        public static FormattedText Format(string format, params FormattedText[] args)
+        public static FormattedText Format(string format, params object[] args)
         {
             // TODO: doesn't support more than 10 parameters but I'm lazy
 
@@ -172,17 +172,30 @@ namespace Telegram.Td
                     {
                         if (argument < args.Length)
                         {
-                            var text = args[argument];
-
                             builder.Remove(index, i - index + 1);
-                            builder.Insert(index, text.Text);
 
-                            foreach (var entity in text.Entities)
+                            var arg = args[argument];
+                            if (arg is FormattedText text)
                             {
-                                entities.Add(new TextEntity(entity.Offset + index, entity.Length, entity.Type));
-                            }
+                                builder.Insert(index, text.Text);
 
-                            i = index + text.Text.Length - 1;
+                                foreach (var entity in text.Entities)
+                                {
+                                    if (entity.Offset < index)
+                                    {
+                                        entities.Add(new TextEntity(entity.Offset + index, entity.Length, entity.Type));
+                                    }
+                                }
+
+                                i = index + text.Text.Length - 1;
+                            }
+                            else
+                            {
+                                var value = arg.ToString();
+
+                                builder.Insert(index, value);
+                                i = index + value.Length - 1;
+                            }
                         }
                     }
 
