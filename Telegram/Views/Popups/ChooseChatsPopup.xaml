@@ -256,11 +256,10 @@
                         Placement="Top"
                         ShowMode="Transient">
                     <Flyout.FlyoutPresenterStyle>
-                        <Style TargetType="FlyoutPresenter">
+                        <Style TargetType="FlyoutPresenter"
+                               BasedOn="{StaticResource CommandFlyoutPresenterStyle}">
                             <Setter Property="Padding"
                                     Value="0" />
-                            <Setter Property="CornerRadius"
-                                    Value="8" />
                         </Style>
                     </Flyout.FlyoutPresenterStyle>
                     <drawers:EmojiDrawer x:Name="EmojiPanel"

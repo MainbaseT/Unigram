@@ -46,7 +46,7 @@
                             ShowMode="Transient">
                         <Flyout.FlyoutPresenterStyle>
                             <Style TargetType="FlyoutPresenter"
-                                   BasedOn="{StaticResource DefaultFlyoutPresenterStyle}">
+                                   BasedOn="{StaticResource CommandFlyoutPresenterStyle}">
                                 <Setter Property="Padding"
                                         Value="0" />
                             </Style>
