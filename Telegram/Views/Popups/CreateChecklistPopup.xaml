@@ -18,7 +18,8 @@
                 Placement="Top"
                 ShowMode="Transient">
             <Flyout.FlyoutPresenterStyle>
-                <Style TargetType="FlyoutPresenter">
+                <Style TargetType="FlyoutPresenter"
+                       BasedOn="{StaticResource CommandFlyoutPresenterStyle}">
                     <Setter Property="Padding"
                             Value="0" />
                 </Style>
@@ -64,6 +65,7 @@
                                                         Margin="10,4,-2,-2" />
 
                             <controls:GlyphButton Click="Emoji_Click"
+                                                  Tag="{x:Bind TitleText}"
                                                   Glyph="&#xE76E;"
                                                   AutomationProperties.Name="{CustomResource Emoji}"
                                                   IsTabStop="False"
@@ -95,6 +97,8 @@
                             Value="0" />
                     <Setter Property="MinHeight"
                             Value="0" />
+                    <Setter Property="IsTabStop"
+                            Value="False" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
@@ -118,8 +122,8 @@
                                                        Loaded="Task_Loaded"
                                                        PreviewKeyDown="Task_PreviewKeyDown"
                                                        TextChanged="Task_TextChanged"
-                                                       GotFocus="Question_GotFocus"
-                                                       LostFocus="Question_LostFocus"
+                                                       GotFocus="Task_GotFocus"
+                                                       LostFocus="Task_LostFocus"
                                                        Grid.ColumnSpan="3" />
 
                             <messages:CustomEmojiCanvas x:Name="CustomEmoji"
@@ -137,7 +141,8 @@
                                            Margin="8,0,0,0" />
                             </Border>
 
-                            <controls:GlyphButton Click="Emoji_Click"
+                            <controls:GlyphButton x:Name="Emoji"
+                                                  Click="Emoji_Click"
                                                   Glyph="&#xE76E;"
                                                   AutomationProperties.Name="{CustomResource Emoji}"
                                                   IsTabStop="False"
@@ -180,6 +185,7 @@
                                                     Margin="10,4,-2,-2" />
 
                         <controls:GlyphButton x:Name="AddTaskEmoji"
+                                              Tag="{x:Bind AddTask}"
                                               Click="Emoji_Click"
                                               Glyph="&#xE76E;"
                                               AutomationProperties.Name="{CustomResource Emoji}"

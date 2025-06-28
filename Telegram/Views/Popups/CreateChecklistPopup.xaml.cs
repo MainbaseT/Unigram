@@ -228,16 +228,11 @@ namespace Telegram.Views.Popups
 
         private void Task_TextChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is FormattedTextBox textBox && textBox.Tag is ChecklistTaskViewModel option)
+            if (sender is FormattedTextBox textBox && textBox.Tag is ChecklistTaskViewModel task)
             {
-                option.Text = textBox.GetFormattedText();
+                task.Text = textBox.GetFormattedText();
             }
 
-            UpdatePrimaryButton();
-        }
-
-        private void Option_Unchecked(object sender, RoutedEventArgs e)
-        {
             UpdatePrimaryButton();
         }
 
@@ -299,7 +294,7 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private void Question_GotFocus(object sender, RoutedEventArgs e)
+        private void Task_GotFocus(object sender, RoutedEventArgs e)
         {
             AddTask.IsReadOnly = false;
 
@@ -309,7 +304,7 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private void Question_LostFocus(object sender, RoutedEventArgs e)
+        private void Task_LostFocus(object sender, RoutedEventArgs e)
         {
             if (sender is FormattedTextBox textBox && textBox.Parent != null)
             {
@@ -355,9 +350,9 @@ namespace Telegram.Views.Popups
             batch.End();
         }
 
-        private void Focus(int option)
+        private void Focus(int task)
         {
-            var container = ScrollingHost.ContainerFromIndex(option) as SelectorItem;
+            var container = ScrollingHost.ContainerFromIndex(task) as SelectorItem;
             if (container == null)
             {
                 return;
@@ -383,17 +378,27 @@ namespace Telegram.Views.Popups
 
         private void Emoji_Click(object sender, RoutedEventArgs e)
         {
-            var element = FocusManager.GetFocusedElement();
-            if (element is not FormattedTextBox textBox)
+            if (sender is not Button{ Tag: FormattedTextBox textBox })
             {
                 return;
             }
 
+            if (_target != null)
+            {
+                _target.LostFocus -= Target_LostFocus;
+            }
+
             _target = textBox;
+            _target.LostFocus += Target_LostFocus;
 
             // We don't want to unfocus the text are when the context menu gets opened
             EmojiPanel.ViewModel.Update();
             EmojiFlyout.ShowAt(textBox, new FlyoutShowOptions { ShowMode = FlyoutShowMode.Transient });
+        }
+
+        private void Target_LostFocus(object sender, RoutedEventArgs e)
+        {
+            EmojiFlyout.Hide();
         }
 
         private void Emoji_ItemClick(object sender, EmojiDrawerItemClickEventArgs e)
@@ -412,6 +417,11 @@ namespace Telegram.Views.Popups
 
         private void EmojiFlyout_Closed(object sender, object e)
         {
+            if (_target != null)
+            {
+                _target.LostFocus -= Target_LostFocus;
+            }
+
             _target = null;
         }
 
@@ -433,6 +443,7 @@ namespace Telegram.Views.Popups
             {
                 var text = content.FindName("Text") as FormattedTextBox;
                 var customEmoji = content.FindName("CustomEmoji") as CustomEmojiCanvas;
+                var emoji = content.FindName("Emoji") as Button;
                 var handle = content.FindName("Handle") as Border;
                 var remove = content.FindName("Remove") as Button;
 
@@ -446,11 +457,13 @@ namespace Telegram.Views.Popups
 
                 if (task.IsReadOnly)
                 {
+                    emoji.Tag = null;
                     handle.Opacity = 0.6;
                     remove.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
+                    emoji.Tag = text;
                     handle.Opacity = 1;
                     remove.Visibility = Visibility.Visible;
 

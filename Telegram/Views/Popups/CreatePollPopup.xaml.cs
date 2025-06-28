@@ -264,7 +264,7 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private void Question_GotFocus(object sender, RoutedEventArgs e)
+        private void Option_GotFocus(object sender, RoutedEventArgs e)
         {
             AddAnOption.IsReadOnly = false;
 
@@ -274,7 +274,7 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private void Question_LostFocus(object sender, RoutedEventArgs e)
+        private void Option_LostFocus(object sender, RoutedEventArgs e)
         {
             if (sender is FormattedTextBox textBox && textBox.Parent != null)
             {
@@ -375,11 +375,22 @@ namespace Telegram.Views.Popups
                 return;
             }
 
+            if (_target != null)
+            {
+                _target.LostFocus -= Target_LostFocus;
+            }
+
             _target = textBox;
+            _target.LostFocus += Target_LostFocus;
 
             // We don't want to unfocus the text are when the context menu gets opened
             EmojiPanel.ViewModel.Update();
             EmojiFlyout.ShowAt(textBox, new FlyoutShowOptions { ShowMode = FlyoutShowMode.Transient });
+        }
+
+        private void Target_LostFocus(object sender, RoutedEventArgs e)
+        {
+            EmojiFlyout.Hide();
         }
 
         private void Emoji_ItemClick(object sender, EmojiDrawerItemClickEventArgs e)
@@ -398,6 +409,11 @@ namespace Telegram.Views.Popups
 
         private void EmojiFlyout_Closed(object sender, object e)
         {
+            if (_target != null)
+            {
+                _target.LostFocus -= Target_LostFocus;
+            }
+
             _target = null;
         }
     }

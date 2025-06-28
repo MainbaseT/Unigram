@@ -17,7 +17,8 @@
                 Placement="Top"
                 ShowMode="Transient">
             <Flyout.FlyoutPresenterStyle>
-                <Style TargetType="FlyoutPresenter">
+                <Style TargetType="FlyoutPresenter"
+                       BasedOn="{StaticResource CommandFlyoutPresenterStyle}">
                     <Setter Property="Padding"
                             Value="0" />
                 </Style>
@@ -52,6 +53,7 @@
                                                 Margin="10,4,-2,-2" />
 
                     <controls:GlyphButton Click="Emoji_Click"
+                                          Tag="{x:Bind QuestionText}"
                                           Glyph="&#xE76E;"
                                           AutomationProperties.Name="{CustomResource Emoji}"
                                           IsTabStop="False"
@@ -88,14 +90,15 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <controls:FormattedTextBox PlaceholderText="{CustomResource OptionHint}"
+                                    <controls:FormattedTextBox x:Name="Text"
+                                                               PlaceholderText="{CustomResource OptionHint}"
                                                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
                                                                MaxLength="100"
                                                                Loaded="Option_Loaded"
                                                                PreviewKeyDown="Option_PreviewKeyDown"
                                                                TextChanged="Option_TextChanged"
-                                                               GotFocus="Question_GotFocus"
-                                                               LostFocus="Question_LostFocus"
+                                                               GotFocus="Option_GotFocus"
+                                                               LostFocus="Option_LostFocus"
                                                                Grid.ColumnSpan="3" />
 
                                     <messages:CustomEmojiCanvas x:Name="CustomEmoji"
@@ -103,7 +106,8 @@
                                                                 Margin="10,4,-2,-2"
                                                                 Grid.ColumnSpan="3" />
 
-                                    <controls:GlyphButton Click="Emoji_Click"
+                                    <controls:GlyphButton Tag="{x:Bind Text}"
+                                                          Click="Emoji_Click"
                                                           Glyph="&#xE76E;"
                                                           AutomationProperties.Name="{CustomResource Emoji}"
                                                           IsTabStop="False"
