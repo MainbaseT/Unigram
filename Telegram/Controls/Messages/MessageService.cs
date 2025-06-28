@@ -2418,35 +2418,46 @@ namespace Telegram.Controls.Messages
 
         private static FormattedText UpdateChecklistTasksAdded(MessageWithOwner message, MessageChecklistTasksAdded checklistTasksAdded, bool history)
         {
-            FormattedText formatted;
-            if (checklistTasksAdded.Tasks.Count > 3)
+            Checklist checklist = null;
+            if (message is MessageViewModel { ReplyToItem: MessageViewModel { Content: MessageChecklist checklistContent } })
             {
-                var text = message.IsOutgoing
-                    ? Strings.TodoAddedMoreTasksOut
-                    : Strings.TodoAddedMoreTasks;
-                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text, checklistTasksAdded.Tasks[1].Text, checklistTasksAdded.Tasks[2].Text, checklistTasksAdded.Tasks.Count - 3);
+                checklist = checklistContent.List;
             }
-            else if (checklistTasksAdded.Tasks.Count > 2)
+
+            FormattedText formatted;
+            if (checklist == null)
             {
-                var text = message.IsOutgoing
-                    ? Strings.TodoAddedThreeTaskOut
-                    : Strings.TodoAddedThreeTask;
-                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text, checklistTasksAdded.Tasks[1].Text, checklistTasksAdded.Tasks[2].Text);
+                if (checklistTasksAdded.Tasks.Count > 1)
+                {
+                    var text = message.IsOutgoing
+                        ? Locale.Declension(Strings.R.TodoAddedTasksOutUnknown, checklistTasksAdded.Tasks.Count)
+                        : Locale.Declension(Strings.R.TodoAddedTasksUnknown, checklistTasksAdded.Tasks.Count);
+                    formatted = text.AsFormattedText();
+                }
+                else
+                {
+                    var text = message.IsOutgoing
+                        ? Strings.TodoAddedTaskOutUnknown
+                        : Strings.TodoAddedTaskUnknown;
+                    formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text);
+                }
             }
             else if (checklistTasksAdded.Tasks.Count > 1)
             {
                 var text = message.IsOutgoing
-                    ? Strings.TodoAddedTwoTaskOut
-                    : Strings.TodoAddedTwoTask;
-                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text, checklistTasksAdded.Tasks[1].Text);
+                    ? Locale.Declension(Strings.R.TodoAddedTasksOut, checklistTasksAdded.Tasks.Count, "{0}")
+                    : Locale.Declension(Strings.R.TodoAddedTasks, checklistTasksAdded.Tasks.Count, "{0}");
+                formatted = ClientEx.Format(text, checklist.Title);
             }
             else
             {
                 var text = message.IsOutgoing
-                    ? Strings.TodoAddedOneTaskOut
-                    : Strings.TodoAddedOneTask;
-                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text);
+                    ? Strings.TodoAddedTaskOut
+                    : Strings.TodoAddedTask;
+                formatted = ClientEx.Format(text, checklistTasksAdded.Tasks[0].Text, checklist.Title);
             }
+
+            formatted = ClientEx.ParseMarkdown(formatted);
 
             if (message.IsOutgoing)
             {
@@ -2475,7 +2486,27 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            if (task != null)
+            if (task == null || checklistTasksDone.MarkedAsDoneTaskIds.Count > 1 || checklistTasksDone.MarkedAsNotDoneTaskIds.Count > 1)
+            {
+                string text;
+                if (checklistTasksDone.MarkedAsDoneTaskIds.Count > 0)
+                {
+                    text = message.IsOutgoing
+                        ? Locale.Declension(Strings.R.TodoTasksCompletedOut, checklistTasksDone.MarkedAsDoneTaskIds.Count)
+                        : Locale.Declension(Strings.R.TodoTasksCompleted, checklistTasksDone.MarkedAsDoneTaskIds.Count);
+                }
+                else
+                {
+                    text = message.IsOutgoing
+                        ? Locale.Declension(Strings.R.TodoTasksNotCompletedOut, checklistTasksDone.MarkedAsNotDoneTaskIds.Count)
+                        : Locale.Declension(Strings.R.TodoTasksNotCompleted, checklistTasksDone.MarkedAsNotDoneTaskIds.Count);
+                }
+
+                var formatted = ClientEx.ParseMarkdown(text);
+
+                return ReplaceWithLink(formatted, message.GetSender());
+            }
+            else
             {
                 string text;
                 if (checklistTasksDone.MarkedAsDoneTaskIds.Count > 0)
@@ -2491,25 +2522,10 @@ namespace Telegram.Controls.Messages
                         : Strings.TodoTaskNotCompleted;
                 }
 
-                return ReplaceWithLink(ClientEx.Format(text, task.Text), message.GetSender());
-            }
-            else
-            {
-                string text;
-                if (checklistTasksDone.MarkedAsDoneTaskIds.Count > 0)
-                {
-                    text = message.IsOutgoing
-                        ? Strings.TodoTaskCompletedOutUnknown
-                        : Strings.TodoTaskCompletedUnknown;
-                }
-                else
-                {
-                    text = message.IsOutgoing
-                        ? Strings.TodoTaskNotCompletedOutUnknown
-                        : Strings.TodoTaskNotCompletedUnknown;
-                }
+                var formatted = ClientEx.Format(text, task.Text);
+                formatted = ClientEx.ParseMarkdown(formatted);
 
-                return ReplaceWithLink(text, message.GetSender());
+                return ReplaceWithLink(formatted, message.GetSender());
             }
         }
 

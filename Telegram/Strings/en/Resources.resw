@@ -4187,6 +4187,12 @@ Minimum length is 5 characters.</value>
   <data name="Checking" xml:space="preserve">
     <value>Checking...</value>
   </data>
+  <data name="ChecklistTasks_one" xml:space="preserve">
+    <value>{0} task</value>
+  </data>
+  <data name="ChecklistTasks_other" xml:space="preserve">
+    <value>{0} tasks</value>
+  </data>
   <data name="CheckPhoneNumberNo" xml:space="preserve">
     <value>No</value>
   </data>
@@ -11789,6 +11795,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SponsoredMessage" xml:space="preserve">
     <value>ad</value>
   </data>
+  <data name="SponsoredMessageAd" xml:space="preserve">
+    <value>Ad</value>
+  </data>
   <data name="SponsoredMessageSponsor" xml:space="preserve">
     <value>Advertiser Info</value>
   </data>
@@ -12743,29 +12752,41 @@ in mini apps on Telegram.</value>
   <data name="Todo" xml:space="preserve">
     <value>To-Do List</value>
   </data>
-  <data name="TodoAddedMoreTasks" xml:space="preserve">
-    <value>un1 added “{1}”, “{2}” and {0} more to To-Do list.</value>
+  <data name="TodoAddedTask" xml:space="preserve">
+    <value>un1 added a new task **&quot;{0}&quot;** to **&quot;{1}&quot;**</value>
   </data>
-  <data name="TodoAddedMoreTasksOut" xml:space="preserve">
-    <value>You added “{1}”, “{2}” and {0} more to To-Do list.</value>
+  <data name="TodoAddedTaskOut" xml:space="preserve">
+    <value>You added a new task **&quot;{0}&quot;** to **&quot;{1}&quot;**</value>
   </data>
-  <data name="TodoAddedOneTask" xml:space="preserve">
-    <value>un1 added “{0}” to To-Do list.</value>
+  <data name="TodoAddedTaskOutUnknown" xml:space="preserve">
+    <value>You added a new task **&quot;{0}&quot;** to a checklist</value>
   </data>
-  <data name="TodoAddedOneTaskOut" xml:space="preserve">
-    <value>You added “{0}” to To-Do list.</value>
+  <data name="TodoAddedTasks_one" xml:space="preserve">
+    <value>un1 added **{0} task** to **{1}**</value>
   </data>
-  <data name="TodoAddedThreeTask" xml:space="preserve">
-    <value>un1 added “{0}”, “{1}” and “{2}” to To-Do list.</value>
+  <data name="TodoAddedTasks_other" xml:space="preserve">
+    <value>un1 added **{0} tasks** to **{1}**</value>
   </data>
-  <data name="TodoAddedThreeTaskOut" xml:space="preserve">
-    <value>You added “{0}”, “{1}” and “{2}” to To-Do list.</value>
+  <data name="TodoAddedTasksOut_one" xml:space="preserve">
+    <value>You added **{0} task** to **&quot;{1}&quot;**</value>
   </data>
-  <data name="TodoAddedTwoTask" xml:space="preserve">
-    <value>un1 added “{0}” and “{1}” to To-Do list.</value>
+  <data name="TodoAddedTasksOut_other" xml:space="preserve">
+    <value>You added **{0} tasks** to **&quot;{1}&quot;**</value>
   </data>
-  <data name="TodoAddedTwoTaskOut" xml:space="preserve">
-    <value>You added “{0}” and “{1}” to To-Do list.</value>
+  <data name="TodoAddedTasksOutUnknown_one" xml:space="preserve">
+    <value>You added **{0} task** to a checklist</value>
+  </data>
+  <data name="TodoAddedTasksOutUnknown_other" xml:space="preserve">
+    <value>You added **{0} tasks** to a checklist</value>
+  </data>
+  <data name="TodoAddedTasksUnknown_one" xml:space="preserve">
+    <value>un1 added **{0} task** to a checklist</value>
+  </data>
+  <data name="TodoAddedTasksUnknown_other" xml:space="preserve">
+    <value>un1 added **{0} tasks** to a checklist</value>
+  </data>
+  <data name="TodoAddedTaskUnknown" xml:space="preserve">
+    <value>un1 added a new task **&quot;{0}&quot;** to a checklist</value>
   </data>
   <data name="TodoAddTaskInfoMax" xml:space="preserve">
     <value>You have added the maximum number of tasks.</value>
@@ -12843,31 +12864,43 @@ in mini apps on Telegram.</value>
     <value>Only **Telegram Premium** subscribers can mark tasks as done.</value>
   </data>
   <data name="TodoTaskCompleted" xml:space="preserve">
-    <value>un1 marked “{0}” as done</value>
+    <value>un1 marked **&quot;{0}&quot;** as done</value>
   </data>
   <data name="TodoTaskCompletedOut" xml:space="preserve">
-    <value>You marked “{0}” as done</value>
-  </data>
-  <data name="TodoTaskCompletedOutUnknown" xml:space="preserve">
-    <value>You marked task as done</value>
-  </data>
-  <data name="TodoTaskCompletedUnknown" xml:space="preserve">
-    <value>un1 marked task as done</value>
+    <value>You marked **&quot;{0}&quot;** as done</value>
   </data>
   <data name="TodoTaskNotCompleted" xml:space="preserve">
-    <value>un1 marked “{0}” as not done</value>
+    <value>un1 marked **&quot;{0}&quot;** as not done</value>
   </data>
   <data name="TodoTaskNotCompletedOut" xml:space="preserve">
-    <value>You marked “{0}” as not done</value>
-  </data>
-  <data name="TodoTaskNotCompletedOutUnknown" xml:space="preserve">
-    <value>You marked task as not done</value>
-  </data>
-  <data name="TodoTaskNotCompletedUnknown" xml:space="preserve">
-    <value>un1 marked task as not done</value>
+    <value>You marked **&quot;{0}&quot;** as not done</value>
   </data>
   <data name="TodoTaskPlaceholder" xml:space="preserve">
     <value>Task</value>
+  </data>
+  <data name="TodoTasksCompleted_one" xml:space="preserve">
+    <value>un1 marked **{0} task** as done</value>
+  </data>
+  <data name="TodoTasksCompleted_other" xml:space="preserve">
+    <value>un1 marked **{0} tasks** as done</value>
+  </data>
+  <data name="TodoTasksCompletedOut_one" xml:space="preserve">
+    <value>You marked **{0} task** as done</value>
+  </data>
+  <data name="TodoTasksCompletedOut_other" xml:space="preserve">
+    <value>You marked **{0} tasks** as done</value>
+  </data>
+  <data name="TodoTasksNotCompleted_one" xml:space="preserve">
+    <value>un1 marked **{0} task** as not done</value>
+  </data>
+  <data name="TodoTasksNotCompleted_other" xml:space="preserve">
+    <value>un1 marked **{0} tasks** as not done</value>
+  </data>
+  <data name="TodoTasksNotCompletedOut_one" xml:space="preserve">
+    <value>You marked **{0} tasks** as not done</value>
+  </data>
+  <data name="TodoTasksNotCompletedOut_other" xml:space="preserve">
+    <value>You marked **{0} tasks** as not done</value>
   </data>
   <data name="TodoTitle" xml:space="preserve">
     <value>New To-Do List</value>

@@ -181,10 +181,7 @@ namespace Telegram.Td
 
                                 foreach (var entity in text.Entities)
                                 {
-                                    if (entity.Offset < index)
-                                    {
-                                        entities.Add(new TextEntity(entity.Offset + index, entity.Length, entity.Type));
-                                    }
+                                    entities.Add(new TextEntity(entity.Offset + index, entity.Length, entity.Type));
                                 }
 
                                 i = index + text.Text.Length - 1;
