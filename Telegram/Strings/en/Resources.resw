@@ -12788,6 +12788,9 @@ in mini apps on Telegram.</value>
   <data name="TodoCantForwardSecretChat" xml:space="preserve">
     <value>Sorry, to-do lists can’t be forwarded to secret chats.</value>
   </data>
+  <data name="TodoCheck" xml:space="preserve">
+    <value>Check</value>
+  </data>
   <data name="TodoCompleted_one" xml:space="preserve">
     <value>{1} of {0} completed</value>
   </data>
@@ -12868,6 +12871,9 @@ in mini apps on Telegram.</value>
   </data>
   <data name="TodoTitlePlaceholder" xml:space="preserve">
     <value>Title</value>
+  </data>
+  <data name="TodoUncheck" xml:space="preserve">
+    <value>Uncheck</value>
   </data>
   <data name="TooManyTries" xml:space="preserve">
     <value>Too many tries.

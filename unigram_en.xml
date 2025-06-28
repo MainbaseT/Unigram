@@ -12335,5 +12335,7 @@
     <string name="TodoMenuTabTask">Task</string>
     <string name="TodoDeleteItem">Delete Item</string>
     <string name="TodoEditItem">Edit Item</string>
+    <string name="TodoCheck">Check</string>
+    <string name="TodoUncheck">Uncheck</string>
 
 </resources>

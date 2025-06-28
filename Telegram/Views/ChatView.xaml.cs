@@ -2979,7 +2979,7 @@ namespace Telegram.Views
                     if (properties.CanMarkTasksAsDone)
                     {
                         // TODO:
-                        checklistTaskItem.CreateFlyoutItem(ViewModel.MarkChecklistTask, messageTask, checklistTask.CompletionDate != 0 ? "Uncheck" : "Check", checklistTask.CompletionDate != 0 ? Icons.DismissCircle : Icons.CheckmarkCircle);
+                        checklistTaskItem.CreateFlyoutItem(ViewModel.MarkChecklistTask, messageTask, checklistTask.CompletionDate != 0 ? Strings.TodoUncheck : Strings.TodoCheck, checklistTask.CompletionDate != 0 ? Icons.DismissCircle : Icons.CheckmarkCircle);
                     }
 
                     checklistTaskItem.CreateFlyoutItem(ViewModel.CopyText, checklistTask.Text, Strings.Copy, Icons.DocumentCopy);
