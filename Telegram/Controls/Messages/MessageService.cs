@@ -2469,9 +2469,12 @@ namespace Telegram.Controls.Messages
 
         private static FormattedText UpdateChecklistTasksDone(MessageWithOwner message, MessageChecklistTasksDone checklistTasksDone, bool history)
         {
-            var taskId = checklistTasksDone.MarkedAsDoneTaskIds.Count > 0
-                ? checklistTasksDone.MarkedAsDoneTaskIds[0]
-                : checklistTasksDone.MarkedAsNotDoneTaskIds[0];
+            var markedAsDone = checklistTasksDone.MarkedAsDoneTaskIds.Count > 0;
+            var taskIds = markedAsDone
+                ? checklistTasksDone.MarkedAsDoneTaskIds
+                : checklistTasksDone.MarkedAsNotDoneTaskIds;
+
+            var taskId = taskIds[0];
 
             ChecklistTask task = null;
             if (message is MessageViewModel { ReplyToItem: MessageViewModel { Content: MessageChecklist checklist } })
@@ -2486,10 +2489,10 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            if (task == null || checklistTasksDone.MarkedAsDoneTaskIds.Count > 1 || checklistTasksDone.MarkedAsNotDoneTaskIds.Count > 1)
+            if (task == null || taskIds.Count > 1)
             {
                 string text;
-                if (checklistTasksDone.MarkedAsDoneTaskIds.Count > 0)
+                if (markedAsDone)
                 {
                     text = message.IsOutgoing
                         ? Locale.Declension(Strings.R.TodoTasksCompletedOut, checklistTasksDone.MarkedAsDoneTaskIds.Count)
@@ -2509,7 +2512,7 @@ namespace Telegram.Controls.Messages
             else
             {
                 string text;
-                if (checklistTasksDone.MarkedAsDoneTaskIds.Count > 0)
+                if (markedAsDone)
                 {
                     text = message.IsOutgoing
                         ? Strings.TodoTaskCompletedOut
