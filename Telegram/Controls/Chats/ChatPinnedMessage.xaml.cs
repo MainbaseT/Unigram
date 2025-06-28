@@ -133,7 +133,7 @@ namespace Telegram.Controls.Chats
             {
                 ShowHide(chat.BusinessBotManageBar == null);
             }
-            
+
             if (value < 0)
             {
                 value = maximum - 1;

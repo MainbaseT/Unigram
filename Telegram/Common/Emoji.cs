@@ -325,7 +325,7 @@ namespace Telegram.Common
         {
             var previous = 0;
             count = 0;
-            
+
             for (int i = 0; i < text.Entities.Count; i++)
             {
                 var entity = text.Entities[i];

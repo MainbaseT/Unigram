@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using Telegram.Collections;
-using Telegram.Converters;
 using Telegram.Td.Api;
 
 namespace Telegram.ViewModels

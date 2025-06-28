@@ -5,7 +5,6 @@ using Telegram.Converters;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Business;
 using Telegram.Views.Premium.Popups;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;

@@ -180,7 +180,7 @@ namespace Telegram.Controls.Drawers
                 _tone2 = tone2.Tone2;
                 return;
             }
-            
+
             if (tone1 != null)
             {
                 Outline1.Text = tone1.Value;

@@ -133,7 +133,7 @@ namespace Telegram.ViewModels
                 if (result is FoundChatMessages foundChatMessages && foundChatMessages.Messages.Count > 0)
                 {
                     var results = new ListWithTotalCount<PinnedMessageViewModel>(foundChatMessages.TotalCount);
-                    
+
                     for (int i = 0; i < foundChatMessages.Messages.Count; i++)
                     {
                         results.Add(_viewModel.CreatePinnedMessage(foundChatMessages.Messages[i], -1));
