@@ -157,7 +157,15 @@ namespace Telegram.Services
                         }
                         else
                         {
-                            var destination = await Future.CreateFileAsync(source.Name);
+                            var sourceName = source.Name;
+
+                            var response = await SendAsync(new GetSuggestedFileName(file.Id, ApplicationData.Current.TemporaryFolder.Path));
+                            if (response is Text text)
+                            {
+                                sourceName = text.TextValue;
+                            }
+
+                            var destination = await Future.CreateFileAsync(sourceName);
 
                             await source.CopyAndReplaceAsync(destination);
                             Future.AddOrReplace(file.Remote.UniqueId, destination);
@@ -217,8 +225,16 @@ namespace Telegram.Services
                     StorageFile source = await StorageFile.GetFileFromPathAsync(file.Local.Path);
                     StorageFile destination = await Future.GetFileAsync(file.Remote.UniqueId, true);
 
+                    var sourceName = source.Name;
+
+                    var response = await SendAsync(new GetSuggestedFileName(file.Id, ApplicationData.Current.TemporaryFolder.Path));
+                    if (response is Text text)
+                    {
+                        sourceName = text.TextValue;
+                    }
+
                     await source.CopyAndReplaceAsync(destination);
-                    await destination.RenameAsync(source.Name, NameCollisionOption.GenerateUniqueName);
+                    await destination.RenameAsync(sourceName, NameCollisionOption.GenerateUniqueName);
 
                     Future.Remove(file.Remote.UniqueId, true);
                     Future.AddOrReplace(file.Remote.UniqueId, destination);
