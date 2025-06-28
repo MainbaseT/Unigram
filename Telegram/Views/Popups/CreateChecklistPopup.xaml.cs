@@ -133,7 +133,7 @@ namespace Telegram.Views.Popups
         private IList<InputChecklistTask> GetTasks(bool addedTasksOnly)
         {
             var tasks = new List<InputChecklistTask>();
-            var nextTaskId = Items.Max(x => x.Id);
+            var nextTaskId = Math.Max(0, Items.Max(x => x.Id));
 
             foreach (var item in Items)
             {
