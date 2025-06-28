@@ -378,7 +378,7 @@ namespace Telegram.Views.Popups
 
         private void Emoji_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button{ Tag: FormattedTextBox textBox })
+            if (sender is not Button { Tag: FormattedTextBox textBox })
             {
                 return;
             }

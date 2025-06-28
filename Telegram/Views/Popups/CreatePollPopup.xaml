@@ -44,6 +44,7 @@
                                                CustomEmoji="{x:Bind CustomEmoji}"
                                                PlaceholderText="{CustomResource QuestionHint}"
                                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                               AllowedEntities="CustomEmoji"
                                                AcceptsReturn="True"
                                                TextWrapping="Wrap"
                                                MaxLength="255" />
@@ -93,6 +94,7 @@
                                     <controls:FormattedTextBox x:Name="Text"
                                                                PlaceholderText="{CustomResource OptionHint}"
                                                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                               AllowedEntities="CustomEmoji"
                                                                MaxLength="100"
                                                                Loaded="Option_Loaded"
                                                                PreviewKeyDown="Option_PreviewKeyDown"

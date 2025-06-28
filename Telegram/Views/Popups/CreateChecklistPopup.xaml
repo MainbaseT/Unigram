@@ -55,6 +55,7 @@
                                                        CustomEmoji="{x:Bind CustomEmoji}"
                                                        PlaceholderText="{CustomResource TodoTitlePlaceholder}"
                                                        FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                       AllowedEntities="CustomEmoji"
                                                        AcceptsReturn="True"
                                                        TextWrapping="Wrap"
                                                        MaxLength="255"
@@ -117,6 +118,7 @@
                             <controls:FormattedTextBox x:Name="Text"
                                                        PlaceholderText="{CustomResource TodoTaskPlaceholder}"
                                                        FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                       AllowedEntities="CustomEmoji"
                                                        Padding="28,5,64,6"
                                                        MaxLength="100"
                                                        Loaded="Task_Loaded"
@@ -176,6 +178,7 @@
                         <controls:FormattedTextBox x:Name="AddTask"
                                                    CustomEmoji="{x:Bind AddTaskCustomEmoji}"
                                                    PlaceholderText="{CustomResource TodoNewTask}"
+                                                   AllowedEntities="CustomEmoji"
                                                    TextChangedForRealNoCap="AddTask_TextChanged"
                                                    GotFocus="AddTask_GotFocus"
                                                    LostFocus="AddTask_LostFocus" />
