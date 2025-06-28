@@ -182,7 +182,15 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (!checklist.List.CanMarkTasksAsDone)
             {
-                ToastPopup.Show(XamlRoot, string.Format(Strings.TodoCompleteForbidden, _message.ClientService.GetTitle(_message.SenderId)), ToastPopupIcon.Error);
+                if (_message.ForwardInfo != null)
+                {
+                    ToastPopup.Show(XamlRoot, Strings.TodoCompleteForbiddenForward, ToastPopupIcon.Error);
+                }
+                else
+                {
+                    ToastPopup.Show(XamlRoot, string.Format(Strings.TodoCompleteForbidden, _message.ClientService.GetTitle(_message.SenderId)), ToastPopupIcon.Error);
+                }
+
                 return;
             }
 

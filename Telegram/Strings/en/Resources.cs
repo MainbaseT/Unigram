@@ -19007,6 +19007,11 @@ namespace Telegram
         public static string TodoCompleteForbidden => Resource.GetString("TodoCompleteForbidden");
         
         /// <summary>
+        /// Localized resource similar to "You can't change forwarded to-do."
+        /// </summary>
+        public static string TodoCompleteForbiddenForward => Resource.GetString("TodoCompleteForbiddenForward");
+        
+        /// <summary>
         /// Localized resource similar to "Delete Item"
         /// </summary>
         public static string TodoDeleteItem => Resource.GetString("TodoDeleteItem");

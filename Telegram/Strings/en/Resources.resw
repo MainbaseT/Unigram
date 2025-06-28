@@ -12809,6 +12809,9 @@ in mini apps on Telegram.</value>
   <data name="TodoCompleteForbidden" xml:space="preserve">
     <value>**{0}** has restricted others from editing this to-do list.</value>
   </data>
+  <data name="TodoCompleteForbiddenForward" xml:space="preserve">
+    <value>You can&apos;t change forwarded to-do.</value>
+  </data>
   <data name="TodoDeleteItem" xml:space="preserve">
     <value>Delete Item</value>
   </data>

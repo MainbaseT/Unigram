@@ -12337,5 +12337,6 @@
     <string name="TodoEditItem">Edit Item</string>
     <string name="TodoCheck">Check</string>
     <string name="TodoUncheck">Uncheck</string>
+    <string name="TodoCompleteForbiddenForward">You can\'t change forwarded to-do.</string>
 
 </resources>
