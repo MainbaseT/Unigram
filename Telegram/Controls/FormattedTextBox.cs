@@ -55,7 +55,7 @@ namespace Telegram.Controls
         private bool _updateLocked;
         private bool _fromTextChanging;
         private bool _isContentChanging;
-        private bool _undoGroup;
+        private int _undoGroup;
 
         private int _selectionIndex;
 
@@ -148,7 +148,7 @@ namespace Telegram.Controls
             _fromTextChanging = true;
             _isEmpty = null;
 
-            if (args.IsContentChanging && !_undoGroup)
+            if (args.IsContentChanging && _undoGroup == 0)
             {
                 // Fixes insertion of some fully qualified emoji from WIN+.
                 var inserted = Document.GetRange(Document.Selection.StartPosition - 1, Document.Selection.StartPosition);
@@ -1264,23 +1264,22 @@ namespace Telegram.Controls
 
         private void BeginUndoGroup()
         {
-            if (_undoGroup)
+            if (_undoGroup == 0)
             {
-                return;
+                Document.BeginUndoGroup();
             }
 
-            _undoGroup = true;
-            Document.BeginUndoGroup();
+            _undoGroup++;
         }
 
         private void EndUndoGroup()
         {
-            if (_undoGroup)
+            _undoGroup--;
+
+            if (_undoGroup == 0)
             {
                 Document.EndUndoGroup();
             }
-
-            _undoGroup = false;
         }
 
         public void ClearText()
@@ -1530,7 +1529,10 @@ namespace Telegram.Controls
             Document.ApplyDisplayUpdates();
             EndUndoGroup();
 
-            TextChangedForRealNoCap?.Invoke(this, EventArgs.Empty);
+            if (_undoGroup == 0 && !_updateLocked)
+            {
+                TextChangedForRealNoCap?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void InsertBlockquote(string quote)
