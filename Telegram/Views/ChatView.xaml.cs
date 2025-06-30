@@ -361,9 +361,6 @@ namespace Telegram.Views
             _newestItemAsFooter = null;
             _newestItemAsFooterNeeded = null;
 
-            _messagesHeaderRootPadding = 0;
-            _messagesScrollBarPadding = 0;
-
             ButtonStickers.Collapse();
         }
 
@@ -387,9 +384,6 @@ namespace Telegram.Views
             _newestItem = null;
             _newestItemAsFooter = null;
             _newestItemAsFooterNeeded = null;
-
-            _messagesHeaderRootPadding = 0;
-            _messagesScrollBarPadding = 0;
 
             if (sender is DialogViewModel viewModel)
             {
@@ -424,9 +418,6 @@ namespace Telegram.Views
             _newestItem = null;
             _newestItemAsFooter = null;
             _newestItemAsFooterNeeded = null;
-
-            _messagesHeaderRootPadding = 0;
-            _messagesScrollBarPadding = 0;
 
             _updateThemeTask = new TaskCompletionSource<bool>();
             ViewModel.MessageSliceLoaded += OnMessageSliceLoaded;
