@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Rg.DiffUtils;
 using System;
 using System.Collections.Generic;
 using Telegram.Common;
@@ -16,10 +17,14 @@ using Windows.UI.Xaml.Documents;
 
 namespace Telegram.Controls.Messages.Content
 {
-    public sealed partial class ChecklistContent : ControlEx, IContent
+    public sealed partial class ChecklistContent : ControlEx, IContent, IDiffEqualityComparer<ChecklistTask>
     {
         private MessageViewModel _message;
         public MessageViewModel Message => _message;
+
+        private readonly Dictionary<int, ChecklistTaskContent> _cache = new();
+
+        private IList<ChecklistTask> _prevValue;
 
         public ChecklistContent(MessageViewModel message)
         {
@@ -57,7 +62,7 @@ namespace Telegram.Controls.Messages.Content
 
         public void UpdateMessage(MessageViewModel message)
         {
-            var recycled = _message?.Id == message.Id;
+            var recycled = _message?.ChatId == message.ChatId && _message?.Id == message.Id;
 
             _message = message;
 
@@ -80,45 +85,68 @@ namespace Telegram.Controls.Messages.Content
 
             var completed = 0;
 
-            // TODO: Diff?
-
-            for (int i = 0; i < Math.Max(checklist.List.Tasks.Count, Tasks.Children.Count); i++)
+            void UpdateItem(ChecklistTask oldItem, ChecklistTask newItem, int index = 0)
             {
-                if (i < Tasks.Children.Count)
+                if (newItem != null)
                 {
-                    var button = Tasks.Children[i] as ChecklistTaskContent;
-                    button.Click -= Task_Click;
+                    oldItem.Text = newItem.Text;
+                    oldItem.CompletionDate = newItem.CompletionDate;
+                    oldItem.CompletedByUserId = newItem.CompletedByUserId;
+                }
 
-                    if (i < checklist.List.Tasks.Count)
+                if (oldItem.CompletionDate != 0)
+                {
+                    completed++;
+                }
+
+                UpdateButton(message, checklist.List, oldItem, index);
+            }
+
+            if (_prevValue == null || !recycled)
+            {
+                _cache.Clear();
+                Tasks.Children.Clear();
+
+                for (int i = 0; i < checklist.List.Tasks.Count; i++)
+                {
+                    UpdateItem(checklist.List.Tasks[i], null, i);
+                }
+            }
+            else
+            {
+                // PERF: run diff asynchronously?
+                var prev = _prevValue ?? Array.Empty<ChecklistTask>();
+                var diff = DiffUtil.CalculateDiff(prev, checklist.List.Tasks, this, Constants.DiffOptions);
+
+                foreach (var step in diff.Steps)
+                {
+                    if (step.Status == DiffStatus.Add)
                     {
-                        if (checklist.List.Tasks[i].CompletionDate != 0)
+                        UpdateItem(step.Items[0].NewValue, null, step.NewStartIndex);
+                    }
+                    else if (step.Status == DiffStatus.Move && step.OldStartIndex < Tasks.Children.Count && step.NewStartIndex < Tasks.Children.Count)
+                    {
+                        UpdateItem(step.Items[0].OldValue, step.Items[0].NewValue);
+                        Tasks.Children.Move((uint)step.OldStartIndex, (uint)step.NewStartIndex);
+                    }
+                    else if (step.Status == DiffStatus.Remove && step.OldStartIndex < Tasks.Children.Count)
+                    {
+                        if (step.Items[0].OldValue is ChecklistTask oldTask)
                         {
-                            completed++;
+                            _cache.Remove(oldTask.Id);
                         }
 
-                        button.UpdateChecklistTask(message, checklist.List, checklist.List.Tasks[i]);
-                        button.Click += Task_Click;
-                    }
-                    else
-                    {
-                        Tasks.Children.Remove(button);
+                        Tasks.Children.RemoveAt(step.OldStartIndex);
                     }
                 }
-                else
+
+                foreach (var item in diff.NotMovedItems)
                 {
-                    if (checklist.List.Tasks[i].CompletionDate != 0)
-                    {
-                        completed++;
-                    }
-
-                    var button = new ChecklistTaskContent();
-                    button.UpdateChecklistTask(message, checklist.List, checklist.List.Tasks[i]);
-                    button.Click += Task_Click;
-
-                    Tasks.Children.Add(button);
+                    UpdateItem(item.OldValue, item.NewValue);
                 }
             }
 
+            _prevValue = checklist.List.Tasks;
             Completed.Text = Locale.Declension(Strings.R.TodoCompleted, checklist.List.Tasks.Count, completed);
         }
 
@@ -207,6 +235,33 @@ namespace Telegram.Controls.Messages.Content
             }
 
             _message.ClientService.Send(new MarkChecklistTasksAsDone(_message.ChatId, _message.Id, markedAsDone, markedAsNotDone));
+        }
+
+        private void UpdateButton(MessageViewModel message, Checklist checklist, ChecklistTask item, int index)
+        {
+            var button = GetOrCreateButton(item.Id, index);
+            button.UpdateChecklistTask(message, checklist, item);
+        }
+
+        private ChecklistTaskContent GetOrCreateButton(int taskId, int index)
+        {
+            if (_cache.TryGetValue(taskId, out ChecklistTaskContent button))
+            {
+                return button;
+            }
+
+            button = new ChecklistTaskContent();
+            button.Click += Task_Click;
+
+            _cache[taskId] = button;
+            Tasks.Children.Insert(Math.Min(index, Tasks.Children.Count), button);
+
+            return button;
+        }
+
+        public bool CompareItems(ChecklistTask oldItem, ChecklistTask newItem)
+        {
+            return oldItem.Id == newItem.Id;
         }
     }
 }
