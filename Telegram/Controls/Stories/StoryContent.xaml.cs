@@ -687,9 +687,8 @@ namespace Telegram.Controls.Stories
 
             visual.StartAnimation("Scale", scale);
 
-            var device = ElementComposition.GetSharedDevice();
-            var rect1 = CanvasGeometry.CreateRoundedRectangle(device, 0, 0, ActualSize.X, ActualSize.Y, 8, 8);
-            var rect2 = CanvasGeometry.CreateRoundedRectangle(device, 0, 0, ActualSize.X, ActualSize.Y, 8 * 2.5f, 8 * 2.5f);
+            var rect1 = CanvasGeometry.CreateRoundedRectangle(null, 0, 0, ActualSize.X, ActualSize.Y, 8, 8);
+            var rect2 = CanvasGeometry.CreateRoundedRectangle(null, 0, 0, ActualSize.X, ActualSize.Y, 8 * 2.5f, 8 * 2.5f);
 
             var geometry1 = compositor.CreatePathGeometry(new CompositionPath(rect1));
             var clip1 = compositor.CreateGeometricClip(geometry1);

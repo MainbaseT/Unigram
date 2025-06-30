@@ -120,16 +120,14 @@ namespace Telegram.Controls.Cells
             visual.StartAnimation("Scale.X", visualScale);
             visual.StartAnimation("Scale.Y", visualScale);
 
-            var device = ElementComposition.GetSharedDevice();
-
             if (index >= f && index < l)
             {
                 // TODO: replace this with an ellipse in the UI
-                var rect1 = CanvasGeometry.CreateRectangle(device, 0, 0, 48, 48);
-                var elli1 = CanvasGeometry.CreateEllipse(device, 48 + 72 * 0, 24, 22, 22);
-                var elli2 = CanvasGeometry.CreateEllipse(device, 48 + 72 * 1, 24, 22, 22);
-                var group1 = CanvasGeometry.CreateGroup(device, new[] { elli1, rect1 }, CanvasFilledRegionDetermination.Alternate);
-                var group2 = CanvasGeometry.CreateGroup(device, new[] { elli2, rect1 }, CanvasFilledRegionDetermination.Alternate);
+                var rect1 = CanvasGeometry.CreateRectangle(null, 0, 0, 48, 48);
+                var elli1 = CanvasGeometry.CreateEllipse(null, 48 + 72 * 0, 24, 22, 22);
+                var elli2 = CanvasGeometry.CreateEllipse(null, 48 + 72 * 1, 24, 22, 22);
+                var group1 = CanvasGeometry.CreateGroup(null, new[] { elli1, rect1 }, CanvasFilledRegionDetermination.Alternate);
+                var group2 = CanvasGeometry.CreateGroup(null, new[] { elli2, rect1 }, CanvasFilledRegionDetermination.Alternate);
 
                 var geometry1 = compositor.CreatePathGeometry(new CompositionPath(group1));
                 var clip1 = compositor.CreateGeometricClip(geometry1);
@@ -154,11 +152,11 @@ namespace Telegram.Controls.Cells
             if (index > f && index <= l)
             {
                 // TODO: replace this with an ellipse in the UI
-                var rect1 = CanvasGeometry.CreateRectangle(device, 0, 0, 48, 48);
-                var elli1 = CanvasGeometry.CreateEllipse(device, -0 + -72 * 0, 24, 22, 22);
-                var elli2 = CanvasGeometry.CreateEllipse(device, -0 + -72 * 1, 24, 22, 22);
-                var group1 = CanvasGeometry.CreateGroup(device, new[] { elli1, rect1 }, CanvasFilledRegionDetermination.Alternate);
-                var group2 = CanvasGeometry.CreateGroup(device, new[] { elli2, rect1 }, CanvasFilledRegionDetermination.Alternate);
+                var rect1 = CanvasGeometry.CreateRectangle(null, 0, 0, 48, 48);
+                var elli1 = CanvasGeometry.CreateEllipse(null, -0 + -72 * 0, 24, 22, 22);
+                var elli2 = CanvasGeometry.CreateEllipse(null, -0 + -72 * 1, 24, 22, 22);
+                var group1 = CanvasGeometry.CreateGroup(null, new[] { elli1, rect1 }, CanvasFilledRegionDetermination.Alternate);
+                var group2 = CanvasGeometry.CreateGroup(null, new[] { elli2, rect1 }, CanvasFilledRegionDetermination.Alternate);
 
                 var geometry1 = compositor.CreatePathGeometry(new CompositionPath(group1));
                 var clip1 = compositor.CreateGeometricClip(geometry1);

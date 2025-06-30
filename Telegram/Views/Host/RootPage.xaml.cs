@@ -969,16 +969,15 @@ namespace Telegram.Views.Host
                 var width = MathF.Max(actualWidth - point.X, actualHeight - point.Y);
                 var diaginal = MathF.Sqrt((width * width) + (width * width));
 
-                var device = ElementComposition.GetSharedDevice();
                 var expand = false; // ActualTheme == ElementTheme.Dark;
 
-                var rect1 = CanvasGeometry.CreateRectangle(device, 0, 0, expand ? 0 : actualWidth, expand ? 0 : actualHeight);
+                var rect1 = CanvasGeometry.CreateRectangle(null, 0, 0, expand ? 0 : actualWidth, expand ? 0 : actualHeight);
 
-                var elli1 = CanvasGeometry.CreateCircle(device, point.X + 24, point.Y + 24, expand ? 0 : diaginal);
-                var group1 = CanvasGeometry.CreateGroup(device, new[] { elli1, rect1 }, CanvasFilledRegionDetermination.Alternate);
+                var elli1 = CanvasGeometry.CreateCircle(null, point.X + 24, point.Y + 24, expand ? 0 : diaginal);
+                var group1 = CanvasGeometry.CreateGroup(null, new[] { elli1, rect1 }, CanvasFilledRegionDetermination.Alternate);
 
-                var elli2 = CanvasGeometry.CreateCircle(device, point.X + 24, point.Y + 24, expand ? diaginal : 0);
-                var group2 = CanvasGeometry.CreateGroup(device, new[] { elli2, rect1 }, CanvasFilledRegionDetermination.Alternate);
+                var elli2 = CanvasGeometry.CreateCircle(null, point.X + 24, point.Y + 24, expand ? diaginal : 0);
+                var group2 = CanvasGeometry.CreateGroup(null, new[] { elli2, rect1 }, CanvasFilledRegionDetermination.Alternate);
 
                 //var visual = ElementComposition.GetElementVisual(Transition);
                 var ellipse = visual.Compositor.CreatePathGeometry(new CompositionPath(group2));

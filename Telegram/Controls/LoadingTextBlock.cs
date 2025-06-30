@@ -270,7 +270,6 @@ namespace Telegram.Controls
                 return finalSize;
             }
 
-            var device = ElementComposition.GetSharedDevice();
             var list = new List<CanvasGeometry>();
 
             var left = (float)Padding.Left;
@@ -284,10 +283,10 @@ namespace Telegram.Controls
                     continue;
                 }
 
-                list.Add(CanvasGeometry.CreateRoundedRectangle(device, new Rect(left + rect.X - 4, top + rect.Y - 2, rect.Width + 6, rect.Height + 6), 4, 4));
+                list.Add(CanvasGeometry.CreateRoundedRectangle(null, new Rect(left + rect.X - 4, top + rect.Y - 2, rect.Width + 6, rect.Height + 6), 4, 4));
             }
 
-            _skeleton.Clip = BootStrapper.Current.Compositor.CreateGeometricClip(BootStrapper.Current.Compositor.CreatePathGeometry(new CompositionPath(CanvasGeometry.CreateGroup(device, list.ToArray(), CanvasFilledRegionDetermination.Winding))));
+            _skeleton.Clip = BootStrapper.Current.Compositor.CreateGeometricClip(BootStrapper.Current.Compositor.CreatePathGeometry(new CompositionPath(CanvasGeometry.CreateGroup(null, list.ToArray(), CanvasFilledRegionDetermination.Winding))));
             _skeleton.Size = _placeholder.DesiredSize.ToVector2();
 
             return finalSize;

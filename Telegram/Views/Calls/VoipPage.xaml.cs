@@ -162,11 +162,10 @@ namespace Telegram.Views.Calls
 
         private void InitializeBlob()
         {
-            var device = ElementComposition.GetSharedDevice();
-            var outerClip = CanvasGeometry.CreateRectangle(device, 0, 0, 280, 280);
-            var innerClip = CanvasGeometry.CreateEllipse(device, 140, 140, 63, 63);
+            var outerClip = CanvasGeometry.CreateRectangle(null, 0, 0, 280, 280);
+            var innerClip = CanvasGeometry.CreateEllipse(null, 140, 140, 63, 63);
             var blob = ElementComposition.GetElementVisual(Blob);
-            var geometry = blob.Compositor.CreatePathGeometry(new CompositionPath(CanvasGeometry.CreateGroup(device, new[] { outerClip, innerClip }, CanvasFilledRegionDetermination.Alternate)));
+            var geometry = blob.Compositor.CreatePathGeometry(new CompositionPath(CanvasGeometry.CreateGroup(null, new[] { outerClip, innerClip }, CanvasFilledRegionDetermination.Alternate)));
 
             blob.Clip = blob.Compositor.CreateGeometricClip(geometry);
         }

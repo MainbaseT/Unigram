@@ -3367,10 +3367,9 @@ namespace Telegram.Views
                 var pictures = new StackPanel();
                 pictures.Orientation = Orientation.Horizontal;
 
-                var device = ElementComposition.GetSharedDevice();
-                var rect1 = CanvasGeometry.CreateRectangle(device, 0, 0, 24, 24);
-                var elli1 = CanvasGeometry.CreateEllipse(device, -2, 12, 14, 14);
-                var group1 = CanvasGeometry.CreateGroup(device, new[] { elli1, rect1 }, CanvasFilledRegionDetermination.Alternate);
+                var rect1 = CanvasGeometry.CreateRectangle(null, 0, 0, 24, 24);
+                var elli1 = CanvasGeometry.CreateEllipse(null, -2, 12, 14, 14);
+                var group1 = CanvasGeometry.CreateGroup(null, new[] { elli1, rect1 }, CanvasFilledRegionDetermination.Alternate);
 
                 var compositor = BootStrapper.Current.Compositor;
                 var geometry = compositor.CreatePathGeometry(new CompositionPath(group1));

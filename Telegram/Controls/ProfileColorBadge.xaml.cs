@@ -65,10 +65,9 @@ namespace Telegram.Controls
 
                 ProfilePrimary.Visibility = Visibility.Visible;
 
-                var device = ElementComposition.GetSharedDevice();
-                var ellipse1 = CanvasGeometry.CreateRectangle(device, 0, 0, 24, 24);
-                var ellipse2 = CanvasGeometry.CreateEllipse(device, 28, 12, 12, 12);
-                var group = CanvasGeometry.CreateGroup(device, new[] { ellipse1, ellipse2 }, CanvasFilledRegionDetermination.Alternate);
+                var ellipse1 = CanvasGeometry.CreateRectangle(null, 0, 0, 24, 24);
+                var ellipse2 = CanvasGeometry.CreateEllipse(null, 28, 12, 12, 12);
+                var group = CanvasGeometry.CreateGroup(null, new[] { ellipse1, ellipse2 }, CanvasFilledRegionDetermination.Alternate);
 
                 var visual = ElementComposition.GetElementVisual(NamePrimary);
                 visual.Clip = BootStrapper.Current.Compositor.CreateGeometricClip(BootStrapper.Current.Compositor.CreatePathGeometry(new CompositionPath(group)));
