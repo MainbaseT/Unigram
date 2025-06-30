@@ -1299,7 +1299,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private async void UpdateMinithumbnail(MinithumbnailId thumbnail)
+        private void UpdateMinithumbnail(MinithumbnailId thumbnail)
         {
             if (thumbnail != null)
             {
@@ -1334,7 +1334,7 @@ namespace Telegram.Controls.Cells
                     try
                     {
                         PlaceholderImageHelper.WriteBytes(thumbnail.Data, stream);
-                        await bitmap.SetSourceAsync(stream);
+                        _ = bitmap.SetSourceAsync(stream);
                     }
                     catch
                     {
@@ -1638,7 +1638,7 @@ namespace Telegram.Controls.Cells
         {
             if (message.Content.IsService())
             {
-                if (chat == null && clientService.TryGetChat(message.ChatId, out chat))
+                if (chat == null)
                 {
                     clientService.TryGetChat(message.ChatId, out chat);
                 }
