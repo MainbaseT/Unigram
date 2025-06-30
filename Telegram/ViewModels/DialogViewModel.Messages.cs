@@ -787,7 +787,14 @@ namespace Telegram.ViewModels
             }
             else if (message.Content is MessageAnimatedEmoji animatedEmoji)
             {
-                input = new FormattedText(animatedEmoji.Emoji, Array.Empty<TextEntity>());
+                if (animatedEmoji.AnimatedEmoji.Sticker?.FullType is StickerFullTypeCustomEmoji customEmoji)
+                {
+                    input = new FormattedText(animatedEmoji.Emoji,new[] { new TextEntity(0, animatedEmoji.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
+                }
+                else
+                {
+                    input = new FormattedText(animatedEmoji.Emoji, Array.Empty<TextEntity>());
+                }
             }
 
             if (input != null)
