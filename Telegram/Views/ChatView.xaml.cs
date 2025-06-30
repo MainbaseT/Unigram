@@ -349,6 +349,10 @@ namespace Telegram.Views
                 }
             }
 
+            _headerUnreadViewport = null;
+            _headerUnreadNotReady = false;
+            _headerUnreadRetry = false;
+
             _oldestItem = null;
             _oldestItemAsHeader = null;
             _oldestItemAsHeaderNeeded = null;
@@ -356,6 +360,9 @@ namespace Telegram.Views
             _newestItem = null;
             _newestItemAsFooter = null;
             _newestItemAsFooterNeeded = null;
+
+            _messagesHeaderRootPadding = 0;
+            _messagesScrollBarPadding = 0;
 
             ButtonStickers.Collapse();
         }
@@ -369,6 +376,10 @@ namespace Telegram.Views
             _messageIdToMessageIds.Clear();
             _messageTopicToSelectors.Clear();
 
+            _headerUnreadViewport = null;
+            _headerUnreadNotReady = false;
+            _headerUnreadRetry = false;
+
             _oldestItem = null;
             _oldestItemAsHeader = null;
             _oldestItemAsHeaderNeeded = null;
@@ -376,6 +387,9 @@ namespace Telegram.Views
             _newestItem = null;
             _newestItemAsFooter = null;
             _newestItemAsFooterNeeded = null;
+
+            _messagesHeaderRootPadding = 0;
+            _messagesScrollBarPadding = 0;
 
             if (sender is DialogViewModel viewModel)
             {
@@ -402,8 +416,17 @@ namespace Telegram.Views
             _headerUnreadViewport = null;
             _headerUnreadNotReady = false;
             _headerUnreadRetry = false;
+
+            _oldestItem = null;
+            _oldestItemAsHeader = null;
             _oldestItemAsHeaderNeeded = null;
+
+            _newestItem = null;
+            _newestItemAsFooter = null;
             _newestItemAsFooterNeeded = null;
+
+            _messagesHeaderRootPadding = 0;
+            _messagesScrollBarPadding = 0;
 
             _updateThemeTask = new TaskCompletionSource<bool>();
             ViewModel.MessageSliceLoaded += OnMessageSliceLoaded;
@@ -6815,14 +6838,7 @@ namespace Telegram.Views
 
         private void HeaderUnread_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
         {
-            var padding = GroupCall.AnimatedHeight
-                + JoinRequests.AnimatedHeight
-                + TranslateHeader.AnimatedHeight
-                + ActionBar.AnimatedHeight
-                + ConnectedBot.AnimatedHeight
-                + PinnedMessage.AnimatedHeight
-                + AccountInfoHeader.AnimatedHeight
-                + Sponsored.AnimatedHeight;
+            var padding = AnimatedHeight;
 
             if (args.EffectiveViewport.Top < 4 && Math.Truncate(args.EffectiveViewport.Top) >= -padding && args.BringIntoViewDistanceY <= 28 && !Messages.HasBeenScrolled)
             {
@@ -6845,14 +6861,7 @@ namespace Telegram.Views
 
             _headerUnreadRetry = false;
 
-            var padding = GroupCall.AnimatedHeight
-                + JoinRequests.AnimatedHeight
-                + TranslateHeader.AnimatedHeight
-                + ActionBar.AnimatedHeight
-                + ConnectedBot.AnimatedHeight
-                + PinnedMessage.AnimatedHeight
-                + AccountInfoHeader.AnimatedHeight
-                + Sponsored.AnimatedHeight;
+            var padding = AnimatedHeight;
 
             var args = _headerUnreadViewport;
             if (args?.EffectiveViewport.Top < 4 && Math.Truncate(args.EffectiveViewport.Top) >= -padding && args.BringIntoViewDistanceY <= 28 && !Messages.HasBeenScrolled)
