@@ -69,7 +69,7 @@ namespace Telegram.Common
                         break;
                     }
                     // If preceding character is a surrogate pair we assume it's an emoji
-                    else if (character == ':' && text.Text.Length >= 2 && char.IsSurrogatePair(text.Text, text.Text.Length - 2))
+                    else if (character == ':' && (text.Character == '\uEA4F' || (text.Text.Length >= 2 && char.IsSurrogatePair(text.Text, text.Text.Length - 2))))
                     {
                         index = i;
                         break;
