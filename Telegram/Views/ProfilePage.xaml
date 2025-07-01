@@ -47,7 +47,6 @@
                                                  IsItemClickEnabled="True"
                                                  ItemClick="Navigation_ItemClick"
                                                  SelectionChanged="Navigation_SelectionChanged"
-                                                 ItemContextRequested="Navigation_ItemContextRequested"
                                                  PrepareContainerForItem="Navigation_PrepareContainerForItem"
                                                  ItemsSource="{x:Bind ViewModel.Items}"
                                                  SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}"
@@ -91,10 +90,12 @@
                                  Width="48"
                                  Height="48" />
 
-            <controls:MoreButton x:Name="Menu"
-                                 Click="Menu_ContextRequested"
-                                 HorizontalAlignment="Right"
-                                 VerticalAlignment="Top" />
+            <Border x:Name="MenuRoot"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top">
+                <controls:MoreButton x:Name="Menu"
+                                     Click="Menu_ContextRequested" />
+            </Border>
         </Grid>
 
 
