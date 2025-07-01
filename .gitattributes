@@ -62,4 +62,4 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-unigram_en.xml text eol=lf
+Telegram/Strings/en/Resources.xml text eol=lf
