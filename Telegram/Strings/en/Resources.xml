@@ -2194,7 +2194,7 @@
     <string name="FontSizePreviewReply">Good morning! &#128075;</string>
     <string name="FontSizePreviewLine1">Do you know what time it is?</string>
     <string name="FontSizePreviewLine2">It\'s morning in Tokyo &#128526;</string>
-    <string name="BackgroundColorSinglePreviewLine1">Click \'Set\' to apply the wallpaper.</string>
+    <string name="BackgroundColorSinglePreviewLine1">Click \'Apply\' to set the wallpaper.</string>
     <string name="BackgroundColorSinglePreviewLine2">Looks good</string>
 
 
@@ -7696,7 +7696,7 @@
     <string name="FactCheckWhat">what’s this?</string>
     <string name="FactCheckDialog">Fact Check</string>
     <string name="FactCheckPlaceholder">Add Fact or Context</string>
-    <string name="FactCheckToast">This clarification was provided by a fact checking agency assigned by the department of the government of your country ({0}) responsible for combating misinformation.</string>
+    <string name="FactCheckToast">This clarification was provided by Telegram.</string>
 
     <string name="FactCheckEdited">Fact check updated.</string>
     <string name="FactCheckDeleted">Fact check removed.</string>
@@ -7746,7 +7746,7 @@
     <string name="BotStarsAvailableBalance">Available balance</string>
     <string name="BotStarsOverviewInfo">Stars from your total balance can be used for ads or withdrawn as rewards 21 days after they are earned.</string>
     <string name="BotStarsWithdrawInfo">You can collect rewards for Stars using Fragment, or use Stars to advertise your bot. You cannot withdraw less than 1000 stars. **Learn more &gt;**</string>
-    <string name="BotStarsWithdrawInfoLink">https://telegram.org/tos/affiliate-program</string>
+    <string name="BotStarsWithdrawInfoLink">https://telegram.org/privacy</string>
 
 
 
@@ -8084,8 +8084,8 @@
     <string name="Gift2ActionSavedInfo">You added this gift to your profile.</string>
     <string name="Gift2ActionConvertedInfo_one">You converted this gift to {0} Star.</string>
     <string name="Gift2ActionConvertedInfo_other">You converted this gift to {0} Stars.</string>
-    <string name="Gift2ActionOutInfo_one">**{1}** can display this gift on their page or convert it to {0} Star.</string>
-    <string name="Gift2ActionOutInfo_other">**{1}** can display this gift on their page or convert it to {0} Stars.</string>
+    <string name="Gift2ActionOutInfo_one">**{1}** can add this gift to their profile or convert it to {0} Star.</string>
+    <string name="Gift2ActionOutInfo_other">**{1}** can add this gift to their profile or convert it to {0} Stars.</string>
 
 
     <string name="ProfileGifts">Gifts</string>
@@ -8105,10 +8105,10 @@
 
     <string name="Gift2TitleReceived">Received Gift</string>
     <string name="TelegramPremiumShort">Premium</string>
-    <string name="Gift2Info_one">You can keep this gift in your Profile or convert it to **{0}** Star.</string>
-    <string name="Gift2Info_other">You can keep this gift in your Profile or convert it to **{0}** Stars.</string>
-    <string name="Gift2InfoOut_one">{1} can keep this gift in profile or convert it to **{0}** Star.</string>
-    <string name="Gift2InfoOut_other">{1} can keep this gift in profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2Info_one">You can add this gift to your profile or convert it to **{0}** Star.</string>
+    <string name="Gift2Info_other">You can add this gift to your profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2InfoOut_one">{1} can add this gift to their profile or convert it to **{0}** Star.</string>
+    <string name="Gift2InfoOut_other">{1} can add this gift to their profile or convert it to **{0}** Stars.</string>
     <string name="Gift2InfoConverted_one">You converted this gift to **{0}** Star.</string>
     <string name="Gift2InfoConverted_other">You converted this gift to **{0}** Stars.</string>
     <string name="Gift2InfoPinned">You added this gift to your profile.</string>
@@ -9461,10 +9461,10 @@
     <string name="Gift2ActionInfo_two">Add this gift to your profile or convert it to {0} Stars.</string>
     <string name="Gift2ActionInfo_few">Add this gift to your profile or convert it to {0} Stars.</string>
     <string name="Gift2ActionInfo_many">Add this gift to your profile or convert it to {0} Stars.</string>
-    <string name="Gift2ActionOutInfo_zero">**{1}** can display this gift on their page or convert it to {0} Stars.</string>
-    <string name="Gift2ActionOutInfo_two">**{1}** can display this gift on their page or convert it to {0} Stars.</string>
-    <string name="Gift2ActionOutInfo_few">**{1}** can display this gift on their page or convert it to {0} Stars.</string>
-    <string name="Gift2ActionOutInfo_many">**{1}** can display this gift on their page or convert it to {0} Stars.</string>
+    <string name="Gift2ActionOutInfo_zero">**{1}** can add this gift to their profile or convert it to {0} Stars.</string>
+    <string name="Gift2ActionOutInfo_two">**{1}** can add this gift to their profile or convert it to {0} Stars.</string>
+    <string name="Gift2ActionOutInfo_few">**{1}** can add this gift to their profile or convert it to {0} Stars.</string>
+    <string name="Gift2ActionOutInfo_many">**{1}** can add this gift to their profile or convert it to {0} Stars.</string>
 
 
 
@@ -9494,18 +9494,18 @@
     <string name="Gift2Converted_two">{0} Star were sent to your balance</string>
     <string name="Gift2Converted_few">{0} Star were sent to your balance</string>
     <string name="Gift2Converted_many">{0} Star were sent to your balance</string>
-    <string name="Gift2Info_zero">You can keep this gift in your Profile or convert it to **{0}** Stars.</string>
-    <string name="Gift2Info_two">You can keep this gift in your Profile or convert it to **{0}** Stars.</string>
-    <string name="Gift2Info_few">You can keep this gift in your Profile or convert it to **{0}** Stars.</string>
-    <string name="Gift2Info_many">You can keep this gift in your Profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2Info_zero">You can add this gift to your profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2Info_two">You can add this gift to your profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2Info_few">You can add this gift to your profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2Info_many">You can add this gift to your profile or convert it to **{0}** Stars.</string>
     <string name="Gift2InfoConverted_zero">You converted this gift to **{0}** Stars.</string>
     <string name="Gift2InfoConverted_two">You converted this gift to **{0}** Stars.</string>
     <string name="Gift2InfoConverted_few">You converted this gift to **{0}** Stars.</string>
     <string name="Gift2InfoConverted_many">You converted this gift to **{0}** Stars.</string>
-    <string name="Gift2InfoOut_zero">{1} can keep this gift in profile or convert it to **{0}** Stars.</string>
-    <string name="Gift2InfoOut_two">{1} can keep this gift in profile or convert it to **{0}** Stars.</string>
-    <string name="Gift2InfoOut_few">{1} can keep this gift in profile or convert it to **{0}** Stars.</string>
-    <string name="Gift2InfoOut_many">{1} can keep this gift in profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2InfoOut_zero">{1} can add this gift to their profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2InfoOut_two">{1} can add this gift to their profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2InfoOut_few">{1} can add this gift to their profile or convert it to **{0}** Stars.</string>
+    <string name="Gift2InfoOut_many">{1} can add this gift to their profile or convert it to **{0}** Stars.</string>
 
 
 
@@ -11276,12 +11276,12 @@
     <string name="TelegramPremiumUserGiftedPremiumOutboundDialogTitleWithPlural">You gifted **{0}** a {1} subscription to\nTelegram Premium.</string>
     <string name="TelegramPremiumUserGiftedPremiumOutboundDialogSubtitle">**{0}** now has access to additional features.</string>
 
-    <string name="Gift2Months_zero">{0}-months</string>
-    <string name="Gift2Months_two">{0}-months</string>
-    <string name="Gift2Months_few">{0}-months</string>
-    <string name="Gift2Months_many">{0}-months</string>
-    <string name="Gift2Months_one">{0}-month</string>
-    <string name="Gift2Months_other">{0}-months</string>
+    <string name="Gift2Months_zero">{0} months</string>
+    <string name="Gift2Months_two">{0} months</string>
+    <string name="Gift2Months_few">{0} months</string>
+    <string name="Gift2Months_many">{0} months</string>
+    <string name="Gift2Months_one">{0} month</string>
+    <string name="Gift2Months_other">{0} months</string>
 
     <string name="ChatDoubleClickAction">Double Click Action</string>
     <string name="DoubleClickReply">Reply</string>
@@ -11513,7 +11513,7 @@
     <string name="DeleteThisChat">Delete this chat</string>
 
     <string name="PrivacyGifts">Gifts</string>
-    <string name="PrivacyGiftsTitle">Who can display gifts on my profile</string>
+    <string name="PrivacyGiftsTitle">Automatically display gifts from</string>
     <string name="PrivacyGiftsInfo">Choose whether gifts from specific senders need your approval before they’re visible to others on your profile.</string>
     <string name="PrivacyMiniapps">Mini Apps &amp; Bots</string>
     <string name="PrivacyMiniappsText">all bots</string>
@@ -11681,7 +11681,7 @@
     <string name="SendAnotherGift">Send Another Gift</string>
     <string name="SendGiftTo">Send Gift to {0}</string>
 
-    <string name="Gift2ActionUpgrade">Tap “Unpack” to turn this gift into a unique collectible.</string>
+    <string name="Gift2ActionUpgrade">Tap \"Unpack\" to turn this gift into a unique collectible.</string>
     <string name="Gift2ActionUpgradeOut">{0} can turn this gift to a unique collectible.</string>
     <string name="Gift2Unpack">Unpack</string>
     <string name="Gift2Status">Status</string>
@@ -11728,11 +11728,11 @@
     <string name="Gift2CollectionNumber_one">Collectible #{0}</string>
     <string name="Gift2CollectionNumber_other">Collectible #{0}</string>
     <string name="Gift2AttributeOriginalDetails">Gifted by {0} to {1} on {2}.</string>
-    <string name="Gift2AttributeOriginalDetailsComment">Gifted by {0} to {1} on {2} with the comment: “{3}”</string>
+    <string name="Gift2AttributeOriginalDetailsComment">Gifted by {0} to {1} on {2} with the comment: \"{3}\"</string>
     <string name="Gift2AttributeOriginalDetailsSelf">Saved by {0} on {1}.</string>
-    <string name="Gift2AttributeOriginalDetailsSelfComment">Gifted by {0} on {1} with the comment: “{2}”</string>
+    <string name="Gift2AttributeOriginalDetailsSelfComment">Gifted by {0} on {1} with the comment: \"{2}\"</string>
     <string name="Gift2AttributeOriginalDetailsNoSender">Gifted to {0} on {1}.</string>
-    <string name="Gift2AttributeOriginalDetailsNoSenderComment">Gifted to {0} on {1} with the comment: “{2}”</string>
+    <string name="Gift2AttributeOriginalDetailsNoSenderComment">Gifted to {0} on {1} with the comment: \"{2}\"</string>
     <string name="Gift2RarityHint">Only {0} of such collectibles have this attribute</string>
     <string name="Gift2Transfer">Transfer {0}</string>
     <string name="Gift2TransferText">Do you want to transfer ownership of **{0}** to **{1}**?</string>
@@ -11777,7 +11777,7 @@
 
     <string name="Gift2TabInStock">In Stock</string>
     <string name="Gift2TransferOption">Transfer</string>
-    <string name="UniqueGiftNotFound">Gift was not found</string>
+    <string name="UniqueGiftNotFound">Gift not found.</string>
     <string name="StoryViewGift">Show Gift &gt;</string>
     <string name="SimilarBotsTab">Similar Bots</string>
 
@@ -11792,16 +11792,16 @@
     <string name="ContactsAndFee">Paid</string>
     <string name="ContactsAndPremium">Contacts &amp; Premium</string>
     <string name="PrivateMessagesChargePrice">Charge for Messages</string>
-    <string name="PrivateMessagesChargePriceInfo">Charge a fee for messages from people outside your contacts or those you haven\'t messaged first.</string>
+    <string name="PrivateMessagesChargePriceInfo">Charge a fee for messages from people outside your contacts or who you haven\'t messaged first.</string>
     <string name="PrivateMessagesExceptions">Remove Fee</string>
     <string name="PrivateMessagesExceptionsHeader">Exceptions</string>
-    <string name="PrivateMessagesExceptionsInfo">Add users or entire groups who won\'t be charged for sending messages to you.</string>
+    <string name="PrivateMessagesExceptionsInfo">Add users or entire groups who won\'t have to pay to send you messages.</string>
     <string name="PrivateMessagesPriceHeader">Set your price per message</string>
-    <string name="PrivateMessagesPriceInfo">You will receive {0}% of the selected fee (~{1}) for each incoming message.</string>
+    <string name="PrivateMessagesPriceInfo">You will receive {0} of the selected fee (~{1}$) for each incoming message.</string>
     <string name="CheckPrivacyCallsText">You\'ve restricted who can message you, but anyone can still call you. Would you like to review these settings?</string>
     <string name="CheckPrivacyCallsTitle">Call Settings</string>
     <string name="CheckPrivacyInviteText">You\'ve restricted who can message you, but anyone can still invite you to groups and channels. Would you like to review these settings?</string>
-    <string name="CheckPrivacyInviteTitle">Invitation Settings</string>
+    <string name="CheckPrivacyInviteTitle">Invite Settings</string>
     <string name="CheckPrivacyReview">Review</string>
 
     <string name="MessageLockedStarsConfirmMessage1_one">**{1}** charges **{0}** Star per message.</string>
@@ -11813,7 +11813,7 @@
     <string name="MessageLockedStarsConfirmMessage2One_one">Would you like to pay **{0}** Star to send one message?</string>
     <string name="MessageLockedStarsConfirmMessage2One_other">Would you like to pay **{0}** Stars to send one message?</string>
     <string name="MessageLockedStarsConfirmMessageDontAsk">Don\'t ask me again</string>
-    <string name="MessageLockedStarsConfirmMessageMulti1_one">You selected **{0}** chat that charge Stars for messages.</string>
+    <string name="MessageLockedStarsConfirmMessageMulti1_one">You selected **{0}** chat that charges Stars for messages.</string>
     <string name="MessageLockedStarsConfirmMessageMulti1_other">You selected **{0}** chats that charge Stars for messages.</string>
     <string name="MessageLockedStarsConfirmMessageMulti2Messages_one">**{0}** message</string>
     <string name="MessageLockedStarsConfirmMessageMulti2Messages_other">**{0}** messages</string>
@@ -11822,7 +11822,7 @@
     <string name="MessageLockedStarsConfirmMessagePay_one">Pay for {0} Message</string>
     <string name="MessageLockedStarsConfirmMessagePay_other">Pay for {0} Messages</string>
     <string name="MessageLockedStarsConfirmTitle">Confirm Payment</string>
-    <string name="ContactInfoCommonGroups">Shared groups</string>
+    <string name="ContactInfoCommonGroups">Common groups</string>
     <string name="ContactInfoIsContact">Contact</string>
     <string name="ContactInfoIsNotContact">Not a contact</string>
     <string name="ContactInfoLocation">Location</string>
@@ -11852,7 +11852,7 @@
     <string name="GroupMessagesChargePrice">Charge Stars for Messages</string>
     <string name="GroupMessagesChargePriceInfo">If you turn this on, regular members of the group will have to pay Stars to send messages.</string>
     <string name="GroupMessagesPriceHeader">Set price per message</string>
-    <string name="GroupMessagesPriceInfo">Your group will receive {0}% of the selected fee (~{1}) for each incoming message.</string>
+    <string name="GroupMessagesPriceInfo">Your group will receive {0} of the selected fee (~{1}$) for each incoming message.</string>
 
     <string name="Gift2HideGift">Hide</string>
     <string name="Gift2Pin">Pin</string>
@@ -12005,19 +12005,19 @@
     <string name="AccountFrozenTitle">Your Account is Frozen</string>
 
     <string name="PrivacyGiftsShowIcon">Show Gift Icon in Chats</string>
-    <string name="PrivacyGiftsShowIconInfo">Display the {0} Gift in the message input field for both participants in all chats.</string>
+    <string name="PrivacyGiftsShowIconInfo">Display the {0} Gift icon in the message input field for both participants in all chats.</string>
     <string name="PrivacyGiftsTypeHeader">Accepted gift types</string>
     <string name="PrivacyGiftsTypeInfo">Choose the types of gifts that you allow others to send you.</string>
     <string name="PrivacyGiftsTypeLimited">Limited-Edition</string>
-    <string name="PrivacyGiftsTypePremium">Premium Subscription</string>
+    <string name="PrivacyGiftsTypePremium">Premium Subscriptions</string>
     <string name="PrivacyGiftsTypeUnique">Unique</string>
     <string name="PrivacyGiftsTypeUnlimited">Unlimited</string>
     <string name="BusinessBotPermissionsGiftsSection">Manage Gifts and Stars</string>
-    <string name="BusinessBotPermissionsGiftsSell">Sell Gifts</string>
+    <string name="BusinessBotPermissionsGiftsSell">Convert Gifts to Stars</string>
     <string name="BusinessBotPermissionsGiftsSettings">Change Gift Settings</string>
     <string name="BusinessBotPermissionsGiftsTransfer">Transfer and Upgrade Gifts</string>
     <string name="BusinessBotPermissionsGiftsTransferStars">Transfer Stars</string>
-    <string name="BusinessBotPermissionsGiftsView">View Gifts</string>
+    <string name="BusinessBotPermissionsGiftsView">View Gifts and Stars</string>
     <string name="BusinessBotPermissionsMessagesDeleteReceived">Delete Received Messages</string>
     <string name="BusinessBotPermissionsMessagesDeleteSent">Delete Sent Messages</string>
     <string name="BusinessBotPermissionsMessagesMarkAsRead">Mark Messages As Read</string>
@@ -12085,7 +12085,7 @@
     <string name="AccDescrReactionMentionDown">Go to next unread reactions</string>
 
     <string name="Gift2ProfileInvisible3">This gift is hidden from your page. **Show &gt;**</string>
-    <string name="Gift2ProfileVisible3">This gift is visible on your page. **Hide &gt;**</string>
+    <string name="Gift2ProfileVisible3">This gift is visible on your profile. **Hide &gt;**</string>
     <string name="Gift2ChannelProfileVisible3">This gift is visible on your channel\'s profile. **Hide &gt;**</string>
     <string name="Gift2ChannelProfileInvisible3">This gift is hidden from visitors to your channel. **Show &gt;**</string>
     <string name="AppDisplayName">Unigram</string>
@@ -12215,7 +12215,7 @@
 
     <string name="TopicsEnable">Enable Topics</string>
     <string name="TopicsInfo">The group chat will be divided into topics created by admins and users.</string>
-    <string name="TopicsLayout">Topics layout</string>
+    <string name="TopicsLayout">Topic layout</string>
     <string name="TopicsLayoutInfo">Choose how topics appear for all members.</string>
     <string name="TopicsLayoutList">List</string>
     <string name="TopicsLayoutTabs">Tabs</string>
@@ -12229,14 +12229,14 @@
 
     <string name="PostSuggestionsDisabledUpdated">un1 disabled direct messages</string>
     <string name="PostSuggestionsEnabledUpdated">un1 now accepts direct messages</string>
-    <string name="PostSuggestionsPriceUpdated_one">un1 now accepts direct messages for {0} star</string>
-    <string name="PostSuggestionsPriceUpdated_other">un1 now accepts direct messages for {0} stars</string>
+    <string name="PostSuggestionsPriceUpdated_one">un1 now accepts direct messages for {0} Star</string>
+    <string name="PostSuggestionsPriceUpdated_other">un1 now accepts direct messages for {0} Stars</string>
     <string name="PostSuggestions">Direct Messages</string>
     <string name="PostSuggestionsInfo">Allow users to send messages to your channel, with the option to charge a fee for each message.</string>
     <string name="AllowPostSuggestions">Allow Direct Messages</string>
     <string name="AllowPostSuggestionsHint">Allow users to send messages to your channel, with the option to charge a fee for each message.</string>
-    <string name="PriceForEachSuggestion">Price for each message</string>
-    <string name="PostSuggestionsPriceInfo">You will receive {0}% of the selected fee (~{1}) for each incoming message.</string>
+    <string name="PriceForEachSuggestion">Price per message</string>
+    <string name="PostSuggestionsPriceInfo">Your channel will receive {0} of the selected fee (~{1}) for each incoming message.</string>
     <string name="PostSuggestionsFree">Free</string>
     <string name="PostSuggestionsOff">Off</string>
     <string name="ChatMessageSuggestions">Direct Messages</string>
@@ -12258,7 +12258,7 @@
     <string name="ActionGiftChannel_other">**un1** sent a gift to **un2** for {0} Stars</string>
     <string name="EmojiPackCollectibles">Collectibles</string>
     <string name="RepliesChatInfo">This chat helps you keep track of replies to your comments in Channels.</string>
-    <string name="VerifyChatInfo">Third-party services, like websites and stores, can send verification codes to your phone number via Telegram instead of SMS. Such codes will appear in this chat.\n\nIf you didn\'t request any codes —&#160;don\'t worry! Most likely, someone made a mistake when entering their number.</string>
+    <string name="VerifyChatInfo">Third-party services, like websites and stores, can send verification codes to your phone number via Telegram instead of SMS. Such codes will appear in this chat.\n\nIf you didn\'t request any codes — don\'t worry! Most likely, someone made a mistake when entering their number.</string>
     <string name="MessageSuggestionsUnsavedChanges">You have changed the direct message settings. Apply changes?</string>
     <string name="PremiumStickerTooltip">This set contains premium stickers like this one.</string>
     <string name="ViewAction">View</string>
@@ -12283,22 +12283,22 @@
     <string name="ProfileStoriesArchiveCount_other">{0} archived stories</string>
     <string name="ProfileStoriesCount_one">{0} story</string>
     <string name="ProfileStoriesCount_other">{0} stories</string>
-    <string name="Todo">To-Do List</string>
-    <string name="TodoTitle">New To-Do List</string>
+    <string name="Todo">Checklist</string>
+    <string name="TodoTitle">New Checklist</string>
     <string name="TodoTitlePlaceholder">Title</string>
-    <string name="TodoItemsTitle">To-Do List</string>
+    <string name="TodoItemsTitle">Checklist</string>
     <string name="TodoNewTask">Add a Task</string>
     <string name="TodoNewTaskInfo_one">You can add {0} more task.</string>
     <string name="TodoNewTaskInfo_other">You can add {0} more tasks.</string>
     <string name="TodoAddTaskInfoMax">You have added the maximum number of tasks.</string>
     <string name="TodoAllowMarkingDone">Allow Others to Mark As Done</string>
     <string name="TodoAllowAddingTasks">Allow Others to Add Tasks</string>
-    <string name="TodoEditTitle">Edit To-Do List</string>
+    <string name="TodoEditTitle">Edit Checklist</string>
     <string name="TodoTaskPlaceholder">Task</string>
     <string name="EditToDo">Edit</string>
     <string name="AddTasks">Add Tasks</string>
     <string name="TodoAddTasksButton">Add</string>
-    <string name="TodoEditTasksButton">Edit</string>
+    <string name="TodoEditTasksButton">Save</string>
     <string name="TodoAddTasksTitle">New Tasks</string>
     <string name="TodoCompleted_one">{1} of {0} completed</string>
     <string name="TodoCompleted_other">{1} of {0} completed</string>
@@ -12314,14 +12314,14 @@
     <string name="TodoAddedTaskOutUnknown">You added a new task **"{0}"** to a checklist</string>
     <string name="TodoAddedTasksOutUnknown_one">You added **{0} task** to a checklist</string>
     <string name="TodoAddedTasksOutUnknown_other">You added **{0} tasks** to a checklist</string>
-    <string name="TodoTaskCompleted">un1 marked **"{0}"** as done</string>
-    <string name="TodoTaskCompletedOut">You marked **"{0}"** as done</string>
+    <string name="TodoTaskCompleted">un1 marked \"{0}\" as done</string>
+    <string name="TodoTaskCompletedOut">You marked \"{0}\" as done</string>
     <string name="TodoTasksCompletedOut_one">You marked **{0} task** as done</string>
     <string name="TodoTasksCompletedOut_other">You marked **{0} tasks** as done</string>
     <string name="TodoTasksCompleted_one">un1 marked **{0} task** as done</string>
     <string name="TodoTasksCompleted_other">un1 marked **{0} tasks** as done</string>
-    <string name="TodoTaskNotCompleted">un1 marked **"{0}"** as not done</string>
-    <string name="TodoTaskNotCompletedOut">You marked **"{0}"** as not done</string>
+    <string name="TodoTaskNotCompleted">un1 marked \"{0}\" as not done</string>
+    <string name="TodoTaskNotCompletedOut">You marked \"{0}\" as not done</string>
     <string name="TodoTasksNotCompletedOut_one">You marked **{0} tasks** as not done</string>
     <string name="TodoTasksNotCompletedOut_other">You marked **{0} tasks** as not done</string>
     <string name="TodoTasksNotCompleted_one">un1 marked **{0} task** as not done</string>
@@ -12329,24 +12329,24 @@
     <string name="TodoCompletedDateTimeAt">Completed {0} at {1}</string>
     <string name="TodoCompletedTodayAt">Completed at {0}</string>
     <string name="TodoCompletedYesterdayAt">Completed yesterday at {0}</string>
-    <string name="TodoCompleteForbidden">**{0}** has restricted others from editing this to-do list.</string>
-    <string name="PremiumPreviewTodo">To-Do Lists</string>
-    <string name="PremiumPreviewTodoDescription">Plan, assign, and complete tasks –\nseamlessly and efficiently.</string>
-    <string name="CancelTodoAlertText">Are you sure you want to discard this To-Do List?</string>
-    <string name="CancelTodoAlertTitle">Discard To-Do List</string>
-    <string name="TodoCantForward">Sorry, to-do lists can’t be forwarded to channels.</string>
-    <string name="TodoCantForwardSecretChat">Sorry, to-do lists can’t be forwarded to secret chats.</string>
+    <string name="TodoCompleteForbidden">**{0}** has restricted others from editing this checklist.</string>
+    <string name="PremiumPreviewTodo">Checklists</string>
+    <string name="PremiumPreviewTodoDescription">Plan, assign and complete tasks –\nseamlessly and efficiently.</string>
+    <string name="CancelTodoAlertText">Are you sure you want to discard this Checklist?</string>
+    <string name="CancelTodoAlertTitle">Discard Checklist</string>
+    <string name="TodoCantForward">Sorry, checklists can\'t be forwarded to channels.</string>
+    <string name="TodoCantForwardSecretChat">Sorry, checklists can\'t be forwarded to secret chats.</string>
     <string name="TodoPremiumRequired">Only **Telegram Premium** subscribers can mark tasks as done.</string>
-    <string name="MessageTodo">To-Do</string>
-    <string name="MessageTodoList">To-Do List</string>
-    <string name="MessageGroupTodoList">Group To-Do List</string>
+    <string name="MessageTodo">Checklist</string>
+    <string name="MessageTodoList">Checklist</string>
+    <string name="MessageGroupTodoList">Group Checklist</string>
     <string name="TodoMenuTabTask">Task</string>
     <string name="TodoDeleteItem">Delete Item</string>
     <string name="TodoEditItem">Edit Item</string>
     <string name="TodoCheck">Check</string>
     <string name="TodoUncheck">Uncheck</string>
     <string name="SponsoredMessageAd">Ad</string>
-    <string name="TodoCompleteForbiddenForward">You can\'t change forwarded to-do.</string>
+    <string name="TodoCompleteForbiddenForward">You can\'t edit a forwarded checklist.</string>
     <string name="ChecklistTasks_one">{0} task</string>
     <string name="ChecklistTasks_other">{0} tasks</string>
 
