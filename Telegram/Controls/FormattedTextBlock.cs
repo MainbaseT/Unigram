@@ -581,7 +581,8 @@ namespace Telegram.Controls
                     var entity = runs[j];
                     if (entity.Offset > previous)
                     {
-                        direct.AddToCollection(inlines, CreateDirectRun(direct, text.Substring(previous, entity.Offset - previous), ref offset, direction, fontSize: partFontSize));
+                        NativeUtils.AddRunToCollection(direct, inlines, text, previous, entity.Offset - previous, direction, false, TextDecorations.None, null, fontSize: partFontSize, false);
+                        offset += entity.Offset - previous;
                     }
 
                     if (entity.Length + entity.Offset > text.Length)
@@ -607,13 +608,20 @@ namespace Telegram.Controls
                                     Source = this
                                 });
 
-                                hyperlink.Inlines.Add(CreateRun(data, ref offset, direction, fontFamily: GetMonospaceFontFamily(), fontSize: partFontSize));
-                                direct.AddToCollection(inlines, direct.GetXamlDirectObject(hyperlink));
+                                var native = direct.GetXamlDirectObject(hyperlink);
+                                var collection = direct.GetXamlDirectObjectProperty(native, XamlPropertyIndex.Span_Inlines);
+
+                                NativeUtils.AddRunToCollection(direct, collection, data, direction, false, TextDecorations.None, GetMonospaceFontFamily(), partFontSize, false);
+                                offset += data.Length;
+
+                                direct.AddToCollection(inlines, native);
                             }
                             else
                             {
                                 direct.SetObjectProperty(paragraph, XamlPropertyIndex.TextElement_FontFamily, GetMonospaceFontFamily());
-                                direct.AddToCollection(inlines, CreateDirectRun(direct, data, ref offset, direction));
+                                
+                                NativeUtils.AddRunToCollection(direct, inlines, data, direction, false, TextDecorations.None, null, 0, false);
+                                offset += data.Length;
 
                                 preformatted = true;
 
@@ -621,12 +629,13 @@ namespace Telegram.Controls
 
                                 var last = part == styled.Paragraphs[^1];
                                 var temp = direct.GetObject(paragraph) as Paragraph;
-                                temp.Margin = new Thickness(11, (has ? 22 : 0) + 6, has ? 8 : 24, last ? 0 : 8);
+
+                                direct.SetThicknessProperty(paragraph, XamlPropertyIndex.Block_Margin, new Thickness(11, (has ? 22 : 0) + 6, has ? 8 : 24, last ? 0 : 8));
 
                                 if (entity.Type is TextEntityTypePreCode preCode && preCode.Language.Length > 0)
                                 {
                                     _codeBlocks.Add(new FormattedParagraph(temp, part.Type));
-                                    ProcessCodeBlock(temp.Inlines, data, preCode.Language);
+                                    ProcessCodeBlock(direct, inlines, data, preCode.Language);
                                 }
                                 else
                                 {
@@ -636,7 +645,8 @@ namespace Telegram.Controls
                         }
                         else
                         {
-                            direct.AddToCollection(inlines, CreateDirectRun(direct, data, ref offset, direction, fontFamily: GetMonospaceFontFamily()));
+                            NativeUtils.AddRunToCollection(direct, inlines, data, direction, false, TextDecorations.None, GetMonospaceFontFamily(), 0, false);
+                            offset += data.Length;
                         }
                     }
                     else
@@ -824,17 +834,17 @@ namespace Telegram.Controls
                                     ? direction == FlowDirection.RightToLeft ? Icons.RTL : Icons.LTR
                                     : Icons.ZWNJ;
 
-                                direct.AddToCollection(inlines, CreateDirectRun(direct, character, ref offset, direction, fontSize: partFontSize, transparent: true));
+                                NativeUtils.AddRunToCollection(direct, inlines, character, direction, false, TextDecorations.None, null, fontSize: partFontSize, transparent: true);
+                                offset++;
                             }
 
                             direct.AddToCollection(inlines, direct.GetXamlDirectObject(inline));
-                            direct.AddToCollection(inlines, CreateDirectRun(direct, Icons.ZWNJ, ref offset, direction, fontSize: partFontSize, transparent: true));
+                            NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, direction, false, TextDecorations.None, null, partFontSize, true);
+                            offset++;
                         }
                         else
                         {
-                            var run = CreateDirectRun(direct, text.Substring(entity.Offset, entity.Length), ref offset, direction, fontSize: partFontSize);
                             var decorations = TextDecorations.None;
-
                             if (entity.HasFlag(Common.TextStyle.Underline))
                             {
                                 decorations |= TextDecorations.Underline;
@@ -844,21 +854,13 @@ namespace Telegram.Controls
                                 decorations |= TextDecorations.Strikethrough;
                             }
 
-                            if (decorations != TextDecorations.None)
-                            {
-                                direct.SetEnumProperty(run, XamlPropertyIndex.TextElement_TextDecorations, (uint)decorations);
-                            }
+                            var run = NativeUtils.AddRunToCollection(direct, local, text, entity.Offset, entity.Length, direction, entity.HasFlag(Common.TextStyle.Italic), decorations, null, partFontSize, false);
+                            offset += entity.Length;
 
                             if (entity.HasFlag(Common.TextStyle.Bold))
                             {
                                 direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_FontWeight, FontWeights.SemiBold);
                             }
-                            if (entity.HasFlag(Common.TextStyle.Italic))
-                            {
-                                direct.SetEnumProperty(run, XamlPropertyIndex.TextElement_FontStyle, (uint)FontStyle.Italic);
-                            }
-
-                            direct.AddToCollection(local, run);
                         }
                     }
 
@@ -867,7 +869,8 @@ namespace Telegram.Controls
 
                 if (text.Length > previous)
                 {
-                    direct.AddToCollection(inlines, _fastRun = CreateDirectRun(direct, text.Substring(previous), ref offset, direction, fontSize: partFontSize));
+                    _fastRun = NativeUtils.AddRunToCollection(direct, inlines, text, previous, text.Length - previous, direction, false, TextDecorations.None, null, partFontSize, false);
+                    offset += text.Length - previous;
                 }
 
                 if (paragraph != null)
@@ -876,7 +879,8 @@ namespace Telegram.Controls
                 }
                 else if (i < styled.Paragraphs.Count - 1)
                 {
-                    direct.AddToCollection(inlines, CreateDirectRun(direct, " ", ref offset, direction));
+                    NativeUtils.AddRunToCollection(direct, inlines, " ", direction, false, TextDecorations.None, null, 0, false);
+                    offset++;
                 }
 
                 if (part.Offset == 0)
@@ -1259,49 +1263,16 @@ namespace Telegram.Controls
             return direct.GetObject(run) as Run;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IXamlDirectObject CreateDirectRun(XamlDirect direct, string text, ref int offset, FlowDirection direction, FontWeight? fontWeight = null, FontFamily fontFamily = null, double fontSize = 0, bool transparent = false)
-        {
-            var run = direct.CreateInstance(XamlTypeIndex.Run);
-            direct.SetStringProperty(run, XamlPropertyIndex.Run_Text, text);
-            direct.SetEnumProperty(run, XamlPropertyIndex.Run_FlowDirection, (uint)direction);
-
-            offset += text.Length;
-
-            if (fontWeight != null)
-            {
-                direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_FontWeight, fontWeight.Value);
-            }
-
-            if (fontFamily != null)
-            {
-                direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_FontFamily, fontFamily);
-            }
-
-            if (fontSize > 0)
-            {
-                direct.SetDoubleProperty(run, XamlPropertyIndex.TextElement_FontSize, fontSize);
-            }
-
-            // TODO: removed once fixed by Microsoft
-            if (transparent)
-            {
-                direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_Foreground, null);
-            }
-
-            return run;
-        }
-
         #region PreCode
 
-        private async void ProcessCodeBlock(InlineCollection inlines, string text, string language)
+        private async void ProcessCodeBlock(XamlDirect direct, IXamlDirectObject inlines, string text, string language)
         {
             try
             {
                 var tokens = await SyntaxToken.TokenizeAsync(language.ToLowerInvariant(), text);
 
-                inlines.Clear();
-                ProcessCodeBlock(inlines, tokens.Children);
+                direct.ClearCollection(inlines);
+                ProcessCodeBlock(direct, inlines, tokens.Children);
             }
             catch
             {
@@ -1309,8 +1280,10 @@ namespace Telegram.Controls
             }
         }
 
-        private void ProcessCodeBlock(InlineCollection inlines, IList<Token> tokens)
+        private void ProcessCodeBlock(XamlDirect direct, IXamlDirectObject inlines, IList<Token> tokens)
         {
+            var fontFamily = new FontFamily("Consolas, " + Theme.Current.XamlAutoFontFamily);
+
             foreach (var token in tokens)
             {
                 if (token is SyntaxToken syntax)
@@ -1321,34 +1294,31 @@ namespace Telegram.Controls
                         color = GetColor(syntax.Alias);
                     }
 
-                    var span = new Span
-                    {
-                        FontFamily = new FontFamily("Consolas, " + Theme.Current.XamlAutoFontFamily)
-                    };
+                    var span = direct.CreateInstance(XamlTypeIndex.Span);
+                    var collection = direct.GetXamlDirectObjectProperty(span, XamlPropertyIndex.Span_Inlines);
+
+                    direct.SetObjectProperty(span, XamlPropertyIndex.TextElement_FontFamily, fontFamily);
 
                     if (color != null)
                     {
-                        span.Foreground = color;
+                        direct.SetObjectProperty(span, XamlPropertyIndex.TextElement_Foreground, color);
                     }
 
                     if (syntax.Type == "bold")
                     {
-                        span.FontWeight = FontWeights.SemiBold;
+                        direct.SetObjectProperty(span, XamlPropertyIndex.TextElement_FontWeight, FontWeights.SemiBold);
                     }
                     else if (syntax.Type == "italic")
                     {
-                        span.FontStyle = FontStyle.Italic;
+                        direct.SetEnumProperty(span, XamlPropertyIndex.TextElement_FontStyle, (uint)FontStyle.Italic);
                     }
 
-                    ProcessCodeBlock(span.Inlines, syntax.Children);
-                    inlines.Add(span);
+                    ProcessCodeBlock(direct, collection, syntax.Children);
+                    direct.AddToCollection(inlines, span);
                 }
                 else if (token is TextToken text)
                 {
-                    inlines.Add(new Run
-                    {
-                        Text = text.Value
-                    });
+                    NativeUtils.AddRunToCollection(direct, inlines, text.Value, FlowDirection.LeftToRight, false, TextDecorations.None, fontFamily, 0, false);
                 }
             }
         }

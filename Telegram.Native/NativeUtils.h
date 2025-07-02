@@ -7,6 +7,17 @@
 #include <sstream>
 #include <vector>
 
+#include <winrt/Windows.UI.Text.h>
+#include <winrt/Windows.UI.Xaml.h>
+#include <winrt/Windows.UI.Xaml.Media.h>
+#include <winrt/Windows.UI.Xaml.Core.Direct.h>
+
+using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::UI::Text;
+using namespace winrt::Windows::UI::Xaml;
+using namespace winrt::Windows::UI::Xaml::Media;
+using namespace winrt::Windows::UI::Xaml::Core::Direct;
+
 namespace winrt::Telegram::Native::implementation
 {
     struct NativeUtils : NativeUtilsT<NativeUtils>
@@ -20,6 +31,9 @@ namespace winrt::Telegram::Native::implementation
         static void Delete(hstring path);
 
         static int32_t GetLastInputTime();
+
+        static IXamlDirectObject AddRunToCollection(XamlDirect direct, IXamlDirectObject inlines, hstring text, FlowDirection direction, bool italic, TextDecorations decorations, FontFamily fontFamily, double fontSize, bool transparent);
+        static IXamlDirectObject AddRunToCollection(XamlDirect direct, IXamlDirectObject inlines, hstring text, int32_t offset, int32_t length, FlowDirection direction, bool italic, TextDecorations decorations, FontFamily fontFamily, double fontSize, bool transparent);
 
         //[DefaultOverload]
         static winrt::Telegram::Native::TextDirectionality GetDirectionality(hstring value);
@@ -46,7 +60,7 @@ namespace winrt::Telegram::Native::implementation
         static int32_t GetScaleForCurrentView();
 
         static void SetFatalErrorCallback(FatalErrorCallback action);
-        static winrt::Windows::Foundation::Collections::IVector<winrt::Telegram::Native::FatalErrorFrame> GetStowedException();
+        static IVector<winrt::Telegram::Native::FatalErrorFrame> GetStowedException();
         static winrt::Telegram::Native::FatalError GetBackTrace(DWORD code);
 
         static hstring GetLogMessage(int64_t format, int64_t args);

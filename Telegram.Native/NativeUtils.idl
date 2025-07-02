@@ -23,6 +23,9 @@ namespace Telegram.Native
 
         static Int32 GetLastInputTime();
 
+        static Windows.UI.Xaml.Core.Direct.IXamlDirectObject AddRunToCollection(Windows.UI.Xaml.Core.Direct.XamlDirect direct, Windows.UI.Xaml.Core.Direct.IXamlDirectObject inlines, String text, Windows.UI.Xaml.FlowDirection direction, Boolean italic, Windows.UI.Text.TextDecorations decorations, Windows.UI.Xaml.Media.FontFamily fontFamily, Double fontSize, Boolean transparent);
+        static Windows.UI.Xaml.Core.Direct.IXamlDirectObject AddRunToCollection(Windows.UI.Xaml.Core.Direct.XamlDirect direct, Windows.UI.Xaml.Core.Direct.IXamlDirectObject inlines, String text, Int32 offset, Int32 length, Windows.UI.Xaml.FlowDirection direction, Boolean italic, Windows.UI.Text.TextDecorations decorations, Windows.UI.Xaml.Media.FontFamily fontFamily, Double fontSize, Boolean transparent);
+
         //[DefaultOverload]
         static TextDirectionality GetDirectionality(String value);
         static TextDirectionality GetDirectionality(String value, Int32 offset);

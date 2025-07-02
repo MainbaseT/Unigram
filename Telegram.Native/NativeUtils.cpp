@@ -39,6 +39,89 @@ namespace winrt::Telegram::Native::implementation
         Callback = callback;
     }
 
+    IXamlDirectObject NativeUtils::AddRunToCollection(XamlDirect direct, IXamlDirectObject inlines, hstring text, FlowDirection direction, bool italic, TextDecorations decorations, FontFamily fontFamily, double fontSize, bool transparent)
+    {
+        auto run = direct.CreateInstance(XamlTypeIndex::Run);
+        direct.SetStringProperty(run, XamlPropertyIndex::Run_Text, text);
+        direct.SetEnumProperty(run, XamlPropertyIndex::Run_FlowDirection, (uint32_t)direction);
+
+        //if (bold)
+        //{
+        //    direct.SetEnumProperty(run, XamlPropertyIndex::TextElement_FontWeight, FontWeights::SemiBold().Weight);
+        //}
+
+        if (italic)
+        {
+            direct.SetEnumProperty(run, XamlPropertyIndex::TextElement_FontStyle, (uint32_t)FontStyle::Italic);
+        }
+
+        if (decorations != TextDecorations::None)
+        {
+            direct.SetEnumProperty(run, XamlPropertyIndex::TextElement_TextDecorations, (uint32_t)decorations);
+        }
+
+        if (fontFamily)
+        {
+            direct.SetObjectProperty(run, XamlPropertyIndex::TextElement_FontFamily, fontFamily);
+        }
+
+        if (fontSize > 0)
+        {
+            direct.SetDoubleProperty(run, XamlPropertyIndex::TextElement_FontSize, fontSize);
+        }
+
+        // TODO: removed once fixed by Microsoft
+        if (transparent)
+        {
+            direct.SetObjectProperty(run, XamlPropertyIndex::TextElement_Foreground, nullptr);
+        }
+
+        direct.AddToCollection(inlines, run);
+        return run;
+    }
+
+    IXamlDirectObject NativeUtils::AddRunToCollection(XamlDirect direct, IXamlDirectObject inlines, hstring text, int32_t offset, int32_t length, FlowDirection direction, bool italic, TextDecorations decorations, FontFamily fontFamily, double fontSize, bool transparent)
+    {
+        std::wstring wstr = text.c_str();
+        auto run = direct.CreateInstance(XamlTypeIndex::Run);
+        direct.SetStringProperty(run, XamlPropertyIndex::Run_Text, hstring(wstr.substr(offset, length)));
+        direct.SetEnumProperty(run, XamlPropertyIndex::Run_FlowDirection, (uint32_t)direction);
+
+        //if (bold)
+        //{
+        //    direct.SetObjectProperty(run, XamlPropertyIndex::TextElement_FontWeight, FontWeights::Normal());
+        //}
+
+        if (italic)
+        {
+            direct.SetEnumProperty(run, XamlPropertyIndex::TextElement_FontStyle, (uint32_t)FontStyle::Italic);
+        }
+
+        if (decorations != TextDecorations::None)
+        {
+            direct.SetEnumProperty(run, XamlPropertyIndex::TextElement_TextDecorations, (uint32_t)decorations);
+        }
+
+        if (fontFamily)
+        {
+            direct.SetObjectProperty(run, XamlPropertyIndex::TextElement_FontFamily, fontFamily);
+        }
+
+        if (fontSize > 0)
+        {
+            direct.SetDoubleProperty(run, XamlPropertyIndex::TextElement_FontSize, fontSize);
+        }
+
+        // TODO: removed once fixed by Microsoft
+        if (transparent)
+        {
+            direct.SetObjectProperty(run, XamlPropertyIndex::TextElement_Foreground, nullptr);
+        }
+
+        direct.AddToCollection(inlines, run);
+        return run;
+    }
+
     winrt::Windows::Foundation::Collections::IVector<winrt::Telegram::Native::FatalErrorFrame> NativeUtils::GetStowedException()
     {
         HRESULT result;

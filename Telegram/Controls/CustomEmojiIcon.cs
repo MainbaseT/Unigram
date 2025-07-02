@@ -5,14 +5,17 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-using Telegram.Common;
+using Telegram.Controls.Media;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Windows.Foundation;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Core.Direct;
 using Windows.UI.Xaml.Documents;
 
 namespace Telegram.Controls
@@ -26,9 +29,12 @@ namespace Telegram.Controls
 
         public string Emoji { get; set; }
 
-        public static void Add(RichTextBlock parent, InlineCollection inlines, IClientService clientService, FormattedText message, string style = null)
+        public static void Add(RichTextBlock parent, InlineCollection inliness, IClientService clientService, FormattedText message, string style = null)
         {
-            inlines.Clear();
+            var direct = XamlDirect.GetDefault();
+            var inlines = direct.GetXamlDirectObject(inliness);
+
+            direct.ClearCollection(inlines);
 
             if (message != null)
             {
@@ -47,7 +53,7 @@ namespace Telegram.Controls
 
                         if (entity.Offset > previous)
                         {
-                            inlines.Add(clean.Text.Substring(previous, entity.Offset - previous));
+                            NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, entity.Offset - previous, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, false);
                         }
 
                         var player = new CustomEmojiIcon();
@@ -75,13 +81,13 @@ namespace Telegram.Controls
                         inline.Child = player;
 
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
-                        if (inlines.Empty())
+                        if (previous == 0)
                         {
-                            inlines.AddZWNJ();
+                            NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, true);
                         }
 
-                        inlines.Add(inline);
-                        inlines.AddZWNJ();
+                        direct.AddToCollection(inlines, direct.GetXamlDirectObject(inline));
+                        NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, true);
 
                         previous = entity.Offset + entity.Length;
                     }
@@ -89,14 +95,17 @@ namespace Telegram.Controls
 
                 if (clean.Text.Length > previous)
                 {
-                    inlines.Add(clean.Text.Substring(previous));
+                    NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, clean.Text.Length - previous, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, false);
                 }
             }
         }
 
-        public static void Add(RichTextBlock parent, InlineCollection inlines, IClientService clientService, ChatFolderName name, double size = 20)
+        public static void Add(RichTextBlock parent, InlineCollection inliness, IClientService clientService, ChatFolderName name, double size = 20)
         {
-            inlines.Clear();
+            var direct = XamlDirect.GetDefault();
+            var inlines = direct.GetXamlDirectObject(inliness);
+
+            direct.ClearCollection(inlines);
 
             if (name?.Text != null)
             {
@@ -115,7 +124,7 @@ namespace Telegram.Controls
 
                         if (entity.Offset > previous)
                         {
-                            inlines.Add(clean.Text.Substring(previous, entity.Offset - previous));
+                            NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, entity.Offset - previous, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, false);
                         }
 
                         var player = new CustomEmojiIcon();
@@ -153,13 +162,13 @@ namespace Telegram.Controls
                         inline.Child = player;
 
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
-                        if (inlines.Empty())
+                        if (previous == 0)
                         {
-                            inlines.AddZWNJ();
+                            NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, true);
                         }
 
-                        inlines.Add(inline);
-                        inlines.AddZWNJ();
+                        direct.AddToCollection(inlines, direct.GetXamlDirectObject(inline));
+                        NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, true);
 
                         previous = entity.Offset + entity.Length;
                     }
@@ -167,7 +176,7 @@ namespace Telegram.Controls
 
                 if (clean.Text.Length > previous)
                 {
-                    inlines.Add(clean.Text.Substring(previous));
+                    NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, clean.Text.Length - previous, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, false);
                 }
             }
         }
