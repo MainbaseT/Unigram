@@ -44,6 +44,8 @@
                                                CustomEmoji="{x:Bind CustomEmoji}"
                                                PlaceholderText="{CustomResource QuestionHint}"
                                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                               GotFocus="QuestionText_GotFocus"
+                                               LostFocus="QuestionText_LostFocus"
                                                AllowedEntities="CustomEmoji"
                                                AcceptsReturn="True"
                                                TextWrapping="Wrap"
@@ -53,7 +55,8 @@
                                                 IsHitTestVisible="False"
                                                 Margin="10,4,-2,-2" />
 
-                    <controls:GlyphButton Click="Emoji_Click"
+                    <controls:GlyphButton x:Name="QuestionEmoji"
+                                          Click="Emoji_Click"
                                           Tag="{x:Bind QuestionText}"
                                           Glyph="&#xE76E;"
                                           AutomationProperties.Name="{CustomResource Emoji}"

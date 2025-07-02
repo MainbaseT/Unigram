@@ -44,7 +44,8 @@ namespace Telegram.Controls
         Quote = 64,
         TextUrl = 128,
         CustomEmoji = 256,
-        All = Bold | Italic | Underline | Strikethrough | Mono | Spoiler | Quote | TextUrl | CustomEmoji
+        All = Bold | Italic | Underline | Strikethrough | Mono | Spoiler | Quote | TextUrl | CustomEmoji,
+        Checklist = Bold | Italic | Underline | Strikethrough | Spoiler | CustomEmoji
     }
 
     public partial class FormattedTextBox : RichEditBox
@@ -148,7 +149,7 @@ namespace Telegram.Controls
             _fromTextChanging = true;
             _isEmpty = null;
 
-            if (args.IsContentChanging && _undoGroup == 0)
+            if (args.IsContentChanging && !_updateLocked/* _undoGroup == 0*/)
             {
                 // Fixes insertion of some fully qualified emoji from WIN+.
                 var inserted = Document.GetRange(Document.Selection.StartPosition - 1, Document.Selection.StartPosition);

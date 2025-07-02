@@ -194,6 +194,17 @@ namespace Telegram.Views.Popups
 
         public ObservableCollection<ChecklistTaskViewModel> Items { get; private set; }
 
+
+        private void TitleText_GotFocus(object sender, RoutedEventArgs e)
+        {
+            OnVisibleChanged(TitleEmoji, true);
+        }
+
+        private void TitleText_LostFocus(object sender, RoutedEventArgs e)
+        {
+            OnVisibleChanged(TitleEmoji, false);
+        }
+
         private void AddTask_TextChanged(object sender, EventArgs e)
         {
             EmojiFlyout.Hide();

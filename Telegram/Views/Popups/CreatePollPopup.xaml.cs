@@ -264,6 +264,16 @@ namespace Telegram.Views.Popups
             }
         }
 
+        private void QuestionText_GotFocus(object sender, RoutedEventArgs e)
+        {
+            OnVisibleChanged(QuestionEmoji, true);
+        }
+
+        private void QuestionText_LostFocus(object sender, RoutedEventArgs e)
+        {
+            OnVisibleChanged(QuestionEmoji, false);
+        }
+
         private void Option_GotFocus(object sender, RoutedEventArgs e)
         {
             AddAnOption.IsReadOnly = false;

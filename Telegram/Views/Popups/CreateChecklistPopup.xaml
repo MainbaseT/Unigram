@@ -55,6 +55,8 @@
                                                        CustomEmoji="{x:Bind CustomEmoji}"
                                                        PlaceholderText="{CustomResource TodoTitlePlaceholder}"
                                                        FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                       GotFocus="TitleText_GotFocus"
+                                                       LostFocus="TitleText_LostFocus"
                                                        AllowedEntities="CustomEmoji"
                                                        AcceptsReturn="True"
                                                        TextWrapping="Wrap"
@@ -65,7 +67,8 @@
                                                         IsHitTestVisible="False"
                                                         Margin="10,4,-2,-2" />
 
-                            <controls:GlyphButton Click="Emoji_Click"
+                            <controls:GlyphButton x:Name="TitleEmoji"
+                                                  Click="Emoji_Click"
                                                   Tag="{x:Bind TitleText}"
                                                   Glyph="&#xE76E;"
                                                   AutomationProperties.Name="{CustomResource Emoji}"
@@ -73,6 +76,7 @@
                                                   AllowFocusOnInteraction="False"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
+                                                  Visibility="Collapsed"
                                                   Width="36"
                                                   Height="32" />
                         </Grid>
