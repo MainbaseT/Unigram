@@ -42,8 +42,7 @@ namespace Telegram.Controls.Messages.Content
         private Ellipse CheckmarkNotDone;
         private Path CheckmarkDone;
         private Border CheckmarkIcon;
-        private RichTextBlock TextText;
-        private Paragraph Text;
+        private FormattedTextBlock TextText;
         private TextBlock UserText;
         private bool _templateApplied;
 
@@ -53,9 +52,10 @@ namespace Telegram.Controls.Messages.Content
             CheckmarkNotDone = GetTemplateChild(nameof(CheckmarkNotDone)) as Ellipse;
             CheckmarkDone = GetTemplateChild(nameof(CheckmarkDone)) as Path;
             CheckmarkIcon = GetTemplateChild(nameof(CheckmarkIcon)) as Border;
-            TextText = GetTemplateChild(nameof(TextText)) as RichTextBlock;
-            Text = GetTemplateChild(nameof(Text)) as Paragraph;
+            TextText = GetTemplateChild(nameof(TextText)) as FormattedTextBlock;
             UserText = GetTemplateChild(nameof(UserText)) as TextBlock;
+
+            TextText.TextEntityClick += TextText_TextEntityClick;
 
             ElementCompositionPreview.SetIsTranslationEnabled(Photo, true);
             ElementCompositionPreview.SetIsTranslationEnabled(TextText, true);
@@ -78,6 +78,11 @@ namespace Telegram.Controls.Messages.Content
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             _selectionStrokeBrush?.Unregister();
+        }
+
+        private void TextText_TextEntityClick(object sender, TextEntityClickEventArgs e)
+        {
+            MessageBubble.TextEntityClick(_message, TextText, e);
         }
 
         public ChecklistTask Task { get; private set; }
@@ -166,7 +171,7 @@ namespace Telegram.Controls.Messages.Content
                 UpdateIcon(show, false);
             }
 
-            CustomEmojiIcon.Add(TextText, Text.Inlines, message.ClientService, task.Text);
+            TextText.SetText(message.ClientService, task.Text);
 
             if (checklist.CanMarkTasksAsDone || task.CompletionDate == 0)
             {

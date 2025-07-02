@@ -55,11 +55,9 @@ namespace Telegram.Views.Popups
 
             TitleText.DataContext = _viewModel;
             TitleText.MaxLength = (int)clientService.Options.ChecklistTitleLengthMax;
-            TitleText.AllowedEntities = FormattedTextEntity.Checklist;
 
             AddTask.DataContext = _viewModel;
             AddTask.MaxLength = (int)clientService.Options.ChecklistTaskTextLengthMax;
-            AddTask.AllowedEntities = FormattedTextEntity.Checklist;
 
             EmojiPanel.DataContext = EmojiDrawerViewModel.Create(clientService.SessionId);
 
@@ -448,7 +446,6 @@ namespace Telegram.Views.Popups
                 text.Tag = task;
                 text.DataContext = _viewModel;
                 text.MaxLength = (int)_viewModel.ClientService.Options.ChecklistTaskTextLengthMax;
-                text.AllowedEntities = FormattedTextEntity.Checklist;
                 text.CustomEmoji = customEmoji;
 
                 text.SetText(task.Text);

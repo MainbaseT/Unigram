@@ -1692,6 +1692,7 @@
                                        TextAlignment="{TemplateBinding TextAlignment}"
                                        TextTrimming="{TemplateBinding TextTrimming}"
                                        TextWrapping="{TemplateBinding TextWrapping}"
+                                       TextDecorations="{TemplateBinding TextDecorations}"
                                        MaxLines="{TemplateBinding MaxLines}"
                                        OverflowContentTarget="{TemplateBinding OverflowContentTarget}"
                                        HorizontalTextAlignment="{TemplateBinding HorizontalTextAlignment}"

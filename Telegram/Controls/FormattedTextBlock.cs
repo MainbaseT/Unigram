@@ -1519,6 +1519,19 @@ namespace Telegram.Controls
 
         #endregion
 
+        public TextDecorations TextDecorations
+        {
+            get { return (TextDecorations)GetValue(TextDecorationsProperty); }
+            set { SetValue(TextDecorationsProperty, value); }
+        }
+
+        public static readonly DependencyProperty TextDecorationsProperty =
+            DependencyProperty.Register("TextDecorations", typeof(TextDecorations), typeof(FormattedTextBlock), new PropertyMetadata(TextDecorations.None));
+
+        #region TextDecorations
+
+        #endregion
+
         #region MaxLines
 
         public int MaxLines

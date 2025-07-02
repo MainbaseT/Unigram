@@ -130,22 +130,20 @@
                             </Grid>
 
 
-                            <RichTextBlock x:Name="TextText"
-                                           Style="{StaticResource BodyRichTextBlockStyle}"
-                                           FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                                           TextWrapping="Wrap"
-                                           TextTrimming="CharacterEllipsis"
-                                           MaxLines="1"
-                                           VerticalAlignment="Top"
-                                           IsTextSelectionEnabled="False"
-                                           Margin="0,8,0,8"
-                                           Grid.Column="1">
-                                <Paragraph x:Name="Text" />
-                            </RichTextBlock>
+                            <controls:FormattedTextBlock x:Name="TextText"
+                                                         FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                         TextWrapping="Wrap"
+                                                         TextTrimming="CharacterEllipsis"
+                                                         VerticalAlignment="Top"
+                                                         IsTextSelectionEnabled="False"
+                                                         AutoFontSize="False"
+                                                         Margin="0,8,0,8"
+                                                         Grid.Column="1" />
 
                             <TextBlock x:Name="UserText"
                                        Foreground="{ThemeResource MessageSubtleForegroundBrush}"
                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                       IsHitTestVisible="False"
                                        TextWrapping="NoWrap"
                                        TextTrimming="CharacterEllipsis"
                                        VerticalAlignment="Top"
