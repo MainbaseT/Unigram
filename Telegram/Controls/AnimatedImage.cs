@@ -126,6 +126,12 @@ namespace Telegram.Controls
             if (Source != null && IsOutlineEnabled)
             {
                 Source.OutlineChanged += OnOutlineChanged;
+
+                if (IsViewportAware && !_effectiveViewportRegistered)
+                {
+                    _effectiveViewportRegistered = true;
+                    EffectiveViewportChanged += OnEffectiveViewportChanged;
+                }
             }
         }
 
@@ -139,6 +145,12 @@ namespace Telegram.Controls
             if (Source != null)
             {
                 Source.OutlineChanged -= OnOutlineChanged;
+            }
+
+            if (_effectiveViewportRegistered)
+            {
+                _effectiveViewportRegistered = false;
+                EffectiveViewportChanged -= OnEffectiveViewportChanged;
             }
         }
 
@@ -199,7 +211,7 @@ namespace Telegram.Controls
 
         private void OnViewportAwareChanged(bool newValue, bool oldValue)
         {
-            if (newValue && Source != null)
+            if (newValue && IsConnected && Source != null)
             {
                 _effectiveViewportRegistered = true;
                 EffectiveViewportChanged += OnEffectiveViewportChanged;
@@ -422,15 +434,18 @@ namespace Telegram.Controls
                 oldValue.OutlineChanged -= OnOutlineChanged;
             }
 
-            if (e.NewValue is AnimatedImageSource newValue && IsConnected && IsOutlineEnabled)
+            if (e.NewValue is AnimatedImageSource newValue && IsConnected)
             {
-                newValue.OutlineChanged += OnOutlineChanged;
-            }
+                if (IsOutlineEnabled)
+                {
+                    newValue.OutlineChanged += OnOutlineChanged;
+                }
 
-            if (e.NewValue != null && IsViewportAware && !_effectiveViewportRegistered)
-            {
-                _effectiveViewportRegistered = true;
-                EffectiveViewportChanged += OnEffectiveViewportChanged;
+                if (IsViewportAware && !_effectiveViewportRegistered)
+                {
+                    _effectiveViewportRegistered = true;
+                    EffectiveViewportChanged += OnEffectiveViewportChanged;
+                }
             }
         }
 
