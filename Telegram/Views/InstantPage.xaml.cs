@@ -1303,7 +1303,7 @@ namespace Telegram.Views
                     var child = new ImageView();
                     //child.Source = (ImageSource)DefaultPhotoConverter.Convert(photoBlock.Photo, true);
                     //child.DataContext = galleryItem;
-                    child.Click += Image_Click;
+                    //child.Click += Image_Click;
                     child.Width = 72;
                     child.Height = 72;
                     child.Stretch = Stretch.UniformToFill;
@@ -1319,7 +1319,7 @@ namespace Telegram.Views
                     var child = new ImageView();
                     //child.Source = (ImageSource)DefaultPhotoConverter.Convert(videoBlock.Video, true);
                     //child.DataContext = galleryItem;
-                    child.Click += Image_Click;
+                    //child.Click += Image_Click;
                     child.Width = 72;
                     child.Height = 72;
                     child.Stretch = Stretch.UniformToFill;

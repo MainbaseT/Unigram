@@ -13,6 +13,8 @@
     <Grid>
         <controls:SelectGridView x:Name="ScrollingHost"
                                  ItemsSource="{x:Bind ViewModel.Media, Mode=OneWay}"
+                                 IsItemClickEnabled="True"
+                                 ItemClick="OnItemClick"
                                  SelectionMode="None"
                                  ChoosingItemContainer="OnChoosingItemContainer"
                                  ContainerContentChanging="OnContainerContentChanging"
@@ -72,8 +74,7 @@
             <GridView.ItemTemplate>
                 <DataTemplate>
                     <Grid Background="{ThemeResource SettingsItemBackground}">
-                        <controls:ImageView Click="Photo_Click"
-                                            HorizontalContentAlignment="Center"
+                        <controls:ImageView HorizontalContentAlignment="Center"
                                             VerticalContentAlignment="Center"
                                             Stretch="UniformToFill" />
 
@@ -84,7 +85,6 @@
                                                Margin="4" />-->
 
                         <controls:AnimatedImage x:Name="Particles"
-                                                IsHitTestVisible="False"
                                                 IsViewportAware="True"
                                                 FrameSize="0,0"
                                                 FitToSize="True"

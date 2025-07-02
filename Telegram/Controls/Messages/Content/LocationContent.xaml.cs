@@ -29,6 +29,7 @@ namespace Telegram.Controls.Messages.Content
 
         #region InitializeComponent
 
+        private HyperlinkButton Button;
         private ImageView Texture;
         private ProfilePicture PinPhoto;
         private Path PinDot;
@@ -42,6 +43,7 @@ namespace Telegram.Controls.Messages.Content
 
         protected override void OnApplyTemplate()
         {
+            Button = GetTemplateChild(nameof(Button)) as HyperlinkButton;
             Texture = GetTemplateChild(nameof(Texture)) as ImageView;
             PinPhoto = GetTemplateChild(nameof(PinPhoto)) as ProfilePicture;
             PinDot = GetTemplateChild(nameof(PinDot)) as Path;
@@ -51,7 +53,7 @@ namespace Telegram.Controls.Messages.Content
             LivePeriod = GetTemplateChild(nameof(LivePeriod)) as TextBlock;
             LiveRing = GetTemplateChild(nameof(LiveRing)) as SelfDestructTimer;
 
-            Texture.Click += Button_Click;
+            Button.Click += Button_Click;
 
             _templateApplied = true;
 
@@ -74,6 +76,7 @@ namespace Telegram.Controls.Messages.Content
             }
 
             Texture.Constraint = message;
+            Texture.XamlRoot = XamlRoot;
             Texture.SetSource(message.ClientService, location.Location, 320, 200, message.ChatId);
 
             if (location.LivePeriod > 0)

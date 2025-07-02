@@ -44,6 +44,7 @@ namespace Telegram.Views.Business
         {
             if (valid)
             {
+                Map.XamlRoot = XamlRoot;
                 Map.SetSource(ViewModel.ClientService, location, 200, 200, 0);
             }
         }

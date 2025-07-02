@@ -27,6 +27,7 @@ namespace Telegram.Controls.Messages.Content
 
         #region InitializeComponent
 
+        private HyperlinkButton Button;
         private ImageView Texture;
         private BitmapIcon VenueGlyph;
         private Path VenueDot;
@@ -34,11 +35,12 @@ namespace Telegram.Controls.Messages.Content
 
         protected override void OnApplyTemplate()
         {
+            Button = GetTemplateChild(nameof(Button)) as HyperlinkButton;
             Texture = GetTemplateChild(nameof(Texture)) as ImageView;
             VenueGlyph = GetTemplateChild(nameof(VenueGlyph)) as BitmapIcon;
             VenueDot = GetTemplateChild(nameof(VenueDot)) as Path;
 
-            Texture.Click += Button_Click;
+            Button.Click += Button_Click;
 
             _templateApplied = true;
 
@@ -61,6 +63,7 @@ namespace Telegram.Controls.Messages.Content
             }
 
             Texture.Constraint = message;
+            Texture.XamlRoot = XamlRoot;
             Texture.SetSource(message.ClientService, venue.Venue.Location, 320, 200, message.ChatId);
 
             if (string.IsNullOrEmpty(venue.Venue.Type))

@@ -9,9 +9,9 @@ using Telegram.Controls;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Chats;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Telegram.Views.Profile
@@ -35,14 +35,11 @@ namespace Telegram.Views.Profile
 
                 var photo = content.Children[0] as ImageView;
 
-                // TODO: justified because of Photo_Click
-                photo.Tag = message;
-
                 if (message.Content is MessageAnimation animation)
                 {
                     if (animation.Animation.Thumbnail is { Format: ThumbnailFormatJpeg })
                     {
-                        photo.SetSource(ViewModel.ClientService, animation.Animation.Thumbnail.File);
+                        photo.SetSource(ViewModel.ClientService, animation.Animation.Thumbnail.File, animation.Animation.Minithumbnail);
                     }
                     else if (animation.Animation.Minithumbnail != null)
                     {
@@ -56,19 +53,21 @@ namespace Telegram.Views.Profile
             }
         }
 
-        private async void Photo_Click(object sender, RoutedEventArgs e)
+        private async void OnItemClick(object sender, ItemClickEventArgs e)
         {
-            var element = sender as FrameworkElement;
-            var message = element.Tag as MessageWithOwner;
-
-            var response = await ViewModel.ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
-            if (response is not MessageProperties properties)
+            if (e.ClickedItem is MessageWithOwner message)
             {
-                return;
-            }
+                var response = await ViewModel.ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
+                if (response is not MessageProperties properties)
+                {
+                    return;
+                }
 
-            var viewModel = new ChatGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, message.ChatId, ViewModel.Topic, message, properties, true);
-            ViewModel.NavigationService.ShowGallery(viewModel, element);
+                var element = ScrollingHost.ContainerFromItem(e.ClickedItem);
+
+                var viewModel = new ChatGalleryViewModel(ViewModel.ClientService, ViewModel.StorageService, ViewModel.Aggregator, message.ChatId, ViewModel.Topic, message, properties, true);
+                ViewModel.NavigationService.ShowGallery(viewModel, element as SelectorItem);
+            }
         }
     }
 }

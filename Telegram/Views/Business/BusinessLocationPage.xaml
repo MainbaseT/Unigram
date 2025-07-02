@@ -57,9 +57,12 @@
                                 Height="200"
                                 CornerRadius="100"
                                 Margin="12">
-                            <controls:ImageView x:Name="Map"
-                                                Click="{x:Bind ViewModel.ChangeMap}"
-                                                CornerRadius="100" />
+                            <HyperlinkButton Click="{x:Bind ViewModel.ChangeMap}"
+                                             Style="{StaticResource EmptyHyperlinkButtonStyle}"
+                                             CornerRadius="100">
+                                <controls:ImageView x:Name="Map"
+                                                    CornerRadius="100" />
+                            </HyperlinkButton>
                         </Border>
                         <Canvas Width="40"
                                 Height="47.691"

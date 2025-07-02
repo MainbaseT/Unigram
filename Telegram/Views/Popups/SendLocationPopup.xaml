@@ -47,7 +47,6 @@
                                              CornerRadius="4"
                                              Margin="12,12,12,0">
                             <controls:ImageView x:Name="Map"
-                                                IsEnabled="False"
                                                 ImageOpened="Map_ImageOpened" />
                             <Border x:Name="MapShimmer"
                                     BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"

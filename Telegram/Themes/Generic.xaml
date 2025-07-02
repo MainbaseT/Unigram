@@ -4556,11 +4556,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:ImageView">
-                    <Image x:Name="Holder"
-                           Source="{TemplateBinding Source}"
-                           Stretch="{TemplateBinding Stretch}"
-                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    <Border x:Name="RootGrid">
+                        <Image x:Name="Presenter"
+                               Source="{TemplateBinding Source}"
+                               Stretch="{TemplateBinding Stretch}"
+                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

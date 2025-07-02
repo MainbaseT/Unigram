@@ -16,9 +16,12 @@
                 <ControlTemplate TargetType="local:LocationContent">
                     <StackPanel>
                         <Grid Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                            <controls:ImageView x:Name="Texture"
-                                                MaxWidth="320"
-                                                MaxHeight="200" />
+                            <HyperlinkButton x:Name="Button"
+                                             Style="{StaticResource EmptyHyperlinkButtonStyle}">
+                                <controls:ImageView x:Name="Texture"
+                                                    MaxWidth="320"
+                                                    MaxHeight="200" />
+                            </HyperlinkButton>
                             <Canvas Width="40"
                                     Height="47.691"
                                     Margin="0,-36,0,0"

@@ -13,6 +13,8 @@
     <Grid>
         <controls:SelectGridView x:Name="ScrollingHost"
                                  ItemsSource="{x:Bind ViewModel.Animations, Mode=OneWay}"
+                                 IsItemClickEnabled="True"
+                                 ItemClick="OnItemClick"
                                  SelectionMode="None"
                                  ChoosingItemContainer="OnChoosingItemContainer"
                                  ContainerContentChanging="OnContainerContentChanging"
@@ -64,8 +66,7 @@
             <GridView.ItemTemplate>
                 <DataTemplate>
                     <Grid Background="{ThemeResource SettingsItemBackground}">
-                        <controls:ImageView Click="Photo_Click"
-                                            Stretch="UniformToFill" />
+                        <controls:ImageView Stretch="UniformToFill" />
 
                         <!--<controls:BadgeControl Text="00:08"
                                                Background="{ThemeResource MessageOverlayBackgroundBrush}"
