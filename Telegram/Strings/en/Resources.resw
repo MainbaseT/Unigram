@@ -8337,6 +8337,9 @@ Minimum length is 5 characters.</value>
   <data name="MessageOptionsReplyTitle" xml:space="preserve">
     <value>Reply to Message</value>
   </data>
+  <data name="MessagePersonalTodoList" xml:space="preserve">
+    <value>{0}&apos;s Checklist</value>
+  </data>
   <data name="MessagePlayed_one" xml:space="preserve">
     <value>Played</value>
   </data>

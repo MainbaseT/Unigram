@@ -12340,6 +12340,7 @@
     <string name="MessageTodo">Checklist</string>
     <string name="MessageTodoList">Checklist</string>
     <string name="MessageGroupTodoList">Group Checklist</string>
+    <string name="MessagePersonalTodoList">{0}'s Checklist</string>
     <string name="TodoMenuTabTask">Task</string>
     <string name="TodoDeleteItem">Delete Item</string>
     <string name="TodoEditItem">Edit Item</string>

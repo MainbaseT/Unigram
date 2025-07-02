@@ -72,7 +72,11 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            if (message.Chat.Type is ChatTypePrivate || !checklist.List.CanMarkTasksAsDone)
+            if (!checklist.List.CanMarkTasksAsDone && !message.IsOutgoing && message.ForwardInfo == null)
+            {
+                Type.Text = string.Format(Strings.MessagePersonalTodoList, message.ClientService.GetTitle(message.SenderId, true));
+            }
+            else if (message.Chat.Type is ChatTypePrivate)
             {
                 Type.Text = Strings.MessageTodoList;
             }
