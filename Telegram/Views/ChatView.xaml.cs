@@ -2659,6 +2659,15 @@ namespace Telegram.Views
                         }
                     }
                 }
+                else if (textBlock != null)
+                {
+                    MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, textBlock, args);
+
+                    if (args.Handled)
+                    {
+                        return;
+                    }
+                }
 
                 var button = children.FirstOrDefault(x => x is Button inline && inline.Tag is InlineKeyboardButton) as Button;
                 if (button != null && button.Tag is InlineKeyboardButton inlineButton && inlineButton.Type is InlineKeyboardButtonTypeUrl url)
