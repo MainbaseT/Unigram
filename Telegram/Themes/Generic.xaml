@@ -1024,7 +1024,6 @@
                         </Grid>
 
                         <local:AnimatedTextBlock x:Name="Count"
-                                                 x:Load="False"
                                                  Foreground="{ThemeResource MessageReactionForegroundBrush}"
                                                  TextStyle="{StaticResource BaseCaptionTextBlockStyle}"
                                                  VerticalAlignment="Center"

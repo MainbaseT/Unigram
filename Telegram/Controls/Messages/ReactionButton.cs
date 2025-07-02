@@ -156,10 +156,8 @@ namespace Telegram.Controls.Messages
 
             if (interaction.TotalCount > interaction.RecentSenderIds.Count)
             {
-                Count ??= GetTemplateChild(nameof(Count)) as AnimatedTextBlock;
                 Count.Visibility = Visibility.Visible;
-
-                Count.Text = Formatter.ShortNumber(interaction.TotalCount);
+                Count.SetText(Formatter.ShortNumber(interaction.TotalCount), recycled);
 
                 if (RecentChoosers != null)
                 {
@@ -217,6 +215,7 @@ namespace Telegram.Controls.Messages
 
         protected override void OnApplyTemplate()
         {
+            Count = GetTemplateChild(nameof(Count)) as AnimatedTextBlock;
             Overlay = GetTemplateChild(nameof(Overlay)) as Popup;
             Icon = GetTemplateChild(nameof(Icon)) as CustomEmojiIcon;
             Icon.Ready += OnReady;

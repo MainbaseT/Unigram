@@ -23,6 +23,8 @@ namespace Telegram.Controls
         private TextBlock PrevPart;
         private TextBlock NextPart;
 
+        private bool _disableAnimations;
+
         public AnimatedTextBlock()
         {
             DefaultStyleKey = typeof(AnimatedTextBlock);
@@ -71,6 +73,13 @@ namespace Telegram.Controls
             {
                 visual.CenterPoint = new Vector3(point.X / 2, point.Y + 4, 0);
             }
+        }
+
+        public void SetText(string text, bool animate)
+        {
+            _disableAnimations = animate;
+            Text = text;
+            _disableAnimations = false;
         }
 
         #region Text
@@ -134,6 +143,16 @@ namespace Telegram.Controls
         {
             if (NextPart == null)
             {
+                return;
+            }
+
+            if (_disableAnimations)
+            {
+                ChangePartText(ref PrefixPart, nameof(PrefixPart), string.Empty, false);
+                ChangePartText(ref SuffixPart, nameof(SuffixPart), string.Empty, false);
+
+                ChangePartText(ref PrevPart, nameof(PrevPart), string.Empty, true);
+                ChangePartText(ref NextPart, nameof(NextPart), newValue, true);
                 return;
             }
 
