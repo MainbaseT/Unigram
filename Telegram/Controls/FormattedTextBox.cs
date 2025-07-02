@@ -44,7 +44,8 @@ namespace Telegram.Controls
         Quote = 64,
         TextUrl = 128,
         CustomEmoji = 256,
-        All = Bold | Italic | Underline | Strikethrough | Mono | Spoiler | Quote | TextUrl | CustomEmoji,
+        Mention = 512,
+        All = Bold | Italic | Underline | Strikethrough | Mono | Spoiler | Quote | TextUrl | CustomEmoji | Mention,
         Checklist = Bold | Italic | Underline | Strikethrough | Spoiler | CustomEmoji
     }
 
@@ -1203,10 +1204,17 @@ namespace Telegram.Controls
 
             text = text.Replace('\v', '\n').Replace('\r', '\n');
 
+
             if (parseMarkdown)
             {
-                return ClientEx.ParseMarkdown(text, entities);
+                var formattedText = ClientEx.ParseMarkdown(text, entities);
+                text = formattedText.Text;
+                entities = formattedText.Entities;
             }
+
+            // TODO: check if entities are allowed
+            //var allowedEntities = AllowedEntities;
+            //(allowedEntities & FormattedTextEntity.Quote) != 0
 
             return new FormattedText(text, entities);
         }
@@ -1342,6 +1350,8 @@ namespace Telegram.Controls
                 Document.Clear();
             }
 
+            var allowedEntities = AllowedEntities;
+
             if (!string.IsNullOrEmpty(text))
             {
                 if (updateSelection)
@@ -1373,31 +1383,31 @@ namespace Telegram.Controls
 
                         var range = Document.GetRange(index + entity.Offset, index + entity.Offset + entity.Length);
 
-                        if (entity.Type is TextEntityTypeBlockQuote or TextEntityTypeExpandableBlockQuote)
+                        if (entity.Type is TextEntityTypeBlockQuote or TextEntityTypeExpandableBlockQuote && (allowedEntities & FormattedTextEntity.Quote) != 0)
                         {
                             InsertBlockquote(range, false);
                         }
-                        else if (entity.Type is TextEntityTypeBold)
+                        else if (entity.Type is TextEntityTypeBold && (allowedEntities & FormattedTextEntity.Bold) != 0)
                         {
                             range.CharacterFormat.Bold = FormatEffect.On;
                         }
-                        else if (entity.Type is TextEntityTypeItalic)
+                        else if (entity.Type is TextEntityTypeItalic && (allowedEntities & FormattedTextEntity.Italic) != 0)
                         {
                             range.CharacterFormat.Italic = FormatEffect.On;
                         }
-                        else if (entity.Type is TextEntityTypeUnderline)
+                        else if (entity.Type is TextEntityTypeUnderline && (allowedEntities & FormattedTextEntity.Underline) != 0)
                         {
                             range.CharacterFormat.Underline = UnderlineType.Single;
                         }
-                        else if (entity.Type is TextEntityTypeStrikethrough)
+                        else if (entity.Type is TextEntityTypeStrikethrough && (allowedEntities & FormattedTextEntity.Strikethrough) != 0)
                         {
                             range.CharacterFormat.Strikethrough = FormatEffect.On;
                         }
-                        else if (entity.Type is TextEntityTypeSpoiler)
+                        else if (entity.Type is TextEntityTypeSpoiler && (allowedEntities & FormattedTextEntity.Spoiler) != 0)
                         {
                             range.CharacterFormat.BackgroundColor = Colors.Gray;
                         }
-                        else if (entity.Type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode)
+                        else if (entity.Type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode && (allowedEntities & FormattedTextEntity.Mono) != 0)
                         {
                             range.CharacterFormat.Name = "Consolas";
                         }
@@ -1409,15 +1419,15 @@ namespace Telegram.Controls
                         {
                             var range = Document.GetRange(index + entity.Offset, index + entity.Offset + entity.Length);
 
-                            if (entity.Type is TextEntityTypeTextUrl textUrl && IsSafe(text, entity))
+                            if (entity.Type is TextEntityTypeTextUrl textUrl && (allowedEntities & FormattedTextEntity.TextUrl) != 0 && IsSafe(text, entity))
                             {
                                 range.Link = $"\"{textUrl.Url}\"";
                             }
-                            else if (entity.Type is TextEntityTypeMentionName mentionName && IsSafe(text, entity))
+                            else if (entity.Type is TextEntityTypeMentionName mentionName && (allowedEntities & FormattedTextEntity.Mention) != 0 && IsSafe(text, entity))
                             {
                                 range.Link = $"\"tg-user://{mentionName.UserId}\"";
                             }
-                            else if (entity.Type is TextEntityTypeCustomEmoji customEmoji)
+                            else if (entity.Type is TextEntityTypeCustomEmoji customEmoji && (allowedEntities & FormattedTextEntity.CustomEmoji) != 0)
                             {
                                 var emoji = text.Substring(entity.Offset, entity.Length);
                                 InsertEmoji(range, emoji, customEmoji.CustomEmojiId);
