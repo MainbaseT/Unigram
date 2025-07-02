@@ -1500,6 +1500,16 @@ namespace Telegram.Common
             return parentContainer.Descendants<T>().FirstOrDefault(predicate);
         }
 
+        public static T GetLastChild<T>(this DependencyObject parentContainer)
+        {
+            return parentContainer.Descendants<T>(true).FirstOrDefault();
+        }
+
+        public static T GetLastChild<T>(this DependencyObject parentContainer, Func<T, bool> predicate)
+        {
+            return parentContainer.Descendants<T>(true).FirstOrDefault(predicate);
+        }
+
         public static T GetChildOrSelf<T>(this DependencyObject parentContainer)
         {
             if (parentContainer is T child)

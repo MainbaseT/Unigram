@@ -193,7 +193,7 @@ namespace Telegram.Common
 
         public static void SetVerticalPadding(this ScrollViewer scrollViewer, double top, double bottom)
         {
-            var scrollBar = scrollViewer?.GetChild<ScrollBar>(x => x.Orientation == Orientation.Vertical);
+            var scrollBar = scrollViewer?.GetLastChild<ScrollBar>(x => x.Orientation == Orientation.Vertical);
             if (scrollBar != null)
             {
                 scrollBar.Margin = new Thickness(0, top, 0, bottom);
