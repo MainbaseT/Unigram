@@ -51,6 +51,8 @@ namespace Telegram.Controls
 
     public partial class AspectView : Grid
     {
+        public Size ActualConstraint { get; set; } = Size.Empty;
+
         #region Constraint
 
         public object Constraint
@@ -372,6 +374,8 @@ namespace Telegram.Controls
                 width = int.MaxValue;
                 height = int.MaxValue;
             }
+
+            ActualConstraint = new Size(width, height);
 
             var rotate = RotationAngle
                 is RotationAngle.Angle90

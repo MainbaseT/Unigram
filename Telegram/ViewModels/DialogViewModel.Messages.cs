@@ -789,7 +789,7 @@ namespace Telegram.ViewModels
             {
                 if (animatedEmoji.AnimatedEmoji.Sticker?.FullType is StickerFullTypeCustomEmoji customEmoji)
                 {
-                    input = new FormattedText(animatedEmoji.Emoji,new[] { new TextEntity(0, animatedEmoji.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
+                    input = new FormattedText(animatedEmoji.Emoji, new[] { new TextEntity(0, animatedEmoji.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
                 }
                 else
                 {

@@ -372,6 +372,7 @@
                         Height="4" />
                 <local:GalleryTransportSlider x:Name="Slider"
                                               AutomationProperties.Name="{CustomResource AccDescrSeek}"
+                                              Style="{StaticResource DefaultSliderStyle}"
                                               Template="{StaticResource GallerySliderTemplate}"
                                               Foreground="#FFFFFF"
                                               ValueChanged="Slider_ValueChanged"

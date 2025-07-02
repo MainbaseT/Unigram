@@ -10,7 +10,6 @@ using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Gallery;
 using Telegram.Views;
 using Windows.Foundation;
@@ -516,9 +515,10 @@ namespace Telegram.Controls.Gallery
 
         private void OnTrackChanged(VideoPlayerBase sender, VideoPlayerTrackChangedEventArgs args)
         {
-            if (args.Width != 0 && args.Height != 0)
+            if (args.Width != 0 && args.Height != 0 && !ActualConstraint.IsEmpty)
             {
-                Constraint = new MaximumSize(args.Width, args.Height);
+                var size = ImageHelper.ScaleMin(args.Width, args.Height, Math.Max(ActualConstraint.Width, ActualConstraint.Height));
+                Constraint = new MaximumSize(size.Width, size.Height);
             }
         }
 
