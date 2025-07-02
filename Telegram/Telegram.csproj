@@ -196,6 +196,10 @@
     <Compile Include="Charts\FastOutSlowInInterpolator.cs" />
     <Compile Include="Charts\LinearChartView.cs" />
     <Compile Include="Charts\LookupTableInterpolator.cs" />
+    <Compile Include="Collections\Experimental\MediaDataSource.cs" />
+    <Compile Include="Collections\Experimental\ItemCacheManager.cs" />
+    <Compile Include="Collections\Experimental\ItemIndexRangeExtensions.cs" />
+    <Compile Include="Collections\Experimental\ItemIndexRangeList.cs" />
     <Compile Include="Collections\ListWithTotalCount.cs" />
     <Compile Include="Collections\SearchEmojiCollection.cs" />
     <Compile Include="Collections\SynchronizedList.cs" />

@@ -62,12 +62,125 @@ namespace Telegram.ViewModels.Profile
 
         public bool IsDeactivated { get; set; }
 
+        public MediaDataSource MediaSource { get; set; }
+        public MediaDataSource FilesSource { get; set; }
+        public MediaDataSource MusicSource { get; set; }
+        public MediaDataSource VoiceSource { get; set; }
+
         public SearchCollection<MessageWithOwner, MediaCollection> Media { get; private set; }
         public SearchCollection<MessageWithOwner, MediaCollection> Files { get; private set; }
         public SearchCollection<MessageWithOwner, MediaCollection> Links { get; private set; }
         public SearchCollection<MessageWithOwner, MediaCollection> Music { get; private set; }
         public SearchCollection<MessageWithOwner, MediaCollection> Voice { get; private set; }
         public SearchCollection<MessageWithOwner, MediaCollection> Animations { get; private set; }
+
+        protected bool _useMediaSource;
+        public bool UseMediaSource
+        {
+            get => _useMediaSource;
+            set
+            {
+                if (_useMediaSource != value)
+                {
+                    _useMediaSource = value;
+                    RaisePropertyChanged(nameof(MediaView));
+                }
+            }
+        }
+
+        public object MediaView
+        {
+            get
+            {
+                if (_useMediaSource && MediaSource != null)
+                {
+                    return MediaSource;
+                }
+
+                return Media;
+            }
+        }
+
+        protected bool _useFilesSource;
+        public bool UseFilesSource
+        {
+            get => _useFilesSource;
+            set
+            {
+                if (_useFilesSource != value)
+                {
+                    _useFilesSource = value;
+                    RaisePropertyChanged(nameof(FilesView));
+                }
+            }
+        }
+
+        public object FilesView
+        {
+            get
+            {
+                if (_useFilesSource && FilesSource != null)
+                {
+                    return FilesSource;
+                }
+
+                return Files;
+            }
+        }
+
+        protected bool _useMusicSource;
+        public bool UseMusicSource
+        {
+            get => _useMusicSource;
+            set
+            {
+                if (_useMusicSource != value)
+                {
+                    _useMusicSource = value;
+                    RaisePropertyChanged(nameof(MusicView));
+                }
+            }
+        }
+
+        public object MusicView
+        {
+            get
+            {
+                if (_useMusicSource && MusicSource != null)
+                {
+                    return MusicSource;
+                }
+
+                return Music;
+            }
+        }
+
+        protected bool _useVoiceSource;
+        public bool UseVoiceSource
+        {
+            get => _useVoiceSource;
+            set
+            {
+                if (_useVoiceSource != value)
+                {
+                    _useVoiceSource = value;
+                    RaisePropertyChanged(nameof(VoiceView));
+                }
+            }
+        }
+
+        public object VoiceView
+        {
+            get
+            {
+                if (_useVoiceSource && VoiceSource != null)
+                {
+                    return VoiceSource;
+                }
+
+                return Voice;
+            }
+        }
 
         public virtual MediaCollection SetSearch(object sender, string query)
         {

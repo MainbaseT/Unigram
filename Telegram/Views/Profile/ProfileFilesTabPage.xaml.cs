@@ -35,7 +35,7 @@ namespace Telegram.Views.Profile
             {
                 ScrollingHost.Style = BootStrapper.Current.Resources["DefaultListViewStyle"] as Style;
                 ScrollingHost.Padding = new Thickness(0);
-                ScrollingHost.CornerRadius = new CornerRadius(0);
+                ScrollingHost.ItemContainerCornerRadius = new CornerRadius(0);
             }
 
             if (ViewModel.Media.Empty())
@@ -46,21 +46,28 @@ namespace Telegram.Views.Profile
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.InRecycleQueue)
+            if (args.InRecycleQueue || ViewModel == null)
             {
                 return;
             }
-            else if (args.ItemContainer.ContentTemplateRoot is SharedFileCell cell && args.Item is MessageWithOwner message)
+            else if (args.ItemContainer.ContentTemplateRoot is SharedFileCell cell)
             {
-                AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
-
                 if (!IsProfile)
                 {
                     args.ItemContainer.Padding = new Thickness(4, 0, 4, 0);
                     cell.Background = null;
                 }
 
-                cell.UpdateMessage(ViewModel.MessageDelegate, message);
+                if (args.Item is MessageWithOwner message)
+                {
+                    AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
+                    cell.UpdateMessage(ViewModel.MessageDelegate, message);
+                }
+                else
+                {
+                    cell.Hide();
+                }
+
                 args.Handled = true;
             }
         }

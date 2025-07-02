@@ -182,6 +182,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _windowResizeDebug, "WindowResizeDebug", value);
         }
 
+        private bool? _sparseMessagesDebug;
+        public bool SparseMessagesDebug
+        {
+            get => _sparseMessagesDebug ??= GetValueOrDefault("SparseMessagesDebug", Constants.DEBUG);
+            set => AddOrUpdateValue(ref _sparseMessagesDebug, "SparseMessagesDebug", value);
+        }
+
         public bool IsLastErrorDiskFull { get; set; }
     }
 }

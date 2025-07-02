@@ -2305,7 +2305,7 @@
     </windows11:Style>
 
     <Style TargetType="local:TableListView">
-        <Setter Property="CornerRadius"
+        <Setter Property="ItemContainerCornerRadius"
                 Value="4" />
         <Setter Property="IsTabStop"
                 Value="False" />

@@ -6,6 +6,7 @@
 //
 using System;
 using Telegram.Common;
+using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -37,8 +38,29 @@ namespace Telegram.Controls.Cells
             }
         }
 
+        private bool _hidden;
+
+        public void Hide()
+        {
+            if (_hidden)
+            {
+                return;
+            }
+
+            _hidden = true;
+            ButtonRoot.Opacity = 0;
+            TextRoot.Opacity = 0;
+        }
+
         public void UpdateMessage(IPlaybackService playbackService, MessageWithOwner message)
         {
+            if (_hidden)
+            {
+                _hidden = false;
+                ButtonRoot.Opacity = 1;
+                TextRoot.Opacity = 1;
+            }
+
             _playbackService = playbackService;
             _message = message;
 
@@ -139,67 +161,34 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            var size = Math.Max(file.Size, file.ExpectedSize);
-            if (file.Local.IsDownloadingActive)
+            if (message.AreTheSame(_playbackService.CurrentItem))
             {
-                //Button.Glyph = Icons.Cancel;
-                Button.SetGlyph(file.Id, MessageContentState.Downloading);
-                Button.Progress = (double)file.Local.DownloadedSize / size;
-
-                Subtitle.Text = string.Format("{0} / {1}", FileSizeConverter.Convert(file.Local.DownloadedSize, size), FileSizeConverter.Convert(size));
-            }
-            else if (file.Remote.IsUploadingActive || message.SendingState is MessageSendingStateFailed || (message.SendingState is MessageSendingStatePending && !file.Remote.IsUploadingCompleted))
-            {
-                //Button.Glyph = Icons.Cancel;
-                Button.SetGlyph(file.Id, MessageContentState.Uploading);
-                Button.Progress = (double)file.Remote.UploadedSize / size;
-
-                Subtitle.Text = string.Format("{0} / {1}", FileSizeConverter.Convert(file.Remote.UploadedSize, size), FileSizeConverter.Convert(size));
-            }
-            else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingCompleted)
-            {
-                //Button.Glyph = Icons.Download;
-                Button.SetGlyph(file.Id, MessageContentState.Download);
-                Button.Progress = 0;
-
-                Subtitle.Text = voiceNote.GetDuration() + ", " + FileSizeConverter.Convert(size);
-
-                //if (message.Delegate.CanBeDownloaded(message))
-                //{
-                //    _message.ClientService.DownloadFile(file.Id, 32);
-                //}
-            }
-            else
-            {
-                if (message.AreTheSame(_playbackService.CurrentItem))
-                {
-                    if (_playbackService.PlaybackState == PlaybackState.Paused)
-                    {
-                        //Button.Glyph = Icons.Play;
-                        Button.SetGlyph(file.Id, MessageContentState.Play);
-                    }
-                    else
-                    {
-                        //Button.Glyph = Icons.Pause;
-                        Button.SetGlyph(file.Id, MessageContentState.Pause);
-                    }
-
-                    UpdatePosition(_playbackService.Position, _playbackService.Duration);
-
-                    _playbackService.StateChanged += OnPlaybackStateChanged;
-                    _playbackService.PositionChanged += OnPositionChanged;
-                }
-                else
+                if (_playbackService.PlaybackState == PlaybackState.Paused)
                 {
                     //Button.Glyph = Icons.Play;
                     Button.SetGlyph(file.Id, MessageContentState.Play);
-                    Button.Progress = 1;
-
-                    Subtitle.Text = voiceNote.GetDuration();
+                }
+                else
+                {
+                    //Button.Glyph = Icons.Pause;
+                    Button.SetGlyph(file.Id, MessageContentState.Pause);
                 }
 
-                Button.Progress = 1;
+                UpdatePosition(_playbackService.Position, _playbackService.Duration);
+
+                _playbackService.StateChanged += OnPlaybackStateChanged;
+                _playbackService.PositionChanged += OnPositionChanged;
             }
+            else
+            {
+                //Button.Glyph = Icons.Play;
+                Button.SetGlyph(file.Id, MessageContentState.Play);
+                Button.Progress = 1;
+
+                Subtitle.Text = string.Format("{0} {1} {2}", voiceNote.GetDuration(), Icons.Bullet, Formatter.DateAt(message.Date));
+            }
+
+            Button.Progress = 1;
         }
 
         private VoiceNote GetContent(MessageContent content)

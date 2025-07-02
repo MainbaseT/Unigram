@@ -40,8 +40,29 @@ namespace Telegram.Controls.Cells
             UpdateMessage(null, new MessageWithOwner(viewModel.ClientService, fileDownload.Message));
         }
 
+        private bool _hidden;
+
+        public void Hide()
+        {
+            if (_hidden)
+            {
+                return;
+            }
+
+            _hidden = true;
+            ButtonRoot.Opacity = 0;
+            TextRoot.Opacity = 0;
+        }
+
         public void UpdateMessage(IMessageDelegate delegato, MessageWithOwner message)
         {
+            if (_hidden)
+            {
+                _hidden = false;
+                ButtonRoot.Opacity = 1;
+                TextRoot.Opacity = 1;
+            }
+
             _delegate = delegato;
             _message = message;
 
@@ -51,7 +72,7 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            Ellipse.Background = UpdateEllipseBrush(data.FileName);
+            ButtonRoot.Background = UpdateEllipseBrush(data.FileName);
 
             if (string.IsNullOrEmpty(data.FileName))
             {

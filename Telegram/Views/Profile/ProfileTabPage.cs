@@ -197,17 +197,17 @@ namespace Telegram.Views.Profile
             {
                 if (sender is ListView)
                 {
-                    args.ItemContainer = new TableAccessibleChatListViewItem(ViewModel.ClientService);
+                    args.ItemContainer = new TableAccessibleChatListViewItem(ViewModel?.ClientService);
                 }
                 else
                 {
-                    args.ItemContainer = new ChatGridViewItem(ViewModel.ClientService);
+                    args.ItemContainer = new ChatGridViewItem(ViewModel?.ClientService);
                 }
 
                 args.ItemContainer.Style = sender.ItemContainerStyle;
                 args.ItemContainer.ContentTemplate = sender.ItemTemplate;
 
-                if (args.Item is MessageWithOwner)
+                if (args.Item is MessageWithOwner or null)
                 {
                     args.ItemContainer.ContextRequested += Message_ContextRequested;
                 }

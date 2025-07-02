@@ -13,6 +13,7 @@ namespace Telegram.Controls.Media
 {
     public partial class Icons
     {
+        public const string Bullet = "\u2022";
         public const string BulletSpace = "\u2022 ";
         public const string RTL = "\u200F";
         public const string LTR = "\u200E";
@@ -26,6 +27,10 @@ namespace Telegram.Controls.Media
         public const string CalendarArrowUp16 = "\uEAAF";
         public const string NumberSymbolArrowUp = "\uEAAC";
         public const string NumberSymbolArrowUp16 = "\uEAAB";
+
+        public const string ZoomIn = "\uE969";
+        public const string ZoomOut = "\uE96A";
+        public const string ZoomCalendar = "\uEAC2";
 
         public const string Boosters12 = "\uEA6A";
         public const string Boosters212 = "\uEA6B";

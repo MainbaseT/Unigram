@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -15,6 +16,7 @@ using Telegram.Controls;
 using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Navigation;
+using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -22,14 +24,16 @@ using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Profile;
 using Telegram.ViewModels.Stories;
 using Telegram.Views.Chats;
+using Telegram.Views.Popups;
 using Telegram.Views.Profile;
+using Windows.Foundation.Metadata;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
@@ -56,6 +60,15 @@ namespace Telegram.Views
             };
 
             InitializeScrolling();
+
+            if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.UIElement", "Shadow"))
+            {
+                var themeShadow = new ThemeShadow();
+                ToolTip.Shadow = themeShadow;
+                ToolTip.Translation += new Vector3(0, 0, 32);
+
+                themeShadow.Receivers.Add(ScrollingHost);
+            }
         }
 
         public override HostedPagePositionBase GetPosition()
@@ -87,6 +100,8 @@ namespace Telegram.Views
             var visual = ElementComposition.GetElementVisual(HeaderPanel);
             var border = ElementComposition.GetElementVisual(CardBackground);
             var menu = ElementComposition.GetElementVisual(MenuRoot);
+            var media = ElementComposition.GetElementVisual(MediaFrame);
+            media.Clip = media.Compositor.CreateInsetClip();
 
             ElementCompositionPreview.SetIsTranslationEnabled(HeaderPanel, true);
             ElementCompositionPreview.SetIsTranslationEnabled(BackButton, true);
@@ -96,12 +111,18 @@ namespace Telegram.Views
             translation.SetReferenceParameter("scrollViewer", properties);
             translation.SetReferenceParameter("properties", ProfileHeader.Properties);
 
+            var clip = visual.Compositor.CreateExpressionAnimation(
+                "-scrollViewer.Translation.Y + 4");
+            clip.SetReferenceParameter("scrollViewer", properties);
+            clip.SetReferenceParameter("properties", ProfileHeader.Properties);
+
             //var fadeIn = visual.Compositor.CreateExpressionAnimation(
             //    "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -(properties.ActualHeight - 16) ? 0 : ((-scrollViewer.Translation.Y - (properties.ActualHeight - 16)) / 16) : 1");
             //fadeIn.SetReferenceParameter("scrollViewer", properties);
             //fadeIn.SetReferenceParameter("properties", ProfileHeader.Properties);
 
             visual.StartAnimation("Translation.Y", translation);
+            media.Clip.StartAnimation("TopInset", clip);
 
             //border.StartAnimation("Opacity", fadeOut);
 
@@ -391,12 +412,36 @@ namespace Telegram.Views
             UpdateBackButton();
 
             ViewModel.HeaderHeight = Math.Max(e.NewSize.Height, 48 + 10);
+            RootGrid.HeaderHeight = Math.Max((float)e.NewSize.Height - 88, 48 + 10);
             MediaFrame.MinHeight = ScrollingHost.ActualHeight + e.NewSize.Height - 88;
         }
+
+        private Thumb _scrollingThumb;
+        private Border _scrollingPanningThumb;
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             MediaFrame.MinHeight = Header.ActualHeight + e.NewSize.Height - 88;
+
+            var scrollBar = ScrollingHost.GetLastChild<ScrollBar>(x => x.Orientation == Orientation.Vertical);
+            if (scrollBar != null && _scrollingThumb == null)
+            {
+                var rootGrid = scrollBar.GetChild<Grid>();
+                if (rootGrid != null)
+                {
+                    var visualStateGroups = VisualStateManager.GetVisualStateGroups(rootGrid);
+                    if (visualStateGroups != null)
+                    {
+                        foreach (var group in visualStateGroups)
+                        {
+                            group.CurrentStateChanged += ScrollingIndicatorStates_CurrentStateChanged;
+                        }
+                    }
+                }
+
+                _scrollingThumb = scrollBar.GetChild<Thumb>(x => x.Name == "VerticalThumb");
+                _scrollingPanningThumb = scrollBar.GetChild<Border>(x => x.Name == "VerticalPanningThumb");
+            }
 
             if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
             {
@@ -406,9 +451,73 @@ namespace Telegram.Views
             LoadMore(scrollingHost);
         }
 
+        private bool _scrollingIndicatorVisible;
+        private bool _scrollingIndicatorEnabled;
+
+        private void ScrollingIndicatorStates_CurrentStateChanged(object sender, VisualStateChangedEventArgs e)
+        {
+            switch (e.NewState.Name)
+            {
+                case "MouseIndicator":
+                    BindToolTipToThumb(_scrollingThumb);
+
+                    _scrollingIndicatorVisible = true;
+                    ToolTip.Visibility = _scrollingIndicatorEnabled
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                    break;
+                case "TouchIndicator":
+                    BindToolTipToThumb(_scrollingPanningThumb);
+
+                    _scrollingIndicatorVisible = true;
+                    ToolTip.Visibility = _scrollingIndicatorEnabled
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                    break;
+                case "NoIndicator":
+                    _scrollingIndicatorVisible = false;
+                    ToolTip.Visibility = Visibility.Collapsed;
+                    break;
+
+                // This part is needed to fix the visual state (that is still broken all across the app)
+                case "Collapsed":
+                    if (e.OldState.Name == "Expanded")
+                    {
+                        VisualStateManager.GoToState(ScrollingHost, "NoIndicator", true);
+                    }
+                    break;
+            }
+        }
+
+        private void BindToolTipToThumb(UIElement element)
+        {
+            ElementCompositionPreview.SetIsTranslationEnabled(ToolTip, true);
+
+            var target = ElementComposition.GetElementVisual(element);
+
+            if (element is not Thumb)
+            {
+                element = VisualTreeHelper.GetParent(element) as UIElement;
+            }
+
+            var visual = ElementComposition.GetElementVisual(ToolTip);
+            var thumb = ElementComposition.GetElementVisual(element);
+
+            var animation = visual.Compositor.CreateExpressionAnimation("max(thumb.Offset.Y + (target.Size.Y - this.Target.Size.Y) / 2, 8)");
+            animation.SetReferenceParameter("thumb", thumb);
+            animation.SetReferenceParameter("target", target);
+
+            visual.StartAnimation("Translation.Y", animation);
+        }
+
         private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             UpdateBackButton();
+
+            var diff = ScrollingHost.VerticalOffset - (ProfileHeader.ActualSize.Y - 48);
+            RootGrid.HeaderHeight = diff >= 0 && diff < 24
+                ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10)
+                : -1;
 
             if (ProfileHeader.Visibility == Visibility.Visible && !ViewModel.IsSavedMessages)
             {
@@ -435,23 +544,54 @@ namespace Telegram.Views
                 return;
             }
 
-            var container = scrollingHost.Items[index];
-            if (container is MessageWithOwner message)
+            if (scrollingHost.ItemsSource is MediaDataSource dataSource)
             {
-                DateHeaderLabel.Text = Formatter.Date(message.Date, Strings.formatterMonthYear);
-            }
-            else if (container is StoryViewModel story)
-            {
-                DateHeaderLabel.Text = Formatter.Date(story.Date, Strings.formatterMonthYear);
+                var offset = diff / ScrollingHost.ScrollableHeight;
+                if (offset >= 0 && dataSource.HasPositions)
+                {
+                    var position = dataSource.GetByOffset(offset);
+                    if (position != null)
+                    {
+                        ToolTipContent.Text = Formatter.Date(position.Date, Strings.formatterMonthYear);
+
+                        _scrollingIndicatorEnabled = true;
+                        ToolTip.Visibility = _scrollingIndicatorVisible
+                            ? Visibility.Visible
+                            : Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    _scrollingIndicatorEnabled = false;
+                    ToolTip.Visibility = Visibility.Collapsed;
+                }
+
+                _dateHeaderTimer.Stop();
+                ShowHideDateHeader(false, false);
             }
             else
             {
-                return;
-            }
+                _scrollingIndicatorEnabled = false;
+                ToolTip.Visibility = Visibility.Collapsed;
 
-            _dateHeaderTimer.Stop();
-            _dateHeaderTimer.Start();
-            ShowHideDateHeader(ScrollingHost.VerticalOffset > ProfileHeader.ActualHeight, true);
+                var container = scrollingHost.Items[index];
+                if (container is MessageWithOwner message)
+                {
+                    DateHeaderLabel.Text = Formatter.Date(message.Date, Strings.formatterMonthYear);
+                }
+                else if (container is StoryViewModel story)
+                {
+                    DateHeaderLabel.Text = Formatter.Date(story.Date, Strings.formatterMonthYear);
+                }
+                else
+                {
+                    return;
+                }
+
+                _dateHeaderTimer.Stop();
+                _dateHeaderTimer.Start();
+                ShowHideDateHeader(ScrollingHost.VerticalOffset > ProfileHeader.ActualHeight, true);
+            }
         }
 
         private bool _subtitleCollapsed = true;
@@ -479,7 +619,7 @@ namespace Telegram.Views
             cardBackground.StartAnimation("Opacity", opacityOut);
             menu.StartAnimation("Opacity", opacityIn);
 
-            ScrollingHost.SetVerticalPadding(show ? 88 : 0, 0);
+            ScrollingHost.SetVerticalPadding(0, 0);
         }
 
         private bool _loadingMore;
@@ -571,20 +711,50 @@ namespace Telegram.Views
             }
             else if (MediaFrame.Content is ProfileMediaTabPage)
             {
-                var photos = new ToggleMenuFlyoutItem
+                var zoomIn = new MenuFlyoutItem
                 {
-                    Text = Strings.MediaShowPhotos,
-                    IsChecked = ViewModel.Media.Source.Filter is SearchMessagesFilterPhoto or SearchMessagesFilterPhotoAndVideo
+                    Text = Strings.MediaZoomIn,
+                    Icon = MenuFlyoutHelper.CreateIcon(Icons.ZoomIn)
                 };
 
-                var videos = new ToggleMenuFlyoutItem
+                var zoomOut = new MenuFlyoutItem
+                {
+                    Text = Strings.MediaZoomOut,
+                    Icon = MenuFlyoutHelper.CreateIcon(Icons.ZoomOut)
+                };
+
+                var calendar = new MenuFlyoutItem
+                {
+                    Text = Strings.Calendar,
+                    Icon = MenuFlyoutHelper.CreateIcon(Icons.Calendar)
+                };
+
+                var photos = new MenuFlyoutItem
+                {
+                    Text = Strings.MediaShowPhotos,
+                    Icon = ViewModel.Media.Source.Filter is SearchMessagesFilterPhoto or SearchMessagesFilterPhotoAndVideo ? MenuFlyoutHelper.CreateIcon(Icons.Checkmark) : null
+                };
+
+                var videos = new MenuFlyoutItem
                 {
                     Text = Strings.MediaShowVideos,
-                    IsChecked = ViewModel.Media.Source.Filter is SearchMessagesFilterVideo or SearchMessagesFilterPhotoAndVideo
+                    Icon = ViewModel.Media.Source.Filter is SearchMessagesFilterVideo or SearchMessagesFilterPhotoAndVideo ? MenuFlyoutHelper.CreateIcon(Icons.Checkmark) : null
                 };
+
+                zoomIn.Click += MediaZoomIn_Click;
+                zoomOut.Click += MediaZoomOut_Click;
+                calendar.Click += MediaCalendar_Click;
 
                 photos.Click += MediaShowPhotos_Click;
                 videos.Click += MediaShowVideos_Click;
+
+                if (SettingsService.Current.Diagnostics.SparseMessagesDebug)
+                {
+                    flyout.Items.Add(zoomIn);
+                    flyout.Items.Add(zoomOut);
+                    flyout.Items.Add(calendar);
+                    flyout.CreateFlyoutSeparator();
+                }
 
                 flyout.Items.Add(photos);
                 flyout.Items.Add(videos);
@@ -614,7 +784,7 @@ namespace Telegram.Views
                 var unique = new MenuFlyoutItem
                 {
                     Text = Strings.Gift2FilterUnique,
-                    Icon = ViewModel.GiftsTab.ExcludeLimited ? null : MenuFlyoutHelper.CreateIcon(Icons.Checkmark)
+                    Icon = ViewModel.GiftsTab.ExcludeUpgraded ? null : MenuFlyoutHelper.CreateIcon(Icons.Checkmark)
                 };
 
                 sort.Click += (s, args) => ViewModel.GiftsTab.SortByPrice = !ViewModel.GiftsTab.SortByPrice;
@@ -652,6 +822,46 @@ namespace Telegram.Views
             }
 
             flyout.ShowAt(sender as Button, FlyoutPlacementMode.BottomEdgeAlignedRight);
+        }
+
+        private void MediaZoomIn_Click(object sender, RoutedEventArgs e)
+        {
+            if (MediaFrame.Content is ProfileMediaTabPage media)
+            {
+                media.Zoom(-1);
+            }
+        }
+
+        private void MediaZoomOut_Click(object sender, RoutedEventArgs e)
+        {
+            if (MediaFrame.Content is ProfileMediaTabPage media)
+            {
+                media.Zoom(1);
+            }
+        }
+
+        private async void MediaCalendar_Click(object sender, RoutedEventArgs e)
+        {
+            if (MediaFrame.Content is ProfileMediaTabPage media)
+            {
+                var popup = new CalendarPopup(ViewModel.ClientService, ViewModel.Chat.Id, ViewModel.Topic);
+                popup.MaxDate = DateTimeOffset.Now.Date;
+
+                var confirm = await ViewModel.ShowPopupAsync(popup);
+                if (confirm == ContentDialogResult.Primary && popup.SelectedDates.Count > 0)
+                {
+                    var first = popup.SelectedDates.FirstOrDefault();
+                    var offset = first.Date.ToTimestamp();
+
+                    var closest = ViewModel.MediaSource.GetByDate(offset);
+                    var panel = media.ScrollingHost.ItemsPanelRoot as ItemsWrapGrid;
+
+                    int x = closest.Position % panel.MaximumRowsOrColumns;
+                    int y = closest.Position / panel.MaximumRowsOrColumns;
+
+                    ScrollingHost.ChangeView(null, ProfileHeader.ActualHeight - 48 + 24 + (y * panel.ItemHeight), null, true);
+                }
+            }
         }
 
         private void MediaShowPhotos_Click(object sender, RoutedEventArgs e)
@@ -773,7 +983,7 @@ namespace Telegram.Views
                     return;
                 }
 
-                for (int i = 0; i < e.NewItems.Count; i++)
+                for (int i = 0; i < e.NewItems?.Count; i++)
                 {
                     var gift = e.NewItems[i] as ReceivedGift;
                     var animated = new AnimatedImage
@@ -797,5 +1007,43 @@ namespace Telegram.Views
 
             }
         }
+    }
+
+    public class ProfileSnapGrid : Grid, IScrollSnapPointsInfo
+    {
+        public IReadOnlyList<float> GetIrregularSnapPoints(Orientation orientation, SnapPointsAlignment alignment)
+        {
+            return new float[]
+            {
+                HeaderHeight
+            };
+        }
+
+        public float GetRegularSnapPoints(Orientation orientation, SnapPointsAlignment alignment, out float offset)
+        {
+            offset = 0;
+            return 0;
+        }
+
+        private float _headerHeight;
+        public float HeaderHeight
+        {
+            get => _headerHeight;
+            set
+            {
+                if (_headerHeight != value)
+                {
+                    _headerHeight = value;
+                    VerticalSnapPointsChanged?.Invoke(this, null);
+                }
+            }
+        }
+
+        public bool AreHorizontalSnapPointsRegular => false;
+
+        public bool AreVerticalSnapPointsRegular => false;
+
+        public event EventHandler<object> HorizontalSnapPointsChanged;
+        public event EventHandler<object> VerticalSnapPointsChanged;
     }
 }

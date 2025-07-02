@@ -11,8 +11,13 @@
                       mc:Ignorable="d">
 
     <Grid>
+        <Grid x:Name="TestGrid"
+              VerticalAlignment="Top"
+              MaxWidth="1000"
+              Margin="24,0,16,0" />
+
         <controls:SelectGridView x:Name="ScrollingHost"
-                                 ItemsSource="{x:Bind ViewModel.Media, Mode=OneWay}"
+                                 ItemsSource="{x:Bind ViewModel.MediaView, Mode=OneWay}"
                                  IsItemClickEnabled="True"
                                  ItemClick="OnItemClick"
                                  SelectionMode="None"
@@ -27,7 +32,8 @@
                                             SelectedItems="{x:Bind ViewModel.SelectedItems}" />
             </common:SelectedItemsBinder.Attached>
             <common:FluidGridView.Triggers>
-                <common:LengthGridViewTrigger ItemLength="120" />
+                <common:LengthGridViewTrigger x:Name="Test"
+                                              ItemLength="120" />
             </common:FluidGridView.Triggers>
             <GridView.Template>
                 <ControlTemplate TargetType="GridView">
@@ -63,6 +69,10 @@
                             Value="Stretch" />
                     <Setter Property="VerticalContentAlignment"
                             Value="Stretch" />
+                    <!--<Setter Property="MinWidth"
+                            Value="0" />
+                    <Setter Property="MinHeight"
+                            Value="0" />-->
                 </Style>
             </GridView.ItemContainerStyle>
             <GridView.Header>

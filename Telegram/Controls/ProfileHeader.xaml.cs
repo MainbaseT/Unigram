@@ -401,7 +401,7 @@ namespace Telegram.Controls
             var translationExp = "(scrollViewer.Translation.Y - _.RemovedHeight)";
 
             //var rootExp = "clamp(-scrollViewer.Translation.Y - (this.Target.Size.Y - 48 + 0), 0, target.Size.Y - this.Target.Size.Y)";
-            var rootExp = $"{translationExp} < 0 ? clamp(-{translationExp} - (this.Target.Size.Y - 48), 0, 100000) : -{translationExp}";
+            var rootExp = $"{translationExp} < 0 ? clamp(-{translationExp} - (this.Target.Size.Y - 48), 0, 2147483647) : -{translationExp}";
             var rootTranslation = root.Compositor.CreateExpressionAnimation(rootExp);
             rootTranslation.SetReferenceParameter("scrollViewer", properties);
             rootTranslation.SetReferenceParameter("target", target);

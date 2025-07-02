@@ -50,8 +50,31 @@ namespace Telegram.Controls.Cells
             }
         }
 
+        private bool _hidden;
+
+        public void Hide()
+        {
+            if (_hidden)
+            {
+                return;
+            }
+
+            _hidden = true;
+            ButtonRoot.Opacity = 0;
+            DownloadRoot.Opacity = 0;
+            TextRoot.Opacity = 0;
+        }
+
         public void UpdateMessage(IPlaybackService playbackService, MessageWithOwner message)
         {
+            if (_hidden)
+            {
+                _hidden = false;
+                ButtonRoot.Opacity = 1;
+                DownloadRoot.Opacity = 1;
+                TextRoot.Opacity = 1;
+            }
+
             _playbackService = playbackService;
             _message = message;
 
@@ -171,12 +194,12 @@ namespace Telegram.Controls.Cells
                 if (SettingsService.Current.IsStreamingEnabled)
                 {
                     target = Download;
-                    DownloadPanel.Visibility = Visibility.Visible;
+                    DownloadRoot.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     target = Button;
-                    DownloadPanel.Visibility = Visibility.Collapsed;
+                    DownloadRoot.Visibility = Visibility.Collapsed;
                 }
 
                 target.SetGlyph(file.Id, MessageContentState.Downloading);
@@ -186,7 +209,7 @@ namespace Telegram.Controls.Cells
             }
             else if (file.Remote.IsUploadingActive || message.SendingState is MessageSendingStateFailed || (message.SendingState is MessageSendingStatePending && !file.Remote.IsUploadingCompleted))
             {
-                DownloadPanel.Visibility = Visibility.Collapsed;
+                DownloadRoot.Visibility = Visibility.Collapsed;
 
                 Button.SetGlyph(file.Id, MessageContentState.Uploading);
                 Button.Progress = (double)file.Remote.UploadedSize / size;
@@ -199,12 +222,12 @@ namespace Telegram.Controls.Cells
                 if (SettingsService.Current.IsStreamingEnabled)
                 {
                     target = Download;
-                    DownloadPanel.Visibility = Visibility.Visible;
+                    DownloadRoot.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     target = Button;
-                    DownloadPanel.Visibility = Visibility.Collapsed;
+                    DownloadRoot.Visibility = Visibility.Collapsed;
                 }
 
                 target.SetGlyph(file.Id, MessageContentState.Download);
@@ -219,7 +242,7 @@ namespace Telegram.Controls.Cells
             }
             else
             {
-                DownloadPanel.Visibility = Visibility.Collapsed;
+                DownloadRoot.Visibility = Visibility.Collapsed;
 
                 if (!SettingsService.Current.IsStreamingEnabled)
                 {

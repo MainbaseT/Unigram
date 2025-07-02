@@ -35,7 +35,7 @@ namespace Telegram.Views.Profile
             {
                 ScrollingHost.Style = BootStrapper.Current.Resources["DefaultListViewStyle"] as Style;
                 ScrollingHost.Padding = new Thickness(0);
-                ScrollingHost.CornerRadius = new CornerRadius(0);
+                ScrollingHost.ItemContainerCornerRadius = new CornerRadius(0);
             }
 
             if (ViewModel.Media.Empty())

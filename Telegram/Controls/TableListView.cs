@@ -50,7 +50,7 @@ namespace Telegram.Controls
                 return;
             }
 
-            if (args.ItemContainer.ContentTemplateRoot is Grid content && CornerRadius.TopLeft > 0)
+            if (args.ItemContainer.ContentTemplateRoot is Grid content && ItemContainerCornerRadius.TopLeft > 0)
             {
                 // TODO: some day would be great to get rid of this
                 content.CornerRadius = new CornerRadius(4);
@@ -63,6 +63,19 @@ namespace Telegram.Controls
         {
             return new TableListViewItem();
         }
+
+        #region ItemContainerCornerRadius
+
+        public CornerRadius ItemContainerCornerRadius
+        {
+            get { return (CornerRadius)GetValue(ItemContainerCornerRadiusProperty); }
+            set { SetValue(ItemContainerCornerRadiusProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemContainerCornerRadiusProperty =
+            DependencyProperty.Register("ItemContainerCornerRadius", typeof(CornerRadius), typeof(TableListView), new PropertyMetadata(default(CornerRadius)));
+
+        #endregion
     }
 
     public partial class TableListViewItem : TextListViewItem

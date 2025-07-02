@@ -50,6 +50,26 @@ namespace Telegram.Common
             }
         }
 
+        public static double GetLength(ItemsControl owner, FluidGridViewTriggerBase trigger, out int maximumRowsOrColumns)
+        {
+            var triggers = GetTriggers(owner);
+            var reference = GetReference(triggers.Owner);
+
+            var padding = GetPadding(owner);
+
+            var parentLength = reference.Orientation == Orientation.Horizontal
+                ? owner.ItemsPanelRoot.ActualWidth - padding.Left - padding.Right
+                : owner.ItemsPanelRoot.ActualHeight - padding.Top - padding.Bottom;
+
+            var maxLength = GetMaxLength(owner);
+            if (parentLength > maxLength && !double.IsNaN(maxLength))
+            {
+                parentLength = maxLength;
+            }
+
+            return trigger.GetItemLength(Math.Floor(parentLength), out maximumRowsOrColumns);
+        }
+
         private static void SetActive(FluidGridViewTriggerCollection triggers, WrapGridReference reference)
         {
             if (triggers.Owner.ItemsPanelRoot == null || reference == null)
@@ -511,28 +531,45 @@ namespace Telegram.Common
             DependencyProperty.Register("ItemLength", typeof(double), typeof(LengthGridViewTrigger), new PropertyMetadata(0d, OnPropertyChanged));
         #endregion
 
+        #region ItemScale
+
+        public int ItemScale
+        {
+            get { return (int)GetValue(ItemScaleProperty); }
+            set { SetValue(ItemScaleProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemScaleProperty =
+            DependencyProperty.Register("ItemScale", typeof(int), typeof(LengthGridViewTrigger), new PropertyMetadata(0, OnPropertyChanged));
+
+        #endregion
+
         public override double GetItemLength(double parentLength, out int maximumRowsOrColumns)
         {
-            if (parentLength <= 400)
+            //if (parentLength <= 400)
+            //{
+            //    maximumRowsOrColumns = 3;
+            //    return parentLength / 3d;
+            //}
+            //else if (parentLength <= 500)
+            //{
+            //    maximumRowsOrColumns = 4;
+            //    return parentLength / 4d;
+            //}
+            //else
             {
-                maximumRowsOrColumns = 3;
-                return parentLength / 3d;
-            }
-            else if (parentLength <= 500)
-            {
-                maximumRowsOrColumns = 4;
-                return parentLength / 4d;
-            }
-            else
-            {
-                var parent = ItemLength;
+                var item = ItemLength;
+                var parent = item;
                 var itemsCount = 0;
 
                 while (parent <= parentLength)
                 {
-                    parent += ItemLength;
+                    parent += item;
                     itemsCount += 1;
                 }
+
+                itemsCount += ItemScale;
+                itemsCount = Math.Clamp(itemsCount, 2, 12);
 
                 maximumRowsOrColumns = itemsCount;
                 return parentLength / itemsCount;

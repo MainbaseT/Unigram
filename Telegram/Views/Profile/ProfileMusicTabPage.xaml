@@ -14,7 +14,7 @@
 
     <Grid>
         <controls:TableListView x:Name="ScrollingHost"
-                                ItemsSource="{x:Bind ViewModel.Music, Mode=OneWay}"
+                                ItemsSource="{x:Bind ViewModel.MusicView, Mode=OneWay}"
                                 SelectionMode="None"
                                 ChoosingItemContainer="OnChoosingItemContainer"
                                 ContainerContentChanging="OnContainerContentChanging">

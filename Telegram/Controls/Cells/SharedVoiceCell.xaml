@@ -18,7 +18,8 @@
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition />
     </Grid.ColumnDefinitions>
-    <Grid Width="48"
+    <Grid x:Name="ButtonRoot"
+          Width="48"
           Height="48"
           CornerRadius="24"
           Background="{ThemeResource MessageMediaBackgroundBrush}"
@@ -29,7 +30,8 @@
                              Click="Button_Click"
                              Style="{StaticResource InlineFileButtonStyle}" />
     </Grid>
-    <StackPanel Margin="8,0,0,2"
+    <StackPanel x:Name="TextRoot"
+                Margin="8,0,0,2"
                 VerticalAlignment="Center"
                 Grid.Column="1">
         <TextBlock x:Name="Title"

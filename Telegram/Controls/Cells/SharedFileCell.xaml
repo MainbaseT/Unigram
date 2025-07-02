@@ -17,7 +17,7 @@
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition />
     </Grid.ColumnDefinitions>
-    <Grid x:Name="Ellipse"
+    <Grid x:Name="ButtonRoot"
           Width="48"
           Height="48"
           CornerRadius="24"
@@ -29,7 +29,8 @@
                              Click="Button_Click"
                              Style="{StaticResource InlineFileButtonStyle}" />
     </Grid>
-    <Grid Margin="12,0,0,0"
+    <Grid x:Name="TextRoot"
+          Margin="12,0,0,0"
           VerticalAlignment="Center"
           Grid.Column="1">
         <Grid.RowDefinitions>
