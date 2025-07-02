@@ -4555,7 +4555,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:ImageView">
-                    <Border x:Name="RootGrid">
+                    <Border x:Name="RootGrid"
+                            CornerRadius="{TemplateBinding CornerRadius}">
                         <Image x:Name="Presenter"
                                Source="{TemplateBinding Source}"
                                Stretch="{TemplateBinding Stretch}"

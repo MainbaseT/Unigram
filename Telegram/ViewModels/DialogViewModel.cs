@@ -3976,7 +3976,7 @@ namespace Telegram.ViewModels
 
         public async void JumpDate()
         {
-            var dialog = new CalendarPopup();
+            var dialog = new CalendarPopup(ClientService, ChatId, Topic);
             dialog.MaxDate = DateTimeOffset.Now.Date;
             //dialog.SelectedDates.Add(BindConvert.Current.DateTime(message.Date));
 

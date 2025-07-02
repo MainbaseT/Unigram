@@ -10,10 +10,48 @@
                        SecondaryButtonText="Cancel"
                        PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
                        SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
-                       Padding="0,6,0,24">
+                       Padding="0,8,0,24">
 
     <CalendarView x:Name="View"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Top"
-                  BorderThickness="0,0,0,1" />
+                  CalendarViewDayItemChanging="OnCalendarViewDayItemChanging"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Top">
+        <CalendarView.CalendarViewDayItemStyle>
+            <Style TargetType="CalendarViewDayItem">
+                <Setter Property="MinWidth"
+                        Value="40" />
+                <Setter Property="MinHeight"
+                        Value="40" />
+                <Setter Property="Margin"
+                        Value="1" />
+                <Setter Property="Padding"
+                        Value="0,0,0,4" />
+                <Setter Property="UseSystemFocusVisuals"
+                        Value="True" />
+                <Setter Property="FocusVisualMargin"
+                        Value="-3" />
+                <Setter Property="FocusVisualPrimaryBrush"
+                        Value="{ThemeResource CalendarViewFocusVisualPrimaryBrush}" />
+                <Setter Property="FocusVisualPrimaryThickness"
+                        Value="2" />
+                <Setter Property="FocusVisualSecondaryBrush"
+                        Value="{ThemeResource CalendarViewFocusVisualSecondaryBrush}" />
+                <Setter Property="FocusVisualSecondaryThickness"
+                        Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="CalendarViewDayItem">
+                            <Grid CornerRadius="20"
+                                  Margin="0,0,0,-4">
+                                <controls:ImageView Stretch="UniformToFill"
+                                                    CornerRadius="20" />
+                                <TextBlock TextAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </CalendarView.CalendarViewDayItemStyle>
+    </CalendarView>
 </controls:ContentPopup>

@@ -1846,7 +1846,7 @@ namespace Telegram.ViewModels
             {
                 var date = Formatter.ToLocalTime(message.Date);
 
-                var dialog = new CalendarPopup(date);
+                var dialog = new CalendarPopup(ClientService, ChatId, Topic, date);
                 dialog.MaxDate = DateTimeOffset.Now.Date;
 
                 var confirm = await ShowPopupAsync(dialog);

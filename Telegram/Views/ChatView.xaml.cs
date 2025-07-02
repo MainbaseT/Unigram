@@ -4321,7 +4321,7 @@ namespace Telegram.Views
             var button = sender as Button;
             if (button.Tag is DateTime date && ViewModel.Type is DialogType.History or DialogType.Thread)
             {
-                var dialog = new CalendarPopup(date);
+                var dialog = new CalendarPopup(ViewModel.ClientService, ViewModel.ChatId, ViewModel.Topic, date);
                 dialog.MaxDate = DateTimeOffset.Now.Date;
 
                 var confirm = await dialog.ShowQueuedAsync(XamlRoot);
