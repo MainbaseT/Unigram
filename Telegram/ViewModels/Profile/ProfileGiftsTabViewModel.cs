@@ -4,8 +4,12 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Rg.DiffUtils;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Common;
@@ -17,22 +21,20 @@ using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.Views.Popups;
 using Telegram.Views.Stars.Popups;
+using Windows.Foundation;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels.Profile
 {
-    public partial class ProfileGiftsTabViewModel : ViewModelBase, IHandle, IIncrementalCollectionOwner
+    public partial class ProfileGiftsTabViewModel : ViewModelBase, IHandle, IDiffHandler<ReceivedGift>
     {
         private MessageSender _senderId;
-        private string _nextOffsetId = string.Empty;
-
-        private List<string> _pinnedGifts = new List<string>();
 
         public ProfileGiftsTabViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
-            Items = new IncrementalCollection<ReceivedGift>(this);
+            ItemsView = new SearchCollection<ReceivedGift, ReceivedGiftsCollection>(UpdateItems, this);
         }
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
@@ -54,6 +56,8 @@ namespace Telegram.ViewModels.Profile
                 {
                     _senderId = new MessageSenderUser(user.Id);
                 }
+
+                ItemsView.Reload();
             }
 
             return Task.CompletedTask;
@@ -96,7 +100,7 @@ namespace Telegram.ViewModels.Profile
 
                 if (receivedGift.IsPinned)
                 {
-                    _pinnedGifts.Remove(receivedGift.ReceivedGiftId);
+                    Items.Pinned.Remove(receivedGift.ReceivedGiftId);
                 }
 
                 Items.Remove(receivedGift);
@@ -127,8 +131,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeUnsaved, value))
                 {
-                    HasMoreItems = true;
-                    Items.Clear();
+                    ItemsView.Reload();
                 }
             }
         }
@@ -141,8 +144,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeSaved, value))
                 {
-                    HasMoreItems = true;
-                    Items.Clear();
+                    ItemsView.Reload();
                 }
             }
         }
@@ -155,8 +157,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeUnlimited, value))
                 {
-                    HasMoreItems = true;
-                    Items.Clear();
+                    ItemsView.Reload();
                 }
             }
         }
@@ -169,8 +170,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeLimited, value))
                 {
-                    HasMoreItems = true;
-                    Items.Clear();
+                    ItemsView.Reload();
                 }
             }
         }
@@ -183,8 +183,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeUpgraded, value))
                 {
-                    HasMoreItems = true;
-                    Items.Clear();
+                    ItemsView.Reload();
                 }
             }
         }
@@ -197,45 +196,107 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _sortByPrice, value))
                 {
-                    HasMoreItems = true;
-                    Items.Clear();
+                    ItemsView.Reload();
                 }
             }
         }
 
-        public IncrementalCollection<ReceivedGift> Items { get; private set; }
-
-        public async Task<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
+        private ReceivedGiftsCollection UpdateItems(object arg1, string arg2)
         {
-            var total = 0u;
-            var limit = count == 3 ? 3 : 50;
+            return new ReceivedGiftsCollection(ClientService, _senderId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
+        }
 
-            var response = await ClientService.SendAsync(new GetReceivedGifts(string.Empty, _senderId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
-            if (response is ReceivedGifts gifts)
+        public bool CompareItems(ReceivedGift oldItem, ReceivedGift newItem)
+        {
+            if (oldItem.Date != newItem.Date)
             {
-                _nextOffsetId = gifts.NextOffset;
+                return false;
+            }
 
-                foreach (var gift in gifts.Gifts)
+            if (oldItem.Gift is SentGiftRegular oldRegular && newItem.Gift is SentGiftRegular newRegular)
+            {
+                return oldRegular.Gift.Id == newRegular.Gift.Id;
+            }
+            else if (oldItem.Gift is SentGiftUpgraded oldUpgraded && newItem.Gift is SentGiftUpgraded newUpgraded)
+            {
+                return oldUpgraded.Gift.Id == newUpgraded.Gift.Id;
+            }
+
+            return false;
+        }
+
+        public void UpdateItem(ReceivedGift oldItem, ReceivedGift newItem)
+        {
+
+        }
+
+        public SearchCollection<ReceivedGift, ReceivedGiftsCollection> ItemsView { get; private set; }
+        public ReceivedGiftsCollection Items => ItemsView.Source;
+
+        public partial class ReceivedGiftsCollection : ObservableCollection<ReceivedGift>, ISupportIncrementalLoading
+        {
+            private readonly IClientService _clientService;
+            private readonly MessageSender _ownerId;
+            private readonly bool _excludeUnsaved;
+            private readonly bool _excludeSaved;
+            private readonly bool _excludeUnlimited;
+            private readonly bool _excludeLimited;
+            private readonly bool _excludeUpgraded;
+            private readonly bool _sortByPrice;
+
+            private readonly List<string> _pinnedGifts = new();
+
+            private string _nextOffsetId = string.Empty;
+
+            public ReceivedGiftsCollection(IClientService clientService, MessageSender ownerId, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeLimited, bool excludeUpgraded, bool sortByPrice)
+            {
+                _clientService = clientService;
+                _ownerId = ownerId;
+                _excludeUnsaved = excludeUnsaved;
+                _excludeSaved = excludeSaved;
+                _excludeUnlimited = excludeUnlimited;
+                _excludeLimited = excludeLimited;
+                _excludeUpgraded = excludeUpgraded;
+                _sortByPrice = sortByPrice;
+            }
+
+            public IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
+            {
+                return AsyncInfo.Run(async token =>
                 {
-                    if (gift.IsPinned)
+                    var total = 0u;
+                    var limit = count == 3 ? 3 : 50;
+
+                    var response = await _clientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
+                    if (response is ReceivedGifts gifts)
                     {
-                        _pinnedGifts.Add(gift.ReceivedGiftId);
+                        _nextOffsetId = gifts.NextOffset;
+
+                        foreach (var gift in gifts.Gifts)
+                        {
+                            if (gift.IsPinned)
+                            {
+                                _pinnedGifts.Add(gift.ReceivedGiftId);
+                            }
+
+                            Add(gift);
+                            total++;
+                        }
                     }
 
-                    Items.Add(gift);
-                    total++;
-                }
+                    HasMoreItems = !string.IsNullOrEmpty(_nextOffsetId);
+
+                    return new LoadMoreItemsResult
+                    {
+                        Count = total
+                    };
+                });
             }
 
-            HasMoreItems = !string.IsNullOrEmpty(_nextOffsetId);
+            public bool HasMoreItems { get; private set; } = true;
 
-            return new LoadMoreItemsResult
-            {
-                Count = total
-            };
+            public IList<string> Pinned => _pinnedGifts;
         }
-
-        public bool HasMoreItems { get; private set; } = true;
 
         public void OpenGift(ReceivedGift receivedGift)
         {
@@ -265,20 +326,20 @@ namespace Telegram.ViewModels.Profile
         {
             if (gift.IsPinned)
             {
-                _pinnedGifts.Remove(gift.ReceivedGiftId);
+                Items.Pinned.Remove(gift.ReceivedGiftId);
             }
             else
             {
-                if (_pinnedGifts.Count == ClientService.Options.PinnedGiftCountMax)
+                if (Items.Pinned.Count == ClientService.Options.PinnedGiftCountMax)
                 {
                     ShowToast(Locale.Declension(Strings.R.GiftsPinLimit, ClientService.Options.PinnedGiftCountMax), ToastPopupIcon.Info);
                     return;
                 }
 
-                _pinnedGifts.Insert(0, gift.ReceivedGiftId);
+                Items.Pinned.Insert(0, gift.ReceivedGiftId);
             }
 
-            var response = await ClientService.SendAsync(new SetPinnedGifts(_senderId, _pinnedGifts));
+            var response = await ClientService.SendAsync(new SetPinnedGifts(_senderId, Items.Pinned));
             if (response is Ok)
             {
                 gift.IsPinned = !gift.IsPinned;
@@ -290,8 +351,8 @@ namespace Telegram.ViewModels.Profile
                 }
                 else
                 {
-                    var index = Items.BinarySearch(gift, (x, y) => _pinnedGifts.Contains(y.ReceivedGiftId) ? 1 : y.Date.CompareTo(x.Date));
-                    if (index < 0 && (~index < Items.Count || !HasMoreItems))
+                    var index = Items.BinarySearch(gift, (x, y) => Items.Pinned.Contains(y.ReceivedGiftId) ? 1 : y.Date.CompareTo(x.Date));
+                    if (index < 0 && (~index < Items.Count || !Items.HasMoreItems))
                     {
                         Items.Remove(gift);
                         Items.Insert(~index, gift);
@@ -331,7 +392,7 @@ namespace Telegram.ViewModels.Profile
                 }
             }
 
-            if (receivedGiftIds.Count != _pinnedGifts.Count)
+            if (receivedGiftIds.Count != Items.Pinned.Count)
             {
                 return;
             }
@@ -341,7 +402,7 @@ namespace Telegram.ViewModels.Profile
 
         public void SetPinnedItem(ReceivedGift gift)
         {
-            var index = _pinnedGifts.IndexOf(gift.ReceivedGiftId);
+            var index = Items.Pinned.IndexOf(gift.ReceivedGiftId);
             if (index >= 0 && index < Items.Count)
             {
                 Items.Remove(gift);

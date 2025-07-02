@@ -232,7 +232,7 @@ namespace Telegram.ViewModels
 
                         if (Items.Count > 1)
                         {
-                            _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+                            _giftsTabViewModel.ItemsView.Reload();
                         }
                     }
                 }
@@ -257,7 +257,7 @@ namespace Telegram.ViewModels
 
                         if (Items.Count > 1)
                         {
-                            _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+                            _giftsTabViewModel.ItemsView.Reload();
                         }
                     }
 
@@ -298,7 +298,7 @@ namespace Telegram.ViewModels
 
                     if (Items.Count > 1)
                     {
-                        _ = _giftsTabViewModel.LoadMoreItemsAsync(3);
+                        _giftsTabViewModel.ItemsView.Reload();
                     }
                 }
 
