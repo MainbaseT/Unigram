@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Navigation;
@@ -12,6 +14,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Gallery
 {
@@ -24,6 +27,10 @@ namespace Telegram.Controls.Gallery
         private bool _unloaded;
 
         private VideoPlayerBase _player;
+        private GalleryMedia _item;
+
+        private Border _tooltip;
+        private ImageBrush _tooltipSource;
 
         public GalleryTransportControls()
         {
@@ -50,6 +57,18 @@ namespace Telegram.Controls.Gallery
             SpeedText.Text = string.Format("{0:N1}x", speed);
             SpeedButton.Badge = string.Format("{0:N1}x", speed);
 
+            _tooltip = new Border
+            {
+                CornerRadius = new CornerRadius(4),
+                Background = _tooltipSource = new ImageBrush
+                {
+                    Stretch = Stretch.None,
+                    AlignmentX = AlignmentX.Left,
+                    AlignmentY = AlignmentY.Top
+                }
+            };
+
+            Slider.HorizontalToolTipContent = _tooltip;
             Slider.AddHandler(KeyDownEvent, new KeyEventHandler(Slider_KeyDown), true);
             Slider.AddHandler(PointerPressedEvent, new PointerEventHandler(Slider_PointerPressed), true);
             Slider.AddHandler(PointerReleasedEvent, new PointerEventHandler(Slider_PointerReleased), true);
@@ -169,8 +188,12 @@ namespace Telegram.Controls.Gallery
 
         #endregion
 
+        private long _storyboardFileToken;
+        private long _storyboardMapToken;
+
         public void Attach(GalleryMedia item, File file)
         {
+            _item = item;
             _loopingEnabled = item.IsLoopingEnabled;
 
             Visibility = item.IsVideo && (item.IsVideoNote || !item.IsLoopingEnabled)
@@ -180,6 +203,98 @@ namespace Telegram.Controls.Gallery
             CompactButton.Visibility = ConvertCompactVisibility(item)
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+            UpdateStoryboard(item, true);
+        }
+
+        private void UpdateStoryboard(GalleryMedia item, bool download)
+        {
+            UpdateManager.Unsubscribe(this, ref _storyboardFileToken, true);
+            UpdateManager.Unsubscribe(this, ref _storyboardMapToken, true);
+
+            if (item is GalleryMessage { Content: MessageVideo video } && video.Storyboards.Count > 0)
+            {
+                var storyboardFile = video.Storyboards[0].StoryboardFile;
+                var storyboardMap = video.Storyboards[0].MapFile;
+
+                if (storyboardFile.Local.IsDownloadingCompleted && storyboardMap.Local.IsDownloadingCompleted)
+                {
+                    LoadStoryboard(storyboardFile.Local.Path, storyboardMap.Local.Path);
+                }
+                else
+                {
+                    if (download)
+                    {
+                        if (storyboardFile.Local.CanBeDownloaded && !storyboardFile.Local.IsDownloadingActive)
+                        {
+                            item.ClientService.DownloadFile(storyboardFile.Id, 16);
+                        }
+
+                        if (storyboardMap.Local.CanBeDownloaded && !storyboardMap.Local.IsDownloadingActive)
+                        {
+                            item.ClientService.DownloadFile(storyboardMap.Id, 16);
+                        }
+                    }
+
+                    UpdateManager.Subscribe(this, item.ClientService, storyboardFile, ref _storyboardFileToken, UpdateStoryboard, true);
+                    UpdateManager.Subscribe(this, item.ClientService, storyboardMap, ref _storyboardMapToken, UpdateStoryboard, true);
+
+                    Slider.IsThumbToolTipEnabled = false;
+                }
+            }
+            else
+            {
+                Slider.IsThumbToolTipEnabled = false;
+            }
+        }
+
+        private void UpdateStoryboard(object sender, File file)
+        {
+            UpdateStoryboard(_item, false);
+        }
+
+        private SortedList<int, Vector2> _storyboardFrames;
+        private double _storyboardScale = 1;
+
+        private void LoadStoryboard(string storyboard, string map)
+        {
+            _tooltipSource.ImageSource = UriEx.ToBitmap(storyboard);
+            Slider.IsThumbToolTipEnabled = true;
+
+            var lines = System.IO.File.ReadAllLines(map);
+
+            var width = 0;
+            var height = 0;
+
+            var frames = new SortedList<int, Vector2>(lines.Length - 3);
+
+            foreach (var line in lines)
+            {
+                var split = line.Split('=');
+                if (split.Length == 1)
+                {
+                    split = line.Split(',');
+
+                    if (split.Length == 3 && int.TryParse(split[0], out int seconds) && int.TryParse(split[1], out int x) && int.TryParse(split[2], out int y))
+                    {
+                        frames.Add(seconds, new Vector2(x, y));
+                    }
+                }
+                else if (split[0] == "frame_width")
+                {
+                    int.TryParse(split[1], out width);
+                }
+                else if (split[0] == "frame_height")
+                {
+                    int.TryParse(split[1], out height);
+                }
+            }
+
+            _storyboardFrames = frames;
+            _storyboardScale = ImageHelper.ScaleRatioMin(width, height, 144);
+
+            _tooltip.Width = width * _storyboardScale;
+            _tooltip.Height = height * _storyboardScale;
         }
 
         private bool ConvertCompactVisibility(GalleryMedia item)
@@ -343,6 +458,24 @@ namespace Telegram.Controls.Gallery
                 Slider.Value = e.NewValue;
                 TimeText.Text = FormatTime(e.NewValue);
             }
+
+            var closest = _storyboardFrames?.LastOrDefault(x => x.Key <= e.NewValue);
+            if (closest == null)
+            {
+                return;
+            }
+
+            _tooltipSource.Transform = new CompositeTransform
+            {
+                TranslateX = -closest.Value.Value.X * _storyboardScale,
+                TranslateY = -closest.Value.Value.Y * _storyboardScale,
+                ScaleX = _storyboardScale,
+                ScaleY = _storyboardScale
+            };
+
+            _tooltipSource.Stretch = Stretch.None;
+            _tooltipSource.AlignmentX = AlignmentX.Left;
+            _tooltipSource.AlignmentY = AlignmentY.Top;
         }
 
         private string FormatTime(double time)
@@ -602,6 +735,46 @@ namespace Telegram.Controls.Gallery
         {
             _unloaded = true;
             Attach(null);
+        }
+    }
+
+    public class GalleryTransportSlider : Slider
+    {
+        private Thumb HorizontalThumb;
+        private ToolTip HorizontalToolTip;
+
+        public GalleryTransportSlider()
+        {
+
+        }
+
+        private object _horizontalToolTipContent;
+        public object HorizontalToolTipContent
+        {
+            get => HorizontalToolTip?.Content ?? _horizontalToolTipContent;
+            set
+            {
+                if (HorizontalToolTip != null)
+                {
+                    HorizontalToolTip.Content = value;
+                }
+                else
+                {
+                    _horizontalToolTipContent = value;
+                }
+            }
+        }
+
+        protected override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            HorizontalThumb = GetTemplateChild(nameof(HorizontalThumb)) as Thumb;
+            HorizontalToolTip = ToolTipService.GetToolTip(HorizontalThumb) as ToolTip;
+            HorizontalToolTip.Content = _horizontalToolTipContent;
+            HorizontalToolTip.Padding = new Thickness();
+
+            _horizontalToolTipContent = null;
         }
     }
 }

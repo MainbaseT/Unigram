@@ -142,6 +142,8 @@
                         MinWidth="320">
                 <local:GalleryTransportControls x:Name="Controls"
                                                 TabIndex="0"
+                                                PointerEntered="Controls_PointerEntered"
+                                                PointerExited="Controls_PointerExited"
                                                 FullScreenClick="FullScreen_Click"
                                                 CompactClick="Compact_Click"
                                                 MaxWidth="396"

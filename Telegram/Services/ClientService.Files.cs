@@ -1354,6 +1354,10 @@ namespace Telegram.Services
                     {
                         ProcessFiles(messageVideo.Cover);
                     }
+                    foreach (var item in messageVideo.Storyboards)
+                    {
+                        ProcessFiles(item);
+                    }
                     if (messageVideo.Video != null)
                     {
                         ProcessFiles(messageVideo.Video);
@@ -2645,6 +2649,16 @@ namespace Telegram.Services
                     if (videoNote.Video != null)
                     {
                         videoNote.Video = ProcessFile(videoNote.Video);
+                    }
+                    break;
+                case VideoStoryboard videoStoryboard:
+                    if (videoStoryboard.MapFile != null)
+                    {
+                        videoStoryboard.MapFile = ProcessFile(videoStoryboard.MapFile);
+                    }
+                    if (videoStoryboard.StoryboardFile != null)
+                    {
+                        videoStoryboard.StoryboardFile = ProcessFile(videoStoryboard.StoryboardFile);
                     }
                     break;
                 case VoiceNote voiceNote:

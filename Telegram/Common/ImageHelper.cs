@@ -43,6 +43,24 @@ namespace Telegram.Common
             return new Size(width * ratio, height * ratio);
         }
 
+        public static double ScaleRatioMin(double width, double height, double requestedMaxSide)
+        {
+            double ratioX = (double)requestedMaxSide / width;
+            double ratioY = (double)requestedMaxSide / height;
+            double ratio = Math.Min(ratioX, ratioY);
+
+            return ratio;
+        }
+
+        public static Size ScaleMin(double width, double height, double requestedMaxSide)
+        {
+            double ratioX = (double)requestedMaxSide / width;
+            double ratioY = (double)requestedMaxSide / height;
+            double ratio = Math.Min(ratioX, ratioY);
+
+            return new Size(width * ratio, height * ratio);
+        }
+
         public static async Task<SizeInt32> GetScaleAsync(StorageFile file, bool allowMultipleFrames = false, int requestedMinSide = 1280, ImageGeneration generation = null)
         {
             try

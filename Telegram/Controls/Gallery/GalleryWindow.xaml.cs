@@ -103,7 +103,11 @@ namespace Telegram.Controls.Gallery
 
             base.OnPointerMoved(e);
 
-            if (e.OriginalSource is FrameworkElement element)
+            if (_transportEntered)
+            {
+                return;
+            }
+            else if (e.OriginalSource is FrameworkElement element)
             {
                 var button = element.GetParentOrSelf<ButtonBase>();
                 if (button is not null and not FileButton)
@@ -162,8 +166,19 @@ namespace Telegram.Controls.Gallery
             }
         }
 
+        private void Controls_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            _transportEntered = true;
+        }
+
+        private void Controls_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            _transportEntered = false;
+        }
+
         private bool _transportCollapsed = false;
         private bool _transportFocused = false;
+        private bool _transportEntered = false;
 
         private void ShowHideTransport(bool show)
         {
