@@ -455,7 +455,6 @@ namespace Telegram.Views
             UpdateBackButton();
 
             ViewModel.HeaderHeight = Math.Max(e.NewSize.Height, 48 + 10);
-            RootGrid.HeaderHeight = Math.Max((float)e.NewSize.Height - 88, 48 + 10);
             MediaFrame.MinHeight = ScrollingHost.ActualHeight + e.NewSize.Height - 88;
         }
 
@@ -505,7 +504,7 @@ namespace Telegram.Views
                     BindToolTipToThumb(_scrollingThumb);
 
                     _scrollingIndicatorVisible = true;
-                    ToolTip.Visibility = _scrollingIndicatorEnabled
+                    ToolTip.Visibility = _scrollingIndicatorEnabled && !_subtitleCollapsed
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                     break;
@@ -513,7 +512,7 @@ namespace Telegram.Views
                     BindToolTipToThumb(_scrollingPanningThumb);
 
                     _scrollingIndicatorVisible = true;
-                    ToolTip.Visibility = _scrollingIndicatorEnabled
+                    ToolTip.Visibility = _scrollingIndicatorEnabled && !_subtitleCollapsed
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                     break;
@@ -546,7 +545,7 @@ namespace Telegram.Views
             var visual = ElementComposition.GetElementVisual(ToolTip);
             var thumb = ElementComposition.GetElementVisual(element);
 
-            var animation = visual.Compositor.CreateExpressionAnimation("max(thumb.Offset.Y + (target.Size.Y - this.Target.Size.Y) / 2, 8)");
+            var animation = visual.Compositor.CreateExpressionAnimation("thumb.Offset.Y + (target.Size.Y - this.Target.Size.Y) / 2");
             animation.SetReferenceParameter("thumb", thumb);
             animation.SetReferenceParameter("target", target);
 
@@ -664,11 +663,9 @@ namespace Telegram.Views
         {
             UpdateBackButton();
 
-            var diff = ScrollingHost.VerticalOffset - (ProfileHeader.ActualSize.Y - 48);
-
             if (ProfileHeader.Visibility == Visibility.Visible && !ViewModel.IsSavedMessages)
             {
-                ProfileHeader.ViewChanged(ScrollingHost.VerticalOffset);
+                ProfileHeader.ViewChanged(ScrollingHost, (float)ScrollingHost.VerticalOffset);
                 ShowHideSubtitle(ScrollingHost.VerticalOffset >= ProfileHeader.ActualHeight - 48);
             }
 
@@ -686,26 +683,36 @@ namespace Telegram.Views
                 _ => -1
             };
 
-            if (index < 0 || index >= scrollingHost.Items.Count)
-            {
-                return;
-            }
-
             if (scrollingHost.ItemsSource is MediaDataSource dataSource)
             {
-                var offset = diff / ScrollingHost.ScrollableHeight;
-                if (offset >= 0 && dataSource.HasPositions)
+                int date = -1;
+                if (index >= 0 && scrollingHost.Items[index] is MessageWithOwner message)
                 {
-                    var position = dataSource.GetByOffset(offset);
-                    if (position != null)
-                    {
-                        ToolTipContent.Text = Formatter.Date(position.Date, Strings.formatterMonthYear);
+                    date = message.Date;
+                }
+                else
+                {
+                    var diff = ScrollingHost.VerticalOffset - (ProfileHeader.ActualSize.Y - 48);
 
-                        _scrollingIndicatorEnabled = true;
-                        ToolTip.Visibility = _scrollingIndicatorVisible
-                            ? Visibility.Visible
-                            : Visibility.Collapsed;
+                    var offset = diff / ScrollingHost.ScrollableHeight;
+                    if (offset >= 0)
+                    {
+                        var position = dataSource.GetByOffset(offset);
+                        if (position != null)
+                        {
+                            date = position.Date;
+                        }
                     }
+                }
+
+                if (date >= 0 && dataSource.HasPositions)
+                {
+                    ToolTipContent.Text = Formatter.Date(date, Strings.formatterMonthYear);
+
+                    _scrollingIndicatorEnabled = true;
+                    ToolTip.Visibility = _scrollingIndicatorVisible && !_subtitleCollapsed
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
                 }
                 else
                 {
@@ -716,7 +723,7 @@ namespace Telegram.Views
                 _dateHeaderTimer.Stop();
                 ShowHideDateHeader(false, false);
             }
-            else
+            else if (index >= 0 && index < scrollingHost.Items.Count)
             {
                 _scrollingIndicatorEnabled = false;
                 ToolTip.Visibility = Visibility.Collapsed;
@@ -766,7 +773,11 @@ namespace Telegram.Views
             cardBackground.StartAnimation("Opacity", opacityOut);
             menu.StartAnimation("Opacity", opacityIn);
 
-            ScrollingHost.SetVerticalPadding(0, 0);
+            ScrollingHost.SetVerticalPadding(show ? 88 : 0, 0);
+
+            ToolTip.Visibility = _scrollingIndicatorEnabled && _scrollingIndicatorVisible && !_subtitleCollapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private bool _loadingMore;

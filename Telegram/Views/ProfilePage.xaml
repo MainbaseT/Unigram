@@ -107,7 +107,7 @@
                  HorizontalAlignment="Right"
                  VerticalAlignment="Top"
                  Visibility="Collapsed"
-                 Margin="0,0,16,0">
+                 Margin="0,88,16,0">
             <controls:AnimatedTextBlock x:Name="ToolTipContent"
                                         TextAlignment="Right"
                                         TextWrapping="WrapWholeWords" />
