@@ -57,7 +57,7 @@
                                                        FontFamily="{ThemeResource EmojiThemeFontFamily}"
                                                        GotFocus="TitleText_GotFocus"
                                                        LostFocus="TitleText_LostFocus"
-                                                       AllowedEntities="CustomEmoji"
+                                                       AllowedEntities="Checklist"
                                                        AcceptsReturn="True"
                                                        TextWrapping="Wrap"
                                                        MaxLength="255"

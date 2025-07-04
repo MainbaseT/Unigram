@@ -35,8 +35,7 @@ namespace Telegram.Controls.Messages.Content
 
         #region InitializeComponent
 
-        private RichTextBlock TitleText;
-        private Paragraph Title;
+        private FormattedTextBlock TitleText;
         private TextBlock Type;
         private StackPanel Tasks;
         private TextBlock Completed;
@@ -44,11 +43,12 @@ namespace Telegram.Controls.Messages.Content
 
         protected override void OnApplyTemplate()
         {
-            TitleText = GetTemplateChild(nameof(TitleText)) as RichTextBlock;
-            Title = GetTemplateChild(nameof(Title)) as Paragraph;
+            TitleText = GetTemplateChild(nameof(TitleText)) as FormattedTextBlock;
             Type = GetTemplateChild(nameof(Type)) as TextBlock;
             Tasks = GetTemplateChild(nameof(Tasks)) as StackPanel;
             Completed = GetTemplateChild(nameof(Completed)) as TextBlock;
+
+            TitleText.TextEntityClick += TitleText_TextEntityClick;
 
             _templateApplied = true;
 
@@ -85,7 +85,7 @@ namespace Telegram.Controls.Messages.Content
                 Type.Text = Strings.MessageGroupTodoList;
             }
 
-            CustomEmojiIcon.Add(TitleText, Title.Inlines, message.ClientService, checklist.List.Title);
+            TitleText.SetText(message.ClientService, checklist.List.Title);
 
             var completed = 0;
 
@@ -179,6 +179,11 @@ namespace Telegram.Controls.Messages.Content
         public bool IsValid(MessageContent content, bool primary)
         {
             return content is MessageChecklist;
+        }
+
+        private void TitleText_TextEntityClick(object sender, TextEntityClickEventArgs e)
+        {
+            MessageBubble.TextEntityClick(_message, TitleText, e);
         }
 
         private async void Task_Click(object sender, RoutedEventArgs e)

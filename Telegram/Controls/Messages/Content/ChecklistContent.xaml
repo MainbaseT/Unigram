@@ -23,13 +23,13 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <StackPanel VerticalAlignment="Top">
-                                <RichTextBlock x:Name="TitleText"
-                                               TextWrapping="Wrap"
-                                               Style="{StaticResource BaseRichTextBlockStyle}"
-                                               FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                                               IsTextSelectionEnabled="False">
-                                    <Paragraph x:Name="Title" />
-                                </RichTextBlock>
+                                <controls:FormattedTextBlock x:Name="TitleText"
+                                                             TextWrapping="Wrap"
+                                                             TextTrimming="CharacterEllipsis"
+                                                             FontWeight="SemiBold"
+                                                             FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                             IsTextSelectionEnabled="False"
+                                                             AutoFontSize="False" />
                                 <TextBlock x:Name="Type"
                                            Foreground="{ThemeResource MessageSubtleForegroundBrush}"
                                            Style="{StaticResource BodyTextBlockStyle}"
