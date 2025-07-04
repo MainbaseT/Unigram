@@ -117,9 +117,10 @@
                         <Border x:Name="ThumbRoot"
                                 x:DeferLoadStrategy="Lazy"
                                 Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                VerticalAlignment="Top"
                                 Width="36"
                                 Height="36"
-                                Margin="8,0,0,0"
+                                Margin="8,4,0,0"
                                 CornerRadius="2"
                                 Grid.Column="1">
                             <Border x:Name="ThumbEllipse">
