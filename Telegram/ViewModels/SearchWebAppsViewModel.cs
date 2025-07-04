@@ -72,7 +72,7 @@ namespace Telegram.ViewModels
             }
 
             _activated = true;
-            CanUpdateQuery(string.Empty);
+            CanUpdateQuery(string.Empty, default);
         }
 
         public ChooseChatsOptions Options
@@ -90,7 +90,7 @@ namespace Telegram.ViewModels
 
         public FlatteningCollection Items { get; }
 
-        private readonly DebouncedProperty<string> _query;
+        private readonly DebouncedPropertyWithToken<string> _query;
         public string Query
         {
             get => _query;
@@ -116,10 +116,9 @@ namespace Telegram.ViewModels
             set => Set(ref _isTopChatsVisible, value);
         }
 
-        public async void UpdateQuery(string value)
+        public async void UpdateQuery(string value, CancellationToken token)
         {
             var query = value ?? string.Empty;
-            var token = _cancellation.Token;
 
             _query.Value = query;
 
@@ -128,7 +127,7 @@ namespace Telegram.ViewModels
             await LoadMessagesAsync(query, token);
         }
 
-        private bool CanUpdateQuery(string value)
+        private bool CanUpdateQuery(string value, CancellationToken token)
         {
             if (string.Equals(value, _prevQuery))
             {
@@ -137,11 +136,11 @@ namespace Telegram.ViewModels
 
             var clearOnline = _prevQuery == null || string.IsNullOrWhiteSpace(value) || (!value.StartsWith(_prevQuery) && !_prevQuery.StartsWith(value));
 
-            UpdateQueryOffline(_prevQuery = value, clearOnline);
+            UpdateQueryOffline(_prevQuery = value, clearOnline, token);
             return value.Length > 0;
         }
 
-        private async void UpdateQueryOffline(string value, bool clearOnline)
+        private async void UpdateQueryOffline(string value, bool clearOnline, CancellationToken token)
         {
             //if (clearOnline)
             {
@@ -154,7 +153,6 @@ namespace Telegram.ViewModels
             _tracker.Clear();
 
             var query = value ?? string.Empty;
-            var token = _cancellation.Token;
 
             await LoadRecentAsync(query, token);
             await LoadSimilarAsync(query, token);

@@ -55,6 +55,7 @@ namespace Telegram.ViewModels
         private readonly ChooseChatsTracker _tracker;
 
         private CancellationTokenSource _cancellation = new();
+        private CancellationToken _messagesToken;
 
         private string _prevQuery;
         private string _nextOffset;
@@ -111,18 +112,22 @@ namespace Telegram.ViewModels
             _ => null,
         };
 
-        private readonly DebouncedProperty<string> _query;
+        private readonly DebouncedPropertyWithToken<string> _query;
         public string Query
         {
             get => _query;
             set
             {
-                if (string.Equals(value, _query) && !string.IsNullOrEmpty(value))
+                var query = value.TrimEnd();
+                if (string.Equals(query, _prevQuery) && !string.IsNullOrEmpty(query))
                 {
                     return;
                 }
 
-                SynchronizeQuery(value);
+                _cancellation.Cancel();
+                _cancellation = new();
+
+                IsEmpty = false;
 
                 if (SelectedTab >= Tabs.Count)
                 {
@@ -132,33 +137,30 @@ namespace Telegram.ViewModels
                 var tab = Tabs[SelectedTab];
                 if (tab.Items != null)
                 {
-                    tab.Items.UpdateQuery(value);
+                    tab.Items.UpdateQuery(query);
+                    _channels.SynchronizeQuery(query);
+                    _webApps.SynchronizeQuery(query);
+                    _query.Value = query;
                 }
                 else if (SelectedTab == 1)
                 {
-                    _channels.Query = value;
-                    _webApps.SynchronizeQuery(value);
+                    _channels.Query = query;
+                    _webApps.SynchronizeQuery(query);
+                    _query.Value = query;
                 }
                 else if (SelectedTab == 2)
                 {
-                    _webApps.Query = value;
-                    _channels.SynchronizeQuery(value);
+                    _webApps.Query = query;
+                    _channels.SynchronizeQuery(query);
+                    _query.Value = query;
                 }
                 else
                 {
-                    _query.Set(value, _cancellation.Token);
-                    _channels.SynchronizeQuery(value);
-                    _webApps.SynchronizeQuery(value);
+                    _query.Set(query, _cancellation.Token);
+                    _channels.SynchronizeQuery(query);
+                    _webApps.SynchronizeQuery(query);
                 }
             }
-        }
-
-        public void SynchronizeQuery(string query)
-        {
-            _cancellation.Cancel();
-            _cancellation = new();
-
-            IsEmpty = false;
         }
 
         private bool _isTopChatsVisible;
@@ -181,6 +183,9 @@ namespace Telegram.ViewModels
                         return;
                     }
 
+                    _cancellation.Cancel();
+                    _cancellation = new CancellationTokenSource();
+
                     var tab = Tabs[value];
                     if (tab.Items != null)
                     {
@@ -201,7 +206,7 @@ namespace Telegram.ViewModels
                     }
                     else
                     {
-                        Query = _channels.Query;
+                        _query.Set(_query.Value, _cancellation.Token);
                     }
                 }
             }
@@ -232,31 +237,31 @@ namespace Telegram.ViewModels
             set => Set(ref _isEmpty, value);
         }
 
-        private bool CanUpdateQuery(string value)
+        private bool CanUpdateQuery(string value, CancellationToken token)
         {
             if (string.Equals(value, _prevQuery))
             {
                 return false;
             }
 
-            UpdateQueryOffline(_prevQuery = value);
+            UpdateQueryOffline(_prevQuery = value, token);
             return value.Length > 0;
         }
 
-        private async void UpdateQueryOffline(string value)
+        private async void UpdateQueryOffline(string value, CancellationToken token)
         {
             _nextOffset = null;
+            _messagesToken = default;
 
-            _messages.Clear();
+            _messages.ClearIfNotEmpty();
             _tracker.Clear();
 
             var query = value ?? string.Empty;
-            var token = _cancellation.Token;
 
             if (string.IsNullOrEmpty(value))
             {
-                _chatsAndContacts2.Clear();
-                _globalSearch.Clear();
+                _chatsAndContacts2.ClearIfNotEmpty();
+                _globalSearch.ClearIfNotEmpty();
 
                 IsTopChatsVisible = true;
 
@@ -272,10 +277,9 @@ namespace Telegram.ViewModels
             }
         }
 
-        public async void UpdateQuery(string value)
+        public async void UpdateQuery(string value, CancellationToken token)
         {
             var query = value ?? string.Empty;
-            var token = _cancellation.Token;
 
             _query.Value = query;
 
@@ -303,7 +307,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            await ReplaceDiffAsync(TopChats, temp, cancellationToken);
+            ReplaceDiff(TopChats, temp);
         }
 
         private async Task LoadRecentAsync(string query, CancellationToken cancellationToken)
@@ -322,12 +326,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
-            await ReplaceDiffAsync(_recent, temp, cancellationToken);
+            ReplaceDiff(_recent, temp);
         }
 
         private Chat LoadSavedMessages(string query, CancellationToken cancellationToken)
@@ -347,7 +346,7 @@ namespace Telegram.ViewModels
         {
             if (string.IsNullOrEmpty(query))
             {
-                _chatsAndContacts1.Clear();
+                _chatsAndContacts1.ClearIfNotEmpty();
                 return;
             }
 
@@ -391,12 +390,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
-            await ReplaceDiffAsync(_chatsAndContacts1, temp, cancellationToken);
+            ReplaceDiff(_chatsAndContacts1, temp);
         }
 
         private async Task LoadChatsAndContactsPart2Async(string query, CancellationToken cancellationToken)
@@ -414,7 +408,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                await ReplaceDiffAsync(_chatsAndContacts2, temp, cancellationToken);
+                ReplaceDiff(_chatsAndContacts2, temp);
             }
         }
 
@@ -433,12 +427,14 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                await ReplaceDiffAsync(_globalSearch, temp, cancellationToken);
+                ReplaceDiff(_globalSearch, temp);
             }
         }
 
         private async Task LoadMessagesAsync(string query, CancellationToken cancellationToken)
         {
+            _messagesToken = cancellationToken;
+
             var response = await ClientService.SendAsync(new SearchMessages(null, query, _nextOffset ?? string.Empty, 50, null, null, 0, 0));
             if (response is FoundMessages messages && !cancellationToken.IsCancellationRequested)
             {
@@ -451,23 +447,54 @@ namespace Telegram.ViewModels
             }
         }
 
-        private async Task ReplaceDiffAsync<T>(DiffObservableCollection<T> destination, IEnumerable<T> source, CancellationToken cancellationToken)
+        private void ReplaceDiff<T>(DiffObservableCollection<T> destination, IList<T> source)
         {
-            var diff = await Task.Run(() => DiffUtil.CalculateDiff(destination, source, destination.DefaultDiffHandler, destination.DefaultOptions));
-
-            if (cancellationToken.IsCancellationRequested)
+            if (destination.Empty())
             {
+                destination.AddRange(source);
+                return;
+            }
+            else if (source.Empty())
+            {
+                destination.ClearIfNotEmpty();
                 return;
             }
 
-            destination.ReplaceDiff(diff);
+            var recycledItems = Math.Min(destination.Count, source.Count);
+            var changedItems = Math.Max(destination.Count, source.Count);
+
+            if (destination.Count > source.Count)
+            {
+                for (int i = recycledItems; i < changedItems; i++)
+                {
+                    destination.RemoveAt(recycledItems);
+                }
+            }
+            else if (source.Count > destination.Count)
+            {
+                for (int i = recycledItems; i < changedItems; i++)
+                {
+                    destination.Insert(i, source[i]);
+                }
+            }
+
+            for (int i = 0; i < recycledItems; i++)
+            {
+                var oldItem = destination[i];
+                var newItem = source[i];
+
+                if (destination.DefaultDiffHandler == null || !destination.DefaultDiffHandler.CompareItems(oldItem, newItem))
+                {
+                    destination[i] = newItem;
+                }
+            }
         }
 
         #region ISupportIncrementalLoading
 
         public async Task<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
         {
-            await LoadMessagesAsync(_query.Value, _cancellation.Token);
+            await LoadMessagesAsync(_query.Value, _messagesToken);
             return new LoadMoreItemsResult { Count = 50 };
         }
 

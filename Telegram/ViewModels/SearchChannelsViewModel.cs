@@ -71,7 +71,7 @@ namespace Telegram.ViewModels
             }
 
             _activated = true;
-            CanUpdateQuery(string.Empty);
+            CanUpdateQuery(string.Empty, default);
         }
 
         public ChooseChatsOptions Options
@@ -87,7 +87,7 @@ namespace Telegram.ViewModels
 
         public FlatteningCollection Items { get; }
 
-        private readonly DebouncedProperty<string> _query;
+        private readonly DebouncedPropertyWithToken<string> _query;
         public string Query
         {
             get => _query;
@@ -106,10 +106,9 @@ namespace Telegram.ViewModels
             _cancellation = new();
         }
 
-        public async void UpdateQuery(string value)
+        public async void UpdateQuery(string value, CancellationToken token)
         {
             var query = value ?? string.Empty;
-            var token = _cancellation.Token;
 
             _query.Value = query;
 
@@ -122,18 +121,18 @@ namespace Telegram.ViewModels
             }
         }
 
-        private bool CanUpdateQuery(string value)
+        private bool CanUpdateQuery(string value, CancellationToken token)
         {
             if (string.Equals(value, _prevQuery))
             {
                 return false;
             }
 
-            UpdateQueryOffline(_prevQuery = value);
+            UpdateQueryOffline(_prevQuery = value, token);
             return value.Length > 0;
         }
 
-        private async void UpdateQueryOffline(string value)
+        private async void UpdateQueryOffline(string value, CancellationToken token)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -147,7 +146,6 @@ namespace Telegram.ViewModels
             _tracker.Clear();
 
             var query = value ?? string.Empty;
-            var token = _cancellation.Token;
 
             await LoadRecentAsync(query, token);
             await LoadSimilarAsync(query, token);

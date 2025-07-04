@@ -1477,6 +1477,16 @@ namespace Telegram.Common
             return GetHyperlink(parent.ElementStart.Parent as TextElement);
         }
 
+        public static bool ClearIfNotEmpty<T>(this IList<T> list)
+        {
+            if (list.Count > 0)
+            {
+                list.Clear();
+            }
+
+            return false;
+        }
+
         public static bool Empty<T>(this IList<T> list)
         {
             return list.Count == 0;

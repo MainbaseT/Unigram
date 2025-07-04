@@ -205,6 +205,7 @@
     <Compile Include="Collections\SynchronizedList.cs" />
     <Compile Include="Common\AutomaticDragHelper.cs" />
     <Compile Include="Common\BezierPoint.cs" />
+    <Compile Include="Common\DebouncedPropertyWithToken.cs" />
     <Compile Include="Common\FeatureTokenGenerator.cs" />
     <Compile Include="Common\MediaDeviceTracker.cs" />
     <Compile Include="Common\MediaDeviceList.cs" />

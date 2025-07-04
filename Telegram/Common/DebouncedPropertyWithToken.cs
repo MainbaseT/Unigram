@@ -10,25 +10,27 @@ using Windows.UI.Xaml;
 
 namespace Telegram.Common
 {
-    public partial class DebouncedProperty<T>
+    public partial class DebouncedPropertyWithToken<T>
     {
         private readonly DispatcherTimer _timer;
         private readonly Timer _backgroundTimer;
 
         private readonly TimeSpan _interval;
 
-        private readonly Action<T> _update;
-        private readonly Func<T, bool> _canUpdate;
+        private readonly Action<T, CancellationToken> _update;
+        private readonly Func<T, CancellationToken, bool> _canUpdate;
+
+        private CancellationToken _cancellationToken;
 
         private T _lastValue;
         private T _value;
 
-        public DebouncedProperty(double milliseconds, Action<T> update, Func<T, bool> canUpdate = null, bool useBackgroundThread = false)
+        public DebouncedPropertyWithToken(double milliseconds, Action<T, CancellationToken> update, Func<T, CancellationToken, bool> canUpdate = null, bool useBackgroundThread = false)
             : this(TimeSpan.FromMilliseconds(milliseconds), update, canUpdate, useBackgroundThread)
         {
         }
 
-        public DebouncedProperty(TimeSpan throttle, Action<T> update, Func<T, bool> canUpdate = null, bool useBackgroundThread = false)
+        public DebouncedPropertyWithToken(TimeSpan throttle, Action<T, CancellationToken> update, Func<T, CancellationToken, bool> canUpdate = null, bool useBackgroundThread = false)
         {
             if (useBackgroundThread)
             {
@@ -47,12 +49,12 @@ namespace Telegram.Common
             _canUpdate = canUpdate ?? DefaultCanUpdate;
         }
 
-        private static bool DefaultCanUpdate(T value)
+        private static bool DefaultCanUpdate(T value, CancellationToken token)
         {
-            return true;
+            return !token.IsCancellationRequested;
         }
 
-        public static implicit operator T(DebouncedProperty<T> debouncer)
+        public static implicit operator T(DebouncedPropertyWithToken<T> debouncer)
         {
             return debouncer._value;
         }
@@ -67,18 +69,32 @@ namespace Telegram.Common
         {
             _backgroundTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
-            _value = _lastValue;
-            _update(_lastValue);
-            _lastValue = default;
+            if (_cancellationToken.IsCancellationRequested)
+            {
+                _lastValue = default;
+            }
+            else
+            {
+                _value = _lastValue;
+                _update(_lastValue, _cancellationToken);
+                _lastValue = default;
+            }
         }
 
         private void OnTick(object sender, object e)
         {
             _timer.Stop();
 
-            _value = _lastValue;
-            _update(_lastValue);
-            _lastValue = default;
+            if (_cancellationToken.IsCancellationRequested)
+            {
+                _lastValue = default;
+            }
+            else
+            {
+                _value = _lastValue;
+                _update(_lastValue, _cancellationToken);
+                _lastValue = default;
+            }
         }
 
         public T Value
@@ -87,19 +103,23 @@ namespace Telegram.Common
             set => _value = value;
         }
 
-        public void Set(T value)
+        public void Set(T value, CancellationToken cancellationToken = default)
         {
             _timer?.Stop();
             _backgroundTimer?.Change(Timeout.Infinite, Timeout.Infinite);
 
-            if (_canUpdate(value))
+            if (_canUpdate(value, cancellationToken))
             {
+                _cancellationToken = cancellationToken;
+
                 _lastValue = value;
                 _timer?.Start();
                 _backgroundTimer?.Change(_interval, TimeSpan.Zero);
             }
             else
             {
+                _cancellationToken = default;
+
                 _value = value;
                 _lastValue = default;
             }

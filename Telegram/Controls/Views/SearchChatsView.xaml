@@ -23,6 +23,38 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <DataTemplate x:Key="HeaderTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource BaseTextBlockStyle}"
+                           FontFamily="{StaticResource EmojiThemeFontFamily}"
+                           Margin="12,12,0,4" />
+
+                <controls:GlyphButton Click="ClearRecentChats_Click"
+                                      AllowFocusOnInteraction="False"
+                                      VerticalAlignment="Bottom"
+                                      Margin="0,0,0,-6"
+                                      Glyph="&#xE711;"
+                                      FontSize="12"
+                                      Width="48"
+                                      Height="32"
+                                      Grid.Column="1" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Name="ProfileTemplate">
+            <cells:ProfileCell />
+        </DataTemplate>
+
+        <DataTemplate x:Name="MessageTemplate">
+            <cells:ChatCell Stroke="{ThemeResource ChatLastMessageStateBrush}"
+                            SelectionStroke="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                            Margin="4,0" />
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid x:Name="DialogsSearchPanel">
@@ -151,45 +183,6 @@
                         </controls:TextListView>
                     </StackPanel>
                 </ListView.Header>
-                <ListView.ItemTemplateSelector>
-                    <selectors:SearchTemplateSelector>
-                        <selectors:SearchTemplateSelector.HeaderTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Style="{StaticResource BaseTextBlockStyle}"
-                                               FontFamily="{StaticResource EmojiThemeFontFamily}"
-                                               Margin="12,12,0,4" />
-
-                                    <controls:GlyphButton Click="ClearRecentChats_Click"
-                                                          AllowFocusOnInteraction="False"
-                                                          VerticalAlignment="Bottom"
-                                                          Margin="0,0,0,-6"
-                                                          Glyph="&#xE711;"
-                                                          FontSize="12"
-                                                          Width="48"
-                                                          Height="32"
-                                                          Grid.Column="1" />
-                                </Grid>
-                            </DataTemplate>
-                        </selectors:SearchTemplateSelector.HeaderTemplate>
-                        <selectors:SearchTemplateSelector.ChatTemplate>
-                            <DataTemplate>
-                                <cells:ProfileCell />
-                            </DataTemplate>
-                        </selectors:SearchTemplateSelector.ChatTemplate>
-                        <selectors:SearchTemplateSelector.MessageTemplate>
-                            <DataTemplate>
-                                <cells:ChatCell Stroke="{ThemeResource ChatLastMessageStateBrush}"
-                                                SelectionStroke="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                                                Margin="4,0" />
-                            </DataTemplate>
-                        </selectors:SearchTemplateSelector.MessageTemplate>
-                    </selectors:SearchTemplateSelector>
-                </ListView.ItemTemplateSelector>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem"
                            BasedOn="{StaticResource DefaultListViewItemStyle}">

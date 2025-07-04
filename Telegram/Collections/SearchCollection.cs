@@ -41,10 +41,10 @@ namespace Telegram.Collections
         {
             _factory = factory;
             _sender = sender;
-            _query = new DebouncedProperty<string>(Constants.TypingTimeout, UpdateQuery);
+            _query = new DebouncedPropertyWithToken<string>(Constants.TypingTimeout, UpdateQuery);
         }
 
-        private readonly DebouncedProperty<string> _query;
+        private readonly DebouncedPropertyWithToken<string> _query;
         public string Query
         {
             get => _query;
@@ -69,8 +69,13 @@ namespace Telegram.Collections
             Update(_factory((_sender = sender) ?? this, _query.Value));
         }
 
-        public void UpdateQuery(string value)
+        public void UpdateQuery(string value, CancellationToken token = default)
         {
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+
             Update(_factory(_sender ?? this, _query.Value = value));
         }
 

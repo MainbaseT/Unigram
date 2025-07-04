@@ -73,6 +73,11 @@ namespace Telegram.Collections
         {
         }
 
+        public MvxObservableCollection(IEnumerable<T> items, IDiffHandler<T> diffHandler, DiffOptions options)
+            : base(items, diffHandler, options)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MvxObservableCollection{T}"/> class.
         /// </summary>

@@ -13,7 +13,7 @@ namespace Telegram.Collections.Handlers
     {
         public bool CompareItems(SearchResult oldItem, SearchResult newItem)
         {
-            if (oldItem.IsPublic != newItem.IsPublic)
+            if (oldItem.Type != newItem.Type)
             {
                 return false;
             }
