@@ -21,6 +21,9 @@
     <Grid Background="{ThemeResource SettingsPageBackground}">
         <ScrollViewer x:Name="ScrollingHost"
                       SizeChanged="OnSizeChanged"
+                      DirectManipulationStarted="OnDirectManipulationStarted"
+                      DirectManipulationCompleted="OnDirectManipulationCompleted"
+                      ViewChanging="OnViewChanging"
                       ViewChanged="OnViewChanged"
                       VerticalSnapPointsAlignment="Near"
                       VerticalSnapPointsType="Mandatory">

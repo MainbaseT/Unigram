@@ -553,14 +553,118 @@ namespace Telegram.Views
             visual.StartAnimation("Translation.Y", animation);
         }
 
+        private bool _initialViewChanging = true;
+        private bool _initialDirectManipulation;
+        private double _initialVerticalOffset;
+        private double _initialFinalOffset;
+        private double _initialPreviousOffset;
+
+        private void OnDirectManipulationStarted(object sender, object e)
+        {
+            _initialDirectManipulation = true;
+        }
+
+        private void OnDirectManipulationCompleted(object sender, object e)
+        {
+            _initialDirectManipulation = false;
+        }
+
+        private void OnViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
+        {
+            if (e.IsInertial && e.NextView.VerticalOffset.AlmostEquals(e.FinalView.VerticalOffset, 1e-02))
+            {
+                if (e.FinalView.VerticalOffset == RootGrid.HeaderHeight)
+                {
+                    if (RootGrid.Update(-1, false))
+                    {
+                        Logger.Info("Unsnap");
+                    }
+                }
+
+                _initialViewChanging = true;
+                return;
+            }
+
+            if (_initialViewChanging)
+            {
+                _initialVerticalOffset = ScrollingHost.VerticalOffset;
+                _initialFinalOffset = e.FinalView.VerticalOffset;
+                Logger.Info("Initial: " + _initialVerticalOffset);
+            }
+            else if (_initialFinalOffset == e.FinalView.VerticalOffset && e.IsInertial)
+            {
+                return;
+            }
+
+            _initialViewChanging = false;
+            _initialFinalOffset = e.FinalView.VerticalOffset;
+
+            // Direction changed
+            if (_initialDirectManipulation && (_initialVerticalOffset < _initialFinalOffset) != (_initialPreviousOffset < e.NextView.VerticalOffset))
+            {
+                _initialVerticalOffset = _initialPreviousOffset;
+                _initialFinalOffset = e.FinalView.VerticalOffset;
+                Logger.Info("Direction changed");
+            }
+
+            _initialPreviousOffset = e.NextView.VerticalOffset;
+
+            if (e.FinalView.VerticalOffset <= ProfileHeader.HeaderHeight - 48)
+            {
+                var diff = e.NextView.VerticalOffset - (ProfileHeader.HeaderHeight - 48);
+                var diff2 = e.NextView.VerticalOffset - e.FinalView.VerticalOffset;
+
+                PanelScrollingDirection direction;
+                if (_initialDirectManipulation)
+                {
+                    direction = _initialVerticalOffset > e.FinalView.VerticalOffset /*&& diff2.AlmostEqualsToZero()*/
+                            ? PanelScrollingDirection.Backward
+                            : _initialVerticalOffset < e.FinalView.VerticalOffset || Math.Abs(diff) > 24
+                            ? PanelScrollingDirection.Forward
+                            : PanelScrollingDirection.Backward;
+                }
+                else
+                {
+                    direction = e.NextView.VerticalOffset < e.FinalView.VerticalOffset || Math.Abs(diff) > 24
+                        ? PanelScrollingDirection.Forward
+                        : PanelScrollingDirection.Backward;
+                }
+
+                if (RootGrid.Update(direction == PanelScrollingDirection.Forward ? ProfileHeader.HeaderHeight - 48 : 0, !_initialDirectManipulation))
+                {
+                    if (direction == PanelScrollingDirection.Forward)
+                    {
+                        Logger.Info("Snap header");
+                    }
+                    else
+                    {
+                        Logger.Info("Unsnap header");
+                    }
+                }
+            }
+            else
+            {
+                var diff = e.FinalView.VerticalOffset - (ProfileHeader.ActualSize.Y - 48);
+
+                if (RootGrid.Update(diff >= 0 && diff <= 24 ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10) : -1, false))
+                {
+                    if (diff >= 0 && diff <= 24)
+                    {
+                        Logger.Info("Snap content");
+                    }
+                    else
+                    {
+                        Logger.Info("Unsnap content");
+                    }
+                }
+            }
+        }
+
         private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             UpdateBackButton();
 
             var diff = ScrollingHost.VerticalOffset - (ProfileHeader.ActualSize.Y - 48);
-            RootGrid.HeaderHeight = diff >= 0 && diff < 24
-                ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10)
-                : -1;
 
             if (ProfileHeader.Visibility == Visibility.Visible && !ViewModel.IsSavedMessages)
             {
@@ -1006,14 +1110,29 @@ namespace Telegram.Views
                 sender.ContentTemplate = null;
             }
         }
+    }
 
     public class ProfileSnapGrid : Grid, IScrollSnapPointsInfo
     {
         public IReadOnlyList<float> GetIrregularSnapPoints(Orientation orientation, SnapPointsAlignment alignment)
         {
+            if (_headerHeight == -1)
+            {
+                return new float[0];
+            }
+
+            if (_snapToTop)
+            {
+                return new float[]
+                {
+                    0,
+                    _headerHeight
+                };
+            }
+
             return new float[]
             {
-                HeaderHeight
+                _headerHeight
             };
         }
 
@@ -1023,18 +1142,23 @@ namespace Telegram.Views
             return 0;
         }
 
-        private float _headerHeight;
-        public float HeaderHeight
+        private float _headerHeight = -1;
+        private bool _snapToTop = false;
+
+        public float HeaderHeight => _headerHeight;
+
+        public bool Update(float headerHeight, bool snapToTop)
         {
-            get => _headerHeight;
-            set
+            if (_headerHeight == headerHeight && _snapToTop == snapToTop)
             {
-                if (_headerHeight != value)
-                {
-                    _headerHeight = value;
-                    VerticalSnapPointsChanged?.Invoke(this, null);
-                }
+                return false;
             }
+
+            _headerHeight = headerHeight;
+            _snapToTop = snapToTop;
+            VerticalSnapPointsChanged?.Invoke(this, null);
+
+            return true;
         }
 
         public bool AreHorizontalSnapPointsRegular => false;
