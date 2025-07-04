@@ -868,28 +868,14 @@ namespace Telegram.Controls.Messages
 
         private void SetAnimatedEmojiTemplate(MessageViewModel message, MessageSender sender, MessageAnimatedEmoji animatedEmoji, string title, bool outgoing, bool white)
         {
-            if (animatedEmoji.AnimatedEmoji?.Sticker?.FullType is StickerFullTypeCustomEmoji)
-            {
-                SetText(message,
-                    outgoing,
-                    sender,
-                    title,
-                    string.Empty,
-                    animatedEmoji.AnimatedEmoji.Sticker.ToFormattedText(),
-                    false,
-                    white);
-            }
-            else
-            {
-                SetText(message,
-                    outgoing,
-                    sender,
-                    title,
-                    animatedEmoji.Emoji,
-                    null,
-                    false,
-                    white);
-            }
+            SetText(message,
+                outgoing,
+                sender,
+                title,
+                string.Empty,
+                null,
+                false,
+                white);
 
             HideThumbnail();
         }
