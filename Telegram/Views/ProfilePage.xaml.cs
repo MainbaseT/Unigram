@@ -281,6 +281,8 @@ namespace Telegram.Views
 
         public void UpdateChatGifts(Chat chat)
         {
+            ProfileHeader.UpdateChatGifts(chat);
+
             // TODO: this should be optimized, not the best approach at all
             var item = ViewModel?.Items.FirstOrDefault(x => x.Type == typeof(ProfileGiftsTabPage));
             if (item != null)

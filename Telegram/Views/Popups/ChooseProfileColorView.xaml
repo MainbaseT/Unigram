@@ -10,10 +10,10 @@
 
     <UserControl.Resources>
         <Style x:Key="Yolo"
-               TargetType="controls:ProfileHeaderPattern">
+               TargetType="controls:ProfilePatternCover">
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="controls:ProfileHeaderPattern">
+                    <ControlTemplate TargetType="controls:ProfilePatternCover">
                         <Grid Width="1000"
                               Height="320">
                             <Border x:Name="LayoutRoot" />
@@ -68,7 +68,7 @@
                     </Border.RenderTransform>
                 </Border>
 
-                <controls:ProfileHeaderPattern x:Name="Pattern"
+                <controls:ProfilePatternCover x:Name="Pattern"
                                                Margin="-430,-22,-430,-156"
                                                Width="1000"
                                                Height="320"

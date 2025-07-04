@@ -1,7 +1,10 @@
 ﻿using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.UI.Xaml.Media;
+using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
@@ -15,6 +18,206 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
 {
+    // TODO: Rewrite
+    public partial class ProfileHeaderPattern : Control
+    {
+        public ProfileHeaderPattern()
+        {
+            DefaultStyleKey = typeof(ProfileHeaderPattern);
+        }
+
+        protected override void OnApplyTemplate()
+        {
+            var animated = GetTemplateChild("Animated") as AnimatedImage;
+            var layoutRoot = GetTemplateChild("LayoutRoot") as Border;
+
+            animated.Ready += OnReady;
+
+            var visual = ElementComposition.GetElementVisual(animated);
+            var compositor = visual.Compositor;
+
+            // Create a VisualSurface positioned at the same location as this control and feed that
+            // through the color effect.
+            var surfaceBrush = compositor.CreateSurfaceBrush();
+            var surface = compositor.CreateVisualSurface();
+
+            // Select the source visual and the offset/size of this control in that element's space.
+            surface.SourceVisual = visual;
+            surface.SourceOffset = new Vector2(0, 0);
+            surface.SourceSize = new Vector2(37, 37);
+            surfaceBrush.HorizontalAlignmentRatio = 0.5f;
+            surfaceBrush.VerticalAlignmentRatio = 0.5f;
+            surfaceBrush.Surface = surface;
+            surfaceBrush.Stretch = CompositionStretch.Fill;
+            surfaceBrush.BitmapInterpolationMode = CompositionBitmapInterpolationMode.NearestNeighbor;
+            surfaceBrush.SnapToPixels = true;
+
+            var container = compositor.CreateContainerVisual();
+            container.Size = new Vector2(1000, 320);
+
+            var clones = Generate(0);
+
+            for (int i = 1; i < clones.Count; i++)
+            {
+                Vector4 clone = clones[i];
+
+                var redirect = compositor.CreateSpriteVisual();
+                redirect.Size = new Vector2(clone.Z);
+                redirect.Offset = new Vector3(clone.X, clone.Y, 0);
+                redirect.CenterPoint = new Vector3(clone.Z / 2);
+                redirect.Opacity = clone.W;
+                redirect.Brush = surfaceBrush;
+
+                container.Children.InsertAtTop(redirect);
+            }
+
+            ElementCompositionPreview.SetElementChildVisual(layoutRoot, container);
+        }
+
+        private void OnReady(object sender, EventArgs e)
+        {
+            var layoutRoot = GetTemplateChild("LayoutRoot") as Border;
+            var container = ElementCompositionPreview.GetElementChildVisual(layoutRoot) as ContainerVisual;
+
+            var scale = container.Compositor.CreateVector3KeyFrameAnimation();
+            scale.InsertKeyFrame(0, Vector3.Zero);
+            scale.InsertKeyFrame(1, Vector3.One);
+
+            var batch = container.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+
+            foreach (var redirect in container.Children)
+            {
+                redirect.StartAnimation("Scale", scale);
+            }
+
+            batch.End();
+        }
+
+        public void Update(float avatarTransitionFraction)
+        {
+            var layoutRoot = GetTemplateChild("LayoutRoot") as Border;
+            var container = ElementCompositionPreview.GetElementChildVisual(layoutRoot) as ContainerVisual;
+
+            var clones = Generate(avatarTransitionFraction);
+            var i = 0;
+
+            foreach (var redirect in container.Children)
+            {
+                Vector4 clone = clones[i++];
+
+                redirect.Size = new Vector2(clone.Z);
+                redirect.Offset = new Vector3(clone.X, clone.Y, 0);
+                redirect.Opacity = clone.W;
+            }
+        }
+
+        private float windowFunction(float t)
+        {
+            return BezierPoint.Calculate(0.6f, 0.0f, 0.4f, 1.0f, t);
+        }
+
+        private float patternScaleValueAt(float fraction, float t, bool reverse)
+        {
+            float windowSize = 0.8f;
+
+            float effectiveT;
+            float windowStartOffset;
+            float windowEndOffset;
+            if (reverse)
+            {
+                effectiveT = 1.0f - t;
+                windowStartOffset = 1.0f;
+                windowEndOffset = -windowSize;
+            }
+            else
+            {
+                effectiveT = t;
+                windowStartOffset = -0.3f;
+                windowEndOffset = 1.0f;
+            }
+
+            float windowPosition = (1.0f - fraction) * windowStartOffset + fraction * windowEndOffset;
+            float windowT = MathF.Max(0.0f, MathF.Min(windowSize, effectiveT - windowPosition)) / windowSize;
+            float localT = 1.0f - windowFunction(t: windowT);
+
+            return localT;
+        }
+
+        private IList<Vector4> Generate(float avatarTransitionFraction)
+        {
+            var results = new List<Vector4>();
+
+            var avatarPatternFrame = new Vector2(1000 - 36, 86 + 36 * 2);
+            //var avatarPatternFrame = new Vector2(500, 500);
+
+            var lokiRng = new LokiRng(seed0: 123, seed1: 0, seed2: 0);
+            var numRows = 5;
+
+            for (int row = 0; row < numRows; row++)
+            {
+                int avatarPatternCount = 7;
+                float avatarPatternAngleSpan = MathF.PI * 2.0f / (avatarPatternCount - 1f);
+
+                for (int i = 0; i < avatarPatternCount - 1; i++)
+                {
+                    float baseItemDistance;
+                    float itemDistanceFraction;
+                    float itemScaleFraction;
+                    float itemDistance;
+
+                    if (IsSmall)
+                    {
+                        baseItemDistance = 72.0f + row * 28.0f;
+
+                        itemDistanceFraction = MathF.Max(0.0f, MathF.Min(1.0f, baseItemDistance / 140.0f));
+                        itemScaleFraction = patternScaleValueAt(fraction: avatarTransitionFraction, t: itemDistanceFraction, reverse: false);
+                        itemDistance = baseItemDistance * (1.0f - itemScaleFraction) + 20.0f * itemScaleFraction;
+                    }
+                    else
+                    {
+                        baseItemDistance = 100.0f + row * 40.0f;
+
+                        itemDistanceFraction = MathF.Max(0.0f, MathF.Min(1.0f, baseItemDistance / 196.0f));
+                        itemScaleFraction = patternScaleValueAt(fraction: avatarTransitionFraction, t: itemDistanceFraction, reverse: false);
+                        itemDistance = baseItemDistance * (1.0f - itemScaleFraction) + 28.0f * itemScaleFraction;
+                    }
+
+
+                    float itemAngle = -MathF.PI * 0.5f + i * avatarPatternAngleSpan;
+
+                    if (row % 2 != 0)
+                    {
+                        itemAngle += avatarPatternAngleSpan * 0.5f;
+                    }
+
+                    Vector2 itemPosition = new Vector2(avatarPatternFrame.X * 0.5f + MathF.Cos(itemAngle) * itemDistance, avatarPatternFrame.Y * 0.5f + MathF.Sin(itemAngle) * itemDistance);
+
+                    float itemScale = 0.7f + lokiRng.Next() * (1.0f - 0.7f);
+                    float itemSize = MathF.Floor((IsSmall ? 32 : 36) * itemScale);
+
+                    results.Add(new Vector4(itemPosition.X, itemPosition.Y, itemSize, 1.0f - itemScaleFraction));
+                }
+            }
+
+            return results;
+        }
+
+        public bool IsSmall { get; set; } = false;
+
+        #region Source
+
+        public AnimatedImageSource Source
+        {
+            get { return (AnimatedImageSource)GetValue(SourceProperty); }
+            set { SetValue(SourceProperty, value); }
+        }
+
+        public static readonly DependencyProperty SourceProperty =
+            DependencyProperty.Register("Source", typeof(AnimatedImageSource), typeof(ProfileHeaderPattern), new PropertyMetadata(null));
+
+        #endregion
+    }
+
     public partial class PatternBackground : ContentControl
     {
         public PatternBackground()

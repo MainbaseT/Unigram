@@ -9,10 +9,10 @@
              Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <UserControl.Resources>
-        <Style TargetType="controls:ProfileHeaderPattern">
+        <Style TargetType="controls:ProfilePatternCover">
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="controls:ProfileHeaderPattern">
+                    <ControlTemplate TargetType="controls:ProfilePatternCover">
                         <Grid Width="1000"
                               Height="320">
                             <Border x:Name="LayoutRoot" />
@@ -73,22 +73,33 @@
                   Grid.RowSpan="4"
                   Margin="-8,-16,-8,-8" />
 
-            <Grid Width="140"
+            <Grid x:Name="HeaderPhotoRoot"
+                  Width="140"
                   Height="140"
-                  Margin="12,4,12,8">
+                  Margin="12,16,12,8">
 
                 <Border x:Name="HeaderGlow"
+                        VerticalAlignment="Top"
                         Width="1000"
                         Height="320"
-                        Margin="-430,-20,-430,-156" />
+                        Margin="-430,-32,-430,-156" />
 
-                <controls:ProfileHeaderPattern x:Name="Pattern"
+                <controls:ProfilePatternCover x:Name="Pattern"
                                                Loaded="Pattern_Loaded"
-                                               Margin="-430,-20,-430,-156"
+                                               VerticalAlignment="Top"
+                                               Margin="-430,-32,-430,-156"
                                                Width="1000"
                                                Height="320"
                                                Opacity="0"
                                                RenderTransformOrigin="0.5,0.5" />
+
+                <controls:ProfileGiftsCover x:Name="GiftsCover"
+                                            SizeChanged="GiftsCover_SizeChanged"
+                                            VerticalAlignment="Top"
+                                            HorizontalAlignment="Center"
+                                            Width="360"
+                                            Margin="-110,-32,-110,-900"
+                                            Height="208" />
 
                 <Grid x:Name="HeaderPhoto"
                       Width="140"
