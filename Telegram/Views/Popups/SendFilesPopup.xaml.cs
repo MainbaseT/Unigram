@@ -1135,7 +1135,8 @@ namespace Telegram.Views.Popups
                 var flyout = new MenuFlyout();
 
                 // If number of items is different from the view then there's some album
-                if (Items.Count > ItemsView.Count)
+                var itemsView = ComposeViewModel.GetItemsView(Items, true, false, _photoAllowed, _videoAllowed, _audioAllowed, _documentAllowed);
+                if (itemsView.Count < Items.Count)
                 {
                     flyout.CreateFlyoutItem(SendWithoutGrouping, Strings.SendWithoutGrouping, "\uE90C");
                 }
