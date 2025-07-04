@@ -1181,17 +1181,45 @@ namespace Telegram.Controls
 
             Description.Content = Strings.DescriptionPlaceholder;
 
-            if (group.HasActiveUsername(out string username))
+            if (ViewModel.ForumTopic != null)
             {
-                Username.Badge = username;
-                Username.Visibility = Visibility.Visible;
+                ViewModel.ClientService.Send(new GetMessageLink(chat.Id, ViewModel.ForumTopic.Info.MessageThreadId, 0, false, true), result =>
+                {
+                    if (result is MessageLink link)
+                    {
+                        this.BeginOnUIThread(() =>
+                        {
+                            Username.Badge = link.Link;
+                            Username.Visibility = Visibility.Visible;
+
+                            if (group.HasActiveUsername(out string username))
+                            {
+                                ActiveUsernames.Inlines.Clear();
+                                ActiveUsernames.Inlines.Add(new Run { Text = Strings.InviteLink });
+                            }
+                            else
+                            {
+                                ActiveUsernames.Inlines.Clear();
+                                ActiveUsernames.Inlines.Add(new Run { Text = Strings.InviteLinkPrivate });
+                            }
+                        });
+                    }
+                });
             }
             else
             {
-                Username.Visibility = Visibility.Collapsed;
-            }
+                if (group.HasActiveUsername(out string username))
+                {
+                    Username.Badge = username;
+                    Username.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Username.Visibility = Visibility.Collapsed;
+                }
 
-            UpdateUsernames(group.Usernames);
+                UpdateUsernames(group.Usernames);
+            }
 
             Location.Visibility = group.HasLocation ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1252,7 +1280,7 @@ namespace Telegram.Controls
 
             BusinessHours.Visibility = Visibility.Collapsed;
 
-            if (fullInfo == null)
+            if (fullInfo == null || ViewModel.ForumTopic != null)
             {
                 return;
             }
