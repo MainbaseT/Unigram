@@ -5,6 +5,9 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using Telegram.Common;
+using Telegram.Native;
+using Telegram.Td.Api;
 using Windows.UI;
 
 namespace Telegram.Streams
@@ -15,20 +18,27 @@ namespace Telegram.Streams
 
         public Color Background { get; }
 
-        public bool IsText { get; }
+        public ParticlesType Type { get; }
 
         public ParticlesImageSource()
         {
             Foreground = Colors.White;
             Background = Color.FromArgb(0x54, 0, 0, 0);
-            IsText = false;
+            Type = ParticlesType.Media;
         }
 
-        public ParticlesImageSource(Color foreground)
+        public ParticlesImageSource(Color foreground, ParticlesType type = ParticlesType.Text)
         {
             Foreground = foreground;
             Background = Colors.Transparent;
-            IsText = true;
+            Type = type;
+        }
+
+        public ParticlesImageSource(UpgradedGiftBackdropColors backdrop)
+        {
+            Foreground = backdrop.SymbolColor.ToColor();
+            Background = Colors.Transparent;
+            Type = ParticlesType.Status;
         }
 
         public override int GetHashCode()

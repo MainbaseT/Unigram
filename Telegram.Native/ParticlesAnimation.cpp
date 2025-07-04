@@ -79,6 +79,8 @@ namespace winrt::Telegram::Native::implementation
         }
     }
 
+#pragma region Circle
+
     // 1px diameter circles (0.5px radius)
     inline void draw_circle_1px_100(int32_t* pixels, int width, int height,
         int cx, int cy, int sa, int sr, int sg, int sb)
@@ -360,6 +362,260 @@ namespace winrt::Telegram::Native::implementation
         }
     }
 
+#pragma endregion
+
+#pragma region Plus
+
+    // 1px diameter plus shapes (0.5px radius equivalent)
+    inline void draw_plus_1px_100(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // Single pixel
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+    }
+
+    inline void draw_plus_1px_125(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 1.25px effective size - center + light arms
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel_alpha(pixels, cx - 1, cy, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx + 1, cy, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx, cy - 1, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx, cy + 1, width, height, sa, sr, sg, sb, 64);
+    }
+
+    inline void draw_plus_1px_150(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 1.5px effective size
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel_alpha(pixels, cx - 1, cy, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx + 1, cy, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx, cy - 1, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx, cy + 1, width, height, sa, sr, sg, sb, 128);
+    }
+
+    inline void draw_plus_1px_200(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 2px effective size - solid plus
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx - 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 1, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 1, width, height, sa, sr, sg, sb);
+    }
+
+    inline void draw_plus_1px_250(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 2.5px effective size with anti-aliasing
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx - 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 1, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 1, width, height, sa, sr, sg, sb);
+
+        // Extended arms with anti-aliasing
+        set_pixel_alpha(pixels, cx - 2, cy, width, height, sa, sr, sg, sb, 96);
+        set_pixel_alpha(pixels, cx + 2, cy, width, height, sa, sr, sg, sb, 96);
+        set_pixel_alpha(pixels, cx, cy - 2, width, height, sa, sr, sg, sb, 96);
+        set_pixel_alpha(pixels, cx, cy + 2, width, height, sa, sr, sg, sb, 96);
+    }
+
+    inline void draw_plus_1px_400(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 4px effective size with anti-aliasing
+        // Solid center cross
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx - 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 1, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 1, width, height, sa, sr, sg, sb);
+
+        // Extended arms
+        set_pixel(pixels, cx - 2, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 2, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 2, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 2, width, height, sa, sr, sg, sb);
+
+        // Anti-aliased outer tips
+        set_pixel_alpha(pixels, cx - 3, cy, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx + 3, cy, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx, cy - 3, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx, cy + 3, width, height, sa, sr, sg, sb, 128);
+    }
+
+    // 2px diameter plus shapes (1px radius equivalent)
+    inline void draw_plus_2px_100(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // Classic 2px plus pattern
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx - 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 1, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 1, width, height, sa, sr, sg, sb);
+    }
+
+    inline void draw_plus_2px_125(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 2.5px effective size with light anti-aliasing
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx - 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 1, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 1, width, height, sa, sr, sg, sb);
+
+        // Light anti-aliasing on arm tips
+        set_pixel_alpha(pixels, cx - 2, cy, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx + 2, cy, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx, cy - 2, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx, cy + 2, width, height, sa, sr, sg, sb, 64);
+    }
+
+    inline void draw_plus_2px_150(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 3px effective size
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx - 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 1, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 1, width, height, sa, sr, sg, sb);
+
+        // Medium anti-aliasing on arm tips
+        set_pixel_alpha(pixels, cx - 2, cy, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx + 2, cy, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx, cy - 2, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx, cy + 2, width, height, sa, sr, sg, sb, 128);
+    }
+
+    inline void draw_plus_2px_200(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 4px effective size - thicker plus
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx - 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 1, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 1, width, height, sa, sr, sg, sb);
+
+        // Extended solid arms
+        set_pixel(pixels, cx - 2, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 2, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 2, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 2, width, height, sa, sr, sg, sb);
+
+        // Light anti-aliasing on outer tips
+        set_pixel_alpha(pixels, cx - 3, cy, width, height, sa, sr, sg, sb, 96);
+        set_pixel_alpha(pixels, cx + 3, cy, width, height, sa, sr, sg, sb, 96);
+        set_pixel_alpha(pixels, cx, cy - 3, width, height, sa, sr, sg, sb, 96);
+        set_pixel_alpha(pixels, cx, cy + 3, width, height, sa, sr, sg, sb, 96);
+    }
+
+    inline void draw_plus_2px_250(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 5px effective size with good anti-aliasing
+        // Solid center cross
+        set_pixel(pixels, cx, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx - 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 1, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 1, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 1, width, height, sa, sr, sg, sb);
+
+        // Extended solid arms
+        set_pixel(pixels, cx - 2, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx + 2, cy, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy - 2, width, height, sa, sr, sg, sb);
+        set_pixel(pixels, cx, cy + 2, width, height, sa, sr, sg, sb);
+
+        // Anti-aliased outer tips
+        set_pixel_alpha(pixels, cx - 3, cy, width, height, sa, sr, sg, sb, 160);
+        set_pixel_alpha(pixels, cx + 3, cy, width, height, sa, sr, sg, sb, 160);
+        set_pixel_alpha(pixels, cx, cy - 3, width, height, sa, sr, sg, sb, 160);
+        set_pixel_alpha(pixels, cx, cy + 3, width, height, sa, sr, sg, sb, 160);
+    }
+
+    inline void draw_plus_2px_400(int32_t* pixels, int width, int height,
+        int cx, int cy, int sa, int sr, int sg, int sb)
+    {
+        // 8px effective size with full anti-aliasing
+        // Solid center cross (3 pixels thick)
+        for (int i = -1; i <= 1; i++)
+        {
+            // Horizontal arm
+            set_pixel(pixels, cx - 3, cy + i, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx - 2, cy + i, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx - 1, cy + i, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx, cy + i, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx + 1, cy + i, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx + 2, cy + i, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx + 3, cy + i, width, height, sa, sr, sg, sb);
+
+            // Vertical arm
+            set_pixel(pixels, cx + i, cy - 3, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx + i, cy - 2, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx + i, cy + 2, width, height, sa, sr, sg, sb);
+            set_pixel(pixels, cx + i, cy + 3, width, height, sa, sr, sg, sb);
+        }
+
+        // Anti-aliased outer tips
+        set_pixel_alpha(pixels, cx - 4, cy, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx + 4, cy, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx, cy - 4, width, height, sa, sr, sg, sb, 128);
+        set_pixel_alpha(pixels, cx, cy + 4, width, height, sa, sr, sg, sb, 128);
+
+        // Side anti-aliasing for smoother edges
+        set_pixel_alpha(pixels, cx - 4, cy - 1, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx - 4, cy + 1, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx + 4, cy - 1, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx + 4, cy + 1, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx - 1, cy - 4, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx + 1, cy - 4, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx - 1, cy + 4, width, height, sa, sr, sg, sb, 64);
+        set_pixel_alpha(pixels, cx + 1, cy + 4, width, height, sa, sr, sg, sb, 64);
+    }
+
+    // Dispatch function for easy usage
+    inline void draw_plus_scaled(int32_t* pixels, int width, int height, Particle* particle, Color color, int scale, double rasterizationScale)
+    {
+        int cx = particle->X;
+        int cy = particle->Y;
+        float radius = particle->Radius;
+
+        if (radius == 0.5)
+        {
+            switch (scale)
+            {
+            case 100: draw_plus_1px_100(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 125: draw_plus_1px_125(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 150: draw_plus_1px_150(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 200: draw_plus_1px_200(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 250: draw_plus_1px_250(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 400: draw_plus_1px_400(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            }
+        }
+        else if (radius == 1)
+        {
+            switch (scale)
+            {
+            case 100: draw_plus_2px_100(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 125: draw_plus_2px_125(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 150: draw_plus_2px_150(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 200: draw_plus_2px_200(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 250: draw_plus_2px_250(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            case 400: draw_plus_2px_400(pixels, width, height, cx, cy, color.A, color.R, color.G, color.B); break;
+            }
+        }
+    }
+
+#pragma endregion
+
     void ParticlesAnimation::RenderSync(IBuffer bitmap)
     {
         auto add = 0.04;
@@ -379,12 +635,19 @@ namespace winrt::Telegram::Native::implementation
             auto easedOpacity = (byte)(std::clamp(dot->Opacity, 0., 1.) * 255);
             auto color = premultiply_color(m_foreground.R, m_foreground.G, m_foreground.B, easedOpacity);
 
-            draw_circle_scaled(pixels, m_width, m_height, dot, color, m_scalePercent, m_rasterizationScale);
+            if (m_type == ParticlesType::Status)
+            {
+                draw_plus_scaled(pixels, m_width, m_height, dot, color, m_scalePercent, m_rasterizationScale);
+            }
+            else
+            {
+                draw_circle_scaled(pixels, m_width, m_height, dot, color, m_scalePercent, m_rasterizationScale);
+            }
 
             if (dot->Opacity <= 0)
             {
                 dot->Adding = true;
-                m_particles[i] = GenerateParticle(dot->Adding);
+                m_particles[i] = GenerateParticle(dot->Adding, NextPoint(m_width, m_height));
             }
             else if (dot->Opacity >= 1)
             {
@@ -398,18 +661,117 @@ namespace winrt::Telegram::Native::implementation
         return x > y ? y : x;
     }
 
-    void ParticlesAnimation::Prepare()
+    inline double max(double x, double y)
     {
-        auto w = m_width * (1 / m_rasterizationScale);
-        auto h = m_height * (1 / m_rasterizationScale);
+        return x > y ? x : y;
+    }
 
-        auto count = round(w * h / (35 * (IS_MOBILE ? 2 : 1)));
-        count *= m_text ? 4 : 1;
-        count = min(/*!liteMode.isAvailable('chat_spoilers') ? 400 :*/ IS_MOBILE ? 1000 : 2200, count);
+    constexpr float PI = 3.14159265358979323846f;
+
+    std::vector<Point> ParticlesAnimation::NextPoints(int count, float width, float height, float noiseFactor)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        // Pre-calculate constants
+        const float centerX = width * 0.5f;
+        const float centerY = height * 0.5f;
+        const float semiMajor = width * 0.5f;
+        const float semiMinor = height * 0.5f;
+        const float invTwoPi = 1.0f / (2.0f * PI);
+
+        std::vector<Point> particles;
+        particles.reserve(count);
+
+        // Generate all random numbers at once for better cache performance
+        std::uniform_real_distribution<float> uniformDist(0.0f, 1.0f);
+        std::uniform_real_distribution<float> noiseDist(-noiseFactor, noiseFactor);
 
         for (int i = 0; i < count; ++i)
         {
-            m_particles.push_back(GenerateParticle(-1));
+            if (m_type == ParticlesType::Status)
+            {
+                // Generate angle and radius
+                float angle = uniformDist(gen) * 2.0f * PI;
+                float r = std::sqrt(uniformDist(gen)); // sqrt for uniform area distribution
+
+                // Fast trigonometry
+                float cosAngle = std::cos(angle);
+                float sinAngle = std::sin(angle);
+
+                // Calculate base position
+                float baseX = r * semiMajor * cosAngle;
+                float baseY = r * semiMinor * sinAngle;
+
+                // Add noise
+                float noiseX = noiseDist(gen) * semiMajor;
+                float noiseY = noiseDist(gen) * semiMinor;
+
+                // Final position
+                float x = centerX + baseX + noiseX;
+                float y = centerY + baseY + noiseY;
+
+                // Clamp to bounds (branchless)
+                x = std::max(0.0f, std::min(width, x));
+                y = std::max(0.0f, std::min(height, y));
+
+                particles.emplace_back(Point{ x, y });
+            }
+            else
+            {
+                particles.emplace_back(Point{ uniformDist(gen) * m_width, uniformDist(gen) * m_height });
+            }
+        }
+
+        return particles;
+    }
+
+    Point ParticlesAnimation::NextPoint(float width, float height, float noiseFactor)
+    {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+
+        if (m_type == ParticlesType::Status)
+        {
+            // Pre-calculate constants
+            const float centerX = width * 0.5f;
+            const float centerY = height * 0.5f;
+            const float semiMajor = width * 0.5f;
+            const float semiMinor = height * 0.5f;
+
+            std::uniform_real_distribution<float> uniformDist(0.0f, 1.0f);
+            std::uniform_real_distribution<float> noiseDist(-noiseFactor, noiseFactor);
+
+            // Generate angle and radius
+            float angle = uniformDist(gen) * 2.0f * PI;
+            float r = std::sqrt(uniformDist(gen)); // sqrt for uniform area distribution
+
+            // Fast trigonometry
+            float cosAngle = std::cos(angle);
+            float sinAngle = std::sin(angle);
+
+            // Calculate base position
+            float baseX = r * semiMajor * cosAngle;
+            float baseY = r * semiMinor * sinAngle;
+
+            // Add noise
+            float noiseX = noiseDist(gen) * semiMajor;
+            float noiseY = noiseDist(gen) * semiMinor;
+
+            // Final position
+            float x = centerX + baseX + noiseX;
+            float y = centerY + baseY + noiseY;
+
+            // Clamp to bounds
+            x = std::max(0.0f, std::min(width, x));
+            y = std::max(0.0f, std::min(height, y));
+
+            return { x, y };
+        }
+        else
+        {
+            static std::uniform_real_distribution<float> dis(0.0, 1.0);
+            return { dis(gen) * m_width, dis(gen) * m_height };
         }
     }
 
@@ -421,19 +783,40 @@ namespace winrt::Telegram::Native::implementation
         return dis(gen);
     }
 
-    Particle ParticlesAnimation::GenerateParticle(int32_t type)
+    void ParticlesAnimation::Prepare()
     {
-        auto x = floor(NextDouble() * m_width);
-        auto y = floor(NextDouble() * m_height);
+        auto w = m_width * (1 / m_rasterizationScale);
+        auto h = m_height * (1 / m_rasterizationScale);
+
+        auto count = round(w * h / (35 * (IS_MOBILE ? 2 : 1)));
+        count *= m_type == ParticlesType::Text ? 4 : 1;
+        count = min(/*!liteMode.isAvailable('chat_spoilers') ? 400 :*/ IS_MOBILE ? 1000 : 2200, count);
+
+        auto particles = NextPoints(count, m_width, m_height);
+        m_particles.reserve(count);
+
+        for (const auto& particle : particles)
+        {
+            m_particles.emplace_back(GenerateParticle(-1, particle));
+        }
+    }
+
+    Particle ParticlesAnimation::GenerateParticle(int32_t type, const Point& position)
+    {
+        const auto threshold = m_type == ParticlesType::Status ? .2f : .8f;
+
         auto opacity = type == 1 ? 0 : NextDouble();
-        auto radius = (NextDouble() >= .8 ? 1 : 0.5);
+        auto radius = (NextDouble() >= threshold ? 1.f : 0.5f);
         auto adding = type == -1
             ? NextDouble() >= .5
             : type;
+
+        auto padding = ceil(radius * m_rasterizationScale / 2);
+
         return Particle(
-            (float)x,
-            (float)y,
-            (float)radius,
+            max(padding, min(m_width - padding - 1, round(position.X))),
+            max(padding, min(m_height - padding - 1, round(position.Y))),
+            radius,
             opacity,
             adding);
     }

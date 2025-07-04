@@ -19,11 +19,15 @@ namespace winrt::Telegram::Native::implementation
         {
         }
 
-        float X;
-        float Y;
+        float X, Y;
         float Radius;
         double Opacity;
         bool Adding;
+    };
+
+    struct Point
+    {
+        float X, Y;
     };
 
     inline static double findClosestScale(double target)
@@ -58,12 +62,12 @@ namespace winrt::Telegram::Native::implementation
 
     struct ParticlesAnimation : ParticlesAnimationT<ParticlesAnimation>
     {
-        ParticlesAnimation(int32_t width, int32_t height, double rasterizationScale, bool text, Color foreground, Color background)
+        ParticlesAnimation(int32_t width, int32_t height, double rasterizationScale, ParticlesType type, Color foreground, Color background)
             : m_width(width)
             , m_height(height)
             , m_scalePercent(findClosestScale(rasterizationScale) * 100)
             , m_rasterizationScale(rasterizationScale)
-            , m_text(text)
+            , m_type(type)
             , m_foreground(foreground)
             , m_background(premultiply_background(background))
         {
@@ -84,13 +88,16 @@ namespace winrt::Telegram::Native::implementation
 
     private:
         void Prepare();
-        Particle GenerateParticle(int32_t type);
+        Particle GenerateParticle(int32_t type, const Point& position);
+
+        std::vector<Point> NextPoints(int count, float width, float height, float noiseFactor = 0.1f);
+        Point NextPoint(float width, float height, float noiseFactor = 0.1f);
 
         int32_t m_width;
         int32_t m_height;
         int32_t m_scalePercent;
         double m_rasterizationScale;
-        bool m_text;
+        ParticlesType m_type;
 
         Color m_foreground;
         int32_t m_background;

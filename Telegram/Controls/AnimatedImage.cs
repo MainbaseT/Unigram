@@ -1887,7 +1887,7 @@ namespace Telegram.Controls
 
         private void LoadParticles(WorkItem work, ParticlesImageSource particles)
         {
-            var animation = new ParticlesAnimation(work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.RasterizationScale, particles.IsText, particles.Foreground, particles.Background);
+            var animation = new ParticlesAnimation(work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.RasterizationScale, particles.Type, particles.Foreground, particles.Background);
             NotifyDelegate(work.CorrelationId, null, new ParticlesAnimatedImageTask(animation, work.Presentation));
         }
 
