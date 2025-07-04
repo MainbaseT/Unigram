@@ -1183,7 +1183,7 @@ namespace Telegram.Controls
 
             if (ViewModel.ForumTopic != null)
             {
-                ViewModel.ClientService.Send(new GetMessageLink(chat.Id, ViewModel.ForumTopic.Info.MessageThreadId, 0, false, true), result =>
+                ViewModel.ClientService.Send(new GetForumTopicLink(chat.Id, ViewModel.ForumTopic.Info.MessageThreadId), result =>
                 {
                     if (result is MessageLink link)
                     {
@@ -1192,7 +1192,7 @@ namespace Telegram.Controls
                             Username.Badge = link.Link;
                             Username.Visibility = Visibility.Visible;
 
-                            if (group.HasActiveUsername(out string username))
+                            if (link.IsPublic)
                             {
                                 ActiveUsernames.Inlines.Clear();
                                 ActiveUsernames.Inlines.Add(new Run { Text = Strings.InviteLink });

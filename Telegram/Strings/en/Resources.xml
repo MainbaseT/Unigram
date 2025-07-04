@@ -12352,5 +12352,6 @@
     <string name="ChecklistTasks_one">{0} task</string>
     <string name="ChecklistTasks_other">{0} tasks</string>
     <string name="CopyAsPath">Copy as Path</string>
+    <string name="InviteLinkPrivate">Invite Link only works for group members</string>
 
 </resources>

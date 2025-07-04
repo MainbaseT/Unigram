@@ -7544,6 +7544,9 @@ This setting does not affect group chats.</value>
   <data name="InviteLinkCount_other" xml:space="preserve">
     <value>{0} invite links</value>
   </data>
+  <data name="InviteLinkPrivate" xml:space="preserve">
+    <value>Invite Link only works for group members</value>
+  </data>
   <data name="InviteLinks" xml:space="preserve">
     <value>Invite Links</value>
   </data>
