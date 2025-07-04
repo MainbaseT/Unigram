@@ -50,7 +50,14 @@ namespace Telegram.ViewModels
             _notificationsService = notificationsService;
             _translateService = translateService;
 
+            _giftsTabViewModel.ItemsReady += Gifts_ItemsReady;
+
             SetTimerCommand = new RelayCommand<int?>(SetTimer);
+        }
+
+        private void Gifts_ItemsReady(object sender, EventArgs e)
+        {
+            Delegate?.UpdateChatGifts(Chat);
         }
 
         public ITranslateService TranslateService => _translateService;
@@ -232,7 +239,7 @@ namespace Telegram.ViewModels
 
                         if (Items.Count > 1)
                         {
-                            _giftsTabViewModel.ItemsView.Reload();
+                            _giftsTabViewModel.Preload();
                         }
                     }
                 }
@@ -257,7 +264,7 @@ namespace Telegram.ViewModels
 
                         if (Items.Count > 1)
                         {
-                            _giftsTabViewModel.ItemsView.Reload();
+                            _giftsTabViewModel.Preload();
                         }
                     }
 
@@ -298,7 +305,7 @@ namespace Telegram.ViewModels
 
                     if (Items.Count > 1)
                     {
-                        _giftsTabViewModel.ItemsView.Reload();
+                        _giftsTabViewModel.Preload();
                     }
                 }
 
