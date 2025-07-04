@@ -298,6 +298,7 @@ namespace Telegram.Controls
 
             _query = null;
             _spoiler = null;
+            _ignoreSpoilers = false;
 
             ClearEntities();
         }

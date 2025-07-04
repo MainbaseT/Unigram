@@ -224,7 +224,7 @@ namespace Telegram.Controls.Messages
 
         public void UpdateMessage(MessageViewModel message)
         {
-            if (_message?.Id != message?.Id && Message != null)
+            if (Message != null && (_message?.Id != message?.Id || _message?.ChatId != message?.ChatId))
             {
                 Message.IgnoreSpoilers = false;
             }
