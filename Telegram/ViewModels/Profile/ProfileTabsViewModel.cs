@@ -224,7 +224,7 @@ namespace Telegram.ViewModels.Profile
 
             async Task<Count> GetCountAsync(SearchMessagesFilter filter)
             {
-                if (sparseMessagesAvailable && filter is SearchMessagesFilterPhotoAndVideo or SearchMessagesFilterDocument or SearchMessagesFilterAudio or SearchMessagesFilterVoiceNote)
+                if (sparseMessagesAvailable && filter is SearchMessagesFilterPhotoAndVideo or SearchMessagesFilterDocument or SearchMessagesFilterAudio or SearchMessagesFilterVoiceNote or SearchMessagesFilterAnimation)
                 {
                     var source = await MediaDataSource.Create(ClientService, chat.Id, savedMessagesTopicId, filter);
                     if (source.Count > 0)
@@ -234,20 +234,19 @@ namespace Telegram.ViewModels.Profile
                             case SearchMessagesFilterPhotoAndVideo:
                             case SearchMessagesFilterPhoto:
                             case SearchMessagesFilterVideo:
-                                MediaSource = source;
-                                UseMediaSource = true;
+                                Media.DataSource = source;
                                 break;
                             case SearchMessagesFilterDocument:
-                                FilesSource = source;
-                                UseFilesSource = true;
+                                Files.DataSource = source;
                                 break;
                             case SearchMessagesFilterAudio:
-                                MusicSource = source;
-                                UseMusicSource = true;
+                                Music.DataSource = source;
                                 break;
                             case SearchMessagesFilterVoiceNote:
-                                VoiceSource = source;
-                                UseVoiceSource = true;
+                                Voice.DataSource = source;
+                                break;
+                            case SearchMessagesFilterAnimation:
+                                Animations.DataSource = source;
                                 break;
                         }
                     }
@@ -318,54 +317,29 @@ namespace Telegram.ViewModels.Profile
         {
             var target = sender switch
             {
-                SearchMessagesFilterPhotoAndVideo => MediaSource,
-                SearchMessagesFilterPhoto => MediaSource,
-                SearchMessagesFilterVideo => MediaSource,
-                SearchMessagesFilterDocument => FilesSource,
-                SearchMessagesFilterAudio => MusicSource,
-                SearchMessagesFilterVoiceNote => VoiceSource,
+                SearchMessagesFilterPhotoAndVideo => Media,
+                SearchMessagesFilterPhoto => Media,
+                SearchMessagesFilterVideo => Media,
+                SearchMessagesFilterDocument => Files,
+                SearchMessagesFilterAudio => Music,
+                SearchMessagesFilterVoiceNote => Voice,
+                SearchMessagesFilterAnimation => Animations,
                 _ => null
             };
 
             if (sender is SearchMessagesFilter filter && (target == null || query.Length > 0))
             {
-                switch (filter)
+                if (target != null)
                 {
-                    case SearchMessagesFilterPhotoAndVideo:
-                    case SearchMessagesFilterPhoto:
-                    case SearchMessagesFilterVideo:
-                        UseMediaSource = false;
-                        break;
-                    case SearchMessagesFilterDocument:
-                        UseFilesSource = false;
-                        break;
-                    case SearchMessagesFilterAudio:
-                        UseMusicSource = false;
-                        break;
-                    case SearchMessagesFilterVoiceNote:
-                        UseVoiceSource = false;
-                        break;
+                    target.UseDataSource = false;
                 }
 
                 return new MediaCollection(ClientService, Chat.Id, Topic, filter, query);
             }
 
-            switch (sender)
+            if (target != null)
             {
-                case SearchMessagesFilterPhotoAndVideo:
-                case SearchMessagesFilterPhoto:
-                case SearchMessagesFilterVideo:
-                    UseMediaSource = true;
-                    break;
-                case SearchMessagesFilterDocument:
-                    UseFilesSource = true;
-                    break;
-                case SearchMessagesFilterAudio:
-                    UseMusicSource = true;
-                    break;
-                case SearchMessagesFilterVoiceNote:
-                    UseVoiceSource = true;
-                    break;
+                target.UseDataSource = true;
             }
 
             return null;

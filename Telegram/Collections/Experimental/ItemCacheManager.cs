@@ -39,6 +39,8 @@ namespace Telegram.Collections
         internal ItemIndexRangeList _requests;
         internal ItemIndexRangeList _visibleRanges;
 
+        private ItemIndexRange[] _trackedRanges;
+
         // list of ranges for items that are present in the cache
         private ItemIndexRangeList _cachedResults;
         // Range of items that is currently being requested
@@ -93,7 +95,7 @@ namespace Telegram.Collections
                 // iterates through the cache blocks to find the item
                 foreach (CacheEntryBlock<T> block in _cacheBlocks)
                 {
-                    if (index >= block.FirstIndex && index <= block.lastIndex)
+                    if (index >= block.FirstIndex && index <= block.LastIndex)
                     {
                         return block.Items[index - block.FirstIndex];
                     }
@@ -106,7 +108,7 @@ namespace Telegram.Collections
                 for (int i = 0; i < _cacheBlocks.Count; i++)
                 {
                     CacheEntryBlock<T> block = _cacheBlocks[i];
-                    if (index >= block.FirstIndex && index <= block.lastIndex)
+                    if (index >= block.FirstIndex && index <= block.LastIndex)
                     {
                         block.Items[index - block.FirstIndex] = value;
                         //register that we have the result in the cache
@@ -132,17 +134,16 @@ namespace Telegram.Collections
             if (insertBeforeBlock > 0)
             {
                 CacheEntryBlock<T> block = _cacheBlocks[insertBeforeBlock - 1];
-                if (block.lastIndex == index - 1)
+                if (block.LastIndex == index - 1)
                 {
                     T[] newItems = new T[block.Length + 1];
                     Array.Copy(block.Items, newItems, (int)block.Length);
                     newItems[block.Length] = value;
-                    block.Length++;
-                    block.Items = newItems;
+                    _cacheBlocks[insertBeforeBlock - 1] = new CacheEntryBlock<T>(block.FirstIndex, newItems);
                     return;
                 }
             }
-            CacheEntryBlock<T> newBlock = new CacheEntryBlock<T>() { FirstIndex = index, Length = 1, Items = new T[] { value } };
+            CacheEntryBlock<T> newBlock = new CacheEntryBlock<T>(index, new T[] { value });
             _cacheBlocks.Insert(insertBeforeBlock, newBlock);
         }
 
@@ -159,74 +160,17 @@ namespace Telegram.Collections
             // Fail fast if the ranges haven't changed
             if (!HasRangesChanged(ranges)) { return; }
 
-            //To make the cache update easier, we'll create a new set of CacheEntryBlocks
-            List<CacheEntryBlock<T>> newCacheBlocks = new List<CacheEntryBlock<T>>();
-            foreach (ItemIndexRange range in ranges)
-            {
-                CacheEntryBlock<T> newBlock = new CacheEntryBlock<T>() { FirstIndex = range.FirstIndex, Length = range.Length, Items = new T[range.Length] };
-                newCacheBlocks.Add(newBlock);
-            }
-
-#if TRACE_DATASOURCE
-            string s = "┌ " + debugName + ".UpdateRanges: ";
-            foreach (ItemIndexRange range in ranges)
-            {
-                s += range.FirstIndex + "->" + range.LastIndex + " ";
-            }
-            Debug.WriteLine(s);
-#endif
-            //Copy over data to the new cache blocks from the old ones where there is overlap
-            int lastTransferred = 0;
-            for (int i = 0; i < ranges.Length; i++)
-            {
-                CacheEntryBlock<T> newBlock = newCacheBlocks[i];
-                ItemIndexRange range = ranges[i];
-                int j = lastTransferred;
-                while (j < _cacheBlocks.Count && _cacheBlocks[j].FirstIndex <= ranges[i].LastIndex)
-                {
-                    ItemIndexRange overlap, oldEntryRange;
-                    ItemIndexRange[] added, removed;
-                    CacheEntryBlock<T> oldBlock = _cacheBlocks[j];
-                    oldEntryRange = new ItemIndexRange(oldBlock.FirstIndex, oldBlock.Length);
-                    bool hasOverlap = oldEntryRange.DiffRanges(range, out overlap, out removed, out added);
-                    if (hasOverlap)
-                    {
-                        Array.Copy(oldBlock.Items, overlap.FirstIndex - oldBlock.FirstIndex, newBlock.Items, overlap.FirstIndex - range.FirstIndex, (int)overlap.Length);
-#if TRACE_DATASOURCE
-                        Debug.WriteLine("│ Transfering cache items " + overlap.FirstIndex + "->" + overlap.LastIndex);
-#endif
-                    }
-                    j++;
-                    if (ranges.Length > i + 1 && oldBlock.lastIndex < ranges[i + 1].FirstIndex) { lastTransferred = j; }
-                }
-            }
-            //swap over to the new cache
-            _cacheBlocks = newCacheBlocks;
-
             //figure out what items need to be fetched because we don't have them in the cache
             _visibleRanges = new ItemIndexRangeList(visibleRange);
             _requests = new ItemIndexRangeList(ranges);
-            ItemIndexRangeList newCachedResults = new ItemIndexRangeList();
+            _trackedRanges = ranges;
 
-            // Use the previous knowlege of what we have cached to form the new list
-            foreach (ItemIndexRange range in ranges)
+            foreach (CacheEntryBlock<T> cached in _cacheBlocks)
             {
-                foreach (ItemIndexRange cached in _cachedResults)
-                {
-                    ItemIndexRange overlap;
-                    ItemIndexRange[] added, removed;
-                    bool hasOverlap = cached.DiffRanges(range, out overlap, out removed, out added);
-                    if (hasOverlap) { newCachedResults.Add(overlap); }
-                }
+                _requests.Subtract(cached);
             }
-            // remove the data we know we have cached from the results
-            foreach (ItemIndexRange range in newCachedResults)
-            {
-                _requests.Subtract(range);
-            }
-            _cachedResults = newCachedResults;
 
-            startFetchData();
+            StartFetchData();
 
 #if TRACE_DATASOURCE
             s = "└ Pending requests: ";
@@ -241,19 +185,21 @@ namespace Telegram.Collections
         // Compares the new ranges against the previous ones to see if they have changed
         private bool HasRangesChanged(ItemIndexRange[] ranges)
         {
-            if (ranges.Length != _cacheBlocks.Count)
+            if (_trackedRanges?.Length != ranges.Length)
             {
                 return true;
             }
+
             for (int i = 0; i < ranges.Length; i++)
             {
                 ItemIndexRange r = ranges[i];
-                CacheEntryBlock<T> block = _cacheBlocks[i];
-                if (r.FirstIndex != block.FirstIndex || r.LastIndex != block.lastIndex)
+                ItemIndexRange block = _trackedRanges[i];
+                if (r.FirstIndex != block.FirstIndex || r.LastIndex != block.LastIndex)
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -281,10 +227,9 @@ namespace Telegram.Collections
             return null;
         }
 
-
         // Throttling function for fetching data. Forces a wait of 20ms before making the request.
         // If another fetch is requested in that time, it will reset the timer, so we don't fetch data if the view is actively scrolling
-        public void startFetchData()
+        public void StartFetchData()
         {
             // Verify if an active request is still needed
             if (_requestInProgress != null)
@@ -432,13 +377,15 @@ namespace Telegram.Collections
         }
 
         // Type for the cache blocks
-        class CacheEntryBlock<ITEMTYPE>
+        class CacheEntryBlock<ITEMTYPE> : ItemIndexRange
         {
-            public int FirstIndex;
-            public uint Length;
-            public ITEMTYPE[] Items;
+            public ITEMTYPE[] Items { get; }
 
-            public int lastIndex { get { return FirstIndex + (int)Length - 1; } }
+            public CacheEntryBlock(int firstIndex, ITEMTYPE[] items)
+                : base(firstIndex, (uint)items.Length)
+            {
+                Items = items;
+            }
         }
     }
 }

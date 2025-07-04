@@ -38,7 +38,7 @@ namespace Telegram.Views.Profile
                 ScrollingHost.ItemContainerCornerRadius = new CornerRadius(0);
             }
 
-            if (ViewModel.Media.Empty())
+            if (ViewModel.Voice.Empty())
             {
                 ScrollingHost.ItemContainerTransitions.Add(new EntranceThemeTransition { IsStaggeringEnabled = false });
             }

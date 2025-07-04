@@ -879,13 +879,13 @@ namespace Telegram.Views
                 var photos = new MenuFlyoutItem
                 {
                     Text = Strings.MediaShowPhotos,
-                    Icon = ViewModel.Media.Source.Filter is SearchMessagesFilterPhoto or SearchMessagesFilterPhotoAndVideo ? MenuFlyoutHelper.CreateIcon(Icons.Checkmark) : null
+                    Icon = ViewModel.Media.Filter is SearchMessagesFilterPhoto or SearchMessagesFilterPhotoAndVideo ? MenuFlyoutHelper.CreateIcon(Icons.Checkmark) : null
                 };
 
                 var videos = new MenuFlyoutItem
                 {
                     Text = Strings.MediaShowVideos,
-                    Icon = ViewModel.Media.Source.Filter is SearchMessagesFilterVideo or SearchMessagesFilterPhotoAndVideo ? MenuFlyoutHelper.CreateIcon(Icons.Checkmark) : null
+                    Icon = ViewModel.Media.Filter is SearchMessagesFilterVideo or SearchMessagesFilterPhotoAndVideo ? MenuFlyoutHelper.CreateIcon(Icons.Checkmark) : null
                 };
 
                 zoomIn.Click += MediaZoomIn_Click;
@@ -899,6 +899,10 @@ namespace Telegram.Views
                 {
                     flyout.Items.Add(zoomIn);
                     flyout.Items.Add(zoomOut);
+                }
+
+                if (ViewModel.Media.UseDataSource)
+                {
                     flyout.Items.Add(calendar);
                     flyout.CreateFlyoutSeparator();
                 }
@@ -989,7 +993,7 @@ namespace Telegram.Views
 
         private async void MediaCalendar_Click(object sender, RoutedEventArgs e)
         {
-            if (MediaFrame.Content is ProfileMediaTabPage media)
+            if (MediaFrame.Content is ProfileMediaTabPage media && ViewModel.Media.UseDataSource)
             {
                 var popup = new CalendarPopup(ViewModel.ClientService, ViewModel.Chat.Id, ViewModel.Topic);
                 popup.MaxDate = DateTimeOffset.Now.Date;
@@ -1000,38 +1004,38 @@ namespace Telegram.Views
                     var first = popup.SelectedDates.FirstOrDefault();
                     var offset = first.Date.ToTimestamp();
 
-                    var closest = ViewModel.MediaSource.GetByDate(offset);
+                    var closest = ViewModel.Media.DataSource.GetByDate(offset);
                     var panel = media.ScrollingHost.ItemsPanelRoot as ItemsWrapGrid;
 
                     int x = closest.Position % panel.MaximumRowsOrColumns;
                     int y = closest.Position / panel.MaximumRowsOrColumns;
 
-                    ScrollingHost.ChangeView(null, ProfileHeader.ActualHeight - 48 + 24 + (y * panel.ItemHeight), null, true);
+                    ScrollingHost.ChangeView(null, ProfileHeader.ActualHeight - 48 + 24 + (y * panel.ItemHeight), null, false);
                 }
             }
         }
 
         private void MediaShowPhotos_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.Media.Source.Filter is SearchMessagesFilterPhotoAndVideo)
+            if (ViewModel.Media.Filter is SearchMessagesFilterPhotoAndVideo)
             {
-                ViewModel.Media.UpdateSender(new SearchMessagesFilterVideo());
+                ViewModel.Media.Filter = new SearchMessagesFilterVideo();
             }
-            else if (ViewModel.Media.Source.Filter is SearchMessagesFilterVideo)
+            else if (ViewModel.Media.Filter is SearchMessagesFilterVideo)
             {
-                ViewModel.Media.UpdateSender(new SearchMessagesFilterPhotoAndVideo());
+                ViewModel.Media.Filter = new SearchMessagesFilterPhotoAndVideo();
             }
         }
 
         private void MediaShowVideos_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.Media.Source.Filter is SearchMessagesFilterPhotoAndVideo)
+            if (ViewModel.Media.Filter is SearchMessagesFilterPhotoAndVideo)
             {
-                ViewModel.Media.UpdateSender(new SearchMessagesFilterPhoto());
+                ViewModel.Media.Filter = new SearchMessagesFilterPhoto();
             }
-            else if (ViewModel.Media.Source.Filter is SearchMessagesFilterPhoto)
+            else if (ViewModel.Media.Filter is SearchMessagesFilterPhoto)
             {
-                ViewModel.Media.UpdateSender(new SearchMessagesFilterPhotoAndVideo());
+                ViewModel.Media.Filter = new SearchMessagesFilterPhotoAndVideo();
             }
         }
 

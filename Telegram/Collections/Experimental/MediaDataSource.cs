@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
-using Windows.Storage.Search;
-using Windows.UI.Core;
 using Windows.UI.Xaml.Data;
 
 namespace Telegram.Collections
@@ -135,13 +133,13 @@ namespace Telegram.Collections
 
         public MessagePosition GetByDate(int targetDate)
         {
-            return _positions?.Values.LastOrDefault(x => x.Date <= targetDate);
+            return _positions?.Values.LastOrDefault(x => x.Date >= targetDate);
         }
 
         public MessagePosition GetByOffset(double offset)
         {
             offset = Math.Clamp(offset, 0, 1);
-            return _positions?.Values.LastOrDefault(x => x.Position <= offset * _positions.Count);
+            return _positions?.Values.LastOrDefault(x => x.Position <= offset * _count);
         }
 
         public MessagePosition GetByIndex(int targetIndex, out int index)

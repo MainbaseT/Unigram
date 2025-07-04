@@ -9,10 +9,13 @@ using Telegram.Controls;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Chats;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Profile
 {
@@ -23,30 +26,52 @@ namespace Telegram.Views.Profile
             InitializeComponent();
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if (!IsProfile)
+            {
+                ScrollingHost.Padding = new Thickness(12, 0, 4, 8);
+            }
+
+            if (ViewModel.Animations.Empty())
+            {
+                ScrollingHost.ItemContainerTransitions.Add(new EntranceThemeTransition { IsStaggeringEnabled = false });
+            }
+        }
+
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.InRecycleQueue)
+            if (args.InRecycleQueue || ViewModel == null)
             {
                 return;
             }
-            else if (args.ItemContainer.ContentTemplateRoot is Grid content && args.Item is MessageWithOwner message)
+            else if (args.ItemContainer.ContentTemplateRoot is Grid content)
             {
-                AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
-
                 var photo = content.Children[0] as ImageView;
 
-                if (message.Content is MessageAnimation animation)
+                if (args.Item is MessageWithOwner message)
                 {
-                    if (animation.Animation.Thumbnail is { Format: ThumbnailFormatJpeg })
+                    AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
+
+                    if (message.Content is MessageAnimation animation)
                     {
-                        photo.SetSource(ViewModel.ClientService, animation.Animation.Thumbnail.File, animation.Animation.Minithumbnail);
+                        if (animation.Animation.Thumbnail is { Format: ThumbnailFormatJpeg })
+                        {
+                            photo.SetSource(ViewModel.ClientService, animation.Animation.Thumbnail.File, animation.Animation.Minithumbnail);
+                        }
+                        else if (animation.Animation.Minithumbnail != null)
+                        {
+                            var bitmap = new BitmapImage();
+                            PlaceholderHelper.GetBlurred(bitmap, animation.Animation.Minithumbnail.Data);
+                            photo.Source = bitmap;
+                        }
                     }
-                    else if (animation.Animation.Minithumbnail != null)
-                    {
-                        var bitmap = new BitmapImage();
-                        PlaceholderHelper.GetBlurred(bitmap, animation.Animation.Minithumbnail.Data);
-                        photo.Source = bitmap;
-                    }
+                }
+                else
+                {
+                    photo.Clear();
                 }
 
                 args.Handled = true;

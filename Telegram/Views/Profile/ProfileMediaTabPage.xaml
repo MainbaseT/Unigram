@@ -17,7 +17,7 @@
               Margin="24,0,16,0" />
 
         <controls:SelectGridView x:Name="ScrollingHost"
-                                 ItemsSource="{x:Bind ViewModel.MediaView, Mode=OneWay}"
+                                 ItemsSource="{x:Bind ViewModel.Media.ItemsView, Mode=OneWay}"
                                  IsItemClickEnabled="True"
                                  ItemClick="OnItemClick"
                                  SelectionMode="None"

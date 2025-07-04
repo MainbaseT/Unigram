@@ -17,33 +17,33 @@ namespace Telegram.Collections
 
         public ItemIndexRangeList()
         {
-            this._ranges = new List<ItemIndexRange>();
+            _ranges = new List<ItemIndexRange>();
         }
 
         public ItemIndexRangeList(ItemIndexRange range)
         {
-            this._ranges = new List<ItemIndexRange>();
-            this._ranges.Add(range);
+            _ranges = new List<ItemIndexRange>();
+            _ranges.Add(range);
         }
 
         public ItemIndexRangeList(List<ItemIndexRange> ranges)
         {
-            this._ranges = NormalizeRanges(ranges);
+            _ranges = NormalizeRanges(ranges);
         }
 
         public ItemIndexRangeList(ItemIndexRange[] ranges)
         {
-            this._ranges = NormalizeRanges(ranges);
+            _ranges = NormalizeRanges(ranges);
         }
 
         public List<ItemIndexRange> ToList()
         {
-            return this._ranges;
+            return _ranges;
         }
 
         public ItemIndexRange[] ToArray()
         {
-            return this._ranges.ToArray();
+            return _ranges.ToArray();
         }
 
         /// <summary>
@@ -52,31 +52,31 @@ namespace Telegram.Collections
         /// <param name="newrange">Range to merge into the collection</param>
         public void Add(ItemIndexRange newrange)
         {
-            for (int i = 0; i < this._ranges.Count; i++)
+            for (int i = 0; i < _ranges.Count; i++)
             {
-                ItemIndexRange existing = this._ranges[i];
+                ItemIndexRange existing = _ranges[i];
                 if (newrange.ContiguousOrOverlaps(existing))
                 {
                     existing = existing.Combine(newrange);
-                    for (int j = i + 1; j < this._ranges.Count; j++)
+                    for (int j = i + 1; j < _ranges.Count; j++)
                     {
-                        ItemIndexRange next = this._ranges[j];
+                        ItemIndexRange next = _ranges[j];
                         if (existing.ContiguousOrOverlaps(next))
                         {
                             existing = existing.Combine(next);
-                            this._ranges.RemoveAt(i + 1);
+                            _ranges.RemoveAt(i + 1);
                         }
                     }
-                    this._ranges[i] = existing;
+                    _ranges[i] = existing;
                     return;
                 }
                 else if (newrange.LastIndex < existing.FirstIndex)
                 {
-                    this._ranges.Insert(i, newrange);
+                    _ranges.Insert(i, newrange);
                     return;
                 }
             }
-            this._ranges.Add(newrange);
+            _ranges.Add(newrange);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Telegram.Collections
         /// </summary>
         public void Add(uint FirstIndex, uint Length)
         {
-            this.Add(new ItemIndexRange((int)FirstIndex, Length));
+            Add(new ItemIndexRange((int)FirstIndex, Length));
         }
 
         /// <summary>
@@ -92,9 +92,9 @@ namespace Telegram.Collections
         /// </summary>
         public void Subtract(ItemIndexRange range)
         {
-            for (int idx = 0; idx < this._ranges.Count; idx++)
+            for (int idx = 0; idx < _ranges.Count; idx++)
             {
-                ItemIndexRange existing = this._ranges[idx];
+                ItemIndexRange existing = _ranges[idx];
                 if (existing.FirstIndex > range.LastIndex) return;
 
                 int i, j;
@@ -106,25 +106,25 @@ namespace Telegram.Collections
                     if (existing.FirstIndex < i && existing.LastIndex > j)
                     {
                         //range is in the middle of existing range, so split existing into two
-                        this._ranges[idx] = (new ItemIndexRange(existing.FirstIndex, (uint)(i - existing.FirstIndex)));
-                        this._ranges.Insert(idx + 1, new ItemIndexRange(j + 1, (uint)(existing.LastIndex - j)));
+                        _ranges[idx] = (new ItemIndexRange(existing.FirstIndex, (uint)(i - existing.FirstIndex)));
+                        _ranges.Insert(idx + 1, new ItemIndexRange(j + 1, (uint)(existing.LastIndex - j)));
                         return;
                     }
                     else if (existing.LastIndex > j)
                     {
                         //range ends before existing so trim existing to be the remainder
-                        this._ranges[idx] = new ItemIndexRange(j + 1, (uint)(existing.LastIndex - j));
+                        _ranges[idx] = new ItemIndexRange(j + 1, (uint)(existing.LastIndex - j));
                         return;
                     }
                     else if (existing.FirstIndex < i)
                     {
                         //range starts after existing so trim existing to the part before range
-                        this._ranges[idx] = new ItemIndexRange(existing.FirstIndex, (uint)(i - existing.FirstIndex));
+                        _ranges[idx] = new ItemIndexRange(existing.FirstIndex, (uint)(i - existing.FirstIndex));
                     }
                     else
                     {
                         //existing is overlapped by range, so remove it.
-                        this._ranges.RemoveAt(idx);
+                        _ranges.RemoveAt(idx);
                         idx--;
                     }
                     //trim the subtracted range to the remainder, and exit if complete
@@ -139,12 +139,12 @@ namespace Telegram.Collections
 
         public void Subtract(uint FirstIndex, uint Length)
         {
-            this.Subtract(new ItemIndexRange((int)FirstIndex, Length));
+            Subtract(new ItemIndexRange((int)FirstIndex, Length));
         }
 
         public bool Intersects(ItemIndexRange range)
         {
-            foreach (ItemIndexRange r in this._ranges)
+            foreach (ItemIndexRange r in _ranges)
             {
                 if (r.Intersects(range))
                 {

@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Rg.DiffUtils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -20,6 +21,96 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.ViewModels.Profile
 {
+    public class MediaSourceCollection : BindableBase, IDiffHandler<MessageWithOwner>
+    {
+        public MediaSourceCollection(Func<object, string, MediaCollection> factory, SearchMessagesFilter filter)
+        {
+            Items = new SearchCollection<MessageWithOwner, MediaCollection>(factory, _filter = filter, this);
+        }
+
+        public SearchCollection<MessageWithOwner, MediaCollection> Items { get; private set; }
+
+        public string Query
+        {
+            get => Items.Query;
+            set => Items.Query = value;
+        }
+
+        public void UpdateQuery(string query)
+        {
+            Items.UpdateQuery(query);
+        }
+
+        public bool Empty()
+        {
+            if (DataSource != null)
+            {
+                return DataSource.Count > 0;
+            }
+
+            return Items.Count > 0;
+        }
+
+        private SearchMessagesFilter _filter;
+        public SearchMessagesFilter Filter
+        {
+            get => _filter;
+            set
+            {
+                _filter = value;
+                DataSource?.SetFilter(value);
+                Items.UpdateSender(value);
+            }
+        }
+
+        private MediaDataSource _dataSource;
+        public MediaDataSource DataSource
+        {
+            get => _dataSource;
+            set
+            {
+                _dataSource = value;
+                UseDataSource = value != null;
+            }
+        }
+
+        protected bool _useDataSource;
+        public bool UseDataSource
+        {
+            get => _useDataSource && _dataSource != null;
+            set
+            {
+                if (_useDataSource != value)
+                {
+                    _useDataSource = value;
+                    RaisePropertyChanged(nameof(ItemsView));
+                }
+            }
+        }
+
+        public object ItemsView
+        {
+            get
+            {
+                if (_useDataSource && DataSource != null)
+                {
+                    return DataSource;
+                }
+
+                return Items;
+            }
+        }
+
+        public bool CompareItems(MessageWithOwner oldItem, MessageWithOwner newItem)
+        {
+            return oldItem?.Id == newItem?.Id && oldItem?.ChatId == newItem?.ChatId;
+        }
+
+        public void UpdateItem(MessageWithOwner oldItem, MessageWithOwner newItem)
+        {
+        }
+    }
+
     public abstract partial class MediaTabsViewModelBase : MultiViewModelBase
     {
         private readonly IPlaybackService _playbackService;
@@ -35,12 +126,12 @@ namespace Telegram.ViewModels.Profile
 
             _messageDelegate = new MessageDelegate(this);
 
-            Media = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterPhotoAndVideo(), new MessageDiffHandler());
-            Files = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterDocument(), new MessageDiffHandler());
-            Links = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterUrl(), new MessageDiffHandler());
-            Music = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterAudio(), new MessageDiffHandler());
-            Voice = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterVoiceNote(), new MessageDiffHandler());
-            Animations = new SearchCollection<MessageWithOwner, MediaCollection>(SetSearch, new SearchMessagesFilterAnimation(), new MessageDiffHandler());
+            Media = new MediaSourceCollection(SetSearch, new SearchMessagesFilterPhotoAndVideo());
+            Files = new MediaSourceCollection(SetSearch, new SearchMessagesFilterDocument());
+            Links = new MediaSourceCollection(SetSearch, new SearchMessagesFilterUrl());
+            Music = new MediaSourceCollection(SetSearch, new SearchMessagesFilterAudio());
+            Voice = new MediaSourceCollection(SetSearch, new SearchMessagesFilterVoiceNote());
+            Animations = new MediaSourceCollection(SetSearch, new SearchMessagesFilterAnimation());
 
             SelectedItems = new MvxObservableCollection<MessageWithOwner>();
             SelectedItems.CollectionChanged += OnCollectionChanged;
@@ -62,125 +153,12 @@ namespace Telegram.ViewModels.Profile
 
         public bool IsDeactivated { get; set; }
 
-        public MediaDataSource MediaSource { get; set; }
-        public MediaDataSource FilesSource { get; set; }
-        public MediaDataSource MusicSource { get; set; }
-        public MediaDataSource VoiceSource { get; set; }
-
-        public SearchCollection<MessageWithOwner, MediaCollection> Media { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Files { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Links { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Music { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Voice { get; private set; }
-        public SearchCollection<MessageWithOwner, MediaCollection> Animations { get; private set; }
-
-        protected bool _useMediaSource;
-        public bool UseMediaSource
-        {
-            get => _useMediaSource;
-            set
-            {
-                if (_useMediaSource != value)
-                {
-                    _useMediaSource = value;
-                    RaisePropertyChanged(nameof(MediaView));
-                }
-            }
-        }
-
-        public object MediaView
-        {
-            get
-            {
-                if (_useMediaSource && MediaSource != null)
-                {
-                    return MediaSource;
-                }
-
-                return Media;
-            }
-        }
-
-        protected bool _useFilesSource;
-        public bool UseFilesSource
-        {
-            get => _useFilesSource;
-            set
-            {
-                if (_useFilesSource != value)
-                {
-                    _useFilesSource = value;
-                    RaisePropertyChanged(nameof(FilesView));
-                }
-            }
-        }
-
-        public object FilesView
-        {
-            get
-            {
-                if (_useFilesSource && FilesSource != null)
-                {
-                    return FilesSource;
-                }
-
-                return Files;
-            }
-        }
-
-        protected bool _useMusicSource;
-        public bool UseMusicSource
-        {
-            get => _useMusicSource;
-            set
-            {
-                if (_useMusicSource != value)
-                {
-                    _useMusicSource = value;
-                    RaisePropertyChanged(nameof(MusicView));
-                }
-            }
-        }
-
-        public object MusicView
-        {
-            get
-            {
-                if (_useMusicSource && MusicSource != null)
-                {
-                    return MusicSource;
-                }
-
-                return Music;
-            }
-        }
-
-        protected bool _useVoiceSource;
-        public bool UseVoiceSource
-        {
-            get => _useVoiceSource;
-            set
-            {
-                if (_useVoiceSource != value)
-                {
-                    _useVoiceSource = value;
-                    RaisePropertyChanged(nameof(VoiceView));
-                }
-            }
-        }
-
-        public object VoiceView
-        {
-            get
-            {
-                if (_useVoiceSource && VoiceSource != null)
-                {
-                    return VoiceSource;
-                }
-
-                return Voice;
-            }
-        }
+        public MediaSourceCollection Media { get; private set; }
+        public MediaSourceCollection Files { get; private set; }
+        public MediaSourceCollection Links { get; private set; }
+        public MediaSourceCollection Music { get; private set; }
+        public MediaSourceCollection Voice { get; private set; }
+        public MediaSourceCollection Animations { get; private set; }
 
         public virtual MediaCollection SetSearch(object sender, string query)
         {
@@ -194,18 +172,6 @@ namespace Telegram.ViewModels.Profile
 
         public ObservableCollection<MessageWithOwner> SelectedItems { get; }
 
-        public partial class MessageDiffHandler : IDiffHandler<MessageWithOwner>
-        {
-            public bool CompareItems(MessageWithOwner oldItem, MessageWithOwner newItem)
-            {
-                return oldItem?.Id == newItem?.Id && oldItem?.ChatId == newItem?.ChatId;
-            }
-
-            public void UpdateItem(MessageWithOwner oldItem, MessageWithOwner newItem)
-            {
-            }
-        }
-
         public override void Subscribe()
         {
             Aggregator.Subscribe<UpdateDeleteMessages>(this, Handle);
@@ -218,18 +184,19 @@ namespace Telegram.ViewModels.Profile
                 return;
             }
 
+            // TODO: this isn't really valid at the moment
             if (ShouldHandleDeleteMessages(update))
             {
                 var table = update.MessageIds.ToHashSet();
 
                 BeginOnUIThread(() =>
                 {
-                    UpdateDeleteMessages(Media.Source, table);
-                    UpdateDeleteMessages(Files.Source, table);
-                    UpdateDeleteMessages(Links.Source, table);
-                    UpdateDeleteMessages(Music.Source, table);
-                    UpdateDeleteMessages(Voice.Source, table);
-                    UpdateDeleteMessages(Animations.Source, table);
+                    UpdateDeleteMessages(Media.Items.Source, table);
+                    UpdateDeleteMessages(Files.Items.Source, table);
+                    UpdateDeleteMessages(Links.Items.Source, table);
+                    UpdateDeleteMessages(Music.Items.Source, table);
+                    UpdateDeleteMessages(Voice.Items.Source, table);
+                    UpdateDeleteMessages(Animations.Items.Source, table);
                 });
             }
         }
