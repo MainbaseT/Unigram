@@ -742,6 +742,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:IdentityIcon">
                     <Grid>
+                        <local:AnimatedImage x:Name="Particles"
+                                             x:Load="False"
+                                             IsViewportAware="True"
+                                             FrameSize="24,24"
+                                             DecodeFrameType="Logical"
+                                             Stretch="UniformToFill"
+                                             VerticalAlignment="Bottom"
+                                             Width="24"
+                                             Height="24"
+                                             Margin="-2,-4,-2,-4" />
                         <local:CustomEmojiIcon x:Name="Status"
                                                x:Load="False"
                                                ReplacementColor="{TemplateBinding Foreground}"

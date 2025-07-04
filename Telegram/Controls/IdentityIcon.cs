@@ -26,6 +26,7 @@ namespace Telegram.Controls
 
     public partial class IdentityIcon : Control
     {
+        private AnimatedImage Particles;
         private AnimatedImage Status;
         private FontIcon Icon;
 
@@ -111,6 +112,16 @@ namespace Telegram.Controls
 
                     LoadObject(ref Status, nameof(Status));
                     Status.Source = new CustomEmojiFileSource(clientService, chat.EmojiStatus.Type);
+
+                    if (chat.EmojiStatus.Type is EmojiStatusTypeUpgradedGift upgraded)
+                    {
+                        LoadObject(ref Particles, nameof(Particles));
+                        Particles.Source = new ParticlesImageSource(upgraded.BackdropColors);
+                    }
+                    else
+                    {
+                        UnloadObject(ref Particles);
+                    }
                 }
                 else
                 {
@@ -123,6 +134,7 @@ namespace Telegram.Controls
 
                 UnloadObject(ref Icon);
                 UnloadObject(ref Status);
+                UnloadObject(ref Particles);
             }
         }
 
@@ -144,6 +156,16 @@ namespace Telegram.Controls
 
                 LoadObject(ref Status, nameof(Status));
                 Status.Source = new CustomEmojiFileSource(clientService, user.EmojiStatus.Type);
+
+                if (user.EmojiStatus.Type is EmojiStatusTypeUpgradedGift upgraded)
+                {
+                    LoadObject(ref Particles, nameof(Particles));
+                    Particles.Source = new ParticlesImageSource(upgraded.BackdropColors);
+                }
+                else
+                {
+                    UnloadObject(ref Particles);
+                }
             }
             else
             {
@@ -175,6 +197,7 @@ namespace Telegram.Controls
                 }
 
                 UnloadObject(ref Status);
+                UnloadObject(ref Particles);
             }
         }
 
@@ -210,6 +233,7 @@ namespace Telegram.Controls
             }
 
             UnloadObject(ref Status);
+            UnloadObject(ref Particles);
         }
 
         public void SetStatus(IClientService clientService, ForumTopicIcon icon)
@@ -245,6 +269,8 @@ namespace Telegram.Controls
 
                 UnloadObject(ref Status);
             }
+
+            UnloadObject(ref Particles);
         }
 
         public void SetStatus(Supergroup supergroup)
@@ -279,6 +305,7 @@ namespace Telegram.Controls
             }
 
             UnloadObject(ref Status);
+            UnloadObject(ref Particles);
         }
 
         public void ClearStatus()
@@ -286,6 +313,7 @@ namespace Telegram.Controls
             CurrentType = IdentityIconType.None;
             UnloadObject(ref Icon);
             UnloadObject(ref Status);
+            UnloadObject(ref Particles);
         }
 
         #region Helpers
