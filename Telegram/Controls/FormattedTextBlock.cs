@@ -620,7 +620,7 @@ namespace Telegram.Controls
                             else
                             {
                                 direct.SetObjectProperty(paragraph, XamlPropertyIndex.TextElement_FontFamily, GetMonospaceFontFamily());
-                                
+
                                 NativeUtils.AddRunToCollection(direct, inlines, data, direction, false, TextDecorations.None, null, 0, false);
                                 offset += data.Length;
 

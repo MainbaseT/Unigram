@@ -83,7 +83,7 @@ namespace Telegram.Collections
         private void Assert()
         {
             var temp = new List<object>();
-            
+
             foreach (var collection in _groups)
             {
                 if (collection.Count > 0)
@@ -134,7 +134,7 @@ namespace Telegram.Collections
 
         private void Replace(IKeyedCollection collection, int oldStartingIndex, object oldItem, object newItem)
         {
-            this[collection.TotalIndex +  oldStartingIndex] = newItem;
+            this[collection.TotalIndex + oldStartingIndex] = newItem;
         }
 
         private void Reset(IKeyedCollection collection)

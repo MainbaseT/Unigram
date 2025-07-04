@@ -79,11 +79,11 @@ namespace Telegram.ViewModels
                 new SearchChatsTabItem(Strings.FilterChats, typeof(BlankPage), null),
                 new SearchChatsTabItem(Strings.FilterChannels, typeof(BlankPage), null),
                 new SearchChatsTabItem(Strings.AppsTab, typeof(BlankPage), null),
-                new SearchChatsTabItem(Strings.SharedMediaTab2, typeof(ProfileMediaTabPage), Media),
-                new SearchChatsTabItem(Strings.SharedFilesTab2, typeof(ProfileFilesTabPage), Files),
-                new SearchChatsTabItem(Strings.SharedLinksTab2, typeof(ProfileLinksTabPage), Links),
-                new SearchChatsTabItem(Strings.SharedMusicTab2, typeof(ProfileMusicTabPage), Music),
-                new SearchChatsTabItem(Strings.SharedVoiceTab2, typeof(ProfileVoiceTabPage), Voice)
+                new SearchChatsTabItem(Strings.SharedMediaTab2, typeof(ProfileMediaTabPage), Media.Items),
+                new SearchChatsTabItem(Strings.SharedFilesTab2, typeof(ProfileFilesTabPage), Files.Items),
+                new SearchChatsTabItem(Strings.SharedLinksTab2, typeof(ProfileLinksTabPage), Links.Items),
+                new SearchChatsTabItem(Strings.SharedMusicTab2, typeof(ProfileMusicTabPage), Music.Items),
+                new SearchChatsTabItem(Strings.SharedVoiceTab2, typeof(ProfileVoiceTabPage), Voice.Items)
             };
         }
 

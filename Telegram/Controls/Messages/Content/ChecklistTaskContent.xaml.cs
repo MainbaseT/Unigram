@@ -15,7 +15,6 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
