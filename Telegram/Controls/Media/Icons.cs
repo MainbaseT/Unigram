@@ -275,6 +275,7 @@ namespace Telegram.Controls.Media
         public const string ShareFilled = "\uE914";
         public const string CheckmarkCircle = "\uE97E";
         public const string Multiselect = "\uE762";
+        public const string CopyAsPath = "\uEAC3";
         public const string SaveAs = "\uE792";
         public const string SaveAsLocked = "\uEA2B";
         public const string FolderOpen = "\uE838";

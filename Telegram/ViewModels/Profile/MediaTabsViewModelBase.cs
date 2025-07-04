@@ -304,6 +304,19 @@ namespace Telegram.ViewModels.Profile
 
         #endregion
 
+        #region Copy path
+
+        public async void CopyMessagePath(MessageWithOwner message)
+        {
+            var file = message.GetFile();
+            if (file != null)
+            {
+                await _storageService.CopyFilePathAsync(XamlRoot, file);
+            }
+        }
+
+        #endregion
+
         #region Delete
 
         public void DeleteMessage(MessageWithOwner message)

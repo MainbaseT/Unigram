@@ -3038,6 +3038,7 @@ namespace Telegram.Views
 
                 flyout.CreateFlyoutItem(MessageCopyLink_Loaded, ViewModel.CopyMessageLink, message, Strings.CopyLink, Icons.Link);
                 flyout.CreateFlyoutItem(MessageCopyMedia_Loaded, ViewModel.CopyMessageMedia, message, Strings.CopyImage, Icons.Image);
+                flyout.CreateFlyoutItem(MessageSaveMedia_Loaded, ViewModel.CopyMessagePath, message, Strings.CopyAsPath, Icons.CopyAsPath);
 
                 if (quote != null)
                 {

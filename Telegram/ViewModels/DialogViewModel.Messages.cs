@@ -870,6 +870,19 @@ namespace Telegram.ViewModels
 
         #endregion
 
+        #region Copy path
+
+        public async void CopyMessagePath(MessageViewModel message)
+        {
+            var file = message.GetFile();
+            if (file != null)
+            {
+                await _storageService.CopyFilePathAsync(XamlRoot, file);
+            }
+        }
+
+        #endregion
+
         #region Edit
 
         public async void EditLastMessage()

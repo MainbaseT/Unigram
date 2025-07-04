@@ -1317,6 +1317,7 @@
 
     <string name="DeleteForAll">Delete for all members</string>
     <string name="TextCopied">Text copied to clipboard.</string>
+    <string name="PathCopied">Path copied to clipboard.</string>
 
 
 
@@ -12350,5 +12351,6 @@
     <string name="TodoCompleteForbiddenForward">You can\'t edit a forwarded checklist.</string>
     <string name="ChecklistTasks_one">{0} task</string>
     <string name="ChecklistTasks_other">{0} tasks</string>
+    <string name="CopyAsPath">Copy as Path</string>
 
 </resources>

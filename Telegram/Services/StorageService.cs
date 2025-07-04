@@ -8,11 +8,14 @@ using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Controls;
 using Telegram.Td.Api;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
+using Windows.UI.Xaml;
 using Path = System.IO.Path;
 using SAP = Windows.Storage.AccessCache.StorageApplicationPermissions;
 
@@ -58,6 +61,8 @@ namespace Telegram.Services
         Task OpenFileAsync(File file);
 
         Task OpenFileWithAsync(File file);
+
+        Task CopyFilePathAsync(XamlRoot xamlRoot, File file);
 
         Task OpenFolderAsync(File file);
 
@@ -165,6 +170,22 @@ namespace Telegram.Services
                 await OpenFolderAsync(permanent);
             }
             catch { }
+        }
+
+        public async Task CopyFilePathAsync(XamlRoot xamlRoot, File file)
+        {
+            var cached = await _clientService.GetPermanentFileAsync(file);
+            if (cached == null)
+            {
+                return;
+            }
+
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(cached.Path);
+            ClipboardEx.TrySetContent(dataPackage);
+
+            ToastPopup.Show(xamlRoot, Strings.PathCopied, ToastPopupIcon.Copied);
+
         }
 
         public async Task OpenFolderAsync(File file)

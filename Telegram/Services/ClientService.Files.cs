@@ -159,7 +159,7 @@ namespace Telegram.Services
                         {
                             var sourceName = source.Name;
 
-                            var response = await SendAsync(new GetSuggestedFileName(file.Id, ApplicationData.Current.TemporaryFolder.Path));
+                            var response = await SendAsync(new GetSuggestedFileName(file.Id, string.Empty));
                             if (response is Text text)
                             {
                                 sourceName = text.TextValue;
@@ -227,7 +227,7 @@ namespace Telegram.Services
 
                     var sourceName = source.Name;
 
-                    var response = await SendAsync(new GetSuggestedFileName(file.Id, ApplicationData.Current.TemporaryFolder.Path));
+                    var response = await SendAsync(new GetSuggestedFileName(file.Id, string.Empty));
                     if (response is Text text)
                     {
                         sourceName = text.TextValue;

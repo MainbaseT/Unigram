@@ -4525,6 +4525,9 @@ Minimum length is 5 characters.</value>
   <data name="Copy" xml:space="preserve">
     <value>Copy</value>
   </data>
+  <data name="CopyAsPath" xml:space="preserve">
+    <value>Copy as Path</value>
+  </data>
   <data name="CopyEmojiPreview" xml:space="preserve">
     <value>Copy Emoji</value>
   </data>
@@ -9321,6 +9324,9 @@ messages from multiple devices.</value>
   </data>
   <data name="PasteFromClipboard" xml:space="preserve">
     <value>Paste from clipboard</value>
+  </data>
+  <data name="PathCopied" xml:space="preserve">
+    <value>Path copied to clipboard.</value>
   </data>
   <data name="PauseAll" xml:space="preserve">
     <value>Pause all</value>
