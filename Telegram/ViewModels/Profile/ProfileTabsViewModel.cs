@@ -327,7 +327,7 @@ namespace Telegram.ViewModels.Profile
                 _ => null
             };
 
-            if (sender is SearchMessagesFilter filter && (target == null || query.Length > 0))
+            if (sender is SearchMessagesFilter filter && (target?.DataSource == null || query.Length > 0))
             {
                 if (target != null)
                 {
