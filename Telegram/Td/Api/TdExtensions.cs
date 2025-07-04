@@ -2914,6 +2914,7 @@ namespace Telegram.Td.Api
                 or ChatMemberStatusRestricted { Permissions.CanAddLinkPreviews: true };
         }
 
+        // Currently used only by ChatTextBox, if used somewhere TODO should be fixed
         public static bool CanSendOtherMessages(this Chat chat, IClientService clientService)
         {
             var status = clientService.GetChatMemberStatus(chat, out bool channel);
@@ -2921,7 +2922,8 @@ namespace Telegram.Td.Api
             {
                 return false;
             }
-            else if (status is ChatMemberStatusMember)
+            // TODO: check if group is accessible of Left?
+            else if (status is ChatMemberStatusMember or ChatMemberStatusLeft)
             {
                 return chat.Permissions.CanSendOtherMessages;
             }
