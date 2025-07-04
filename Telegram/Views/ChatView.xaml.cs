@@ -5094,6 +5094,11 @@ namespace Telegram.Views
             // Not needed in chat view
         }
 
+        public void UpdateChatGifts(Chat chat)
+        {
+            // Not needed in chat view
+        }
+
         public void UpdateChatActiveStories(Chat chat)
         {
             if (ViewModel.Type == DialogType.History)

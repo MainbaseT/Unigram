@@ -140,7 +140,6 @@ namespace Telegram.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             ViewModel.PropertyChanged += OnPropertyChanged;
-            ViewModel.GiftsTab.Items.CollectionChanged += Gifts_CollectionChanged;
 
             if (ViewModel.SelectedItem is ProfileTabItem tab)
             {
@@ -181,7 +180,6 @@ namespace Telegram.Views
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             ViewModel.PropertyChanged -= OnPropertyChanged;
-            ViewModel.GiftsTab.Items.CollectionChanged -= Gifts_CollectionChanged;
             ViewModel.Delegate = null;
 
             if (MediaFrame.Content is ProfileTabPage tabPage)
@@ -279,6 +277,49 @@ namespace Telegram.Views
             ProfileHeader.UpdateChatAccentColors(chat);
 
             UpdateBackButton();
+        }
+
+        public void UpdateChatGifts(Chat chat)
+        {
+            // TODO: this should be optimized, not the best approach at all
+            var item = ViewModel?.Items.FirstOrDefault(x => x.Type == typeof(ProfileGiftsTabPage));
+            if (item != null)
+            {
+                var container = Navigation.ContainerFromItem(item) as SelectorItem;
+
+                var grid = container?.Content as Grid;
+                if (grid == null)
+                {
+                    return;
+                }
+                else if (grid.Children.Count == 4)
+                {
+                    return;
+                }
+
+                for (int i = 0; i < Math.Min(3, ViewModel.GiftsTab.Items.Count); i++)
+                {
+                    var gift = ViewModel.GiftsTab.Items[i] as ReceivedGift;
+                    var animated = new AnimatedImage
+                    {
+                        Source = DelayedFileSource.FromSticker(ViewModel.ClientService, gift.GetSticker()),
+                        Width = 20,
+                        Height = 20,
+                        FrameSize = new Windows.Foundation.Size(20, 20),
+                        DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
+                        IsViewportAware = true,
+                        LoopCount = 3,
+                        Margin = new Thickness(4, 0, 0, 0),
+                    };
+
+                    Grid.SetColumn(animated, grid.Children.Count);
+                    grid.Children.Add(animated);
+                }
+
+                container.Content = grid;
+                container.ContentTemplate = null;
+
+            }
         }
 
         public void UpdateChatActiveStories(Chat chat)
@@ -963,51 +1004,6 @@ namespace Telegram.Views
                 sender.ContentTemplate = null;
             }
         }
-
-        private void Gifts_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            // TODO: this should be optimized, not the best approach at all
-            var item = ViewModel?.Items.FirstOrDefault(x => x.Type == typeof(ProfileGiftsTabPage));
-            if (item != null)
-            {
-                var container = Navigation.ContainerFromItem(item) as SelectorItem;
-
-                var grid = container?.Content as Grid;
-                if (grid == null)
-                {
-                    return;
-                }
-                else if (grid.Children.Count == 4)
-                {
-                    ViewModel.GiftsTab.Items.CollectionChanged -= Gifts_CollectionChanged;
-                    return;
-                }
-
-                for (int i = 0; i < e.NewItems?.Count; i++)
-                {
-                    var gift = e.NewItems[i] as ReceivedGift;
-                    var animated = new AnimatedImage
-                    {
-                        Source = DelayedFileSource.FromSticker(ViewModel.ClientService, gift.GetSticker()),
-                        Width = 20,
-                        Height = 20,
-                        FrameSize = new Windows.Foundation.Size(20, 20),
-                        DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
-                        IsViewportAware = true,
-                        LoopCount = 3,
-                        Margin = new Thickness(4, 0, 0, 0),
-                    };
-
-                    Grid.SetColumn(animated, grid.Children.Count);
-                    grid.Children.Add(animated);
-                }
-
-                container.Content = grid;
-                container.ContentTemplate = null;
-
-            }
-        }
-    }
 
     public class ProfileSnapGrid : Grid, IScrollSnapPointsInfo
     {

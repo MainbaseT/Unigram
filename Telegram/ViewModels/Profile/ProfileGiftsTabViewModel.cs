@@ -201,9 +201,23 @@ namespace Telegram.ViewModels.Profile
             }
         }
 
+        public void Preload()
+        {
+            ItemsView.Reload();
+            _ = ItemsView.LoadMoreItemsAsync(50);
+        }
+
+        public event EventHandler ItemsReady;
+
+        protected void OnItemsReady()
+        {
+            ItemsReady?.Invoke(this, EventArgs.Empty);
+            ItemsReady = null;
+        }
+
         private ReceivedGiftsCollection UpdateItems(object arg1, string arg2)
         {
-            return new ReceivedGiftsCollection(ClientService, _senderId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
+            return new ReceivedGiftsCollection(this, _senderId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
         }
 
         public bool CompareItems(ReceivedGift oldItem, ReceivedGift newItem)
@@ -235,7 +249,7 @@ namespace Telegram.ViewModels.Profile
 
         public partial class ReceivedGiftsCollection : ObservableCollection<ReceivedGift>, ISupportIncrementalLoading
         {
-            private readonly IClientService _clientService;
+            private readonly ProfileGiftsTabViewModel _viewModel;
             private readonly MessageSender _ownerId;
             private readonly bool _excludeUnsaved;
             private readonly bool _excludeSaved;
@@ -248,9 +262,9 @@ namespace Telegram.ViewModels.Profile
 
             private string _nextOffsetId = string.Empty;
 
-            public ReceivedGiftsCollection(IClientService clientService, MessageSender ownerId, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeLimited, bool excludeUpgraded, bool sortByPrice)
+            public ReceivedGiftsCollection(ProfileGiftsTabViewModel viewModel, MessageSender ownerId, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeLimited, bool excludeUpgraded, bool sortByPrice)
             {
-                _clientService = clientService;
+                _viewModel = viewModel;
                 _ownerId = ownerId;
                 _excludeUnsaved = excludeUnsaved;
                 _excludeSaved = excludeSaved;
@@ -267,14 +281,14 @@ namespace Telegram.ViewModels.Profile
                     var total = 0u;
                     var limit = count == 3 ? 3 : 50;
 
-                    var response = await _clientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
+                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
                     if (response is ReceivedGifts gifts)
                     {
                         _nextOffsetId = gifts.NextOffset;
 
                         foreach (var gift in gifts.Gifts)
                         {
-                            if (gift.IsPinned)
+                            if (gift.IsPinned && gift.ReceivedGiftId.Length > 0)
                             {
                                 _pinnedGifts.Add(gift.ReceivedGiftId);
                             }
@@ -284,6 +298,7 @@ namespace Telegram.ViewModels.Profile
                         }
                     }
 
+                    _viewModel.OnItemsReady();
                     HasMoreItems = !string.IsNullOrEmpty(_nextOffsetId);
 
                     return new LoadMoreItemsResult
@@ -295,6 +310,7 @@ namespace Telegram.ViewModels.Profile
 
             public bool HasMoreItems { get; private set; } = true;
 
+            // This is only valid for owned gifts
             public IList<string> Pinned => _pinnedGifts;
         }
 

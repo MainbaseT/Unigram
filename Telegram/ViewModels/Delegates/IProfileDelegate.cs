@@ -19,5 +19,7 @@ namespace Telegram.ViewModels.Delegates
         void UpdateChatEmojiStatus(Chat chat);
         void UpdateChatAccentColors(Chat chat);
         void UpdateChatActiveStories(Chat chat);
+
+        void UpdateChatGifts(Chat chat);
     }
 }
