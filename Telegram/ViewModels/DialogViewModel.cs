@@ -2993,6 +2993,11 @@ namespace Telegram.ViewModels
                 return new AddQuickReplyShortcutMessage(QuickReplyShortcut.Name, 0, inputMessageContent);
             }
 
+            if (DirectMessagesChatTopic != null)
+            {
+                messageSendOptions.DirectMessagesChatTopicId = DirectMessagesChatTopic.Id;
+            }
+
             return base.CreateSendMessage(chatId, messageThreadId, replyTo, messageSendOptions, inputMessageContent);
         }
 
