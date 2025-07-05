@@ -981,7 +981,7 @@
     </Compile>
     <Compile Include="Controls\PlaybackNextButton.cs" />
     <Compile Include="Controls\PlaybackSlider.cs" />
-    <Compile Include="Controls\PollOptionControl.xaml.cs">
+    <Compile Include="Controls\Messages\Content\PollOptionControl.xaml.cs">
       <DependentUpon>PollOptionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PrefixTextBox.cs" />
@@ -2911,7 +2911,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\PollOptionControl.xaml">
+    <Page Include="Controls\Messages\Content\PollOptionControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
