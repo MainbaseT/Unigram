@@ -3048,6 +3048,8 @@ namespace Telegram.ViewModels
             }
             else
             {
+                _contentOverrides.Remove(editing.CombinedId);
+
                 var textContent = editing.Content is MessageText or MessageAnimatedEmoji or MessageBigEmoji;
                 if (textContent && string.IsNullOrEmpty(formattedText.Text))
                 {
