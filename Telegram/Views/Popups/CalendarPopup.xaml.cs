@@ -32,6 +32,7 @@ namespace Telegram.Views.Popups
         private readonly DispatcherTimer _throttleTimer;
 
         private bool _loadingMessages;
+        private bool _hasMoreMessages = true;
         private long _fromMessageId;
         private DateTime _fromMessageDate = DateTime.MaxValue;
         private DateTime _minimumDate = DateTime.MaxValue;
@@ -75,7 +76,7 @@ namespace Telegram.Views.Popups
         {
             _throttleTimer.Stop();
 
-            if (_fromMessageDate > _minimumDate)
+            if (_fromMessageDate > _minimumDate && _hasMoreMessages)
             {
                 InitializeCalendar();
             }
@@ -107,11 +108,17 @@ namespace Telegram.Views.Popups
                         UpdateDayItem(item, day.Message);
                     }
                 }
+
+                _hasMoreMessages = calendar.Days.Count > 0;
+            }
+            else
+            {
+                _hasMoreMessages = false;
             }
 
             _loadingMessages = false;
 
-            if (_fromMessageDate > _minimumDate)
+            if (_fromMessageDate > _minimumDate && _hasMoreMessages)
             {
                 InitializeCalendar();
             }
@@ -289,7 +296,7 @@ namespace Telegram.Views.Popups
                 UpdateDayItem(args.Item);
             }
 
-            if (args.Item.Date.Date < _minimumDate)
+            if (args.Item.Date.Date < _minimumDate && _hasMoreMessages)
             {
                 _minimumDate = args.Item.Date.Date;
 
