@@ -4,10 +4,13 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Common;
+using Telegram.Controls.Cells;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -17,6 +20,7 @@ using Telegram.Views;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
 using Telegram.Views.Settings;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -133,7 +137,57 @@ namespace Telegram.ViewModels
 
         public async void PremiumGifting()
         {
-            var user = await ChooseChatsPopup.PickUserAsync(ClientService, NavigationService, Strings.SelectContact, false);
+            var popup = ChooseChatsPopup.Create(NavigationService, Strings.GiftTelegramPremiumOrStarsTitle);
+
+            if (ClientService.TryGetUser(ClientService.Options.MyId, out User self))
+            {
+                var selfChat = await ClientService.SendAsync(new CreatePrivateChat(self.Id, false)) as Chat;
+
+                var profile = new ProfileCell();
+                profile.UpdateUser(ClientService, self, 36, true);
+                profile.Subtitle = Strings.Gift2Myself;
+
+                var button = new Button
+                {
+                    Content = profile,
+                    Style = BootStrapper.Current.Resources["ListEmptyButtonStyle"] as Style,
+                    Margin = new Thickness(12, 0, 12, 0),
+                    CornerRadius = new CornerRadius(4)
+                };
+
+                button.Click += (s, args) =>
+                {
+                    popup.ViewModel.SelectedItems = new MvxObservableCollection<Chat> { selfChat };
+                    popup.Hide(ContentDialogResult.Primary);
+                };
+
+                popup.Header = button;
+            }
+
+            var options = new ChooseChatsOptions()
+            {
+                AllowChannelChats = false,
+                AllowGroupChats = false,
+                AllowBotChats = false,
+                AllowUserChats = true,
+                AllowSecretChats = false,
+                AllowSelf = false,
+                CanPostMessages = false,
+                CanInviteUsers = false,
+                CanShareContact = false,
+                Mode = ChooseChatsMode.Chats,
+                ShowMessages = false
+            };
+
+            var confirm = await popup.PickAsync(XamlRoot, Array.Empty<long>(), options, ListViewSelectionMode.None);
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            var chat = popup.ViewModel.SelectedItems.FirstOrDefault();
+            var user = ClientService.GetUser(chat);
+
             if (user != null)
             {
                 ClientService.TryGetUserFull(user.Id, out UserFullInfo fullInfo);

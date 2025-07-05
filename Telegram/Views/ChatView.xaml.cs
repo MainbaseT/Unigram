@@ -1797,7 +1797,7 @@ namespace Telegram.Views
                 {
                     if (ViewModel.IsPremium && ViewModel.ClientService.Options.GiftPremiumFromAttachmentMenu)
                     {
-                        if (ViewModel.ClientService.TryGetUser(ViewModel.Chat, out User receiver) && !receiver.IsPremium)
+                        if (ViewModel.ClientService.TryGetUser(ViewModel.Chat, out User receiver))
                         {
                             flyout.CreateFlyoutItem(ViewModel.GiftPremium, Strings.SendAGift, Icons.GiftPremium);
                         }

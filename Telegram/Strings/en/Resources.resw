@@ -6709,6 +6709,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2Months_other" xml:space="preserve">
     <value>{0} months</value>
   </data>
+  <data name="Gift2Myself" xml:space="preserve">
+    <value>buy yourself a gift</value>
+  </data>
   <data name="Gift2OnSale" xml:space="preserve">
     <value>on sale</value>
   </data>
@@ -6876,6 +6879,15 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2StarsInfoLink" xml:space="preserve">
     <value>What are Stars &gt;</value>
+  </data>
+  <data name="Gift2StarsSelf" xml:space="preserve">
+    <value>Buy a gift</value>
+  </data>
+  <data name="Gift2StarsSelfInfo1" xml:space="preserve">
+    <value>Buy yourself a gift to display on your page or reserve for later.</value>
+  </data>
+  <data name="Gift2StarsSelfInfo2" xml:space="preserve">
+    <value>Limited-edition gifts upgraded to collectibles can be gifted to others later.</value>
   </data>
   <data name="Gift2Status" xml:space="preserve">
     <value>Status</value>
@@ -7107,6 +7119,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="GiftTelegramPremiumDescription" xml:space="preserve">
     <value>Give **{0}** access to exclusive features with **Telegram Premium**.</value>
+  </data>
+  <data name="GiftTelegramPremiumOrStarsTitle" xml:space="preserve">
+    <value>Gift Premium or Stars</value>
   </data>
   <data name="GiftTelegramPremiumTitle" xml:space="preserve">
     <value>Gift Telegram Premium</value>

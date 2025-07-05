@@ -68,17 +68,29 @@ namespace Telegram.Views.Premium.Popups
 
             Photo.SetUser(clientService, user, 96);
 
-            TextBlockHelper.SetMarkdown(PremiumInfo, string.Format(Strings.Gift2PremiumInfo, user.FirstName));
+            if (user.Id != clientService.Options.MyId)
+            {
+                TextBlockHelper.SetMarkdown(PremiumInfo, string.Format(Strings.Gift2PremiumInfo, user.FirstName));
 
-            StarsTitle.Text = Strings.Gift2Stars;
-            TextBlockHelper.SetMarkdown(StarsInfo, string.Format(Strings.Gift2StarsInfo, user.FirstName));
+                StarsTitle.Text = Strings.Gift2Stars;
+                TextBlockHelper.SetMarkdown(StarsInfo, string.Format(Strings.Gift2StarsInfo, user.FirstName));
 
-            AddLink(PremiumInfo, Strings.Gift2PremiumInfoLink, PremiumInfoLink_Click);
-            AddLink(StarsInfo, Strings.Gift2StarsInfoLink, StarsInfoLink_Click);
+                AddLink(PremiumInfo, Strings.Gift2PremiumInfoLink, PremiumInfoLink_Click);
+                AddLink(StarsInfo, Strings.Gift2StarsInfoLink, StarsInfoLink_Click);
+
+                InitializeOptions(clientService);
+            }
+            else
+            {
+                PremiumTitle.Visibility = Visibility.Collapsed;
+                PremiumInfo.Visibility = Visibility.Collapsed;
+
+                StarsTitle.Text = Strings.Gift2StarsSelf;
+                TextBlockHelper.SetMarkdown(StarsInfo, Strings.Gift2StarsSelfInfo1 + "\n\n" + Strings.Gift2StarsSelfInfo2);
+            }
 
             ScrollingHost.ItemsSource = _gifts;
 
-            InitializeOptions(clientService);
             InitializeGifts(clientService, fullInfo.Birthdate?.Day == DateTime.Today.Day
                     && fullInfo.Birthdate?.Month == DateTime.Today.Month);
         }
@@ -93,6 +105,9 @@ namespace Telegram.Views.Premium.Popups
             _receiverId = chat.ToMessageSender();
 
             Photo.SetChat(clientService, chat, 96);
+
+            PremiumTitle.Visibility = Visibility.Collapsed;
+            PremiumInfo.Visibility = Visibility.Collapsed;
 
             StarsTitle.Text = Strings.Gift2StarsChannel;
             TextBlockHelper.SetMarkdown(StarsInfo, string.Format(Strings.Gift2StarsChannelInfo, chat.Title));

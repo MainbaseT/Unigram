@@ -12353,5 +12353,10 @@
     <string name="ChecklistTasks_other">{0} tasks</string>
     <string name="CopyAsPath">Copy as Path</string>
     <string name="InviteLinkPrivate">Invite Link only works for group members</string>
+    <string name="GiftTelegramPremiumOrStarsTitle">Gift Premium or Stars</string>
+    <string name="Gift2Myself">buy yourself a gift</string>
+    <string name="Gift2StarsSelf">Buy a gift</string>
+    <string name="Gift2StarsSelfInfo1">Buy yourself a gift to display on your page or reserve for later.</string>
+    <string name="Gift2StarsSelfInfo2">Limited-edition gifts upgraded to collectibles can be gifted to others later.</string>
 
 </resources>
