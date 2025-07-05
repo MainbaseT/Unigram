@@ -122,7 +122,7 @@ namespace Telegram.Collections
         {
             get
             {
-                if (_positions == null)
+                if (_positions == null || _positions.Count < 2)
                 {
                     return false;
                 }
@@ -144,7 +144,7 @@ namespace Telegram.Collections
 
         public MessagePosition GetByIndex(int targetIndex, out int index)
         {
-            if (_positions == null)
+            if (_positions == null || _positions.Count == 0)
             {
                 index = -1;
                 return null;
@@ -196,7 +196,7 @@ namespace Telegram.Collections
         private async Task<MessagePositionRange> GetPositionAsync(ItemIndexRange batch, bool retry)
         {
             var position = GetByIndex(batch.FirstIndex, out int index);
-            if (position == null || (position.Position < batch.FirstIndex && index == -1 && retry))
+            if (_positions == null || (position?.Position < batch.FirstIndex && index == -1 && retry))
             {
                 await _gettingPositions.WaitAsync();
 
@@ -224,6 +224,11 @@ namespace Telegram.Collections
                 {
                     _gettingPositions.Release();
                 }
+            }
+
+            if (position == null)
+            {
+                position = new MessagePosition(0, 0, 0);
             }
 
             var offset = batch.FirstIndex - position.Position;
@@ -325,42 +330,36 @@ namespace Telegram.Collections
             _gettingPositions.Release();
 
             var position = await GetPositionAsync(batch, true);
-            if (position.FromMessageId != 0)
+
+            // Check if request has been cancelled, if so abort getting additional data
+            if (ct.IsCancellationRequested)
             {
-                // Check if request has been cancelled, if so abort getting additional data
-                if (ct.IsCancellationRequested)
-                {
-                    return null;
-                }
+                return null;
+            }
 
-                MessageTopic messageTopic = null;
-                if (_savedMessagesTopicId != 0)
-                {
-                    messageTopic = new MessageTopicSavedMessages(_savedMessagesTopicId);
-                }
+            MessageTopic messageTopic = null;
+            if (_savedMessagesTopicId != 0)
+            {
+                messageTopic = new MessageTopicSavedMessages(_savedMessagesTopicId);
+            }
 
-                var response = await _clientService.SendAsync(new SearchChatMessages(_chatId, messageTopic, string.Empty, null, position.FromMessageId, position.Offset, position.Limit, _filter));
-                if (response is FoundChatMessages foundChatMessages)
+            var response = await _clientService.SendAsync(new SearchChatMessages(_chatId, messageTopic, string.Empty, null, position.FromMessageId, position.Offset, position.Limit, _filter));
+            if (response is FoundChatMessages foundChatMessages)
+            {
+                for (int i = 0; i < foundChatMessages.Messages.Count; i++)
                 {
-                    for (int i = 0; i < foundChatMessages.Messages.Count; i++)
+                    // Check if request has been cancelled, if so abort getting additional data
+                    if (ct.IsCancellationRequested)
                     {
-                        // Check if request has been cancelled, if so abort getting additional data
-                        if (ct.IsCancellationRequested)
-                        {
-                            return null;
-                        }
-
-                        messages.Add(new MessageWithOwner(_clientService, foundChatMessages.Messages[i]));
+                        return null;
                     }
-                }
-                else
-                {
-                    Logger.Info(response);
+
+                    messages.Add(new MessageWithOwner(_clientService, foundChatMessages.Messages[i]));
                 }
             }
             else
             {
-                Debugger.Break();
+                Logger.Info(response);
             }
 
             return new ItemCacheRange<MessageWithOwner>(position.FirstIndex, messages.Count, messages);
