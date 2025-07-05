@@ -95,7 +95,7 @@ namespace Telegram.ViewModels
             }
             else if (parameter is ChooseChatsConfigurationSwitchInline configurationSwitchInline)
             {
-                SelectionMode = ListViewSelectionMode.Single;
+                SelectionMode = ListViewSelectionMode.None;
                 Options = ChooseChatsOptions.PostMessages;
                 IsCommentEnabled = false;
                 IsChatSelection = false;
@@ -110,7 +110,7 @@ namespace Telegram.ViewModels
             }
             else if (parameter is ChooseChatsConfigurationPostText configurationPostText)
             {
-                SelectionMode = ListViewSelectionMode.Single;
+                SelectionMode = ListViewSelectionMode.None;
                 Options = ChooseChatsOptions.PostMessages;
                 PrimaryButtonText = Strings.Send;
                 IsCommentEnabled = true;
@@ -120,7 +120,7 @@ namespace Telegram.ViewModels
             }
             else if (parameter is ChooseChatsConfigurationReplyToMessage)
             {
-                SelectionMode = ListViewSelectionMode.Single;
+                SelectionMode = ListViewSelectionMode.None;
                 Options = ChooseChatsOptions.PostMessages;
                 IsCommentEnabled = false;
                 IsChatSelection = false;
@@ -207,7 +207,7 @@ namespace Telegram.ViewModels
             }
             else if (parameter is ChooseChatsConfigurationStartBot configurationStartBot)
             {
-                SelectionMode = ListViewSelectionMode.Single;
+                SelectionMode = ListViewSelectionMode.None;
                 Options = ChooseChatsOptions.GroupsAndChannels;
                 IsCommentEnabled = false;
                 IsChatSelection = false;
@@ -218,7 +218,7 @@ namespace Telegram.ViewModels
             {
                 SelectionMode = configurationRequestUsers.MaxQuantity != 1
                     ? ListViewSelectionMode.Multiple
-                    : ListViewSelectionMode.Single;
+                    : ListViewSelectionMode.None;
                 Options = new ChooseChatsOptionsRequestUsers(configurationRequestUsers);
                 IsCommentEnabled = false;
                 IsChatSelection = false;
@@ -236,7 +236,7 @@ namespace Telegram.ViewModels
             }
             else if (parameter is ChooseChatsConfigurationRequestChat configurationRequestChat)
             {
-                SelectionMode = ListViewSelectionMode.Single;
+                SelectionMode = ListViewSelectionMode.None;
                 Options = new ChooseChatsOptionsRequestChat(configurationRequestChat);
                 IsCommentEnabled = false;
                 IsChatSelection = false;
