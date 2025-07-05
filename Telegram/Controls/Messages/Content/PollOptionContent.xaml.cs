@@ -7,25 +7,77 @@
 using System;
 using System.Linq;
 using Telegram.Common;
-using Telegram.Services;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Shapes;
 
-namespace Telegram.Controls
+namespace Telegram.Controls.Messages.Content
 {
     public sealed partial class PollOptionControl : ToggleButton
     {
         private bool _allowToggle;
 
+        private MessageViewModel _message;
+        private Poll _poll;
+        private PollOption _option;
+
         public PollOptionControl()
         {
-            InitializeComponent();
+            DefaultStyleKey = typeof(PollOptionControl);
         }
 
-        public void UpdatePollOption(IClientService clientService, Poll poll, PollOption option)
+        #region InitializeComponent
+
+        private Ellipse Ellipse;
+        private global::Microsoft.UI.Xaml.Controls.ProgressRing Loading;
+        private TextBlock Percentage;
+        private RichTextBlock TextText;
+        private Grid Tick;
+        private Ellipse Zero;
+        private ProgressBar Votes;
+        private Border VotesLine;
+        private global::Windows.UI.Xaml.Documents.Paragraph Text;
+
+        private bool _templateApplied;
+
+        protected override void OnApplyTemplate()
         {
+            Ellipse = GetTemplateChild(nameof(Ellipse)) as Ellipse;
+            Loading = GetTemplateChild(nameof(Loading)) as Microsoft.UI.Xaml.Controls.ProgressRing;
+            Percentage = GetTemplateChild(nameof(Percentage)) as TextBlock;
+            TextText = GetTemplateChild(nameof(TextText)) as RichTextBlock;
+            Tick = GetTemplateChild(nameof(Tick)) as Grid;
+            Zero = GetTemplateChild(nameof(Zero)) as Ellipse;
+            Votes = GetTemplateChild(nameof(Votes)) as ProgressBar;
+            Text = GetTemplateChild(nameof(Text)) as Paragraph;
+            VotesLine = GetTemplateChild(nameof(VotesLine)) as Border;
+
+            _templateApplied = true;
+
+            if (_message != null && _poll != null && _option != null)
+            {
+                UpdatePollOption(_message, _poll, _option);
+            }
+        }
+
+        #endregion
+
+        public void UpdatePollOption(MessageViewModel message, Poll poll, PollOption option)
+        {
+            _message = message;
+            _poll = poll;
+            _option = option;
+
+            if (!_templateApplied)
+            {
+                return;
+            }
+
             var results = poll.IsClosed || poll.Options.Any(x => x.IsChosen);
             var correct = poll.Type is PollTypeQuiz quiz && quiz.CorrectOptionId == poll.Options.IndexOf(option);
 
@@ -44,7 +96,7 @@ namespace Telegram.Controls
 
             Extensions.SetToolTip(Percentage, results ? votes : null);
 
-            CustomEmojiIcon.Add(TextText, Text.Inlines, clientService, option.Text);
+            CustomEmojiIcon.Add(TextText, Text.Inlines, message.ClientService, option.Text);
 
             Zero.Visibility = results ? Visibility.Visible : Visibility.Collapsed;
 
@@ -58,11 +110,11 @@ namespace Telegram.Controls
 
             if (option.IsChosen && poll.Type is PollTypeQuiz)
             {
-                VisualStateManager.GoToState(LayoutRoot, correct ? "Correct" : "Wrong", false);
+                VisualStateManager.GoToState(this, correct ? "Correct" : "Wrong", false);
             }
             else
             {
-                VisualStateManager.GoToState(LayoutRoot, "Normal", false);
+                VisualStateManager.GoToState(this, "Unknown", false);
             }
 
             if (results)
@@ -77,17 +129,10 @@ namespace Telegram.Controls
 
         protected override void OnToggle()
         {
-            if (!_allowToggle)
+            if (_allowToggle)
             {
-                return;
+                base.OnToggle();
             }
-
-            base.OnToggle();
-        }
-
-        private Visibility ConvertCheckMark(bool? check)
-        {
-            return check == true ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

@@ -191,7 +191,7 @@ namespace Telegram.Controls.Messages.Content
 
                     if (i < poll.Poll.Options.Count)
                     {
-                        button.UpdatePollOption(message.ClientService, poll.Poll, poll.Poll.Options[i]);
+                        button.UpdatePollOption(message, poll.Poll, poll.Poll.Options[i]);
 
                         if (poll.Poll.Type is PollTypeRegular regular && regular.AllowMultipleAnswers)
                         {
@@ -211,7 +211,7 @@ namespace Telegram.Controls.Messages.Content
                 else
                 {
                     var button = new PollOptionControl();
-                    button.UpdatePollOption(message.ClientService, poll.Poll, poll.Poll.Options[i]);
+                    button.UpdatePollOption(message, poll.Poll, poll.Poll.Options[i]);
 
                     if (poll.Poll.Type is PollTypeRegular regular && regular.AllowMultipleAnswers)
                     {
