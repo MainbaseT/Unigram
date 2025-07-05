@@ -10985,12 +10985,20 @@
     {
       "selection": [
         {
+          "order": 964,
+          "id": 173,
+          "name": "tl_fluent_poll_undo_20_regular",
+          "prevSize": 32,
+          "code": 60100,
+          "tempChar": ""
+        },
+        {
           "order": 963,
           "id": 172,
           "name": "tl_copy_as_path_20_regular",
           "prevSize": 32,
           "code": 60099,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 957,
@@ -10998,7 +11006,7 @@
           "name": "tl_fluent_diamond_20_regular",
           "prevSize": 32,
           "code": 60093,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 935,
@@ -11006,7 +11014,7 @@
           "name": "tl_fluent_number_symbol_arrow_up_16_regular",
           "prevSize": 32,
           "code": 60075,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 936,
@@ -11014,7 +11022,7 @@
           "name": "tl_fluent_number_symbol_arrow_up_20_regular",
           "prevSize": 32,
           "code": 60076,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 937,
@@ -11022,7 +11030,7 @@
           "name": "tl_fluent_dollar_arrow_up_16_regular",
           "prevSize": 32,
           "code": 60077,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 938,
@@ -11030,7 +11038,7 @@
           "name": "tl_fluent_dollar_arrow_up_20_regular",
           "prevSize": 32,
           "code": 60078,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 939,
@@ -11038,7 +11046,7 @@
           "name": "tl_fluent_calendar_arrow_up_16_regular",
           "prevSize": 32,
           "code": 60079,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 940,
@@ -11046,7 +11054,7 @@
           "name": "tl_fluent_calendar_arrow_up_20_regular",
           "prevSize": 32,
           "code": 60080,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 929,
@@ -11054,7 +11062,7 @@
           "name": "tl_fluent_home_dismiss_20_regular",
           "prevSize": 32,
           "code": 60069,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 926,
@@ -11062,7 +11070,7 @@
           "name": "tl_fluent_chat_stars_20_filled",
           "prevSize": 32,
           "code": 59772,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 925,
@@ -11070,7 +11078,7 @@
           "name": "tl_fluent_spoiler_20_regular",
           "prevSize": 32,
           "code": 60065,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 924,
@@ -11078,7 +11086,7 @@
           "name": "tl_fluent_media_spoiler_20_regular",
           "prevSize": 32,
           "code": 60066,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 918,
@@ -11086,7 +11094,7 @@
           "name": "tl_fluent_clock_arrow_forward_20_regular",
           "prevSize": 32,
           "code": 60063,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 917,
@@ -11094,7 +11102,7 @@
           "name": "tl_fluent_clock_edit_20_regular",
           "prevSize": 32,
           "code": 60062,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 899,
@@ -11102,7 +11110,7 @@
           "name": "ic_fluent_person_add_20_regular",
           "prevSize": 32,
           "code": 60049,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 897,
@@ -11110,7 +11118,7 @@
           "name": "tl_fluent_fragment_20_filled",
           "prevSize": 32,
           "code": 60046,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 895,
@@ -11118,7 +11126,7 @@
           "name": "tl_fluent_coin_20_regular",
           "prevSize": 32,
           "code": 60045,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 890,
@@ -11126,7 +11134,7 @@
           "name": "Premium-1",
           "prevSize": 32,
           "code": 60039,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 886,
@@ -11134,7 +11142,7 @@
           "name": "tl_fluent_chat_link_20_filled",
           "prevSize": 32,
           "code": 60035,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 885,
@@ -11142,7 +11150,7 @@
           "name": "tl_fluent_chat_info_20_filled",
           "prevSize": 32,
           "code": 60034,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 884,
@@ -11150,7 +11158,7 @@
           "name": "tl_fluent_fifty_fifty_20_regular",
           "prevSize": 32,
           "code": 60031,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 883,
@@ -11158,7 +11166,7 @@
           "name": "tl_fluent_ton_coin_20_regular",
           "prevSize": 32,
           "code": 60033,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 881,
@@ -11166,7 +11174,7 @@
           "name": "tl_fluent_arrow_reply_20_filled",
           "prevSize": 32,
           "code": 60028,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 880,
@@ -11174,7 +11182,7 @@
           "name": "tl_fluent_chat_snooze_20_filled",
           "prevSize": 32,
           "code": 60029,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 877,
@@ -11182,7 +11190,7 @@
           "name": "tl_fluent_chat_unread_20_filled",
           "prevSize": 32,
           "code": 60025,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 874,
@@ -11190,7 +11198,7 @@
           "name": "tl_fluent_chat_snooze_20_regular",
           "prevSize": 32,
           "code": 60022,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 871,
@@ -11203,7 +11211,7 @@
             60020,
             60021
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 864,
@@ -11211,7 +11219,7 @@
           "name": "tl_fluent_last_seen_20_filled",
           "prevSize": 32,
           "code": 60013,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 853,
@@ -11219,7 +11227,7 @@
           "name": "tl_fluent_my_notes_20_filled",
           "prevSize": 32,
           "code": 60001,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 852,
@@ -11227,7 +11235,7 @@
           "name": "tl_fluent_author_hidden_20_filled",
           "prevSize": 32,
           "code": 60002,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 847,
@@ -11235,7 +11243,7 @@
           "name": "tl_fluent_view_once_20_regular",
           "prevSize": 32,
           "code": 59672,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 836,
@@ -11243,7 +11251,7 @@
           "name": "tl_fluent_videochat_20_filled",
           "prevSize": 32,
           "code": 59983,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 810,
@@ -11251,7 +11259,7 @@
           "name": "tl_fluent_move_down_20_regular",
           "prevSize": 32,
           "code": 59971,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 811,
@@ -11259,7 +11267,7 @@
           "name": "tl_fluent_move_up_20_regular",
           "prevSize": 32,
           "code": 59972,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 809,
@@ -11267,7 +11275,7 @@
           "name": "tl_fluent_enlarge_20_regular",
           "prevSize": 32,
           "code": 59973,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 808,
@@ -11275,7 +11283,7 @@
           "name": "tl_fluent_shrink_20_regular",
           "prevSize": 32,
           "code": 59974,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 807,
@@ -11283,7 +11291,7 @@
           "name": "tl_fluent_id_rectangle_20_regular",
           "prevSize": 32,
           "code": 59970,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 804,
@@ -11291,7 +11299,7 @@
           "name": "tl_fluent_reply_another_chat_20_regular",
           "prevSize": 32,
           "code": 59967,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 803,
@@ -11299,7 +11307,7 @@
           "name": "tl_fluent_quote_block_20_regular",
           "prevSize": 32,
           "code": 59966,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 800,
@@ -11307,7 +11315,7 @@
           "name": "tl_fluent_text_quote_20_regular",
           "prevSize": 32,
           "code": 59964,
-          "tempChar": "",
+          "tempChar": "",
           "codes": [
             59964
           ]
@@ -11318,7 +11326,7 @@
           "name": "tl_fluent_boost_20_regular",
           "prevSize": 32,
           "code": 59961,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 785,
@@ -11326,7 +11334,7 @@
           "name": "tl_fluent_stories_off_20_regular",
           "prevSize": 32,
           "code": 59949,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 784,
@@ -11334,7 +11342,7 @@
           "name": "tl_fluent_stealth_20_filled",
           "prevSize": 32,
           "code": 59948,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 783,
@@ -11342,7 +11350,7 @@
           "name": "tl_fluent_stealth_20_regular",
           "prevSize": 32,
           "code": 59944,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 782,
@@ -11350,7 +11358,7 @@
           "name": "tl_fluent_stealth_locked_20_regular",
           "prevSize": 32,
           "code": 59945,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 781,
@@ -11358,7 +11366,7 @@
           "name": "tl_fluent_eye_on_20_regular",
           "prevSize": 32,
           "code": 59946,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 780,
@@ -11366,7 +11374,7 @@
           "name": "tl_fluent_save_locked_20_regular",
           "prevSize": 32,
           "code": 59947,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 764,
@@ -11374,7 +11382,7 @@
           "name": "tl_fluent_unarchive_20_regular",
           "prevSize": 32,
           "code": 59940,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 759,
@@ -11385,7 +11393,7 @@
           "codes": [
             59859
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 757,
@@ -11393,7 +11401,7 @@
           "name": "Arrow",
           "prevSize": 32,
           "code": 59710,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 753,
@@ -11401,7 +11409,7 @@
           "name": "tl_fluent_arrow_forward_20_filled",
           "prevSize": 32,
           "code": 59668,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 752,
@@ -11409,7 +11417,7 @@
           "name": "tl_fluent_arrow_forward_20_regular",
           "prevSize": 32,
           "code": 59181,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 751,
@@ -11417,7 +11425,7 @@
           "name": "tl_fluent_arrow_reply_20_regular",
           "prevSize": 32,
           "code": 57928,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 749,
@@ -11425,7 +11433,7 @@
           "name": "VoiceRecognition1",
           "prevSize": 32,
           "code": 59667,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 750,
@@ -11433,7 +11441,7 @@
           "name": "VoiceRecognition2",
           "prevSize": 32,
           "code": 59659,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 725,
@@ -11441,7 +11449,7 @@
           "name": "ic_fluent_speed_template_20_regular",
           "prevSize": 32,
           "code": 59923,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 722,
@@ -11449,7 +11457,7 @@
           "name": "ic_fluent_folder_arrow_download_20_regular",
           "prevSize": 32,
           "code": 59920,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 717,
@@ -11457,7 +11465,7 @@
           "name": "ShieldStar",
           "prevSize": 32,
           "code": 59779,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 713,
@@ -11465,7 +11473,7 @@
           "name": "bot_command_0",
           "prevSize": 32,
           "code": 59915,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 696,
@@ -11476,7 +11484,7 @@
           "codes": [
             59895
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 697,
@@ -11484,7 +11492,7 @@
           "name": "link_1",
           "prevSize": 32,
           "code": 59896,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 692,
@@ -11499,7 +11507,7 @@
             59896,
             59897
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 691,
@@ -11514,7 +11522,7 @@
             59901,
             59902
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 690,
@@ -11529,7 +11537,7 @@
             59906,
             59907
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 689,
@@ -11544,7 +11552,7 @@
             59911,
             59912
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 652,
@@ -11552,7 +11560,7 @@
           "name": "gift_premium",
           "prevSize": 32,
           "code": 59860,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 630,
@@ -11560,7 +11568,7 @@
           "name": "Circle",
           "prevSize": 32,
           "code": 59963,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 621,
@@ -11568,7 +11576,7 @@
           "name": "Premium",
           "prevSize": 32,
           "code": 59829,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 603,
@@ -11576,7 +11584,7 @@
           "name": "ic_fluent_clock_alarm_hour_20_regular",
           "prevSize": 32,
           "code": 59811,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 601,
@@ -11584,7 +11592,7 @@
           "name": "never",
           "prevSize": 32,
           "code": 59807,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 599,
@@ -11592,7 +11600,7 @@
           "name": "day",
           "prevSize": 32,
           "code": 59808,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 602,
@@ -11600,7 +11608,7 @@
           "name": "week",
           "prevSize": 32,
           "code": 59809,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 600,
@@ -11608,7 +11616,7 @@
           "name": "month",
           "prevSize": 32,
           "code": 59810,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 592,
@@ -11616,7 +11624,7 @@
           "name": "mask_outline_2",
           "prevSize": 32,
           "code": 59799,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 521,
@@ -11624,7 +11632,7 @@
           "name": "Reactions",
           "prevSize": 32,
           "code": 59776,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 513,
@@ -11632,7 +11640,7 @@
           "name": "ic_fluent_dismiss_24_regular",
           "prevSize": 32,
           "code": 59768,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 497,
@@ -11640,7 +11648,7 @@
           "name": "Seen",
           "prevSize": 32,
           "code": 59755,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 494,
@@ -11648,7 +11656,7 @@
           "name": "ArrowDownSmall",
           "prevSize": 32,
           "code": 60892,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 492,
@@ -11656,7 +11664,7 @@
           "name": "ArrowLeftSmall",
           "prevSize": 32,
           "code": 60889,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 491,
@@ -11664,7 +11672,7 @@
           "name": "ArrowRightSmall",
           "prevSize": 32,
           "code": 60890,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 493,
@@ -11672,7 +11680,7 @@
           "name": "ArrowUpSmall",
           "prevSize": 32,
           "code": 60891,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 489,
@@ -11680,7 +11688,7 @@
           "name": "DismissSmall",
           "prevSize": 32,
           "code": 57610,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 403,
@@ -11688,7 +11696,7 @@
           "name": "tl_fluent_videochat_20_regular",
           "prevSize": 32,
           "code": 59648,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 397,
@@ -11696,7 +11704,7 @@
           "name": "ic_fluent_play_20_regular",
           "prevSize": 32,
           "code": 59240,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 394,
@@ -11704,7 +11712,7 @@
           "name": "uniE769",
           "prevSize": 32,
           "code": 59241,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 0,
@@ -11776,7 +11784,7 @@
           "name": "CancelSmall",
           "prevSize": 32,
           "code": 59711,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 237,
@@ -11784,7 +11792,7 @@
           "name": "DownloadSmall",
           "prevSize": 32,
           "code": 59690,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 0,
@@ -11864,7 +11872,7 @@
           "prevSize": 32,
           "code": 58880,
           "name": "uniE600",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 9,
@@ -11873,7 +11881,7 @@
           "prevSize": 32,
           "code": 58881,
           "name": "uniE601",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 10,
@@ -11882,7 +11890,7 @@
           "prevSize": 32,
           "code": 58882,
           "name": "uniE602",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 11,
@@ -11891,7 +11899,7 @@
           "prevSize": 32,
           "code": 58883,
           "name": "uniE603",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 12,
@@ -11927,7 +11935,7 @@
           "prevSize": 32,
           "code": 58885,
           "name": "uniE60B",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 16,
@@ -11936,7 +11944,7 @@
           "prevSize": 32,
           "code": 58892,
           "name": "uniE60C",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 235,
@@ -11944,7 +11952,7 @@
           "name": "Trending",
           "prevSize": 32,
           "code": 58893,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 18,
@@ -11988,7 +11996,7 @@
           "prevSize": 32,
           "code": 58894,
           "name": "uniE611",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 23,
@@ -11997,7 +12005,7 @@
           "prevSize": 32,
           "code": 58898,
           "name": "uniE612",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 0,
@@ -12095,7 +12103,7 @@
           "prevSize": 32,
           "code": 59654,
           "name": "uniE906",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 34,
@@ -12113,7 +12121,7 @@
           "prevSize": 32,
           "code": 59656,
           "name": "uniE908",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 36,
@@ -12131,7 +12139,7 @@
           "prevSize": 32,
           "code": 59658,
           "name": "uniE90A",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 38,
@@ -12203,7 +12211,7 @@
           "prevSize": 32,
           "code": 59666,
           "name": "uniE912",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 46,
@@ -12275,7 +12283,7 @@
           "prevSize": 32,
           "code": 59674,
           "name": "uniE91A",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 55,
@@ -12311,7 +12319,7 @@
           "prevSize": 32,
           "code": 942080,
           "name": "uE6000",
-          "tempChar": ""
+          "tempChar": ""
         }
       ],
       "id": 2,
@@ -12325,6 +12333,23 @@
       "height": 1024,
       "prevSize": 32,
       "icons": [
+        {
+          "id": 173,
+          "paths": [
+            "M365.901 109.906c9.996-9.996 26.203-9.993 36.2 0 9.998 9.997 9.998 26.203 0 36.2l-58.7 58.7h347.799c55.148 0 101.207 13.806 133.299 45.9s45.901 78.155 45.901 133.3v358.399c0 55.142-13.804 101.207-45.901 133.299-32.092 32.092-78.157 45.901-133.299 45.901h-358.399c-83.031 0-131.261-28.237-156.35-70.052-23.368-38.953-22.85-84.495-22.85-109.148v-358.399c0-14.138 11.462-25.599 25.6-25.6 14.138 0 25.6 11.462 25.6 25.6v358.399c0 26.542 0.529 57.815 15.55 82.852 13.316 22.18 41.905 45.148 112.45 45.148h358.399c47.252 0 77.993-11.796 97.101-30.899 19.103-19.103 30.899-49.848 30.899-97.101v-358.399c0-47.252-11.796-77.994-30.899-97.1-19.108-19.106-49.848-30.9-97.101-30.9h-347.799l58.7 58.7c9.998 9.997 9.998 26.203 0 36.2-9.998 9.987-26.206 9.994-36.2 0l-102.4-102.4c-9.987-9.995-9.983-26.204 0-36.2l102.4-102.4z",
+            "M647.501 442.706c9.999-9.998 26.199-9.998 36.198 0 9.994 9.997 9.994 26.203 0 36.2l-204.798 204.798c-9.997 9.994-26.203 9.994-36.2 0l-102.4-102.4c-9.997-9.999-9.994-26.199 0-36.198 9.997-9.999 26.203-9.999 36.2 0l84.3 84.301 186.7-186.701z"
+          ],
+          "attrs": [
+            {},
+            {}
+          ],
+          "grid": 0,
+          "tags": [
+            "tl_fluent_poll_undo_20_regular"
+          ],
+          "isMulticolor": false,
+          "isMulticolor2": false
+        },
         {
           "id": 172,
           "paths": [
@@ -14712,7 +14737,7 @@
       "metadata": {
         "fontFamily": "Telegram",
         "majorVersion": 2,
-        "minorVersion": 150
+        "minorVersion": 151
       },
       "metrics": {
         "emSize": 1024,

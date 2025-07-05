@@ -2962,7 +2962,7 @@ namespace Telegram.Views
 
 
                 // Polls
-                flyout.CreateFlyoutItem(MessageUnvotePoll_Loaded, ViewModel.UnvotePoll, message, Strings.Unvote, Icons.ArrowUndo);
+                flyout.CreateFlyoutItem(MessageUnvotePoll_Loaded, ViewModel.UnvotePoll, message, Strings.Unvote, Icons.PollUndo);
 
                 if (MessageStopPoll_Loaded(message, properties))
                 {
