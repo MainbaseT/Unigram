@@ -4,6 +4,7 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                     xmlns:local="using:Telegram.Controls.Messages.Content"
+                    xmlns:controls="using:Telegram.Controls"
                     mc:Ignorable="d"
                     d:DesignHeight="300"
                     d:DesignWidth="400">
@@ -99,7 +100,9 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:PollOptionControl">
+    <Style TargetType="local:PollOptionContent">
+        <Setter Property="SelectionStroke"
+                Value="{ThemeResource MessageHeaderBorderBrush}" />
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="BorderBrush"
@@ -122,7 +125,7 @@
                 Value="Stretch" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:PollOptionControl">
+                <ControlTemplate TargetType="local:PollOptionContent">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           Padding="10,0">
@@ -148,17 +151,8 @@
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Disabled" />
-                                <VisualState x:Name="Checked">
-                                    <VisualState.Setters>
-                                        <Setter Target="CheckmarkRoot.Visibility"
-                                                Value="Visible" />
-                                    </VisualState.Setters>
-                                </VisualState>
+                                <VisualState x:Name="Checked" />
                                 <VisualState x:Name="CheckedPointerOver">
-                                    <VisualState.Setters>
-                                        <Setter Target="CheckmarkRoot.Visibility"
-                                                Value="Visible" />
-                                    </VisualState.Setters>
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
                                                                        Storyboard.TargetName="RootGrid">
@@ -168,10 +162,6 @@
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="CheckedPressed">
-                                    <VisualState.Setters>
-                                        <Setter Target="CheckmarkRoot.Visibility"
-                                                Value="Visible" />
-                                    </VisualState.Setters>
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
                                                                        Storyboard.TargetName="RootGrid">
@@ -180,12 +170,7 @@
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
-                                <VisualState x:Name="CheckedDisabled">
-                                    <VisualState.Setters>
-                                        <Setter Target="CheckmarkRoot.Visibility"
-                                                Value="Visible" />
-                                    </VisualState.Setters>
-                                </VisualState>
+                                <VisualState x:Name="CheckedDisabled" />
                                 <VisualState x:Name="Indeterminate" />
                                 <VisualState x:Name="IndeterminatePointerOver" />
                                 <VisualState x:Name="IndeterminatePressed" />
@@ -253,6 +238,14 @@
                                   Data="M13.2197 6.96967L8.75 11.4393L6.78033 9.4697C6.48744 9.1768 6.01256 9.1768 5.71967 9.4697C5.42678 9.7626 5.42678 10.2374 5.71967 10.5303L8.2197 13.0303C8.5126 13.3232 8.9874 13.3232 9.2803 13.0303L14.2803 8.0303C14.5732 7.73744 14.5732 7.26256 14.2803 6.96967C13.9874 6.67678 13.5126 6.67678 13.2197 6.96967Z" />
                         </Grid>
 
+                        <Border x:Name="CheckmarkIcon"
+                                Margin="-2,6,6,6"
+                                AutomationProperties.AccessibilityView="Raw"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Width="24"
+                                Height="24" />
+
 
                         <muxc:ProgressRing x:Name="Loading"
                                            MinWidth="20"
@@ -272,18 +265,15 @@
                                    HorizontalAlignment="Right"
                                    Margin="-10,10,6,8" />
 
-                        <RichTextBlock x:Name="TextText"
-                                       Style="{StaticResource BodyRichTextBlockStyle}"
-                                       FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                                       TextWrapping="Wrap"
-                                       TextTrimming="CharacterEllipsis"
-                                       MaxLines="1"
-                                       VerticalAlignment="Top"
-                                       IsTextSelectionEnabled="False"
-                                       Margin="0,8,0,8"
-                                       Grid.Column="1">
-                            <Paragraph x:Name="Text" />
-                        </RichTextBlock>
+                        <controls:FormattedTextBlock x:Name="TextText"
+                                                     FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                     TextWrapping="Wrap"
+                                                     TextTrimming="CharacterEllipsis"
+                                                     VerticalAlignment="Top"
+                                                     IsTextSelectionEnabled="False"
+                                                     AutoFontSize="False"
+                                                     Margin="0,8,0,8"
+                                                     Grid.Column="1" />
 
                         <Grid x:Name="Tick"
                               VerticalAlignment="Top"

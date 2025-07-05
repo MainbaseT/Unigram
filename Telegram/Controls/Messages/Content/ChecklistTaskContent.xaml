@@ -129,7 +129,6 @@
                                     Height="24" />
                         </Grid>
 
-
                         <controls:FormattedTextBlock x:Name="TextText"
                                                      FontFamily="{ThemeResource EmojiThemeFontFamily}"
                                                      TextWrapping="Wrap"
