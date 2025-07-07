@@ -119,11 +119,17 @@ namespace Telegram.Views
         private void MemoryUsageTimer_Tick(object sender, object e)
         {
             var memoryUsage = Math.Round(Windows.System.MemoryManager.AppMemoryUsage / 1024.0 / 1024.0);
-            if (memoryUsage != _memoryUsage)
+
+            if (MasterDetail?.NavigationService?.Frame?.Content is ChatPage page)
             {
-                _memoryUsage = memoryUsage;
+                MemoryLabel.Text = $"- {memoryUsage:F0} MB" + page.View.GetVirtualizationInfo();
+            }
+            else if (memoryUsage != _memoryUsage)
+            {
                 MemoryLabel.Text = $"- {memoryUsage:F0} MB";
             }
+
+            _memoryUsage = memoryUsage;
         }
 
         public INavigationService NavigationService => MasterDetail.NavigationService;

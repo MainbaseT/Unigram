@@ -111,15 +111,15 @@ namespace Telegram.Views
             _autocompleteZoomer.DownloadFile = fileId => ViewModel.ClientService.DownloadFile(fileId, 32);
             _autocompleteZoomer.SessionId = () => ViewModel.ClientService.SessionId;
 
-            void AddStrategy(ChatHistoryViewItemType type, DataTemplate template, int minimum = 0)
+            void AddStrategy(ChatHistoryViewItemType type, DataTemplate template)
             {
-                _typeToStrategy.Add(type, new(template, minimum));
+                _typeToStrategy.Add(type, new(template));
             }
 
-            AddStrategy(ChatHistoryViewItemType.Outgoing, OutgoingMessageTemplate, 20);
-            AddStrategy(ChatHistoryViewItemType.Incoming, IncomingMessageTemplate, 20);
-            AddStrategy(ChatHistoryViewItemType.Service, ServiceMessageTemplate, 20);
-            AddStrategy(ChatHistoryViewItemType.ServiceForumTopic, ServiceMessageForumTopicTemplate, 20);
+            AddStrategy(ChatHistoryViewItemType.Outgoing, OutgoingMessageTemplate);
+            AddStrategy(ChatHistoryViewItemType.Incoming, IncomingMessageTemplate);
+            AddStrategy(ChatHistoryViewItemType.Service, ServiceMessageTemplate);
+            AddStrategy(ChatHistoryViewItemType.ServiceForumTopic, ServiceMessageForumTopicTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceUnread, ServiceMessageUnreadTemplate);
             AddStrategy(ChatHistoryViewItemType.ServicePhoto, ServiceMessagePhotoTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceBackground, ServiceMessageBackgroundTemplate);

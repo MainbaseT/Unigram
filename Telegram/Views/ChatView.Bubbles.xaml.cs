@@ -720,13 +720,12 @@ namespace Telegram.Views
 
         private readonly Dictionary<ChatHistoryViewItemType, ChoosingItemStrategy> _typeToStrategy = new();
 
-        class ChoosingItemStrategy
+        record ChoosingItemStrategy
         {
-            public ChoosingItemStrategy(DataTemplate itemTemplate, int minimum = 0)
+            public ChoosingItemStrategy(DataTemplate itemTemplate)
             {
                 Queue = new();
                 ItemTemplate = itemTemplate;
-                Minimum = minimum;
             }
 
             public DataTemplate ItemTemplate { get; }
@@ -734,8 +733,19 @@ namespace Telegram.Views
             public HashSet<SelectorItem> Queue { get; }
 
             public int TotalCount { get; set; }
+        }
 
-            public int Minimum { get; set; }
+        public string GetVirtualizationInfo()
+        {
+            if (Messages.ItemsPanelRoot is ItemsStackPanel panel)
+            {
+                var queued = _typeToStrategy.Values.Sum(x => x.Queue.Count);
+                var total = _typeToStrategy.Values.Sum(x => x.TotalCount);
+                var cached = panel.LastCacheIndex + panel.FirstCacheIndex + 1;
+                return string.Format(", [{0}-{1}] {2}/{3}{4}", panel.FirstCacheIndex, panel.LastCacheIndex, queued, total, total - queued - cached > 0 ? $", {total - queued - cached} missing" : "");
+            }
+
+            return string.Empty;
         }
 
         private void OnChoosingItemContainer(ListViewBase sender, ChoosingItemContainerEventArgs args)
@@ -758,23 +768,9 @@ namespace Telegram.Views
                     // TODO: threshold could be made dynamic...
                     // By example if we are in a channel and typeName is UserMessageTemplate, we can just override
                     // Same thing should probably apply to all service messages.
-                    bool ShouldCreateNewContainer()
-                    {
-                        if (relevantHashSet.Queue.Count > 0)
-                        {
-                            return true;
-                        }
-
-                        if (relevantHashSet.Minimum > 0 && relevantHashSet.TotalCount < relevantHashSet.Minimum)
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    }
 
                     // Code inside this branch is the one recommended by Microsoft, that bugs in some scenarios.
-                    if (ShouldCreateNewContainer())
+                    if (relevantHashSet.Queue.Count > 0)
                     {
                         // The ItemContainer's datatemplate does not match the needed
                         // datatemplate.
@@ -790,7 +786,6 @@ namespace Telegram.Views
 
                         selector.TypeName = typeName;
                         selector.ContentTemplate = relevantHashSet.ItemTemplate;
-                        selector.Style = sender.ItemContainerStyle;
 
                         // Remove the container from the old queue and update the counter.
                         recycledHashSet.Queue.Remove(args.ItemContainer);
@@ -834,6 +829,8 @@ namespace Telegram.Views
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
+            args.Handled = true;
+
             if (args.Item is not MessageViewModel message || args.ItemContainer is not ChatHistoryViewItem container)
             {
                 return;
@@ -878,8 +875,6 @@ namespace Telegram.Views
 
                     UpdateNewestItemAsFooter(false);
                 }
-
-                return;
             }
             else
             {
@@ -902,7 +897,6 @@ namespace Telegram.Views
                     }
 
                     service.UpdateMessage(args.Item as MessageViewModel);
-                    args.Handled = true;
                 }
                 else if (content is MessageSelector checkbox)
                 {
@@ -917,7 +911,6 @@ namespace Telegram.Views
                         bubble.UpdateMessage(args.Item as MessageViewModel);
 
                         args.RegisterUpdateCallback(2, RegisterEvents);
-                        args.Handled = true;
                     }
 
                     checkbox.UpdateMessage(message, Messages, ViewModel.IsSelectionEnabled);
