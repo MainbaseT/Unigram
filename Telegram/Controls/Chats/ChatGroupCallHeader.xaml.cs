@@ -141,8 +141,7 @@ namespace Telegram.Controls.Chats
                     }
                     else
                     {
-                        RecentUsers.Items.Clear();
-                        RecentUsers.Items.AddRange(call.RecentSpeakers.Select(x => x.ParticipantId));
+                        RecentUsers.Items.ReplaceWith(call.RecentSpeakers.Select(x => x.ParticipantId));
                     }
                 }
             }

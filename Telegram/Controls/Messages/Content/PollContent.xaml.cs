@@ -234,8 +234,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else
             {
-                destination.Clear();
-                destination.AddRange(origin);
+                destination.ReplaceWith(origin);
             }
         }
 

@@ -1445,8 +1445,7 @@ namespace Telegram.Controls.Messages
                 }
                 else
                 {
-                    RecentRepliers.Items.Clear();
-                    RecentRepliers.Items.AddRange(info.RecentReplierIds);
+                    RecentRepliers.Items.ReplaceWith(info.RecentReplierIds);
                 }
 
                 _recentRepliersChatId = message.ChatId;

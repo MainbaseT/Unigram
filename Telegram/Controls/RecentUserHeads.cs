@@ -435,9 +435,56 @@ namespace Telegram.Controls
 
     public partial class RecentUserCollection : ObservableCollection<MessageSender>
     {
+        protected readonly struct SuppressEventsDisposable : IDisposable
+        {
+            private readonly RecentUserCollection _collection;
+
+            public SuppressEventsDisposable(RecentUserCollection collection)
+            {
+                _collection = collection;
+                ++collection._suppressEvents;
+            }
+
+            public void Dispose()
+            {
+                --_collection._suppressEvents;
+            }
+        }
+
+        private int _suppressEvents;
+
         public RecentUserCollection()
         {
 
+        }
+
+        protected SuppressEventsDisposable SuppressEvents()
+        {
+            return new SuppressEventsDisposable(this);
+        }
+
+        public bool EventsAreSuppressed
+        {
+            get { return _suppressEvents > 0; }
+        }
+
+        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            if (!EventsAreSuppressed)
+            {
+                base.OnCollectionChanged(e);
+            }
+        }
+
+        public void ReplaceWith(IEnumerable<MessageSender> items)
+        {
+            using (SuppressEvents())
+            {
+                Clear();
+                this.AddRange(items);
+            }
+
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         public void ReplaceDiff(IEnumerable<MessageSender> items)

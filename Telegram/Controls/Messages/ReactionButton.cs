@@ -178,8 +178,7 @@ namespace Telegram.Controls.Messages
                 }
                 else
                 {
-                    destination.Clear();
-                    destination.AddRange(origin);
+                    destination.ReplaceWith(origin);
                 }
 
                 if (Count != null)

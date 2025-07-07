@@ -76,8 +76,7 @@ namespace Telegram.Controls.Chats
                 }
                 else
                 {
-                    destination.Clear();
-                    destination.AddRange(origin.Select(x => new MessageSenderUser(x)));
+                    destination.ReplaceWith(origin.Select(x => new MessageSenderUser(x)));
                 }
             }
             else
