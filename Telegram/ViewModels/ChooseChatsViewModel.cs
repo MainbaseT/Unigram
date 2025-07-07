@@ -668,7 +668,8 @@ namespace Telegram.ViewModels
 
             if (_configuration is ChooseChatsConfigurationReplyToMessage replyToMessage)
             {
-                NavigationService.NavigateToChat(chats[0], state: new NavigationState
+                SelectedTopics.TryGetValue(chats[0].Id, out MessageTopic topic);
+                NavigationService.NavigateToChat(chats[0], topic: topic, state: new NavigationState
                 {
                     { "reply_to", replyToMessage.Message },
                     { "reply_to_quote", replyToMessage.Quote }

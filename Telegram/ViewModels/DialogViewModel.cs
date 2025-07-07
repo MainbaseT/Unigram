@@ -2581,7 +2581,7 @@ namespace Telegram.ViewModels
 
         private void ShowReplyTo(IDictionary<string, object> state)
         {
-            if (Type == DialogType.History && state.TryGet("reply_to", out MessageViewModel message))
+            if (Type is DialogType.History or DialogType.Thread && state.TryGet("reply_to", out MessageViewModel message))
             {
                 state.TryGet("reply_to_quote", out InputTextQuote quote);
 
@@ -2928,10 +2928,15 @@ namespace Telegram.ViewModels
                 {
                     _composerHeader = null;
                 }
+
+                if (embedded.ReplyToMessage.ReplyMarkup is ReplyMarkupForceReply)
+                {
+                    ClientService.Send(new DeleteChatReplyMarkup(embedded.ReplyToMessage.ChatId, embedded.ReplyToMessage.Id));
+                }
             }
 
             var chatId = embedded.ReplyToMessage.ChatId;
-            if (chatId == _chat?.Id || chatId == 0)
+            if (chatId == _chat?.Id && embedded.ReplyToMessage.TopicId.AreTheSame(Topic))
             {
                 if (embedded.ReplyToMessage.TopicId != null && (IsForum || IsDirectMessagesGroup))
                 {
@@ -2941,11 +2946,6 @@ namespace Telegram.ViewModels
                     }
 
                     return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, embedded.ReplyToMessage.TopicId, embedded.ReplyToQuote);
-                }
-                else if (clean && embedded.ReplyToMessage.ReplyMarkup is ReplyMarkupForceReply)
-                {
-                    // Code should arrive here only when getting the reply while sending a message
-                    ClientService.Send(new DeleteChatReplyMarkup(embedded.ReplyToMessage.ChatId, embedded.ReplyToMessage.Id));
                 }
 
                 return new InputMessageReplyToMessage(embedded.ReplyToMessage.Id, embedded.ReplyToQuote);
