@@ -1717,10 +1717,17 @@ namespace Telegram.ViewModels
 
         public async void SaveMessageMedia(MessageViewModel message)
         {
-            var file = message.GetFile();
-            if (file != null)
+            if (message.Content is MessageAlbum album)
             {
-                await _storageService.SaveFileAsAsync(file);
+                await _storageService.SaveFilesAsync(album.Messages.Select(x => x.GetFile()));
+            }
+            else
+            {
+                var file = message.GetFile();
+                if (file != null)
+                {
+                    await _storageService.SaveFileAsAsync(file);
+                }
             }
         }
 

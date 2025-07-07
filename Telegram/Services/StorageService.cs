@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Telegram.Common;
@@ -63,6 +64,8 @@ namespace Telegram.Services
         Task OpenFileWithAsync(File file);
 
         Task CopyFilePathAsync(XamlRoot xamlRoot, File file);
+
+        Task SaveFilesAsync(IEnumerable<File> files);
 
         Task OpenFolderAsync(File file);
 
@@ -185,7 +188,44 @@ namespace Telegram.Services
             ClipboardEx.TrySetContent(dataPackage);
 
             ToastPopup.Show(xamlRoot, Strings.PathCopied, ToastPopupIcon.Copied);
+        }
 
+        public async Task SaveFilesAsync(IEnumerable<File> files)
+        {
+            try
+            {
+                var picker = new FolderPicker();
+
+                var folder = await picker.PickSingleFolderAsync();
+                if (folder == null)
+                {
+                    return;
+                }
+
+                var options = new FolderLauncherOptions();
+
+                foreach (var file in files)
+                {
+                    // When saving a file as, we always want to retrieve the cached copy
+                    var cached = await _clientService.GetFileAsync(file);
+                    if (cached == null)
+                    {
+                        return;
+                    }
+
+                    var response = await _clientService.SendAsync(new GetSuggestedFileName(file.Id, string.Empty));
+                    if (response is not Text text)
+                    {
+                        return;
+                    }
+
+                    var destination = await cached.CopyAsync(folder, text.TextValue, NameCollisionOption.GenerateUniqueName);
+                    options.ItemsToSelect.Add(destination);
+                }
+
+                await Launcher.LaunchFolderAsync(folder, options);
+            }
+            catch { }
         }
 
         public async Task OpenFolderAsync(File file)

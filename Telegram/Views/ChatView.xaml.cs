@@ -3038,7 +3038,11 @@ namespace Telegram.Views
 
                 flyout.CreateFlyoutItem(MessageCopyLink_Loaded, ViewModel.CopyMessageLink, message, Strings.CopyLink, Icons.Link);
                 flyout.CreateFlyoutItem(MessageCopyMedia_Loaded, ViewModel.CopyMessageMedia, message, Strings.CopyImage, Icons.Image);
-                flyout.CreateFlyoutItem(MessageSaveMedia_Loaded, ViewModel.CopyMessagePath, message, Strings.CopyAsPath, Icons.CopyAsPath);
+
+                if (message.Content is not MessageAlbum)
+                {
+                    flyout.CreateFlyoutItem(MessageSaveMedia_Loaded, ViewModel.CopyMessagePath, message, Strings.CopyAsPath, Icons.CopyAsPath);
+                }
 
                 if (quote != null)
                 {
@@ -3915,6 +3919,20 @@ namespace Telegram.Views
                 return false;
             }
 
+            if (message.Content is MessageAlbum album)
+            {
+                foreach (var item in album.Messages)
+                {
+                    var temp = item.GetFile();
+                    if (!temp.Local.IsDownloadingCompleted)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
             var file = message.GetFile();
             if (file != null)
             {
@@ -3922,15 +3940,6 @@ namespace Telegram.Views
             }
 
             return false;
-
-            return message.Content switch
-            {
-                MessagePhoto photo => photo.Photo.GetBig()?.Photo.Local.IsDownloadingCompleted ?? false,
-                MessageAudio audio => audio.Audio.AudioValue.Local.IsDownloadingCompleted,
-                MessageDocument document => document.Document.DocumentValue.Local.IsDownloadingCompleted,
-                MessageVideo video => video.Video.VideoValue.Local.IsDownloadingCompleted,
-                _ => false
-            };
         }
 
         private bool MessageOpenMedia_Loaded(MessageViewModel message)
