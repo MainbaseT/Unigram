@@ -43,7 +43,7 @@ namespace Telegram.Views.Profile
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.InRecycleQueue || ViewModel == null)
+            if (args.InRecycleQueue || !sender.IsLoaded)
             {
                 return;
             }

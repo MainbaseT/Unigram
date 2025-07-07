@@ -391,7 +391,7 @@ namespace Telegram.Controls.Views
         {
             await System.Threading.Tasks.Task.Delay(100);
 
-            if (ViewModel.SelectionMode != ListViewSelectionMode.Multiple)
+            if (ViewModel?.SelectionMode != ListViewSelectionMode.Multiple)
             {
                 try
                 {
