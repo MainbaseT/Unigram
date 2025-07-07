@@ -904,7 +904,7 @@ namespace Telegram.ViewModels
                 //    return item;
                 //}
 
-                if (messageThreadId == 0 && Items.Count > 0)
+                if (messageThreadId == 0 && _viewModel != null && !_viewModel._chatList && Items.Count > 0)
                 {
                     return Items[0];
                 }
@@ -914,7 +914,7 @@ namespace Telegram.ViewModels
 
             public object GetItem(MessageTopic topic)
             {
-                if (topic == null && Items.Count > 0)
+                if (topic == null && _viewModel != null && !_viewModel._chatList && Items.Count > 0)
                 {
                     return Items[0];
                 }
@@ -1248,7 +1248,7 @@ namespace Telegram.ViewModels
 
             public DirectMessagesChatTopic GetTopic(long messageThreadId)
             {
-                if (messageThreadId == 0 && Items.Count > 0)
+                if (messageThreadId == 0 && _viewModel != null && !_viewModel._chatList && Items.Count > 0)
                 {
                     return Items[0];
                 }
@@ -1258,7 +1258,7 @@ namespace Telegram.ViewModels
 
             public object GetItem(MessageTopic topic)
             {
-                if (topic == null && Items.Count > 0)
+                if (topic == null && _viewModel != null && !_viewModel._chatList && Items.Count > 0)
                 {
                     return Items[0];
                 }
