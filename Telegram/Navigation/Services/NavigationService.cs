@@ -276,8 +276,6 @@ namespace Telegram.Navigation.Services
 
         private async void OnNavigated(object sender, NavigatedEventArgs e)
         {
-            IsNavigating = false;
-
             if (e.NavigationMode == NavigationMode.Back && Frame.ForwardStack.Count > 0)
             {
                 if (_unallowedTypes.Contains(Frame.ForwardStack[0].SourcePageType))
@@ -635,8 +633,20 @@ namespace Telegram.Navigation.Services
                 CacheKeyToParameter[cacheKey] = cacheParameter;
             }
 
-            IsNavigating = true;
-            return FrameFacade.Navigate(page, parameter, infoOverride, navigationStackEnabled);
+            try
+            {
+                IsNavigating = true;
+                return FrameFacade.Navigate(page, parameter, infoOverride, navigationStackEnabled);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return false;
+            }
+            finally
+            {
+                IsNavigating = false;
+            }
         }
 
         public void Refresh() { FrameFacade.Refresh(); }
