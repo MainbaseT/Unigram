@@ -68,7 +68,7 @@ namespace Telegram.Common
         public static NavigationCacheMode NavigationCacheMode => IsXbox
                 ? NavigationCacheMode.Disabled
                 : Constants.DEBUG
-                ? NavigationCacheMode.Required
-                : NavigationCacheMode.Required;
+                ? NavigationCacheMode.Enabled
+                : NavigationCacheMode.Enabled;
     }
 }

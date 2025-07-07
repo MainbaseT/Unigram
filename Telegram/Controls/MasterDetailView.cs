@@ -81,6 +81,7 @@ namespace Telegram.Controls
             {
                 service = BootStrapper.Current.NavigationServiceFactory(viewModel.NavigationService.Window, BootStrapper.BackButton.Ignore, viewModel.SessionId, key + viewModel.SessionId, false) as NavigationService;
                 service.Frame.DataContext = new object();
+                service.Frame.CacheSize = 5;
                 service.FrameFacade.BackRequested += OnBackRequested;
                 service.BackStackChanged += OnBackStackChanged;
                 service.Navigated += OnNavigated;

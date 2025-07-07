@@ -30,8 +30,6 @@ namespace Telegram.Views
         {
             InitializeComponent();
 
-            NavigationCacheMode = NavigationCacheMode.Required;
-
             _settings = new Dictionary<Type, object>
             {
                 { typeof(SettingsProfilePage), Profile },

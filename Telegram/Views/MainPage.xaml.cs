@@ -1198,6 +1198,7 @@ namespace Telegram.Views
                 if (SettingsService.Current.Diagnostics.ShowMemoryUsage && command == ShortcutCommand.Quit)
                 {
                     //Benchmark();
+                    MasterDetail.NavigationService.ClearCache(true);
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();

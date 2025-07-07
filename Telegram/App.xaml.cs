@@ -209,9 +209,7 @@ namespace Telegram
             }
 
             var sessionId = TypeResolver.Current.Lifetime.ActiveItem.Id;
-
-            var navigationFrame = new Frame();
-            var navigationService = NavigationServiceFactory(window, BackButton.Ignore, navigationFrame, sessionId, $"{sessionId}", true) as NavigationService;
+            var navigationService = NavigationServiceFactory(window, BackButton.Ignore, sessionId, $"{sessionId}", true) as NavigationService;
 
             if (e is ShareTargetActivatedEventArgs)
             {
