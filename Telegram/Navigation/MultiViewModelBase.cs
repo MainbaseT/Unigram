@@ -51,20 +51,6 @@ namespace Telegram.Navigation
             }
         }
 
-        public override IDictionary<string, object> SessionState
-        {
-            get => base.SessionState;
-            set
-            {
-                base.SessionState = value;
-
-                foreach (var child in Children)
-                {
-                    child.SessionState = value;
-                }
-            }
-        }
-
         public override async Task NavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
             if (this is IHandle)

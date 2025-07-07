@@ -11189,8 +11189,20 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SavedMessages" xml:space="preserve">
     <value>Saved Messages</value>
   </data>
+  <data name="SavedMessagesCount_one" xml:space="preserve">
+    <value>{0} saved message</value>
+  </data>
+  <data name="SavedMessagesCount_other" xml:space="preserve">
+    <value>{0} saved messages</value>
+  </data>
+  <data name="SavedMessagesProfileHint" xml:space="preserve">
+    <value>Messages you sent to Saved Messages</value>
+  </data>
   <data name="SavedMessagesTab" xml:space="preserve">
     <value>Saved Messages</value>
+  </data>
+  <data name="SavedMessagesTab2" xml:space="preserve">
+    <value>Saved</value>
   </data>
   <data name="SavedOpenChannel" xml:space="preserve">
     <value>OPEN CHANNEL</value>

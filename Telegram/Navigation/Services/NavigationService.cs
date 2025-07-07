@@ -383,7 +383,6 @@ namespace Telegram.Navigation.Services
 
             dataContext.NavigationService = this;
             dataContext.Dispatcher = Dispatcher;
-            dataContext.SessionState = BootStrapper.Current.SessionState;
 
             var args = new NavigatingEventArgs
             {
@@ -405,7 +404,6 @@ namespace Telegram.Navigation.Services
 
             dataContext.NavigationService = this;
             dataContext.Dispatcher = Dispatcher;
-            dataContext.SessionState = BootStrapper.Current.SessionState;
 
             var pageState = FrameFacade.PageStateSettingsService(page.GetType()).Values;
             dataContext.NavigatedFrom(pageState, suspending);
@@ -441,7 +439,6 @@ namespace Telegram.Navigation.Services
                     // prepare for state load
                     dataContext.NavigationService = this;
                     dataContext.Dispatcher = Dispatcher;
-                    dataContext.SessionState = BootStrapper.Current.SessionState;
                     var pageState = FrameFacade.PageStateSettingsService(page.GetType(), parameter: parameter).Values;
                     await dataContext.NavigatedToAsync(parameter, mode, pageState);
                 }

@@ -113,8 +113,6 @@ namespace Telegram.Navigation
 
         public virtual IDispatcherContext Dispatcher { get; set; }
 
-        public virtual IDictionary<string, object> SessionState { get; set; }
-
         #region Popups
 
         public Task<ContentDialogResult> ShowPopupAsync(ContentPopup popup, object parameter = null, ElementTheme requestedTheme = ElementTheme.Default)

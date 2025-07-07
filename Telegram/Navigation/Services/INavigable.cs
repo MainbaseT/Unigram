@@ -18,6 +18,5 @@ namespace Telegram.Navigation.Services
         void NavigatingFrom(NavigatingEventArgs args);
         INavigationService NavigationService { get; set; }
         IDispatcherContext Dispatcher { get; set; }
-        IDictionary<string, object> SessionState { get; set; }
     }
 }

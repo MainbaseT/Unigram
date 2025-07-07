@@ -12358,5 +12358,9 @@
     <string name="Gift2StarsSelf">Buy a gift</string>
     <string name="Gift2StarsSelfInfo1">Buy yourself a gift to display on your page or reserve for later.</string>
     <string name="Gift2StarsSelfInfo2">Limited-edition gifts upgraded to collectibles can be gifted to others later.</string>
+    <string name="SavedMessagesTab2">Saved</string>
+    <string name="SavedMessagesProfileHint">Messages you sent to Saved Messages</string>
+    <string name="SavedMessagesCount_one">{0} saved message</string>
+    <string name="SavedMessagesCount_other">{0} saved messages</string>
 
 </resources>
