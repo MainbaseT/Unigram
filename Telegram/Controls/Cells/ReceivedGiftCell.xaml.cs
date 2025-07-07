@@ -126,6 +126,7 @@ namespace Telegram.Controls.Cells
                         Grid.SetRow(ResaleStarCountRoot, 0);
                     }
 
+                    ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.WithBrightness(-0.1f));
                     ResaleStarCount.Text = upgraded.Gift.ResaleStarCount.ToString("N0");
                 }
                 else
@@ -174,6 +175,7 @@ namespace Telegram.Controls.Cells
             Animated.Source = new DelayedFileSource(clientService, gift.Gift.Model.Sticker);
 
             FindName(nameof(ResaleStarCountRoot));
+            ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.WithBrightness(-0.1f));
             ResaleStarCount.Text = gift.Gift.ResaleStarCount.ToString("N0");
 
             RibbonRoot.Visibility = Visibility.Visible;

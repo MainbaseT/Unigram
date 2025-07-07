@@ -105,7 +105,6 @@
 
         <Grid x:Name="ResaleStarCountRoot"
               x:Load="False"
-              Background="{ThemeResource MessageServiceBackgroundBrush}"
               HorizontalAlignment="Center"
               VerticalAlignment="Bottom"
               Height="24"
