@@ -9,6 +9,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Telegram.Common;
@@ -575,6 +576,28 @@ namespace Telegram.Controls.Stories
 
                     var window = element.GetParent<StoriesWindow>();
                     var result = await window?.ShowActionAsync(target, text, TeachingTipPlacementMode.Top);
+
+                    if (result == ContentDialogResult.Primary)
+                    {
+                        try
+                        {
+                            Location location = area.Type switch
+                            {
+                                StoryAreaTypeLocation typeLocation => typeLocation.Location,
+                                StoryAreaTypeVenue typeVenue => typeVenue.Venue.Location,
+                                _ => null
+                            };
+
+                            var options = new Windows.System.LauncherOptions();
+                            options.FallbackUri = new Uri(string.Format(CultureInfo.InvariantCulture, "https://www.google.com/maps/search/?api=1&query={0},{1}", location.Latitude, location.Longitude));
+
+                            await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format(CultureInfo.InvariantCulture, "bingmaps:?collection=point.{0}_{1}", location.Latitude, location.Longitude)), options);
+                        }
+                        catch
+                        {
+                            // All the remote procedure calls must be wrapped in a try-catch block
+                        }
+                    }
                 }
                 else if (area.Type is StoryAreaTypeMessage typeMessage)
                 {
