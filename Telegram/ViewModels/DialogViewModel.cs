@@ -2935,8 +2935,10 @@ namespace Telegram.ViewModels
                 }
             }
 
+            var sameTopic = Topic == null || (Topic != null && embedded.ReplyToMessage.TopicId.AreTheSame(Topic));
+
             var chatId = embedded.ReplyToMessage.ChatId;
-            if (chatId == _chat?.Id && embedded.ReplyToMessage.TopicId.AreTheSame(Topic))
+            if (chatId == _chat?.Id && sameTopic)
             {
                 if (embedded.ReplyToMessage.TopicId != null && (IsForum || IsDirectMessagesGroup))
                 {
