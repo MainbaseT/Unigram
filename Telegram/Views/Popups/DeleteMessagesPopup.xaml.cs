@@ -49,7 +49,7 @@ namespace Telegram.Views.Popups
             var senders = messages
                 .Select(x => x.SenderId)
                 .Distinct(new MessageSenderEqualityComparer())
-                .Where(x => !x.IsUser(clientService.Options.MyId))
+                .Where(x => !x.IsUser(clientService.Options.MyId) && !x.IsChat(chat.Id))
                 .ToList();
 
             if (senders.Count > 1 && supergroup?.IsChannel is false && supergroup?.IsDirectMessagesGroup is false)
