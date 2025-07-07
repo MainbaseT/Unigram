@@ -1793,13 +1793,6 @@ namespace Telegram.Views.Popups
                     return true;
                 }
             }
-            else if (ViewModel.SelectionMode == ListViewSelectionMode.None)
-            {
-                ViewModel.SelectedItems = new MvxObservableCollection<Chat>(new[] { chat });
-
-                ConfirmPaidMessages();
-                return true;
-            }
             else if (ViewModel.Options.CanPostMessages && origin && (ViewModel.ClientService.IsForum(chat) || ViewModel.ClientService.IsDirectMessagesGroup(chat)))
             {
                 if (ViewModel.SelectedItems.Contains(chat))
@@ -1814,20 +1807,26 @@ namespace Telegram.Views.Popups
 
                 return false;
             }
+            else if (ViewModel.SelectionMode == ListViewSelectionMode.None)
+            {
+                ViewModel.SelectedItems = new MvxObservableCollection<Chat>(new[] { chat });
+
+                ConfirmPaidMessages();
+                return true;
+            }
 
             return false;
         }
 
         private async void ConfirmPaidMessages()
         {
-            if (await ViewModel.ConfirmPaidMessagesAsync())
+            if (ViewModel.ShouldCloseOnCommit)
+            {
+                Hide(ContentDialogResult.Primary);
+            }
+            else if (await ViewModel.ConfirmPaidMessagesAsync())
             {
                 ViewModel.SendCommand.Execute();
-
-                if (ViewModel.ShouldCloseOnCommit)
-                {
-                    Hide(ContentDialogResult.Primary);
-                }
             }
         }
 
