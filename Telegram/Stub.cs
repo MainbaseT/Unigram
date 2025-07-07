@@ -2899,6 +2899,36 @@ public static class ContentDialogButtonClickEventArgs_stub
         }
     }
 }
+public static class ContentDialogClosingDeferral_stub
+{
+    public static void Complete_stub(this Windows.UI.Xaml.Controls.ContentDialogClosingDeferral sender)
+    {
+        try
+        {
+            sender.Complete();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class ContentDialogClosingEventArgs_stub
+{
+    public static Windows.UI.Xaml.Controls.ContentDialogClosingDeferral GetDeferral_stub(this Windows.UI.Xaml.Controls.ContentDialogClosingEventArgs sender)
+    {
+        try
+        {
+            return sender.GetDeferral();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class Control_stub
 {
     public static bool Focus_stub(this Windows.UI.Xaml.Controls.Control sender, Windows.UI.Xaml.FocusState value)
@@ -4223,6 +4253,18 @@ public static class XamlDirect_stub
         try
         {
             sender.SetStringProperty(xamlDirectObject, propertyIndex, value);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void SetThicknessProperty_stub(this Windows.UI.Xaml.Core.Direct.XamlDirect sender, Windows.UI.Xaml.Core.Direct.IXamlDirectObject xamlDirectObject, Windows.UI.Xaml.Core.Direct.XamlPropertyIndex propertyIndex, Windows.UI.Xaml.Thickness value)
+    {
+        try
+        {
+            sender.SetThicknessProperty(xamlDirectObject, propertyIndex, value);
         }
         catch (Exception ex)
         {
@@ -6000,6 +6042,30 @@ public static class LokiRng_stub
 }
 public static class NativeUtils_stub
 {
+    public static Windows.UI.Xaml.Core.Direct.IXamlDirectObject AddRunToCollection_stub(Windows.UI.Xaml.Core.Direct.XamlDirect direct, Windows.UI.Xaml.Core.Direct.IXamlDirectObject inlines, string text, int offset, int length, Windows.UI.Xaml.FlowDirection direction, bool italic, Windows.UI.Text.TextDecorations decorations, Windows.UI.Xaml.Media.FontFamily fontFamily, double fontSize, bool transparent)
+    {
+        try
+        {
+            return Telegram.Native.NativeUtils.AddRunToCollection(direct, inlines, text, offset, length, direction, italic, decorations, fontFamily, fontSize, transparent);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.UI.Xaml.Core.Direct.IXamlDirectObject AddRunToCollection_stub(Windows.UI.Xaml.Core.Direct.XamlDirect direct, Windows.UI.Xaml.Core.Direct.IXamlDirectObject inlines, string text, Windows.UI.Xaml.FlowDirection direction, bool italic, Windows.UI.Text.TextDecorations decorations, Windows.UI.Xaml.Media.FontFamily fontFamily, double fontSize, bool transparent)
+    {
+        try
+        {
+            return Telegram.Native.NativeUtils.AddRunToCollection(direct, inlines, text, direction, italic, decorations, fontFamily, fontSize, transparent);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static void Crash_stub()
     {
         try
@@ -8748,6 +8814,18 @@ public static class UIElement_stub
 }
 public static class VisualStateManager_stub
 {
+    public static System.Collections.Generic.IList<Windows.UI.Xaml.VisualStateGroup> GetVisualStateGroups_stub(Windows.UI.Xaml.FrameworkElement obj)
+    {
+        try
+        {
+            return Windows.UI.Xaml.VisualStateManager.GetVisualStateGroups(obj);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static bool GoToState_stub(Windows.UI.Xaml.Controls.Control control, string stateName, bool useTransitions)
     {
         try
