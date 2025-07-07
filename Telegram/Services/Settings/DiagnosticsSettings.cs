@@ -185,7 +185,7 @@ namespace Telegram.Services.Settings
         private bool? _sparseMessagesDebug;
         public bool SparseMessagesDebug
         {
-            get => _sparseMessagesDebug ??= GetValueOrDefault("SparseMessagesDebug", Constants.DEBUG);
+            get => _sparseMessagesDebug ??= GetValueOrDefault("SparseMessagesDebug", true);
             set => AddOrUpdateValue(ref _sparseMessagesDebug, "SparseMessagesDebug", value);
         }
 
