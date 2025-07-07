@@ -1197,8 +1197,10 @@ namespace Telegram.Views
             {
                 if (SettingsService.Current.Diagnostics.ShowMemoryUsage && command == ShortcutCommand.Quit)
                 {
-                    //Benchmark();
-                    MasterDetail.NavigationService.ClearCache(true);
+                    if (!MasterDetail.NavigationService.CanGoBack)
+                    {
+                        MasterDetail.NavigationService.ClearCache(true);
+                    }
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
@@ -1210,34 +1212,6 @@ namespace Telegram.Views
                 ProcessChatCommands(command, args);
                 ProcessFolderCommands(command, args);
                 ProcessAppCommands(command, args);
-            }
-        }
-
-        private async void Benchmark()
-        {
-            var pinned = ViewModel.Chats.Items.LastOrDefault(x => x.GetPosition(null).IsPinned);
-            var index = ViewModel.Chats.Items.IndexOf(pinned);
-
-            var next1 = ViewModel.Chats.Items[index + 1];
-            var next2 = ViewModel.Chats.Items[index + 2];
-            var next3 = ViewModel.Chats.Items[index + 3];
-
-            var order = next2.GetOrder(null);
-
-            for (int i = 0; i < 10000; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    ViewModel.Chats.Items.Handle(next1.Id, order - 1);
-                    ViewModel.Chats.Items.Handle(next3.Id, order + 1);
-                }
-                else
-                {
-                    ViewModel.Chats.Items.Handle(next3.Id, order - 1);
-                    ViewModel.Chats.Items.Handle(next1.Id, order + 1);
-                }
-
-                await VisualUtilities.WaitForCompositionRenderingAsync();
             }
         }
 
