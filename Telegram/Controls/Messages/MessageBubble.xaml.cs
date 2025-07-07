@@ -112,10 +112,14 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        public void UpdateQuery(string text)
+        public void UpdateQuery(string text, bool invalidate = true)
         {
             _query = text;
-            Message?.SetQuery(text);
+
+            if (invalidate)
+            {
+                Message?.SetQuery(text);
+            }
         }
 
         #region InitializeComponent
@@ -1713,7 +1717,7 @@ namespace Telegram.Controls.Messages
                 Panel.Children.Insert(0, new MessageFactCheck(message));
             }
 
-            if (Media.Child is IContent media && media.IsValid(content, true))
+            if (Media.Child is IContent media)
             {
                 if (media.IsValid(content, true))
                 {
@@ -1726,10 +1730,10 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            if (Media.Child is StickerContent or VideoNoteContent)
-            {
-                UpdateAttach(message);
-            }
+            //if (Media.Child is StickerContent or VideoNoteContent)
+            //{
+            //    UpdateAttach(message);
+            //}
 
             if (content is MessageText textMessage && textMessage.LinkPreview != null)
             {

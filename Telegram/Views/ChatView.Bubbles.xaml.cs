@@ -913,7 +913,7 @@ namespace Telegram.Views
 
                     if (checkbox.Content is MessageBubble bubble)
                     {
-                        bubble.UpdateQuery(ViewModel.Search?.Query);
+                        bubble.UpdateQuery(ViewModel.Search?.Query, false);
                         bubble.UpdateMessage(args.Item as MessageViewModel);
 
                         args.RegisterUpdateCallback(2, RegisterEvents);
