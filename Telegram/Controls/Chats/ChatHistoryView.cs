@@ -115,7 +115,9 @@ namespace Telegram.Controls.Chats
                 ItemsPanelRoot.SizeChanged -= OnSizeChanged;
             }
 
+            _waitItemsPanelRoot.TrySetResult(false);
             _waitItemsPanelRoot = new();
+
             _raiseViewChanged = false;
 
             // Note, this is done because of the following:
