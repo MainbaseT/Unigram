@@ -435,7 +435,8 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            if (message.IsOutgoing && !message.IsChannelPost && !message.IsSaved)
+            var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
+            if (outgoing)
             {
                 var maxId = message.LastReadOutboxMessageId;
                 var messageHash = message.ChatId ^ message.Id;
