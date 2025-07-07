@@ -324,6 +324,8 @@ namespace Telegram.Common
         public static bool TryCountCustomEmojis(FormattedText text, out int count)
         {
             var previous = 0;
+            var lineCount = 0;
+            var lines = 0;
             count = 0;
 
             for (int i = 0; i < text.Entities.Count; i++)
@@ -339,6 +341,10 @@ namespace Telegram.Common
                     {
                         return false;
                     }
+
+                    count = Math.Max(count, lineCount);
+                    lineCount = 0;
+                    lines++;
                 }
 
                 if (entity.Type is not TextEntityTypeCustomEmoji)
@@ -346,7 +352,7 @@ namespace Telegram.Common
                     return false;
                 }
 
-                count++;
+                lineCount++;
                 previous = entity.Offset + entity.Length;
             }
 
@@ -355,6 +361,7 @@ namespace Telegram.Common
                 return false;
             }
 
+            count = Math.Max(lines, lineCount);
             return previous > 0;
         }
 
