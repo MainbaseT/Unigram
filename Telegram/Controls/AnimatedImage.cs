@@ -859,12 +859,19 @@ namespace Telegram.Controls
             _dispatcherQueue = dispatcherQueue;
             _workerQueue = new FifoActionWorker();
 
-            Increment();
+            Interlocked.Increment(ref _tracker);
         }
 
         public bool Increment()
         {
-            return Interlocked.Increment(ref _tracker) > 1;
+            var tracker = Interlocked.Read(ref _tracker);
+            if (tracker > 0)
+            {
+                Interlocked.Increment(ref _tracker);
+                return true;
+            }
+
+            return false;
         }
 
         public event EventHandler<AnimatedImagePositionChangedEventArgs> PositionChanged;
@@ -945,11 +952,11 @@ namespace Telegram.Controls
 
                 if (_loaded <= 0 && tracker == 0)
                 {
+                    _loader.Activated -= OnActivated;
+                    _loader.Remove(_presentation);
+
                     if (_task != null)
                     {
-                        _loader.Activated -= OnActivated;
-                        _loader.Remove(_presentation);
-
                         if (_ticking)
                         {
                             //Logger.Debug("Task exists, and timer is attached");
@@ -1114,11 +1121,12 @@ namespace Telegram.Controls
                         OnTick(null);
                     }
                 }
-                else if (_task != null && tracker == 0)
+                else if (tracker == 0)
                 {
                     _loader.Activated -= OnActivated;
                     _loader.Remove(_presentation);
 
+                    // Ticking should be always false here
                     if (_ticking)
                     {
                         //Logger.Debug("Task exists, and timer is attached");
