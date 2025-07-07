@@ -1881,6 +1881,7 @@ namespace Telegram.Controls
                 catch
                 {
                     // Shit happens...
+                    NotifyDelegate(work.CorrelationId, null, null);
                 }
             }
         }
@@ -2017,11 +2018,12 @@ namespace Telegram.Controls
             {
                 // TODO: check if animation is valid
                 // Width, height, frame rate...
-                return task.PixelWidth > 0
+                return task != null
+                    && task.PixelWidth > 0
                     && task.PixelHeight > 0;
             }
 
-            if (IsValid(task) && TryGetDelegate(correlationId, out var target))
+            if (TryGetDelegate(correlationId, out var target) && IsValid(task))
             {
                 target.Ready(task);
                 return true;
