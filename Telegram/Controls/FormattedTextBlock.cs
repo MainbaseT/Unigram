@@ -652,7 +652,8 @@ namespace Telegram.Controls
                     }
                     else
                     {
-                        var local = inlines;
+                        IXamlDirectObject parent = null;
+                        IXamlDirectObject parentInlines = inlines;
 
                         if (paragraph != null)
                         {
@@ -672,10 +673,8 @@ namespace Telegram.Controls
                                 spoiler ??= new TextHighlighter();
                                 spoiler.Ranges.Add(new TextRange { StartIndex = offset, Length = entity.Length });
 
-                                var temp = direct.GetXamlDirectObject(hyperlink);
-
-                                direct.AddToCollection(inlines, temp);
-                                local = direct.GetXamlDirectObjectProperty(temp, XamlPropertyIndex.Span_Inlines);
+                                parent = direct.GetXamlDirectObject(hyperlink);
+                                parentInlines = direct.GetXamlDirectObjectProperty(parent, XamlPropertyIndex.Span_Inlines);
                             }
                             else if ((entity.HasFlag(Common.TextStyle.Mention) || entity.HasFlag(Common.TextStyle.Url)))
                             {
@@ -712,10 +711,8 @@ namespace Telegram.Controls
                                         Source = this
                                     });
 
-                                    var temp = direct.GetXamlDirectObject(hyperlink);
-
-                                    direct.AddToCollection(inlines, temp);
-                                    local = direct.GetXamlDirectObjectProperty(temp, XamlPropertyIndex.Span_Inlines);
+                                    parent = direct.GetXamlDirectObject(hyperlink);
+                                    parentInlines = direct.GetXamlDirectObjectProperty(parent, XamlPropertyIndex.Span_Inlines);
                                 }
                                 else
                                 {
@@ -748,10 +745,8 @@ namespace Telegram.Controls
                                         MessageHelper.SetEntityType(hyperlink, entity.Type);
                                     }
 
-                                    var temp = direct.GetXamlDirectObject(hyperlink);
-
-                                    direct.AddToCollection(inlines, temp);
-                                    local = direct.GetXamlDirectObjectProperty(temp, XamlPropertyIndex.Span_Inlines);
+                                    parent = direct.GetXamlDirectObject(hyperlink);
+                                    parentInlines = direct.GetXamlDirectObjectProperty(parent, XamlPropertyIndex.Span_Inlines);
                                 }
                             }
                         }
@@ -774,10 +769,11 @@ namespace Telegram.Controls
                             spoiler ??= new TextHighlighter();
                             spoiler.Ranges.Add(new TextRange { StartIndex = textOffset + offset, Length = entity.Length });
 
-                            direct.AddToCollection(inlines, hyperlink);
-                            local = direct.GetXamlDirectObjectProperty(hyperlink, XamlPropertyIndex.Span_Inlines);
+                            parent = hyperlink;
+                            parentInlines = direct.GetXamlDirectObjectProperty(hyperlink, XamlPropertyIndex.Span_Inlines);
                         }
 
+                        // Consumes local inlines instead of paragraph's
                         // TODO: still use a InlineUIContainer for emojis in spoilers to avoid text resizes
                         if (entity.Type is TextEntityTypeCustomEmoji customEmoji && ((_ignoreSpoilers && entity.HasFlag(Common.TextStyle.Spoiler)) || !entity.HasFlag(Common.TextStyle.Spoiler)))
                         {
@@ -855,13 +851,19 @@ namespace Telegram.Controls
                                 decorations |= TextDecorations.Strikethrough;
                             }
 
-                            var run = NativeUtils.AddRunToCollection(direct, local, text, entity.Offset, entity.Length, direction, entity.HasFlag(Common.TextStyle.Italic), decorations, null, partFontSize, false);
+                            var run = NativeUtils.AddRunToCollection(direct, parentInlines, text, entity.Offset, entity.Length, direction, entity.HasFlag(Common.TextStyle.Italic), decorations, null, partFontSize, false);
                             offset += entity.Length;
 
+                            // Doing this here because in C++ SetObjectProperty expects a IInspectable and FontWeight isn't
                             if (entity.HasFlag(Common.TextStyle.Bold))
                             {
                                 direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_FontWeight, FontWeights.SemiBold);
                             }
+                        }
+
+                        if (parent != null)
+                        {
+                            direct.AddToCollection(inlines, parent);
                         }
                     }
 
