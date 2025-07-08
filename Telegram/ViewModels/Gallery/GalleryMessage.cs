@@ -58,6 +58,8 @@ namespace Telegram.ViewModels.Gallery
         {
         }
 
+        public Message Message => _message;
+
         public MessageContent Content => _message.Content;
 
         public MessageForwardInfo ForwardInfo => _message.ForwardInfo;

@@ -641,6 +641,17 @@ namespace Telegram.Views.Popups
             HasSenderId = hasSenderId;
         }
 
+        public MessageToShare(Message message, MessageProperties properties, bool hasSenderId)
+        {
+            ChatId = message.ChatId;
+            Id = message.Id;
+            ContentType = message.Content.GetType();
+            CanBeCopied = properties.CanBeCopied;
+            CanBeCopiedToSecretChat = properties.CanBeCopiedToSecretChat;
+            HasCaption = message.Content is not MessageText && message.HasCaption();
+            HasSenderId = hasSenderId;
+        }
+
         public MessageToShare(MessageWithOwner message, MessageProperties properties, bool hasSenderId)
         {
             ChatId = message.ChatId;
