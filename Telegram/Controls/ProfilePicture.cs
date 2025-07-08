@@ -175,6 +175,8 @@ namespace Telegram.Controls
 
         #region Shape
 
+        public bool IsShapeEnabled { get; set; } = true;
+
         public ProfilePictureShape Shape
         {
             get { return (ProfilePictureShape)GetValue(ShapeProperty); }
@@ -449,7 +451,7 @@ namespace Telegram.Controls
                 return PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
             }
 
-            if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
+            if (IsShapeEnabled && clientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 if (supergroup.IsForum)
                 {
