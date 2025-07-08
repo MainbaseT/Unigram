@@ -218,6 +218,22 @@ namespace Telegram.Td.Api
             }
         }
 
+        public void MessageSendSucceeded(long oldMessageId, Message message)
+        {
+            if (_messages.TryRemove(oldMessageId, out _))
+            {
+                _messages.Add(message);
+            }
+        }
+
+        public void MessageSendFailed(long oldMessageId, Message message)
+        {
+            if (_messages.TryRemove(oldMessageId, out _))
+            {
+                _messages.Add(message);
+            }
+        }
+
         public void DeleteMessages(IList<long> messageIds)
         {
             var found = false;

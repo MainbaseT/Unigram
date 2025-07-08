@@ -2479,6 +2479,22 @@ namespace Telegram.Services
             }
         }
 
+        private void UpdateChatLastMessage(UpdateMessageSendSucceeded update)
+        {
+            if (_lastMessageAlbums.TryGetValue(update.Message.ChatId, out MessageAlbumLastMessageService service))
+            {
+                service.MessageSendSucceeded(update.OldMessageId, update.Message);
+            }
+        }
+
+        private void UpdateChatLastMessage(UpdateMessageSendFailed update)
+        {
+            if (_lastMessageAlbums.TryGetValue(update.Message.ChatId, out MessageAlbumLastMessageService service))
+            {
+                service.MessageSendFailed(update.OldMessageId, update.Message);
+            }
+        }
+
 #if TD_CX
         public void OnResult(BaseObject update)
 #else
@@ -3320,9 +3336,11 @@ namespace Telegram.Services
                     UpdateForumTopic(updateDeleteMessages.ChatId, false, manager => manager.UpdateDeleteMessages(updateDeleteMessages.MessageIds, updateDeleteMessages.IsPermanent, updateDeleteMessages.FromCache));
                     break;
                 case UpdateMessageSendSucceeded updateMessageSendSucceeded:
+                    UpdateChatLastMessage(updateMessageSendSucceeded);
                     UpdateForumTopic(updateMessageSendSucceeded.Message.ChatId, false, manager => manager.UpdateMessageSendSucceeded(updateMessageSendSucceeded.Message, updateMessageSendSucceeded.OldMessageId));
                     break;
                 case UpdateMessageSendFailed updateMessageSendFailed:
+                    UpdateChatLastMessage(updateMessageSendFailed);
                     UpdateForumTopic(updateMessageSendFailed.Message.ChatId, false, manager => manager.UpdateMessageSendFailed(updateMessageSendFailed.Message, updateMessageSendFailed.OldMessageId, updateMessageSendFailed.Error));
                     break;
                 case UpdateMessageContent updateMessageContent:
