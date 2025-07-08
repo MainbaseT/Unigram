@@ -465,7 +465,7 @@ namespace Telegram.Controls.Chats
         {
             if (file.Id == _backgroundId)
             {
-                UpdateSource(null, _background, _thumbnail);
+                this.BeginOnUIThread(() => UpdateSource(null, _background, _thumbnail));
             }
         }
 
