@@ -1567,6 +1567,11 @@ namespace Telegram.Td.Api
             };
         }
 
+        public static FormattedText Clone(this FormattedText text)
+        {
+            return new FormattedText(text.Text, text.Entities.ToList());
+        }
+
         public static FormattedText ReplaceSpoilers(this FormattedText text, bool singleLine = true)
         {
             if (text.Entities?.Count > 0)
