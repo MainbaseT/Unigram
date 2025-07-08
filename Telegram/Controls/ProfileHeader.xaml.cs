@@ -281,22 +281,35 @@ namespace Telegram.Controls
             subtitleScale.SetReferenceParameter("scrollViewer", properties);
             subtitleScale.SetReferenceParameter("_", Properties);
 
-            var clipperExpBranch1 = $"-{translationExp} - ((root.Size.Y - 88))";
-            var clipperExpBranch2 = $"-{translationExp} - (root.Size.Y - 48)";
-            var clipperExpDiff = $"{clipperExpBranch2} + -((target.Size.Y - 48) - -{translationExp}) / 64 * 256";
-            var clipperExpClamp = $"min(target.Size.Y - root.Size.Y + 64, {clipperExpDiff})";
-            var clipperTranslation = root.Compositor.CreateExpressionAnimation($"{translationExp} < 0 ? -{translationExp} > root.Size.Y - 48 && -{translationExp} < target.Size.Y - 48 ? {clipperExpBranch2} : -{translationExp} < target.Size.Y - 48 ? 0 : -{translationExp} < target.Size.Y - 24 ? {clipperExpClamp} : {clipperExpBranch1} : -{translationExp}");
-            clipperTranslation.SetReferenceParameter("scrollViewer", properties);
-            clipperTranslation.SetReferenceParameter("_", Properties);
-            clipperTranslation.SetReferenceParameter("root", root);
-            clipperTranslation.SetReferenceParameter("target", target);
+            if (ViewModel.IsSavedMessages)
+            {
+                ClipperBackground.Margin = new Thickness(0, -48, 0, -8);
+
+                var clipperTranslation = root.Compositor.CreateExpressionAnimation($"-scrollViewer.Translation.Y + 32");
+                clipperTranslation.SetReferenceParameter("scrollViewer", properties);
+
+                background.StartAnimation("Translation.Y", clipperTranslation);
+            }
+            else
+            {
+                var clipperExpBranch1 = $"-{translationExp} - ((root.Size.Y - 88))";
+                var clipperExpBranch2 = $"-{translationExp} - (root.Size.Y - 48)";
+                var clipperExpDiff = $"{clipperExpBranch2} + -((target.Size.Y - 48) - -{translationExp}) / 64 * 256";
+                var clipperExpClamp = $"min(target.Size.Y - root.Size.Y + 64, {clipperExpDiff})";
+                var clipperTranslation = root.Compositor.CreateExpressionAnimation($"{translationExp} < 0 ? -{translationExp} > root.Size.Y - 48 && -{translationExp} < target.Size.Y - 48 ? {clipperExpBranch2} : -{translationExp} < target.Size.Y - 48 ? 0 : -{translationExp} < target.Size.Y - 24 ? {clipperExpClamp} : {clipperExpBranch1} : -{translationExp}");
+                clipperTranslation.SetReferenceParameter("scrollViewer", properties);
+                clipperTranslation.SetReferenceParameter("_", Properties);
+                clipperTranslation.SetReferenceParameter("root", root);
+                clipperTranslation.SetReferenceParameter("target", target);
+
+                background.StartAnimation("Translation.Y", clipperTranslation);
+            }
 
             controls.Clip = properties.Compositor.CreateInsetClip();
             controls.Clip.StartAnimation("TopInset", controlsClip);
             root.StartAnimation("Translation.Y", rootTranslation);
             buttons.StartAnimation("Translation.Y", buttonsTranslation);
             buttons.StartAnimation("Opacity", buttonsOpacity);
-            background.StartAnimation("Translation.Y", clipperTranslation);
             title.StartAnimation("Translation.Y", titleTranslation);
             title.StartAnimation("Scale", titleScale);
             subtitle.StartAnimation("Translation.Y", titleTranslation);
@@ -566,7 +579,7 @@ namespace Telegram.Controls
             {
                 Title.Text = ViewModel.ForumTopic.Info.Name;
             }
-            else if (chat.Id == ViewModel.ClientService.Options.MyId)
+            else if (chat.Id == ViewModel.ClientService.Options.MyId && !ViewModel.IsSavedMessages)
             {
                 Title.Text = chat.Title;
             }
@@ -613,7 +626,7 @@ namespace Telegram.Controls
             {
                 Icon.Source = null;
 
-                if (chat.Id == ViewModel.ClientService.Options.MyId && ViewModel.ClientService.TryGetUser(chat, out User user))
+                if (chat.Id == ViewModel.ClientService.Options.MyId && !ViewModel.IsSavedMessages && ViewModel.ClientService.TryGetUser(chat, out User user))
                 {
                     Photo.SetUser(ViewModel.ClientService, user, 140);
                 }
@@ -634,7 +647,7 @@ namespace Telegram.Controls
 
         public void UpdateChatEmojiStatus(Chat chat)
         {
-            if (ViewModel.ClientService.TryGetUser(chat, out User user))
+            if (!ViewModel.IsSavedMessages && ViewModel.ClientService.TryGetUser(chat, out User user))
             {
                 Identity.SetStatus(ViewModel.ClientService, user, BotVerified);
             }

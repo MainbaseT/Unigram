@@ -60,8 +60,6 @@ namespace Telegram.Views
                 ShowHideDateHeader(false, true);
             };
 
-            InitializeScrolling();
-
             if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.UIElement", "Shadow"))
             {
                 var themeShadow = new ThemeShadow();
@@ -107,10 +105,10 @@ namespace Telegram.Views
             ElementCompositionPreview.SetIsTranslationEnabled(HeaderPanel, true);
             ElementCompositionPreview.SetIsTranslationEnabled(BackButton, true);
 
-            var translation = visual.Compositor.CreateExpressionAnimation(
-                "properties.ActualHeight > 16 ? scrollViewer.Translation.Y > -(properties.ActualHeight + 8) ? 0 : -scrollViewer.Translation.Y - (properties.ActualHeight + 8) : -scrollViewer.Translation.Y");
+            var translation = visual.Compositor.CreateExpressionAnimation(ViewModel.IsSavedMessages ? "-scrollViewer.Translation.Y" :
+                $"_.ActualHeight > 16 ? scrollViewer.Translation.Y > -(_.ActualHeight + 8) ? 0 : -scrollViewer.Translation.Y - (_.ActualHeight + 8) : -scrollViewer.Translation.Y");
             translation.SetReferenceParameter("scrollViewer", properties);
-            translation.SetReferenceParameter("properties", ProfileHeader.Properties);
+            translation.SetReferenceParameter("_", ProfileHeader.Properties);
 
             var clip = visual.Compositor.CreateExpressionAnimation(
                 "-scrollViewer.Translation.Y + 4");
@@ -147,8 +145,11 @@ namespace Telegram.Views
                 MediaFrame.Navigate(tab.Type, tab.Parameter, new SuppressNavigationTransitionInfo());
             }
 
+            InitializeScrolling();
+
             if (ViewModel.IsSavedMessages)
             {
+                ProfileHeader.Margin = new Thickness(0, 0, 0, -8);
                 ShowHideSubtitle(true);
             }
 
@@ -479,7 +480,7 @@ namespace Telegram.Views
             if (_fromItemClick)
             {
                 _fromItemClick = false;
-                ScrollingHost.ChangeView(null, ProfileHeader.ActualHeight - 48 + 24, null);
+                ScrollingHost.ChangeView(null, ViewModel.IsSavedMessages ? 0 : ProfileHeader.ActualHeight - 48 + 24, null);
             }
         }
 
@@ -633,6 +634,11 @@ namespace Telegram.Views
 
         private void OnViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
+            if (ViewModel.IsSavedMessages)
+            {
+                return;
+            }
+
             if (e.IsInertial && e.NextView.VerticalOffset.AlmostEquals(e.FinalView.VerticalOffset, 1e-02))
             {
                 if (e.FinalView.VerticalOffset.AlmostEquals(RootGrid.HeaderHeight, 0.5))
@@ -692,7 +698,11 @@ namespace Telegram.Views
                         : PanelScrollingDirection.Backward;
                 }
 
-                if (RootGrid.Update(direction == PanelScrollingDirection.Forward ? ProfileHeader.HeaderHeight - 48 : 0, !_initialDirectManipulation))
+                var snap = ProfileHeader.ActualSize.Y > ProfileHeader.HeaderHeight
+                    ? ProfileHeader.HeaderHeight - 48
+                    : Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10);
+
+                if (RootGrid.Update(direction == PanelScrollingDirection.Forward ? snap : 0, !_initialDirectManipulation))
                 {
                     if (direction == PanelScrollingDirection.Forward)
                     {
@@ -889,7 +899,7 @@ namespace Telegram.Views
             if (Navigation.SelectedItem == e.ClickedItem)
             {
                 _fromItemClick = false;
-                ScrollingHost.ChangeView(null, ProfileHeader.ActualHeight - 48 + 24, null);
+                ScrollingHost.ChangeView(null, ViewModel.IsSavedMessages ? 0 : ProfileHeader.ActualHeight - 48 + 24, null);
             }
             else
             {
@@ -978,7 +988,7 @@ namespace Telegram.Views
                     flyout.Items.Add(zoomOut);
                 }
 
-                if (ViewModel.Media.UseDataSource)
+                if (ViewModel.Media.UseDataSource && ViewModel.Media.DataSource.HasPositions)
                 {
                     flyout.Items.Add(calendar);
                     flyout.CreateFlyoutSeparator();
@@ -1087,7 +1097,7 @@ namespace Telegram.Views
                     int x = closest.Position % panel.MaximumRowsOrColumns;
                     int y = closest.Position / panel.MaximumRowsOrColumns;
 
-                    ScrollingHost.ChangeView(null, ProfileHeader.ActualHeight - 48 + 24 + (y * panel.ItemHeight), null, false);
+                    ScrollingHost.ChangeView(null, (ViewModel.IsSavedMessages ? ProfileHeader.ActualHeight - 48 + 24 : 0) + (y * panel.ItemHeight), null, false);
                 }
             }
         }
