@@ -43,7 +43,7 @@ namespace Telegram.Streams
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Foreground, Background);
+            return HashCode.Combine(Foreground, Background, Type);
         }
 
         public override string FilePath => string.Empty;
