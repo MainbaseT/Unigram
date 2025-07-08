@@ -952,10 +952,24 @@ namespace Telegram.Common
                 {
                     if (info.MessageThreadId != 0)
                     {
-                        var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, info.Message.Id));
+                        long messageThreadId;
+                        MessageTopic messageTopic;
+
+                        if (info.Message.TopicId is MessageTopicForum forumTopic && clientService.IsForum(chat))
+                        {
+                            messageThreadId = forumTopic.ForumTopicId;
+                            messageTopic = forumTopic;
+                        }
+                        else
+                        {
+                            messageThreadId = info.Message.Id;
+                            messageTopic = new MessageTopicForum(info.MessageThreadId);
+                        }
+
+                        var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, messageThreadId));
                         if (thread is MessageThreadInfo)
                         {
-                            navigation.NavigateToChat(chat, info.Message.Id, topic: new MessageTopicForum(info.MessageThreadId));
+                            navigation.NavigateToChat(chat, info.Message.Id, topic: messageTopic);
                         }
                         else
                         {
