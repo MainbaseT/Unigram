@@ -185,13 +185,6 @@ namespace Telegram.ViewModels.Profile
             }
         }
 
-        private int[] _sharedCount = new int[] { 0, 0, 0, 0, 0, 0 };
-        public int[] SharedCount
-        {
-            get => _sharedCount;
-            set => Set(ref _sharedCount, value);
-        }
-
         private ProfileTabItem _selectedItem;
         public ProfileTabItem SelectedItem
         {
@@ -206,6 +199,7 @@ namespace Telegram.ViewModels.Profile
             var filters = new SearchMessagesFilter[]
             {
                 new SearchMessagesFilterPhotoAndVideo(),
+                new SearchMessagesFilterEmpty(),
                 new SearchMessagesFilterDocument(),
                 new SearchMessagesFilterUrl(),
                 new SearchMessagesFilterAudio(),
@@ -224,6 +218,22 @@ namespace Telegram.ViewModels.Profile
 
             async Task<Count> GetCountAsync(SearchMessagesFilter filter)
             {
+                if (filter is SearchMessagesFilterEmpty)
+                {
+                    if (IsSavedMessages || MyProfile || !SettingsService.Current.Diagnostics.SavedMessagesDebug)
+                    {
+                        return new Count(0);
+                    }
+
+                    var response = await ClientService.SendAsync(new GetSavedMessagesTopicHistory(chat.Id, 0, 0, 1));
+                    if (response is Messages messages)
+                    {
+                        return new Count(messages.TotalCount);
+                    }
+
+                    return new Count(0);
+                }
+
                 if (sparseMessagesAvailable && filter is SearchMessagesFilterPhotoAndVideo or SearchMessagesFilterDocument or SearchMessagesFilterAudio or SearchMessagesFilterVoiceNote or SearchMessagesFilterAnimation)
                 {
                     var source = await MediaDataSource.Create(ClientService, chat.Id, savedMessagesTopicId, filter);
@@ -262,13 +272,12 @@ namespace Telegram.ViewModels.Profile
                 var response = await GetCountAsync(filters[i]);
                 if (response is Count count)
                 {
-                    SharedCount[i] = count.CountValue;
-
                     if (count.CountValue > 0)
                     {
                         var item = filters[i] switch
                         {
                             SearchMessagesFilterPhotoAndVideo => new ProfileTabItem(Strings.SharedMediaTab2, typeof(ProfileMediaTabPage), null, count.CountValue, Strings.R.Media),
+                            SearchMessagesFilterEmpty => new ProfileTabItem(Strings.SavedMessagesTab2, typeof(ProfileSavedMessagesTabPage), new ChatMessageTopic(ClientService.Options.MyId, new MessageTopicSavedMessages(chat.Id)), count.CountValue, Strings.R.SavedMessagesCount),
                             SearchMessagesFilterDocument => new ProfileTabItem(Strings.SharedFilesTab2, typeof(ProfileFilesTabPage), null, count.CountValue, Strings.R.Files),
                             SearchMessagesFilterUrl => new ProfileTabItem(Strings.SharedLinksTab2, typeof(ProfileLinksTabPage), null, count.CountValue, Strings.R.Links),
                             SearchMessagesFilterAudio => new ProfileTabItem(Strings.SharedMusicTab2, typeof(ProfileMusicTabPage), null, count.CountValue, Strings.R.MusicFiles),
@@ -290,7 +299,6 @@ namespace Telegram.ViewModels.Profile
             if (Items.Count == 1)
             {
                 SelectedItem ??= Items.FirstOrDefault();
-                RaisePropertyChanged(nameof(SharedCount));
             }
         }
 

@@ -490,12 +490,5 @@ namespace Telegram.ViewModels.Profile
         }
 
         #endregion
-
-        protected double _headerHeight;
-        public virtual double HeaderHeight
-        {
-            get => _headerHeight;
-            set => Set(ref _headerHeight, value);
-        }
     }
 }

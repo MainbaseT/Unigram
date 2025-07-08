@@ -1334,6 +1334,9 @@
     <Compile Include="Views\Premium\Popups\ChangePrivacyPopup.xaml.cs">
       <DependentUpon>ChangePrivacyPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Profile\ProfileSavedMessagesTabPage.xaml.cs">
+      <DependentUpon>ProfileSavedMessagesTabPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Profile\ProfileBotsTabPage.xaml.cs">
       <DependentUpon>ProfileBotsTabPage.xaml</DependentUpon>
     </Compile>
@@ -3336,6 +3339,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Premium\Popups\ChangePrivacyPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Profile\ProfileSavedMessagesTabPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

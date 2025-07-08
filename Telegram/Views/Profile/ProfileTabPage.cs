@@ -21,7 +21,20 @@ namespace Telegram.Views.Profile
 {
     public partial class ProfileTabPage : PageEx, INavigablePage
     {
-        public MediaTabsViewModelBase ViewModel => DataContext as MediaTabsViewModelBase;
+        public MediaTabsViewModelBase ViewModel
+        {
+            get
+            {
+                try
+                {
+                    return DataContext as MediaTabsViewModelBase;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
 
         public bool IsProfile { get; private set; }
 
@@ -226,5 +239,14 @@ namespace Telegram.Views.Profile
 
         private ListViewBase _scrollingHost;
         public ListViewBase ScrollingHost => _scrollingHost ??= FindName(nameof(ScrollingHost)) as ListViewBase;
+
+        private FrameworkElement _header;
+        public FrameworkElement Header => _header ??= FindName(nameof(Header)) as FrameworkElement;
+
+        public virtual double HeaderHeight
+        {
+            get => Header.Height;
+            set => Header.Height = value;
+        }
     }
 }

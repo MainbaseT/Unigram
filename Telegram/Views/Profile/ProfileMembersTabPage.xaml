@@ -34,7 +34,7 @@
             </ListView.Template>
             <ListView.Header>
                 <StackPanel>
-                    <Border Height="{x:Bind ViewModel.HeaderHeight, Mode=OneWay}" />
+                    <Border x:Name="Header" />
 
                     <Grid MaxWidth="1000"
                           Margin="24,0">

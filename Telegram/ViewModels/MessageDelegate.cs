@@ -49,6 +49,8 @@ namespace Telegram.ViewModels
 
         public bool IsDirectMessagesGroup => _viewModel is DialogViewModel { IsDirectMessagesGroup: true };
 
+        public bool IsSavedMessagesTab => _viewModel is DialogViewModel { IsSavedMessagesTab: true };
+
         public override INavigationService NavigationService
         {
             get => _viewModel?.NavigationService;

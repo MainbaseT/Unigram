@@ -48,7 +48,7 @@ namespace Telegram.Views.Profile
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.InRecycleQueue || !sender.IsLoaded)
+            if (args.InRecycleQueue || ViewModel == null)
             {
                 return;
             }
@@ -130,7 +130,7 @@ namespace Telegram.Views.Profile
             //parent.RegisterAnchorCandidate(container);
             //parent.anchor
 
-            var y = -(float)parent.VerticalOffset + (float)ViewModel.HeaderHeight - 88;
+            var y = -(float)parent.VerticalOffset + Header.ActualSize.Y - 88;
 
             var childSize = child.ActualSize.X > 0 && child.ActualSize.Y > 0 ? new Vector2(child.ActualSize.X, (float)parent.ViewportHeight) : new Vector2(1, 1);
             var childOffset = new Vector2(0, Math.Max(-y, 0));
@@ -143,7 +143,7 @@ namespace Telegram.Views.Profile
 
             var redirect = visual.Compositor.CreateSpriteVisual();
             redirect.RelativeSizeAdjustment = Vector2.One;
-            redirect.Offset = new Vector3(0, (float)ViewModel.HeaderHeight - Math.Min(y, 0), 0);
+            redirect.Offset = new Vector3(0, Header.ActualSize.Y - Math.Min(y, 0), 0);
 
             //TestGrid.Margin = new Thickness(24, ViewModel.HeaderHeight - Math.Min(y, 0), 16, 0);
             TestGrid.Height = childSize.Y;

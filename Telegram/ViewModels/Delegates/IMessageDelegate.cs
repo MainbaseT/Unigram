@@ -18,6 +18,7 @@ namespace Telegram.ViewModels.Delegates
         bool IsDialog { get; }
         bool IsForum { get; }
         bool IsDirectMessagesGroup { get; }
+        bool IsSavedMessagesTab { get; }
         bool IsTranslating { get; }
 
         INavigationService NavigationService { get; }

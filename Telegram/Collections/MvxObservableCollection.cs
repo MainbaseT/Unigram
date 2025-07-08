@@ -124,32 +124,32 @@ namespace Telegram.Collections
         /// </summary>
         /// <param name="items">The collection from which the items are copied.</param>
         /// <exception cref="ArgumentNullException">The items list is null.</exception>
-        public void AddRange(IEnumerable<T> items)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+        //public void AddRange(IEnumerable<T> items)
+        //{
+        //    if (items == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(items));
+        //    }
 
-            List<T> changedItems = null;
-            int startingIndex = Count;
+        //    List<T> changedItems = null;
+        //    int startingIndex = Count;
 
-            using (SuppressEvents())
-            {
-                foreach (var item in items)
-                {
-                    Add(item);
+        //    using (SuppressEvents())
+        //    {
+        //        foreach (var item in items)
+        //        {
+        //            Add(item);
 
-                    changedItems ??= new();
-                    changedItems.Add(item);
-                }
-            }
+        //            changedItems ??= new();
+        //            changedItems.Add(item);
+        //        }
+        //    }
 
-            if (changedItems != null)
-            {
-                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems: changedItems, startingIndex: startingIndex));
-            }
-        }
+        //    if (changedItems != null)
+        //    {
+        //        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems: changedItems, startingIndex: startingIndex));
+        //    }
+        //}
 
         /// <summary>
         /// Adds the specified items collection to the current <see cref="MvxObservableCollection{T}"/> instance.
@@ -174,12 +174,17 @@ namespace Telegram.Collections
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems: items, startingIndex: index));
         }
 
+        public void ReplaceWith(IEnumerable items)
+        {
+            ReplaceWith(items.Cast<T>());
+        }
+
         /// <summary>
         /// Replaces the current <see cref="MvxObservableCollection{T}"/> instance items with the ones specified in the items collection, raising a single <see cref="NotifyCollectionChangedAction.Reset"/> event.
         /// </summary>
         /// <param name="items">The collection from which the items are copied.</param>
         /// <exception cref="ArgumentNullException">The items list is null.</exception>
-        public void ReplaceWith(IEnumerable items)
+        public void ReplaceWith(IEnumerable<T> items)
         {
             if (items == null)
             {
@@ -189,7 +194,7 @@ namespace Telegram.Collections
             using (SuppressEvents())
             {
                 Clear();
-                AddRange(items.Cast<T>());
+                AddRange(items);
             }
 
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
@@ -308,7 +313,7 @@ namespace Telegram.Collections
         /// <param name="start">The start index.</param>
         /// <param name="count">The count of items to remove.</param>
         /// <exception cref="ArgumentOutOfRangeException">Start index or count incorrect</exception>
-        public void RemoveRange(int start, int count)
+        public new void RemoveRange(int start, int count)
         {
             if (start < 0)
             {

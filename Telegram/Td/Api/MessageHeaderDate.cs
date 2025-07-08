@@ -8,6 +8,13 @@ namespace Telegram.Td.Api
 {
     public partial class MessageHeaderDate : MessageContent
     {
+        public MessageHeaderDate(int date)
+        {
+            Date = date;
+        }
+
+        public int Date { get; set; }
+
         public override string ToString()
         {
             return nameof(MessageHeaderDate);

@@ -189,6 +189,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _sparseMessagesDebug, "SparseMessagesDebug", value);
         }
 
+        private bool? _savedMessagesDebug;
+        public bool SavedMessagesDebug
+        {
+            get => _savedMessagesDebug ??= GetValueOrDefault("SavedMessagesDebug", Constants.DEBUG);
+            set => AddOrUpdateValue(ref _savedMessagesDebug, "SavedMessagesDebug", value);
+        }
+
         public bool IsLastErrorDiskFull { get; set; }
     }
 }

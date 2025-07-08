@@ -73,7 +73,7 @@
                 </ControlTemplate>
             </GridView.Template>
             <GridView.Header>
-                <Border Height="{x:Bind ViewModel.HeaderHeight, Mode=OneWay}" />
+                <Border x:Name="Header" />
             </GridView.Header>
             <GridView.ItemContainerStyle>
                 <Style TargetType="GridViewItem"

@@ -15,12 +15,5 @@ namespace Telegram.ViewModels.Profile
             : base(clientService, settingsService, aggregator)
         {
         }
-
-        private double _headerHeight;
-        public double HeaderHeight
-        {
-            get => _headerHeight;
-            set => Set(ref _headerHeight, value);
-        }
     }
 }

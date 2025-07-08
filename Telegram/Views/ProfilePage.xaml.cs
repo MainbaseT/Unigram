@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,7 @@ using Telegram.Controls;
 using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Navigation;
+using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -379,9 +381,27 @@ namespace Telegram.Views
         private long _itemsSourceToken;
         private long _selectionModeToken;
 
+        private bool _backgroundUpdated;
+
         private void OnNavigating(object sender, NavigatingCancelEventArgs e)
         {
-            if (MediaFrame.Content is ProfileTabPage tabPage)
+            if (MediaFrame.Content is ProfileSavedMessagesTabPage savedMessagesPage)
+            {
+                var args = new NavigatingEventArgs
+                {
+                    NavigationMode = e.NavigationMode,
+                    SourcePageType = ViewModel.NavigationService.CurrentPageType,
+                    Parameter = ViewModel.NavigationService.CurrentPageParam,
+                    Suspending = false,
+                    TargetPageType = e.SourcePageType,
+                    TargetPageParameter = e.Parameter
+                };
+
+                savedMessagesPage.ViewModel.NavigatingFrom(args);
+                savedMessagesPage.ViewModel.NavigatedFrom(null, false);
+                savedMessagesPage.Deactivate(true);
+            }
+            else if (MediaFrame.Content is ProfileTabPage tabPage)
             {
                 tabPage.ScrollingHost.UnregisterPropertyChangedCallback(ItemsControl.ItemsSourceProperty, ref _itemsSourceToken);
                 tabPage.ScrollingHost.UnregisterPropertyChangedCallback(ListViewBase.SelectionModeProperty, ref _selectionModeToken);
@@ -390,10 +410,34 @@ namespace Telegram.Views
 
         private void OnNavigated(object sender, NavigationEventArgs e)
         {
+            if (e.Content is ProfileSavedMessagesTabPage savedMessagesPage)
+            {
+                if (!_backgroundUpdated)
+                {
+                    _backgroundUpdated = true;
+                    BackgroundRoot.Update(ViewModel.ClientService);
+                }
+
+                BackgroundRoot.Visibility = Visibility.Visible;
+
+                savedMessagesPage.Activate(ViewModel.NavigationService);
+                savedMessagesPage.HeaderHeight = Math.Max(Header.ActualHeight, 48 + 10);
+                savedMessagesPage.ViewModel.Dispatcher = ViewModel.Dispatcher;
+                savedMessagesPage.ViewModel.NavigationService = ViewModel.NavigationService;
+                _ = savedMessagesPage.ViewModel.NavigatedToAsync(e.Parameter, e.NavigationMode, new Telegram.Navigation.Services.NavigationState());
+                return;
+            }
+            else if (_backgroundUpdated)
+            {
+                BackgroundRoot.Visibility = Visibility.Collapsed;
+            }
+
             if (e.Content is not ProfileTabPage tabPage)
             {
                 return;
             }
+
+            tabPage.HeaderHeight = Math.Max(Header.ActualHeight, 48 + 10);
 
             if (e.Content is ProfileSavedChatsTabPage or ProfileMediaTabPage or ProfileGiftsTabPage)
             {
@@ -453,19 +497,39 @@ namespace Telegram.Views
         {
             UpdateBackButton();
 
-            ViewModel.HeaderHeight = Math.Max(e.NewSize.Height, 48 + 10);
             MediaFrame.MinHeight = ScrollingHost.ActualHeight + e.NewSize.Height - 88;
+
+            if (MediaFrame.Content is ProfileTabPage tabPage)
+            {
+                tabPage.HeaderHeight = Math.Max(e.NewSize.Height, 48 + 10);
+            }
         }
 
-        private Thumb _scrollingThumb;
-        private Border _scrollingPanningThumb;
+        private Thumb _scrollBarThumb;
+        private Border _scrollBarPanningThumb;
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             MediaFrame.MinHeight = Header.ActualHeight + e.NewSize.Height - 88;
 
+            var material = ElementComposition.GetElementVisual(BackgroundRoot);
+            var properties = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
+            var width = Math.Min(24 + 1000 + 24, BackgroundRoot.ActualSize.X) - 24 - 24;
+            var x = (BackgroundRoot.ActualSize.X - width) / 2;
+
+            var elli1 = CanvasGeometry.CreateRoundedRectangle(null, x, 0, width, BackgroundRoot.ActualSize.Y, 4, 4);
+            var ellipse = material.Compositor.CreatePathGeometry(new CompositionPath(elli1));
+            var clip = material.Compositor.CreateGeometricClip(ellipse);
+
+            var animation = material.Compositor.CreateExpressionAnimation("max(4, _.Translation.Y + HeaderHeight + 4)");
+            animation.SetReferenceParameter("_", properties);
+            animation.SetScalarParameter("HeaderHeight", Math.Max(Header.ActualSize.Y, 48 + 10));
+
+            material.Clip = clip;
+            clip.StartAnimation("Offset.Y", animation);
+
             var scrollBar = ScrollingHost.GetLastChild<ScrollBar>(x => x.Orientation == Orientation.Vertical);
-            if (scrollBar != null && _scrollingThumb == null)
+            if (scrollBar != null && _scrollBarThumb == null)
             {
                 var rootGrid = scrollBar.GetChild<Grid>();
                 if (rootGrid != null)
@@ -480,8 +544,8 @@ namespace Telegram.Views
                     }
                 }
 
-                _scrollingThumb = scrollBar.GetChild<Thumb>(x => x.Name == "VerticalThumb");
-                _scrollingPanningThumb = scrollBar.GetChild<Border>(x => x.Name == "VerticalPanningThumb");
+                _scrollBarThumb = scrollBar.GetChild<Thumb>(x => x.Name == "VerticalThumb");
+                _scrollBarPanningThumb = scrollBar.GetChild<Border>(x => x.Name == "VerticalPanningThumb");
             }
 
             if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
@@ -492,31 +556,31 @@ namespace Telegram.Views
             LoadMore(scrollingHost);
         }
 
-        private bool _scrollingIndicatorVisible;
-        private bool _scrollingIndicatorEnabled;
+        private bool _scrollBarIndicatorVisible;
+        private bool _scrollBarIndicatorEnabled;
 
         private void ScrollingIndicatorStates_CurrentStateChanged(object sender, VisualStateChangedEventArgs e)
         {
             switch (e.NewState.Name)
             {
                 case "MouseIndicator":
-                    BindToolTipToThumb(_scrollingThumb);
+                    BindToolTipToThumb(_scrollBarThumb);
 
-                    _scrollingIndicatorVisible = true;
-                    ToolTip.Visibility = _scrollingIndicatorEnabled && !_subtitleCollapsed
+                    _scrollBarIndicatorVisible = true;
+                    ToolTip.Visibility = _scrollBarIndicatorEnabled && !_subtitleCollapsed
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                     break;
                 case "TouchIndicator":
-                    BindToolTipToThumb(_scrollingPanningThumb);
+                    BindToolTipToThumb(_scrollBarPanningThumb);
 
-                    _scrollingIndicatorVisible = true;
-                    ToolTip.Visibility = _scrollingIndicatorEnabled && !_subtitleCollapsed
+                    _scrollBarIndicatorVisible = true;
+                    ToolTip.Visibility = _scrollBarIndicatorEnabled && !_subtitleCollapsed
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                     break;
                 case "NoIndicator":
-                    _scrollingIndicatorVisible = false;
+                    _scrollBarIndicatorVisible = false;
                     ToolTip.Visibility = Visibility.Collapsed;
                     break;
 
@@ -571,7 +635,7 @@ namespace Telegram.Views
         {
             if (e.IsInertial && e.NextView.VerticalOffset.AlmostEquals(e.FinalView.VerticalOffset, 1e-02))
             {
-                if (e.FinalView.VerticalOffset == RootGrid.HeaderHeight)
+                if (e.FinalView.VerticalOffset.AlmostEquals(RootGrid.HeaderHeight, 0.5))
                 {
                     if (RootGrid.Update(-1, false))
                     {
@@ -598,7 +662,7 @@ namespace Telegram.Views
             _initialFinalOffset = e.FinalView.VerticalOffset;
 
             // Direction changed
-            if (_initialDirectManipulation && (_initialVerticalOffset < _initialFinalOffset) != (_initialPreviousOffset < e.NextView.VerticalOffset))
+            if (_initialDirectManipulation && !e.IsInertial && (_initialVerticalOffset < _initialFinalOffset) != (_initialPreviousOffset < e.NextView.VerticalOffset))
             {
                 _initialVerticalOffset = _initialPreviousOffset;
                 _initialFinalOffset = e.FinalView.VerticalOffset;
@@ -607,7 +671,7 @@ namespace Telegram.Views
 
             _initialPreviousOffset = e.NextView.VerticalOffset;
 
-            if (e.FinalView.VerticalOffset <= ProfileHeader.HeaderHeight - 48)
+            if (e.NextView.VerticalOffset <= ProfileHeader.HeaderHeight - 48)
             {
                 var diff = e.NextView.VerticalOffset - (ProfileHeader.HeaderHeight - 48);
                 var diff2 = e.NextView.VerticalOffset - e.FinalView.VerticalOffset;
@@ -643,10 +707,11 @@ namespace Telegram.Views
             else
             {
                 var diff = e.FinalView.VerticalOffset - (ProfileHeader.ActualSize.Y - 48);
+                var threshold = _initialDirectManipulation ? 24 : 32;
 
-                if (RootGrid.Update(diff >= 0 && diff <= 24 ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10) : -1, false))
+                if (RootGrid.Update(diff >= 0 && diff <= threshold ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10) : -1, false))
                 {
-                    if (diff >= 0 && diff <= 24)
+                    if (diff >= 0 && diff <= threshold)
                     {
                         Logger.Info("Snap content");
                     }
@@ -670,6 +735,8 @@ namespace Telegram.Views
 
             if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
             {
+                _scrollBarIndicatorEnabled = false;
+                ToolTip.Visibility = Visibility.Collapsed;
                 return;
             }
 
@@ -708,14 +775,14 @@ namespace Telegram.Views
                 {
                     ToolTipContent.Text = Formatter.Date(date, Strings.formatterMonthYear);
 
-                    _scrollingIndicatorEnabled = true;
-                    ToolTip.Visibility = _scrollingIndicatorVisible && !_subtitleCollapsed
+                    _scrollBarIndicatorEnabled = true;
+                    ToolTip.Visibility = _scrollBarIndicatorVisible && !_subtitleCollapsed
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                 }
                 else
                 {
-                    _scrollingIndicatorEnabled = false;
+                    _scrollBarIndicatorEnabled = false;
                     ToolTip.Visibility = Visibility.Collapsed;
                 }
 
@@ -724,7 +791,7 @@ namespace Telegram.Views
             }
             else if (index >= 0 && index < scrollingHost.Items.Count)
             {
-                _scrollingIndicatorEnabled = false;
+                _scrollBarIndicatorEnabled = false;
                 ToolTip.Visibility = Visibility.Collapsed;
 
                 var container = scrollingHost.Items[index];
@@ -774,7 +841,7 @@ namespace Telegram.Views
 
             ScrollingHost.SetVerticalPadding(show ? 88 : 0, 0);
 
-            ToolTip.Visibility = _scrollingIndicatorEnabled && _scrollingIndicatorVisible && !_subtitleCollapsed
+            ToolTip.Visibility = _scrollBarIndicatorEnabled && _scrollBarIndicatorVisible && !_subtitleCollapsed
                 ? Visibility.Visible
                 : Visibility.Collapsed;
         }

@@ -78,19 +78,6 @@ namespace Telegram.ViewModels
             set => Set(ref _members, value);
         }
 
-        public override double HeaderHeight
-        {
-            get => _headerHeight;
-            set
-            {
-                if (Set(ref _headerHeight, value))
-                {
-                    PinnedStoriesTab.HeaderHeight = value;
-                    ArchivedStoriesTab.HeaderHeight = value;
-                }
-            }
-        }
-
         public long LinkedChatId { get; private set; }
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)

@@ -138,6 +138,9 @@ namespace Telegram.Controls.Chats
         protected override void OnApplyTemplate()
         {
             ScrollingHost = (ScrollViewer)GetTemplateChild("ScrollViewer");
+
+            // Used by saved messages tab
+            ScrollingHost ??= this.GetParent<ScrollViewer>();
             ScrollingHost.ViewChanging += OnViewChanging;
             ScrollingHost.ViewChanged += OnViewChanged;
             ScrollingHost.DirectManipulationStarted += OnDirectManipulationStarted;
@@ -202,15 +205,15 @@ namespace Telegram.Controls.Chats
                     return;
                 }
 
-                var lastSlice = ViewModel.IsOldestSliceLoaded != true;
-                var firstSlice = ViewModel.IsNewestSliceLoaded != true;
+                var lastSlice = ViewModel.IsSavedMessagesTab ? ViewModel.IsNewestSliceLoaded != true : ViewModel.IsOldestSliceLoaded != true;
+                var firstSlice = ViewModel.IsSavedMessagesTab ? ViewModel.IsOldestSliceLoaded != true : ViewModel.IsNewestSliceLoaded != true;
 
                 if (direction == PanelScrollingDirection.Backward
                     && panel.FirstCacheIndex == 0
                     && lastSlice)
                 {
                     Logger.Debug($"Going {direction}, loading history in the past");
-                    await ViewModel.LoadNextSliceAsync();
+                    await LoadNextSliceAsync();
                 }
                 else if (direction == PanelScrollingDirection.Forward
                     && panel.LastCacheIndex == ViewModel.Items.Count - 1)
@@ -222,7 +225,7 @@ namespace Telegram.Controls.Chats
                     if (lastSlice && panel.FirstVisibleIndex == 0)
                     {
                         Logger.Debug($"Going {direction}, loading history in the past");
-                        await ViewModel.LoadNextSliceAsync();
+                        await LoadNextSliceAsync();
                     }
 
                     if (panel.LastCacheIndex == ViewModel.Items.Count - 1)
@@ -235,11 +238,27 @@ namespace Telegram.Controls.Chats
             _loadMoreSemaphore.Release();
         }
 
+        private Task LoadNextSliceAsync()
+        {
+            if (ViewModel.IsSavedMessagesTab)
+            {
+                return ViewModel.LoadPreviousSliceAsync();
+            }
+
+            return ViewModel.LoadNextSliceAsync();
+        }
+
         private Task LoadPreviousSliceAsync(PanelScrollingDirection direction, bool firstSlice)
         {
             if (firstSlice)
             {
                 Logger.Debug($"Going {direction}, loading history in the future");
+
+                if (ViewModel.IsSavedMessagesTab)
+                {
+                    return ViewModel.LoadNextSliceAsync();
+                }
+
                 return ViewModel.LoadPreviousSliceAsync();
             }
 
@@ -280,6 +299,13 @@ namespace Telegram.Controls.Chats
                 _pendingMode = null;
                 _pendingForce = null;
                 return;
+            }
+
+            if (ViewModel.IsSavedMessagesTab)
+            {
+                mode = mode == ItemsUpdatingScrollMode.KeepLastItemInView
+                    ? ItemsUpdatingScrollMode.KeepItemsInView
+                    : ItemsUpdatingScrollMode.KeepLastItemInView;
             }
 
             if (mode == ItemsUpdatingScrollMode.KeepItemsInView && (force || scroll.VerticalOffset < 200))

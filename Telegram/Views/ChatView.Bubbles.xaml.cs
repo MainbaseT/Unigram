@@ -54,7 +54,7 @@ namespace Telegram.Views
 
         private void UpdateArrowVisibility()
         {
-            if (ViewModel.Type is not DialogType.History and not DialogType.Thread)
+            if (ViewModel.Type is not DialogType.History and not DialogType.Thread || ViewModel.IsSavedMessagesTab)
             {
                 Arrows.IsVisible = false;
                 return;
@@ -917,6 +917,11 @@ namespace Telegram.Views
                     checkbox.HorizontalAlignment = message.Date == 0 && message.Id == 0
                         ? HorizontalAlignment.Center
                         : HorizontalAlignment.Stretch;
+                }
+
+                if (ViewModel.IsSavedMessagesTab)
+                {
+                    return;
                 }
 
                 void UpdateNewestOldest(bool? needed, bool? loaded, ref ChatHistoryViewItem item, ref ChatHistoryViewItem headerFooter, Index index)

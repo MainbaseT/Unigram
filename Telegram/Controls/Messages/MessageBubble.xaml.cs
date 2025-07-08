@@ -474,18 +474,21 @@ namespace Telegram.Controls.Messages
             var bottomOutgoing = false;
             var bottomIncoming = false;
 
+            var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
+            var isLast = message.Delegate.IsSavedMessagesTab ? message.IsFirst : message.IsLast;
+
             var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
             if (outgoing)
             {
-                if (message.IsFirst && message.IsLast)
+                if (isFirst && isLast)
                 {
                     bottomOutgoing = SettingsService.Current.Diagnostics.BubbleTailDebug;
                 }
-                else if (message.IsFirst)
+                else if (isFirst)
                 {
                     bottomRight = small;
                 }
-                else if (message.IsLast)
+                else if (isLast)
                 {
                     topRight = small;
                     bottomOutgoing = SettingsService.Current.Diagnostics.BubbleTailDebug;
@@ -498,15 +501,15 @@ namespace Telegram.Controls.Messages
             }
             else
             {
-                if (message.IsFirst && message.IsLast)
+                if (isFirst && isLast)
                 {
                     bottomIncoming = SettingsService.Current.Diagnostics.BubbleTailDebug;
                 }
-                else if (message.IsFirst)
+                else if (isFirst)
                 {
                     bottomLeft = small;
                 }
-                else if (message.IsLast)
+                else if (isLast)
                 {
                     topLeft = small;
                     bottomIncoming = SettingsService.Current.Diagnostics.BubbleTailDebug;
@@ -553,7 +556,7 @@ namespace Telegram.Controls.Messages
 
             if (message.Delegate != null && message.Delegate.IsDialog)
             {
-                var top = message.IsFirst ? 4 : 2;
+                var top = isFirst ? 4 : 2;
                 var action = message.IsSaved || message.CanBeShared;
 
                 if (message.IsSaved || (chat != null && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup)) && !message.IsChannelPost)
@@ -658,7 +661,8 @@ namespace Telegram.Controls.Messages
         {
             if (message.HasSenderPhoto)
             {
-                if (message.IsLast)
+                var isLast = message.Delegate.IsSavedMessagesTab ? message.IsFirst : message.IsLast;
+                if (isLast)
                 {
                     if (message.Id != _photoId || PhotoRoot == null || PhotoRoot.Visibility == Visibility.Collapsed)
                     {
@@ -931,7 +935,9 @@ namespace Telegram.Controls.Messages
             var header = false;
             var forward = false;
 
-            if (!light && message.IsFirst && (message.IsSaved || message.IsVerificationCode) && !outgoing)
+            var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
+
+            if (!light && isFirst && (message.IsSaved || message.IsVerificationCode) && !outgoing)
             {
                 var title = string.Empty;
                 var foreground = default(SolidColorBrush);
@@ -976,7 +982,7 @@ namespace Telegram.Controls.Messages
                 HeaderLinkRun.Text = title;
                 Identity.ClearStatus();
             }
-            else if (!light && message.IsFirst && !outgoing && (message.HasSenderPhoto || (!message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage)) && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+            else if (!light && isFirst && !outgoing && (message.HasSenderPhoto || (!message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage)) && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
             {
                 if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
                 {
@@ -1583,11 +1589,13 @@ namespace Telegram.Controls.Messages
                 var top = 0;
                 var bottom = 0;
 
-                if (message.IsFirst && !outgoing && !message.IsChannelPost && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+                var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
+
+                if (isFirst && !outgoing && !message.IsChannelPost && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
                 {
                     top = 4;
                 }
-                if (message.IsFirst && message.IsSaved)
+                if (isFirst && message.IsSaved)
                 {
                     top = 4;
                 }

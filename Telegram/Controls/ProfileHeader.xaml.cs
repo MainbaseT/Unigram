@@ -193,13 +193,15 @@ namespace Telegram.Controls
                 SubtitleRoot.RequestedTheme = show ? ActualTheme : HeaderTheme;
             }
 
-            var subtitlePro = ElementComposition.GetElementVisual(HeaderBackground);
+            var headerBackground = ElementComposition.GetElementVisual(HeaderBackground);
+            var headerGlow = ElementComposition.GetElementVisual(HeaderGlow);
 
-            var opacityOut = subtitlePro.Compositor.CreateScalarKeyFrameAnimation();
+            var opacityOut = headerBackground.Compositor.CreateScalarKeyFrameAnimation();
             opacityOut.InsertKeyFrame(0, show ? 1 : 0);
             opacityOut.InsertKeyFrame(1, show ? 0 : 1);
 
-            subtitlePro.StartAnimation("Opacity", opacityOut);
+            headerBackground.StartAnimation("Opacity", opacityOut);
+            headerGlow.StartAnimation("Opacity", opacityOut);
         }
 
         public void InitializeScrolling(CompositionPropertySet properties)

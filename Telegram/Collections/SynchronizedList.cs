@@ -6,6 +6,7 @@
 //
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace Telegram.Collections
 {
@@ -17,8 +18,9 @@ namespace Telegram.Collections
     public partial class SynchronizedList<T> : MvxObservableCollection<T>, ISynchronizedList
     {
         private ObservableCollection<T> _source;
+        private bool _reverse;
 
-        public void UpdateSource(ObservableCollection<T> source)
+        public void UpdateSource(ObservableCollection<T> source, bool reverse)
         {
             if (_source != null)
             {
@@ -26,11 +28,12 @@ namespace Telegram.Collections
             }
 
             _source = source;
+            _reverse = reverse;
 
             if (_source != null)
             {
                 _source.CollectionChanged += OnCollectionChanged;
-                ReplaceWith(_source);
+                ReplaceWith(reverse ? _source.Reverse() : _source);
             }
             else
             {
@@ -56,13 +59,13 @@ namespace Telegram.Collections
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    InsertRange(e.NewStartingIndex, e.NewItems);
+                    InsertRange(_reverse ? Count - e.NewStartingIndex : e.NewStartingIndex, e.NewItems);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+                    RemoveRange(_reverse ? Count - e.OldStartingIndex : e.OldStartingIndex, e.OldItems.Count);
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    ReplaceWith(_source);
+                    ReplaceWith(_reverse ? _source.Reverse() : _source);
                     break;
             }
         }

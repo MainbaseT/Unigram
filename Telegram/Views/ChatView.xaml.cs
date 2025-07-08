@@ -389,7 +389,7 @@ namespace Telegram.Views
             {
                 _headerUnreadNotReady = viewModel.HasUnreadMessages;
 
-                _messages.UpdateSource(viewModel.Items);
+                _messages.UpdateSource(viewModel.Items, viewModel.IsSavedMessagesTab);
                 viewModel.MessageSliceLoaded -= OnMessageSliceLoaded;
             }
 
@@ -496,6 +496,20 @@ namespace Telegram.Views
                 Canvas.SetZIndex(background, 2);
                 LayoutRoot.Children.Insert(0, background);
             }
+            else if (ViewModel.IsSavedMessagesTab)
+            {
+                Header.Visibility = Visibility.Collapsed;
+                Footer.Visibility = Visibility.Collapsed;
+                ClipperOuter.Visibility = Visibility.Collapsed;
+
+                Messages.Template = SavedMessagesTabTemplate;
+            }
+        }
+
+        public double HeaderHeight
+        {
+            get => SavedMessagesTabHeader.Height;
+            set => SavedMessagesTabHeader.Height = value + 4;
         }
 
         private bool _fromPreview;
@@ -724,6 +738,28 @@ namespace Telegram.Views
                     continue;
                 }
 
+                var content = container.ContentTemplateRoot as FrameworkElement;
+                if (content == null)
+                {
+                    continue;
+                }
+
+                if (content is MessageSelector selector)
+                {
+                    content = selector.Content as MessageBubble;
+                }
+
+                if (content is MessageBubble bubble)
+                {
+                    bubble.UpdateAttach(message);
+                    bubble.UpdateMessageHeader(message);
+                }
+
+                if (ViewModel.IsSavedMessagesTab)
+                {
+                    return;
+                }
+
                 void UpdateNewestOldest(bool main, bool? needed, bool? loaded, ref ChatHistoryViewItem item, ref ChatHistoryViewItem headerFooter, Index index)
                 {
                     if (container == headerFooter && !main)
@@ -746,23 +782,6 @@ namespace Telegram.Views
 
                 UpdateNewestOldest(message.IsFirst, _oldestItemAsHeaderNeeded, ViewModel.IsOldestSliceLoaded, ref _oldestItem, ref _oldestItemAsHeader, 0);
                 UpdateNewestOldest(message.IsLast, _newestItemAsFooterNeeded, ViewModel.IsNewestSliceLoaded, ref _newestItem, ref _newestItemAsFooter, ^1);
-
-                var content = container.ContentTemplateRoot as FrameworkElement;
-                if (content == null)
-                {
-                    continue;
-                }
-
-                if (content is MessageSelector selector)
-                {
-                    content = selector.Content as MessageBubble;
-                }
-
-                if (content is MessageBubble bubble)
-                {
-                    bubble.UpdateAttach(message);
-                    bubble.UpdateMessageHeader(message);
-                }
             }
         }
 
@@ -3573,7 +3592,7 @@ namespace Telegram.Views
 
         private bool MessageReply_Loaded(MessageViewModel message, MessageProperties properties)
         {
-            if (message.SchedulingState != null || (ViewModel.Type != DialogType.History && ViewModel.Type != DialogType.Thread))
+            if (message.SchedulingState != null || ViewModel.Type is not DialogType.History and not DialogType.Thread || ViewModel.IsSavedMessagesTab)
             {
                 return false;
             }
@@ -3625,11 +3644,12 @@ namespace Telegram.Views
 
         private bool MessageEdit_Loaded(MessageViewModel message, MessageProperties properties)
         {
-            if (message.Content is MessagePoll or MessageLocation)
+            if (ViewModel.IsSavedMessagesTab)
             {
                 return false;
             }
-            else if (message is QuickReplyMessageViewModel quickReply)
+
+            if (message is QuickReplyMessageViewModel quickReply)
             {
                 return quickReply.CanBeEdited;
             }
@@ -3846,7 +3866,7 @@ namespace Telegram.Views
 
         private bool MessageSelect_Loaded(MessageViewModel message)
         {
-            if (ViewModel.Type == DialogType.EventLog || message.IsService)
+            if (ViewModel.Type == DialogType.EventLog || ViewModel.IsSavedMessagesTab || message.IsService)
             {
                 return false;
             }
@@ -6891,6 +6911,11 @@ namespace Telegram.Views
 
         public void UpdateMessagesHeaderPadding(float padding, bool animate, float scrollBar)
         {
+            if (ViewModel.IsSavedMessagesTab)
+            {
+                return;
+            }
+
             var scrollBarChanged = _messagesScrollBarPadding != scrollBar;
             if (scrollBarChanged || _messageScrollBarPaddingBottom != animate)
             {

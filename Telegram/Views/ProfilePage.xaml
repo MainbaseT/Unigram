@@ -6,6 +6,7 @@
                   xmlns:controls="using:Telegram.Controls"
                   xmlns:messages="using:Telegram.Controls.Messages"
                   xmlns:local="using:Telegram.Views"
+                  xmlns:chats="using:Telegram.Controls.Chats"
                   mc:Ignorable="d"
                   ShowHeader="False"
                   NavigationMode="Root">
@@ -19,6 +20,8 @@
     </Page.Transitions>
 
     <Grid Background="{ThemeResource SettingsPageBackground}">
+        <chats:ChatBackgroundControl x:Name="BackgroundRoot" />
+
         <ScrollViewer x:Name="ScrollingHost"
                       SizeChanged="OnSizeChanged"
                       DirectManipulationStarted="OnDirectManipulationStarted"

@@ -71,7 +71,7 @@
                 </Style>
             </GridView.ItemContainerStyle>
             <GridView.Header>
-                <Border Height="{x:Bind ViewModel.HeaderHeight, Mode=OneWay}" />
+                <Border x:Name="Header" />
             </GridView.Header>
             <GridView.Footer>
                 <Border Height="60" />

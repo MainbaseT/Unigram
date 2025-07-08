@@ -691,7 +691,7 @@ namespace Telegram.Controls.Messages
                 return Strings.MessageScheduledUntilOnline.AsFormattedText();
             }
 
-            return Formatter.DayGrouping(Formatter.ToLocalTime(message.Date)).AsFormattedText();
+            return Formatter.DayGrouping(Formatter.ToLocalTime(headerDate.Date)).AsFormattedText();
         }
 
         #endregion

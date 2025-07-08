@@ -140,6 +140,8 @@ namespace Telegram.ViewModels
 
         public Action<Sticker> Sticker_Click;
 
+        public bool IsSavedMessagesTab { get; set; }
+
         protected Chat _linkedChat;
         public Chat LinkedChat
         {
@@ -656,13 +658,18 @@ namespace Telegram.ViewModels
 
         public bool IsEndReached()
         {
+            return IsEndReached(Items);
+        }
+
+        public bool IsEndReached(IList<MessageViewModel> messages)
+        {
             var lastMessage = _savedMessagesTopic?.LastMessage ?? _forumTopic?.LastMessage ?? _chat?.LastMessage;
             if (lastMessage == null)
             {
-                return Items.Empty();
+                return messages.Empty();
             }
 
-            var last = Items.LastOrDefault();
+            var last = messages.LastOrDefault();
             if (last?.Content is MessageAlbum album)
             {
                 last = album.Messages.LastOrDefault();
@@ -1009,9 +1016,9 @@ namespace Telegram.ViewModels
                 }
             }
 
-            if (previous != null)
+            if (previous != null && !IsSavedMessagesTab)
             {
-                messages.Add(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null));
+                messages.Add(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(previous.Date), null));
             }
         }
 
@@ -1242,10 +1249,19 @@ namespace Telegram.ViewModels
 
                     SetScrollMode(slice.ScrollMode, true);
 
-                    var replied = slice.Items;
+                    var messages = slice.Items;
+                    var endReached = IsEndReached(messages);
 
-                    ProcessMessages(chat, replied);
-                    Items.RawReplaceWith(replied);
+                    ProcessMessages(chat, messages);
+
+                    if (endReached && messages.Count > 0 && IsSavedMessagesTab)
+                    {
+                        var previous = messages[^1];
+                        messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(previous.Date), null)));
+                        messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageCustomServiceAction(Strings.SavedMessagesProfileHint), null)));
+                    }
+
+                    Items.RawReplaceWith(messages);
 
                     MessagesCount = slice.TotalCount;
                     HasUnreadMessages = slice.IsUnread;
@@ -1258,7 +1274,7 @@ namespace Telegram.ViewModels
                     NotifyMessageSliceLoaded();
 
                     IsOldestSliceLoaded = null;
-                    IsNewestSliceLoaded = IsEndReached();
+                    IsNewestSliceLoaded = endReached;
 
                     if (Items.TryGetValue(maxId, out already))
                     {
@@ -1703,7 +1719,7 @@ namespace Telegram.ViewModels
                     var target = replied.FirstOrDefault();
                     if (target != null)
                     {
-                        replied.Insert(0, CreateMessage(new Message(0, target.SenderId, target.ChatId, null, target.SchedulingState, target.IsOutgoing, false, false, false, false, target.IsChannelPost, false, target.Date, 0, null, null, null, null, null, null, 0, target.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(), null)));
+                        replied.Insert(0, CreateMessage(new Message(0, target.SenderId, target.ChatId, null, target.SchedulingState, target.IsOutgoing, false, false, false, false, target.IsChannelPost, false, target.Date, 0, null, null, null, null, null, null, 0, target.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(target.Date), null)));
                     }
 
                     Items.ReplaceWith(replied);
@@ -2242,9 +2258,18 @@ namespace Telegram.ViewModels
                 NotifyMessageSliceLoaded();
                 LoadQuickReplyShortcutSliceAsync();
             }
+            else if (IsSavedMessagesTab)
+            {
+                Logger.Debug(string.Format("{0} - Loading messages from last", chat.Id));
+
+                state.TryRemove("highlight", out TextQuote quote);
+                LoadMessageSliceAsync(null, 0, highlight: quote);
+            }
             else if (state.TryRemove("message_id", out long navigation))
             {
-                Settings.Chats.Clear(chat.Id, ThreadId);
+                var details = GetCurrentDetails();
+
+                Settings.Chats.Clear(chat.Id, details.MessageThreadId);
                 Logger.Debug(string.Format("{0} - Loading messages from specific id", chat.Id));
 
                 state.TryRemove("highlight", out TextQuote quote);
@@ -2492,7 +2517,7 @@ namespace Telegram.ViewModels
 
             ClientService.Send(new CloseChat(chat.Id));
 
-            if (Type is not DialogType.History and not DialogType.Thread)
+            if (Type is not DialogType.History and not DialogType.Thread || IsSavedMessagesTab)
             {
                 return;
             }
