@@ -2014,6 +2014,8 @@ namespace Telegram.Controls
                 catch
                 {
                     // All the remote procedure calls must be wrapped in a try-catch block
+                    NotifyDelegate(work.CorrelationId, null, null);
+                    return;
                 }
             }
 
