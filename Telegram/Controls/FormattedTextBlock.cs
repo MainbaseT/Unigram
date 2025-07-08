@@ -363,7 +363,12 @@ namespace Telegram.Controls
             _query = query;
             _invalidateSpoilers = false;
 
-            if (_text != null && TextBlock != null && TextBlock.IsLoaded)
+            if (TextBlock == null || !TextBlock.IsLoaded)
+            {
+                return;
+            }
+
+            if (_text != null)
             {
                 if (_isHighlighted)
                 {
@@ -401,45 +406,40 @@ namespace Telegram.Controls
                     _isHighlighted = true;
                     TextBlock.TextHighlighters.Add(_spoiler);
                 }
+                else
+                {
+                    if (Below == null || _spoilerPresenter == null)
+                    {
+                        return;
+                    }
+
+                    Below.Children.Remove(_spoilerPresenter);
+                    _spoilerPresenter = null;
+                }
+            }
+            else if (_isHighlighted)
+            {
+                _isHighlighted = false;
+                TextBlock.TextHighlighters.Clear();
+
+                if (Below == null || _spoilerPresenter == null)
+                {
+                    return;
+                }
+
+                Below.Children.Remove(_spoilerPresenter);
+                _spoilerPresenter = null;
             }
         }
 
         public void SetText(IClientService clientService, FormattedText text, double fontSize = 0)
         {
-            if (text != null)
-            {
-                SetText(clientService, TextStyleRun.GetText(text), fontSize);
-            }
-            else
-            {
-                _clientService = clientService;
-                _text = null;
-                _fontSize = fontSize;
-
-                if (_templateApplied)
-                {
-                    ClearEntities();
-                }
-            }
+            SetText(clientService, TextStyleRun.GetText(text), fontSize);
         }
 
         public void SetText(IClientService clientService, string text, IList<TextEntity> entities, double fontSize = 0)
         {
-            if (text != null)
-            {
-                SetText(clientService, TextStyleRun.GetText(text, entities), fontSize);
-            }
-            else
-            {
-                _clientService = clientService;
-                _text = null;
-                _fontSize = fontSize;
-
-                if (_templateApplied)
-                {
-                    ClearEntities();
-                }
-            }
+            SetText(clientService, TextStyleRun.GetText(text, entities), fontSize);
         }
 
         public void SetText(IClientService clientService, StyledText styled, double fontSize = 0)
@@ -911,7 +911,7 @@ namespace Telegram.Controls
             }
             else
             {
-                _invalidateSpoilers = false;
+                _invalidateSpoilers = _spoiler != null;
                 _spoiler = null;
             }
 

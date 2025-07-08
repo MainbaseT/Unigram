@@ -356,6 +356,11 @@ namespace Telegram.Common
 
         public static StyledText GetText(string text, IList<TextEntity> entities)
         {
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+
             return new StyledText(text, entities, GetParagraphs(text, entities ?? Array.Empty<TextEntity>()));
         }
 
