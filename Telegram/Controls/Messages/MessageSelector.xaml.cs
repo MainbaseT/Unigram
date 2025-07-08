@@ -427,11 +427,11 @@ namespace Telegram.Controls.Messages
             }
 
             properties = compositor.CreatePropertySet();
-            properties.InsertScalar("Progress", 1.0F);
+            properties.InsertScalar("Progress", 0.0F);
 
             var progressAnimation = compositor.CreateExpressionAnimation("_.Progress");
             progressAnimation.SetReferenceParameter("_", properties);
-            visual.RootVisual.Properties.InsertScalar("Progress", 1.0F);
+            visual.RootVisual.Properties.InsertScalar("Progress", 0.0F);
             visual.RootVisual.Properties.StartAnimation("Progress", progressAnimation);
 
             return visual;
