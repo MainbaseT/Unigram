@@ -698,9 +698,12 @@ namespace Telegram.Views
                         : PanelScrollingDirection.Backward;
                 }
 
+                var contentOffset = Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10);
                 var snap = ProfileHeader.ActualSize.Y > ProfileHeader.HeaderHeight
-                    ? ProfileHeader.HeaderHeight - 48
-                    : Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10);
+                    ? _initialVerticalOffset >= contentOffset
+                    ? contentOffset
+                    : ProfileHeader.HeaderHeight - 48
+                    : contentOffset;
 
                 if (RootGrid.Update(direction == PanelScrollingDirection.Forward ? snap : 0, !_initialDirectManipulation))
                 {
@@ -719,7 +722,7 @@ namespace Telegram.Views
                 var diff = e.FinalView.VerticalOffset - (ProfileHeader.ActualSize.Y - 48);
                 var threshold = _initialDirectManipulation ? 24 : 32;
 
-                if (RootGrid.Update(diff >= 0 && diff <= threshold ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10) : -1, false))
+                if (RootGrid.Update(diff >= -1 && diff <= threshold ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10) : -1, false))
                 {
                     if (diff >= 0 && diff <= threshold)
                     {
