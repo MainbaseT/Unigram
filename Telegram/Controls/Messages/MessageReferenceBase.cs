@@ -22,6 +22,8 @@ namespace Telegram.Controls.Messages
 {
     public abstract class MessageReferenceBase : HyperlinkButton
     {
+        protected MessageComposerHeader _composerHeader;
+
         protected MessageViewModel _messageReply;
 
         protected MessageViewModel _message;
@@ -34,26 +36,14 @@ namespace Telegram.Controls.Messages
         {
         }
 
-        public long MessageId { get; private set; }
+        public MessageViewModel Message { get; private set; }
 
         #region Message
 
-        public object Message
+        public void UpdateComposerHeader(MessageComposerHeader embedded)
         {
-            get => GetValue(MessageProperty);
-            set => SetValue(MessageProperty, value);
-        }
+            _composerHeader = embedded;
 
-        public static readonly DependencyProperty MessageProperty =
-            DependencyProperty.Register("Message", typeof(object), typeof(MessageReferenceBase), new PropertyMetadata(null, OnMessageChanged));
-
-        private static void OnMessageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((MessageReferenceBase)d).OnMessageChanged(e.NewValue as MessageComposerHeader);
-        }
-
-        protected void OnMessageChanged(MessageComposerHeader embedded)
-        {
             if (embedded == null || !_templateApplied)
             {
                 return;
@@ -61,7 +51,7 @@ namespace Telegram.Controls.Messages
 
             if (embedded.LinkPreview != null && !embedded.LinkPreviewDisabled)
             {
-                MessageId = 0;
+                Message = null;
                 Visibility = Visibility.Visible;
 
                 HideThumbnail();
@@ -89,12 +79,12 @@ namespace Telegram.Controls.Messages
             }
             else if (embedded.EditingMessage != null)
             {
-                MessageId = embedded.EditingMessage.Id;
+                Message = embedded.EditingMessage;
                 GetMessageTemplate(embedded.EditingMessage, null, false, Strings.Edit, true, false, false);
             }
             else if (embedded.ReplyToMessage != null)
             {
-                MessageId = embedded.ReplyToMessage.Id;
+                Message = embedded.ReplyToMessage;
                 GetMessageTemplate(embedded.ReplyToMessage, embedded.ReplyToQuote?.Text, false, embedded.ReplyToQuote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
             }
         }
@@ -167,11 +157,12 @@ namespace Telegram.Controls.Messages
 
             if (loading)
             {
+                Message = null;
                 SetLoadingTemplate(message, null, title, true, false);
             }
             else
             {
-                MessageId = message.Id;
+                Message = message;
                 GetMessageTemplate(message, null, false, title, true, false, message.ForwardInfo != null);
             }
         }

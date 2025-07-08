@@ -215,9 +215,9 @@ namespace Telegram.Controls.Messages
             {
                 UpdateMessage(_message, _loading, _title);
             }
-            else if (Message != null)
+            else if (_composerHeader != null)
             {
-                OnMessageChanged(Message as MessageComposerHeader);
+                UpdateComposerHeader(_composerHeader);
             }
         }
 

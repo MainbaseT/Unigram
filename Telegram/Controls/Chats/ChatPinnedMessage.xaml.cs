@@ -70,8 +70,6 @@ namespace Telegram.Controls.Chats
             return _alternativeText;
         }
 
-        public new MessageViewModel Message => _message;
-
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             _chatId = 0;

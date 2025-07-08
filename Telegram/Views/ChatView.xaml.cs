@@ -1917,19 +1917,19 @@ namespace Telegram.Views
 
             //if (sender is MessagePinned || WindowContext.IsKeyDown(VirtualKey.Control))
             {
-                var message = referenceBase.MessageId;
-                if (message != 0)
+                var message = referenceBase.Message;
+                if (message != null && message.ChatId == ViewModel.ChatId)
                 {
                     if (sender is not ChatPinnedMessage)
                     {
                         ViewModel.PinnedMessages.SetLocked(0);
                     }
 
-                    await ViewModel.LoadMessageSliceAsync(null, message);
+                    await ViewModel.LoadMessageSliceAsync(null, message.Id);
 
                     if (sender is ChatPinnedMessage)
                     {
-                        ViewModel.PinnedMessages.SetLocked(message);
+                        ViewModel.PinnedMessages.SetLocked(message.Id);
                         ViewVisibleMessages();
                     }
                 }
@@ -5441,7 +5441,7 @@ namespace Telegram.Views
                 // Let's reset
                 //ComposerHeader.Visibility = Visibility.Collapsed;
                 ShowHideComposerHeader(false);
-                ComposerHeaderReference.Message = null;
+                ComposerHeaderReference.UpdateComposerHeader(null);
 
                 ButtonAttach.Glyph = Icons.Attach24;
                 ButtonAttach.IsEnabled = true;
@@ -5455,7 +5455,7 @@ namespace Telegram.Views
             {
                 //ComposerHeader.Visibility = Visibility.Visible;
                 ShowHideComposerHeader(true);
-                ComposerHeaderReference.Message = header;
+                ComposerHeaderReference.UpdateComposerHeader(header);
 
                 TextField.Reply = header;
 
