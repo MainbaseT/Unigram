@@ -13,6 +13,7 @@ using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
 using Telegram.Views;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
@@ -261,7 +262,16 @@ namespace Telegram.Controls.Gallery
                     Button.SetGlyph(file.Id, MessageContentState.Photo);
                     Button.Opacity = 0;
 
-                    Texture.Source = UriEx.ToBitmap(file.Local.Path, 0, 0);
+                    if (Extensions.IsRelativePath(ApplicationData.Current.LocalFolder.Path, file.Local.Path, out _))
+                    {
+                        Texture.Source = UriEx.ToBitmap(file.Local.Path, 0, 0);
+                    }
+                    else
+                    {
+                        var bitmap = new BitmapImage();
+                        Texture.Source = bitmap;
+                        UpdateBitmap(bitmap, file.Local.Path);
+                    }
                 }
                 else
                 {
@@ -273,6 +283,22 @@ namespace Telegram.Controls.Gallery
 
             Canvas.SetZIndex(Button,
                 Button.State == MessageContentState.Photo ? -1 : 0);
+        }
+
+        private async void UpdateBitmap(BitmapImage bitmap, string path)
+        {
+            try
+            {
+                var file = await StorageFile.GetFileFromPathAsync(path);
+                using (var stream = await file.OpenReadAsync())
+                {
+                    await bitmap.SetSourceAsync(stream);
+                }
+            }
+            catch
+            {
+                //
+            }
         }
 
         private void UpdateThumbnail(object target, File file)
