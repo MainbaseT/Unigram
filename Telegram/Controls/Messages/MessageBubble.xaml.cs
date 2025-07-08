@@ -1742,132 +1742,45 @@ namespace Telegram.Controls.Messages
             //    UpdateAttach(message);
             //}
 
-            if (content is MessageText textMessage && textMessage.LinkPreview != null)
+            Media.Child = content switch
             {
-                Media.Child = new WebPageContent(message);
-            }
-            else if (content is MessageAlbum)
-            {
-                Media.Child = new AlbumContent(message);
-            }
-            else if (content is MessagePaidAlbum)
-            {
-                Media.Child = new PaidMediaContent(message);
-            }
-            else if (content is MessageAnimation)
-            {
-                Media.Child = new AnimationContent(message);
-            }
-            else if (content is MessageAudio)
-            {
-                Media.Child = new AudioContent(message);
-            }
-            else if (content is MessageCall or MessageGroupCall)
-            {
-                Media.Child = new CallContent(message);
-            }
-            else if (content is MessageContact)
-            {
-                Media.Child = new ContactContent(message);
-            }
-            else if (content is MessageDice)
-            {
-                Media.Child = new DiceContent(message);
-            }
-            else if (content is MessageDocument)
-            {
-                Media.Child = new DocumentContent(message);
-            }
-            else if (content is MessageGame)
-            {
-                Media.Child = new GameContent(message);
-            }
-            else if (content is MessageInvoice invoice)
-            {
-                if (invoice.PaidMedia is PaidMediaPhoto)
-                {
-                    Media.Child = new PhotoContent(message);
-                }
-                else if (invoice.PaidMedia is PaidMediaVideo)
-                {
-                    Media.Child = new VideoContent(message);
-                }
-                else if (invoice.PaidMedia is PaidMediaPreview)
-                {
-                    Media.Child = new InvoicePreviewContent(message);
-                }
-                else if (invoice.ProductInfo.Photo != null)
-                {
-                    Media.Child = new InvoicePhotoContent(message);
-                }
-                else
-                {
-                    Media.Child = new InvoiceContent(message);
-                }
-            }
-            else if (content is MessageLocation)
-            {
-                Media.Child = new LocationContent(message);
-            }
-            else if (content is MessagePhoto)
-            {
-                Media.Child = new PhotoContent(message);
-            }
-            else if (content is MessagePoll)
-            {
-                Media.Child = new PollContent(message);
-            }
-            else if (content is MessageChecklist)
-            {
-                Media.Child = new ChecklistContent(message);
-            }
-            else if (content is MessageSticker)
-            {
-                Media.Child = new StickerContent(message);
-            }
-            else if (content is MessageVenue)
-            {
-                Media.Child = new VenueContent(message);
-            }
-            else if (content is MessageVideo)
-            {
-                Media.Child = new VideoContent(message);
-            }
-            else if (content is MessageVideoNote)
-            {
-                Media.Child = new VideoNoteContent(message);
-            }
-            else if (content is MessageVoiceNote)
-            {
-                Media.Child = new VoiceNoteContent(message);
-            }
-            else if (content is MessageGiveaway or MessageGiveawayWinners)
-            {
-                Media.Child = new GiveawayContent(message);
-            }
-            else if (content is MessageAsyncStory story && story.State != MessageStoryState.Expired)
-            {
-                Media.Child = new AspectView
+                MessageText textMessage when textMessage.LinkPreview != null => new WebPageContent(message),
+                MessageAlbum => new AlbumContent(message),
+                MessagePaidAlbum => new PaidMediaContent(message),
+                MessageAnimation => new AnimationContent(message),
+                MessageAudio => new AudioContent(message),
+                MessageCall or MessageGroupCall => new CallContent(message),
+                MessageContact => new ContactContent(message),
+                MessageDice => new DiceContent(message),
+                MessageDocument => new DocumentContent(message),
+                MessageGame => new GameContent(message),
+                MessageInvoice invoice when invoice.PaidMedia is PaidMediaPhoto => new PhotoContent(message),
+                MessageInvoice invoice when invoice.PaidMedia is PaidMediaVideo => new VideoContent(message),
+                MessageInvoice invoice when invoice.PaidMedia is PaidMediaPreview => new InvoicePreviewContent(message),
+                MessageInvoice invoice when invoice.ProductInfo.Photo != null => new InvoicePhotoContent(message),
+                MessageInvoice => new InvoiceContent(message),
+                MessageLocation => new LocationContent(message),
+                MessagePhoto => new PhotoContent(message),
+                MessagePoll => new PollContent(message),
+                MessageChecklist => new ChecklistContent(message),
+                MessageSticker => new StickerContent(message),
+                MessageVenue => new VenueContent(message),
+                MessageVideo => new VideoContent(message),
+                MessageVideoNote => new VideoNoteContent(message),
+                MessageVoiceNote => new VoiceNoteContent(message),
+                MessageGiveaway or MessageGiveawayWinners => new GiveawayContent(message),
+                MessageAsyncStory story when story.State != MessageStoryState.Expired => new AspectView
                 {
                     Constraint = message
-                };
-            }
-            else if (content is MessageAnimatedEmoji)
-            {
-                Media.Child = new Border
+                },
+                MessageAnimatedEmoji => new Border
                 {
                     Width = 180 * message.ClientService.Config.GetNamedNumber("emojies_animated_zoom", 0.625f),
                     Height = 180 * message.ClientService.Config.GetNamedNumber("emojies_animated_zoom", 0.625f)
-                };
-            }
-            else if (content is MessageUnsupported)
-            {
-                Media.Child = new UnsupportedContent(message);
-            }
-            else
-            {
-                Media.Child = null;
-            }
+                },
+                MessageUnsupported => new UnsupportedContent(message),
+                _ => null
+            };
         }
 
         public IPlayerView GetPlaybackElement()
