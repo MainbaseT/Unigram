@@ -299,14 +299,12 @@ namespace Telegram.Views.Host
             var detail = WindowContext.Current.NavigationServices.GetByFrameId($"Main{master.FrameFacade.FrameId}");
             if (detail != null)
             {
-                //detail.Navigate(typeof(BlankPage));
-                //detail.ClearCache();
                 detail.Suspend();
+                detail.ClearCache();
             }
 
             master.Frame.Navigating -= OnNavigating;
             master.Frame.Navigated -= OnNavigated;
-            //master.Frame.Navigate(typeof(BlankPage));
             master.Suspend();
 
             WindowContext.Current.NavigationServices.Remove(master);
