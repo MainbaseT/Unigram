@@ -46,7 +46,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (_viewModel.Type == DialogType.Thread && _viewModel.Thread != null)
+            if (_viewModel.Type == DialogType.Thread && (_viewModel.Thread != null || _viewModel.SavedMessagesTopic != null))
             {
                 _viewModel.Delegate?.UpdatePinnedMessage(chat, false);
                 return;
