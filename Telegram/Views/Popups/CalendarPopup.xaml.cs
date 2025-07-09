@@ -133,10 +133,10 @@ namespace Telegram.Views.Popups
             var text = grid.Children[1] as TextBlock;
             var original = children[^1] as TextBlock;
 
-            grid.Background = new SolidColorBrush(Colors.Black);
-            text.Foreground = new SolidColorBrush(Colors.White);
+            //grid.Background = new SolidColorBrush(Colors.Black);
+            //text.Foreground = new SolidColorBrush(Colors.White);
             text.Text = original.Text;
-            text.FontWeight = FontWeights.SemiBold;
+            //text.FontWeight = FontWeights.SemiBold;
             grid.Visibility = Visibility.Visible;
             original.Visibility = Visibility.Collapsed;
 
