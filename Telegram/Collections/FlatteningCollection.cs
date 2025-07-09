@@ -86,7 +86,7 @@ namespace Telegram.Collections
 
             foreach (var collection in _groups)
             {
-                if (collection.Count > 0)
+                if (collection.Count > 0 && collection.Key != null)
                 {
                     temp.Add(collection);
                 }

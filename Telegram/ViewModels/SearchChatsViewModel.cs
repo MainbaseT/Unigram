@@ -331,7 +331,7 @@ namespace Telegram.ViewModels
 
         private Chat LoadSavedMessages(string query, CancellationToken cancellationToken)
         {
-            if (ClientEx.SearchByPrefix(Strings.SavedMessages, _query))
+            if (ClientEx.SearchByPrefix(Strings.SavedMessages, query))
             {
                 if (ClientService.TryGetChat(ClientService.Options.MyId, out Chat chat) && !cancellationToken.IsCancellationRequested)
                 {
@@ -352,8 +352,6 @@ namespace Telegram.ViewModels
 
             var task2 = ClientService.SendAsync(new SearchChats(query, 100));
             var task3 = ClientService.SendAsync(new SearchContacts(query, 100));
-
-            await Task.WhenAny(task2, task3);
 
             var temp = new List<SearchResult>();
 
