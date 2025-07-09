@@ -197,7 +197,13 @@ namespace Telegram.Controls
         private void OnReady(object sender, EventArgs e)
         {
             var icon = sender as CustomEmojiIcon;
+
             var root = icon.Parent as Grid;
+            if (root == null)
+            {
+                return;
+            }
+
             var visual = ElementComposition.GetElementVisual(root);
 
             var scale = visual.Compositor.CreateVector3KeyFrameAnimation();
