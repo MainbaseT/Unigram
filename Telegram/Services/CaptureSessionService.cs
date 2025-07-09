@@ -62,12 +62,19 @@ namespace Telegram.Services
             var access = await RequestAccessAsync();
             if (access == AppCapabilityAccessStatus.UserPromptRequired)
             {
-                var picker = new GraphicsCapturePicker();
-
-                var backup = await picker.PickSingleItemAsync();
-                if (backup != null)
+                try
                 {
-                    return new CaptureSessionOptions(backup, 0);
+                    var picker = new GraphicsCapturePicker();
+
+                    var backup = await picker.PickSingleItemAsync();
+                    if (backup != null)
+                    {
+                        return new CaptureSessionOptions(backup, 0);
+                    }
+                }
+                catch
+                {
+                    // All the remote procedure calls must be wrapped in a try-catch block
                 }
 
                 return null;
