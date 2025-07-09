@@ -1411,13 +1411,13 @@ namespace Telegram.Views
                 {
                     if (_oldEditing)
                     {
-                        elementHide = btnEdit;
+                        elementHide = EditMessageButton;
                         SendMessageButton.Visibility = Visibility.Collapsed;
                     }
                     else
                     {
                         elementHide = SendMessageButton;
-                        btnEdit.Visibility = Visibility.Collapsed;
+                        EditMessageButton.Visibility = Visibility.Collapsed;
                     }
 
                     elementShow = ButtonRecord;
@@ -1426,13 +1426,13 @@ namespace Telegram.Views
                 {
                     if (_oldEditing)
                     {
-                        elementHide = btnEdit;
+                        elementHide = EditMessageButton;
                         ButtonRecord.Visibility = Visibility.Collapsed;
                     }
                     else
                     {
                         elementHide = ButtonRecord;
-                        btnEdit.Visibility = Visibility.Collapsed;
+                        EditMessageButton.Visibility = Visibility.Collapsed;
                     }
 
                     elementShow = SendMessageButton;
@@ -1453,7 +1453,7 @@ namespace Telegram.Views
                         ButtonRecord.Visibility = Visibility.Collapsed;
                     }
 
-                    elementShow = btnEdit;
+                    elementShow = EditMessageButton;
                 }
                 else
                 {
@@ -1468,7 +1468,7 @@ namespace Telegram.Views
                         ButtonRecord.Visibility = Visibility.Collapsed;
                     }
 
-                    elementHide = btnEdit;
+                    elementHide = EditMessageButton;
                 }
             }
             //else

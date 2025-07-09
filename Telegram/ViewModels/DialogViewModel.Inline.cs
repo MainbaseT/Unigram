@@ -42,6 +42,13 @@ namespace Telegram.ViewModels
             }
         }
 
+        private bool _isInlineBotResultsLoading;
+        public bool IsInlineBotResultsLoading
+        {
+            get => _isInlineBotResultsLoading;
+            set => Set(ref _isInlineBotResultsLoading, value);
+        }
+
         public bool IsInlineBotResultsVisible => _inlineBotResults != null && (_inlineBotResults.Button != null || _inlineBotResults.Count > 0);
 
         public async Task<bool> ResolveInlineBotAsync(string text, CancellationToken token)
@@ -135,9 +142,12 @@ namespace Telegram.ViewModels
             if (false && string.IsNullOrEmpty(query))
             {
                 InlineBotResults = null;
+                IsInlineBotResultsLoading = false;
             }
             else
             {
+                IsInlineBotResultsLoading = true;
+
                 var collection = new BotResultsCollection(ClientService, _currentInlineBot.Id, chat.Id, null, query, token);
                 await collection.LoadMoreItemsAsync(0);
 
@@ -146,6 +156,7 @@ namespace Telegram.ViewModels
                     InlineBotResults = collection;
                 }
 
+                IsInlineBotResultsLoading = false;
                 //var response = await ClientService.GetInlineBotResultsAsync(CurrentInlineBot.ToInputUser(), Peer, null, query, string.Empty);
                 //if (response.IsSucceeded)
                 //{

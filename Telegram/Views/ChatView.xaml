@@ -10,6 +10,7 @@
                         xmlns:messages="using:Telegram.Controls.Messages"
                         xmlns:local="using:Telegram.Views"
                         xmlns:views="using:Telegram.Controls.Views"
+                        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                         mc:Ignorable="d"
                         Connected="OnLoaded"
                         Disconnected="OnUnloaded"
@@ -34,7 +35,8 @@
                     Value="{ThemeResource PageSubHeaderBackgroundBrush2}" />
         </Style>
 
-        <ControlTemplate x:Name="SavedMessagesTabTemplate" TargetType="ListView">
+        <ControlTemplate x:Name="SavedMessagesTabTemplate"
+                         TargetType="ListView">
             <Border BorderBrush="{TemplateBinding BorderBrush}"
                     Background="{TemplateBinding Background}"
                     BorderThickness="{TemplateBinding BorderThickness}"
@@ -1847,17 +1849,33 @@
                                             Margin="0,8,8,8" />
                                 </Grid>
 
-                                <controls:GlyphButton x:Name="btnEdit"
-                                                      VerticalAlignment="Bottom"
-                                                      Click="btnSendMessage_Click"
-                                                      Glyph="&#xE9F4;"
-                                                      AllowFocusOnInteraction="False"
-                                                      Foreground="{ThemeResource TelegramBackgroundAccentBrush}"
-                                                      FontSize="24"
-                                                      Grid.Column="2"
-                                                      AutomationProperties.Name="{CustomResource Done}"
-                                                      ToolTipService.ToolTip="{CustomResource Done}"
-                                                      Visibility="Collapsed" />
+                                <Grid x:Name="EditMessageButton"
+                                      Visibility="Collapsed"
+                                      Grid.Column="2">
+
+                                    <Ellipse Fill="#FFFFFF"
+                                             Width="16"
+                                             Height="16" />
+
+                                    <controls:GlyphButton x:Name="btnEdit"
+                                                          VerticalAlignment="Bottom"
+                                                          Click="btnSendMessage_Click"
+                                                          Glyph="&#xE9F4;"
+                                                          AllowFocusOnInteraction="False"
+                                                          Foreground="{ThemeResource TelegramBackgroundAccentBrush}"
+                                                          FontSize="24"
+                                                          AutomationProperties.Name="{CustomResource Done}"
+                                                          ToolTipService.ToolTip="{CustomResource Done}" />
+
+                                    <muxc:ProgressRing x:Name="EditMessageProgress"
+                                                       IsActive="{x:Bind ViewModel.IsInlineBotResultsLoading, Mode=OneWay}"
+                                                       IsHitTestVisible="False"
+                                                       Foreground="#7AFFFFFF"
+                                                       MinWidth="20"
+                                                       MinHeight="20"
+                                                       Width="20"
+                                                       Height="20" />
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
