@@ -39,12 +39,18 @@ namespace Telegram.Views.Popups
 
         private readonly Checklist _checklist;
 
-        public CreateChecklistPopup(IClientService clientService)
-            : this(clientService, null, true, false, null)
+        public CreateChecklistPopup(IClientService clientService, FormattedText title)
+            : this(clientService, title, null, true, false, null)
         {
         }
 
         public CreateChecklistPopup(IClientService clientService, Checklist checklist, bool canBeEdited, bool addTask, ChecklistTask taskToEdit)
+            : this(clientService, null, checklist, canBeEdited, addTask, taskToEdit)
+        {
+
+        }
+
+        private CreateChecklistPopup(IClientService clientService, FormattedText title, Checklist checklist, bool canBeEdited, bool addTask, ChecklistTask taskToEdit)
         {
             InitializeComponent();
 
@@ -55,6 +61,11 @@ namespace Telegram.Views.Popups
 
             TitleText.DataContext = _viewModel;
             TitleText.MaxLength = (int)clientService.Options.ChecklistTitleLengthMax;
+
+            if (title != null)
+            {
+                TitleText.SetText(title);
+            }
 
             AddTask.DataContext = _viewModel;
             AddTask.MaxLength = (int)clientService.Options.ChecklistTaskTextLengthMax;

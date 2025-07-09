@@ -1574,7 +1574,7 @@ namespace Telegram.ViewModels
             }
             else if (keyboardButton.Type is KeyboardButtonTypeRequestPoll requestPoll)
             {
-                await SendPollAsync(requestPoll.ForceQuiz, requestPoll.ForceRegular, _chat?.Type is ChatTypeSupergroup super && super.IsChannel);
+                await SendPollAsync(false, requestPoll.ForceQuiz, requestPoll.ForceRegular, _chat?.Type is ChatTypeSupergroup super && super.IsChannel);
             }
             else if (keyboardButton.Type is KeyboardButtonTypeText)
             {

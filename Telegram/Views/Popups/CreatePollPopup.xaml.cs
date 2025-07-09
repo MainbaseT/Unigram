@@ -36,7 +36,7 @@ namespace Telegram.Views.Popups
     {
         private readonly CreatePollViewModel _viewModel;
 
-        public CreatePollPopup(IClientService clientService, bool forceQuiz, bool forceRegular, bool forceAnonymous)
+        public CreatePollPopup(IClientService clientService, FormattedText question, bool forceQuiz, bool forceRegular, bool forceAnonymous)
         {
             InitializeComponent();
 
@@ -46,6 +46,11 @@ namespace Telegram.Views.Popups
 
             QuestionText.DataContext = _viewModel;
             EmojiPanel.DataContext = EmojiDrawerViewModel.Create(clientService.SessionId);
+
+            if (question != null)
+            {
+                QuestionText.SetText(question);
+            }
 
             Title = Strings.NewPoll;
             PrimaryButtonText = Strings.OK;

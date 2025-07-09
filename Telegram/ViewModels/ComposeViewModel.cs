@@ -777,16 +777,20 @@ namespace Telegram.ViewModels
 
         public async void SendPoll()
         {
-            await SendPollAsync(false, false, Chat?.Type is ChatTypeSupergroup super && super.IsChannel);
+            await SendPollAsync(true, false, false, Chat?.Type is ChatTypeSupergroup super && super.IsChannel);
         }
 
-        protected async Task SendPollAsync(bool forceQuiz, bool forceRegular, bool forceAnonymous)
+        protected async Task SendPollAsync(bool useTextAsQuestion, bool forceQuiz, bool forceRegular, bool forceAnonymous)
         {
-            var dialog = new CreatePollPopup(ClientService, forceQuiz, forceRegular, forceAnonymous);
+            var title = GetFormattedText(true, false);
+            title = title.Substring(0, ClientService.Options.ChecklistTitleLengthMax);
 
-            var confirm = await ShowPopupAsync(dialog);
+            var popup = new CreatePollPopup(ClientService, title, forceQuiz, forceRegular, forceAnonymous);
+
+            var confirm = await ShowPopupAsync(popup);
             if (confirm != ContentDialogResult.Primary)
             {
+                SetFormattedText(title);
                 return;
             }
 
@@ -797,7 +801,7 @@ namespace Telegram.ViewModels
             }
 
             var reply = GetReply(true);
-            var input = new InputMessagePoll(dialog.Question, dialog.Options, dialog.IsAnonymous, dialog.Type, 0, 0, false);
+            var input = new InputMessagePoll(popup.Question, popup.Options, popup.IsAnonymous, popup.Type, 0, 0, false);
 
             await SendMessageAsync(reply, input, options);
         }
@@ -806,11 +810,15 @@ namespace Telegram.ViewModels
         {
             if (IsPremium)
             {
-                var popup = new CreateChecklistPopup(ClientService);
+                var title = GetFormattedText(true, false);
+                title = title.Substring(0, ClientService.Options.ChecklistTitleLengthMax);
+
+                var popup = new CreateChecklistPopup(ClientService, title);
 
                 var confirm = await ShowPopupAsync(popup);
                 if (confirm != ContentDialogResult.Primary)
                 {
+                    SetFormattedText(title);
                     return;
                 }
 
