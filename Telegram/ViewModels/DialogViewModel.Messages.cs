@@ -1297,7 +1297,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (properties.CanBeEdited)
+            if (properties.CanBeEdited && !addTask)
             {
                 ClientService.Send(new EditMessageChecklist(message.ChatId, message.Id, null, new InputChecklist(popup.Title, popup.Tasks, popup.OthersCanAddTasks, popup.OthersCanMarkTasksAsDone)));
             }
