@@ -48,11 +48,12 @@ namespace Telegram.Collections
         // Used to be able to cancel outstanding requests
         private CancellationTokenSource _cancelTokenSource;
         // Callback that will be used to request data
-        private fetchDataCallbackHandler fetchDataCallback;
+        private fetchDataCallbackHandler _fetchDataCallback;
         // Maximum number of items that can be fetched in one batch
         private int _maxBatchFetchSize;
         // Timer to optimize the the fetching of data so we throttle requests if the list is still changing
         private DispatcherTimer _timer;
+        private bool _stopped;
 
 #if DEBUG
         // Name for trace messages, and when debugging so you know which instance of the cache manager you are dealing with
@@ -63,7 +64,7 @@ namespace Telegram.Collections
             _cacheBlocks = new List<CacheEntryBlock<T>>();
             _requests = new ItemIndexRangeList();
             _cachedResults = new ItemIndexRangeList();
-            fetchDataCallback = callback;
+            _fetchDataCallback = callback;
             _maxBatchFetchSize = batchsize;
             //set up a timer that is used to delay fetching data so that we can catch up if the list is scrolling fast
             _timer = new Windows.UI.Xaml.DispatcherTimer();
@@ -82,6 +83,13 @@ namespace Telegram.Collections
         }
 
         public event TypedEventHandler<object, CacheChangedEventArgs<T>> CacheChanged;
+
+        public void Stop()
+        {
+            _stopped = true;
+            _cancelTokenSource.Cancel();
+            _timer.Stop();
+        }
 
         /// <summary>
         /// Indexer for access to the item cache
@@ -122,9 +130,9 @@ namespace Telegram.Collections
                         return;
                     }
                 }
+
                 // No blocks exist, so creating a new block
                 AddOrExtendBlock(index, value, _cacheBlocks.Count);
-
             }
         }
 
@@ -143,10 +151,10 @@ namespace Telegram.Collections
                     return;
                 }
             }
+
             CacheEntryBlock<T> newBlock = new CacheEntryBlock<T>(index, new T[] { value });
             _cacheBlocks.Insert(insertBeforeBlock, newBlock);
         }
-
 
         /// <summary>
         /// Updates the desired item range of the cache, discarding items that are not needed, and figuring out which items need to be requested. It will then kick off a fetch if required.
@@ -231,6 +239,11 @@ namespace Telegram.Collections
         // If another fetch is requested in that time, it will reset the timer, so we don't fetch data if the view is actively scrolling
         public void StartFetchData()
         {
+            if (_stopped)
+            {
+                return;
+            }
+
             // Verify if an active request is still needed
             if (_requestInProgress != null)
             {
@@ -260,6 +273,12 @@ namespace Telegram.Collections
         {
             //Stop the timer so we don't get fired again unless data is requested
             _timer.Stop();
+
+            if (_stopped)
+            {
+                return;
+            }
+
             if (_requestInProgress != null)
             {
                 // Verify if an active request is still needed
@@ -290,7 +309,7 @@ namespace Telegram.Collections
                     Debug.WriteLine(">" + debugName + " Fetching items " + nextRequest.FirstIndex + "->" + nextRequest.LastIndex);
 #endif
                     // Use the callback to get the data, passing in a cancellation token
-                    data = await fetchDataCallback(nextRequest, ct);
+                    data = await _fetchDataCallback(nextRequest, ct);
 
                     if (data != null && !ct.IsCancellationRequested)
                     {

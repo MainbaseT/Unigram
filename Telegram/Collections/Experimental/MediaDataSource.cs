@@ -59,16 +59,17 @@ namespace Telegram.Collections
             return ds;
         }
 
-        // Handles a change notification for the list of files from the OS
-        private void ResetCollection()
+        public async void SetFilter(SearchMessagesFilter filter)
         {
-            // Unhook the old change notification
             if (_itemCache != null)
             {
+                _itemCache.Stop();
                 _itemCache.CacheChanged -= ItemCache_CacheChanged;
             }
 
-            // Create a new instance of the cache manager
+            _filter = filter;
+            await UpdateCount(true);
+
             _itemCache = new ItemCacheManager<MessageWithOwner>(FetchDataCallback, 50);
             _itemCache.CacheChanged += ItemCache_CacheChanged;
 
@@ -78,16 +79,10 @@ namespace Telegram.Collections
             }
         }
 
-        public async void SetFilter(SearchMessagesFilter filter)
-        {
-            _filter = filter;
-
-            await UpdateCount(true);
-            ResetCollection();
-        }
-
         private async Task UpdateCount(bool getSparseMessages)
         {
+            await _gettingPositions.WaitAsync();
+
             if (getSparseMessages)
             {
                 var response = await _clientService.SendAsync(new GetChatSparseMessagePositions(_chatId, _filter, 0, 2000, _savedMessagesTopicId));
@@ -110,6 +105,8 @@ namespace Telegram.Collections
                     _count = count.CountValue;
                 }
             }
+
+            _gettingPositions.Release();
 
             if (CollectionChanged != null)
             {
