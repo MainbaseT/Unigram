@@ -203,8 +203,11 @@ namespace Telegram.ViewModels.Profile
 
         public void Preload()
         {
-            ItemsView.Reload();
-            _ = ItemsView.LoadMoreItemsAsync(50);
+            if (Items.Empty())
+            {
+                ItemsView.Reload();
+                _ = ItemsView.LoadMoreItemsAsync(50);
+            }
         }
 
         public event EventHandler ItemsReady;
