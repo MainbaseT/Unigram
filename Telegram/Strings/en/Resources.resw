@@ -7560,7 +7560,7 @@ This setting does not affect group chats.</value>
     <value>{0} invite links</value>
   </data>
   <data name="InviteLinkPrivate" xml:space="preserve">
-    <value>Invite Link only works for group members</value>
+    <value>This topic link will only work for group members</value>
   </data>
   <data name="InviteLinks" xml:space="preserve">
     <value>Invite Links</value>
@@ -12903,16 +12903,16 @@ in mini apps on Telegram.</value>
     <value>Only **Telegram Premium** subscribers can mark tasks as done.</value>
   </data>
   <data name="TodoTaskCompleted" xml:space="preserve">
-    <value>un1 marked &quot;{0}&quot; as done</value>
+    <value>un1 marked **&quot;{0}&quot;** as done</value>
   </data>
   <data name="TodoTaskCompletedOut" xml:space="preserve">
-    <value>You marked &quot;{0}&quot; as done</value>
+    <value>You marked **&quot;{0}&quot;** as done</value>
   </data>
   <data name="TodoTaskNotCompleted" xml:space="preserve">
-    <value>un1 marked &quot;{0}&quot; as not done</value>
+    <value>un1 marked **&quot;{0}&quot;** as not done</value>
   </data>
   <data name="TodoTaskNotCompletedOut" xml:space="preserve">
-    <value>You marked &quot;{0}&quot; as not done</value>
+    <value>You marked **&quot;{0}&quot;** as not done</value>
   </data>
   <data name="TodoTaskPlaceholder" xml:space="preserve">
     <value>Task</value>
