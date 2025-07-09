@@ -1290,6 +1290,50 @@ namespace winrt::Telegram::Native::implementation
         return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
     }
 
+    CompositionPath PlaceholderImageHelper::GetEllipticalClip(float width, float height, float radius, float x, float y)
+    {
+        std::lock_guard const guard(m_criticalSection);
+        HRESULT result;
+
+        winrt::com_ptr<ID2D1GeometrySink> d2dGeometrySink;
+        winrt::com_ptr<ID2D1PathGeometry1> d2dPathGeometry;
+
+        ReturnNullIfFailed(result, m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
+        ReturnNullIfFailed(result, d2dPathGeometry->Open(d2dGeometrySink.put()));
+
+        d2dGeometrySink->SetFillMode(D2D1_FILL_MODE_ALTERNATE);
+        d2dGeometrySink->BeginFigure({ 0, 0 }, D2D1_FIGURE_BEGIN_FILLED);
+        d2dGeometrySink->AddLine({ width, 0 });
+        d2dGeometrySink->AddLine({ width, height });
+        d2dGeometrySink->AddLine({ 0, height });
+        d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+
+        D2D1_POINT_2F startPoint = D2D1::Point2F(x + radius, y);
+        D2D1_SIZE_F radii = D2D1::SizeF(radius, radius);
+
+        d2dGeometrySink->BeginFigure(startPoint, D2D1_FIGURE_BEGIN_FILLED);
+        d2dGeometrySink->AddArc(D2D1::ArcSegment(
+            D2D1::Point2F(x - radius, y),
+            radii,
+            0.0f,
+            D2D1_SWEEP_DIRECTION_CLOCKWISE,
+            D2D1_ARC_SIZE_SMALL
+        ));
+        d2dGeometrySink->AddArc(D2D1::ArcSegment(
+            startPoint,
+            radii,
+            0.0f,
+            D2D1_SWEEP_DIRECTION_CLOCKWISE,
+            D2D1_ARC_SIZE_SMALL
+        ));
+        d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+
+        ReturnNullIfFailed(result, d2dGeometrySink->Close());
+
+        auto geometry = winrt::make_self<CompositionPathSource>(d2dPathGeometry);
+        return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
+    }
+
     HRESULT PlaceholderImageHelper::Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height, int32_t rotation)
     {
         HRESULT result;

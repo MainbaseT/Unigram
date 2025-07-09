@@ -15,6 +15,7 @@ namespace Telegram.Native
 
 		Windows.UI.Composition.CompositionPath GetTail(Single width, Single height, Single topLeftRadius, Single topRightRadius, Single bottomRightRadius, Single bottomLeftRadius);
 		Windows.UI.Composition.CompositionPath GetOutline(Windows.Foundation.Collections.IVector<Telegram.Td.Api.ClosedVectorPath> contours);
+		Windows.UI.Composition.CompositionPath GetEllipticalClip(Single width, Single height, Single radius, Single x, Single y);
 
 		void Encode(Windows.Storage.Streams.IBuffer source, Windows.Storage.Streams.IRandomAccessStream destination, Int32 width, Int32 height, Int32 rotation);
 

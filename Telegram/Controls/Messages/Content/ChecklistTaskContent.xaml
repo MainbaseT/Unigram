@@ -92,42 +92,41 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="0" />
                         </Grid.RowDefinitions>
-                        <controls:ProfilePicture x:Name="Photo"
-                                                 Width="20"
-                                                 Height="20"
-                                                 HorizontalAlignment="Left"
-                                                 VerticalAlignment="Top"
-                                                 Margin="0,8,8,8" />
+                        <Border x:Name="PhotoRoot"
+                                Width="20"
+                                Height="20"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Margin="0,8,8,8">
+                            <controls:ProfilePicture x:Name="Photo"
+                                                     Width="20"
+                                                     Height="20" />
+                        </Border>
 
-                        <Grid Width="24"
-                              Height="24"
-                              CornerRadius="12"
-                              Background="{ThemeResource MessageBackgroundBrush}"
+                        <Ellipse x:Name="CheckmarkNotDone"
+                                 Width="4"
+                                 Height="4"
+                                 UseLayoutRounding="False"
+                                 Fill="{ThemeResource MessageHeaderBorderBrush}"
+                                 StrokeThickness="0"
+                                 HorizontalAlignment="Left"
+                                 VerticalAlignment="Top"
+                                 Margin="8,16,0,0" />
+                        <Path x:Name="CheckmarkDone"
+                              Fill="{ThemeResource MessageHeaderBorderBrush}"
+                              Data="M13.2197 6.96967L8.75 11.4393L6.78033 9.4697C6.48744 9.1768 6.01256 9.1768 5.71967 9.4697C5.42678 9.7626 5.42678 10.2374 5.71967 10.5303L8.2197 13.0303C8.5126 13.3232 8.9874 13.3232 9.2803 13.0303L14.2803 8.0303C14.5732 7.73744 14.5732 7.26256 14.2803 6.96967C13.9874 6.67678 13.5126 6.67678 13.2197 6.96967Z"
                               HorizontalAlignment="Left"
                               VerticalAlignment="Top"
-                              Margin="-2,6,6,6">
-                            <Ellipse x:Name="CheckmarkNotDone"
-                                     Width="4"
-                                     Height="4"
-                                     UseLayoutRounding="False"
-                                     Fill="{ThemeResource MessageHeaderBorderBrush}"
-                                     StrokeThickness="0"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center"
-                                     Margin="-2" />
-                            <Path x:Name="CheckmarkDone"
-                                  Fill="{ThemeResource MessageHeaderBorderBrush}"
-                                  Data="M13.2197 6.96967L8.75 11.4393L6.78033 9.4697C6.48744 9.1768 6.01256 9.1768 5.71967 9.4697C5.42678 9.7626 5.42678 10.2374 5.71967 10.5303L8.2197 13.0303C8.5126 13.3232 8.9874 13.3232 9.2803 13.0303L14.2803 8.0303C14.5732 7.73744 14.5732 7.26256 14.2803 6.96967C13.9874 6.67678 13.5126 6.67678 13.2197 6.96967Z"
-                                  Margin="2,2,0,0" />
+                              Margin="0,8,0,0" />
 
-                            <Border x:Name="CheckmarkIcon"
-                                    Canvas.ZIndex="1"
-                                    AutomationProperties.AccessibilityView="Raw"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Width="24"
-                                    Height="24" />
-                        </Grid>
+                        <Border x:Name="CheckmarkIcon"
+                                Canvas.ZIndex="1"
+                                AutomationProperties.AccessibilityView="Raw"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Width="24"
+                                Height="24"
+                                Margin="-2,6,0,0" />
 
                         <controls:FormattedTextBlock x:Name="TextText"
                                                      FontFamily="{ThemeResource EmojiThemeFontFamily}"

@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using System.Numerics;
 using Telegram.Assets.Icons;
 using Telegram.Composition;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -37,6 +38,7 @@ namespace Telegram.Controls.Messages.Content
 
         #region InitializeComponent
 
+        private Border PhotoRoot;
         private ProfilePicture Photo;
         private Ellipse CheckmarkNotDone;
         private Path CheckmarkDone;
@@ -65,6 +67,22 @@ namespace Telegram.Controls.Messages.Content
             {
                 UpdateChecklistTask(_message, _checklist, _task);
             }
+        }
+
+        private Visual GetTemplatePhoto(bool show)
+        {
+            if (PhotoRoot == null && show)
+            {
+                PhotoRoot = GetTemplateChild(nameof(PhotoRoot)) as Border;
+
+                var clip = PlaceholderImageHelper.Foreground.GetEllipticalClip(20, 20, 12, -2, 10);
+                var photo = ElementComposition.GetElementVisual(PhotoRoot);
+                var geometry = photo.Compositor.CreatePathGeometry(clip);
+                photo.Clip = photo.Compositor.CreateGeometricClip(geometry);
+                photo.Clip.Offset = new Vector2(12, 0);
+            }
+
+            return ElementComposition.GetElementVisual(Photo);
         }
 
         #endregion
@@ -133,7 +151,7 @@ namespace Telegram.Controls.Messages.Content
                 UserText.Text = user.FullName();
             }
 
-            var photo = ElementComposition.GetElementVisual(Photo);
+            var photo = GetTemplatePhoto(show);
             var text = ElementComposition.GetElementVisual(TextText);
             var userText = ElementComposition.GetElementVisual(UserText);
 
