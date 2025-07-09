@@ -12482,4 +12482,5 @@
   <string name="TodoTasksNotCompletedOut_two">You marked **{0} tasks** as not done</string>
   <string name="TodoTasksNotCompletedOut_few">You marked **{0} tasks** as not done</string>
   <string name="TodoTasksNotCompletedOut_many">You marked **{0} tasks** as not done</string>
+  <string name="SendDirectMessage">Send direct message</string>
 </resources>

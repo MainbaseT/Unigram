@@ -11405,6 +11405,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SendByEnterKey" xml:space="preserve">
     <value>Enter</value>
   </data>
+  <data name="SendDirectMessage" xml:space="preserve">
+    <value>Send direct message</value>
+  </data>
   <data name="SendEmojiPreview" xml:space="preserve">
     <value>Send Emoji</value>
   </data>

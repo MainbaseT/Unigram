@@ -1883,12 +1883,16 @@
                     </chats:ChatBottomButton>
                     <controls:GlyphButton x:Name="ButtonFeedback"
                                           Click="ButtonFeedback_Click"
+                                          AutomationProperties.Name="{CustomResource SendDirectMessage}"
+                                          ToolTipService.ToolTip="{CustomResource SendDirectMessage}"
                                           Foreground="{ThemeResource TelegramForegroundAccentBrush}"
                                           HorizontalAlignment="Left"
                                           Glyph="&#xEABA;"
                                           Visibility="Collapsed" />
                     <controls:GlyphButton x:Name="ButtonGift"
                                           Click="ButtonGift_Click"
+                                          AutomationProperties.Name="{CustomResource SendAGift}"
+                                          ToolTipService.ToolTip="{CustomResource SendAGift}"
                                           Foreground="{ThemeResource TelegramForegroundAccentBrush}"
                                           HorizontalAlignment="Right"
                                           Glyph="&#xEABB;"
