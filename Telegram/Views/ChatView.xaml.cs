@@ -4108,8 +4108,15 @@ namespace Telegram.Views
             }
             else if (emoji is Sticker sticker && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                ViewModel.InsertedCustomEmojiIds.Add(customEmoji.CustomEmojiId);
-                TextField.InsertEmoji(sticker);
+                if (ViewModel.IsPremium)
+                {
+                    ViewModel.InsertedCustomEmojiIds.Add(customEmoji.CustomEmojiId);
+                    TextField.InsertEmoji(sticker);
+                }
+                else
+                {
+                    ToastPopup.ShowFeaturePromo(ViewModel.NavigationService, new PremiumFeatureCustomEmoji());
+                }
             }
 
             _focusState.Set(FocusState.Programmatic);

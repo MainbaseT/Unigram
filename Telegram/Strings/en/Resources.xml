@@ -12483,4 +12483,6 @@
   <string name="TodoTasksNotCompletedOut_few">You marked **{0} tasks** as not done</string>
   <string name="TodoTasksNotCompletedOut_many">You marked **{0} tasks** as not done</string>
   <string name="SendDirectMessage">Send direct message</string>
+  <string name="UnlockPremiumEmojiHint">Subscribe to **Telegram Premium** to unlock this emoji.</string>
+  <string name="UnlockPremiumEmojiReaction">Subscribe to **Telegram Premium** to unlock this reaction.</string>
 </resources>

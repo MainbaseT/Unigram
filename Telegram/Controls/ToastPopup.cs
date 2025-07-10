@@ -84,6 +84,9 @@ namespace Telegram.Controls
                 PremiumFeatureAccentColor => Strings.UserColorApplyPremium,
                 PremiumFeatureRealTimeChatTranslation => Strings.ShowTranslateChatButtonLocked,
                 PremiumFeatureChecklists => Strings.TodoPremiumRequired,
+                PremiumFeatureMessageEffects => Strings.AnimatedEffectPremium,
+                PremiumFeatureUniqueReactions => Strings.UnlockPremiumEmojiReaction,
+                PremiumFeatureCustomEmoji => Strings.UnlockPremiumEmojiHint,
                 _ => Strings.UnlockPremium
             };
 

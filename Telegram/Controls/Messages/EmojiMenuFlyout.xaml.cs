@@ -8,6 +8,7 @@ using System;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Drawers;
+using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -529,8 +530,6 @@ namespace Telegram.Controls.Messages
             {
                 _popup.IsOpen = false;
 
-                EmojiSelected?.Invoke(this, new EmojiSelectedEventArgs(sticker.ToReactionType()));
-
                 if (_story != null)
                 {
                     StoryToggleReaction(sticker.ToReactionType());
@@ -546,6 +545,10 @@ namespace Telegram.Controls.Messages
                 else if (_mode == EmojiDrawerMode.Reactions)
                 {
                     _clientService.Send(new SetDefaultReactionType(sticker.ToReactionType()));
+                }
+                else
+                {
+                    EmojiSelected?.Invoke(this, new EmojiSelectedEventArgs(sticker.ToReactionType()));
                 }
             }
         }
@@ -571,6 +574,12 @@ namespace Telegram.Controls.Messages
 
         private async void StoryToggleReaction(ReactionType reaction)
         {
+            if (reaction is ReactionTypeCustomEmoji && !_story.ClientService.IsPremium)
+            {
+                ToastPopup.ShowFeaturePromo(WindowContext.GetNavigationService(this), new PremiumFeatureUniqueReactions());
+                return;
+            }
+
             if (_story.ChosenReactionType != null && _story.ChosenReactionType.AreTheSame(reaction))
             {
                 _story.ClientService.Send(new SetStoryReaction(_story.ChatId, _story.StoryId, null, true));
@@ -588,6 +597,12 @@ namespace Telegram.Controls.Messages
 
         private async void MessageToggleReaction(ReactionType reaction)
         {
+            if (reaction is ReactionTypeCustomEmoji && !_message.ClientService.IsPremium)
+            {
+                ToastPopup.ShowFeaturePromo(_message.Delegate.NavigationService, new PremiumFeatureUniqueReactions());
+                return;
+            }
+
             if (_message.InteractionInfo != null && _message.InteractionInfo.Reactions.IsChosen(reaction))
             {
                 _message.ClientService.Send(new RemoveMessageReaction(_message.ChatId, _message.Id, reaction));

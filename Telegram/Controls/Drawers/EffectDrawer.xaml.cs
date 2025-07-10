@@ -117,9 +117,7 @@ namespace Telegram.Controls.Drawers
             {
                 if (effect.IsPremium && !ViewModel.IsPremium)
                 {
-                    var navigationService = WindowContext.GetNavigationService(this);
-
-                    ToastPopup.ShowPromo(navigationService, Strings.AnimatedEffectPremium, Strings.OptionPremiumRequiredButton, null);
+                    ToastPopup.ShowFeaturePromo(WindowContext.GetNavigationService(this), new PremiumFeatureMessageEffects());
                 }
                 else
                 {
