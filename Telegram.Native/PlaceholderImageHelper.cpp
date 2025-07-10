@@ -1334,6 +1334,94 @@ namespace winrt::Telegram::Native::implementation
         return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
     }
 
+    inline void AppendButton(winrt::com_ptr<ID2D1GeometrySink> d2dGeometrySink, float x, float y, float width, float height, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
+    {
+        d2dGeometrySink->BeginFigure({ x + topLeftRadius, y }, D2D1_FIGURE_BEGIN_FILLED);
+
+        // Top edge
+        d2dGeometrySink->AddLine({ x + width - topRightRadius, y });
+
+        // Top-right corner
+        if (topRightRadius > 0)
+            d2dGeometrySink->AddArc({ { x + width, y + topRightRadius }, { topRightRadius, topRightRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
+        
+        // Right edge
+        d2dGeometrySink->AddLine({ x + width, y + height - bottomRightRadius });
+        
+        // Bottom-right corner
+        if (bottomRightRadius > 0)
+            d2dGeometrySink->AddArc({ { x + width - bottomRightRadius, y + height }, { bottomRightRadius, bottomRightRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
+        
+        // Bottom edge
+        d2dGeometrySink->AddLine({ x + bottomLeftRadius, y + height });
+        
+        // Bottom-left corner
+        if (bottomLeftRadius > 0)
+            d2dGeometrySink->AddArc({ { x, y + height - bottomLeftRadius }, { bottomLeftRadius, bottomLeftRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
+        
+        // Left edge
+        d2dGeometrySink->AddLine({ x, y + topLeftRadius });
+        
+        // Top-left corner
+        if (topLeftRadius > 0)
+            d2dGeometrySink->AddArc({ { x + topLeftRadius, y }, { topLeftRadius, topLeftRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
+        
+        d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+    }
+
+    CompositionPath PlaceholderImageHelper::GetReplyMarkupClip(IVector<IVector<Windows::Foundation::Rect>> rows, float bottomRightRadius, float bottomLeftRadius)
+    {
+        std::lock_guard const guard(m_criticalSection);
+        HRESULT result;
+
+        winrt::com_ptr<ID2D1GeometrySink> d2dGeometrySink;
+        winrt::com_ptr<ID2D1PathGeometry1> d2dPathGeometry;
+
+        ReturnNullIfFailed(result, m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
+        ReturnNullIfFailed(result, d2dPathGeometry->Open(d2dGeometrySink.put()));
+
+        auto padding = 2;
+        auto x = 0.f;
+        auto y = 0.f;
+
+        auto j = 0;
+
+        for (const IVector<Windows::Foundation::Rect>& row : rows)
+        {
+            auto i = 0;
+
+            for (const Windows::Foundation::Rect& button : row)
+            {
+                auto bottomRight = 4.f;
+                auto bottomLeft = 4.f;
+
+                if (j == rows.Size() - 1)
+                {
+                    if (i == 0)
+                    {
+                        bottomLeft = bottomLeftRadius;
+                    }
+
+                    if (i == row.Size() - 1)
+                    {
+                        bottomRight = bottomRightRadius;
+                    }
+                }
+
+                AppendButton(d2dGeometrySink, button.X, button.Y, button.Width, button.Height, 4, 4, bottomRight, bottomLeft);
+
+                i++;
+            }
+
+            j++;
+        }
+
+        ReturnNullIfFailed(result, d2dGeometrySink->Close());
+
+        auto geometry = winrt::make_self<CompositionPathSource>(d2dPathGeometry);
+        return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
+    }
+
     HRESULT PlaceholderImageHelper::Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height, int32_t rotation)
     {
         HRESULT result;

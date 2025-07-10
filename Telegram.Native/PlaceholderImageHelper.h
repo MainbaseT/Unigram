@@ -113,6 +113,7 @@ namespace winrt::Telegram::Native::implementation
         CompositionPath GetTail(float width, float height, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius);
         CompositionPath GetOutline(IVector<ClosedVectorPath> contours);
         CompositionPath GetEllipticalClip(float width, float height, float radius, float x, float y);
+        CompositionPath GetReplyMarkupClip(IVector<IVector<Windows::Foundation::Rect>> rows, float bottomRightRadius, float bottomLeftRadius);
 
         HRESULT Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height, int32_t rotation);
 

@@ -3733,9 +3733,9 @@
     </Style>
 
     <Style x:Key="ReplyInlineMarkupButtonStyle"
-           TargetType="controls:GlyphButton">
+           TargetType="controls:ReplyMarkupButton">
         <Setter Property="Background"
-                Value="{ThemeResource MessageServiceBackgroundBrush}" />
+                Value="Transparent" />
         <Setter Property="Foreground"
                 Value="#FFFFFFFF" />
         <Setter Property="BorderBrush"
@@ -3766,9 +3766,11 @@
                 Value="{StaticResource ControlCornerRadius}" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:GlyphButton">
+                <ControlTemplate TargetType="controls:ReplyMarkupButton">
                     <Grid x:Name="RootGrid"
-                          CornerRadius="{TemplateBinding CornerRadius}">
+                          Background="{TemplateBinding Background}"
+                          CornerRadius="{TemplateBinding CornerRadius}"
+                          Padding="{TemplateBinding Padding}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal" />
@@ -3793,19 +3795,15 @@
                                 <VisualState x:Name="Disabled" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Border x:Name="BorderPresenter"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="{TemplateBinding CornerRadius}" />
 
-                        <ContentPresenter x:Name="ContentPresenter"
-                                          BorderThickness="{TemplateBinding BorderThickness}"
-                                          Content="{TemplateBinding Content}"
-                                          ContentTransitions="{TemplateBinding ContentTransitions}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          Padding="{TemplateBinding Padding}"
-                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          AutomationProperties.AccessibilityView="Raw" />
+                        <TextBlock x:Name="ContentPresenter"
+                                   Text="{TemplateBinding Text}"
+                                   TextWrapping="NoWrap"
+                                   TextTrimming="CharacterEllipsis"
+                                   Padding="{TemplateBinding Padding}"
+                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   AutomationProperties.AccessibilityView="Raw" />
 
                         <TextBlock Margin="4"
                                    FontSize="12"
@@ -3821,7 +3819,7 @@
     </Style>
 
     <Style x:Key="ReplyKeyboardMarkupButtonStyle"
-           TargetType="controls:GlyphButton">
+           TargetType="controls:ReplyMarkupButton">
         <!--<Setter Property="Background" Value="{ThemeResource PageHeaderBackgroundBrush}" />
              <Setter Property="Foreground" Value="#FFFFFFFF" />
              <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" />
@@ -3866,10 +3864,14 @@
                 Value="{StaticResource ControlCornerRadius}" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:GlyphButton">
+                <ControlTemplate TargetType="controls:ReplyMarkupButton">
                     <Grid x:Name="RootGrid"
+                          BackgroundSizing="OuterBorderEdge"
                           Background="{TemplateBinding Background}"
-                          CornerRadius="{TemplateBinding CornerRadius}">
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}"
+                          Padding="{TemplateBinding Padding}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal" />
@@ -3880,7 +3882,7 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource ButtonBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
                                                                        Storyboard.TargetProperty="BorderBrush">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource ButtonBorderBrushPointerOver}" />
@@ -3899,7 +3901,7 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource ButtonBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
                                                                        Storyboard.TargetProperty="BorderBrush">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource ButtonBorderBrushPressed}" />
@@ -3918,7 +3920,7 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource ButtonBackgroundDisabled}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
                                                                        Storyboard.TargetProperty="BorderBrush">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource ButtonBorderBrushDisabled}" />
@@ -3932,16 +3934,13 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <ContentPresenter x:Name="ContentPresenter"
-                                          BorderBrush="{TemplateBinding BorderBrush}"
-                                          BorderThickness="{TemplateBinding BorderThickness}"
-                                          Content="{TemplateBinding Content}"
-                                          ContentTransitions="{TemplateBinding ContentTransitions}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          Padding="{TemplateBinding Padding}"
-                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          AutomationProperties.AccessibilityView="Raw" />
+                        <TextBlock x:Name="ContentPresenter"
+                                   Text="{TemplateBinding Text}"
+                                   TextWrapping="NoWrap"
+                                   TextTrimming="CharacterEllipsis"
+                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   AutomationProperties.AccessibilityView="Raw" />
 
                         <TextBlock Margin="4"
                                    FontSize="12"

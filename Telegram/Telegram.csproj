@@ -343,6 +343,7 @@
     <Compile Include="Controls\Messages\MessageFactCheck.xaml.cs">
       <DependentUpon>MessageFactCheck.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Messages\ReplyMarkupInlinePanel.cs" />
     <Compile Include="Controls\NativeVideoPlayer.xaml.cs">
       <DependentUpon>NativeVideoPlayer.xaml</DependentUpon>
     </Compile>

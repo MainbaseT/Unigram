@@ -159,7 +159,7 @@ namespace Telegram.Controls.Messages
         private ReactionsPanel Reactions;
 
         private ReactionsPanel MediaReactions;
-        private ReplyMarkupPanel Markup;
+        private ReplyMarkupInlinePanel Markup;
 
         private Border Action;
         private GlyphButton ActionButton;
@@ -537,7 +537,7 @@ namespace Telegram.Controls.Messages
 
                 if (Markup != null)
                 {
-                    Markup.CornerRadius = new CornerRadius(small, small, bottomRight, bottomLeft);
+                    Markup.CornerRadius = new Vector2(bottomRight, bottomLeft);
                 }
             }
             else
@@ -1315,7 +1315,7 @@ namespace Telegram.Controls.Messages
             {
                 if (Markup == null)
                 {
-                    Markup = GetTemplateChild(nameof(Markup)) as ReplyMarkupPanel;
+                    Markup = GetTemplateChild(nameof(Markup)) as ReplyMarkupInlinePanel;
                     Markup.InlineButtonClick += ReplyMarkup_ButtonClick;
                 }
 
