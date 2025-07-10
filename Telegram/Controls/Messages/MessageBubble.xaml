@@ -321,11 +321,12 @@
                             </HyperlinkButton>
                         </Grid>
 
-                        <controls:ReplyMarkupPanel x:Name="Markup"
-                                                   x:Load="False"
-                                                   MaxWidth="{StaticResource MessageMaxWidth}"
-                                                   Grid.Column="1"
-                                                   Grid.Row="1" />
+                        <local:ReplyMarkupInlinePanel x:Name="Markup"
+                                                      x:Load="False"
+                                                      MaxWidth="{StaticResource MessageMaxWidth}"
+                                                      Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                                      Grid.Column="1"
+                                                      Grid.Row="1" />
 
 
                         <!-- TODO: find a way to get rid of this -->
