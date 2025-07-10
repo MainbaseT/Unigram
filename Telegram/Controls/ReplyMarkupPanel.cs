@@ -121,17 +121,13 @@ namespace Telegram.Controls
                 for (int i = 0; i < row.Count; i++)
                 {
                     var item = row[i];
-                    var button = new ReplyMarkupButton();
-                    button.Tag = item;
+                    var button = new ReplyMarkupButton(item);
                     button.HorizontalAlignment = HorizontalAlignment.Stretch;
                     button.VerticalAlignment = VerticalAlignment.Stretch;
-                    button.Click += Button_Click;
-
-                    button.Style = BootStrapper.Current.Resources["ReplyKeyboardMarkupButtonStyle"] as Style;
                     button.Margin = new Thickness(4, 8, 4, 0);
                     button.Height = resize ? 36 : double.NaN;
-
                     button.Text = item.Text;
+                    button.Click += Button_Click;
 
                     if (item.Type is KeyboardButtonTypeWebApp)
                     {
@@ -159,10 +155,9 @@ namespace Telegram.Controls
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button.Tag is KeyboardButton btn)
+            if (sender is ReplyMarkupButton button)
             {
-                ButtonClick?.Invoke(this, new ReplyMarkupButtonClickEventArgs(btn, _oneTime));
+                ButtonClick?.Invoke(this, new ReplyMarkupButtonClickEventArgs(button.Button, _oneTime));
             }
         }
 
@@ -211,6 +206,14 @@ namespace Telegram.Controls
 
     public class ReplyMarkupButton : GlyphButton
     {
+        public ReplyMarkupButton(KeyboardButton button)
+        {
+            DefaultStyleKey = typeof(ReplyMarkupButton);
+            Button = button;
+        }
+
+        public KeyboardButton Button { get; }
+
         #region Text
 
         public string Text
@@ -221,6 +224,30 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(ReplyMarkupButton), new PropertyMetadata(string.Empty));
+
+        #endregion
+    }
+
+    public class ReplyMarkupInlineButton : GlyphButton
+    {
+        public ReplyMarkupInlineButton(InlineKeyboardButton button)
+        {
+            DefaultStyleKey = typeof(ReplyMarkupInlineButton);
+            Button = button;
+        }
+
+        public InlineKeyboardButton Button { get; }
+
+        #region Text
+
+        public string Text
+        {
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+
+        public static readonly DependencyProperty TextProperty =
+            DependencyProperty.Register("Text", typeof(string), typeof(ReplyMarkupInlineButton), new PropertyMetadata(string.Empty));
 
         #endregion
     }

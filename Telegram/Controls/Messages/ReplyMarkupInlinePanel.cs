@@ -82,21 +82,13 @@ namespace Telegram.Controls.Messages
 
             foreach (var row in rows)
             {
-                var panel = new ReplyMarkupRow();
-                panel.HorizontalAlignment = HorizontalAlignment.Stretch;
-                panel.VerticalAlignment = VerticalAlignment.Stretch;
-                panel.Margin = new Thickness(-1, 0, -1, 0);
-
                 foreach (var item in row)
                 {
-                    var button = new ReplyMarkupButton();
-                    button.Tag = item;
+                    var button = new ReplyMarkupInlineButton(item);
                     button.HorizontalAlignment = HorizontalAlignment.Stretch;
                     button.VerticalAlignment = VerticalAlignment.Stretch;
-                    button.Click += Button_Click;
-
-                    button.Style = BootStrapper.Current.Resources["ReplyInlineMarkupButtonStyle"] as Style;
                     button.Text = item.Text.Replace('\n', ' ');
+                    button.Click += Button_Click;
 
                     switch (item.Type)
                     {
@@ -139,10 +131,9 @@ namespace Telegram.Controls.Messages
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button.Tag is InlineKeyboardButton inlineBtn)
+            if (sender is ReplyMarkupInlineButton button)
             {
-                InlineButtonClick?.Invoke(this, new ReplyMarkupInlineButtonClickEventArgs(inlineBtn));
+                InlineButtonClick?.Invoke(this, new ReplyMarkupInlineButtonClickEventArgs(button.Button));
             }
         }
 
