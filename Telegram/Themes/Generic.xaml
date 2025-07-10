@@ -2478,6 +2478,8 @@
     </Style>
 
     <Style TargetType="local:TopNavViewItem">
+        <Setter Property="Foreground"
+                Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
         <Setter Property="HorizontalAlignment"
                 Value="Stretch" />
         <Setter Property="VerticalAlignment"
@@ -2507,9 +2509,24 @@
                                 <VisualState x:Name="Normal" />
                                 <VisualState x:Name="PointerOver" />
                                 <VisualState x:Name="Pressed" />
-                                <VisualState x:Name="Selected" />
-                                <VisualState x:Name="PointerOverSelected" />
-                                <VisualState x:Name="PressedSelected" />
+                                <VisualState x:Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Foreground"
+                                                Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="PointerOverSelected">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Foreground"
+                                                Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="PressedSelected">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Foreground"
+                                                Value="{ThemeResource NavigationViewSelectionIndicatorForeground}" />
+                                    </VisualState.Setters>
+                                </VisualState>
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="ReorderHintStates">
                                 <VisualState x:Name="NoReorderHint" />
