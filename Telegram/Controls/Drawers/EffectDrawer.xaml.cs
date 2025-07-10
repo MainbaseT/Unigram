@@ -11,8 +11,10 @@ using Telegram.Navigation;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Drawers;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Drawers
 {
@@ -183,14 +185,15 @@ namespace Telegram.Controls.Drawers
 
             _itemIdToContent[effect] = content;
 
+            var animation = content.Children[0] as AnimatedImage;
+            var locked = content.Children[1] as Border;
+
             if (effect?.Type is MessageEffectTypeEmojiReaction emojiReaction)
             {
-                var animation = content.Children[0] as AnimatedImage;
                 animation.Source = new DelayedFileSource(ViewModel.ClientService, emojiReaction.SelectAnimation);
             }
             else if (effect?.Type is MessageEffectTypePremiumSticker premiumSticker)
             {
-                var animation = content.Children[0] as AnimatedImage;
                 animation.Source = new DelayedFileSource(ViewModel.ClientService, premiumSticker.Sticker);
 
                 var emoji = content.Children[2] as TextBlock;
@@ -201,14 +204,22 @@ namespace Telegram.Controls.Drawers
             }
             else
             {
-                var animation = content.Children[0] as AnimatedImage;
                 animation.Source = null;
             }
 
-            var locked = content.Children[1] as Border;
-            locked.Visibility = effect.IsPremium && !ViewModel.IsPremium
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            if (effect.IsPremium && !ViewModel.IsPremium)
+            {
+                var brush = new SolidColorBrush(Colors.White);
+                animation.DominantColor = brush;
+                locked.Background = brush;
+                locked.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                animation.DominantColor = null;
+                locked.Background = null;
+                locked.Visibility = Visibility.Collapsed;
+            }
 
             args.Handled = true;
         }

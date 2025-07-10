@@ -565,6 +565,11 @@ namespace Telegram.Controls
             {
                 _clean = false;
 
+                if (DominantColor is SolidColorBrush dominantColor)
+                {
+                    dominantColor.Color = GetDominantColor(source.ImageSource as WriteableBitmap);
+                }
+
                 if (UpdateRotation(source))
                 {
                     source.Stretch = Stretch.None;
@@ -586,7 +591,48 @@ namespace Telegram.Controls
             }
         }
 
-        public bool UpdateRotation(ImageBrush source)
+        private unsafe Color GetDominantColor(WriteableBitmap bitmap)
+        {
+            if (bitmap == null)
+            {
+                return Colors.White;
+            }
+
+            float stepH = (bitmap.PixelHeight - 1) / 10f;
+            float stepW = (bitmap.PixelWidth - 1) / 10f;
+
+            int width = bitmap.PixelWidth;
+            bitmap.Buffer(out byte* imageBytes);
+
+            int r = 0, g = 0, b = 0;
+            int amount = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    int x = (int)(stepW * i);
+                    int y = (int)(stepH * j);
+                    int k = (y * width + x) * 4;
+
+                    byte alpha = imageBytes[k + 3];
+                    if (alpha > 200)
+                    {
+                        r += imageBytes[k + 2];
+                        g += imageBytes[k + 1];
+                        b += imageBytes[k + 0];
+                        amount++;
+                    }
+                }
+            }
+            if (amount == 0)
+            {
+                return Colors.Transparent;
+            }
+
+            return Color.FromArgb(255, (byte)(r / amount), (byte)(g / amount), (byte)(b / amount));
+        }
+
+        private bool UpdateRotation(ImageBrush source)
         {
             if (LayoutRoot.Background is ImageBrush { ImageSource: WriteableBitmap bitmap, Transform: CompositeTransform composite })
             {
@@ -800,6 +846,19 @@ namespace Telegram.Controls
                 Logger.Error(ex);
             }
         }
+
+        #endregion
+
+        #region DominantColor
+
+        public SolidColorBrush DominantColor
+        {
+            get { return (SolidColorBrush)GetValue(DominantColorProperty); }
+            set { SetValue(DominantColorProperty, value); }
+        }
+
+        public static readonly DependencyProperty DominantColorProperty =
+            DependencyProperty.Register("DominantColor", typeof(SolidColorBrush), typeof(AnimatedImage), new PropertyMetadata(null));
 
         #endregion
 
