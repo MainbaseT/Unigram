@@ -17,7 +17,6 @@ using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
@@ -55,29 +54,69 @@ namespace Telegram.Controls
 
             if (_gifts != hash || _positions == null || _frameWidth != newSize.X || _frameHeight != newSize.Y)
             {
-                var titleTransform = titleRoot.TransformToVector2(this);
-
-                var excludeRects = new RectangleF[]
-                {
-                    new RectangleF(titleTransform.X - 4, titleTransform.Y, titleRoot.ActualSize.X + 8, titleRoot.ActualSize.Y),
-                };
-
-                var positionGenerator = new OrbitGenerator(
-                        containerSize: newSize,
-                        centerFrame: centerFrame,
-                        exclusionZones: excludeRects,
-                        minimumDistance: 42.0f,
-                        edgePadding: 5.0f,
-                        seed: seed
-                    );
-
-                _positions = positionGenerator.GeneratePositions(count: 12, itemSize: new Vector2(28));
-                _gifts = hash;
-                _frameWidth = newSize.X;
-                _frameHeight = newSize.Y;
-
-                RootGrid.Children.Clear();
+                GeneratePositions(avatarTransitionFraction, titleRoot);
             }
+
+            var i = 0;
+
+            foreach (var child in RootGrid.Children)
+            {
+                if (_positions == null || _positions.Count <= i)
+                {
+                    child.Opacity = 0;
+                    continue;
+                }
+
+                var iconPosition = _positions[i++];
+                var itemDistanceFraction = Math.Max(0.0f, Math.Min(0.5f, (iconPosition.Distance - avatarSize.X / 2.0f) / 144.0f));
+                var itemScaleFraction = OrbitGenerator.PatternScaleValueAt(fraction: Math.Min(1.0f, avatarTransitionFraction * 1.33f), t: itemDistanceFraction, reverse: false);
+
+                var toAngle = MathF.PI * 0.18f;
+                var centerPosition = new OrbitGenerator.Position(distance: 0.0f, angle: iconPosition.Angle + toAngle, scale: iconPosition.Scale);
+                var effectivePosition = OrbitGenerator.InterpolatePosition(from: iconPosition, to: centerPosition, t: itemScaleFraction);
+                var effectiveAngle = toAngle * itemScaleFraction;
+
+                var absolutePosition = effectivePosition.GetAbsolutePosition(centerFrame.Center);
+
+                var visual = ElementComposition.GetElementVisual(child);
+                visual.Offset = new Vector3(absolutePosition, 0);
+                visual.Scale = new Vector3(iconPosition.Scale * (1.0f - itemScaleFraction));
+                visual.RotationAngle = effectiveAngle;
+            }
+        }
+
+        private void GeneratePositions(float avatarTransitionFraction, UIElement titleRoot)
+        {
+            var newSize = new Vector2(ActualSize.X + 36, ActualSize.Y);
+            var seed = _seed;
+
+            var gifts = GetPinnedGifts(out long hash);
+
+            var avatarSize = new Vector2(120, 120);
+            var centerFrame = new RectangleF((-72 + newSize.X - avatarSize.X) / 2f, (-36 + 204 - avatarSize.Y) / 2f, avatarSize.X, avatarSize.Y);
+
+            var titleTransform = titleRoot.TransformToVector2(this);
+
+            var excludeRects = new RectangleF[]
+            {
+                new RectangleF(titleTransform.X - 4, titleTransform.Y, titleRoot.ActualSize.X + 8, titleRoot.ActualSize.Y),
+            };
+
+            var positionGenerator = new OrbitGenerator(
+                    containerSize: newSize,
+                    centerFrame: centerFrame,
+                    exclusionZones: excludeRects,
+                    minimumDistance: 42.0f,
+                    edgePadding: 5.0f,
+                    seed: seed
+                );
+
+            _positions = positionGenerator.GeneratePositions(count: 12, itemSize: new Vector2(28));
+            _gifts = hash;
+            _frameWidth = newSize.X;
+            _frameHeight = newSize.Y;
+
+            RootGrid.Children.Clear();
 
             var iconPositions = _positions;
             if (iconPositions == null)
@@ -87,13 +126,8 @@ namespace Telegram.Controls
 
             for (int i = 0; i < Math.Max(iconPositions.Count, gifts.Count); i++)
             {
-                if (i >= gifts.Count || i >= iconPositions.Count)
+                if (i >= gifts.Count || i >= iconPositions.Count || gifts[i].Gift is not SentGiftUpgraded upgraded)
                 {
-                    if (RootGrid.Children.Count > i)
-                    {
-                        RootGrid.Children.RemoveAt(i);
-                    }
-
                     continue;
                 }
 
@@ -108,89 +142,63 @@ namespace Telegram.Controls
 
                 var absolutePosition = effectivePosition.GetAbsolutePosition(centerFrame.Center);
 
-                if (gifts[i].Gift is SentGiftUpgraded upgraded)
+                var centerColor = upgraded.Gift.Backdrop.Colors.CenterColor.ToColor().WithBrightness(0.3f);
+
+                var gradient = new RadialGradientBrush();
+                gradient.Center = new Point(0.5, 0.5);
+                gradient.GradientStops.Add(new GradientStop { Color = Color.FromArgb(166, centerColor.R, centerColor.G, centerColor.B) });
+                gradient.GradientStops.Add(new GradientStop { Color = Color.FromArgb(166, centerColor.R, centerColor.G, centerColor.B), Offset = 0.3 });
+                gradient.GradientStops.Add(new GradientStop { Color = Color.FromArgb(0, centerColor.R, centerColor.G, centerColor.B), Offset = 1 });
+
+                var particles = new AnimatedImage
                 {
-                    Visual visual;
+                    Source = new ParticlesImageSource(Colors.White, ParticlesType.Status),
+                    IsViewportAware = false,
+                    Stretch = Stretch.UniformToFill,
+                    DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
+                    FrameSize = new Size(36, 36),
+                    Width = 36,
+                    Height = 36,
+                    Margin = new Thickness(-4)
+                };
 
-                    if (RootGrid.Children.Count - 1 < i)
-                    {
-                        static Color MakeLuminous(Color color, double intensity)
-                        {
-                            intensity = Math.Max(0, Math.Min(1, intensity));
+                var icon = new CustomEmojiIcon
+                {
+                    Source = DelayedFileSource.FromSticker(ViewModel.ClientService, upgraded.Gift.Model.Sticker),
+                    Width = 28,
+                    Height = 28,
+                    FrameSize = new Size(28, 28),
+                    IsViewportAware = false
+                };
 
-                            var hsl = color.ToHSL();
+                icon.Ready += OnReady;
 
-                            // Increase lightness and reduce saturation for a glowing effect
-                            hsl.L = Math.Min(1, hsl.L + intensity * (1 - hsl.L) * 0.8);
-                            hsl.S = hsl.S * (1 - intensity * 0.4);
+                var root = new Grid
+                {
+                    Opacity = 0,
+                    Width = 28,
+                    Height = 28,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
 
-                            return hsl.ToRGB();
-                        }
+                root.Children.Add(new Border
+                {
+                    Background = gradient,
+                    Width = 32,
+                    Height = 32,
+                    Margin = new Thickness(-2)
+                });
 
-                        var centerColor = MakeLuminous(upgraded.Gift.Backdrop.Colors.CenterColor.ToColor(), 0.3);
+                root.Children.Add(particles);
+                root.Children.Add(icon);
 
-                        var gradient = new RadialGradientBrush();
-                        gradient.Center = new Point(0.5, 0.5);
-                        gradient.GradientStops.Add(new GradientStop { Color = Color.FromArgb(166, centerColor.R, centerColor.G, centerColor.B) });
-                        gradient.GradientStops.Add(new GradientStop { Color = Color.FromArgb(166, centerColor.R, centerColor.G, centerColor.B), Offset = 0.3 });
-                        gradient.GradientStops.Add(new GradientStop { Color = Color.FromArgb(0, centerColor.R, centerColor.G, centerColor.B), Offset = 1 });
+                RootGrid.Children.Add(root);
 
-                        var particles = new AnimatedImage
-                        {
-                            Source = new ParticlesImageSource(Colors.White, ParticlesType.Status),
-                            IsViewportAware = false,
-                            Stretch = Stretch.UniformToFill,
-                            DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
-                            FrameSize = new Size(36, 36),
-                            Width = 36,
-                            Height = 36,
-                            Margin = new Thickness(-4)
-                        };
-
-                        var icon = new CustomEmojiIcon
-                        {
-                            Source = DelayedFileSource.FromSticker(ViewModel.ClientService, upgraded.Gift.Model.Sticker),
-                            Width = 28,
-                            Height = 28,
-                            FrameSize = new Size(28, 28),
-                            IsViewportAware = false
-                        };
-
-                        icon.Ready += OnReady;
-
-                        var root = new Grid
-                        {
-                            Opacity = 0,
-                            Width = 28,
-                            Height = 28,
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            VerticalAlignment = VerticalAlignment.Top
-                        };
-
-                        root.Children.Add(new Border
-                        {
-                            Background = gradient,
-                            Width = 32,
-                            Height = 32,
-                            Margin = new Thickness(-2)
-                        });
-
-                        root.Children.Add(particles);
-                        root.Children.Add(icon);
-
-                        RootGrid.Children.Add(root);
-
-                        visual = ElementComposition.GetElementVisual(root);
-                    }
-                    else
-                    {
-                        visual = ElementComposition.GetElementVisual(RootGrid.Children[i]);
-                    }
-
-                    visual.Offset = new Vector3(absolutePosition, 0);
-                    visual.Scale = new Vector3(iconPosition.Scale * (1.0f - itemScaleFraction));
-                    visual.RotationAngle = effectiveAngle;
-                }
+                var visual = ElementComposition.GetElementVisual(root);
+                visual.Offset = new Vector3(absolutePosition, 0);
+                visual.Scale = new Vector3(iconPosition.Scale * (1.0f - itemScaleFraction));
+                visual.RotationAngle = effectiveAngle;
             }
         }
 
