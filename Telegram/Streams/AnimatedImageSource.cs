@@ -66,11 +66,13 @@ namespace Telegram.Streams
 
         public bool IsUnique { get; set; }
 
+        public bool IsAnimated { get; set; } = true;
+
         public override bool Equals(object obj)
         {
             if (obj is AnimatedImageSource y && !y.IsUnique && !IsUnique)
             {
-                return y.Id == Id;
+                return y.Id == Id && y.IsAnimated == IsAnimated;
             }
 
             return base.Equals(obj);
@@ -83,7 +85,7 @@ namespace Telegram.Streams
                 return base.GetHashCode();
             }
 
-            return Id.GetHashCode();
+            return HashCode.Combine(Id, IsAnimated);
         }
     }
 

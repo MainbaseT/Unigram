@@ -62,16 +62,11 @@ namespace Telegram.Controls.Messages
 
             if (string.IsNullOrEmpty(_tag?.Label))
             {
-                if (Count != null)
-                {
-                    Count.Visibility = Visibility.Collapsed;
-                }
+                Count.Visibility = Visibility.Collapsed;
             }
             else
             {
-                Count ??= GetTemplateChild(nameof(Count)) as AnimatedTextBlock;
                 Count.Visibility = Visibility.Visible;
-
                 Count.Text = _tag.Label;
             }
         }
@@ -88,16 +83,11 @@ namespace Telegram.Controls.Messages
         {
             if (string.IsNullOrEmpty(_tag?.Label))
             {
-                if (Count != null)
-                {
-                    Count.Visibility = Visibility.Collapsed;
-                }
+                Count.Visibility = Visibility.Collapsed;
             }
             else
             {
-                Count ??= GetTemplateChild(nameof(Count)) as AnimatedTextBlock;
                 Count.Visibility = Visibility.Visible;
-
                 Count.Text = _tag.Label;
             }
         }

@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using Telegram.Common;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -88,7 +89,7 @@ namespace Telegram.Streams
         {
             if (obj is CustomEmojiFileSource y && !y.IsUnique && !IsUnique)
             {
-                return y.Id == Id;
+                return y.Id == Id && y.IsAnimated == IsAnimated;
             }
 
             return base.Equals(obj);
@@ -101,7 +102,7 @@ namespace Telegram.Streams
                 return base.GetHashCode();
             }
 
-            return Id.GetHashCode();
+            return HashCode.Combine(Id, IsAnimated);
         }
     }
 }

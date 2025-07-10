@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using Telegram.Common;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -20,6 +21,31 @@ namespace Telegram.Streams
             _reaction = reaction;
 
             DownloadFile(null, null);
+        }
+
+        private ReactionFileSource(IClientService clientService, ReactionType reaction, File file)
+            : base(clientService, file)
+        {
+            _reaction = reaction;
+
+            if (file == null)
+            {
+                DownloadFile(null, null);
+            }
+        }
+
+        public ReactionFileSource Clone(bool animated)
+        {
+            return new ReactionFileSource(_clientService, _reaction, _file)
+            {
+                IsUnique = !animated,
+                IsAnimated = animated,
+                UseCenterAnimation = true,
+                Format = Format,
+                Width = Width,
+                Height = Height,
+                NeedsRepainting = NeedsRepainting
+            };
         }
 
         public bool UseCenterAnimation { get; set; }
@@ -101,7 +127,7 @@ namespace Telegram.Streams
         {
             if (obj is CustomEmojiFileSource y && !y.IsUnique && !IsUnique)
             {
-                return y.Id == Id;
+                return y.Id == Id && y.IsAnimated == IsAnimated;
             }
 
             return base.Equals(obj);
@@ -116,8 +142,8 @@ namespace Telegram.Streams
 
             return _reaction switch
             {
-                ReactionTypeEmoji emoji => emoji.Emoji.GetHashCode(),
-                ReactionTypeCustomEmoji customEmoji => customEmoji.CustomEmojiId.GetHashCode(),
+                ReactionTypeEmoji emoji => HashCode.Combine(emoji.Emoji, IsAnimated),
+                ReactionTypeCustomEmoji customEmoji => HashCode.Combine(customEmoji.CustomEmojiId, IsAnimated),
                 _ => base.GetHashCode()
             };
         }

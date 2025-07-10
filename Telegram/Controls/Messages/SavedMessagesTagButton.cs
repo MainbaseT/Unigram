@@ -99,7 +99,7 @@ namespace Telegram.Controls.Messages
                 Icon.Source = new ReactionFileSource(viewModel.ClientService, reaction.Tag)
                 {
                     UseCenterAnimation = true,
-                    IsUnique = true
+                    IsAnimated = false
                 };
             }
         }
@@ -122,9 +122,6 @@ namespace Telegram.Controls.Messages
             //}
             //else if (interaction.TotalCount > interaction.RecentSenderIds.Count)
             //{
-            Count ??= GetTemplateChild(nameof(Count)) as AnimatedTextBlock;
-            Count.Visibility = Visibility.Visible;
-
             var builder = new StringBuilder(tag.Label);
             if (builder.Length > 0)
             {
@@ -171,6 +168,7 @@ namespace Telegram.Controls.Messages
         {
             LayoutRoot = GetTemplateChild(nameof(LayoutRoot)) as Grid;
             Icon = GetTemplateChild(nameof(Icon)) as CustomEmojiIcon;
+            Count = GetTemplateChild(nameof(Count)) as AnimatedTextBlock;
 
             if (_reaction != null)
             {

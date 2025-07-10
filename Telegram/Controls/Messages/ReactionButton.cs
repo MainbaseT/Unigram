@@ -145,7 +145,7 @@ namespace Telegram.Controls.Messages
                 Icon.Source = new ReactionFileSource(message.ClientService, reaction.Type)
                 {
                     UseCenterAnimation = true,
-                    IsUnique = true
+                    IsAnimated = false
                 };
             }
         }
@@ -356,6 +356,11 @@ namespace Telegram.Controls.Messages
 
         protected void Animate(File around, bool cache)
         {
+            if (Icon?.Source is ReactionFileSource reaction && !Icon.Source.IsAnimated)
+            {
+                Icon.Source = reaction.Clone(true);
+            }
+
             Icon?.Play();
 
             var popup = Overlay;
@@ -388,6 +393,11 @@ namespace Telegram.Controls.Messages
         private void Continue()
         {
             Logger.Info();
+
+            if (Icon?.Source is ReactionFileSource reaction && Icon.Source.IsAnimated && this.IsConnected())
+            {
+                Icon.Source = reaction.Clone(false);
+            }
 
             var popup = Overlay;
             if (popup == null)

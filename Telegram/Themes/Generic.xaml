@@ -1026,7 +1026,8 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Grid Margin="0,-4">
-                            <local:CustomEmojiIcon x:Name="Icon" />
+                            <local:CustomEmojiIcon x:Name="Icon"
+                                                   CleanOnSourceChanged="False" />
                             <Popup x:Name="Overlay"
                                    IsHitTestVisible="False"
                                    Margin="-32"
@@ -1122,7 +1123,8 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Grid Margin="0,-4">
-                            <local:CustomEmojiIcon x:Name="Icon" />
+                            <local:CustomEmojiIcon x:Name="Icon"
+                                                   CleanOnSourceChanged="False" />
                             <Popup x:Name="Overlay"
                                    IsHitTestVisible="False"
                                    Margin="-32"
@@ -1131,7 +1133,6 @@
                         </Grid>
 
                         <local:AnimatedTextBlock x:Name="Count"
-                                                 x:Load="False"
                                                  Foreground="{ThemeResource MessageReactionPaidForegroundBrush}"
                                                  TextStyle="{StaticResource BaseCaptionTextBlockStyle}"
                                                  VerticalAlignment="Center"
@@ -1205,7 +1206,8 @@
                                                     Grid.ColumnSpan="2" />
 
                         <Grid Margin="0,-4">
-                            <local:CustomEmojiIcon x:Name="Icon" />
+                            <local:CustomEmojiIcon x:Name="Icon"
+                                                   CleanOnSourceChanged="False" />
                             <Popup x:Name="Overlay"
                                    IsHitTestVisible="False"
                                    Margin="-32"
@@ -1214,8 +1216,6 @@
                         </Grid>
 
                         <local:AnimatedTextBlock x:Name="Count"
-                                                 x:Load="False"
-                                                 Visibility="Collapsed"
                                                  Foreground="{ThemeResource MessageReactionForegroundBrush}"
                                                  TextStyle="{StaticResource BaseCaptionTextBlockStyle}"
                                                  VerticalAlignment="Center"
@@ -1280,11 +1280,11 @@
                                                        Grid.ColumnSpan="2" />
 
                         <Grid Margin="0,-4">
-                            <local:CustomEmojiIcon x:Name="Icon" />
+                            <local:CustomEmojiIcon x:Name="Icon"
+                                                   CleanOnSourceChanged="False" />
                         </Grid>
 
                         <local:AnimatedTextBlock x:Name="Count"
-                                                 x:Load="False"
                                                  Foreground="{ThemeResource MessageReactionForegroundBrush}"
                                                  TextStyle="{StaticResource BaseCaptionTextBlockStyle}"
                                                  VerticalAlignment="Center"

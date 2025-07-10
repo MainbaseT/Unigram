@@ -86,7 +86,7 @@ namespace Telegram.Streams
         {
             if (obj is LocalFileSource y && !y.IsUnique && !IsUnique)
             {
-                return y.FilePath == FilePath;
+                return y.FilePath == FilePath && y.IsAnimated == IsAnimated;
             }
 
             return base.Equals(obj);
@@ -99,7 +99,7 @@ namespace Telegram.Streams
                 return base.GetHashCode();
             }
 
-            return FilePath.GetHashCode();
+            return HashCode.Combine(FilePath, IsAnimated);
         }
     }
 }

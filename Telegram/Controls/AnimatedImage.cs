@@ -1551,12 +1551,16 @@ namespace Telegram.Controls
     public partial class LottieAnimatedImageTask : AnimatedImageTask
     {
         private readonly LottieAnimation _animation;
+        private readonly bool _shouldStop;
+
         private readonly HashSet<int> _markers;
 
         public LottieAnimatedImageTask(LottieAnimation animation, AnimatedImagePresentation presentation)
             : base(presentation)
         {
             _animation = animation;
+            _shouldStop = !presentation.Source.IsAnimated;
+
             _markers = presentation.Source.Markers?.Values.ToHashSet();
 
             PixelWidth = presentation.PixelWidth; //animation.PixelWidth;
@@ -1574,7 +1578,7 @@ namespace Telegram.Controls
         {
             position = 0;
 
-            if (_animation.IsReadyToCache)
+            if (_animation.IsReadyToCache && !_shouldStop)
             {
                 _animation.Cache();
                 return AnimatedImageTaskState.Skip;
@@ -1593,7 +1597,7 @@ namespace Telegram.Controls
             _animation.RenderSync(frame, _index);
             _index = Math.Min(_animation.TotalFrame, _index + framesPerUpdate);
 
-            if (_animation.TotalFrame == 1)
+            if (_animation.TotalFrame == 1 || _shouldStop)
             {
                 _index = 0;
                 return AnimatedImageTaskState.Stop;
@@ -1620,11 +1624,13 @@ namespace Telegram.Controls
     public partial class VideoAnimatedImageTask : AnimatedImageTask
     {
         private readonly CachedVideoAnimation _animation;
+        private readonly bool _shouldStop;
 
         public VideoAnimatedImageTask(CachedVideoAnimation animation, AnimatedImagePresentation presentation)
             : base(presentation)
         {
             _animation = animation;
+            _shouldStop = !presentation.Source.IsAnimated;
 
             PixelWidth = animation.PixelWidth;
             PixelHeight = animation.PixelHeight;
@@ -1642,7 +1648,7 @@ namespace Telegram.Controls
         {
             position = 0;
 
-            if (_animation.IsReadyToCache)
+            if (_animation.IsReadyToCache && !_shouldStop)
             {
                 _animation.Cache();
                 return AnimatedImageTaskState.Skip;
@@ -1655,7 +1661,7 @@ namespace Telegram.Controls
             _animation.RenderSync(frame, out int seconds, out bool completed);
             _index++;
 
-            if (_animation.TotalFrame == 1 || (completed && _index == 1))
+            if (_animation.TotalFrame == 1 || _shouldStop || (completed && _index == 1))
             {
                 _index = 0;
                 return AnimatedImageTaskState.Stop;
