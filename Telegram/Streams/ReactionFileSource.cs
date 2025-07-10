@@ -144,6 +144,7 @@ namespace Telegram.Streams
             {
                 ReactionTypeEmoji emoji => HashCode.Combine(emoji.Emoji, IsAnimated),
                 ReactionTypeCustomEmoji customEmoji => HashCode.Combine(customEmoji.CustomEmojiId, IsAnimated),
+                ReactionTypePaid paid => HashCode.Combine("\u2B50", IsAnimated),
                 _ => base.GetHashCode()
             };
         }

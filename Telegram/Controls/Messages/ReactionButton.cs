@@ -218,6 +218,7 @@ namespace Telegram.Controls.Messages
             Overlay = GetTemplateChild(nameof(Overlay)) as Popup;
             Icon = GetTemplateChild(nameof(Icon)) as CustomEmojiIcon;
             Icon.Ready += OnReady;
+            Icon.LoopCompleted += OnLoopCompleted;
 
             if (_reaction != null)
             {
@@ -232,6 +233,19 @@ namespace Telegram.Controls.Messages
         private void OnReady(object sender, EventArgs e)
         {
             SetUnread(_unread);
+        }
+
+        private void OnLoopCompleted(object sender, AnimatedImageLoopCompletedEventArgs e)
+        {
+            this.BeginOnUIThread(OnLoopCompleted);
+        }
+
+        private void OnLoopCompleted()
+        {
+            if (Icon?.Source is ReactionFileSource reaction && Icon.Source.IsAnimated && this.IsConnected())
+            {
+                Icon.Source = reaction.Clone(false);
+            }
         }
 
         protected override void OnToggle()
@@ -393,11 +407,6 @@ namespace Telegram.Controls.Messages
         private void Continue()
         {
             Logger.Info();
-
-            if (Icon?.Source is ReactionFileSource reaction && Icon.Source.IsAnimated && this.IsConnected())
-            {
-                Icon.Source = reaction.Clone(false);
-            }
 
             var popup = Overlay;
             if (popup == null)
