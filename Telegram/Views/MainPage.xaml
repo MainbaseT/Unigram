@@ -527,6 +527,12 @@
                                 <Border x:Name="ChatTabs"
                                         x:Load="False">
                                     <Grid x:Name="ChatTabsView">
+                                        <!-- Blurred background
+                                        <Border Margin="0,-72,0,0">
+                                            <Border.Background>
+                                                <media:BlurBrush />
+                                            </Border.Background>
+                                        </Border>-->
                                         <controls:ChatFoldersNavView x:Name="ChatFolders"
                                                                      AutomationProperties.Name="{CustomResource Filters}"
                                                                      ItemsSource="{x:Bind ViewModel.Folders}"

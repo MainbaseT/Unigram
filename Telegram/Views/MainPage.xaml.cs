@@ -79,7 +79,7 @@ namespace Telegram.Views
 
             VisualUtilities.DropShadow(UpdateShadow);
 
-            RootGrid.CreateInsetClip(0, -32, 0, 0);
+            RootGrid.CreateInsetClip(0, -40, 0, 0);
 
             ChatsList.RegisterPropertyChangedCallback(ListViewBase.SelectionModeProperty, List_SelectionModeChanged);
 
