@@ -16,10 +16,8 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
 {
-    public partial class ProgressBarRing : Control
+    public partial class ProgressBarRing : ControlEx
     {
-        private readonly FrameworkElementState _manager;
-
         private readonly ShapeVisual _visual;
         private readonly CompositionSpriteShape _shape;
         private readonly CompositionEllipseGeometry _ellipse;
@@ -31,9 +29,8 @@ namespace Telegram.Controls
         {
             DefaultStyleKey = typeof(ProgressBarRing);
 
-            _manager = new FrameworkElementState(this);
-            _manager.Loaded += OnLoaded;
-            _manager.Unloaded += OnUnloaded;
+            Connected += OnLoaded;
+            Disconnected += OnUnloaded;
 
             var ellipse = BootStrapper.Current.Compositor.CreateEllipseGeometry();
             ellipse.Radius = new Vector2((float)Radius);
