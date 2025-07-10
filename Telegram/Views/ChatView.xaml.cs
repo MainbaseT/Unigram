@@ -2435,8 +2435,7 @@ namespace Telegram.Views
 
         public void PlayInteraction(File interaction)
         {
-            var file = interaction;
-            if (file.Local.IsDownloadingCompleted && SendEffectInteractions.Children.Count < 4)
+            if (SendEffectInteractions.Children.Count < 4)
             {
                 var dispatcher = Windows.System.DispatcherQueue.GetForCurrentThread();
 
@@ -2449,7 +2448,7 @@ namespace Telegram.Views
                 player.IsHitTestVisible = false;
                 player.FrameSize = new Size(512, 512);
                 player.AutoPlay = true;
-                player.Source = new LocalFileSource(file);
+                player.Source = new DelayedFileSource(ViewModel.ClientService, interaction);
                 player.LoopCompleted += (s, args) =>
                 {
                     dispatcher.TryEnqueue(() =>
@@ -2486,13 +2485,6 @@ namespace Telegram.Views
 
                 SendEffectInteractions.Children.Add(player);
                 SendEffectInteractionsPopup.IsOpen = true;
-            }
-            else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
-            {
-                //message.Interaction = interaction;
-                ViewModel.ClientService.DownloadFile(file.Id, 16);
-
-                //UpdateManager.Subscribe(this, message, file, ref _interactionToken, UpdateFile, true);
             }
         }
 
