@@ -89,6 +89,10 @@
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.SavedMessagesDebug, Mode=TwoWay}"
                               Content="Saved Messages Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
+
+                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.DeleteFilesDebug, Mode=TwoWay}"
+                              Content="Delete Files Debug"
+                              Style="{StaticResource SettingsCheckBoxStyle}" />
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl Header="Crash Mitigation">

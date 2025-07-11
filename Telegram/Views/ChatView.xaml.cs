@@ -3098,10 +3098,10 @@ namespace Telegram.Views
                 flyout.CreateFlyoutItem(MessageAddContact_Loaded, ViewModel.AddToContacts, message, Strings.AddContactTitle, Icons.Person);
                 //CreateFlyoutItem(ref flyout, MessageSaveDownload_Loaded, ViewModel.MessageSaveDownloadCommand, messageCommon, Strings.SaveToDownloads);
 
-                if (Constants.DEBUG)
+                if (SettingsService.Current.Diagnostics.DeleteFilesDebug)
                 {
                     var file = message.GetFile();
-                    if (file != null && (file.Local.IsDownloadingActive || file.Local.IsDownloadingCompleted || message.Content is MessageVideo { AlternativeVideos.Count: > 0 }))
+                    if (file != null && (file.Local.IsDownloadingActive || file.Local.IsDownloadingCompleted || (message.Content is MessageVideo video && video.AlternativeVideos.Any(x => x.HlsFile.Local.IsDownloadingActive || x.HlsFile.Local.IsDownloadingCompleted || x.Video.Local.IsDownloadingActive || x.Video.Local.IsDownloadingCompleted))))
                     {
                         flyout.CreateFlyoutItem(x =>
                         {
