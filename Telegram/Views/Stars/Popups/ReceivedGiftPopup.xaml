@@ -6,7 +6,7 @@
                        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                        xmlns:controls="using:Telegram.Controls"
                        mc:Ignorable="d"
-                       Padding="24,0,24,24"
+                       Padding="0,0,0,24"
                        IsDismissButtonVisible="True">
 
     <Grid>
@@ -45,17 +45,17 @@
                            Style="{StaticResource PopupTextBlockStyle}"
                            TextAlignment="Center"
                            VerticalAlignment="Top"
+                           Margin="12,0"
                            Grid.Row="1" />
                 <TextBlock x:Name="Subtitle"
                            Style="{StaticResource BodyTextBlockStyle}"
                            TextAlignment="Center"
-                           Margin="12,0,12,8"
+                           Margin="24,0,24,8"
                            Grid.Row="3" />
             </Grid>
             <controls:PatternBackground x:Name="UpgradedHeader"
                                         CornerRadius="7,7,0,0"
-                                        Padding="0"
-                                        Margin="-24,0">
+                                        Padding="0">
                 <controls:PatternBackground.Footer>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -67,12 +67,13 @@
                                    Text="{CustomResource GiftTelegramPremiumTitle}"
                                    Style="{StaticResource PopupTextBlockStyle}"
                                    TextAlignment="Center"
-                                   VerticalAlignment="Top" />
+                                   VerticalAlignment="Top"
+                                   Margin="12,0" />
                         <TextBlock x:Name="UpgradedSubtitle"
                                    Style="{StaticResource BodyTextBlockStyle}"
                                    Foreground="#AAFFFFFF"
                                    TextAlignment="Center"
-                                   Margin="12,0,12,8"
+                                   Margin="24,0,24,8"
                                    Grid.Row="1" />
 
                         <Grid x:Name="UpgradedButtons"
@@ -89,7 +90,7 @@
                                                   Click="TransferButton_Click"
                                                   Content="{CustomResource Gift2ActionTransfer}"
                                                   Style="{StaticResource GlyphGridBadgeButtonStyle}"
-                                                  Glyph="&#xE9B0;" />
+                                                  Glyph="&#xEAC6;" />
 
                             <controls:BadgeButton x:Name="WearButton"
                                                   Click="WearButton_Click"
@@ -123,7 +124,7 @@
                   VerticalAlignment="Top"
                   Height="24"
                   CornerRadius="12"
-                  Margin="-16,8,0,0"
+                  Margin="8,8,0,0"
                   Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -171,7 +172,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <controls:TableView x:Name="TableRoot"
-                                        Margin="-8,12,-8,0">
+                                        Margin="8,8,8,0">
                         <controls:TableViewItem x:Name="FirstSale"
                                                 Header="{CustomResource Gift2SoldOutSheetFirstSale}"
                                                 Visibility="Collapsed" />
@@ -265,7 +266,7 @@
                             BorderBrush="{ThemeResource ButtonBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="0,0,4,4"
-                            Margin="-8,0,-8,0"
+                            Margin="8,0,8,0"
                             Visibility="Collapsed"
                             Grid.Row="1">
                         <controls:FormattedTextBlock x:Name="Caption"
@@ -279,7 +280,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <controls:TableView x:Name="UpgradedTableRoot"
-                                        Margin="-8,12,-8,0">
+                                        Margin="8,8,8,0">
                         <controls:TableViewItem Header="{CustomResource Gift2Owner}"
                                                 Padding="0">
                             <Grid>
@@ -383,7 +384,7 @@
                             BorderBrush="{ThemeResource ButtonBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="0,0,4,4"
-                            Margin="-8,0,-8,0"
+                            Margin="8,0,8,0"
                             Visibility="Collapsed"
                             Grid.Row="1">
                         <controls:FormattedTextBlock x:Name="UpgradedCaption"
@@ -417,25 +418,26 @@
                                       Badge="{CustomResource Gift2UpgradeFeature1Text}"
                                       Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
                                       Glyph="&#xE76E;"
-                                      Margin="-12,0,-12,0"
+                                      Margin="12,0,12,0"
                                       IsHitTestVisible="False" />
                 <controls:BadgeButton Content="{CustomResource Gift2UpgradeFeature2Title}"
                                       Badge="{CustomResource Gift2UpgradeFeature2Text}"
                                       Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
                                       Glyph="&#xE76E;"
-                                      Margin="-12,-4,-12,0"
+                                      Margin="12,-8,12,0"
                                       IsHitTestVisible="False"
                                       Grid.Row="1" />
                 <controls:BadgeButton Content="{CustomResource Gift2UpgradeFeature3Title}"
                                       Badge="{CustomResource Gift2UpgradeFeature3Text}"
                                       Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
                                       Glyph="&#xE76E;"
-                                      Margin="-12,-4,-12,0"
+                                      Margin="12,-8,12,0"
                                       IsHitTestVisible="False"
                                       Grid.Row="2" />
 
                 <CheckBox x:Name="KeepOriginalDetails"
                           Content="{CustomResource Gift2AddSenderName}"
+                          Margin="24,0,0,0"
                           Grid.Row="3" />
             </Grid>
         </Grid>
@@ -443,7 +445,7 @@
         <Grid x:Name="PurchasePanel"
               VerticalAlignment="Bottom"
               HorizontalAlignment="Stretch"
-              Margin="0,8,0,0"
+              Margin="24,8,24,0"
               Grid.Row="1">
             <controls:BadgeButton x:Name="PurchaseCommand"
                                   Click="Purchase_Click"
@@ -473,7 +475,7 @@
                              Click="More_ContextRequested"
                              HorizontalAlignment="Right"
                              VerticalAlignment="Top"
-                             Margin="0,0,16,0"
+                             Margin="0,0,40,0"
                              CornerRadius="20"
                              RequestedTheme="Dark"
                              Visibility="Collapsed" />

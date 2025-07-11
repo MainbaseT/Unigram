@@ -251,8 +251,16 @@ namespace Telegram.Controls.Messages
                 var info = FindName("AttributeInfo") as TextBlock;
                 var text = FindName("AttributeText") as TextBlock;
 
-                title.Text = string.Format(Strings.Gift2UniqueTitle, message.IsOutgoing ? self.FirstName : user.FullName(true));
-                subtitle.Text = string.Format("{0} #{1}", upgradedGift.Gift.Title, upgradedGift.Gift.Number);
+                if (upgradedGift.ReceiverId.IsUser(message.ClientService.Options.MyId) && upgradedGift.ReceiverId.AreTheSame(upgradedGift.SenderId))
+                {
+                    title.Text = Strings.Gift2ActionSelfTitle;
+                }
+                else
+                {
+                    title.Text = string.Format(Strings.Gift2UniqueTitle, message.IsOutgoing ? self.FirstName : user.FullName(true));
+                }
+
+                subtitle.Text = upgradedGift.Gift.ToName();
 
                 info.Text = Strings.Gift2AttributeModel + "\n" + Strings.Gift2AttributeBackdrop + "\n" + Strings.Gift2AttributeSymbol;
                 text.Text = upgradedGift.Gift.Model.Name + "\n" + upgradedGift.Gift.Backdrop.Name + "\n" + upgradedGift.Gift.Symbol.Name;
@@ -2323,7 +2331,7 @@ namespace Telegram.Controls.Messages
             {
                 if (upgradedGift.ReceiverId.IsUser(message.ClientService.Options.MyId))
                 {
-                    if (message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out Object outboundUser))
+                    if (!upgradedGift.ReceiverId.AreTheSame(upgradedGift.SenderId) && message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out Object outboundUser))
                     {
                         return ReplaceWithLink(Strings.ActionUniqueGiftUpgradeOutbound, outboundUser);
                     }

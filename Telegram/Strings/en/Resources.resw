@@ -6432,6 +6432,9 @@ Duration: {1}</value>
   <data name="Gift2ActionSavedInfo" xml:space="preserve">
     <value>You added this gift to your profile.</value>
   </data>
+  <data name="Gift2ActionSelfTitle" xml:space="preserve">
+    <value>Saved Gift</value>
+  </data>
   <data name="Gift2ActionTitle" xml:space="preserve">
     <value>Gift from {0}</value>
   </data>
