@@ -1260,7 +1260,7 @@ namespace Telegram.Views.Host
             }
         }
 
-        private void OnProcessKeyboardAccelerators(UIElement sender, ProcessKeyboardAcceleratorEventArgs args)
+        private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs args)
         {
             if (_navigationService?.Frame.Content is MainPage mainPage)
             {

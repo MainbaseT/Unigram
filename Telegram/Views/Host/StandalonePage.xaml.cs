@@ -159,7 +159,7 @@ namespace Telegram.Views.Host
             }
         }
 
-        private void OnProcessKeyboardAccelerators(UIElement sender, ProcessKeyboardAcceleratorEventArgs args)
+        private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs args)
         {
             var invoked = _shortcutsService.Process(args);
             if (invoked == null)
@@ -173,7 +173,7 @@ namespace Telegram.Views.Host
             }
         }
 
-        private async void ProcessAppCommands(ShortcutCommand command, ProcessKeyboardAcceleratorEventArgs args)
+        private async void ProcessAppCommands(ShortcutCommand command, KeyRoutedEventArgs args)
         {
             if (command == ShortcutCommand.Search)
             {

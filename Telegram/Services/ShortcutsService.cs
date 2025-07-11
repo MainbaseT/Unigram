@@ -18,9 +18,9 @@ namespace Telegram.Services
 {
     public interface IShortcutsService
     {
-        InvokedShortcut Process(ProcessKeyboardAcceleratorEventArgs args);
+        InvokedShortcut Process(KeyRoutedEventArgs args);
 
-        bool TryGetShortcut(ProcessKeyboardAcceleratorEventArgs args, out Shortcut shortcut);
+        bool TryGetShortcut(KeyRoutedEventArgs args, out Shortcut shortcut);
 
         IList<ShortcutList> GetShortcuts();
         IList<ShortcutList> Update(Shortcut shortcut, ShortcutCommand command);
@@ -183,14 +183,14 @@ namespace Telegram.Services
             InitializeCustom();
         }
 
-        public InvokedShortcut Process(ProcessKeyboardAcceleratorEventArgs args)
+        public InvokedShortcut Process(KeyRoutedEventArgs args)
         {
             if (args.Key is >= VirtualKey.NumberPad0 and <= VirtualKey.NumberPad9)
             {
-                return Process(args.Modifiers, VirtualKey.Number0 + (args.Key - VirtualKey.NumberPad0));
+                return Process(WindowContext.KeyModifiers(), VirtualKey.Number0 + (args.Key - VirtualKey.NumberPad0));
             }
 
-            return Process(args.Modifiers, args.Key);
+            return Process(WindowContext.KeyModifiers(), args.Key);
         }
 
         private InvokedShortcut Process(VirtualKeyModifiers modifiers, VirtualKey key)
@@ -210,9 +210,9 @@ namespace Telegram.Services
         //int nonVirtualKey = MapVirtualKey((uint)args.VirtualKey, 2);
         //char mappedChar = Convert.ToChar(nonVirtualKey);
 
-        public bool TryGetShortcut(ProcessKeyboardAcceleratorEventArgs args, out Shortcut shortcut)
+        public bool TryGetShortcut(KeyRoutedEventArgs args, out Shortcut shortcut)
         {
-            return TryGetShortcut(args.Modifiers, args.Key, out shortcut);
+            return TryGetShortcut(WindowContext.KeyModifiers(), args.Key, out shortcut);
         }
 
         private bool TryGetShortcut(VirtualKeyModifiers modifiers, VirtualKey key, out Shortcut shortcut)
@@ -602,8 +602,7 @@ namespace Telegram.Services
 
         public override int GetHashCode()
         {
-            return Modifiers.GetHashCode()
-                ^ Key.GetHashCode();
+            return HashCode.Combine(Modifiers, Key);
         }
 
         public override string ToString()

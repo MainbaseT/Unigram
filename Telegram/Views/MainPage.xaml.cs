@@ -1191,7 +1191,7 @@ namespace Telegram.Views
             }
         }
 
-        public new void ProcessKeyboardAccelerators(ProcessKeyboardAcceleratorEventArgs args)
+        public void ProcessKeyboardAccelerators(KeyRoutedEventArgs args)
         {
             var invoked = ViewModel?.ShortcutService.Process(args);
             if (invoked == null)
@@ -1221,7 +1221,7 @@ namespace Telegram.Views
             }
         }
 
-        private async void ProcessAppCommands(ShortcutCommand command, ProcessKeyboardAcceleratorEventArgs args)
+        private async void ProcessAppCommands(ShortcutCommand command, KeyRoutedEventArgs args)
         {
             if (command is ShortcutCommand.SetStatus)
             {
@@ -1280,7 +1280,7 @@ namespace Telegram.Views
             }
         }
 
-        private void ProcessFolderCommands(ShortcutCommand command, ProcessKeyboardAcceleratorEventArgs args)
+        private void ProcessFolderCommands(ShortcutCommand command, KeyRoutedEventArgs args)
         {
             var folders = ViewModel.Folders;
             if (folders.Empty())
@@ -1323,7 +1323,7 @@ namespace Telegram.Views
             }
         }
 
-        private async void ProcessChatCommands(ShortcutCommand command, ProcessKeyboardAcceleratorEventArgs args)
+        private async void ProcessChatCommands(ShortcutCommand command, KeyRoutedEventArgs args)
         {
             if (command == ShortcutCommand.ChatPrevious)
             {

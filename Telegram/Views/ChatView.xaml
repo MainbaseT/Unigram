@@ -15,8 +15,7 @@
                         Connected="OnLoaded"
                         Disconnected="OnUnloaded"
                         SizeChanged="OnSizeChanged"
-                        PreviewKeyDown="OnPreviewKeyDown"
-                        ProcessKeyboardAccelerators="OnProcessKeyboardAccelerators">
+                        PreviewKeyDown="OnPreviewKeyDown">
 
     <!--<Page.Transitions>
         <TransitionCollection>
