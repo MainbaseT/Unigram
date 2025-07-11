@@ -2261,9 +2261,7 @@ namespace Telegram.ViewModels
             else if (IsSavedMessagesTab)
             {
                 Logger.Debug(string.Format("{0} - Loading messages from last", chat.Id));
-
-                state.TryRemove("highlight", out TextQuote quote);
-                LoadMessageSliceAsync(null, 0, highlight: quote);
+                LoadMessageSliceAsync(null, 0, VerticalAlignment.Bottom);
             }
             else if (state.TryRemove("message_id", out long navigation))
             {
