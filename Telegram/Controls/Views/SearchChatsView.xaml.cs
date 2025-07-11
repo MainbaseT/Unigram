@@ -46,6 +46,17 @@ namespace Telegram.Controls.Views
             InitializeComponent();
         }
 
+        public Thickness PaddingImpl
+        {
+            get => TopChats.Padding;
+            set
+            {
+                ItemsHost.Padding = value;
+                TopChats.Padding = value;
+                TopChats.Margin = new Thickness(-value.Left, 0, -value.Right, 0);
+            }
+        }
+
         public void Activate()
         {
             ViewModel.Activate();

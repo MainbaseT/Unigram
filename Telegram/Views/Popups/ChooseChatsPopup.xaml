@@ -163,7 +163,7 @@
                                    DataContext="{x:Bind ViewModel.SearchChats}"
                                    AreTabsVisible="False"
                                    ItemClick="ListView_ItemClick"
-                                   Margin="12,0" />
+                                   PaddingImpl="12,0" />
 
             <Grid x:Name="ChatListPanel">
                 <Grid.RowDefinitions>
@@ -197,12 +197,6 @@
                             </StackPanel>
                         </DataTemplate>
                     </controls:TopNavView.ItemTemplate>
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"
-                                        Padding="12,0" />
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
                 </controls:TopNavView>
 
                 <ListView x:Name="ChatsPanel"
