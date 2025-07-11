@@ -210,6 +210,13 @@ namespace Telegram.Controls.Gallery
 
             UpdateManager.Subscribe(this, window.ClientService, file, ref _fileToken, UpdateFile);
             UpdateFile(item, file);
+
+            if (item.AlternativeVideos.Count > 0)
+            {
+                var video = item.AlternativeVideos[0];
+                window.ClientService.DownloadFile(video.HlsFile.Id, 30);
+                window.ClientService.DownloadFile(video.Video.Id, 29, 0, (int)((double)video.Video.Size / item.Duration));
+            }
         }
 
         private void UpdateFile(object target, File file)
@@ -246,7 +253,7 @@ namespace Telegram.Controls.Gallery
 
                 if (item.IsPhoto && item.IsMedia)
                 {
-                    item.ClientService.DownloadFile(file.Id, 1);
+                    item.ClientService.DownloadFile(file.Id, 16);
                 }
             }
             else
