@@ -113,7 +113,7 @@ namespace Telegram.Streams
                 _fileStream?.Close();
                 _fileStream = null;
 
-                _source.Close();
+                _source.Close(true);
             }
             catch (Exception)
             {

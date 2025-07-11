@@ -23,7 +23,7 @@ namespace Telegram.Streams
         private bool _canceled;
 
         private long _offset;
-        private long _next;
+        private long _count;
 
         private bool _closed;
 
@@ -42,11 +42,7 @@ namespace Telegram.Streams
             _limit = limit;
 
             Format = new StickerFormatWebm();
-
-            //if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingCompleted)
-            {
-                UpdateManager.Subscribe(this, clientService, file, ref _fileToken, UpdateFile);
-            }
+            UpdateManager.Subscribe(this, clientService, file, ref _fileToken, UpdateFile);
         }
 
         public override void SeekCallback(long offset)
@@ -83,26 +79,26 @@ namespace Telegram.Streams
             var end = _file.Local.DownloadOffset + _file.Local.DownloadedPrefixSize;
 
             var inBegin = _offset >= begin;
-            var inEnd = end >= _offset + count || end == _file.Size;
-            var difference = end - _offset;
+            var inEnd = end >= _offset + count /*|| end == _file.Size*/;
 
             if (_canceled)
             {
+                //Logger.Info("Canceled");
                 return false;
             }
 
-            if (_file.Local.Path.Length > 0 && (inBegin && inEnd || _file.Local.IsDownloadingCompleted))
+            if (_file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted))
             {
+                //Logger.Debug($"Next chunk is available, offset: {_offset}, count: {_count}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
                 return false;
             }
 
             _event.Reset();
 
             _clientService.Send(new DownloadFile(_file.Id, 32, _offset, _limit ? count : 0, false));
-            _next = count;
+            _count = count;
 
-            //Logger.Debug($"Not enough data available, offset: {_offset}, next: {_next}, size: {_file.Size}");
-
+            //Logger.Debug($"Not enough data available, offset: {_offset}, count: {_count}, size: {_file.Size}");
             return true;
         }
 
@@ -122,22 +118,25 @@ namespace Telegram.Streams
                 return;
             }
 
-            var enough = file.Local.DownloadedPrefixSize >= _next;
-            var end = file.Local.DownloadOffset + file.Local.DownloadedPrefixSize == file.Size;
+            var begin = _file.Local.DownloadOffset;
+            var end = _file.Local.DownloadOffset + _file.Local.DownloadedPrefixSize;
 
-            if (file.Local.Path.Length > 0 && (file.Local.DownloadOffset == _offset && (enough || end) || file.Local.IsDownloadingCompleted))
+            var inBegin = _offset >= begin;
+            var inEnd = end >= _offset + _count /*|| end == _file.Size*/;
+
+            if (_file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted))
             {
-                //Logger.Debug($"Next chunk is available, offset: {_offset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                //Logger.Debug($"Next chunk is available, offset: {_offset}, count: {_count}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
                 _event.Set();
             }
-            else if (!file.Local.IsDownloadingActive)
+            else if (_canceled || !file.Local.IsDownloadingActive)
             {
                 Logger.Info("Download was canceled for " + file.Id);
                 _event.Set();
             }
             //else
             //{
-            //    Logger.Debug($"Next chunk is not available, offset: {_offset}, real: {file.Local.DownloadOffset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}, completed: {file.Local.IsDownloadingCompleted}");
+            //    Logger.Debug($"Not enough data available, expected offset: {_offset}, expected count: {_count}, offset: {file.Local.DownloadOffset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}, completed: {file.Local.IsDownloadingCompleted}");
             //}
         }
 
@@ -149,7 +148,7 @@ namespace Telegram.Streams
             SeekCallback(0);
         }
 
-        public void Close()
+        public void Close(bool cancel)
         {
             if (_closed)
             {
@@ -161,8 +160,11 @@ namespace Telegram.Streams
             //Logger.Debug($"Disposing the stream");
             UpdateManager.Unsubscribe(this, ref _fileToken);
 
-            _canceled = true;
-            _clientService.Send(new CancelDownloadFile(_file.Id, false));
+            if (cancel)
+            {
+                _canceled = true;
+                _clientService.Send(new CancelDownloadFile(_file.Id, false));
+            }
 
             _event.Set();
 

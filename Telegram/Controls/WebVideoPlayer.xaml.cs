@@ -335,15 +335,16 @@ namespace Telegram.Controls
                     }
                 }
 
-                Debug.WriteLine(resource + ", offset: " + offset + ", length:" + limit);
-
                 if (limit == 0)
                 {
                     limit = file.Size - offset;
                 }
 
+                //Logger.Info(resource + ", offset: " + offset + ", count:" + limit);
+
                 remote.SeekCallback(offset);
                 await remote.ReadCallbackAsync(limit);
+                remote.Close(false);
 
                 if (extension == ".m3u8")
                 {
