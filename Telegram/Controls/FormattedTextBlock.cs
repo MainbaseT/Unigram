@@ -901,6 +901,7 @@ namespace Telegram.Controls
             //_isFormatted = runs.Count > 0 || fontSize != 0;
             HasCodeBlocks = preformatted;
 
+            var spoilerChanged = (_spoiler != null) != (spoiler != null);
             if (spoiler?.Ranges.Count > 0)
             {
                 spoiler.Foreground = new SolidColorBrush(Colors.Transparent);
@@ -950,33 +951,31 @@ namespace Telegram.Controls
             Below.Margin = new Thickness(0, topPadding, 0, 0);
             TextBlock.Margin = new Thickness(0, topPadding, 0, 0);
 
-            if (!_layoutUpdated)
+            if (spoilerChanged && !_layoutUpdated)
             {
                 _layoutUpdated = true;
                 TextBlock.LayoutUpdated += OnLayoutUpdated;
             }
         }
 
-        private bool _sizeChanged;
         private bool _layoutUpdated;
 
         private void OnLayoutUpdated(object sender, object e)
         {
-            _sizeChanged = true;
-
-            _layoutUpdated = false;
-            TextBlock.LayoutUpdated -= OnLayoutUpdated;
-
-            UpdateBelow();
-            UpdateSpoilers();
+            UpdateComponent();
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (_sizeChanged)
+            UpdateComponent();
+        }
+
+        private void UpdateComponent()
+        {
+            if (_layoutUpdated)
             {
-                _sizeChanged = false;
-                return;
+                _layoutUpdated = false;
+                TextBlock.LayoutUpdated -= OnLayoutUpdated;
             }
 
             UpdateBelow();
@@ -985,7 +984,7 @@ namespace Telegram.Controls
 
         private void UpdateBelow()
         {
-            Below.Children.Clear();
+            Below.Children.ClearIfNotEmpty();
 
             foreach (var paragraph in _codeBlocks)
             {
