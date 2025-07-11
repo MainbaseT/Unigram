@@ -11,7 +11,6 @@ using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Native;
-using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;

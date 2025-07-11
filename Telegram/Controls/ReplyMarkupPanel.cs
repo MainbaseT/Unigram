@@ -7,7 +7,6 @@
 using System;
 using Telegram.Common;
 using Telegram.Controls.Media;
-using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
