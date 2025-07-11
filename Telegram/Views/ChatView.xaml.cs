@@ -4879,6 +4879,11 @@ namespace Telegram.Views
                 return;
             }
 
+            if (ViewModel.SavedMessagesTopic != null && ViewModel.ClientService.TryGetChat(ViewModel.SavedMessagesTopic.Type, out Chat savedMessagesChat))
+            {
+                chat = savedMessagesChat;
+            }
+
             UpdateChatTheme(ViewModel.ClientService.GetChatTheme(chat.ThemeName));
         }
 

@@ -166,6 +166,7 @@ namespace Telegram.Services
         bool TryGetChat(long chatId, out Chat chat);
         bool TryGetChat(MessageSender sender, out Chat value);
         bool TryGetChat(AffiliateType type, out Chat value);
+        bool TryGetChat(SavedMessagesTopicType type, out Chat chat);
 
         bool TryGetChatFromUser(long userId, out long value);
         bool TryGetChatFromUser(long userId, out Chat value);
@@ -1794,6 +1795,17 @@ namespace Telegram.Services
             if (type is AffiliateTypeChannel typeChannel)
             {
                 return TryGetChat(typeChannel.ChatId, out value);
+            }
+
+            value = null;
+            return false;
+        }
+
+        public bool TryGetChat(SavedMessagesTopicType type, out Chat value)
+        {
+            if (type is SavedMessagesTopicTypeSavedFromChat fromChat)
+            {
+                return TryGetChat(fromChat.ChatId, out value);
             }
 
             value = null;
