@@ -962,18 +962,34 @@ namespace Telegram.Common
                         }
                         else
                         {
-                            messageThreadId = info.Message.Id;
-                            messageTopic = new MessageTopicForum(info.MessageThreadId);
+                            var properties = await clientService.SendAsync(new GetMessageProperties(info.Message.ChatId, info.Message.Id)) as MessageProperties;
+                            if (properties != null && properties.CanGetMessageThread)
+                            {
+                                messageThreadId = info.Message.Id;
+                                messageTopic = new MessageTopicForum(info.MessageThreadId);
+                            }
+                            else
+                            {
+                                messageThreadId = 0;
+                                messageTopic = null;
+                            }
                         }
 
-                        var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, messageThreadId));
-                        if (thread is MessageThreadInfo)
+                        if (messageTopic != null)
                         {
-                            navigation.NavigateToChat(chat, info.Message.Id, topic: messageTopic);
+                            var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, messageThreadId));
+                            if (thread is MessageThreadInfo)
+                            {
+                                navigation.NavigateToChat(chat, info.Message.Id, topic: messageTopic);
+                            }
+                            else
+                            {
+                                navigation.ShowPopup(Strings.LinkNotFound, Strings.AppName, Strings.OK);
+                            }
                         }
                         else
                         {
-                            navigation.ShowPopup(Strings.LinkNotFound, Strings.AppName, Strings.OK);
+                            navigation.NavigateToChat(chat, info.Message.Id);
                         }
                     }
                     else
