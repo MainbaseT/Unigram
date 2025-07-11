@@ -310,7 +310,7 @@ namespace Telegram.Views
 
         private ChatBackgroundControl FindBackgroundControl()
         {
-            var masterDetailPanel = this.GetParent<MasterDetailPanel>();
+            var masterDetailPanel = ViewModel.NavigationService.XamlRoot?.Content?.GetChild<MasterDetailPanel>();
             if (masterDetailPanel != null)
             {
                 return masterDetailPanel.GetChild<ChatBackgroundControl>();
@@ -2058,7 +2058,7 @@ namespace Telegram.Views
 
         private void ChatThemeDrawer_ThemeChanged(object sender, ChatThemeChangedEventArgs e)
         {
-            UpdateChatTheme(e.Theme);
+            UpdateChatTheme(ViewModel.Chat, e.Theme);
         }
 
         private void ChatThemeDrawer_ThemeSelected(object sender, ChatThemeSelectedEventArgs e)
@@ -2243,7 +2243,7 @@ namespace Telegram.Views
                 flyout.CreateFlyoutItem(ViewModel.ShowTranslate, Strings.TranslateMessage, Icons.Translate);
             }
 
-            if (user != null && user.Type is not UserTypeDeleted && !secret)
+            if (user != null && user.Type is not UserTypeDeleted && !secret && ViewModel.SavedMessagesTopic == null)
             {
                 flyout.CreateFlyoutItem(ViewModel.ChangeTheme, Strings.SetWallpapers, Icons.PaintBrush);
             }
@@ -4884,7 +4884,7 @@ namespace Telegram.Views
                 chat = savedMessagesChat;
             }
 
-            UpdateChatTheme(ViewModel.ClientService.GetChatTheme(chat.ThemeName));
+            UpdateChatTheme(chat, ViewModel.ClientService.GetChatTheme(chat.ThemeName));
         }
 
         public void UpdateChatBackground(Chat chat)
@@ -4903,11 +4903,11 @@ namespace Telegram.Views
             }
         }
 
-        private void UpdateChatTheme(ChatTheme theme)
+        private void UpdateChatTheme(Chat chat, ChatTheme theme)
         {
-            if (Theme.Current.Update(ActualTheme, theme, _viewModel.Chat.Background))
+            if (Theme.Current.Update(ActualTheme, theme, chat.Background))
             {
-                var current = _viewModel.Chat.Background?.Background;
+                var current = chat.Background?.Background;
                 if (current?.Type is BackgroundTypeChatTheme typeChatTheme)
                 {
                     theme ??= ViewModel.ClientService.GetChatTheme(typeChatTheme.ThemeName);
