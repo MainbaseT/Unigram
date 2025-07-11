@@ -86,7 +86,7 @@ namespace Telegram.Views
                 void handler(object sender, RoutedEventArgs e)
                 {
                     ScrollingHost.Loaded -= handler;
-                    ScrollingHost.ChangeView(null, listViewPosition.ScrollPosition, null, true);
+                    ChangeView(listViewPosition.ScrollPosition, true);
                 }
 
                 ScrollingHost.Loaded += handler;
@@ -480,7 +480,7 @@ namespace Telegram.Views
             if (_fromItemClick)
             {
                 _fromItemClick = false;
-                ScrollingHost.ChangeView(null, ViewModel.IsSavedMessages ? 0 : ProfileHeader.ActualHeight - 48 + 24, null);
+                ScrollToContent();
             }
         }
 
@@ -634,7 +634,7 @@ namespace Telegram.Views
 
         private void OnViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
-            if (ViewModel.IsSavedMessages)
+            if (_programmaticChange || ViewModel.IsSavedMessages)
             {
                 return;
             }
@@ -739,6 +739,11 @@ namespace Telegram.Views
         private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             UpdateBackButton();
+
+            if (!e.IsIntermediate)
+            {
+                _programmaticChange = false;
+            }
 
             if (ProfileHeader.Visibility == Visibility.Visible && !ViewModel.IsSavedMessages)
             {
@@ -896,18 +901,31 @@ namespace Telegram.Views
         }
 
         private bool _fromItemClick;
+        private bool _programmaticChange;
 
         private void Navigation_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (Navigation.SelectedItem == e.ClickedItem)
             {
                 _fromItemClick = false;
-                ScrollingHost.ChangeView(null, ViewModel.IsSavedMessages ? 0 : ProfileHeader.ActualHeight - 48 + 24, null);
+                ScrollToContent();
             }
             else
             {
                 _fromItemClick = true;
             }
+        }
+
+        private void ScrollToContent()
+        {
+            ChangeView(ViewModel.IsSavedMessages ? 0 : ProfileHeader.ActualHeight - 48 + 24, false);
+        }
+
+        private async void ChangeView(double verticalOffset, bool disableAnimation)
+        {
+            _programmaticChange = true;
+            await ScrollingHost.ChangeViewAsync(null, verticalOffset, disableAnimation, false);
+            _programmaticChange = false;
         }
 
         private int _prevSelectedIndex = -1;
