@@ -936,7 +936,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            CurrentInlineBot = null;
+            ClearInlineBot();
             DisposeSearch();
             SaveDraft();
 

@@ -207,9 +207,7 @@ namespace Telegram.ViewModels
             //}
 
             SetText(null, false);
-
-            CurrentInlineBot = null;
-            InlineBotResults = null;
+            ClearInlineBot();
 
             var reply = GetReply(true);
             Function function;
@@ -231,6 +229,13 @@ namespace Telegram.ViewModels
             }
 
             var response = await ClientService.SendAsync(function);
+        }
+
+        public void ClearInlineBot()
+        {
+            CurrentInlineBot = null;
+            InlineBotResults = null;
+            IsInlineBotResultsLoading = false;
         }
     }
 

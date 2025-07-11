@@ -1495,11 +1495,24 @@ namespace Telegram.Views
             var batch = visualShow.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
             {
-                elementHide.Visibility = Visibility.Collapsed;
-                elementShow.Visibility = Visibility.Visible;
-
-                visualHide.Scale = visualShow.Scale = new Vector3(1);
-                visualHide.Opacity = visualShow.Opacity = 1;
+                if (_oldEditing)
+                {
+                    EditMessageButton.Visibility = Visibility.Visible;
+                    SendMessageButton.Visibility = Visibility.Collapsed;
+                    ButtonRecord.Visibility = Visibility.Collapsed;
+                }
+                else if (_oldEmpty)
+                {
+                    EditMessageButton.Visibility = Visibility.Collapsed;
+                    SendMessageButton.Visibility = Visibility.Collapsed;
+                    ButtonRecord.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    EditMessageButton.Visibility = Visibility.Collapsed;
+                    SendMessageButton.Visibility = Visibility.Visible;
+                    ButtonRecord.Visibility = Visibility.Collapsed;
+                }
             };
 
             var hide1 = visualShow.Compositor.CreateVector3KeyFrameAnimation();
