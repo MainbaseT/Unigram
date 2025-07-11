@@ -8,6 +8,7 @@ using Telegram.Common;
 using Telegram.Controls.Messages;
 using Telegram.Services;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
@@ -153,6 +154,14 @@ namespace Telegram.Controls.Chats
                     return AutomationProperties.GetName(sservice);
                 }
             }
+            else if (_owner.Content is MessageWithOwner messageWithOwner)
+            {
+                return Automation.GetSummaryWithName(messageWithOwner, true);
+            }
+            else if (_owner.Content is Message message && _clientService != null)
+            {
+                return Automation.GetDescription(_clientService, message);
+            }
 
             return base.GetNameCore();
         }
@@ -209,6 +218,10 @@ namespace Telegram.Controls.Chats
             else if (_owner.ContentTemplateRoot is MessageBubble child)
             {
                 return child.GetAutomationName() ?? base.GetNameCore();
+            }
+            else if (_owner.Content is MessageWithOwner messageWithOwner)
+            {
+                return Automation.GetSummaryWithName(messageWithOwner, true);
             }
             else if (_owner.Content is Message message && _clientService != null)
             {

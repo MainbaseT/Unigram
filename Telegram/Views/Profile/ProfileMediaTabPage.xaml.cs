@@ -62,8 +62,6 @@ namespace Telegram.Views.Profile
 
                 if (args.Item is MessageWithOwner message)
                 {
-                    AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
-
                     if (message.Content is MessagePhoto photoMessage)
                     {
                         var small = photoMessage.Photo.GetSmall();

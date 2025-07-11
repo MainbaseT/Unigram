@@ -51,22 +51,17 @@ namespace Telegram.Views.Profile
             {
                 var photo = content.Children[0] as ImageView;
 
-                if (args.Item is MessageWithOwner message)
+                if (args.Item is MessageWithOwner { Content: MessageAnimation animation })
                 {
-                    AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
-
-                    if (message.Content is MessageAnimation animation)
+                    if (animation.Animation.Thumbnail is { Format: ThumbnailFormatJpeg })
                     {
-                        if (animation.Animation.Thumbnail is { Format: ThumbnailFormatJpeg })
-                        {
-                            photo.SetSource(ViewModel.ClientService, animation.Animation.Thumbnail.File, animation.Animation.Minithumbnail);
-                        }
-                        else if (animation.Animation.Minithumbnail != null)
-                        {
-                            var bitmap = new BitmapImage();
-                            PlaceholderHelper.GetBlurred(bitmap, animation.Animation.Minithumbnail.Data);
-                            photo.Source = bitmap;
-                        }
+                        photo.SetSource(ViewModel.ClientService, animation.Animation.Thumbnail.File, animation.Animation.Minithumbnail);
+                    }
+                    else if (animation.Animation.Minithumbnail != null)
+                    {
+                        var bitmap = new BitmapImage();
+                        PlaceholderHelper.GetBlurred(bitmap, animation.Animation.Minithumbnail.Data);
+                        photo.Source = bitmap;
                     }
                 }
                 else

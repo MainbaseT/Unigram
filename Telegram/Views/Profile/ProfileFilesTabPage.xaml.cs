@@ -60,7 +60,6 @@ namespace Telegram.Views.Profile
 
                 if (args.Item is MessageWithOwner message)
                 {
-                    AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
                     cell.UpdateMessage(ViewModel.MessageDelegate, message);
                 }
                 else

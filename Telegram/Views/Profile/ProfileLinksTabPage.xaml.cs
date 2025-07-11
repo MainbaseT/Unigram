@@ -52,8 +52,6 @@ namespace Telegram.Views.Profile
             }
             else if (args.ItemContainer.ContentTemplateRoot is SharedLinkCell cell && args.Item is MessageWithOwner message)
             {
-                AutomationProperties.SetName(args.ItemContainer, Automation.GetSummaryWithName(message, true));
-
                 if (!IsProfile)
                 {
                     args.ItemContainer.Padding = new Thickness(4, 0, 4, 0);
