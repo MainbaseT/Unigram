@@ -142,6 +142,7 @@ namespace Telegram.Controls.Messages
         protected override Size MeasureOverride(Size availableSize)
         {
             var j = 0;
+            var w = 0d;
             var h = 0d;
 
             var spacing = 2;
@@ -149,20 +150,32 @@ namespace Telegram.Controls.Messages
             foreach (var row in Rows)
             {
                 var column = new Size(Math.Max(0, (availableSize.Width - spacing * (row - 1)) / row), availableSize.Height / Rows.Count);
+                var width = 0d;
                 var height = 0d;
 
                 for (int i = 0; i < row; i++)
                 {
                     var child = Children[j + i];
                     child.Measure(column);
+                    width = Math.Max(width, child.DesiredSize.Width);
                     height = Math.Max(height, child.DesiredSize.Height);
+                }
+
+                var final = (width * row) + (spacing * (row - 1));
+                if (final > availableSize.Width)
+                {
+                    w = availableSize.Width;
+                }
+                else
+                {
+                    w = Math.Max(w, final);
                 }
 
                 h += height + spacing;
                 j += row;
             }
 
-            return new Size(availableSize.Width, h);
+            return new Size(w, h);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
