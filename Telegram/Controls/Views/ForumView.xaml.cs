@@ -30,7 +30,7 @@ namespace Telegram.Controls.Views
         Horizontal
     }
 
-    public sealed partial class ForumView : UserControl, ITopicListDelegate
+    public sealed partial class ForumView : UserControl, ITopicListDelegate, IAutomationNameProvider
     {
         public TopicListViewModel ViewModel
         {
@@ -586,6 +586,40 @@ namespace Telegram.Controls.Views
             {
                 ScrollingHost.ItemClick -= value;
             }
+        }
+
+        public string GetAutomationName()
+        {
+            if (Title == null || Subtitle == null || ChatActionLabel == null)
+            {
+                return string.Empty;
+            }
+
+            var result = Title.Text.TrimEnd('.', ',');
+            var identity = Identity.CurrentType switch
+            {
+                IdentityIconType.Fake => Strings.FakeMessage,
+                IdentityIconType.Scam => Strings.ScamMessage,
+                IdentityIconType.Premium => Strings.AccDescrPremium,
+                IdentityIconType.Verified => Strings.AccDescrVerified,
+                _ => null
+            };
+
+            if (identity != null)
+            {
+                result += ", " + identity;
+            }
+
+            if (ChatActionLabel.Text.Length > 0)
+            {
+                result += ", " + ChatActionLabel.Text;
+            }
+            else if (Subtitle.Text.Length > 0)
+            {
+                result += ", " + Subtitle.Text;
+            }
+
+            return result;
         }
     }
 }

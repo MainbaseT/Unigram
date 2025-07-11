@@ -66,7 +66,7 @@ namespace Telegram.Views
         DialogViewModel ViewModel { get; }
     }
 
-    public sealed partial class ChatView : UserControlEx, INavigablePage, ISearchablePage, IDialogDelegate
+    public sealed partial class ChatView : UserControlEx, INavigablePage, ISearchablePage, IDialogDelegate, IAutomationNameProvider
     {
         private DialogViewModel _viewModel;
         public DialogViewModel ViewModel => _viewModel ??= DataContext as DialogViewModel;
@@ -7498,7 +7498,7 @@ namespace Telegram.Views
 
             //protected override string GetFullDescriptionCore()
             //{
-            var view = _owner.GetParent<ChatView>();
+            var view = _owner.GetParent<IAutomationNameProvider>();
             if (view != null)
             {
                 return view.GetAutomationName();
@@ -7506,5 +7506,10 @@ namespace Telegram.Views
 
             return base.GetNameCore();
         }
+    }
+
+    public interface IAutomationNameProvider
+    {
+        string GetAutomationName();
     }
 }
