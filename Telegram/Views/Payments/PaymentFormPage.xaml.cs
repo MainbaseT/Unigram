@@ -26,7 +26,7 @@ namespace Telegram.Views.Payments
 
             VisualUtilities.DropShadow(BuyShadow);
 
-            WindowContext.Current.SetTitleBar(TitlePanel, true);
+            WindowContext.Current.SetTitleBar(TitleBar, true);
         }
 
         private string ConvertTitle(bool receipt, bool test)
