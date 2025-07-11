@@ -32,7 +32,7 @@ namespace Telegram.Services
         void Unsubscribe(object subscriber, long token, bool fireAndForget);
 
         void Publish(object message);
-        void Publish(object message, long token, bool forget);
+        void Publish(object message, long token);
     }
 
     public partial class EventAggregator : IEventAggregator
@@ -90,7 +90,7 @@ namespace Telegram.Services
 
             if (_typeHandlers.TryGetValue(messageType, out TypeHandler handler))
             {
-                if (handler.Handle(message, false))
+                if (handler.Handle(message))
                 {
                     _typeHandlers.TryRemove(messageType, out _);
                 }
@@ -105,7 +105,7 @@ namespace Telegram.Services
             // collected, so we resynchronize the amount on every handle.
             protected int _count;
 
-            public virtual bool Handle(object message, bool forget)
+            public virtual bool Handle(object message)
             {
                 var count = 0;
 
@@ -212,18 +212,11 @@ namespace Telegram.Services
             }
         }
 
-        public virtual void Publish(object message, long token, bool forget)
+        public virtual void Publish(object message, long token)
         {
-            if (forget)
+            if (_longHandlers.TryGetValue(token, out LongHandler handler))
             {
-                if (_longHandlers.TryRemove(token, out LongHandler handler))
-                {
-                    handler.Handle(message, true);
-                }
-            }
-            else if (_longHandlers.TryGetValue(token, out LongHandler handler))
-            {
-                if (handler.Handle(message, false))
+                if (handler.Handle(message))
                 {
                     _longHandlers.TryRemove(token, out _);
                 }
@@ -232,7 +225,7 @@ namespace Telegram.Services
 
         public partial class LongHandler : TypeHandler
         {
-            public override bool Handle(object message, bool forget)
+            public override bool Handle(object message)
             {
                 var count = 0;
 
@@ -252,11 +245,6 @@ namespace Telegram.Services
                     }
 
                     count++;
-                }
-
-                if (forget && count > 0)
-                {
-                    _delegates.Clear();
                 }
 
                 _count = count;

@@ -2523,10 +2523,10 @@ namespace Telegram.Services
                         var token = SessionId << 16 | updateFile.File.Id;
                         if (updateFile.File.Local.IsDownloadingCompleted)
                         {
-                            EventAggregator.Current.Publish(updateFile.File, token | 0x01000000, true);
+                            EventAggregator.Current.Publish(updateFile.File, token | 0x01000000);
                         }
 
-                        EventAggregator.Current.Publish(updateFile.File, token, false);
+                        EventAggregator.Current.Publish(updateFile.File, token);
                         TrackDownloadedFile(updateFile.File);
                         return;
                     }
