@@ -35,13 +35,13 @@ namespace Telegram.Views.Popups
 
         private void OnProcessKeyboardAccelerators(UIElement sender, ProcessKeyboardAcceleratorEventArgs args)
         {
-            if (TextField.FocusState != FocusState.Unfocused && _shortcutsService.TryGetShortcut(args, out Shortcut shortcut))
-            {
-                args.Handled = true;
+            //if (TextField.FocusState != FocusState.Unfocused && _shortcutsService.TryGetShortcut(args, out Shortcut shortcut))
+            //{
+            //    args.Handled = true;
 
-                Shortcut = shortcut;
-                TextField.Text = shortcut.ToString();
-            }
+            //    Shortcut = shortcut;
+            //    TextField.Text = shortcut.ToString();
+            //}
         }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)

@@ -167,12 +167,6 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        public void UpdateFile(MessageViewModel message, File file)
-        {
-            // TODO: maybe something better...
-            UpdateMessageReply(message);
-        }
-
         private void UpdateThumbnail(MessageViewModel message, PhotoSize photoSize, Minithumbnail minithumbnail)
         {
             if (photoSize != null && photoSize.Photo.Local.IsDownloadingCompleted)
