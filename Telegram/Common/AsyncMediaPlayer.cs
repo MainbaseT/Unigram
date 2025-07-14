@@ -131,6 +131,34 @@ namespace Telegram.Common
             }
         }
 
+        public void Play(Uri input)
+        {
+            Write(valid => PlayImpl(input, valid));
+        }
+
+        private void PlayImpl(Uri input, bool play)
+        {
+            if (play)
+            {
+                // Not sure whether it's file or network caching and if they make any difference at all
+                var media = new Media(_library, input, ":file-caching=10000", ":network-caching=10000");
+
+                _player.Play(media);
+
+                // We need to retain both Media and MediaInput due to the bad (IMHO) design of libvlc API.
+                // When creating a Media from a MediaInput, some callbacks are registered to access the stream.
+                // The problem is that the library creates a GC handle in MediaInput that is then used by Media
+                // to register the aforementioned callbacks. What happens, in my understanding, is that there are
+                // some good chances that MediaInput is disposed before Media, and due to that the GC handle is deleted
+                // and this causes an access violation in libvlccore when trying to raise the callbacks for the media.
+                _media?.Dispose();
+                _media = media;
+
+                _input?.Dispose();
+                _input = null;
+            }
+        }
+
         public void Play()
         {
             Write(() => _player.Play());

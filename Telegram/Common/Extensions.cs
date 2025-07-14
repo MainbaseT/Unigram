@@ -1345,7 +1345,7 @@ namespace Telegram.Common
             var first = query.Split('?');
             if (first.Length > 1)
             {
-                query = first.Last();
+                query = first[^1];
             }
 
             var queryDict = new Dictionary<string, string>();

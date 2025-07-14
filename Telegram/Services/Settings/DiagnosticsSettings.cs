@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Telegram.Common;
 
 namespace Telegram.Services.Settings
 {
@@ -192,7 +193,7 @@ namespace Telegram.Services.Settings
         private bool? _savedMessagesDebug;
         public bool SavedMessagesDebug
         {
-            get => _savedMessagesDebug ??= GetValueOrDefault("SavedMessagesDebug", Constants.DEBUG);
+            get => _savedMessagesDebug ??= GetValueOrDefault("SavedMessagesDebug", ApiInfo.IsPackagedRelease);
             set => AddOrUpdateValue(ref _savedMessagesDebug, "SavedMessagesDebug", value);
         }
 
@@ -201,6 +202,13 @@ namespace Telegram.Services.Settings
         {
             get => _deleteFilesDebug ??= GetValueOrDefault("DeleteFilesDebug", Constants.DEBUG);
             set => AddOrUpdateValue(ref _deleteFilesDebug, "DeleteFilesDebug", value);
+        }
+
+        private bool? _mediaServerDebug;
+        public bool MediaServerDebug
+        {
+            get => _mediaServerDebug ??= GetValueOrDefault("MediaServerDebug", ApiInfo.IsPackagedRelease);
+            set => AddOrUpdateValue(ref _mediaServerDebug, "MediaServerDebug", value);
         }
 
         public bool IsLastErrorDiskFull { get; set; }

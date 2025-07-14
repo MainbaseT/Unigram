@@ -1,0 +1,127 @@
+//
+// Copyright (c) Fela Ameghino 2015-2025
+//
+// Distributed under the GNU General Public License v3.0. (See accompanying
+// file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
+//
+using System;
+using System.Net.Http.Headers;
+using Telegram.Services;
+using Telegram.Streams;
+using Telegram.Views;
+
+namespace Telegram.Common
+{
+    internal class MediaHttpServer
+    {
+        private readonly HttpServer _server;
+
+        private MediaHttpServer()
+        {
+            _server = new HttpServer(1234, Serve);
+            _server.Start();
+        }
+
+        private static MediaHttpServer _current;
+
+        public static void Start()
+        {
+            _current ??= new MediaHttpServer();
+        }
+
+        private void Stop()
+        {
+            _server.Stop();
+        }
+
+        private HttpResponse Serve(HttpRequest request)
+        {
+            var session = System.IO.Path.GetDirectoryName(request.Path);
+            var fileName = System.IO.Path.GetFileNameWithoutExtension(request.Path);
+            var extension = System.IO.Path.GetExtension(request.Path);
+
+            if (!int.TryParse(session, out int sessionId) || !int.TryParse(fileName, out int fileId))
+            {
+                return HttpResponse.NotFound;
+            }
+
+            var clientService = TypeResolver.Current.Resolve<IClientService>(sessionId);
+            if (clientService == null)
+            {
+                return HttpResponse.NotFound;
+            }
+
+            var file = clientService.GetFileAsync(fileId).Result;
+            if (file == null)
+            {
+                return HttpResponse.NotFound;
+            }
+
+            long offset = 0;
+            long limit = 0;
+
+            if (request.Headers.TryGetValue("Range", out var range) && RangeHeaderValue.TryParse(range, out var ranges))
+            {
+                long chunk;
+                if (request.Query.TryGetValue("duration", out string durationValue) && int.TryParse(durationValue, out int duration))
+                {
+                    chunk = (long)(((double)file.Size / duration) * 15);
+                }
+                else
+                {
+                    chunk = 1 * 1024 * 1024;
+                }
+
+                foreach (var part in ranges.Ranges)
+                {
+                    offset = part.From ?? 0;
+
+                    if (part.To.HasValue)
+                    {
+                        limit = part.To.Value - offset + 1;
+                    }
+                    else if ((double)offset / file.Size >= 0.95)
+                    {
+                        // Likely metadata, let's read the remaning all together
+                        limit = 0;
+                    }
+                    else
+                    {
+                        limit = Math.Min(file.Size - offset, chunk);
+                    }
+
+                    break;
+                }
+            }
+
+            Logger.Info(request.Path + ", offset: " + offset + ", count: " + limit);
+
+            if (limit == 0)
+            {
+                limit = file.Size - offset;
+            }
+
+            var remote = new RemoteFileSource(clientService, file, 31, true);
+            remote.SeekCallback(offset);
+            remote.ReadCallback(limit);
+            remote.Close(false);
+
+            var response = new HttpResponse();
+            response.StatusCode = "206";
+            response.Headers["Access-Control-Allow-Origin"] = "*";
+            response.Headers["Content-Type"] = "video/mp4";
+            response.Headers["Content-Range"] = string.Format("bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size);
+
+            using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+            {
+                stream.Seek(offset, System.IO.SeekOrigin.Begin);
+
+                byte[] buffer = new byte[(int)limit];
+                stream.Read(buffer, 0, buffer.Length);
+                response.Content = buffer;
+            }
+
+            return response;
+        }
+    }
+}

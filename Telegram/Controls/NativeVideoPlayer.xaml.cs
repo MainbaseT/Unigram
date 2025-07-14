@@ -1,7 +1,15 @@
-﻿using LibVLCSharp.Platforms.Windows;
+//
+// Copyright Fela Ameghino 2015-2025
+//
+// Distributed under the GNU General Public License v3.0. (See accompanying
+// file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
+//
+using LibVLCSharp.Platforms.Windows;
 using LibVLCSharp.Shared;
 using System;
+using System.Diagnostics;
 using Telegram.Common;
+using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
@@ -78,7 +86,15 @@ namespace Telegram.Controls
             }
             else
             {
-                _core.Play(new RemoteFileStream(video.ClientService, video.File));
+                if (SettingsService.Current.Diagnostics.MediaServerDebug)
+                {
+                    _core.Play(BuildUri(video));
+                }
+                else
+                {
+                    _core.Play(new RemoteFileStream(video.ClientService, video.File));
+                }
+
                 _core.Time = (long)(position * 1000);
             }
 
@@ -88,7 +104,7 @@ namespace Telegram.Controls
         private void UpdateBuffered(object target, File update)
         {
             var offset = update.Local.DownloadOffset + update.Local.DownloadedPrefixSize;
-            OnBufferedChanged(_buffered = update.Local.IsDownloadingCompleted || offset == update.Size ? 0 : offset / update.Size);
+            OnBufferedChanged(_buffered = update.Local.IsDownloadingCompleted || offset == update.Size ? 0 : (double)offset / update.Size);
         }
 
         public override void Play()
@@ -215,6 +231,8 @@ namespace Telegram.Controls
             }
         }
 
+        private Stopwatch _started;
+
         private void OnInitialized(object sender, InitializedEventArgs e)
         {
             _core = new AsyncMediaPlayer(e.SwapChainOptions);
@@ -230,7 +248,17 @@ namespace Telegram.Controls
 
             if (_video != null)
             {
-                _core.Play(new RemoteFileStream(_video.ClientService, _video.File));
+                _started = Stopwatch.StartNew();
+
+                if (SettingsService.Current.Diagnostics.MediaServerDebug)
+                {
+                    _core.Play(BuildUri(_video));
+                }
+                else
+                {
+                    _core.Play(new RemoteFileStream(_video.ClientService, _video.File));
+                }
+
                 _core.Time = _initialPosition;
             }
 
@@ -238,8 +266,17 @@ namespace Telegram.Controls
             _initialPosition = 0;
         }
 
+        private Uri BuildUri(GalleryMedia video)
+        {
+            MediaHttpServer.Start();
+            return new Uri(string.Format("http://127.0.0.1:1234/{0}/{1}.mp4?duration={2}", video.ClientService.SessionId, video.File.Id, video.Duration));
+        }
+
         private void OnVout(AsyncMediaPlayer sender, EventArgs args)
         {
+            _started.Stop();
+            Logger.Info(_started.Elapsed);
+
             OnFirstFrameReady(true);
         }
 
