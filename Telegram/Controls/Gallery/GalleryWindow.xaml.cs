@@ -5,7 +5,6 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -59,9 +58,8 @@ namespace Telegram.Controls.Gallery
 
         private bool _unloaded;
 
-        private long? _initialPosition;
-
-        public long InitialPosition
+        private double? _initialPosition;
+        public double InitialPosition
         {
             get => _initialPosition ?? 0;
             set => _initialPosition = value > 0 ? value : null;
@@ -348,7 +346,7 @@ namespace Telegram.Controls.Gallery
             return ShowAsync(navigationService.XamlRoot, viewModel, closing);
         }
 
-        public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, GalleryViewModelBase parameter, FrameworkElement closing = null, long timestamp = 0, VideoPlayerBase player = null)
+        public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, GalleryViewModelBase parameter, FrameworkElement closing = null, double timestamp = 0, VideoPlayerBase player = null)
         {
             var popup = new GalleryWindow
             {
@@ -663,7 +661,7 @@ namespace Telegram.Controls.Gallery
             var position = 0d;
             var file = item.File;
 
-            if (_initialPosition is long initialPosition)
+            if (_initialPosition is double initialPosition)
             {
                 _initialPosition = null;
                 position = initialPosition;
