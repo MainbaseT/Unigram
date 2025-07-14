@@ -955,6 +955,12 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
+        <Border x:Name="HeaderBackground"
+                Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
+                Visibility="Collapsed"
+                Grid.ColumnSpan="2"
+                Canvas.ZIndex="2" />
+
         <Grid x:Name="Header"
               Height="{StaticResource NavigationViewTopPaneHeight}"
               Grid.ColumnSpan="2"

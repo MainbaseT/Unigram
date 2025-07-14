@@ -480,8 +480,8 @@ namespace Telegram.Views
                 BackButton.Visibility = Visibility.Collapsed;
                 Options.Visibility = Visibility.Collapsed;
 
-                // TODO: collapse this but provide a background for the header
                 ClipperOuter.Visibility = Visibility.Collapsed;
+                HeaderBackground.Visibility = Visibility.Visible;
 
                 HeaderLeft.SizeChanged += Options_SizeChanged;
                 HeaderLeft.Padding = new Thickness(12, 0, 0, 0);
@@ -6871,14 +6871,16 @@ namespace Telegram.Views
             UpdateNewestOldestItemAsFooterHeader(_newestItemAsFooterNeeded, ViewModel.IsNewestSliceLoaded, ref _newestItem, ref _newestItemAsFooter, ^1, clear);
         }
 
-        public float AnimatedHeight => GroupCall.AnimatedHeight
+        public float AnimatedHeight => ClipperOuter.Visibility == Visibility.Visible
+            ? GroupCall.AnimatedHeight
             + JoinRequests.AnimatedHeight
             + TranslateHeader.AnimatedHeight
             + ActionBar.AnimatedHeight
             + ConnectedBot.AnimatedHeight
             + PinnedMessage.AnimatedHeight
             + AccountInfoHeader.AnimatedHeight
-            + Sponsored.AnimatedHeight;
+            + Sponsored.AnimatedHeight
+            : 0;
 
         public bool HasMessagesPadding => _messagesHeaderRootPadding > 0;
 
