@@ -110,6 +110,7 @@ namespace Telegram.Controls
             CreateKeyboardAccelerator(VirtualKey.P, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
             CreateKeyboardAccelerator(VirtualKey.K);
             CreateKeyboardAccelerator(VirtualKey.N, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
+            CreateKeyboardAccelerator(190, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
 
             // Used for special characters
             CreateKeyboardAccelerator(VirtualKey.X, VirtualKeyModifiers.Menu);
@@ -424,11 +425,6 @@ namespace Telegram.Controls
             var entities = AllowedEntities & ~FormattedTextEntity.CustomEmoji;
             if (entities != FormattedTextEntity.None)
             {
-                if ((entities & FormattedTextEntity.Quote) != 0)
-                {
-                    _formattingFlyout.CreateFlyoutItem(length, ToggleQuote, Strings.Quote, Icons.QuoteBlock);
-                }
-
                 if ((entities & FormattedTextEntity.Bold) != 0)
                 {
                     _formattingFlyout.CreateFlyoutItem(length, ToggleBold, Strings.Bold, Icons.TextBold, VirtualKey.B);
@@ -447,6 +443,11 @@ namespace Telegram.Controls
                 if ((entities & FormattedTextEntity.Strikethrough) != 0)
                 {
                     _formattingFlyout.CreateFlyoutItem(length, ToggleStrikethrough, Strings.Strike, Icons.TextStrikethrough, VirtualKey.X, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
+                }
+
+                if ((entities & FormattedTextEntity.Quote) != 0)
+                {
+                    _formattingFlyout.CreateFlyoutItem(length, ToggleQuote, Strings.Quote, Icons.QuoteBlock, (VirtualKey)190, VirtualKeyModifiers.Control | Windows.System.VirtualKeyModifiers.Shift);
                 }
 
                 if ((entities & FormattedTextEntity.Mono) != 0)
@@ -832,6 +833,14 @@ namespace Telegram.Controls
             KeyboardAccelerators.Add(accelerator);
         }
 
+        private void CreateKeyboardAccelerator(int key, VirtualKeyModifiers modifiers = VirtualKeyModifiers.Control)
+        {
+            var accelerator = new KeyboardAccelerator { Modifiers = modifiers, Key = (VirtualKey)key, ScopeOwner = this };
+            accelerator.Invoked += FlyoutAccelerator_Invoked;
+
+            KeyboardAccelerators.Add(accelerator);
+        }
+
         private void FlyoutAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             args.Handled = true;
@@ -856,6 +865,10 @@ namespace Telegram.Controls
             else if (sender.Key == VirtualKey.X && sender.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && length)
             {
                 ToggleStrikethrough();
+            }
+            else if (sender.Key == (VirtualKey)190 && sender.Modifiers == (VirtualKeyModifiers.Control | Windows.System.VirtualKeyModifiers.Shift) && length)
+            {
+                ToggleQuote();
             }
             else if (sender.Key == VirtualKey.M && sender.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && length && format.Name != "Consolas")
             {

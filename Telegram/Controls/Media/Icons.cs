@@ -65,7 +65,7 @@ namespace Telegram.Controls.Media
         public const string CodeFilled16 = "\uEA5A";
         public const string CodeBlockFilled16 = "\uEA3D";
         public const string QuoteBlockFilled16 = "\uEA01";
-        public const string QuoteBlock = "\uEA3E";
+        public const string QuoteBlock = "\uEAC7";
 
         public const string Globe = "\uE774";
         public const string Loading = "\uE1CD";

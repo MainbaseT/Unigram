@@ -560,6 +560,7 @@ namespace Telegram.Services
                     VirtualKey.Control => Strings.VirtualKeyModifiersControl,
                     VirtualKey.Menu => Strings.VirtualKeyModifiersMenu,
                     VirtualKey.Shift => Strings.VirtualKeyModifiersShift,
+                    (VirtualKey)190 => '.',
                     _ => key.ToString()
                 });
             }
