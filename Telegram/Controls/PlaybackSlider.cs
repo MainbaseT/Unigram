@@ -81,6 +81,12 @@ namespace Telegram.Controls
 
             var step = (float)(position.TotalSeconds / duration.TotalSeconds);
 
+            if (_props == null)
+            {
+                _props = compositor.CreatePropertySet();
+                _props.InsertScalar("Progress", 0);
+            }
+
             if (state == PlaybackState.Playing)
             {
                 var linearEasing = compositor.CreateLinearEasingFunction();
@@ -89,24 +95,19 @@ namespace Telegram.Controls
                 animation.InsertKeyFrame(0, step, linearEasing);
                 animation.InsertKeyFrame(1, 1, linearEasing);
 
-                if (_props == null)
-                {
-                    _props = compositor.CreatePropertySet();
-                    _props.InsertScalar("Progress", 0);
-                }
-
-                var progressAnimation = compositor.CreateExpressionAnimation("visual.Size.X - (_.Progress * visual.Size.X)");
-                progressAnimation.SetReferenceParameter("_", _props);
-                progressAnimation.SetReferenceParameter("visual", visual);
-
                 _props.StartAnimation("Progress", animation);
-                clip.StartAnimation("RightInset", progressAnimation);
             }
             else
             {
-                clip.StopAnimation("RightInset");
-                clip.RightInset = visual.Size.X - step * visual.Size.X;
+                _props.StopAnimation("Progress");
+                _props.InsertScalar("Progress", step);
             }
+
+            var progressAnimation = compositor.CreateExpressionAnimation("visual.Size.X - (_.Progress * visual.Size.X)");
+            progressAnimation.SetReferenceParameter("_", _props);
+            progressAnimation.SetReferenceParameter("visual", visual);
+
+            clip.StartAnimation("RightInset", progressAnimation);
         }
 
         protected override void OnPointerEntered(PointerRoutedEventArgs e)
