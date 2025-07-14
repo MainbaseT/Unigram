@@ -10392,6 +10392,9 @@ seamlessly and efficiently.</value>
   <data name="PrivateStory" xml:space="preserve">
     <value>Private story</value>
   </data>
+  <data name="ProcessingVideo" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
   <data name="ProfileBirthday" xml:space="preserve">
     <value>Date of Birth</value>
   </data>

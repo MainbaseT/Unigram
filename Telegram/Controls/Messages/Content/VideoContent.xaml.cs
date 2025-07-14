@@ -52,6 +52,7 @@ namespace Telegram.Controls.Messages.Content
         private AnimatedImage Player;
         private FileButton Overlay;
         private TextBlock Subtitle;
+        private ProgressBar Indicator;
         private bool _templateApplied;
 
         protected override void OnApplyTemplate()
@@ -63,6 +64,7 @@ namespace Telegram.Controls.Messages.Content
             Player = GetTemplateChild(nameof(Player)) as AnimatedImage;
             Overlay = GetTemplateChild(nameof(Overlay)) as FileButton;
             Subtitle = GetTemplateChild(nameof(Subtitle)) as TextBlock;
+            //Indicator = GetTemplateChild(nameof(Indicator)) as ProgressBar;
 
             ButtonDrag = new AutomaticDragHelper(Button, true);
             ButtonDrag.StartDetectingDrag();
@@ -116,10 +118,46 @@ namespace Telegram.Controls.Messages.Content
                 minithumbnail = video.Minithumbnail;
             }
 
+            if (message.Delegate.Settings.Playback.TryGetPosition(video.VideoValue.Id, out double position))
+            {
+                UpdatePosition(position, video.Duration);
+            }
+            else
+            {
+                UpdatePosition(0, 0);
+            }
+
             UpdateThumbnail(message, thumbnail, minithumbnail, true, isSecret, hasSpoiler);
 
             UpdateManager.Subscribe(this, message, lowQuality?.Video ?? video.VideoValue, ref _fileToken, UpdateFile);
             UpdateFile(message, lowQuality?.Video ?? video.VideoValue, video, lowQuality, hasSpoiler, isSecret);
+        }
+
+        private bool _indicatorCollapsed;
+
+        private void UpdatePosition(double position, double duration)
+        {
+            if (Indicator == null)
+            {
+                return;
+            }
+
+            if (duration > 0)
+            {
+                if (_indicatorCollapsed)
+                {
+                    _indicatorCollapsed = false;
+                    Indicator.Visibility = Visibility.Visible;
+                }
+
+                Indicator.Maximum = duration;
+                Indicator.Value = position;
+            }
+            else if (!_indicatorCollapsed)
+            {
+                _indicatorCollapsed = true;
+                Indicator.Visibility = Visibility.Collapsed;
+            }
         }
 
         public void UpdateMessageContentOpened(MessageViewModel message)
@@ -276,7 +314,7 @@ namespace Telegram.Controls.Messages.Content
 
                     if (generating)
                     {
-                        Subtitle.Text = video.GetDuration() + Environment.NewLine + string.Format("{0}%", file.Local.DownloadedSize);
+                        Subtitle.Text = video.GetDuration() + Environment.NewLine + Strings.ProcessingVideo;
                     }
                     else
                     {
@@ -448,6 +486,8 @@ namespace Telegram.Controls.Messages.Content
             {
                 Subtitle.Text = position.ToString("mm\\:ss");
             }
+
+            UpdatePosition(e.Position, Player.IsPlaying ? video.Duration : 0);
         }
 
         public void Recycle()
@@ -671,7 +711,14 @@ namespace Telegram.Controls.Messages.Content
                         return;
                     }
 
-                    _message.Delegate.OpenMedia(_message, this);
+                    if (_indicatorCollapsed || _message.Delegate.Settings.Playback.HasPosition(video.VideoValue.Id))
+                    {
+                        _message.Delegate.OpenMedia(_message, this);
+                    }
+                    else
+                    {
+                        _message.Delegate.OpenMedia(_message, this, Indicator.Value);
+                    }
                 }
             }
         }

@@ -12491,4 +12491,5 @@
     <string name="VirtualKeyModifiersShift">Shift</string>
     <string name="VirtualKeyModifiersMenu">Alt</string>
     <string name="CopySelected">Copy Selected</string>
+    <string name="ProcessingVideo">Processing...</string>
 </resources>
