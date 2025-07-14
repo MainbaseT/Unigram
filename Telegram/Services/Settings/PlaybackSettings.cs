@@ -4,7 +4,6 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using Telegram.Common;
 using Windows.Storage;
 
 namespace Telegram.Services.Settings
@@ -14,7 +13,6 @@ namespace Telegram.Services.Settings
         public PlaybackSettings(ApplicationDataContainer container)
             : base(container)
         {
-
         }
 
         private int? _repeatMode;
@@ -43,16 +41,6 @@ namespace Telegram.Services.Settings
         {
             get => _highQuality ??= GetValueOrDefault("HighQuality", true);
             set => AddOrUpdateValue(ref _highQuality, "HighQuality", value);
-        }
-
-        public bool TryGetPosition(int fileId, out double position)
-        {
-            return _container.Values.TryGet("Video" + fileId, out position);
-        }
-
-        public void SetPosition(int fileId, double position)
-        {
-            _container.Values["Video" + fileId] = position;
         }
     }
 }

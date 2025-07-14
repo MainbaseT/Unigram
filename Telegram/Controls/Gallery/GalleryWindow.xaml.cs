@@ -526,8 +526,8 @@ namespace Telegram.Controls.Gallery
 
             batch.End();
 
-            Unload();
             Dispose();
+            Unload();
         }
 
         private void Preview_ImageOpened(object sender, RoutedEventArgs e)
@@ -666,7 +666,7 @@ namespace Telegram.Controls.Gallery
                 _initialPosition = null;
                 position = initialPosition;
             }
-            else if (ViewModel.Settings.Playback.TryGetPosition(file.Id, out double knownPosition))
+            else if (ViewModel.Settings.Video.TryGetPosition(file, out double knownPosition))
             {
                 position = knownPosition;
             }
@@ -692,13 +692,15 @@ namespace Telegram.Controls.Gallery
 
             if (_current != null)
             {
-                _current.Stop(out int fileId, out double position);
-                _current = null;
+                _current.Stop(out var item, out double position);
 
-                if (fileId != 0 && position > 0)
+                if (item is GalleryMessage message && position > 0)
                 {
-                    ViewModel?.Settings.Playback.SetPosition(fileId, position);
+                    ViewModel?.Settings.Video.SetPosition(item.File, position);
+                    ViewModel?.Aggregator.Publish(new UpdateMessageContentOpened(message.ChatId, message.Id));
                 }
+
+                _current = null;
             }
 
             ViewModel?.PlaybackStopped();

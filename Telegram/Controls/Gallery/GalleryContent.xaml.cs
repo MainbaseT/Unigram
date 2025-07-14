@@ -565,11 +565,11 @@ namespace Telegram.Controls.Gallery
             }
         }
 
-        public void Stop(out int fileId, out double position)
+        public void Stop(out GalleryMedia item, out double position)
         {
             if (Video != null && !_unloaded)
             {
-                fileId = _fileId;
+                item = _item;
                 position = Video.Position;
 
                 _stopped = true;
@@ -578,7 +578,7 @@ namespace Telegram.Controls.Gallery
             }
             else
             {
-                fileId = 0;
+                item = null;
                 position = 0;
             }
 

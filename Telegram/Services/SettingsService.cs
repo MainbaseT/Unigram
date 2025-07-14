@@ -45,6 +45,7 @@ namespace Telegram.Services
         AppearanceSettings Appearance { get; }
         PasscodeLockSettings PasscodeLock { get; }
         PlaybackSettings Playback { get; }
+        VideoSettings Video { get; }
         VoIPSettings VoIP { get; }
         TranslateSettings Translate { get; }
 
@@ -303,6 +304,9 @@ namespace Telegram.Services
 
         private static PlaybackSettings _playback;
         public PlaybackSettings Playback => _playback ??= new PlaybackSettings(_local);
+
+        private static VideoSettings _video;
+        public VideoSettings Video => _video ??= new VideoSettings(_own);
 
         private static VoIPSettings _voip;
         public VoIPSettings VoIP => _voip ??= new VoIPSettings();

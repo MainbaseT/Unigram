@@ -3099,7 +3099,7 @@ namespace Telegram.Views
                 if (SettingsService.Current.Diagnostics.DeleteFilesDebug)
                 {
                     var file = message.GetFile();
-                    if (file != null && (file.Local.IsDownloadingActive || file.Local.IsDownloadingCompleted || (message.Content is MessageVideo video && video.AlternativeVideos.Any(x => x.HlsFile.Local.IsDownloadingActive || x.HlsFile.Local.IsDownloadingCompleted || x.Video.Local.IsDownloadingActive || x.Video.Local.IsDownloadingCompleted))))
+                    if (file != null && (file.Local.DownloadedSize > 0 || (message.Content is MessageVideo video && video.AlternativeVideos.Any(x => x.HlsFile.Local.DownloadedSize > 0 || x.Video.Local.DownloadedSize > 0))))
                     {
                         flyout.CreateFlyoutItem(x =>
                         {
@@ -3108,6 +3108,9 @@ namespace Telegram.Views
                             {
                                 return;
                             }
+
+                            ViewModel.Settings.Video.RemovePosition(file);
+                            ViewModel.Aggregator.Publish(new UpdateMessageContentOpened(message.ChatId, message.Id));
 
                             ViewModel.ClientService.CancelDownloadFile(file);
                             ViewModel.ClientService.Send(new DeleteFile(file.Id));
