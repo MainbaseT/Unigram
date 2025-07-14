@@ -4789,7 +4789,7 @@
                                    VerticalAlignment="Center"
                                    Margin="0,1,0,2"
                                    Foreground="#FFFFFF"
-                                   FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}" />
+                                   FontFamily="{StaticResource EmojiThemeFontFamilyWithRounded}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
