@@ -638,10 +638,9 @@ namespace Telegram.Views.Popups
             CanBeCopied = canBeCopied;
             CanBeCopiedToSecretChat = canBeCopiedtoSecretChat;
             HasCaption = hasCaption;
-            HasSenderId = hasSenderId;
         }
 
-        public MessageToShare(Message message, MessageProperties properties, bool hasSenderId)
+        public MessageToShare(Message message, MessageProperties properties)
         {
             ChatId = message.ChatId;
             Id = message.Id;
@@ -649,10 +648,12 @@ namespace Telegram.Views.Popups
             CanBeCopied = properties.CanBeCopied;
             CanBeCopiedToSecretChat = properties.CanBeCopiedToSecretChat;
             HasCaption = message.Content is not MessageText && message.HasCaption();
-            HasSenderId = hasSenderId;
+            SenderId = message.SenderId;
+            ForwardInfo = message.ForwardInfo;
+            ImportInfo = message.ImportInfo;
         }
 
-        public MessageToShare(MessageWithOwner message, MessageProperties properties, bool hasSenderId)
+        public MessageToShare(MessageWithOwner message, MessageProperties properties)
         {
             ChatId = message.ChatId;
             Id = message.Id;
@@ -660,7 +661,9 @@ namespace Telegram.Views.Popups
             CanBeCopied = properties.CanBeCopied;
             CanBeCopiedToSecretChat = properties.CanBeCopiedToSecretChat;
             HasCaption = message.Content is not MessageText && message.HasCaption();
-            HasSenderId = hasSenderId;
+            SenderId = message.SenderId;
+            ForwardInfo = message.ForwardInfo;
+            ImportInfo = message.ImportInfo;
         }
 
         public long ChatId { get; }
@@ -675,7 +678,51 @@ namespace Telegram.Views.Popups
 
         public bool HasCaption { get; }
 
-        public bool HasSenderId { get; }
+        public MessageSender SenderId { get; }
+
+        public MessageForwardInfo ForwardInfo { get; }
+
+        public MessageImportInfo ImportInfo { get; }
+
+        public string GetSenderId(IClientService clientService)
+        {
+            if (ChatId == clientService.Options.MyId && ForwardInfo != null)
+            {
+                return null;
+            }
+
+            // TODO: Not beautiful but it does the trick
+            if (ForwardInfo?.Origin is MessageOriginUser fromUser)
+            {
+                return "MessageOriginUser" + fromUser.SenderUserId;
+            }
+            else if (ForwardInfo?.Origin is MessageOriginChat fromChat)
+            {
+                return "MessageOriginChat" + fromChat.SenderChatId;
+            }
+            else if (ForwardInfo?.Origin is MessageOriginChannel fromChannel)
+            {
+                return "MessageOriginChannel" + fromChannel.ChatId;
+            }
+            else if (ForwardInfo?.Origin is MessageOriginHiddenUser hiddenUser)
+            {
+                return "MessageOriginHiddenUser" + hiddenUser.SenderName;
+            }
+            else if (ImportInfo != null)
+            {
+                return "MessageImportInfo" + ImportInfo.SenderName;
+            }
+            else if (SenderId is MessageSenderChat senderChat)
+            {
+                return "MessageSenderChat" + senderChat.ChatId;
+            }
+            else if (SenderId is MessageSenderUser senderUser)
+            {
+                return "MessageSenderUser" + senderUser.UserId;
+            }
+
+            return null;
+        }
     }
 
     public partial class ChooseChatsConfigurationShareMessages : ChooseChatsConfiguration
@@ -965,7 +1012,11 @@ namespace Telegram.Views.Popups
             {
                 var flyout = new MenuFlyout();
 
-                if (shareMessages.Messages.Any(x => x.HasSenderId && x.CanBeCopied))
+                var senders = shareMessages.Messages
+                    .GroupBy(x => x.GetSenderId(ViewModel.ClientService))
+                    .ToList();
+
+                if (senders[0].Key != null && shareMessages.Messages.Any(x => x.CanBeCopied))
                 {
                     void SendAsCopy()
                     {
@@ -973,7 +1024,7 @@ namespace Telegram.Views.Popups
                         Hide(ContentDialogResult.Primary);
                     }
 
-                    flyout.CreateFlyoutItem(SendAsCopy, Strings.HideSenderNames, Icons.DocumentCopy);
+                    flyout.CreateFlyoutItem(SendAsCopy, senders.Count > 1 ? Strings.HideSenderNames : Strings.HideSendersName, Icons.DocumentCopy);
                 }
 
                 if (shareMessages.Messages.Any(x => x.HasCaption && x.CanBeCopied))

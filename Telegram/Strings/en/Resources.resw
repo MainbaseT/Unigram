@@ -7448,6 +7448,9 @@ This setting does not affect group chats.</value>
   <data name="HideSenderNames" xml:space="preserve">
     <value>Hide Sender Names</value>
   </data>
+  <data name="HideSendersName" xml:space="preserve">
+    <value>Hide sender’s name</value>
+  </data>
   <data name="HistoryCleared" xml:space="preserve">
     <value>History was cleared</value>
   </data>
