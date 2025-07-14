@@ -758,43 +758,58 @@ namespace Telegram.Controls.Gallery
 
         private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs args)
         {
-            if (args.Key is VirtualKey.Space /*&& args.Modifiers == VirtualKeyModifiers.None*/)
+            var modifiers = WindowContext.KeyModifiers();
+            var keyCode = (int)args.Key;
+
+            if (args.Key is VirtualKey.Space && modifiers == VirtualKeyModifiers.None)
             {
                 Controls.TogglePlaybackState();
                 args.Handled = true;
             }
-        }
-
-        private void OnProcessKeyboardAccelerators(UIElement sender, ProcessKeyboardAcceleratorEventArgs args)
-        {
-            var keyCode = (int)args.Key;
-
-            if (args.Key is VirtualKey.Left or VirtualKey.GamepadLeftShoulder && args.Modifiers == VirtualKeyModifiers.None)
+            else if (args.Key is VirtualKey.Left or VirtualKey.GamepadLeftShoulder && modifiers == VirtualKeyModifiers.None)
             {
+                if (args.Key == VirtualKey.Left)
+                {
+                    var focused = FocusManager.GetFocusedElement();
+                    if (focused is Slider)
+                    {
+                        return;
+                    }
+                }
+
                 ChangeView(CarouselDirection.Previous, false);
                 args.Handled = true;
             }
-            else if (args.Key is VirtualKey.Right or VirtualKey.GamepadRightShoulder && args.Modifiers == VirtualKeyModifiers.None)
+            else if (args.Key is VirtualKey.Right or VirtualKey.GamepadRightShoulder && modifiers == VirtualKeyModifiers.None)
             {
+                if (args.Key == VirtualKey.Right)
+                {
+                    var focused = FocusManager.GetFocusedElement();
+                    if (focused is Slider)
+                    {
+                        return;
+                    }
+                }
+
                 ChangeView(CarouselDirection.Next, false);
                 args.Handled = true;
             }
-            else if (args.Key is VirtualKey.R && args.Modifiers == VirtualKeyModifiers.Control)
+            else if (args.Key is VirtualKey.R && modifiers == VirtualKeyModifiers.Control)
             {
                 args.Handled = true;
                 Rotate_Click(null, null);
             }
-            else if (args.Key is VirtualKey.C && args.Modifiers == VirtualKeyModifiers.Control)
+            else if (args.Key is VirtualKey.C && modifiers == VirtualKeyModifiers.Control)
             {
                 ViewModel?.Copy();
                 args.Handled = true;
             }
-            else if (args.Key is VirtualKey.S && args.Modifiers == VirtualKeyModifiers.Control)
+            else if (args.Key is VirtualKey.S && modifiers == VirtualKeyModifiers.Control)
             {
                 ViewModel?.Save();
                 args.Handled = true;
             }
-            else if (args.Key is VirtualKey.F11 || (args.Key is VirtualKey.F && args.Modifiers == VirtualKeyModifiers.Control))
+            else if (args.Key is VirtualKey.F11 || (args.Key is VirtualKey.F && modifiers == VirtualKeyModifiers.Control))
             {
                 FullScreen_Click(null, null);
                 args.Handled = true;

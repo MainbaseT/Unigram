@@ -147,7 +147,7 @@ namespace Telegram.Controls
 
         public override void AddTime(double value)
         {
-            _core?.AddTime((long)value);
+            _core?.AddTime((long)value * 1000);
         }
 
         public override double Position
