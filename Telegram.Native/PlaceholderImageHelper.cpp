@@ -1263,7 +1263,7 @@ namespace winrt::Telegram::Native::implementation
                             { (float)controlPoint1.X(), (float)controlPoint1.Y() },
                             { (float)controlPoint2.X(), (float)controlPoint2.Y() },
                             { (float)endPoint.X(), (float)endPoint.Y() }
-                        });
+                            });
                     }
                 }
             }
@@ -1344,28 +1344,28 @@ namespace winrt::Telegram::Native::implementation
         // Top-right corner
         if (topRightRadius > 0)
             d2dGeometrySink->AddArc({ { x + width, y + topRightRadius }, { topRightRadius, topRightRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
-        
+
         // Right edge
         d2dGeometrySink->AddLine({ x + width, y + height - bottomRightRadius });
-        
+
         // Bottom-right corner
         if (bottomRightRadius > 0)
             d2dGeometrySink->AddArc({ { x + width - bottomRightRadius, y + height }, { bottomRightRadius, bottomRightRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
-        
+
         // Bottom edge
         d2dGeometrySink->AddLine({ x + bottomLeftRadius, y + height });
-        
+
         // Bottom-left corner
         if (bottomLeftRadius > 0)
             d2dGeometrySink->AddArc({ { x, y + height - bottomLeftRadius }, { bottomLeftRadius, bottomLeftRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
-        
+
         // Left edge
         d2dGeometrySink->AddLine({ x, y + topLeftRadius });
-        
+
         // Top-left corner
         if (topLeftRadius > 0)
             d2dGeometrySink->AddArc({ { x + topLeftRadius, y }, { topLeftRadius, topLeftRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
-        
+
         d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
     }
 
@@ -1415,6 +1415,99 @@ namespace winrt::Telegram::Native::implementation
 
             j++;
         }
+
+        ReturnNullIfFailed(result, d2dGeometrySink->Close());
+
+        auto geometry = winrt::make_self<CompositionPathSource>(d2dPathGeometry);
+        return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
+    }
+
+    CompositionPath PlaceholderImageHelper::GetVoiceNoteClip(IVector<byte> waveform, double waveformWidth)
+    {
+        std::lock_guard const guard(m_criticalSection);
+        HRESULT result;
+
+        winrt::com_ptr<ID2D1GeometrySink> d2dGeometrySink;
+        winrt::com_ptr<ID2D1PathGeometry1> d2dPathGeometry;
+
+        ReturnNullIfFailed(result, m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
+        ReturnNullIfFailed(result, d2dPathGeometry->Open(d2dGeometrySink.put()));
+
+        auto lines = waveform.Size() * 8 / 5;
+        auto bytes = new double[lines];
+
+        for (int i = 0; i < lines; i++)
+        {
+            int j = (i * 5) / 8, shift = (i * 5) % 8;
+            bytes[i] = ((waveform.GetAt(j) | ((j + 1 < waveform.Size() ? waveform.GetAt(j + 1) : 0) << 8)) >> shift & 0x1F) / 31.0;
+        }
+
+        auto imageWidth = waveformWidth; // 142d; // double.IsNaN(ActualWidth) ? 142 : ActualWidth;
+        auto imageHeight = 20;
+
+        auto space = 1.0;
+        auto lineWidth = 2.0;
+        auto maxLines = (imageWidth - space) / (lineWidth + space);
+        auto maxWidth = lines / maxLines;
+
+        for (int index = 0; index < maxLines; index++)
+        {
+            auto lineIndex = (int)(index * maxWidth);
+            auto lineHeight = bytes[lineIndex] * (double)(imageHeight - 2.0) + 2.0;
+
+            float x1 = (int)(index * (lineWidth + space));
+            float y1 = (imageHeight - (int)lineHeight) / 2;
+            float x2 = (int)(index * (lineWidth + space) + lineWidth);
+            float y2 = imageHeight - y1;
+
+            //d2dGeometrySink->BeginFigure({ x1, y1 }, D2D1_FIGURE_BEGIN_FILLED);
+            //d2dGeometrySink->AddLine({ x2, y1 });
+            //d2dGeometrySink->AddLine({ x2, y2 });
+            //d2dGeometrySink->AddLine({ x1, y2 });
+            //d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+
+            if (lineHeight > 2)
+            {
+                d2dGeometrySink->BeginFigure({ x1, y1 + 1 }, D2D1_FIGURE_BEGIN_FILLED);
+                d2dGeometrySink->AddArc(D2D1::ArcSegment(
+                    D2D1::Point2F(x2, y1 + 1),
+                    D2D1::SizeF(1, 1),
+                    0.0f,
+                    D2D1_SWEEP_DIRECTION_CLOCKWISE,
+                    D2D1_ARC_SIZE_SMALL
+                ));
+                d2dGeometrySink->AddLine({ x2, y2 - 1 });
+                d2dGeometrySink->AddArc(D2D1::ArcSegment(
+                    { x1, y2 - 1 },
+                    D2D1::SizeF(1, 1),
+                    0.0f,
+                    D2D1_SWEEP_DIRECTION_CLOCKWISE,
+                    D2D1_ARC_SIZE_SMALL
+                ));
+            }
+            else
+            {
+                d2dGeometrySink->BeginFigure({ x1, 10 }, D2D1_FIGURE_BEGIN_FILLED);
+                d2dGeometrySink->AddArc(D2D1::ArcSegment(
+                    D2D1::Point2F(x2, 10),
+                    D2D1::SizeF(1, 1),
+                    0.0f,
+                    D2D1_SWEEP_DIRECTION_CLOCKWISE,
+                    D2D1_ARC_SIZE_SMALL
+                ));
+                d2dGeometrySink->AddArc(D2D1::ArcSegment(
+                    { x1, 10 },
+                    D2D1::SizeF(1, 1),
+                    0.0f,
+                    D2D1_SWEEP_DIRECTION_CLOCKWISE,
+                    D2D1_ARC_SIZE_SMALL
+                ));
+            }
+
+            d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+        }
+
+        delete[] bytes;
 
         ReturnNullIfFailed(result, d2dGeometrySink->Close());
 
