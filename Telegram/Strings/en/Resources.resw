@@ -13919,6 +13919,15 @@ Anonymously</value>
   <data name="ViewWallpaperAction" xml:space="preserve">
     <value>View Wallpaper</value>
   </data>
+  <data name="VirtualKeyModifiersControl" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="VirtualKeyModifiersMenu" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="VirtualKeyModifiersShift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
   <data name="Voice_one" xml:space="preserve">
     <value>{0} voice message</value>
   </data>

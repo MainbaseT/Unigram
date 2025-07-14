@@ -12487,5 +12487,8 @@
     <string name="UnlockPremiumEmojiReaction">Subscribe to **Telegram Premium** to unlock this reaction.</string>
     <string name="Gift2ActionSelfTitle">Saved Gift</string>
 
+    <string name="VirtualKeyModifiersControl">Ctrl</string>
+    <string name="VirtualKeyModifiersShift">Shift</string>
+    <string name="VirtualKeyModifiersMenu">Alt</string>
     <string name="CopySelected">Copy Selected</string>
 </resources>
