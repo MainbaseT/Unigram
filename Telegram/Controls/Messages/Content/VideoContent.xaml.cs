@@ -133,7 +133,7 @@ namespace Telegram.Controls.Messages.Content
             UpdateFile(message, lowQuality?.Video ?? video.VideoValue, video, lowQuality, hasSpoiler, isSecret);
         }
 
-        private bool _indicatorCollapsed;
+        private bool _indicatorCollapsed = true;
 
         private void UpdatePosition(double position, double duration)
         {
