@@ -74,7 +74,7 @@ namespace Telegram.Views.Business.Popups
         {
             var flyout = new MenuFlyout();
 
-            flyout.CreateFlyoutItem(_viewModel.Copy, _chatLink, Strings.Copy, Icons.DocumentCopy);
+            flyout.CreateFlyoutItem(_viewModel.Copy, _chatLink, Strings.Copy, Icons.Copy);
             //flyout.CreateFlyoutItem(_viewModel.Share, _chatLink, Strings.ShareFile, Icons.Share);
             flyout.CreateFlyoutItem(_viewModel.Rename, _chatLink, Strings.Rename, Icons.Edit);
             flyout.CreateFlyoutItem(_viewModel.Delete, _chatLink, Strings.Delete, Icons.Delete, destructive: true);

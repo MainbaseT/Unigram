@@ -54,7 +54,7 @@ namespace Telegram.Views.Chats
             var flyout = new MenuFlyout();
 
             flyout.CreateFlyoutItem(ViewModel.LaunchProgram, program, Strings.ProfileBotOpenApp, Icons.Bot);
-            flyout.CreateFlyoutItem(ViewModel.CopyProgram, program, Strings.CopyLink, Icons.DocumentCopy);
+            flyout.CreateFlyoutItem(ViewModel.CopyProgram, program, Strings.CopyLink, Icons.Copy);
             flyout.CreateFlyoutItem(ViewModel.DisconnectProgram, program, Strings.LeaveAffiliateLinkButton, Icons.Delete, destructive: true);
 
             flyout.ShowAt(sender, args);

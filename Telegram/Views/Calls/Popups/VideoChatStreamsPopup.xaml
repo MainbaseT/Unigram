@@ -48,7 +48,7 @@
                                            IsTextSelectionEnabled="False"
                                            Margin="-4" />
             </Button>
-            <!--<TextBlock Text="&#xE8C8;"
+            <!--<TextBlock Text="&#xEAC9;"
                        FontFamily="{StaticResource SymbolThemeFontFamily}"
                        FontSize="20"
                        Foreground="{ThemeResource AccentButtonBackground}"
@@ -73,7 +73,7 @@
                                            IsTextSelectionEnabled="False"
                                            Margin="-4" />
             </Button>
-            <!--<TextBlock Text="&#xE8C8;"
+            <!--<TextBlock Text="&#xEAC9;"
                        FontFamily="{StaticResource SymbolThemeFontFamily}"
                        FontSize="20"
                        Foreground="{ThemeResource AccentButtonBackground}"

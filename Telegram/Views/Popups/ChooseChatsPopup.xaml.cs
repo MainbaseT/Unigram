@@ -1024,7 +1024,7 @@ namespace Telegram.Views.Popups
                         Hide(ContentDialogResult.Primary);
                     }
 
-                    flyout.CreateFlyoutItem(SendAsCopy, senders.Count > 1 ? Strings.HideSenderNames : Strings.HideSendersName, Icons.DocumentCopy);
+                    flyout.CreateFlyoutItem(SendAsCopy, senders.Count > 1 ? Strings.HideSenderNames : Strings.HideSendersName, Icons.Copy);
                 }
 
                 if (shareMessages.Messages.Any(x => x.HasCaption && x.CanBeCopied))

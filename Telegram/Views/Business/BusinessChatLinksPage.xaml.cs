@@ -126,7 +126,7 @@ namespace Telegram.Views.Business
 
             var flyout = new MenuFlyout();
 
-            flyout.CreateFlyoutItem(ViewModel.Copy, chatLink, Strings.Copy, Icons.DocumentCopy);
+            flyout.CreateFlyoutItem(ViewModel.Copy, chatLink, Strings.Copy, Icons.Copy);
             //flyout.CreateFlyoutItem(ViewModel.Share, chatLink, Strings.ShareFile, Icons.Share);
             flyout.CreateFlyoutItem(ViewModel.Rename, chatLink, Strings.Rename, Icons.Edit);
             flyout.CreateFlyoutItem(ViewModel.Delete, chatLink, Strings.Delete, Icons.Delete, destructive: true);

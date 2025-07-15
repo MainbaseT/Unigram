@@ -52,7 +52,7 @@ namespace Telegram.Views.Settings
             {
                 if (ViewModel.SelectedItems.All(x => x.Type is ProxyTypeMtproto or ProxyTypeSocks5))
                 {
-                    flyout.CreateFlyoutItem(ViewModel.CopySelected, Strings.CopySelected, Icons.DocumentCopy);
+                    flyout.CreateFlyoutItem(ViewModel.CopySelected, Strings.CopySelected, Icons.Copy, VirtualKey.C, VirtualKeyModifiers.Control);
                 }
 
                 flyout.CreateFlyoutItem(ViewModel.DeleteSelected, Strings.DeleteSelected, Icons.Delete, destructive: true);
@@ -68,7 +68,7 @@ namespace Telegram.Views.Settings
                 if (proxy.Type is ProxyTypeMtproto or ProxyTypeSocks5)
                 {
                     flyout.CreateFlyoutItem(ViewModel.Share, proxy, Strings.ShareFile, Icons.Share);
-                    flyout.CreateFlyoutItem(ViewModel.Copy, proxy, Strings.CopyLink, Icons.DocumentCopy, VirtualKey.C, VirtualKeyModifiers.Control);
+                    flyout.CreateFlyoutItem(ViewModel.Copy, proxy, Strings.CopyLink, Icons.Copy, VirtualKey.C, VirtualKeyModifiers.Control);
                 }
 
                 flyout.CreateFlyoutItem(ViewModel.Edit, proxy, Strings.Edit, Icons.Edit);

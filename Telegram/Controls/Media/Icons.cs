@@ -133,6 +133,7 @@ namespace Telegram.Controls.Media
         public const string ArrowRedo = "\uE7A6";
         public const string Cut = "\uE8C6";
         public const string DocumentCopy = "\uE8C8";
+        public const string Copy = "\uEAC9";
         public const string ClipboardPaste = "\uE77F";
 
         public const string Translate = "\uE97D";
@@ -281,6 +282,7 @@ namespace Telegram.Controls.Media
         public const string SaveAsLocked = "\uEA2B";
         public const string FolderOpen = "\uE838";
         public const string OpenIn = "\uE7AC";
+        public const string OpenWith = "\uEAC8";
         public const string PersonCircle = "\uE9A9";
 
         public const string ArrowExit = "\uE999";

@@ -1625,7 +1625,7 @@ namespace Telegram.Common
             var length = text.Length;
             if (length > 0)
             {
-                flyout.CreateFlyoutItem(() => LinkCopy_Click(xamlRoot, text), Strings.Copy, Icons.DocumentCopy);
+                flyout.CreateFlyoutItem(() => LinkCopy_Click(xamlRoot, text), Strings.Copy, Icons.Copy);
 
                 if (service != null && service.CanTranslateText(text))
                 {
@@ -1688,11 +1688,11 @@ namespace Telegram.Common
                     flyout.CreateFlyoutItem(() => LinkOpen_Click(hyperlink.XamlRoot, link), Strings.Open, Icons.OpenIn);
                 }
 
-                flyout.CreateFlyoutItem(() => LinkCopy_Click(hyperlink.XamlRoot, link), Strings.Copy, Icons.DocumentCopy);
+                flyout.CreateFlyoutItem(() => LinkCopy_Click(hyperlink.XamlRoot, link), Strings.Copy, Icons.Copy);
             }
             else
             {
-                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, link), Strings.Copy, Icons.DocumentCopy);
+                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, link), Strings.Copy, Icons.Copy);
             }
         }
 
@@ -1707,7 +1707,7 @@ namespace Telegram.Common
 
                 var flyout = new MenuFlyout();
                 flyout.CreateFlyoutItem(() => LinkOpen_Click(sender.XamlRoot, link), Strings.Open, Icons.OpenIn);
-                flyout.CreateFlyoutItem(() => LinkCopy_Click(sender.XamlRoot, link), Strings.Copy, Icons.DocumentCopy);
+                flyout.CreateFlyoutItem(() => LinkCopy_Click(sender.XamlRoot, link), Strings.Copy, Icons.Copy);
 
                 // We don't want to unfocus the text are when the context menu gets opened
                 flyout.ShowAt(sender, new FlyoutShowOptions { Position = point, ShowMode = FlyoutShowMode.Transient });

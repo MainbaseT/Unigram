@@ -2830,7 +2830,7 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(ViewModel.DeleteSelectedMessages, Strings.DeleteSelected, Icons.Delete, destructive: true);
                     flyout.CreateFlyoutItem(ViewModel.UnselectMessages, Strings.ClearSelection);
                     flyout.CreateFlyoutSeparator();
-                    flyout.CreateFlyoutItem(ViewModel.CopySelectedMessages, Strings.CopySelectedMessages, Icons.DocumentCopy);
+                    flyout.CreateFlyoutItem(ViewModel.CopySelectedMessages, Strings.CopySelectedMessages, Icons.Copy);
                 }
                 else
                 {
@@ -2844,7 +2844,7 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(MessageRetry_Loaded, ViewModel.ResendMessage, message, Strings.Retry, Icons.ArrowClockwise);
                 }
 
-                flyout.CreateFlyoutItem(MessageCopy_Loaded, ViewModel.CopyMessage, message, Strings.Copy, Icons.DocumentCopy);
+                flyout.CreateFlyoutItem(MessageCopy_Loaded, ViewModel.CopyMessage, message, Strings.Copy, Icons.Copy);
 
                 if (MessageDelete_Loaded(message, properties))
                 {
@@ -3027,7 +3027,7 @@ namespace Telegram.Views
                         checklistTaskItem.CreateFlyoutItem(ViewModel.MarkChecklistTask, messageTask, checklistTask.CompletionDate != 0 ? Strings.TodoUncheck : Strings.TodoCheck, checklistTask.CompletionDate != 0 ? Icons.DismissCircle : Icons.CheckmarkCircle);
                     }
 
-                    checklistTaskItem.CreateFlyoutItem(ViewModel.CopyText, checklistTask.Text, Strings.Copy, Icons.DocumentCopy);
+                    checklistTaskItem.CreateFlyoutItem(ViewModel.CopyText, checklistTask.Text, Strings.Copy, Icons.Copy);
 
                     if (properties.CanBeEdited)
                     {
@@ -3051,11 +3051,11 @@ namespace Telegram.Views
                 if (quote != null)
                 {
                     // TODO: copy selection
-                    flyout.CreateFlyoutItem(MessageCopy_Loaded, ViewModel.CopyMessage, quote, Strings.Copy, Icons.DocumentCopy);
+                    flyout.CreateFlyoutItem(MessageCopy_Loaded, ViewModel.CopyMessage, quote, Strings.Copy, Icons.Copy);
                 }
                 else
                 {
-                    flyout.CreateFlyoutItem(MessageCopy_Loaded, ViewModel.CopyMessage, message, Strings.Copy, Icons.DocumentCopy);
+                    flyout.CreateFlyoutItem(MessageCopy_Loaded, ViewModel.CopyMessage, message, Strings.Copy, Icons.Copy);
                 }
 
                 flyout.CreateFlyoutItem(MessageCopyLink_Loaded, ViewModel.CopyMessageLink, message, Strings.CopyLink, Icons.Link);
@@ -3089,7 +3089,7 @@ namespace Telegram.Views
                 flyout.CreateFlyoutItem(MessageSaveAnimation_Loaded, ViewModel.SaveMessageAnimation, message, Strings.SaveToGIFs, Icons.Gif);
                 flyout.CreateFlyoutItem(MessageSaveSound_Loaded, ViewModel.SaveMessageNotificationSound, message, Strings.SaveForNotifications, Icons.MusicNote2);
                 flyout.CreateFlyoutItem(MessageSaveMedia_Loaded, ViewModel.SaveMessageMedia, message, Strings.SaveAs, Icons.SaveAs);
-                flyout.CreateFlyoutItem(MessageOpenMedia_Loaded, ViewModel.OpenMessageWith, message, Strings.OpenWith, Icons.OpenIn);
+                flyout.CreateFlyoutItem(MessageOpenMedia_Loaded, ViewModel.OpenMessageWith, message, Strings.OpenWith, Icons.OpenWith);
                 flyout.CreateFlyoutItem(MessageOpenFolder_Loaded, ViewModel.OpenMessageFolder, message, Strings.ShowInFolder, Icons.FolderOpen);
 
                 // Contacts
