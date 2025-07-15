@@ -25,8 +25,6 @@ namespace Telegram.Views.Calls.Popups
             _clientService = clientService;
             _chatId = chatId;
 
-            Title = Strings.Streaming;
-
             if (start)
             {
                 PrimaryButtonText = Strings.VoipChannelStartStreaming;
