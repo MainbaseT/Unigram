@@ -44,18 +44,36 @@ namespace Telegram.Controls
             var visual = ElementComposition.GetElementVisual(RootGrid);
             visual.Clip = _clip;
 
-            if (_deferred != null && _deferred.Duration != -1)
+            base.OnApplyTemplate();
+        }
+
+        private VoiceNote _deferred;
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            if (_deferred is VoiceNote voiceNote)
             {
-                UpdateWaveform(_deferred);
-                //_deferred = null;
+                var maxVoiceLength = 30.0;
+                var minVoiceLength = 2.0;
+
+                var minVoiceWidth = 72.0;
+                var maxVoiceWidth = 226.0;
+
+                var calcDuration = Math.Max(minVoiceLength, Math.Min(maxVoiceLength, voiceNote.Duration));
+                var waveformWidth = minVoiceWidth + (maxVoiceWidth - minVoiceWidth) * (calcDuration - minVoiceLength) / (maxVoiceLength - minVoiceLength);
+
+                availableSize = new Size(waveformWidth, 20);
+
+                RootGrid.Measure(availableSize);
+                return availableSize;
             }
 
-            base.OnApplyTemplate();
+            return base.MeasureOverride(availableSize);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            if (_deferred != null && _deferred.Duration == -1)
+            if (_deferred != null)
             {
                 UpdateWaveform(_deferred.Waveform, 0, finalSize.Width);
             }
@@ -63,32 +81,11 @@ namespace Telegram.Controls
             return base.ArrangeOverride(finalSize);
         }
 
-        private VoiceNote _deferred;
-
         public void UpdateWaveform(VoiceNote voiceNote)
         {
             _deferred = voiceNote;
-
-            if (voiceNote.Duration == -1)
-            {
-                // Recording
-                InvalidateArrange();
-            }
-            else
-            {
-                // Bubble
-                var maxVoiceLength = 30.0;
-                var minVoiceLength = 2.0;
-
-                var minVoiceWidth = 72.0;
-                var maxVoiceWidth = 226.0;
-
-
-                var calcDuration = Math.Max(minVoiceLength, Math.Min(maxVoiceLength, voiceNote.Duration));
-                var waveformWidth = minVoiceWidth + (maxVoiceWidth - minVoiceWidth) * (calcDuration - minVoiceLength) / (maxVoiceLength - minVoiceLength);
-
-                UpdateWaveform(voiceNote.Waveform, calcDuration, waveformWidth);
-            }
+            InvalidateMeasure();
+            InvalidateArrange();
         }
 
         private void UpdateWaveform(IList<byte> waveform, double duration, double waveformWidth)
@@ -100,11 +97,6 @@ namespace Telegram.Controls
 
             var clip = PlaceholderImageHelper.Foreground.GetVoiceNoteClip(waveform, waveformWidth);
             _clip.Geometry = BootStrapper.Current.Compositor.CreatePathGeometry(clip);
-
-            if (duration != 0)
-            {
-                Width = waveformWidth;
-            }
         }
     }
 }

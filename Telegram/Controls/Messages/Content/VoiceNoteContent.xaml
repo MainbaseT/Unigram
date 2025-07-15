@@ -244,7 +244,7 @@
                             <!--<TextBlock x:Name="Title" Foreground="{ThemeResource MessageForegroundBrush}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource BaseTextBlockStyle}"/>-->
                             <controls:ProgressVoice x:Name="Progress"
                                                     AutomationProperties.AccessibilityView="Raw"
-                                                    HorizontalAlignment="Left" />
+                                                    HorizontalAlignment="Stretch" />
 
                             <TextBlock x:Name="Subtitle"
                                        Foreground="{ThemeResource MessageSubtleLabelBrush}"
