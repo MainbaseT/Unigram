@@ -1299,6 +1299,9 @@
     <Compile Include="Views\Popups\FactCheckPopup.xaml.cs">
       <DependentUpon>FactCheckPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Popups\QrCodePopup.xaml.cs">
+      <DependentUpon>QrCodePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\JoinGroupCallPopup.xaml.cs">
       <DependentUpon>JoinGroupCallPopup.xaml</DependentUpon>
     </Compile>
@@ -2198,6 +2201,7 @@
     <Content Include="Assets\Animations\SendMessagesCompleted.tgs" />
     <Content Include="Assets\Animations\SendMessagesProgress.tgs" />
     <Content Include="Assets\Fonts\Nunito.ttf" />
+    <Content Include="Assets\Animations\QrLogo.json" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -3292,6 +3296,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\FactCheckPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\QrCodePopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

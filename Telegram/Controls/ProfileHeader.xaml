@@ -425,6 +425,13 @@
                             </MenuFlyoutItem>
                         </MenuFlyout>
                     </Button.ContextFlyout>
+                    <controls:BadgeButton.Badge>
+                        <controls:GlyphButton Content="&#xEACA;"
+                                              Click="{x:Bind ViewModel.ShareUsername}"
+                                              Foreground="{ThemeResource SystemColorControlAccentBrush}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,-12,0" />
+                    </controls:BadgeButton.Badge>
                     <controls:BadgeButton.Description>
                         <TextBlock x:Name="ActiveUsernames"
                                    Style="{StaticResource InfoCaptionTextBlockStyle}"
