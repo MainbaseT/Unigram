@@ -675,12 +675,12 @@ namespace Telegram.Controls
         {
             UpdateUserStatus(chat, user);
 
-            UserPhone.Badge = PhoneNumber.Format(user.PhoneNumber);
+            UserPhone.Content = PhoneNumber.Format(user.PhoneNumber);
             UserPhone.Visibility = string.IsNullOrEmpty(user.PhoneNumber) ? Visibility.Collapsed : Visibility.Visible;
 
             if (user.HasActiveUsername(out string username))
             {
-                Username.Badge = username;
+                Username.Content = username;
                 Username.Visibility = Visibility.Visible;
             }
             else
@@ -690,7 +690,7 @@ namespace Telegram.Controls
 
             UpdateUsernames(user.Usernames);
 
-            Description.Content = user.Type is UserTypeBot ? Strings.DescriptionPlaceholder : Strings.UserBio;
+            Description.Description = user.Type is UserTypeBot ? Strings.DescriptionPlaceholder : Strings.UserBio;
 
             if (secret is false)
             {
@@ -817,7 +817,7 @@ namespace Telegram.Controls
             if (fullInfo.BusinessInfo?.Location != null)
             {
                 Location.Visibility = Visibility.Visible;
-                Location.Badge = fullInfo.BusinessInfo.Location.Address;
+                Location.Content = fullInfo.BusinessInfo.Location.Address;
             }
 
             if (fullInfo.Birthdate != null)
@@ -827,15 +827,15 @@ namespace Telegram.Controls
 
                 if (today)
                 {
-                    UserBirthday.Content = Strings.ProfileBirthdayToday;
-                    UserBirthday.Badge = years != 0
+                    UserBirthday.Description = Strings.ProfileBirthdayToday;
+                    UserBirthday.Content = years != 0
                         ? Locale.Declension(Strings.R.ProfileBirthdayTodayValueYear, years, Formatter.Birthdate(fullInfo.Birthdate))
                         : string.Format(Strings.ProfileBirthdayTodayValue, Formatter.Birthdate(fullInfo.Birthdate));
                 }
                 else
                 {
-                    UserBirthday.Content = Strings.ProfileBirthday;
-                    UserBirthday.Badge = years != 0
+                    UserBirthday.Description = Strings.ProfileBirthday;
+                    UserBirthday.Content = years != 0
                         ? Locale.Declension(Strings.R.ProfileBirthdayValueYear, years, Formatter.Birthdate(fullInfo.Birthdate))
                         : string.Format(Strings.ProfileBirthdayValue, Formatter.Birthdate(fullInfo.Birthdate));
                 }
@@ -931,7 +931,7 @@ namespace Telegram.Controls
             Subtitle.Text = Locale.Declension(Strings.R.Members, group.MemberCount);
             SubtitleWhen.Visibility = Visibility.Collapsed;
 
-            Description.Content = Strings.DescriptionPlaceholder;
+            Description.Description = Strings.DescriptionPlaceholder;
 
             UserPhone.Visibility = Visibility.Collapsed;
             Location.Visibility = Visibility.Collapsed;
@@ -1029,7 +1029,7 @@ namespace Telegram.Controls
                 SubtitleWhen.Visibility = Visibility.Collapsed;
             }
 
-            Description.Content = Strings.DescriptionPlaceholder;
+            Description.Description = Strings.DescriptionPlaceholder;
 
             if (ViewModel.ForumTopic != null)
             {
@@ -1039,7 +1039,7 @@ namespace Telegram.Controls
                     {
                         this.BeginOnUIThread(() =>
                         {
-                            Username.Badge = link.Link;
+                            Username.Content = link.Link;
                             Username.Visibility = Visibility.Visible;
 
                             if (link.IsPublic)
@@ -1060,7 +1060,7 @@ namespace Telegram.Controls
             {
                 if (group.HasActiveUsername(out string username))
                 {
-                    Username.Badge = username;
+                    Username.Content = username;
                     Username.Visibility = Visibility.Visible;
                 }
                 else
@@ -1139,7 +1139,7 @@ namespace Telegram.Controls
             Description.Visibility = string.IsNullOrEmpty(fullInfo.Description) ? Visibility.Collapsed : Visibility.Visible;
 
             Location.Visibility = fullInfo.Location != null ? Visibility.Visible : Visibility.Collapsed;
-            Location.Badge = fullInfo.Location?.Address;
+            Location.Content = fullInfo.Location?.Address;
 
             if (group.IsChannel && group.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator)
             {
