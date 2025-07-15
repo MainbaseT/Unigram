@@ -1124,7 +1124,7 @@ namespace Telegram.Views
         {
             var modifiers = WindowContext.KeyModifiers();
 
-            if (args.Key == VirtualKey.Space /*&& args.RepeatCount == 1 && args.Modifiers == VirtualKeyModifiers.None*/)
+            if (args.Key == VirtualKey.Space && modifiers == VirtualKeyModifiers.None /*&& args.RepeatCount == 1*/)
             {
                 if (btnVoiceMessage.IsLocked)
                 {
@@ -1132,7 +1132,7 @@ namespace Telegram.Views
                     args.Handled = true;
                 }
             }
-            else if (args.Key == VirtualKey.C && WindowContext.IsKeyDownAsync(VirtualKey.Control))
+            else if (args.Key == VirtualKey.C && modifiers == VirtualKeyModifiers.Control)
             {
                 if (ViewModel.IsSelectionEnabled && ViewModel.SelectedItems.Count > 0 && ViewModel.CanCopySelectedMessage)
                 {
@@ -1179,7 +1179,7 @@ namespace Telegram.Views
                     }
                 }
             }
-            else if (args.Key == VirtualKey.Delete)
+            else if (args.Key == VirtualKey.Delete && modifiers == VirtualKeyModifiers.None)
             {
                 if (ViewModel.IsSelectionEnabled && ViewModel.SelectedItems.Count > 0 && ViewModel.CanDeleteSelectedMessages)
                 {
