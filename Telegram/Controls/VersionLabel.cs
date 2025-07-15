@@ -55,7 +55,7 @@ namespace Telegram.Controls
             var flyout = new MenuFlyout();
             var element = sender as FrameworkElement;
 
-            flyout.CreateFlyoutItem(CopyVersion, Strings.Copy, Icons.DocumentCopy);
+            flyout.CreateFlyoutItem(CopyVersion, Strings.Copy, Icons.Copy);
 
             flyout.ShowAt(element, args);
         }

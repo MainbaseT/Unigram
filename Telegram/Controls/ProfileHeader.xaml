@@ -391,7 +391,7 @@
                             <MenuFlyoutItem Text="{CustomResource Copy}"
                                             Click="{x:Bind ViewModel.CopyPhone}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE8C8;"
+                                    <FontIcon Glyph="&#xEAC9;"
                                               Style="{StaticResource DefaultFontIconStyle}" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
@@ -416,7 +416,7 @@
                             <MenuFlyoutItem Text="{CustomResource Copy}"
                                             Click="{x:Bind ViewModel.CopyUsername}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE8C8;"
+                                    <FontIcon Glyph="&#xEAC9;"
                                               Style="{StaticResource DefaultFontIconStyle}" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
@@ -453,7 +453,7 @@
                             <MenuFlyoutItem Text="{CustomResource Copy}"
                                             Click="{x:Bind ViewModel.CopyUsername}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE8C8;"
+                                    <FontIcon Glyph="&#xEAC9;"
                                               Style="{StaticResource DefaultFontIconStyle}" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
@@ -474,7 +474,7 @@
                             <MenuFlyoutItem Text="{CustomResource Copy}"
                                             Click="{x:Bind ViewModel.CopyId}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE8C8;"
+                                    <FontIcon Glyph="&#xEAC9;"
                                               Style="{StaticResource DefaultFontIconStyle}" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
