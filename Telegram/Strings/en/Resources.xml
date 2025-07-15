@@ -1318,6 +1318,7 @@
     <string name="DeleteForAll">Delete for all members</string>
     <string name="TextCopied">Text copied to clipboard.</string>
     <string name="PathCopied">Path copied to clipboard.</string>
+    <string name="ImageCopied">Image copied to clipboard.</string>
 
 
 
@@ -12492,4 +12493,7 @@
     <string name="VirtualKeyModifiersMenu">Alt</string>
     <string name="CopySelected">Copy Selected</string>
     <string name="ProcessingVideo">Processing...</string>
+    <string name="ShareQrCode">Share QR Code</string>
+    <string name="QrCode">QR Code</string>
+
 </resources>

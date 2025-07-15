@@ -841,6 +841,8 @@ namespace Telegram.ViewModels
                 var dataPackage = new DataPackage();
                 dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromFile(cached));
                 ClipboardEx.TrySetContent(dataPackage);
+
+                ToastPopup.Show(XamlRoot, Strings.ImageCopied, ToastPopupIcon.Copied);
             }
         }
 

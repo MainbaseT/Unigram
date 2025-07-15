@@ -7481,6 +7481,9 @@ This setting does not affect group chats.</value>
   <data name="IfInactiveFor" xml:space="preserve">
     <value>If inactive for</value>
   </data>
+  <data name="ImageCopied" xml:space="preserve">
+    <value>Image copied to clipboard.</value>
+  </data>
   <data name="Import" xml:space="preserve">
     <value>Import</value>
   </data>
@@ -11659,6 +11662,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="SharePhoneNumberWith" xml:space="preserve">
     <value>Share my phone number with {0}</value>
+  </data>
+  <data name="ShareQrCode" xml:space="preserve">
+    <value>Share QR Code</value>
   </data>
   <data name="Shares_one" xml:space="preserve">
     <value>{0} share</value>
