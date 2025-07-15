@@ -1910,7 +1910,8 @@
                                           ToolTipService.ToolTip="{CustomResource SendDirectMessage}"
                                           Foreground="{ThemeResource TelegramForegroundAccentBrush}"
                                           HorizontalAlignment="Left"
-                                          Glyph="&#xEABA;"
+                                          Glyph="&#xE954;"
+                                          FontSize="24"
                                           Visibility="Collapsed" />
                     <controls:GlyphButton x:Name="ButtonGift"
                                           Click="ButtonGift_Click"
@@ -1919,6 +1920,7 @@
                                           Foreground="{ThemeResource TelegramForegroundAccentBrush}"
                                           HorizontalAlignment="Right"
                                           Glyph="&#xEABB;"
+                                          FontSize="24"
                                           Visibility="Collapsed" />
                 </Grid>
 
