@@ -230,6 +230,8 @@ namespace Telegram.Common
 
         private void CloseImpl()
         {
+            MediaDevice.DefaultAudioRenderDeviceChanged -= OnDefaultAudioRenderDeviceChanged;
+
             _player.ESSelected -= OnESSelected;
             _player.Vout -= OnVout;
             _player.Buffering -= OnBuffering;
