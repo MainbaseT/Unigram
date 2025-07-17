@@ -129,7 +129,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdatePosition(double position, double duration)
         {
-            if (duration > 0)
+            if (duration >= 30)
             {
                 if (_indicatorCollapsed)
                 {

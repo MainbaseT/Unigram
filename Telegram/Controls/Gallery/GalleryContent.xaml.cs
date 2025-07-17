@@ -570,9 +570,15 @@ namespace Telegram.Controls.Gallery
             if (Video != null && !_unloaded)
             {
                 item = _item;
-                position = Video.Position;
 
-                if (Video.Duration - position < 400)
+                var time = Video.Position;
+                var length = Video.Duration;
+
+                if (length >= 30 && time >= 10 && time <= length - 10)
+                {
+                    position = time;
+                }
+                else
                 {
                     position = 0;
                 }
