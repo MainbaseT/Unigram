@@ -12495,7 +12495,7 @@
     <string name="ProcessingVideo">Processing...</string>
     <string name="ShareQrCode">Share QR Code</string>
     <string name="QrCode">QR Code</string>
-
+    <string name="LimitReachedPinnedTopics">Sorry, you can\'t pin more than {0} topics to the top.</string>
     <string name="PrivacySettingsChangedAlert">You have changed some privacy settings. Apply changes?</string>
     <string name="RevokeStreamKey">Revoke Stream Key</string>
     <string name="RevokeStreamKeyAlert">Are you sure you want to revoke your Stream Key?</string>

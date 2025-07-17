@@ -7879,6 +7879,9 @@ Upgrade to **Telegram Premium** to create up to **{1}**.</value>
   <data name="LimitReachedPinDialogsPremium" xml:space="preserve">
     <value>Sorry, you can&apos;t pin more than {0} chats to the top. Unpin some that are currently pinned.</value>
   </data>
+  <data name="LimitReachedPinnedTopics" xml:space="preserve">
+    <value>Sorry, you can&apos;t pin more than {0} topics to the top.</value>
+  </data>
   <data name="LimitReachedPublicLinks" xml:space="preserve">
     <value>You have reserved too many public links. Try revoking the link from an older group or channel, or subscribe to **Telegram Premium** to double the limit to **{1}** public links.</value>
   </data>

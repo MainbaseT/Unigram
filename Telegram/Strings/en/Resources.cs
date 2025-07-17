@@ -11691,6 +11691,11 @@ namespace Telegram
         public static string LimitReachedPinDialogsPremium => Resource.GetString("LimitReachedPinDialogsPremium");
         
         /// <summary>
+        /// Localized resource similar to "Sorry, you can't pin more than {0} topics to the top."
+        /// </summary>
+        public static string LimitReachedPinnedTopics => Resource.GetString("LimitReachedPinnedTopics");
+        
+        /// <summary>
         /// Localized resource similar to "You have reserved too many public links. Try revoking the link from an older group or channel, or subscribe to **Telegram Premium** to double the limit to **{1}** public links."
         /// </summary>
         public static string LimitReachedPublicLinks => Resource.GetString("LimitReachedPublicLinks");
