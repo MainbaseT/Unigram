@@ -20,6 +20,7 @@ using Telegram.Views.Popups;
 using Windows.Devices.Input;
 using Windows.System.Display;
 using Windows.UI.Composition;
+using Windows.UI.Text;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -389,6 +390,30 @@ namespace Telegram.Views.Calls
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)
         {
             var flyout = new MenuFlyout();
+
+            var slider = new MenuFlyoutSlider
+            {
+                Icon = MenuFlyoutHelper.CreateIcon(Icons.Speaker3),
+                TextValueConverter = new TextValueProvider(newValue => string.Format("{0:P0}", newValue / 100)),
+                IconValueConverter = new IconValueProvider(newValue => newValue switch
+                {
+                    double n when n > 66 => Icons.Speaker3,
+                    double n when n > 33 => Icons.Speaker2,
+                    double n when n > 0 => Icons.Speaker1,
+                    _ => Icons.SpeakerOff
+                }),
+                FontWeight = FontWeights.SemiBold,
+                Value = _call.VolumeLevel * 100d,
+                Minimum = 0,
+                Maximum = 200
+            };
+
+            slider.ValueChanged += (s, args) =>
+            {
+                _call.VolumeLevel = args.NewValue / 100d;
+            };
+
+            flyout.Items.Add(slider);
 
             if (_call.CanBeManaged)
             {
