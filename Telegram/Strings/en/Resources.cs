@@ -15381,6 +15381,11 @@ namespace Telegram
         public static string PrivacySettings => Resource.GetString("PrivacySettings");
         
         /// <summary>
+        /// Localized resource similar to "You have changed some privacy settings. Apply changes?"
+        /// </summary>
+        public static string PrivacySettingsChangedAlert => Resource.GetString("PrivacySettingsChangedAlert");
+        
+        /// <summary>
         /// Localized resource similar to "Privacy"
         /// </summary>
         public static string PrivacyTitle => Resource.GetString("PrivacyTitle");

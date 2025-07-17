@@ -10330,6 +10330,9 @@ seamlessly and efficiently.</value>
   <data name="PrivacySettings" xml:space="preserve">
     <value>Privacy and Security</value>
   </data>
+  <data name="PrivacySettingsChangedAlert" xml:space="preserve">
+    <value>You have changed some privacy settings. Apply changes?</value>
+  </data>
   <data name="PrivacyTitle" xml:space="preserve">
     <value>Privacy</value>
   </data>
