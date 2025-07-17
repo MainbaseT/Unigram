@@ -268,8 +268,7 @@ namespace Telegram.Controls
 
         private Uri BuildUri(GalleryMedia video)
         {
-            MediaHttpServer.Start();
-            return new Uri(string.Format("http://127.0.0.1:1234/{0}/{1}.mp4?duration={2}", video.ClientService.SessionId, video.File.Id, video.Duration));
+            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}", MediaHttpServer.Port, video.ClientService.SessionId, video.File.Id, video.Duration));
         }
 
         private void OnVout(AsyncMediaPlayer sender, EventArgs args)

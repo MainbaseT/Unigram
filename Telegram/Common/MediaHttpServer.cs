@@ -18,7 +18,7 @@ namespace Telegram.Common
 
         private MediaHttpServer()
         {
-            _server = new HttpServer(1234, Serve);
+            _server = new HttpServer(0, Serve);
             _server.Start();
         }
 
@@ -28,6 +28,8 @@ namespace Telegram.Common
         {
             _current ??= new MediaHttpServer();
         }
+
+        public static int Port => _current?._server.Port ?? 0;
 
         private void Stop()
         {

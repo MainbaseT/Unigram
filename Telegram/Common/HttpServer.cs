@@ -76,6 +76,8 @@ namespace Telegram.Common
             _port = port;
         }
 
+        public int Port => _listener?.LocalEndpoint is IPEndPoint endpoint ? endpoint.Port : _port;
+
         public void Start()
         {
             Thread thread = new Thread(new ThreadStart(Listen));
@@ -84,7 +86,7 @@ namespace Telegram.Common
 
         private void Listen()
         {
-            _listener = new TcpListener(IPAddress.Any, _port);
+            _listener = new TcpListener(IPAddress.Loopback, _port);
             _listener.Start();
 
             while (_active)
