@@ -11177,6 +11177,12 @@ The group &quot;**{1}**&quot; will become private.</value>
 
 The channel &quot;**{1}**&quot; will become private.</value>
   </data>
+  <data name="RevokeStreamKey" xml:space="preserve">
+    <value>Revoke Stream Key</value>
+  </data>
+  <data name="RevokeStreamKeyAlert" xml:space="preserve">
+    <value>Are you sure you want to revoke your Stream Key?</value>
+  </data>
   <data name="Saturation" xml:space="preserve">
     <value>Saturation</value>
   </data>
