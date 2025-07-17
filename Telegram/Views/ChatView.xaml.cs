@@ -667,14 +667,14 @@ namespace Telegram.Views
                         var xOffset = content switch
                         {
                             MessageBigEmoji => 48 + more,
-                            MessageSticker or MessageDice => 48 + more,
+                            MessageSticker or MessageAnimatedEmoji or MessageDice => 48 + more,
                             _ => 48 + more - 12f
                         };
 
                         var yOffset = content switch
                         {
                             MessageBigEmoji => 66,
-                            MessageSticker or MessageDice => 36,
+                            MessageSticker or MessageAnimatedEmoji or MessageDice => 36,
                             _ => reply ? 29 : 44f
                         };
 
@@ -702,7 +702,7 @@ namespace Telegram.Views
                         var fontScale = content switch
                         {
                             MessageBigEmoji => 14 / 32f,
-                            MessageSticker => 20 / (180 * message.ClientService.Config.GetNamedNumber("emojies_animated_zoom", 0.625f)),
+                            MessageSticker or MessageAnimatedEmoji => 20 / (180 * message.ClientService.Config.GetNamedNumber("emojies_animated_zoom", 0.625f)),
                             _ => 1
                         };
 

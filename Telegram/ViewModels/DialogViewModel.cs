@@ -1947,10 +1947,6 @@ namespace Telegram.ViewModels
                     message.GeneratedContent = null;
                 }
             }
-            else if (message.Content is MessageAnimatedEmoji animatedEmoji && animatedEmoji.AnimatedEmoji.Sticker != null)
-            {
-                message.GeneratedContent = new MessageSticker(animatedEmoji.AnimatedEmoji.Sticker, false);
-            }
             else
             {
                 message.GeneratedContent = null;

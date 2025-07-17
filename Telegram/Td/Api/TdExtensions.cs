@@ -1138,6 +1138,8 @@ namespace Telegram.Td.Api
                     break;
                 case MessageSticker sticker:
                     return (sticker.Sticker.StickerValue, null, null);
+                case MessageAnimatedEmoji animatedEmoji:
+                    return (animatedEmoji.AnimatedEmoji.Sticker?.StickerValue, null, null);
                 case MessageText text:
                     return text.LinkPreview?.Type switch
                     {
@@ -1318,6 +1320,8 @@ namespace Telegram.Td.Api
                     return photo.Photo.GetBig()?.Photo;
                 case MessageSticker sticker:
                     return sticker.Sticker.StickerValue;
+                case MessageAnimatedEmoji animatedEmoji:
+                    return animatedEmoji.AnimatedEmoji.Sticker?.StickerValue;
                 case MessageText text:
                     return text.LinkPreview?.Type switch
                     {
@@ -1375,6 +1379,8 @@ namespace Telegram.Td.Api
                     return animation.Animation.AnimationValue.Local.IsDownloadingCompleted;
                 case MessageSticker sticker:
                     return sticker.Sticker.Format is StickerFormatTgs or StickerFormatWebm && sticker.Sticker.StickerValue.Local.IsDownloadingCompleted;
+                case MessageAnimatedEmoji animatedEmoji:
+                    return animatedEmoji.AnimatedEmoji.Sticker?.Format is StickerFormatTgs or StickerFormatWebm && animatedEmoji.AnimatedEmoji.Sticker.StickerValue.Local.IsDownloadingCompleted;
                 case MessageVideoNote videoNote:
                     return videoNote.VideoNote.Video.Local.IsDownloadingCompleted;
                 case MessageGame game:
@@ -1493,6 +1499,8 @@ namespace Telegram.Td.Api
                     return game.Game.Animation?.Thumbnail;
                 case MessageSticker sticker:
                     return sticker.Sticker.Thumbnail;
+                case MessageAnimatedEmoji animatedEmoji:
+                    return animatedEmoji.AnimatedEmoji.Sticker?.Thumbnail;
                 case MessageText text:
                     return text.LinkPreview?.GetThumbnail();
                 case MessageVideo video:
