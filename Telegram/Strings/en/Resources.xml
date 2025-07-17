@@ -12499,4 +12499,11 @@
     <string name="PrivacySettingsChangedAlert">You have changed some privacy settings. Apply changes?</string>
     <string name="RevokeStreamKey">Revoke Stream Key</string>
     <string name="RevokeStreamKeyAlert">Are you sure you want to revoke your Stream Key?</string>
+    <string name="CopyHashtag">Copy Hashtag</string>
+    <string name="CopyLink">Copy Link</string>
+    <string name="CopyMail">Copy E-Mail</string>
+    <string name="CopyNumber">Copy Number</string>
+    <string name="ViewProfile">View Profile &gt;</string>
+    <string name="NumberNotOnTelegram">This number is not on Telegram</string>
+
 </resources>

@@ -4531,11 +4531,20 @@ Minimum length is 5 characters.</value>
   <data name="CopyEmojiPreview" xml:space="preserve">
     <value>Copy Emoji</value>
   </data>
+  <data name="CopyHashtag" xml:space="preserve">
+    <value>Copy Hashtag</value>
+  </data>
   <data name="CopyImage" xml:space="preserve">
     <value>Copy Image</value>
   </data>
   <data name="CopyLink" xml:space="preserve">
     <value>Copy Link</value>
+  </data>
+  <data name="CopyMail" xml:space="preserve">
+    <value>Copy E-Mail</value>
+  </data>
+  <data name="CopyNumber" xml:space="preserve">
+    <value>Copy Number</value>
   </data>
   <data name="CopySelected" xml:space="preserve">
     <value>Copy Selected</value>
@@ -9077,6 +9086,9 @@ Stories</value>
   </data>
   <data name="NoWordsRecognized" xml:space="preserve">
     <value>No words recognized.</value>
+  </data>
+  <data name="NumberNotOnTelegram" xml:space="preserve">
+    <value>This number is not on Telegram</value>
   </data>
   <data name="October" xml:space="preserve">
     <value>October</value>
@@ -13912,6 +13924,9 @@ Anonymously</value>
   </data>
   <data name="ViewPhotoAction" xml:space="preserve">
     <value>View Photo</value>
+  </data>
+  <data name="ViewProfile" xml:space="preserve">
+    <value>View Profile &gt;</value>
   </data>
   <data name="ViewReplies_one" xml:space="preserve">
     <value>View {0} Reply</value>
