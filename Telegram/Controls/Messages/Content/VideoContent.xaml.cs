@@ -467,7 +467,7 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            var position = TimeSpan.FromSeconds(video.Duration - e.Position);
+            var position = TimeSpan.FromSeconds(video.Duration - Math.Truncate(e.Position));
             if (position.TotalHours >= 1)
             {
                 Subtitle.Text = position.ToString("h\\:mm\\:ss");
@@ -477,7 +477,7 @@ namespace Telegram.Controls.Messages.Content
                 Subtitle.Text = position.ToString("mm\\:ss");
             }
 
-            //UpdatePosition(e.Position, Player.IsPlaying ? video.Duration : 0);
+            UpdatePosition(e.Position, Player.IsPlaying ? video.Duration : 0);
         }
 
         public void Recycle()
@@ -701,11 +701,9 @@ namespace Telegram.Controls.Messages.Content
                         return;
                     }
 
-                    _message.Delegate.OpenMedia(_message, this);
-                    return;
-
                     if (_indicatorCollapsed || _message.Delegate.Settings.Video.HasPosition(video.VideoValue))
                     {
+                        _message.Delegate.OpenMedia(_message, this);
                     }
                     else
                     {
