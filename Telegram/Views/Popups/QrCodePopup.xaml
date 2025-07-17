@@ -14,7 +14,8 @@
                        Padding="0"
                        mc:Ignorable="d">
 
-    <Grid x:Name="LayoutRoot">
+    <Grid x:Name="LayoutRoot"
+          ActualThemeChanged="OnActualThemeChanged">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
@@ -63,12 +64,20 @@
                                                 Grid.Row="1" />
 
                         <Viewbox StretchDirection="DownOnly"
-                                 Margin="12,0,12,12"
+                                 Margin="12,0,12,8"
+                                 Height="36"
                                  Grid.Row="2">
-                            <TextBlock x:Name="Username"
-                                       FontFamily="/Assets/Fonts/Nunito.ttf#Nunito"
-                                       FontSize="24"
-                                       TextAlignment="Center" />
+                            <controls:AnimatedTextBlock x:Name="Username"
+                                                        TextAlignment="Center">
+                                <controls:AnimatedTextBlock.TextStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontFamily"
+                                                Value="/Assets/Fonts/Nunito.ttf#Nunito" />
+                                        <Setter Property="FontSize"
+                                                Value="24" />
+                                    </Style>
+                                </controls:AnimatedTextBlock.TextStyle>
+                            </controls:AnimatedTextBlock>
                         </Viewbox>
                     </Grid>
                 </Grid>

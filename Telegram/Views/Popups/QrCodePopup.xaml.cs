@@ -34,10 +34,11 @@ namespace Telegram.Views.Popups
     public sealed partial class QrCodePopup : ContentPopup
     {
         private readonly IClientService _clientService;
-        private readonly Chat _chat;
 
         private readonly ChatThemeViewModel _selectedTheme;
-        private readonly ChatBackground _background;
+
+        private readonly DispatcherTimer _expiresTimer;
+        private int _expiresIn;
 
         private readonly Dictionary<string, BackgroundFillFreeformGradient> _lightBackgrounds = new Dictionary<string, BackgroundFillFreeformGradient>
         {
@@ -65,25 +66,55 @@ namespace Telegram.Views.Popups
             { "\uD83C\uDFAE", new BackgroundFillFreeformGradient( new int[]{ 0xC74343, 0xEC7F36, 0x06B0F9, 0xA347FF }) },
         };
 
+        public QrCodePopup(IClientService clientService, INavigationService navigationService, ISettingsService settingsService, User user)
+            : this(clientService, navigationService, settingsService)
+        {
+            Photo.SetUser(clientService, user, 96);
+
+            if (user.HasActiveUsername(out string username))
+            {
+                Username.Text = string.Format("@{0}", username.ToUpper());
+                InitializeCode(username);
+            }
+            else if (user.Id == clientService.Options.MyId)
+            {
+                InitializeToken();
+            }
+        }
+
         public QrCodePopup(IClientService clientService, INavigationService navigationService, ISettingsService settingsService, Chat chat)
+            : this(clientService, navigationService, settingsService)
+        {
+            Photo.SetChat(clientService, chat, 96);
+
+            if (_clientService.TryGetSupergroup(chat, out Supergroup supergroup) && supergroup.HasActiveUsername(out string username))
+            {
+                Username.Text = string.Format("@{0}", username.ToUpper());
+                InitializeCode(username);
+            }
+            else if (_clientService.TryGetUser(chat, out User user))
+            {
+                if (user.HasActiveUsername(out username))
+                {
+                    Username.Text = string.Format("@{0}", username.ToUpper());
+                    InitializeCode(username);
+                }
+                else if (user.Id == clientService.Options.MyId)
+                {
+                    InitializeToken();
+                }
+            }
+        }
+
+        public QrCodePopup(IClientService clientService, INavigationService navigationService, ISettingsService settingsService)
         {
             InitializeComponent();
 
             _clientService = clientService;
-            _chat = chat;
 
-            Photo.SetChat(clientService, chat, 96);
-
-            if (_clientService.TryGetSupergroup(_chat, out Supergroup supergroup) && supergroup.HasActiveUsername(out string username))
-            {
-                Username.Text = string.Format("@{0}", username.ToUpper());
-                InitializeCode(username);
-            }
-            else if (_clientService.TryGetUser(_chat, out User user) && user.HasActiveUsername(out username))
-            {
-                Username.Text = string.Format("@{0}", username.ToUpper());
-                InitializeCode(username);
-            }
+            _expiresTimer = new DispatcherTimer();
+            _expiresTimer.Interval = TimeSpan.FromSeconds(1);
+            _expiresTimer.Tick += OnTick;
 
             static Background GetDefaultBackground(bool dark)
             {
@@ -115,20 +146,10 @@ namespace Telegram.Views.Popups
             var items = new[] { defaultTheme }.Union(themes).ToList();
 
             _selectedTheme = themes.FirstOrDefault(x => x.Name == settingsService.Appearance.ChatTheme?.Name) ?? defaultTheme;
-            _background = chat.Background;
 
             ScrollingHost.ItemsSource = items;
             ScrollingHost.SelectedItem = _selectedTheme;
             ScrollingHost.SelectionChanged += OnSelectionChanged;
-
-            LayoutRoot.ActualThemeChanged += OnActualThemeChanged;
-        }
-
-        private void OnActualThemeChanged(FrameworkElement sender, object args)
-        {
-            Theme.IsChecked = sender.ActualTheme == ElementTheme.Dark;
-
-            OnSelectionChanged(null, null);
         }
 
         private async void InitializeCode(string username)
@@ -140,6 +161,50 @@ namespace Telegram.Views.Popups
                 var visual = ElementComposition.GetElementVisual(Code);
                 visual.Clip = visual.Compositor.CreateGeometricClip(visual.Compositor.CreatePathGeometry(geometry.Data));
             }
+        }
+
+        private async void InitializeToken()
+        {
+            var response = await _clientService.SendAsync(new GetUserLink());
+            if (response is UserLink userLink)
+            {
+                var geometry = QrCode.CreateGeometry(userLink.Url, 3, 4, true);
+                var visual = ElementComposition.GetElementVisual(Code);
+                visual.Clip = visual.Compositor.CreateGeometricClip(visual.Compositor.CreatePathGeometry(geometry.Data));
+
+                if (userLink.ExpiresIn != 0)
+                {
+                    _expiresIn = userLink.ExpiresIn;
+                    _expiresTimer.Start();
+                }
+                else
+                {
+                    _expiresIn = 0;
+                    _expiresTimer.Stop();
+                }
+
+                Username.Text = _expiresIn.ToDuration();
+            }
+        }
+
+        private void OnTick(object sender, object e)
+        {
+            _expiresIn--;
+
+            if (_expiresIn == 0)
+            {
+                _expiresTimer.Stop();
+                InitializeToken();
+            }
+
+            Username.Text = _expiresIn.ToDuration();
+        }
+
+        private void OnActualThemeChanged(FrameworkElement sender, object args)
+        {
+            Theme.IsChecked = sender.ActualTheme == ElementTheme.Dark;
+
+            OnSelectionChanged(null, null);
         }
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
