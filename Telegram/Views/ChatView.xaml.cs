@@ -6883,6 +6883,7 @@ namespace Telegram.Views
             + PinnedMessage.AnimatedHeight
             + AccountInfoHeader.AnimatedHeight
             + Sponsored.AnimatedHeight
+            + (_forumCollapsed == ForumViewType.Horizontal ? 40 : 0)
             : 0;
 
         public bool HasMessagesPadding => _messagesHeaderRootPadding > 0;
@@ -7151,6 +7152,7 @@ namespace Telegram.Views
             if (IsLoaded is false)
             {
                 _forumCollapsed = type;
+                UpdateMessagesHeaderPadding();
 
                 Complete();
                 return;
@@ -7270,6 +7272,7 @@ namespace Telegram.Views
             batch.End();
 
             _forumCollapsed = type;
+            UpdateMessagesHeaderPadding();
         }
 
         private IEnumerable<UIElement> GetAnimatableVisuals()
