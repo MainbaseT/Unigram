@@ -524,12 +524,15 @@ namespace Telegram.Views.Popups
 
     public partial class ChooseChatsConfigurationGroupCall : ChooseChatsConfiguration
     {
-        public ChooseChatsConfigurationGroupCall(int groupCallId)
+        public ChooseChatsConfigurationGroupCall(int groupCallId, bool isRtmpStream)
         {
             GroupCallId = groupCallId;
+            IsRtmpStream = isRtmpStream;
         }
 
         public int GroupCallId { get; }
+
+        public bool IsRtmpStream { get; }
 
         public override int NumberOfSentMessages => 1;
     }

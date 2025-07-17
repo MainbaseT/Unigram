@@ -485,6 +485,8 @@ namespace Telegram.Views.Calls
                 }
             }
 
+            flyout.CreateFlyoutItem(ShareInviteLink, Strings.VoipGroupShareInviteLink, Icons.Link);
+
             if (_call.CanBeManaged)
             {
                 flyout.CreateFlyoutSeparator();
@@ -554,7 +556,7 @@ namespace Telegram.Views.Calls
 
         private async void ShareInviteLink()
         {
-            await this.ShowPopupAsync(_call.ClientService.SessionId, new ChooseChatsPopup(), new ChooseChatsConfigurationGroupCall(_call.Id));
+            await this.ShowPopupAsync(_call.ClientService.SessionId, new ChooseChatsPopup(), new ChooseChatsConfigurationGroupCall(_call.Id, true));
         }
 
         private readonly ScrollViewer _scrollingHost;

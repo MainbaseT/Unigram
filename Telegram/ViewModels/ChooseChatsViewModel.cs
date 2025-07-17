@@ -800,7 +800,15 @@ namespace Telegram.ViewModels
                 var response = await ClientService.SendAsync(new GetVideoChatInviteLink(groupCall.GroupCallId, false));
                 if (response is HttpUrl httpUrl)
                 {
-                    var formatted = new FormattedText(string.Format(Strings.VoipGroupInviteText, httpUrl.Url), Array.Empty<TextEntity>());
+                    FormattedText formatted;
+                    if (groupCall.IsRtmpStream)
+                    {
+                        formatted = httpUrl.Url.AsFormattedText();
+                    }
+                    else
+                    {
+                        formatted = string.Format(Strings.VoipGroupInviteText, httpUrl.Url).AsFormattedText();
+                    }
 
                     foreach (var chat in chats)
                     {
