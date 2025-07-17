@@ -694,7 +694,7 @@ namespace Telegram.Controls.Gallery
             {
                 _current.Stop(out var item, out double position);
 
-                if (item is GalleryMessage message && position > 0)
+                if (item is GalleryMessage message)
                 {
                     ViewModel?.Settings.Video.SetPosition(item.File, position);
                     ViewModel?.Aggregator.Publish(new UpdateMessageContentOpened(message.ChatId, message.Id));

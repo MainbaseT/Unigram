@@ -30,7 +30,14 @@ namespace Telegram.Services.Settings
 
         public void SetPosition(File file, double position)
         {
-            _container.Values["Video" + file.Remote.UniqueId] = position;
+            if (position > 0)
+            {
+                _container.Values["Video" + file.Remote.UniqueId] = position;
+            }
+            else
+            {
+                _container.Values.Remove("Video" + file.Remote.UniqueId);
+            }
         }
 
         public void RemovePosition(File file)

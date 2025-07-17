@@ -572,6 +572,11 @@ namespace Telegram.Controls.Gallery
                 item = _item;
                 position = Video.Position;
 
+                if (Video.Duration - position < 400)
+                {
+                    position = 0;
+                }
+
                 _stopped = true;
                 Video.Stop();
                 Button.Visibility = Visibility.Visible;
