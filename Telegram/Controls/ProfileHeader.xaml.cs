@@ -579,6 +579,10 @@ namespace Telegram.Controls
             {
                 Title.Text = ViewModel.ForumTopic.Info.Name;
             }
+            else if (ViewModel.SavedMessagesTopic != null)
+            {
+                Title.Text = ViewModel.ClientService.GetTitle(ViewModel.SavedMessagesTopic);
+            }
             else if (chat.Id == ViewModel.ClientService.Options.MyId && !ViewModel.IsSavedMessages)
             {
                 Title.Text = chat.Title;
