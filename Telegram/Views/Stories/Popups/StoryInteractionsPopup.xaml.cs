@@ -204,6 +204,9 @@ namespace Telegram.Views.Stories.Popups
                     cell.UpdateStoryViewer(ViewModel.ClientService, args, OnContainerContentChanging);
                     animated.Source = interaction.Type is StoryInteractionTypeView view && view.ChosenReactionType != null
                         ? new ReactionFileSource(ViewModel.ClientService, view.ChosenReactionType)
+                        {
+                            UseCenterAnimation = true
+                        }
                         : null;
                 }
             }
