@@ -69,7 +69,7 @@ namespace Telegram.Controls
             _duration = duration;
             _state = state;
 
-            if (ProgressBarIndicator == null || duration - position <= TimeSpan.Zero)
+            if (ProgressBarIndicator == null)
             {
                 return;
             }
@@ -80,6 +80,10 @@ namespace Telegram.Controls
             var clip = (visual.Clip ??= compositor.CreateInsetClip()) as InsetClip;
 
             var step = (float)(position.TotalSeconds / duration.TotalSeconds);
+            if (double.IsNaN(step))
+            {
+                step = 0;
+            }
 
             if (_props == null)
             {
@@ -87,7 +91,7 @@ namespace Telegram.Controls
                 _props.InsertScalar("Progress", 0);
             }
 
-            if (state == PlaybackState.Playing)
+            if (state == PlaybackState.Playing && duration - position > TimeSpan.Zero)
             {
                 var linearEasing = compositor.CreateLinearEasingFunction();
                 var animation = compositor.CreateScalarKeyFrameAnimation();
