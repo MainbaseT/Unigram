@@ -5,16 +5,19 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections.Concurrent;
 using System.Net.Http.Headers;
 using Telegram.Services;
 using Telegram.Streams;
+using Telegram.ViewModels.Gallery;
 using Telegram.Views;
 
 namespace Telegram.Common
 {
-    internal class MediaHttpServer
+    public class MediaHttpServer
     {
         private readonly HttpServer _server;
+        private readonly ConcurrentDictionary<long, int> _availableFiles = new();
 
         private MediaHttpServer()
         {
@@ -31,6 +34,59 @@ namespace Telegram.Common
 
         public static int Port => _current?._server.Port ?? 0;
 
+        public static Uri Start(GalleryMedia video, ref long token)
+        {
+            Start(video.ClientService.SessionId, video.File.Id, ref token);
+
+            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}", Port, video.ClientService.SessionId, video.File.Id, video.Duration));
+        }
+
+        public static void Start(int sessionId, int fileId, ref long token)
+        {
+            if (_current == null)
+            {
+                return;
+            }
+
+            if (token != 0)
+            {
+                Stop(ref token);
+            }
+
+            token = (sessionId << 16) | fileId;
+
+            if (_current._availableFiles.TryGetValue(token, out int count))
+            {
+                _current._availableFiles[token] = count++;
+            }
+            else
+            {
+                _current._availableFiles[token] = 1;
+            }
+        }
+
+        public static void Stop(ref long token)
+        {
+            if (_current == null)
+            {
+                return;
+            }
+
+            if (_current._availableFiles.TryGetValue(token, out int count))
+            {
+                if (count == 1)
+                {
+                    _current._availableFiles.TryRemove(token, out count);
+                }
+                else
+                {
+                    _current._availableFiles[token] = count--;
+                }
+            }
+
+            token = 0;
+        }
+
         private void Stop()
         {
             _server.Stop();
@@ -43,6 +99,11 @@ namespace Telegram.Common
             var extension = System.IO.Path.GetExtension(request.Path);
 
             if (!int.TryParse(session, out int sessionId) || !int.TryParse(fileName, out int fileId))
+            {
+                return HttpResponse.NotFound;
+            }
+
+            if (!_availableFiles.ContainsKey((sessionId << 16) | fileId))
             {
                 return HttpResponse.NotFound;
             }

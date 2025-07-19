@@ -23,6 +23,7 @@ namespace Telegram.Controls
         private GalleryMedia _video;
 
         private long _bufferedToken;
+        private long _httpServerToken;
 
         private long _initialPosition;
 
@@ -66,6 +67,7 @@ namespace Telegram.Controls
                 _core = null;
             }
 
+            MediaHttpServer.Stop(ref _httpServerToken);
             UpdateManager.Unsubscribe(this, ref _bufferedToken);
         }
 
@@ -88,7 +90,7 @@ namespace Telegram.Controls
             {
                 if (SettingsService.Current.Diagnostics.MediaServerDebug)
                 {
-                    _core.Play(BuildUri(video));
+                    _core.Play(MediaHttpServer.Start(video, ref _httpServerToken));
                 }
                 else
                 {
@@ -231,8 +233,6 @@ namespace Telegram.Controls
             }
         }
 
-        private Stopwatch _started;
-
         private void OnInitialized(object sender, InitializedEventArgs e)
         {
             _core = new AsyncMediaPlayer(e.SwapChainOptions);
@@ -248,11 +248,9 @@ namespace Telegram.Controls
 
             if (_video != null)
             {
-                _started = Stopwatch.StartNew();
-
                 if (SettingsService.Current.Diagnostics.MediaServerDebug)
                 {
-                    _core.Play(BuildUri(_video));
+                    _core.Play(MediaHttpServer.Start(_video, ref _httpServerToken));
                 }
                 else
                 {
@@ -266,16 +264,8 @@ namespace Telegram.Controls
             _initialPosition = 0;
         }
 
-        private Uri BuildUri(GalleryMedia video)
-        {
-            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}", MediaHttpServer.Port, video.ClientService.SessionId, video.File.Id, video.Duration));
-        }
-
         private void OnVout(AsyncMediaPlayer sender, EventArgs args)
         {
-            _started.Stop();
-            Logger.Info(_started.Elapsed);
-
             OnFirstFrameReady(true);
         }
 
