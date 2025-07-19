@@ -842,7 +842,7 @@ namespace Telegram.Views
         private void Segments_Click(object sender, RoutedEventArgs e)
         {
             var chat = ViewModel.Chat;
-            if (chat == null || chat.Id == ViewModel.ClientService.Options.MyId || sender is not ActiveStoriesSegments segments || _fromPreview)
+            if (chat == null || (chat.Id == ViewModel.ClientService.Options.MyId && ViewModel.SavedMessagesTopic == null) || sender is not ActiveStoriesSegments segments || _fromPreview)
             {
                 return;
             }
@@ -859,7 +859,14 @@ namespace Telegram.Views
             }
             else
             {
-                GalleryWindow.ShowAsync(ViewModel, ViewModel.StorageService, chat, Photo);
+                if (ViewModel.ClientService.TryGetChat(ViewModel.SavedMessagesTopic?.Type, out Chat savedMessagesTopicChat))
+                {
+                    GalleryWindow.ShowAsync(ViewModel, ViewModel.StorageService, savedMessagesTopicChat, Photo);
+                }
+                else
+                {
+                    GalleryWindow.ShowAsync(ViewModel, ViewModel.StorageService, chat, Photo);
+                }
             }
         }
 
