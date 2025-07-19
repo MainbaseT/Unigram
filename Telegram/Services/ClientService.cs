@@ -51,6 +51,8 @@ namespace Telegram.Services
 
         Task<Chats> GetChatListAsync(ChatList chatList, int offset, int limit);
 
+        void LoadFullInfo(Chat chat);
+
         void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
 
         Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, StarTransactionDirection direction, string offset, int limit);
@@ -1306,6 +1308,22 @@ namespace Telegram.Services
 
             channel = false;
             return new ChatMemberStatusMember();
+        }
+
+        public void LoadFullInfo(Chat chat)
+        {
+            if (TryGetUser(chat, out User user))
+            {
+                Send(new GetUserFullInfo(user.Id));
+            }
+            else if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                Send(new GetSupergroupFullInfo(supergroup.Id));
+            }
+            else if (TryGetBasicGroup(chat, out BasicGroup basicGroup))
+            {
+                Send(new GetBasicGroupFullInfo(basicGroup.Id));
+            }
         }
 
         public string GetTitle(long chatId, bool tiny = false)
