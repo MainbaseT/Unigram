@@ -141,13 +141,6 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _disablePackageManager, "DisablePackageManager", value);
         }
 
-        private bool? _sendLargePhotos;
-        public bool SendLargePhotos
-        {
-            get => _sendLargePhotos ??= GetValueOrDefault("SendLargePhotos", false);
-            set => AddOrUpdateValue(ref _sendLargePhotos, "SendLargePhotos", value);
-        }
-
         private bool? _useSpeexResampler;
         public bool UseSpeexResampler
         {
