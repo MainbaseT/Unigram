@@ -1062,10 +1062,18 @@ namespace Telegram.Views
                     Icon = ViewModel.GiftsTab.ExcludeUpgraded ? null : MenuFlyoutHelper.CreateIcon(Icons.Checkmark)
                 };
 
-                sort.Click += (s, args) => ViewModel.GiftsTab.SortByPrice = !ViewModel.GiftsTab.SortByPrice;
-                unlimited.Click += (s, args) => ViewModel.GiftsTab.ExcludeUnlimited = !ViewModel.GiftsTab.ExcludeUnlimited;
-                limited.Click += (s, args) => ViewModel.GiftsTab.ExcludeLimited = !ViewModel.GiftsTab.ExcludeLimited;
-                unique.Click += (s, args) => ViewModel.GiftsTab.ExcludeUpgraded = !ViewModel.GiftsTab.ExcludeUpgraded;
+                async void UpdateFilters(Action action)
+                {
+                    _programmaticChange = true;
+                    action();
+                    await ScrollingHost.WaitForViewChangedAsync(false);
+                    _programmaticChange = false;
+                }
+
+                sort.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.SortByPrice = !ViewModel.GiftsTab.SortByPrice);
+                unlimited.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeUnlimited = !ViewModel.GiftsTab.ExcludeUnlimited);
+                limited.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeLimited = !ViewModel.GiftsTab.ExcludeLimited);
+                unique.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeUpgraded = !ViewModel.GiftsTab.ExcludeUpgraded);
 
                 flyout.Items.Add(sort);
                 flyout.CreateFlyoutSeparator();
@@ -1075,20 +1083,20 @@ namespace Telegram.Views
 
                 if (ViewModel.ClientService.IsSavedMessages(ViewModel.Chat) || ViewModel.ClientService.TryGetSupergroup(ViewModel.Chat, out Supergroup supergroup) && supergroup.CanPostMessages())
                 {
-                    var displayed = new ToggleMenuFlyoutItem
+                    var displayed = new MenuFlyoutItem
                     {
                         Text = Strings.Gift2FilterDisplayed,
-                        IsChecked = !ViewModel.GiftsTab.ExcludeSaved
+                        Icon = ViewModel.GiftsTab.ExcludeSaved ? null : MenuFlyoutHelper.CreateIcon(Icons.Checkmark)
                     };
 
-                    var hidden = new ToggleMenuFlyoutItem
+                    var hidden = new MenuFlyoutItem
                     {
                         Text = Strings.Gift2FilterHidden,
-                        IsChecked = !ViewModel.GiftsTab.ExcludeUnsaved
+                        Icon = ViewModel.GiftsTab.ExcludeUnsaved ? null : MenuFlyoutHelper.CreateIcon(Icons.Checkmark)
                     };
 
-                    displayed.Click += (s, args) => ViewModel.GiftsTab.ExcludeSaved = !ViewModel.GiftsTab.ExcludeSaved;
-                    hidden.Click += (s, args) => ViewModel.GiftsTab.ExcludeUnsaved = !ViewModel.GiftsTab.ExcludeUnsaved;
+                    displayed.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeSaved = !ViewModel.GiftsTab.ExcludeSaved);
+                    hidden.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeUnsaved = !ViewModel.GiftsTab.ExcludeUnsaved);
 
                     flyout.CreateFlyoutSeparator();
                     flyout.Items.Add(displayed);
