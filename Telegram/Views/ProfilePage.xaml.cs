@@ -184,7 +184,23 @@ namespace Telegram.Views
             ViewModel.PropertyChanged -= OnPropertyChanged;
             ViewModel.Delegate = null;
 
-            if (MediaFrame.Content is ProfileTabPage tabPage)
+            if (MediaFrame.Content is ProfileSavedMessagesTabPage savedMessagesPage)
+            {
+                var args = new NavigatingEventArgs
+                {
+                    NavigationMode = e.NavigationMode,
+                    SourcePageType = ViewModel.NavigationService.CurrentPageType,
+                    Parameter = ViewModel.NavigationService.CurrentPageParam,
+                    Suspending = false,
+                    TargetPageType = e.SourcePageType,
+                    TargetPageParameter = e.Parameter
+                };
+
+                savedMessagesPage.ViewModel.NavigatingFrom(args);
+                savedMessagesPage.ViewModel.NavigatedFrom(null, false);
+                savedMessagesPage.Deactivate(true);
+            }
+            else if (MediaFrame.Content is ProfileTabPage tabPage)
             {
                 tabPage.ScrollingHost.UnregisterPropertyChangedCallback(ItemsControl.ItemsSourceProperty, ref _itemsSourceToken);
                 tabPage.ScrollingHost.UnregisterPropertyChangedCallback(ListViewBase.SelectionModeProperty, ref _selectionModeToken);
