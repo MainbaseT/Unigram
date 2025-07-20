@@ -171,6 +171,18 @@ namespace Telegram.Controls.Chats
             _recorder.QuantumProcessed = null;
         }
 
+        protected override void OnPointerEntered(PointerRoutedEventArgs e)
+        {
+            _pointerEntered = true;
+            base.OnPointerEntered(e);
+        }
+
+        protected override void OnPointerExited(PointerRoutedEventArgs e)
+        {
+            _pointerEntered = false;
+            base.OnPointerExited(e);
+        }
+
         protected override void OnPointerPressed(PointerRoutedEventArgs e)
         {
             Icon.CapturePointer(e.Pointer);
@@ -264,6 +276,18 @@ namespace Telegram.Controls.Chats
             }
         }
 
+        private void UpdateVisualState()
+        {
+            if (_pointerEntered)
+            {
+                VisualStateManager.GoToState(this, Mode == ChatRecordMode.Voice ? "PointerOver" : "CheckedPointerOver", false);
+            }
+            else
+            {
+                VisualStateManager.GoToState(this, Mode == ChatRecordMode.Voice ? "Normal" : "Checked", false);
+            }
+        }
+
         private int recordInterfaceState;
 
         private DisplayRequest _request;
@@ -282,7 +306,7 @@ namespace Telegram.Controls.Chats
 
                 this.BeginOnUIThread(() =>
                 {
-                    VisualStateManager.GoToState(this, "Locked", false);
+                    UpdateVisualState();
 
                     ClickMode = ClickMode.Press;
                     RecordingLocked?.Invoke(this, EventArgs.Empty);
@@ -298,7 +322,7 @@ namespace Telegram.Controls.Chats
 
                 this.BeginOnUIThread(() =>
                 {
-                    VisualStateManager.GoToState(this, "Locked", false);
+                    UpdateVisualState();
 
                     ClickMode = ClickMode.Press;
                     RecordingStopped?.Invoke(this, EventArgs.Empty);
@@ -319,7 +343,7 @@ namespace Telegram.Controls.Chats
 
                 this.BeginOnUIThread(() =>
                 {
-                    VisualStateManager.GoToState(this, "Started", false);
+                    UpdateVisualState();
 
                     ClickMode = ClickMode.Release;
                     RecordingStarting?.Invoke(this, EventArgs.Empty);
@@ -350,7 +374,7 @@ namespace Telegram.Controls.Chats
 
                 this.BeginOnUIThread(() =>
                 {
-                    VisualStateManager.GoToState(this, "Stopped", false);
+                    UpdateVisualState();
 
                     ClickMode = ClickMode.Press;
                     RecordingStopped?.Invoke(this, EventArgs.Empty);
@@ -477,6 +501,8 @@ namespace Telegram.Controls.Chats
                 _recordingAudioVideo = false;
                 UpdateRecordingInterface();
             }
+
+            UpdateVisualState();
         }
 
         private async Task<bool> CheckAccessAsync(ChatRecordMode mode)
@@ -565,6 +591,7 @@ namespace Telegram.Controls.Chats
 
         private readonly bool _hasRecordVideo = true;
 
+        private bool _pointerEntered;
         private bool _pointerReleased;
 
         private bool _calledRecordRunnable;
