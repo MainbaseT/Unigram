@@ -2478,7 +2478,7 @@ namespace Telegram.Services
         {
             chat.LastMessage = lastMessage;
 
-            if (lastMessage == null || lastMessage.MediaAlbumId == 0 || lastMessage.Content is not MessagePhoto and not MessageVideo)
+            if (lastMessage == null || lastMessage.MediaAlbumId == 0 || lastMessage.Content is not MessagePhoto and not MessageVideo || !SettingsService.Current.Diagnostics.AlbumPreloadDebug)
             {
                 _lastMessageAlbums.TryRemove(chat.Id, out _);
                 return;
