@@ -207,7 +207,7 @@ namespace Telegram.Services.Settings
         private bool? _albumPreloadDebug;
         public bool AlbumPreloadDebug
         {
-            get => _albumPreloadDebug ??= GetValueOrDefault("AlbumPreloadDebug", true);
+            get => _albumPreloadDebug ??= GetValueOrDefault("AlbumPreloadDebug", ApiInfo.IsPackagedRelease);
             set => AddOrUpdateValue(ref _albumPreloadDebug, "AlbumPreloadDebug", value);
         }
 
