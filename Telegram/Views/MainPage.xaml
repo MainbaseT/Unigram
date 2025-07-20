@@ -246,8 +246,8 @@
                                                        Height="24"
                                                        Fill="{ThemeResource NavigationViewSelectionIndicatorForeground}"
                                                        Opacity="0"
-                                                       RadiusX="3"
-                                                       RadiusY="3" />
+                                                       RadiusX="1.5"
+                                                       RadiusY="1.5" />
                                         </Grid>
                                     </Grid>
                                 </ControlTemplate>
