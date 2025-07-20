@@ -270,19 +270,24 @@ namespace Telegram.Views.Popups
                 case ChatTypeSecret:
                     return AllowSecretChats;
                 case ChatTypeSupergroup supergroup:
-                    if (supergroup.IsChannel ? AllowChannelChats : AllowGroupChats)
+                    if ((supergroup.IsChannel ? AllowChannelChats : AllowGroupChats) && clientService.TryGetSupergroup(supergroup.SupergroupId, out Supergroup super))
                     {
+                        if (super.IsDirectMessagesGroup)
+                        {
+                            return false;
+                        }
+
                         if (CanPostMessages)
                         {
-                            return clientService.CanPostMessages(chat);
+                            return super.CanPostMessages();
                         }
                         else if (CanInviteUsers)
                         {
-                            return clientService.CanInviteUsers(chat);
+                            return super.CanInviteUsers();
                         }
                         else if (CanPromoteMembers)
                         {
-                            return clientService.CanPromoteMembers(chat);
+                            return super.CanPromoteMembers();
                         }
 
                         return true;
