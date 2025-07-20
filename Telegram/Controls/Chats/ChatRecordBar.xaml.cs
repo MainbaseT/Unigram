@@ -230,6 +230,7 @@ namespace Telegram.Controls.Chats
                 _videoElement = null;
             }
 
+            ChatRecordPopup.IsHitTestVisible = false;
             ChatRecordPopup.IsOpen = true;
             ChatRecordGlyph.Text = ControlledButton.Mode == ChatRecordMode.Video
                 ? Icons.VideoNoteFilled24
@@ -327,7 +328,7 @@ namespace Telegram.Controls.Chats
                 }
 
                 var target = new RenderTargetBitmap();
-                await target.RenderAsync(_videoElement);
+                await target.RenderAsync(_videoElement, 80, 80);
                 var pixels = await target.GetPixelsAsync();
 
                 var file = await ApplicationData.Current.TemporaryFolder.CreateFileAsync("LastVideoFrame.png", CreationCollisionOption.ReplaceExisting);
@@ -338,9 +339,6 @@ namespace Telegram.Controls.Chats
                 var height = (uint)target.PixelHeight;
 
                 encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied, width, height, 96, 96, pixels.ToArray());
-
-                encoder.BitmapTransform.ScaledWidth = 80;
-                encoder.BitmapTransform.ScaledHeight = 80;
                 encoder.BitmapTransform.Flip = BitmapFlip.Horizontal;
 
                 await encoder.FlushAsync();
@@ -450,6 +448,7 @@ namespace Telegram.Controls.Chats
         private void OnRecordingLocked(object sender, EventArgs e)
         {
             ChatRecordGlyph.Text = Icons.SendFilled;
+            ChatRecordPopup.IsHitTestVisible = true;
 
             DetachExpression();
 
