@@ -211,6 +211,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _albumPreloadDebug, "AlbumPreloadDebug", value);
         }
 
+        private bool? _videoPreloadDebug;
+        public bool VideoPreloadDebug
+        {
+            get => _videoPreloadDebug ??= GetValueOrDefault("VideoPreloadDebug", ApiInfo.IsPackagedRelease);
+            set => AddOrUpdateValue(ref _videoPreloadDebug, "VideoPreloadDebug", value);
+        }
+
         public bool IsLastErrorDiskFull { get; set; }
     }
 }

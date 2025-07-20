@@ -8,6 +8,7 @@ using System;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
+using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -274,7 +275,7 @@ namespace Telegram.Controls.Messages.Content
             else
             {
                 var size = Math.Max(file.Size, file.ExpectedSize);
-                if (file.Local.IsDownloadingActive)
+                if (file.Local.IsDownloadingActive && !message.ClientService.IsDownloadFilePartial(file.Id))
                 {
                     if (!hasSpoiler && message.Delegate.CanBeDownloaded(video, file))
                     {
@@ -328,6 +329,11 @@ namespace Telegram.Controls.Messages.Content
                     }
                     else
                     {
+                        if (_message.Delegate.Settings.AutoDownload.PreloadLargeVideos && SettingsService.Current.Diagnostics.VideoPreloadDebug)
+                        {
+                            VideoPreloader.Current.Load(_message.ClientService, file, video.Duration);
+                        }
+
                         UpdateSource(null, null);
                     }
                 }

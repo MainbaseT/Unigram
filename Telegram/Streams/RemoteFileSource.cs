@@ -54,7 +54,7 @@ namespace Telegram.Streams
 
                 if (_file.Local.CanBeDownloaded && !_file.Local.IsDownloadingCompleted && !_limit)
                 {
-                    _clientService.Send(new DownloadFile(_file.Id, _priority, offset, 0, false));
+                    _clientService.DownloadFile(_file.Id, _priority, offset, 0, false);
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace Telegram.Streams
                 _event.Reset();
                 _count = count;
 
-                _clientService.Send(new DownloadFile(_file.Id, 32, _offset, _limit ? count : 0, false));
+                _clientService.DownloadFile(_file.Id, 32, _offset, _limit ? count : 0, false);
 
                 Logger.Debug($"Not enough data available, offset: {_offset}, count: {count}, size: {_file.Size}");
                 return true;

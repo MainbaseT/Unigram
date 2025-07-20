@@ -1622,6 +1622,12 @@ All new messages in this chat will be automatically deleted {0} after they were 
   <data name="AutoDownloadPm" xml:space="preserve">
     <value>PM</value>
   </data>
+  <data name="AutoDownloadPreloadVideo" xml:space="preserve">
+    <value>Preload larger videos</value>
+  </data>
+  <data name="AutoDownloadPreloadVideoInfo" xml:space="preserve">
+    <value>Preload the first few seconds (1-2 MB) of videos larger than %1$s for instant playback.</value>
+  </data>
   <data name="AutodownloadPrivateChats" xml:space="preserve">
     <value>Private Chats</value>
   </data>

@@ -385,7 +385,7 @@ namespace Telegram.Controls.Gallery
 
             if (file.Local.IsDownloadingActive)
             {
-                item.ClientService.Send(new CancelDownloadFile(file.Id, false));
+                item.ClientService.CancelDownloadFile(file, false);
             }
             else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && !file.Local.IsDownloadingCompleted)
             {

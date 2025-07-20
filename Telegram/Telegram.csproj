@@ -213,6 +213,7 @@
     <Compile Include="Common\MediaDevicePermissions.cs" />
     <Compile Include="Common\MediaHttpServer.cs" />
     <Compile Include="Common\SliderHelper.cs" />
+    <Compile Include="Common\VideoPreloader.cs" />
     <Compile Include="Composition\CompositionVisualColorSource.cs" />
     <Compile Include="Composition\WeakInteractionTrackerOwner.cs" />
     <Compile Include="Controls\Calls\MediaStateBadge.xaml.cs">

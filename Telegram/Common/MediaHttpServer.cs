@@ -41,6 +41,13 @@ namespace Telegram.Common
             return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}", Port, video.ClientService.SessionId, video.File.Id, video.Duration));
         }
 
+        public static Uri Start(VideoPresentation presentation, ref long token)
+        {
+            Start(presentation.SessionId, presentation.FileId, ref token);
+
+            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}", Port, presentation.SessionId, presentation.FileId, presentation.Duration));
+        }
+
         public static void Start(int sessionId, int fileId, ref long token)
         {
             if (_current == null)
