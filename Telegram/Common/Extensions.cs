@@ -1623,6 +1623,8 @@ namespace Telegram.Common
 
             return new BitmapImage(ToLocal(path))
             {
+                // TODO: experiment
+                //CreateOptions = BitmapCreateOptions.IgnoreImageCache,
                 DecodePixelWidth = width,
                 DecodePixelHeight = height,
                 DecodePixelType = width > 0 || height > 0
