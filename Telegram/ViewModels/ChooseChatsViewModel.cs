@@ -348,7 +348,10 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            PreSelectedItems = new List<long>(SelectedItems.Select(x => x.Id));
+            if (SelectedItems.Count > 0)
+            {
+                PreSelectedItems = new List<long>(SelectedItems.Select(x => x.Id));
+            }
 
             var chatList = SelectedFolder?.ChatList ?? new ChatListMain();
 
