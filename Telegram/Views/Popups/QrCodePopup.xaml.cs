@@ -85,15 +85,17 @@ namespace Telegram.Views.Popups
         public QrCodePopup(IClientService clientService, INavigationService navigationService, ISettingsService settingsService, Chat chat)
             : this(clientService, navigationService, settingsService)
         {
-            Photo.SetChat(clientService, chat, 96);
-
             if (_clientService.TryGetSupergroup(chat, out Supergroup supergroup) && supergroup.HasActiveUsername(out string username))
             {
+                Photo.SetChat(clientService, chat, 96);
+
                 Username.Text = string.Format("@{0}", username.ToUpper());
                 InitializeCode(username);
             }
             else if (_clientService.TryGetUser(chat, out User user))
             {
+                Photo.SetUser(clientService, user, 96);
+
                 if (user.HasActiveUsername(out username))
                 {
                     Username.Text = string.Format("@{0}", username.ToUpper());
