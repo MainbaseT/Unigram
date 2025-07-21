@@ -205,6 +205,7 @@ namespace Telegram.Controls.Cells
             Photo.Visibility = Visibility.Collapsed;
             Pinned.Visibility = Visibility.Collapsed;
 
+            StarCountParticles.Source = new ParticlesImageSource(Color.FromArgb(0x80, 0xE8, 0xAB, 0x02), Native.ParticlesType.Premium);
             Animated.Source = new DelayedFileSource(clientService, gift.Gift.Sticker);
 
             if (gift.Gift.TotalCount > 0 && (gift.Gift.RemainingCount > 0 || gift.MinResaleStarCount == 0))
