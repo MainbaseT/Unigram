@@ -277,7 +277,7 @@ namespace Telegram.Views.Popups
             IsMediaSelected = media && IsMediaAllowed;
             IsFilesSelected = !IsMediaSelected;
 
-            SendHighQuality = viewModel.Settings.SendHighQualityPhotos;
+            SendHighQuality = viewModel.Settings.SendLargePhotos;
 
             EmojiPanel.DataContext = EmojiDrawerViewModel.Create(viewModel.SessionId);
             CaptionInput.CustomEmoji = CustomEmoji;
@@ -1326,7 +1326,7 @@ namespace Telegram.Views.Popups
         private void ToggleSendHighQuality()
         {
             SendHighQuality = !SendHighQuality;
-            ViewModel.Settings.SendHighQualityPhotos = SendHighQuality;
+            ViewModel.Settings.SendLargePhotos = SendHighQuality;
         }
 
         private void ToggleSendWithSpoiler()
