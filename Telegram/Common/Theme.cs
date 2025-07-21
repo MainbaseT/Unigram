@@ -224,13 +224,14 @@ namespace Telegram.Common
                     }
 
                     var accent = settings.AccentColor.ToColor();
-                    var outgoing = settings.OutgoingMessageFill switch
-                    {
-                        //BackgroundFillSolid solid => solid.Color.ToColor(),
-                        BackgroundFillGradient gradient => gradient.TopColor.ToColor(),
-                        BackgroundFillFreeformGradient freeform => freeform.Colors[0].ToColor(),
-                        _ => settings.OutgoingMessageAccentColor.ToColor()
-                    };
+                    var outgoing = settings.OutgoingMessageAccentColor.ToColor();
+                    //var outgoing = settings.OutgoingMessageFill switch
+                    //{
+                    //    //BackgroundFillSolid solid => solid.Color.ToColor(),
+                    //    BackgroundFillGradient gradient => gradient.TopColor.ToColor(),
+                    //    BackgroundFillFreeformGradient freeform => freeform.Colors[0].ToColor(),
+                    //    _ => settings.OutgoingMessageAccentColor.ToColor()
+                    //};
 
                     var info = ThemeAccentInfo.FromAccent(tint, accent, outgoing);
                     ThemeOutgoing.Update(info.Parent, info.Values);
