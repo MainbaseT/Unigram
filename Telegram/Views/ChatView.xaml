@@ -1855,6 +1855,8 @@
                                 </Grid>
 
                                 <Grid x:Name="EditMessageButton"
+                                      VerticalAlignment="Bottom"
+                                      Height="48"
                                       Visibility="Collapsed"
                                       Grid.Column="2">
 
@@ -1863,7 +1865,6 @@
                                              Height="16" />
 
                                     <controls:GlyphButton x:Name="btnEdit"
-                                                          VerticalAlignment="Bottom"
                                                           Click="btnSendMessage_Click"
                                                           Glyph="&#xE9F4;"
                                                           AllowFocusOnInteraction="False"
