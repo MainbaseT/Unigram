@@ -6420,6 +6420,18 @@ public static class PlaceholderImageHelper_stub
             throw new RuntimeException(ex);
         }
     }
+    public static Windows.Foundation.Rect LayoutMetrics_stub(this Telegram.Native.PlaceholderImageHelper sender, string text, int offset, int length, System.Collections.Generic.IList<Telegram.Td.Api.TextEntity> entities, double fontSize, double width, bool rtl)
+    {
+        try
+        {
+            return sender.LayoutMetrics(text, offset, length, entities, fontSize, width, rtl);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static System.Collections.Generic.IList<Windows.Foundation.Rect> LineMetrics_stub(this Telegram.Native.PlaceholderImageHelper sender, string text, System.Collections.Generic.IList<Telegram.Td.Api.TextEntity> entities, double fontSize, double width, bool rtl)
     {
         try
