@@ -2042,8 +2042,8 @@ namespace Telegram.Td.Api
 
         private static bool CompareOrderedRules(IList<UserPrivacySettingRule> xRules, IList<UserPrivacySettingRule> yRules)
         {
-            var xSorted = xRules.OrderBy(r => r.GetType().Name).ToArray();
-            var ySorted = yRules.OrderBy(r => r.GetType().Name).ToArray();
+            var xSorted = xRules.OrderBy(r => r.GetType()).ToArray();
+            var ySorted = yRules.OrderBy(r => r.GetType()).ToArray();
 
             for (int i = 0; i < xSorted.Length; i++)
             {
