@@ -82,7 +82,7 @@ namespace Telegram.Controls.Messages
             {
                 foreach (var item in row)
                 {
-                    var button = new ReplyMarkupInlineButton(item);
+                    var button = new ReplyMarkupInlineButton(this, item);
                     button.HorizontalAlignment = HorizontalAlignment.Stretch;
                     button.VerticalAlignment = VerticalAlignment.Stretch;
                     button.Text = item.Text.Replace('\n', ' ');
