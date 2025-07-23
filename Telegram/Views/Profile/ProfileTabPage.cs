@@ -211,11 +211,11 @@ namespace Telegram.Views.Profile
             {
                 if (sender is ListView)
                 {
-                    args.ItemContainer = new TableAccessibleChatListViewItem(ViewModel?.ClientService);
+                    args.ItemContainer = new TableAccessibleChatListViewItem(sender);
                 }
                 else
                 {
-                    args.ItemContainer = new ChatGridViewItem(ViewModel?.ClientService);
+                    args.ItemContainer = new ChatGridViewItem(sender);
                 }
 
                 args.ItemContainer.Style = sender.ItemContainerStyle;
