@@ -55,7 +55,7 @@
                               Content="{CustomResource AutoDownloadPreloadVideo}"
                               Margin="0,8,0,0" />
 
-                    <TextBlock Text="{CustomResource AutoDownloadPreloadVideoInfo}"
+                    <TextBlock Text="{x:Bind ConvertPreload(ViewModel.Limit), Mode=OneWay}"
                                Style="{StaticResource InfoCaptionTextBlockStyle}"
                                Margin="0,4,0,0" />
                 </StackPanel>

@@ -12506,6 +12506,6 @@
     <string name="ViewProfile">View Profile &gt;</string>
     <string name="NumberNotOnTelegram">This number is not on Telegram</string>
     <string name="AutoDownloadPreloadVideo">Preload larger videos</string>
-    <string name="AutoDownloadPreloadVideoInfo">Preload the first few seconds (1-2 MB) of videos larger than %1$s for instant playback.</string>
+    <string name="AutoDownloadPreloadVideoInfo">Preload the first few seconds (1-2 MB) of videos larger than {0} for instant playback.</string>
 
 </resources>

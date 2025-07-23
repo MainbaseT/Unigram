@@ -1626,7 +1626,7 @@ All new messages in this chat will be automatically deleted {0} after they were 
     <value>Preload larger videos</value>
   </data>
   <data name="AutoDownloadPreloadVideoInfo" xml:space="preserve">
-    <value>Preload the first few seconds (1-2 MB) of videos larger than %1$s for instant playback.</value>
+    <value>Preload the first few seconds (1-2 MB) of videos larger than {0} for instant playback.</value>
   </data>
   <data name="AutodownloadPrivateChats" xml:space="preserve">
     <value>Private Chats</value>
