@@ -13,7 +13,6 @@ namespace Telegram.Views
         private readonly Telegram.Services.ILifetimeService _lifetimeService;
         private readonly Telegram.Services.ILocaleService _localeService;
         private readonly Telegram.Services.IPasscodeService _passcodeService;
-        private readonly Telegram.Services.IPlaybackService _playbackService;
 
         private readonly Telegram.Services.IDeviceInfoService _deviceInfoService;
         private readonly Telegram.Services.ISettingsService _settingsService;
@@ -36,14 +35,13 @@ namespace Telegram.Views
         private Telegram.Services.ITranslateService _translateService;
         private Telegram.Services.IProfilePhotoService _profilePhotoService;
 
-        public TypeLocator(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, Telegram.Services.IPlaybackService playbackService, int session, bool active)
+        public TypeLocator(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, int session, bool active)
         {
             _session = session;
 
             _lifetimeService = lifetimeService;
             _localeService = localeService;
             _passcodeService = passcodeService;
-            _playbackService = playbackService;
 
             _deviceInfoService = new Telegram.Services.DeviceInfoService();
             _settingsService = new Telegram.Services.SettingsService(_session);
@@ -143,7 +141,6 @@ namespace Telegram.Views
                             _clientService,
                             _networkService,
                             _eventAggregator),
-                        _playbackService,
                         _shortcutsService ??= new Telegram.Services.ShortcutsService(
                             _clientService,
                             _settingsService,
@@ -177,7 +174,6 @@ namespace Telegram.Views
                         _eventAggregator,
                         _locationService ??= new Telegram.Services.LocationService(_clientService),
                         _notificationsService,
-                        _playbackService,
                         _voipService,
                         _networkService,
                         _storageService ??= new Telegram.Services.StorageService(_clientService),
@@ -192,7 +188,6 @@ namespace Telegram.Views
                         _eventAggregator,
                         _locationService ??= new Telegram.Services.LocationService(_clientService),
                         _notificationsService,
-                        _playbackService,
                         _voipService,
                         _networkService,
                         _storageService ??= new Telegram.Services.StorageService(_clientService),
@@ -207,7 +202,6 @@ namespace Telegram.Views
                         _eventAggregator,
                         _locationService ??= new Telegram.Services.LocationService(_clientService),
                         _notificationsService,
-                        _playbackService,
                         _voipService,
                         _networkService,
                         _storageService ??= new Telegram.Services.StorageService(_clientService),
@@ -222,7 +216,6 @@ namespace Telegram.Views
                         _eventAggregator,
                         _locationService ??= new Telegram.Services.LocationService(_clientService),
                         _notificationsService,
-                        _playbackService,
                         _voipService,
                         _networkService,
                         _storageService ??= new Telegram.Services.StorageService(_clientService),
@@ -237,7 +230,6 @@ namespace Telegram.Views
                         _eventAggregator,
                         _locationService ??= new Telegram.Services.LocationService(_clientService),
                         _notificationsService,
-                        _playbackService,
                         _voipService,
                         _networkService,
                         _storageService ??= new Telegram.Services.StorageService(_clientService),
@@ -275,7 +267,6 @@ namespace Telegram.Views
                         _clientService,
                         _settingsService,
                         _eventAggregator,
-                        _playbackService,
                         _voipService,
                         _notificationsService,
                         _storageService ??= new Telegram.Services.StorageService(_clientService),
@@ -461,7 +452,6 @@ namespace Telegram.Views
                             _clientService,
                             _settingsService,
                             _eventAggregator),
-                        _playbackService,
                         _eventAggregator);
                 case "Telegram.ViewModels.LogOutViewModel":
                     return (T)(object)new Telegram.ViewModels.LogOutViewModel(

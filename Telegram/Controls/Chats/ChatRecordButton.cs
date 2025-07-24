@@ -15,6 +15,7 @@ using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.Views;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Media;
@@ -233,10 +234,7 @@ namespace Telegram.Controls.Chats
                 return;
             }
 
-            if (ViewModel is DialogViewModel viewModel)
-            {
-                viewModel.PlaybackService.Pause();
-            }
+            TypeResolver.Current.Playback.Pause();
 
             Logger.Debug("Permissions granted, mode: " + Mode);
 
