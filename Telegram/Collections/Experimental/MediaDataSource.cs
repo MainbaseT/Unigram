@@ -61,7 +61,7 @@ namespace Telegram.Collections
         public static async Task<MediaDataSource> Create(IClientService clientService, long chatId, long savedMessagesTopicId, SearchMessagesFilter filter)
         {
             MediaDataSource ds = new MediaDataSource(clientService, chatId, savedMessagesTopicId, filter);
-            await ds.UpdateCount(false);
+            await ds.UpdateCount(true);
             return ds;
         }
 
@@ -371,7 +371,11 @@ namespace Telegram.Collections
         // Used to fire our collection changed event
         private void ItemCache_CacheChanged(object sender, CacheChangedEventArgs<MessageWithOwner> args)
         {
-            if (CollectionChanged != null)
+            if (args.ItemIndex >= _count)
+            {
+                SetFilter(_filter);
+            }
+            else if (CollectionChanged != null)
             {
                 CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, args.OldItem, args.NewItem, args.ItemIndex));
             }
