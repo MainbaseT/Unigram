@@ -78,6 +78,7 @@ namespace Telegram.Services
         private readonly HashSet<int> _canceledDownloads = new();
         private readonly HashSet<int> _partialDownloads = new();
         private readonly HashSet<string> _completedDownloads = new();
+        private readonly object _downloadsLock = new();
 
         public Task<File> GetFileAsync(int fileId)
         {
@@ -149,7 +150,10 @@ namespace Telegram.Services
                     var permanent = await Future.GetFileAsync(file.Remote.UniqueId);
                     if (permanent == null)
                     {
-                        _completedDownloads.Add(file.Remote.UniqueId);
+                        lock (_downloadsLock)
+                        {
+                            _completedDownloads.Add(file.Remote.UniqueId);
+                        }
 
                         var source = await StorageFile.GetFileFromPathAsync(file.Local.Path);
                         if (Future.CheckAccess(source))
@@ -188,7 +192,11 @@ namespace Telegram.Services
 
         public async void AddFileToDownloads(File file, long chatId, long messageId, int priority = 30)
         {
-            _partialDownloads.Remove(file.Id);
+            lock (_downloadsLock)
+            {
+                _partialDownloads.Remove(file.Id);
+            }
+
             Send(new AddFileToDownloads(file.Id, chatId, messageId, priority));
 
             if (ApiInfo.HasCacheOnly || !SettingsService.Current.IsDownloadFolderEnabled || Future.Contains(file.Remote.UniqueId, true) || await Future.ContainsAsync(file.Remote.UniqueId))
@@ -215,12 +223,15 @@ namespace Telegram.Services
                 && file.Remote.IsUploadingCompleted
                 && Future.Contains(file.Remote.UniqueId, true))
             {
-                if (_completedDownloads.Contains(file.Remote.UniqueId))
+                lock (_downloadsLock)
                 {
-                    return;
-                }
+                    if (_completedDownloads.Contains(file.Remote.UniqueId))
+                    {
+                        return;
+                    }
 
-                _completedDownloads.Add(file.Remote.UniqueId);
+                    _completedDownloads.Add(file.Remote.UniqueId);
+                }
 
                 try
                 {
@@ -250,8 +261,11 @@ namespace Telegram.Services
 
         public async void CancelDownloadFile(File file, bool onlyIfPending = false)
         {
-            _canceledDownloads.Add(file.Id);
-            _completedDownloads.Remove(file.Remote.UniqueId);
+            lock (_downloadsLock)
+            {
+                _canceledDownloads.Add(file.Id);
+                _completedDownloads.Remove(file.Remote.UniqueId);
+            }
 
             Send(new CancelDownloadFile(file.Id, onlyIfPending));
             Send(new RemoveFileFromDownloads(file.Id, false));
@@ -280,12 +294,18 @@ namespace Telegram.Services
 
         public bool IsDownloadFileCanceled(int fileId)
         {
-            return _canceledDownloads.Contains(fileId);
+            lock (_downloadsLock)
+            {
+                return _canceledDownloads.Contains(fileId);
+            }
         }
 
         public bool IsDownloadFilePartial(int fileId)
         {
-            return _partialDownloads.Contains(fileId);
+            lock (_downloadsLock)
+            {
+                return _partialDownloads.Contains(fileId);
+            }
         }
 
         private File ProcessFile(File file)

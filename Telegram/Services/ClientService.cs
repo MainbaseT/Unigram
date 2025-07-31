@@ -976,13 +976,16 @@ namespace Telegram.Services
 
         public void DownloadFile(int fileId, int priority, long offset = 0, long limit = 0, bool synchronous = false)
         {
-            if (limit != 0)
+            lock (_downloadsLock)
             {
-                _partialDownloads.Add(fileId);
-            }
-            else
-            {
-                _partialDownloads.Remove(fileId);
+                if (limit != 0)
+                {
+                    _partialDownloads.Add(fileId);
+                }
+                else
+                {
+                    _partialDownloads.Remove(fileId);
+                }
             }
 
             Send(new DownloadFile(fileId, priority, offset, limit, synchronous));
