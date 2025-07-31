@@ -72,7 +72,7 @@ namespace Telegram.ViewModels
         public virtual bool CanBeDownloaded(object content, File file)
         {
             var chat = Chat;
-            if (chat == null || ClientService.IsDownloadFileCanceled(file.Id) || ClientService.IsDownloadFilePartial(file.Id))
+            if (chat == null || ClientService.IsDownloadFileCanceled(file.Id))
             {
                 return false;
             }
