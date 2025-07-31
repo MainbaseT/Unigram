@@ -348,45 +348,52 @@ namespace Telegram.Controls
                 //Logger.Info(resource + ", offset: " + offset + ", count:" + limit);
 
                 remote.SeekCallback(offset);
-                await remote.ReadCallbackAsync(limit);
+                var bytesRead = await remote.ReadCallbackAsync(limit);
                 remote.Close(false);
 
-                if (extension == ".m3u8")
+                if (bytesRead >= limit)
                 {
-                    var text = await System.IO.File.ReadAllTextAsync(file.Local.Path);
-                    var playlist = Regex.Replace(text, "mtproto:\\d+\\b", _playlist[fileId].Video.Id + ".mp4");
-
-                    using (var stream = await ToStreamAsync(playlist))
+                    if (extension == ".m3u8")
                     {
-                        CreateWebResourceResponse(stream, 200, "OK", "Content-Type: application/vnd.apple.mpegurl");
+                        var text = await System.IO.File.ReadAllTextAsync(file.Local.Path);
+                        var playlist = Regex.Replace(text, "mtproto:\\d+\\b", _playlist[fileId].Video.Id + ".mp4");
+
+                        using (var stream = await ToStreamAsync(playlist))
+                        {
+                            CreateWebResourceResponse(stream, 200, "OK", "Content-Type: application/vnd.apple.mpegurl");
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            // TODO: would be probably better to use Storage APIs as they're asynchronous
+                            // At the same time, they're known to be slow, and they also seem to be quite buggy.
+                            using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                            {
+                                stream.Seek(offset, System.IO.SeekOrigin.Begin);
+
+                                byte[] buffer = new byte[(int)limit];
+                                await stream.ReadAsync(buffer, 0, buffer.Length);
+
+                                using var memory = new InMemoryRandomAccessStream();
+                                using var writer = new DataWriter(memory.GetOutputStreamAt(0));
+
+                                writer.WriteBytes(buffer);
+                                await writer.StoreAsync();
+
+                                CreateWebResourceResponse(memory, 206, "OK", string.Format("Content-Type: video/mp4\nContent-Range: bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size));
+                            }
+                        }
+                        catch
+                        {
+                            // TODO: file name changes when download is completed and a race seems to be happening some times.
+                        }
                     }
                 }
                 else
                 {
-                    try
-                    {
-                        // TODO: would be probably better to use Storage APIs as they're asynchronous
-                        // At the same time, they're known to be slow, and they also seem to be quite buggy.
-                        using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
-                        {
-                            stream.Seek(offset, System.IO.SeekOrigin.Begin);
-
-                            byte[] buffer = new byte[(int)limit];
-                            await stream.ReadAsync(buffer, 0, buffer.Length);
-
-                            using var memory = new InMemoryRandomAccessStream();
-                            using var writer = new DataWriter(memory.GetOutputStreamAt(0));
-
-                            writer.WriteBytes(buffer);
-                            await writer.StoreAsync();
-
-                            CreateWebResourceResponse(memory, 206, "OK", string.Format("Content-Type: video/mp4\nContent-Range: bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size));
-                        }
-                    }
-                    catch
-                    {
-                        // TODO: file name changes when download is completed and a race seems to be happening some times.
-                    }
+                    CreateWebResourceResponse(null, 404, "Not Found", string.Empty);
                 }
             }
 

@@ -110,19 +110,25 @@ namespace winrt::Telegram::Native::implementation
             }
             else
             {
-                info->file.ReadCallback(buf_size);
+                int64_t result;
+                info->file.ReadCallback(buf_size, result);
 
                 if (info->fd == INVALID_HANDLE_VALUE)
                 {
                     requestFd(info);
                 }
 
-                DWORD bytesRead;
-                DWORD moved = SetFilePointer(info->fd, info->file.Offset(), NULL, FILE_BEGIN);
-                BOOL result = ReadFile(info->fd, buf, buf_size, &bytesRead, NULL);
+                if (info->fd != INVALID_HANDLE_VALUE && result >= buf_size)
+                {
+                    DWORD bytesRead;
+                    DWORD moved = SetFilePointer(info->fd, info->file.Offset(), NULL, FILE_BEGIN);
+                    BOOL result = ReadFile(info->fd, buf, buf_size, &bytesRead, NULL);
 
-                info->file.SeekCallback(bytesRead + info->file.Offset());
-                return bytesRead == 0 ? AVERROR_EOF : bytesRead;
+                    info->file.SeekCallback(bytesRead + info->file.Offset());
+                    return bytesRead == 0 ? AVERROR_EOF : bytesRead;
+                }
+
+                return AVERROR_EOF;
             }
         }
         return 0;

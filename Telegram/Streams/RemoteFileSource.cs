@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Common;
@@ -33,6 +34,8 @@ namespace Telegram.Streams
         private readonly int _priority;
         private readonly bool _limit;
 
+        private long _availableBytesResult;
+
         public RemoteFileSource(IClientService clientService, File file, int priority = 32, bool limit = false)
         {
             _event = new ManualResetEvent(false);
@@ -59,22 +62,69 @@ namespace Telegram.Streams
             }
         }
 
-        public override void ReadCallback(long count)
+        public override void ReadCallback(long count, out long bytesRead)
         {
             if (MustWait(count))
             {
                 _event.WaitOne();
+
+                lock (_stateLock)
+                {
+                    bytesRead = _availableBytesResult;
+                }
+            }
+            else
+            {
+                lock (_stateLock)
+                {
+                    bytesRead = CalculateAvailableBytes(count);
+                }
             }
         }
 
-        public Task ReadCallbackAsync(long count)
+        public async Task<long> ReadCallbackAsync(long count)
         {
             if (MustWait(count))
             {
-                return _event.WaitOneAsync();
+                await _event.WaitOneAsync();
+
+                lock (_stateLock)
+                {
+                    return _availableBytesResult;
+                }
             }
 
-            return Task.CompletedTask;
+            lock (_stateLock)
+            {
+                return CalculateAvailableBytes(count);
+            }
+        }
+
+        private long CalculateAvailableBytes(long requestedCount)
+        {
+            if (_canceled)
+            {
+                return 0;
+            }
+
+            var begin = _file.Local.DownloadOffset;
+            var end = _file.Local.DownloadOffset + _file.Local.DownloadedPrefixSize;
+
+            var inBegin = _offset >= begin;
+
+            if (_file.Local.Path.Length > 0 && inBegin)
+            {
+                if (_file.Local.IsDownloadingCompleted)
+                {
+                    return Math.Max(0, _file.Size - _offset);
+                }
+                else
+                {
+                    return Math.Max(0, Math.Min(requestedCount, end - _offset));
+                }
+            }
+
+            return 0;
         }
 
         protected bool MustWait(long count)
@@ -95,7 +145,7 @@ namespace Telegram.Streams
 
                 if (_file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted))
                 {
-                    Logger.Debug($"Next chunk is available, offset: {_offset}, count: {count}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                    Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, count: {count}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
                     return false;
                 }
 
@@ -105,7 +155,7 @@ namespace Telegram.Streams
 
                 _clientService.DownloadFile(_file.Id, 32, _offset, _limit ? count : 0, false);
 
-                Logger.Debug($"Not enough data available, offset: {_offset}, count: {count}, size: {_file.Size}");
+                Logger.Debug($"Not enough data available for {_file.Id}, offset: {_offset}, count: {count}, size: {_file.Size}");
                 return true;
             }
         }
@@ -136,12 +186,18 @@ namespace Telegram.Streams
 
                 if (_file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted))
                 {
-                    Logger.Debug($"Next chunk is available, offset: {_offset}, count: {_count}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                    Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, count: {_count}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+
+                    // Calculate and store available bytes before setting the event
+                    _availableBytesResult = CalculateAvailableBytes(_count);
                     _event.Set();
                 }
                 else if (_canceled || !file.Local.IsDownloadingActive)
                 {
-                    Logger.Info("Download was canceled for " + file.Id);
+                    Logger.Info($"Download was canceled for {_file.Id}");
+
+                    // Set result to 0 for canceled/inactive downloads
+                    _availableBytesResult = 0;
                     _event.Set();
                 }
                 //else

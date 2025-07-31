@@ -77,9 +77,9 @@ namespace Telegram.Streams
             _offset = offset;
         }
 
-        public override void ReadCallback(long count)
+        public override void ReadCallback(long count, out long bytesRead)
         {
-            // Nothing
+            bytesRead = count;
         }
 
         public override bool Equals(object obj)

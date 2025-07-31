@@ -173,25 +173,30 @@ namespace Telegram.Common
 
             var remote = new RemoteFileSource(clientService, file, 31, true);
             remote.SeekCallback(offset);
-            remote.ReadCallback(limit);
+            remote.ReadCallback(limit, out long bytesRead);
             remote.Close(false);
 
-            var response = new HttpResponse();
-            response.StatusCode = "206";
-            response.Headers["Access-Control-Allow-Origin"] = "*";
-            response.Headers["Content-Type"] = "video/mp4";
-            response.Headers["Content-Range"] = string.Format("bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size);
-
-            using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+            if (bytesRead >= limit)
             {
-                stream.Seek(offset, System.IO.SeekOrigin.Begin);
+                var response = new HttpResponse();
+                response.StatusCode = "206";
+                response.Headers["Access-Control-Allow-Origin"] = "*";
+                response.Headers["Content-Type"] = "video/mp4";
+                response.Headers["Content-Range"] = string.Format("bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size);
 
-                byte[] buffer = new byte[(int)limit];
-                stream.Read(buffer, 0, buffer.Length);
-                response.Content = buffer;
+                using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                {
+                    stream.Seek(offset, System.IO.SeekOrigin.Begin);
+
+                    byte[] buffer = new byte[(int)limit];
+                    stream.Read(buffer, 0, buffer.Length);
+                    response.Content = buffer;
+                }
+
+                return response;
             }
 
-            return response;
+            return HttpResponse.NotFound;
         }
     }
 }
