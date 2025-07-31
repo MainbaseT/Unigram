@@ -317,6 +317,20 @@ namespace Telegram.Controls
             return null;
         }
 
+        protected override string GetFullDescriptionCore()
+        {
+            if (_owner.Description is FrameworkElement element)
+            {
+                var peer = FrameworkElementAutomationPeer.FromElement(element);
+                if (peer != null)
+                {
+                    return peer.GetName();
+                }
+            }
+
+            return _owner.Description?.ToString() ?? string.Empty;
+        }
+
         public string Value
         {
             get
