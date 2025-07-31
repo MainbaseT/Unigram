@@ -102,7 +102,7 @@
                               Content="Album Preload Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
-                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.AlbumPreloadDebug, Mode=TwoWay}"
+                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.VideoPreloadDebug, Mode=TwoWay}"
                               Content="Video Preload Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
                 </controls:HeaderedControl>
