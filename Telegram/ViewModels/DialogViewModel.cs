@@ -2964,7 +2964,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            var sameTopic = Topic == null || (Topic != null && embedded.ReplyToMessage.TopicId.AreTheSame(Topic));
+            var sameTopic = (Topic == null || Thread != null) || (Topic != null && embedded.ReplyToMessage.TopicId.AreTheSame(Topic));
 
             var chatId = embedded.ReplyToMessage.ChatId;
             if (chatId == _chat?.Id && sameTopic)
