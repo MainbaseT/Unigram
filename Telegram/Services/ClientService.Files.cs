@@ -76,7 +76,7 @@ namespace Telegram.Services
          */
 
         private readonly HashSet<int> _canceledDownloads = new();
-        private readonly HashSet<int> _partialDownloads = new();
+        private readonly HashSet<int> _persistentDownloads = new();
         private readonly HashSet<string> _completedDownloads = new();
         private readonly object _downloadsLock = new();
 
@@ -194,7 +194,7 @@ namespace Telegram.Services
         {
             lock (_downloadsLock)
             {
-                _partialDownloads.Remove(file.Id);
+                _persistentDownloads.Add(file.Id);
             }
 
             Send(new AddFileToDownloads(file.Id, chatId, messageId, priority));
@@ -304,7 +304,7 @@ namespace Telegram.Services
         {
             lock (_downloadsLock)
             {
-                return _partialDownloads.Contains(fileId);
+                return !_persistentDownloads.Contains(fileId);
             }
         }
 
