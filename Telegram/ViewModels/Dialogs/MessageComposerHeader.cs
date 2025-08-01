@@ -20,9 +20,12 @@ namespace Telegram.ViewModels
 
         public MessageViewModel ReplyToMessage { get; set; }
         public InputTextQuote ReplyToQuote { get; set; }
+        public int ReplyToTaskId { get; set; }
 
         public MessageViewModel EditingMessage { get; set; }
         public InputMessageContent EditingMessageMedia { get; set; }
+
+        public InputSuggestedPostInfo SuggestedPostInfo { get; set; }
 
         public LinkPreview LinkPreview { get; set; }
         public string LinkPreviewUrl { get; set; }

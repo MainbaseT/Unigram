@@ -742,7 +742,7 @@ namespace Telegram.ViewModels
                     messageSendOptions.DirectMessagesChatTopicId = topicDirectMessagesChat.DirectMessagesChatTopicId;
                 }
 
-                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote);
+                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId);
             }
 
             return new SendMessage(chatId, messageThreadId, replyTo, messageSendOptions, null, inputMessageContent);
@@ -911,7 +911,7 @@ namespace Telegram.ViewModels
                     messageSendOptions.DirectMessagesChatTopicId = topicDirectMessagesChat.DirectMessagesChatTopicId;
                 }
 
-                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote);
+                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId);
             }
 
             return new SendMessageAlbum(chatId, messageThreadId, replyTo, messageSendOptions, inputMessageContent);

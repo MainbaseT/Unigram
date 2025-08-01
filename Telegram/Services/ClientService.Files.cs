@@ -1266,6 +1266,12 @@ namespace Telegram.Services
                         ProcessFiles(messageGiftedStars.Sticker);
                     }
                     break;
+                case MessageGiftedTon messageGiftedTon:
+                    if (messageGiftedTon.Sticker != null)
+                    {
+                        ProcessFiles(messageGiftedTon.Sticker);
+                    }
+                    break;
                 case MessageGiveaway messageGiveaway:
                     if (messageGiveaway.Sticker != null)
                     {
@@ -2360,6 +2366,24 @@ namespace Telegram.Services
                     if (tMeUrlTypeChatInvite.Info != null)
                     {
                         ProcessFiles(tMeUrlTypeChatInvite.Info);
+                    }
+                    break;
+                case TonTransaction tonTransaction:
+                    if (tonTransaction.Type != null)
+                    {
+                        ProcessFiles(tonTransaction.Type);
+                    }
+                    break;
+                case TonTransactions tonTransactions:
+                    foreach (var item in tonTransactions.Transactions)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
+                case TonTransactionTypeFragmentDeposit tonTransactionTypeFragmentDeposit:
+                    if (tonTransactionTypeFragmentDeposit.Sticker != null)
+                    {
+                        ProcessFiles(tonTransactionTypeFragmentDeposit.Sticker);
                     }
                     break;
                 case TrendingStickerSets trendingStickerSets:

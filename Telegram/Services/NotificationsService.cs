@@ -754,8 +754,8 @@ namespace Telegram.Services
 
                     // TODO: topic id
 
-                    var replyToMessage = data.TryGetValue("msg_id", out string msg_id) && long.TryParse(msg_id, out long messageId) ? new InputMessageReplyToMessage(messageId, null) : null;
-                    var response = await _clientService.SendAsync(new SendMessage(chat.Id, 0, replyToMessage, new MessageSendOptions(0, false, true, false, false, 0, false, null, 0, 0, false), null, new InputMessageText(formatted, null, false)));
+                    var replyToMessage = data.TryGetValue("msg_id", out string msg_id) && long.TryParse(msg_id, out long messageId) ? new InputMessageReplyToMessage(messageId, null, 0) : null;
+                    var response = await _clientService.SendAsync(new SendMessage(chat.Id, 0, replyToMessage, new MessageSendOptions(0, null, false, true, false, false, 0, false, null, 0, 0, false), null, new InputMessageText(formatted, null, false)));
 
                     if (chat.Type is ChatTypePrivate && chat.LastMessage != null)
                     {

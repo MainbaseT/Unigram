@@ -920,7 +920,7 @@ namespace Telegram.ViewModels
                     var fullInfo = ClientService.GetUserFull(user.Id);
                     fullInfo ??= await ClientService.SendAsync(new GetUserFullInfo(user.Id)) as UserFullInfo;
 
-                    messages.Add(new Message(0, new MessageSenderUser(user.Id), chat.Id, null, null, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderAccountInfo(), null));
+                    messages.Add(new Message(0, new MessageSenderUser(user.Id), chat.Id, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderAccountInfo(), null));
                     return;
                 }
 
@@ -934,7 +934,7 @@ namespace Telegram.ViewModels
 
                 var content = new MessageText(text, null, null);
 
-                messages.Add(new Message(0, new MessageSenderUser(user.Id), chat.Id, null, null, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, content, null));
+                messages.Add(new Message(0, new MessageSenderUser(user.Id), chat.Id, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, content, null));
                 return;
             }
             else
@@ -984,7 +984,7 @@ namespace Telegram.ViewModels
 
                 if (content != null)
                 {
-                    messages.Add(new Message(0, new MessageSenderUser(user.Id), chat.Id, null, null, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, content, null));
+                    messages.Add(new Message(0, new MessageSenderUser(user.Id), chat.Id, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, content, null));
                     return;
                 }
             }
@@ -999,11 +999,11 @@ namespace Telegram.ViewModels
 
                 if (empty)
                 {
-                    messages.Add(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageCustomServiceAction(Strings.NoComments), null));
+                    messages.Add(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageCustomServiceAction(Strings.NoComments), null));
                 }
                 else
                 {
-                    messages.Add(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageCustomServiceAction(Strings.DiscussionStarted), null));
+                    messages.Add(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageCustomServiceAction(Strings.DiscussionStarted), null));
                 }
 
                 for (int i = replied.Count - 1; i >= 0; i--)
@@ -1014,7 +1014,7 @@ namespace Telegram.ViewModels
 
             if (previous != null && !IsSavedMessagesTab)
             {
-                messages.Add(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(previous.Date), null));
+                messages.Add(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(previous.Date), null));
             }
         }
 
@@ -1253,8 +1253,8 @@ namespace Telegram.ViewModels
                     if (endReached && messages.Count > 0 && IsSavedMessagesTab)
                     {
                         var previous = messages[^1];
-                        messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(previous.Date), null)));
-                        messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, previous.Date, 0, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageCustomServiceAction(Strings.SavedMessagesProfileHint), null)));
+                        messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(previous.Date), null)));
+                        messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, 0, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageCustomServiceAction(Strings.SavedMessagesProfileHint), null)));
                     }
 
                     Items.RawReplaceWith(messages);
@@ -1524,7 +1524,7 @@ namespace Telegram.ViewModels
                         {
                             if (index >= 0 && index < messages.MessagesValue.Count - 1)
                             {
-                                messages.MessagesValue.Insert(index + 1, new Message(0, target.SenderId, target.ChatId, null, null, target.IsOutgoing, false, false, false, false, target.IsChannelPost, false, target.Date, 0, null, null, null, null, null, null, target.MessageThreadId, target.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderUnread(), null));
+                                messages.MessagesValue.Insert(index + 1, new Message(0, target.SenderId, target.ChatId, null, null, target.IsOutgoing, false, false, false, false, target.IsChannelPost, false, false, false, target.Date, 0, null, null, null, null, null, null, null, target.MessageThreadId, target.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderUnread(), null));
                                 unread = true;
                             }
                             else if (maxId == details.LastReadInboxMessageId)
@@ -1715,7 +1715,7 @@ namespace Telegram.ViewModels
                     var target = replied.FirstOrDefault();
                     if (target != null)
                     {
-                        replied.Insert(0, CreateMessage(new Message(0, target.SenderId, target.ChatId, null, target.SchedulingState, target.IsOutgoing, false, false, false, false, target.IsChannelPost, false, target.Date, 0, null, null, null, null, null, null, 0, target.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(target.Date), null)));
+                        replied.Insert(0, CreateMessage(new Message(0, target.SenderId, target.ChatId, null, target.SchedulingState, target.IsOutgoing, false, false, false, false, target.IsChannelPost, false, false, false, target.Date, 0, null, null, null, null, null, null, null, 0, target.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderDate(target.Date), null)));
                     }
 
                     Items.ReplaceWith(replied);
@@ -2613,14 +2613,17 @@ namespace Telegram.ViewModels
             if (Type is DialogType.History or DialogType.Thread && state.TryGet("reply_to", out MessageViewModel message))
             {
                 state.TryGet("reply_to_quote", out InputTextQuote quote);
+                state.TryGet("reply_to_task_id", out int taskId);
 
                 state.Remove("reply_to");
                 state.Remove("reply_to_quote");
+                state.Remove("reply_to_task_id");
 
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
                     ReplyToMessage = message,
-                    ReplyToQuote = quote
+                    ReplyToQuote = quote,
+                    ReplyToTaskId = taskId,
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -2721,7 +2724,8 @@ namespace Telegram.ViewModels
                         ComposerHeader = new MessageComposerHeader(ClientService)
                         {
                             ReplyToMessage = CreateMessage(message),
-                            ReplyToQuote = replyToMessage.Quote
+                            ReplyToQuote = replyToMessage.Quote,
+                            ReplyToTaskId = replyToMessage.ChecklistTaskId,
                         };
 
                         goto UpdateText;
@@ -2735,7 +2739,8 @@ namespace Telegram.ViewModels
                         ComposerHeader = new MessageComposerHeader(ClientService)
                         {
                             ReplyToMessage = CreateMessage(message),
-                            ReplyToQuote = replyToExternalMessage.Quote
+                            ReplyToQuote = replyToExternalMessage.Quote,
+                            ReplyToTaskId = replyToExternalMessage.ChecklistTaskId,
                         };
 
                         goto UpdateText;
@@ -2823,12 +2828,14 @@ namespace Telegram.ViewModels
 
             var replyToMessageId = 0L;
             var replyToChatId = 0L;
+            var replyToTaskId = 0;
             var quote = default(InputTextQuote);
 
             if (embedded != null && embedded.ReplyToMessage != null)
             {
                 replyToMessageId = embedded.ReplyToMessage.Id;
                 replyToChatId = embedded.ReplyToMessage.ChatId;
+                replyToTaskId = embedded.ReplyToTaskId;
                 quote = embedded.ReplyToQuote;
 
                 if (replyToChatId == chat.Id)
@@ -2847,11 +2854,11 @@ namespace Telegram.ViewModels
 
                 InputMessageReplyTo inputReply = replyToMessageId != 0
                     ? replyToChatId == chat.Id || replyToChatId == 0
-                    ? new InputMessageReplyToMessage(replyToMessageId, quote)
-                    : new InputMessageReplyToExternalMessage(replyToChatId, replyToMessageId, quote)
+                    ? new InputMessageReplyToMessage(replyToMessageId, quote, replyToTaskId)
+                    : new InputMessageReplyToExternalMessage(replyToChatId, replyToMessageId, quote, replyToTaskId)
                     : null;
 
-                draft = new DraftMessage(inputReply, 0, new InputMessageText(formattedText, null, false), 0);
+                draft = new DraftMessage(inputReply, 0, new InputMessageText(formattedText, null, false), 0, embedded.SuggestedPostInfo);
             }
 
             _draft = draft;
@@ -2910,6 +2917,8 @@ namespace Telegram.ViewModels
                     EditingMessage = container.EditingMessage,
                     ReplyToMessage = container.ReplyToMessage,
                     ReplyToQuote = container.ReplyToQuote,
+                    ReplyToTaskId = container.ReplyToTaskId,
+                    SuggestedPostInfo = container.SuggestedPostInfo,
                     LinkPreviewUrl = container.LinkPreviewUrl,
                     LinkPreview = null,
                     LinkPreviewDisabled = true
@@ -2973,16 +2982,16 @@ namespace Telegram.ViewModels
                 {
                     if (embedded.ReplyToMessage.TopicId.IsForum(ForumTopicService.GeneralId))
                     {
-                        return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, new MessageTopicForum(embedded.ReplyToMessage.MessageThreadId), embedded.ReplyToQuote);
+                        return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, new MessageTopicForum(embedded.ReplyToMessage.MessageThreadId), embedded.ReplyToQuote, embedded.ReplyToTaskId);
                     }
 
-                    return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, embedded.ReplyToMessage.TopicId, embedded.ReplyToQuote);
+                    return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, embedded.ReplyToMessage.TopicId, embedded.ReplyToQuote, embedded.ReplyToTaskId);
                 }
 
-                return new InputMessageReplyToMessage(embedded.ReplyToMessage.Id, embedded.ReplyToQuote);
+                return new InputMessageReplyToMessage(embedded.ReplyToMessage.Id, embedded.ReplyToQuote, embedded.ReplyToTaskId);
             }
 
-            return new InputMessageReplyToExternalMessage(chatId, embedded.ReplyToMessage.Id, embedded.ReplyToQuote);
+            return new InputMessageReplyToExternalMessage(chatId, embedded.ReplyToMessage.Id, embedded.ReplyToQuote, embedded.ReplyToTaskId);
         }
 
         #endregion
@@ -3065,7 +3074,7 @@ namespace Telegram.ViewModels
             var factory = header.EditingMessageMedia;
             if (factory is InputMessageContent input)
             {
-                var options = new MessageSendOptions(DirectMessagesChatTopicId, false, false, false, false, 0, false, null, 0, 0, true);
+                var options = new MessageSendOptions(DirectMessagesChatTopicId, header.SuggestedPostInfo, false, false, false, false, 0, false, null, 0, 0, true);
 
                 var response = await ClientService.SendAsync(new SendMessage(editing.ChatId, editing.MessageThreadId, null, options, null, input));
                 if (response is Message preview)

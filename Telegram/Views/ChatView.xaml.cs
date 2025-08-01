@@ -1643,6 +1643,8 @@ namespace Telegram.Views
                             EditingMessage = embedded.EditingMessage,
                             ReplyToMessage = embedded.ReplyToMessage,
                             ReplyToQuote = embedded.ReplyToQuote,
+                            ReplyToTaskId = embedded.ReplyToTaskId,
+                            SuggestedPostInfo = embedded.SuggestedPostInfo,
                         };
                     }
                 }
@@ -1671,9 +1673,11 @@ namespace Telegram.Views
                             EditingMessage = embedded?.EditingMessage,
                             ReplyToMessage = embedded?.ReplyToMessage,
                             ReplyToQuote = embedded?.ReplyToQuote,
+                            ReplyToTaskId = embedded?.ReplyToTaskId ?? 0,
+                            SuggestedPostInfo = embedded?.SuggestedPostInfo,
                             LinkPreviewOptions = embedded?.LinkPreviewOptions,
                             LinkPreview = linkPreview,
-                            LinkPreviewUrl = linkPreview.Url
+                            LinkPreviewUrl = linkPreview.Url,
                         };
                     }
                     else if (embedded != null)
@@ -1689,6 +1693,8 @@ namespace Telegram.Views
                                 EditingMessage = embedded.EditingMessage,
                                 ReplyToMessage = embedded.ReplyToMessage,
                                 ReplyToQuote = embedded.ReplyToQuote,
+                                ReplyToTaskId = embedded.ReplyToTaskId,
+                                SuggestedPostInfo = embedded.SuggestedPostInfo,
                             };
                         }
                     }
@@ -2526,6 +2532,7 @@ namespace Telegram.Views
                 }
                 else
                 {
+                    // TODO: task id support
                     flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, header.ReplyToMessage, Strings.ReplyToAnotherChat, Icons.Replace);
                 }
 

@@ -166,6 +166,9 @@ namespace Telegram.ViewModels
             ContainsUnreadMention = message.ContainsUnreadMention;
             IsFromOffline = message.IsFromOffline;
             IsChannelPost = message.IsChannelPost;
+            IsPaidStarSuggestedPost = message.IsPaidStarSuggestedPost;
+            IsPaidTonSuggestedPost = message.IsPaidTonSuggestedPost;
+            SuggestedPostInfo = message.SuggestedPostInfo;
             CanBeSaved = message.CanBeSaved;
             IsOutgoing = message.IsOutgoing;
             IsPinned = message.IsPinned;
@@ -206,6 +209,9 @@ namespace Telegram.ViewModels
             ContainsUnreadMention = message.ContainsUnreadMention;
             IsFromOffline = message.IsFromOffline;
             IsChannelPost = message.IsChannelPost;
+            IsPaidStarSuggestedPost = message.IsPaidStarSuggestedPost;
+            IsPaidTonSuggestedPost = message.IsPaidTonSuggestedPost;
+            SuggestedPostInfo = message.SuggestedPostInfo;
             CanBeSaved = message.CanBeSaved;
             IsOutgoing = message.IsOutgoing;
             IsPinned = message.IsPinned;
@@ -341,6 +347,9 @@ namespace Telegram.ViewModels
             Id = message.Id;
             IsFromOffline = message.IsFromOffline;
             IsChannelPost = message.IsChannelPost;
+            IsPaidStarSuggestedPost = message.IsPaidStarSuggestedPost;
+            IsPaidTonSuggestedPost = message.IsPaidTonSuggestedPost;
+            SuggestedPostInfo = message.SuggestedPostInfo;
             IsOutgoing = message.IsOutgoing;
             IsPinned = message.IsPinned;
             MessageThreadId = message.MessageThreadId;
@@ -443,6 +452,9 @@ namespace Telegram.ViewModels
             ContainsUnreadMention = message.ContainsUnreadMention;
             IsFromOffline = message.IsFromOffline;
             IsChannelPost = message.IsChannelPost;
+            IsPaidStarSuggestedPost = message.IsPaidStarSuggestedPost;
+            IsPaidTonSuggestedPost = message.IsPaidTonSuggestedPost;
+            SuggestedPostInfo = message.SuggestedPostInfo;
             CanBeSaved = message.CanBeSaved;
             IsOutgoing = message.IsOutgoing;
             IsPinned = message.IsPinned;
@@ -520,6 +532,9 @@ namespace Telegram.ViewModels
         public bool ContainsUnreadMention { get; set; }
         public bool IsFromOffline { get; protected set; }
         public bool IsChannelPost { get; protected set; }
+        public bool IsPaidStarSuggestedPost { get; protected set; }
+        public bool IsPaidTonSuggestedPost { get; protected set; }
+        public SuggestedPostInfo SuggestedPostInfo { get; set; }
         public bool CanBeSaved { get; protected set; }
         public bool IsOutgoing { get; protected set; }
         public bool IsPinned { get; set; }
@@ -592,7 +607,7 @@ namespace Telegram.ViewModels
         // TODO: Get rid of this
         public Message Get()
         {
-            return new Message(Id, SenderId, ChatId, SendingState, SchedulingState, IsOutgoing, IsPinned, IsFromOffline, CanBeSaved, HasTimestampedMedia, IsChannelPost, ContainsUnreadMention, Date, EditDate, ForwardInfo, ImportInfo, InteractionInfo, UnreadReactions, FactCheck, ReplyTo, MessageThreadId, TopicId, SelfDestructType, SelfDestructIn, AutoDeleteIn, ViaBotUserId, SenderBusinessBotUserId, SenderBoostCount, PaidMessageStarCount, AuthorSignature, MediaAlbumId, EffectId, HasSensitiveContent, RestrictionReason, Content, ReplyMarkup);
+            return new Message(Id, SenderId, ChatId, SendingState, SchedulingState, IsOutgoing, IsPinned, IsFromOffline, CanBeSaved, HasTimestampedMedia, IsChannelPost, IsPaidStarSuggestedPost, IsPaidTonSuggestedPost, ContainsUnreadMention, Date, EditDate, ForwardInfo, ImportInfo, InteractionInfo, UnreadReactions, FactCheck, SuggestedPostInfo, ReplyTo, MessageThreadId, TopicId, SelfDestructType, SelfDestructIn, AutoDeleteIn, ViaBotUserId, SenderBusinessBotUserId, SenderBoostCount, PaidMessageStarCount, AuthorSignature, MediaAlbumId, EffectId, HasSensitiveContent, RestrictionReason, Content, ReplyMarkup);
         }
 
         public virtual bool CanBeAddedToDownloads

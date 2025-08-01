@@ -66,7 +66,7 @@ namespace Telegram
             DetectMoves = true
         };
 
-        public static MessageSendOptions PreviewOnly = new(0, false, false, false, false, 0, false, null, 0, 0, true);
+        public static MessageSendOptions PreviewOnly = new(0, null, false, false, false, false, 0, false, null, 0, 0, true);
 
 #if DEBUG
         // We use properties in debug so that the duration is re-evaluated

@@ -2327,7 +2327,7 @@ namespace Telegram.Controls.Messages
 
         private static FormattedText UpdateUpgradedGift(MessageWithOwner message, MessageUpgradedGift upgradedGift, bool history)
         {
-            if (upgradedGift.IsUpgrade)
+            if (upgradedGift.Origin is UpgradedGiftOriginUpgrade)
             {
                 if (upgradedGift.ReceiverId.IsUser(message.ClientService.Options.MyId))
                 {
