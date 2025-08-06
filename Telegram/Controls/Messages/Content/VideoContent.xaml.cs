@@ -275,7 +275,7 @@ namespace Telegram.Controls.Messages.Content
             else
             {
                 var size = Math.Max(file.Size, file.ExpectedSize);
-                if (file.Local.IsDownloadingActive && !message.ClientService.IsDownloadFilePartial(file.Id))
+                if (file.Local.IsDownloadingActive)
                 {
                     if (!hasSpoiler && message.Delegate.CanBeDownloaded(video, file))
                     {
