@@ -228,6 +228,56 @@ namespace Telegram.ViewModels
             }
         }
 
+        public void ReplyToChecklistTask(MessageChecklistTask message)
+        {
+            ReplyToChecklistTask(message, false);
+        }
+
+        public void ReplyToChecklistTaskInAnotherChat(MessageChecklistTask message)
+        {
+            ReplyToChecklistTask(message, true);
+        }
+
+        public async void ReplyToChecklistTask(MessageChecklistTask checklistTask, bool inAnotherChat)
+        {
+            DisposeSearch();
+
+            var message = checklistTask.Message;
+            if (message == null)
+            {
+                return;
+            }
+
+            if (message.Content is MessageAlbum album)
+            {
+                message = album.Messages.FirstOrDefault();
+            }
+
+            if (inAnotherChat || await ShouldReplyInAnotherChatAsync(message))
+            {
+                var header = ComposerHeader;
+                var text = GetFormattedText(true, false);
+
+                GetReply(true);
+
+                var confirm = await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationReplyToMessage(message, checklistTaskId: checklistTask.Task.Id));
+                if (confirm != ContentDialogResult.Primary)
+                {
+                    ComposerHeader = header;
+                    SetFormattedText(text);
+                }
+            }
+            else
+            {
+                ComposerHeader = new MessageComposerHeader(ClientService)
+                {
+                    ReplyTo = new MessageComposerReplyTo(message, null, 0)
+                };
+
+                TextField?.Focus(FocusState.Keyboard);
+            }
+        }
+
         private async Task<bool> ShouldReplyInAnotherChatAsync(MessageViewModel message)
         {
             var properties = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id)) as MessageProperties;

@@ -12935,6 +12935,9 @@ in mini apps on Telegram.</value>
   <data name="TodoEditTitle" xml:space="preserve">
     <value>Edit Checklist</value>
   </data>
+  <data name="TodoItemQuote" xml:space="preserve">
+    <value>Reply to Item</value>
+  </data>
   <data name="TodoItemsTitle" xml:space="preserve">
     <value>Checklist</value>
   </data>

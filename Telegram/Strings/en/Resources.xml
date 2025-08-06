@@ -12507,5 +12507,6 @@
     <string name="NumberNotOnTelegram">This number is not on Telegram</string>
     <string name="AutoDownloadPreloadVideo">Preload larger videos</string>
     <string name="AutoDownloadPreloadVideoInfo">Preload the first few seconds (1-2 MB) of videos larger than {0} for instant playback.</string>
+    <string name="TodoItemQuote">Reply to Item</string>
 
 </resources>

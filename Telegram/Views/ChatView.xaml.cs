@@ -2519,6 +2519,12 @@ namespace Telegram.Views
 
                     flyout.CreateFlyoutItem(ViewModel.QuoteToMessageInAnotherChat, quote, Strings.ReplyToAnotherChat, Icons.Replace);
                 }
+                else if (header.ReplyTo.ChecklistTaskId != 0)
+                {
+                    var checklist = new MessageChecklistTask(header.ReplyTo);
+
+                    flyout.CreateFlyoutItem(ViewModel.ReplyToChecklistTaskInAnotherChat, checklist, Strings.ReplyToAnotherChat, Icons.Replace);
+                }
                 else
                 {
                     flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, header.ReplyTo.Message, Strings.ReplyToAnotherChat, Icons.Replace);
@@ -3029,6 +3035,7 @@ namespace Telegram.Views
                         checklistTaskItem.CreateFlyoutItem(ViewModel.MarkChecklistTask, messageTask, checklistTask.CompletionDate != 0 ? Strings.TodoUncheck : Strings.TodoCheck, checklistTask.CompletionDate != 0 ? Icons.DismissCircle : Icons.CheckmarkCircle);
                     }
 
+                    checklistTaskItem.CreateFlyoutItem(ViewModel.ReplyToChecklistTask, messageTask, Strings.TodoItemQuote, Icons.ArrowReply);
                     checklistTaskItem.CreateFlyoutItem(ViewModel.CopyText, checklistTask.Text, Strings.Copy, Icons.Copy);
 
                     if (properties.CanBeEdited)

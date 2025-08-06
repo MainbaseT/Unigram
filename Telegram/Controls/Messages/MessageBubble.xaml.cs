@@ -59,7 +59,7 @@ namespace Telegram.Controls.Messages
 
         public long MessageId { get; }
 
-        public int ChecklistTaskId { get; } = -1;
+        public int ChecklistTaskId { get; } = 0;
 
         public TextQuote Quote { get; }
 
@@ -2743,7 +2743,7 @@ namespace Telegram.Controls.Messages
                     solid.Size = area.ToSizeF();
                 }
             }
-            else if (Media.Child is ChecklistContent checklist && options.ChecklistTaskId != -1)
+            else if (Media.Child is ChecklistContent checklist && options.ChecklistTaskId != 0)
             {
                 var area = checklist.Highlight(options);
                 if (!area.IsEmpty)

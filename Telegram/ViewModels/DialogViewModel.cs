@@ -1145,7 +1145,7 @@ namespace Telegram.ViewModels
             MessageSliceLoaded = null;
         }
 
-        public async Task LoadMessageSliceAsync(long? previousId, long maxId, VerticalAlignment alignment = VerticalAlignment.Center, double? pixel = null, ScrollIntoViewAlignment? direction = null, bool? disableAnimation = null, TextQuote highlight = null, int checklistTaskId = -1, bool onlyRemote = false)
+        public async Task LoadMessageSliceAsync(long? previousId, long maxId, VerticalAlignment alignment = VerticalAlignment.Center, double? pixel = null, ScrollIntoViewAlignment? direction = null, bool? disableAnimation = null, TextQuote highlight = null, int checklistTaskId = 0, bool onlyRemote = false)
         {
             if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned)
             {
@@ -2277,7 +2277,8 @@ namespace Telegram.ViewModels
                 Logger.Debug(string.Format("{0} - Loading messages from specific id", chat.Id));
 
                 state.TryRemove("highlight", out TextQuote quote);
-                LoadMessageSliceAsync(null, navigation, highlight: quote);
+                state.TryRemove("checklist_task_id", out int checklistTaskId);
+                LoadMessageSliceAsync(null, navigation, highlight: quote, checklistTaskId: checklistTaskId);
             }
             else
             {
