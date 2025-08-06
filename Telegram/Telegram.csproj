@@ -382,6 +382,7 @@
     <Compile Include="Entities\StorageAlbum.cs" />
     <Compile Include="Entities\VideoGeneration.cs" />
     <Compile Include="Services\Calls\VoipCallBase.cs" />
+    <Compile Include="Services\Calls\VoipCoordinator.cs" />
     <Compile Include="Services\Calls\VoipGroupCallVerificationStateChangedEventArgs.cs" />
     <Compile Include="Services\Calls\VoipGroupCallJoinedStateChangedEventArgs.cs" />
     <Compile Include="Services\Calls\VoipGroupCallParticipants.cs" />

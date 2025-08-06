@@ -1010,6 +1010,7 @@ namespace Telegram.Views
             }
 
             Handle(new UpdateUnconfirmedSession(ViewModel.ClientService.UnconfirmedSession));
+            Handle(new UpdateActiveCall());
             Handle(ViewModel.ClientService.FreezeState);
             UpdateChatFolders();
 
