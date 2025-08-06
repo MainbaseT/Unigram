@@ -1391,7 +1391,7 @@ namespace Telegram.Views
         private void CheckButtonsVisibility()
         {
             var empty = TextField.IsEmpty;
-            var editing = ViewModel.ComposerHeader?.EditingMessage != null || ViewModel.CurrentInlineBot != null;
+            var editing = ViewModel.ComposerHeader?.Editing != null || ViewModel.CurrentInlineBot != null;
 
             if (empty != _oldEmpty)
             {
@@ -1640,10 +1640,8 @@ namespace Telegram.Views
                     {
                         viewModel.ComposerHeader = new MessageComposerHeader(viewModel.ClientService)
                         {
-                            EditingMessage = embedded.EditingMessage,
-                            ReplyToMessage = embedded.ReplyToMessage,
-                            ReplyToQuote = embedded.ReplyToQuote,
-                            ReplyToTaskId = embedded.ReplyToTaskId,
+                            Editing = embedded.Editing,
+                            ReplyTo = embedded.ReplyTo,
                             SuggestedPostInfo = embedded.SuggestedPostInfo,
                         };
                     }
@@ -1670,10 +1668,8 @@ namespace Telegram.Views
 
                         viewModel.ComposerHeader = new MessageComposerHeader(viewModel.ClientService)
                         {
-                            EditingMessage = embedded?.EditingMessage,
-                            ReplyToMessage = embedded?.ReplyToMessage,
-                            ReplyToQuote = embedded?.ReplyToQuote,
-                            ReplyToTaskId = embedded?.ReplyToTaskId ?? 0,
+                            Editing = embedded.Editing,
+                            ReplyTo = embedded.ReplyTo,
                             SuggestedPostInfo = embedded?.SuggestedPostInfo,
                             LinkPreviewOptions = embedded?.LinkPreviewOptions,
                             LinkPreview = linkPreview,
@@ -1690,10 +1686,8 @@ namespace Telegram.Views
                         {
                             viewModel.ComposerHeader = new MessageComposerHeader(viewModel.ClientService)
                             {
-                                EditingMessage = embedded.EditingMessage,
-                                ReplyToMessage = embedded.ReplyToMessage,
-                                ReplyToQuote = embedded.ReplyToQuote,
-                                ReplyToTaskId = embedded.ReplyToTaskId,
+                                Editing = embedded.Editing,
+                                ReplyTo = embedded.ReplyTo,
                                 SuggestedPostInfo = embedded.SuggestedPostInfo,
                             };
                         }
@@ -1792,7 +1786,7 @@ namespace Telegram.Views
             var videoRights = !ViewModel.VerifyRights(chat, x => x.CanSendVideos);
             var documentRights = !ViewModel.VerifyRights(chat, x => x.CanSendDocuments);
 
-            if (header == null || header.EditingMessage == null || (header.IsEmpty && header.LinkPreviewDisabled))
+            if (header == null || header.Editing == null || (header.IsEmpty && header.LinkPreviewDisabled))
             {
                 var messageRights = !ViewModel.VerifyRights(chat, x => x.CanSendBasicMessages);
                 var pollRights = !ViewModel.VerifyRights(chat, x => x.CanSendPolls);
@@ -1859,7 +1853,7 @@ namespace Telegram.Views
                     }
                 }
             }
-            else if (header?.EditingMessage != null)
+            else if (header?.Editing != null)
             {
                 if (photoRights || videoRights)
                 {
@@ -1871,7 +1865,7 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(ViewModel.EditDocument, Strings.ChatDocument, Icons.Document);
                 }
 
-                if (header.EditingMessage.Content is MessagePhoto or MessageVideo)
+                if (header.Editing.Message.Content is MessagePhoto or MessageVideo)
                 {
                     flyout.CreateFlyoutItem(ViewModel.EditCurrent, Strings.Edit, Icons.Crop);
                 }
@@ -2517,23 +2511,17 @@ namespace Telegram.Views
             var flyout = new MenuFlyout();
 
             var header = ViewModel.ComposerHeader;
-            if (header?.ReplyToMessage != null)
+            if (header?.ReplyTo != null)
             {
-                if (header.ReplyToQuote != null)
+                if (header.ReplyTo.Quote != null)
                 {
-                    var quote = new MessageQuote
-                    {
-                        Message = header.ReplyToMessage,
-                        Quote = header.ReplyToQuote.Text,
-                        Position = header.ReplyToQuote.Position
-                    };
+                    var quote = new MessageQuote(header.ReplyTo);
 
                     flyout.CreateFlyoutItem(ViewModel.QuoteToMessageInAnotherChat, quote, Strings.ReplyToAnotherChat, Icons.Replace);
                 }
                 else
                 {
-                    // TODO: task id support
-                    flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, header.ReplyToMessage, Strings.ReplyToAnotherChat, Icons.Replace);
+                    flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, header.ReplyTo.Message, Strings.ReplyToAnotherChat, Icons.Replace);
                 }
 
                 flyout.CreateFlyoutSeparator();
@@ -5491,7 +5479,7 @@ namespace Telegram.Views
 
                 TextField.Reply = header;
 
-                var editing = header.EditingMessage;
+                var editing = header.Editing?.Message;
                 if (editing != null)
                 {
                     switch (editing.Content)
@@ -5535,7 +5523,7 @@ namespace Telegram.Views
                     {
                         ComposerHeaderGlyph.Glyph = Icons.Link24;
                     }
-                    else if (header.ReplyToMessage != null)
+                    else if (header.ReplyTo != null)
                     {
                         ComposerHeaderGlyph.Glyph = Icons.ArrowReply24;
                     }

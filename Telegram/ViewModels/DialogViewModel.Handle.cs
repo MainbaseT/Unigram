@@ -537,7 +537,7 @@ namespace Telegram.ViewModels
             if (update.ChatId == _chat?.Id)
             {
                 var header = _composerHeader;
-                if (header?.EditingMessage != null)
+                if (header?.Editing != null)
                 {
                     return;
                 }

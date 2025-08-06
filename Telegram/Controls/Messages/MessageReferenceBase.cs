@@ -77,15 +77,15 @@ namespace Telegram.Controls.Messages
                     string.Empty,
                     message.AsFormattedText());
             }
-            else if (embedded.EditingMessage != null)
+            else if (embedded.Editing != null)
             {
-                Message = embedded.EditingMessage;
-                GetMessageTemplate(embedded.EditingMessage, null, false, Strings.Edit, true, false, false);
+                Message = embedded.Editing.Message;
+                GetMessageTemplate(embedded.Editing.Message, null, false, Strings.Edit, true, false, false);
             }
-            else if (embedded.ReplyToMessage != null)
+            else if (embedded.ReplyTo != null)
             {
-                Message = embedded.ReplyToMessage;
-                GetMessageTemplate(embedded.ReplyToMessage, embedded.ReplyToQuote?.Text, false, embedded.ReplyToQuote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
+                Message = embedded.ReplyTo.Message;
+                GetMessageTemplate(embedded.ReplyTo.Message, embedded.ReplyTo.Quote?.Text, false, embedded.ReplyTo.Quote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
             }
         }
 

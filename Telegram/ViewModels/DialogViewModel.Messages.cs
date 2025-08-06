@@ -42,6 +42,18 @@ namespace Telegram.ViewModels
 
         public int Position { get; set; }
 
+        public MessageQuote()
+        {
+
+        }
+
+        public MessageQuote(MessageComposerReplyTo reply)
+        {
+            Message = reply.Message;
+            Quote = reply.Quote.Text;
+            Position = reply.Quote.Position;
+        }
+
         public InputTextQuote ToInput()
         {
             return new InputTextQuote(Quote, Position);
@@ -59,6 +71,16 @@ namespace Telegram.ViewModels
             Message = message;
             Task = task;
         }
+
+        public MessageChecklistTask(MessageComposerReplyTo reply)
+        {
+            Message = reply.Message;
+            
+            if (reply.Message.Content is MessageChecklist checklist)
+            {
+                Task = checklist.List.Tasks.FirstOrDefault(x => x.Id == reply.ChecklistTaskId);
+            }
+        }
     }
 
     public partial class DialogViewModel
@@ -70,9 +92,9 @@ namespace Telegram.ViewModels
             MessageViewModel last = null;
 
             var data = _composerHeader;
-            if (data != null && data.ReplyToMessage != null)
+            if (data != null && data.ReplyTo != null)
             {
-                last = Items.Reverse().FirstOrDefault(x => x.Id != 0 && x.Id < data.ReplyToMessage.Id) ?? Items.LastOrDefault();
+                last = Items.Reverse().FirstOrDefault(x => x.Id != 0 && x.Id < data.ReplyTo.Message.Id) ?? Items.LastOrDefault();
             }
             else
             {
@@ -91,9 +113,9 @@ namespace Telegram.ViewModels
             MessageViewModel last = null;
 
             var data = _composerHeader;
-            if (data != null && data.ReplyToMessage != null)
+            if (data != null && data.ReplyTo != null)
             {
-                last = Items.FirstOrDefault(x => x.Id != 0 && x.Id > data.ReplyToMessage.Id);
+                last = Items.FirstOrDefault(x => x.Id != 0 && x.Id > data.ReplyTo.Message.Id);
             }
 
             if (last != null)
@@ -149,7 +171,7 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyToMessage = message
+                    ReplyTo = new MessageComposerReplyTo(message, null, 0)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -199,8 +221,7 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyToMessage = message,
-                    ReplyToQuote = quote.ToInput()
+                    ReplyTo = new MessageComposerReplyTo(message, quote.ToInput(), 0)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -945,7 +966,7 @@ namespace Telegram.ViewModels
             var input = message.GetCaption();
             var container = new MessageComposerHeader(ClientService)
             {
-                EditingMessage = message
+                Editing = new MessageComposerEditing(message, null)
             };
 
             if (message.Content is MessageText text)

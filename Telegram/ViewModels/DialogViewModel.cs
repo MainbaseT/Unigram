@@ -2621,9 +2621,7 @@ namespace Telegram.ViewModels
 
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyToMessage = message,
-                    ReplyToQuote = quote,
-                    ReplyToTaskId = taskId,
+                    ReplyTo = new MessageComposerReplyTo(message, quote, taskId)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -2723,9 +2721,7 @@ namespace Telegram.ViewModels
                     {
                         ComposerHeader = new MessageComposerHeader(ClientService)
                         {
-                            ReplyToMessage = CreateMessage(message),
-                            ReplyToQuote = replyToMessage.Quote,
-                            ReplyToTaskId = replyToMessage.ChecklistTaskId,
+                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToMessage.Quote, replyToMessage.ChecklistTaskId)
                         };
 
                         goto UpdateText;
@@ -2738,9 +2734,7 @@ namespace Telegram.ViewModels
                     {
                         ComposerHeader = new MessageComposerHeader(ClientService)
                         {
-                            ReplyToMessage = CreateMessage(message),
-                            ReplyToQuote = replyToExternalMessage.Quote,
-                            ReplyToTaskId = replyToExternalMessage.ChecklistTaskId,
+                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToExternalMessage.Quote, replyToExternalMessage.ChecklistTaskId)
                         };
 
                         goto UpdateText;
@@ -2800,7 +2794,7 @@ namespace Telegram.ViewModels
             }
 
             var embedded = _composerHeader;
-            if (embedded != null && embedded.EditingMessage != null)
+            if (embedded != null && embedded.Editing != null)
             {
                 return;
             }
@@ -2831,12 +2825,12 @@ namespace Telegram.ViewModels
             var replyToTaskId = 0;
             var quote = default(InputTextQuote);
 
-            if (embedded != null && embedded.ReplyToMessage != null)
+            if (embedded != null && embedded.ReplyTo != null)
             {
-                replyToMessageId = embedded.ReplyToMessage.Id;
-                replyToChatId = embedded.ReplyToMessage.ChatId;
-                replyToTaskId = embedded.ReplyToTaskId;
-                quote = embedded.ReplyToQuote;
+                replyToMessageId = embedded.ReplyTo.Message.Id;
+                replyToChatId = embedded.ReplyTo.Message.ChatId;
+                replyToTaskId = embedded.ReplyTo.ChecklistTaskId;
+                quote = embedded.ReplyTo.Quote;
 
                 if (replyToChatId == chat.Id)
                 {
@@ -2914,10 +2908,8 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    EditingMessage = container.EditingMessage,
-                    ReplyToMessage = container.ReplyToMessage,
-                    ReplyToQuote = container.ReplyToQuote,
-                    ReplyToTaskId = container.ReplyToTaskId,
+                    Editing = container.Editing,
+                    ReplyTo = container.ReplyTo,
                     SuggestedPostInfo = container.SuggestedPostInfo,
                     LinkPreviewUrl = container.LinkPreviewUrl,
                     LinkPreview = null,
@@ -2926,7 +2918,7 @@ namespace Telegram.ViewModels
             }
             else
             {
-                if (container.EditingMessage != null)
+                if (container.Editing != null)
                 {
                     var chat = _chat;
                     if (chat != null)
@@ -2951,7 +2943,7 @@ namespace Telegram.ViewModels
         protected override InputMessageReplyTo GetReply(bool clean, bool notify = true)
         {
             var embedded = _composerHeader;
-            if (embedded == null || embedded.ReplyToMessage == null)
+            if (embedded == null || embedded.ReplyTo == null)
             {
                 return null;
             }
@@ -2967,31 +2959,13 @@ namespace Telegram.ViewModels
                     _composerHeader = null;
                 }
 
-                if (embedded.ReplyToMessage.ReplyMarkup is ReplyMarkupForceReply)
+                if (embedded.ReplyTo.Message.ReplyMarkup is ReplyMarkupForceReply)
                 {
-                    ClientService.Send(new DeleteChatReplyMarkup(embedded.ReplyToMessage.ChatId, embedded.ReplyToMessage.Id));
+                    ClientService.Send(new DeleteChatReplyMarkup(embedded.ReplyTo.Message.ChatId, embedded.ReplyTo.Message.Id));
                 }
             }
 
-            var sameTopic = (Topic == null || Thread != null) || (Topic != null && embedded.ReplyToMessage.TopicId.AreTheSame(Topic));
-
-            var chatId = embedded.ReplyToMessage.ChatId;
-            if (chatId == _chat?.Id && sameTopic)
-            {
-                if (embedded.ReplyToMessage.TopicId != null && (IsForum || IsDirectMessagesGroup))
-                {
-                    if (embedded.ReplyToMessage.TopicId.IsForum(ForumTopicService.GeneralId))
-                    {
-                        return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, new MessageTopicForum(embedded.ReplyToMessage.MessageThreadId), embedded.ReplyToQuote, embedded.ReplyToTaskId);
-                    }
-
-                    return new InputMessageReplyToTopicMessage(embedded.ReplyToMessage.Id, embedded.ReplyToMessage.TopicId, embedded.ReplyToQuote, embedded.ReplyToTaskId);
-                }
-
-                return new InputMessageReplyToMessage(embedded.ReplyToMessage.Id, embedded.ReplyToQuote, embedded.ReplyToTaskId);
-            }
-
-            return new InputMessageReplyToExternalMessage(chatId, embedded.ReplyToMessage.Id, embedded.ReplyToQuote, embedded.ReplyToTaskId);
+            return embedded.ReplyTo.ToInput(this);
         }
 
         #endregion
@@ -3064,14 +3038,14 @@ namespace Telegram.ViewModels
             }
 
             var header = _composerHeader;
-            if (header?.EditingMessage == null)
+            if (header?.Editing == null)
             {
                 return false;
             }
 
-            var editing = header.EditingMessage;
+            var editing = header.Editing.Message;
 
-            var factory = header.EditingMessageMedia;
+            var factory = header.Editing.Media;
             if (factory is InputMessageContent input)
             {
                 var options = new MessageSendOptions(DirectMessagesChatTopicId, header.SuggestedPostInfo, false, false, false, false, 0, false, null, 0, 0, true);
