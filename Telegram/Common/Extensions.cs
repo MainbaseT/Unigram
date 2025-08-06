@@ -1092,6 +1092,12 @@ namespace Telegram.Common
 
         public static bool IsRelativePath(string relativeTo, string path, out string relative)
         {
+            if (string.IsNullOrEmpty(relativeTo) || string.IsNullOrEmpty(path))
+            {
+                relative = null;
+                return false;
+            }
+
             var relativeFull = Path.GetFullPath(relativeTo);
             var pathFull = Path.GetFullPath(path);
 
