@@ -11,13 +11,13 @@ using Telegram.Converters;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.Views;
 using Windows.UI.Xaml;
 
 namespace Telegram.Controls.Cells
 {
     public sealed partial class SharedVoiceCell : GridEx
     {
-        private IPlaybackService _playbackService;
         private MessageWithOwner _message;
         public MessageWithOwner Message => _message;
 
@@ -30,12 +30,9 @@ namespace Telegram.Controls.Cells
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
-            if (_playbackService != null)
-            {
-                _playbackService.SourceChanged -= OnPlaybackStateChanged;
-                _playbackService.StateChanged -= OnPlaybackStateChanged;
-                _playbackService.PositionChanged -= OnPositionChanged;
-            }
+            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
+            TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
+            TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
         }
 
         private bool _hidden;
@@ -52,7 +49,7 @@ namespace Telegram.Controls.Cells
             TextRoot.Opacity = 0;
         }
 
-        public void UpdateMessage(IPlaybackService playbackService, MessageWithOwner message)
+        public void UpdateMessage(MessageWithOwner message)
         {
             if (_hidden)
             {
@@ -61,10 +58,9 @@ namespace Telegram.Controls.Cells
                 TextRoot.Opacity = 1;
             }
 
-            _playbackService = playbackService;
             _message = message;
 
-            _playbackService.SourceChanged -= OnPlaybackStateChanged;
+            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
 
             var voiceNote = GetContent(message.Content);
             if (voiceNote == null)
@@ -72,7 +68,7 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            _playbackService.SourceChanged += OnPlaybackStateChanged;
+            TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
 
             if (message.ClientService.TryGetUser(message.SenderId, out User user))
             {
@@ -120,7 +116,7 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            if (message.AreTheSame(_playbackService.CurrentItem) /*&& !_pressed*/)
+            if (message.AreTheSame(TypeResolver.Current.Playback.CurrentItem) /*&& !_pressed*/)
             {
                 Subtitle.Text = FormatTime(position) + " / " + FormatTime(duration);
             }
@@ -147,8 +143,8 @@ namespace Telegram.Controls.Cells
 
         private void UpdateFile(MessageWithOwner message, File file)
         {
-            _playbackService.StateChanged -= OnPlaybackStateChanged;
-            _playbackService.PositionChanged -= OnPositionChanged;
+            TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
+            TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
 
             var voiceNote = GetContent(message.Content);
             if (voiceNote == null)
@@ -161,9 +157,9 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            if (message.AreTheSame(_playbackService.CurrentItem))
+            if (message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
-                if (_playbackService.PlaybackState == PlaybackState.Paused)
+                if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
                 {
                     //Button.Glyph = Icons.Play;
                     Button.SetGlyph(file.Id, MessageContentState.Play);
@@ -174,10 +170,10 @@ namespace Telegram.Controls.Cells
                     Button.SetGlyph(file.Id, MessageContentState.Pause);
                 }
 
-                UpdatePosition(_playbackService.Position, _playbackService.Duration);
+                UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration);
 
-                _playbackService.StateChanged += OnPlaybackStateChanged;
-                _playbackService.PositionChanged += OnPositionChanged;
+                TypeResolver.Current.Playback.StateChanged += OnPlaybackStateChanged;
+                TypeResolver.Current.Playback.PositionChanged += OnPositionChanged;
             }
             else
             {
@@ -225,24 +221,24 @@ namespace Telegram.Controls.Cells
             else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && !file.Local.IsDownloadingCompleted)
             {
                 //_clientService.DownloadFile(file.Id, 32);
-                _playbackService.Play(_message);
+                TypeResolver.Current.Playback.Play(_message);
             }
             else
             {
-                if (_message.AreTheSame(_playbackService.CurrentItem))
+                if (_message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
                 {
-                    if (_playbackService.PlaybackState == PlaybackState.Paused)
+                    if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
                     {
-                        _playbackService.Play();
+                        TypeResolver.Current.Playback.Play();
                     }
                     else
                     {
-                        _playbackService.Pause();
+                        TypeResolver.Current.Playback.Pause();
                     }
                 }
                 else
                 {
-                    _playbackService.Play(_message);
+                    TypeResolver.Current.Playback.Play(_message);
                 }
             }
         }

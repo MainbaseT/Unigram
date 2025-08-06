@@ -1995,7 +1995,7 @@ namespace Telegram.Controls.Messages
 
         private void Message_TextEntityClick(object sender, TextEntityClickEventArgs e)
         {
-            if (_message is not MessageViewModel message || message.Delegate == null || message.PlaybackService == null)
+            if (_message is not MessageViewModel message || message.Delegate == null)
             {
                 return;
             }
