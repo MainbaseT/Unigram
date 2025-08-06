@@ -1591,7 +1591,7 @@ namespace Telegram.Controls.Messages
 
                 var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
 
-                if (isFirst && !outgoing && !message.IsChannelPost && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+                if (isFirst && !outgoing && !message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
                 {
                     top = 4;
                 }

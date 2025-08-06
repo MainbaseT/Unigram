@@ -295,7 +295,7 @@ namespace Telegram.ViewModels
             return false;
         }
 
-        public bool IsDirectMessagesChatTopicMessage => _directMessagesChatTopic != null;
+        public bool IsDirectMessagesChatTopicMessage => _directMessagesChatTopic != null && !IsOutgoing;
 
         private bool? _hasSenderPhoto;
         public bool HasSenderPhoto => _hasSenderPhoto ??= GetHasSenderPhoto();
