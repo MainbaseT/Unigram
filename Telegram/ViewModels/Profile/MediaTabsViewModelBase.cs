@@ -128,7 +128,7 @@ namespace Telegram.ViewModels.Profile
             Files = new MediaSourceCollection(SetSearch, new SearchMessagesFilterDocument());
             Links = new MediaSourceCollection(SetSearch, new SearchMessagesFilterUrl());
             Music = new MediaSourceCollection(SetSearch, new SearchMessagesFilterAudio());
-            Voice = new MediaSourceCollection(SetSearch, new SearchMessagesFilterVoiceNote());
+            Voice = new MediaSourceCollection(SetSearch, new SearchMessagesFilterVoiceAndVideoNote());
             Animations = new MediaSourceCollection(SetSearch, new SearchMessagesFilterAnimation());
 
             SelectedItems = new MvxObservableCollection<MessageWithOwner>();

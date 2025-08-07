@@ -8,11 +8,13 @@ using System;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
+using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Cells
 {
@@ -22,6 +24,7 @@ namespace Telegram.Controls.Cells
         public MessageWithOwner Message => _message;
 
         private long _fileToken;
+        private long _thumbnailToken;
 
         public SharedVoiceCell()
         {
@@ -62,8 +65,8 @@ namespace Telegram.Controls.Cells
 
             TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
 
-            var voiceNote = GetContent(message.Content);
-            if (voiceNote == null)
+            var file = message.GetFile();
+            if (file == null)
             {
                 return;
             }
@@ -83,21 +86,32 @@ namespace Telegram.Controls.Cells
                 Title.Text = string.Empty;
             }
 
-            UpdateManager.Subscribe(this, message, voiceNote.Voice, ref _fileToken, UpdateFile);
-            UpdateFile(message, voiceNote.Voice);
+            if (message.Content is MessageVideoNote videoNote && videoNote.VideoNote.Thumbnail != null)
+            {
+                UpdateManager.Subscribe(this, message, videoNote.VideoNote.Thumbnail.File, ref _thumbnailToken, UpdateThumbnail, true);
+                UpdateThumbnail(message, videoNote.VideoNote.Thumbnail, videoNote.VideoNote.Thumbnail.File);
+            }
+            else
+            {
+                Texture.Background = null;
+                Button.Style = BootStrapper.Current.Resources["InlineFileButtonStyle"] as Style;
+            }
+
+            UpdateManager.Subscribe(this, message, file, ref _fileToken, UpdateFile);
+            UpdateFile(message, file);
         }
 
         #region Playback
 
         private void OnPlaybackStateChanged(IPlaybackService sender, object args)
         {
-            var voiceNote = GetContent(_message?.Content);
-            if (voiceNote == null)
+            var file = _message?.GetFile();
+            if (file == null)
             {
                 return;
             }
 
-            this.BeginOnUIThread(() => UpdateFile(_message, voiceNote.Voice));
+            this.BeginOnUIThread(() => UpdateFile(_message, file));
         }
 
         private void OnPositionChanged(IPlaybackService sender, PlaybackPositionChangedEventArgs args)
@@ -146,17 +160,6 @@ namespace Telegram.Controls.Cells
             TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
             TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
 
-            var voiceNote = GetContent(message.Content);
-            if (voiceNote == null)
-            {
-                return;
-            }
-
-            if (voiceNote.Voice.Id != file.Id)
-            {
-                return;
-            }
-
             if (message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
                 if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
@@ -181,35 +184,105 @@ namespace Telegram.Controls.Cells
                 Button.SetGlyph(file.Id, MessageContentState.Play);
                 Button.Progress = 1;
 
-                Subtitle.Text = string.Format("{0} {1} {2}", voiceNote.GetDuration(), Icons.Bullet, Formatter.DateAt(message.Date));
+                if (TryGetVoiceNote(message.Content, out VoiceNote voiceNote))
+                {
+                    Subtitle.Text = string.Format("{0} {1} {2}", voiceNote.GetDuration(), Icons.Bullet, Formatter.DateAt(message.Date));
+                }
+                else if (TryGetVideoNote(message.Content, out VideoNote videoNote))
+                {
+                    Subtitle.Text = string.Format("{0} {1} {2}", videoNote.GetDuration(), Icons.Bullet, Formatter.DateAt(message.Date));
+                }
             }
 
             Button.Progress = 1;
         }
 
-        private VoiceNote GetContent(MessageContent content)
+        private void UpdateThumbnail(object target, File file)
         {
-            if (content is MessageVoiceNote voiceNote)
+            if (TryGetVideoNote(_message?.Content, out VideoNote videoNote))
             {
-                return voiceNote.VoiceNote;
+                UpdateThumbnail(_message, videoNote.Thumbnail, file);
             }
-            else if (content is MessageText text && text.LinkPreview?.Type is LinkPreviewTypeVoiceNote previewVoiceNote)
-            {
-                return previewVoiceNote.VoiceNote;
-            }
-
-            return null;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void UpdateThumbnail(MessageWithOwner message, Thumbnail thumbnail, File file)
         {
-            var voiceNote = GetContent(_message?.Content);
-            if (voiceNote == null)
+            if (thumbnail?.File.Id != file.Id)
             {
                 return;
             }
 
-            var file = voiceNote.Voice;
+            if (file.Local.IsDownloadingCompleted)
+            {
+                double ratioX = (double)48 / thumbnail.Width;
+                double ratioY = (double)48 / thumbnail.Height;
+                double ratio = Math.Max(ratioX, ratioY);
+
+                var width = (int)(thumbnail.Width * ratio);
+                var height = (int)(thumbnail.Height * ratio);
+
+                try
+                {
+                    Texture.Background = new ImageBrush { ImageSource = UriEx.ToBitmap(file.Local.Path, width, height), Stretch = Stretch.UniformToFill, AlignmentX = AlignmentX.Center, AlignmentY = AlignmentY.Center };
+                    Button.Style = BootStrapper.Current.Resources["ImmersiveFileButtonStyle"] as Style;
+                }
+                catch
+                {
+                    Texture.Background = null;
+                    Button.Style = BootStrapper.Current.Resources["InlineFileButtonStyle"] as Style;
+                }
+            }
+            else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
+            {
+                message.ClientService.DownloadFile(file.Id, 1);
+
+                Texture.Background = null;
+                Button.Style = BootStrapper.Current.Resources["InlineFileButtonStyle"] as Style;
+            }
+        }
+
+        private bool TryGetVoiceNote(MessageContent content, out VoiceNote voice)
+        {
+            if (content is MessageVoiceNote voiceNote)
+            {
+                voice = voiceNote.VoiceNote;
+                return true;
+            }
+            else if (content is MessageText text && text.LinkPreview?.Type is LinkPreviewTypeVoiceNote previewVoiceNote)
+            {
+                voice = previewVoiceNote.VoiceNote;
+                return true;
+            }
+
+            voice = null;
+            return false;
+        }
+
+        private bool TryGetVideoNote(MessageContent content, out VideoNote video)
+        {
+            if (content is MessageVideoNote videoNote)
+            {
+                video = videoNote.VideoNote;
+                return true;
+            }
+            else if (content is MessageText text && text.LinkPreview?.Type is LinkPreviewTypeVideoNote previewVideoNote)
+            {
+                video = previewVideoNote.VideoNote;
+                return true;
+            }
+
+            video = null;
+            return false;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var file = _message?.GetFile();
+            if (file == null)
+            {
+                return;
+            }
+
             if (file.Local.IsDownloadingActive)
             {
                 _message.ClientService.CancelDownloadFile(file, false);
