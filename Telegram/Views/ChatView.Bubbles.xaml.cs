@@ -678,18 +678,19 @@ namespace Telegram.Views
                 : next != null ? next.Keys
                 : prev;
 
-            if (skip != null)
-            {
-                foreach (var item in _prev.Keys.Except(skip).ToList())
-                {
-                    var presenter = _prev[item].Target as IPlayerView;
-                    if (presenter != null && presenter.LoopCount == 0)
-                    {
-                        presenter.ViewportChanged(false);
-                    }
+            var source = skip != null
+                ? _prev.Keys.Except(skip).ToList()
+                : _prev.Keys.ToList();
 
-                    _prev.Remove(item);
+            foreach (var item in source)
+            {
+                var presenter = _prev[item].Target as IPlayerView;
+                if (presenter != null && presenter.LoopCount == 0)
+                {
+                    presenter.ViewportChanged(false);
                 }
+
+                _prev.Remove(item);
             }
 
             if (next != null)
