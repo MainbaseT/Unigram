@@ -364,6 +364,7 @@
     <Compile Include="Controls\ProfileGiftsCover.xaml.cs">
       <DependentUpon>ProfileGiftsCover.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ProfileRating.cs" />
     <Compile Include="Controls\ProfilePatternCover.cs" />
     <Compile Include="Common\RectangleF.cs" />
     <Compile Include="Controls\SlideTextBlock.cs" />
