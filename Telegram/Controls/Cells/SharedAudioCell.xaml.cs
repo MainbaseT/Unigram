@@ -23,6 +23,7 @@ namespace Telegram.Controls.Cells
         public MessageWithOwner Message => _message;
 
         private long _fileToken;
+        private long _thumbnailToken;
 
         public SharedAudioCell()
         {
@@ -88,6 +89,7 @@ namespace Telegram.Controls.Cells
 
             if (audio.AlbumCoverThumbnail != null)
             {
+                UpdateManager.Subscribe(this, message, audio.AlbumCoverThumbnail.File, ref _thumbnailToken, UpdateThumbnail, true);
                 UpdateThumbnail(message, audio.AlbumCoverThumbnail, audio.AlbumCoverThumbnail.File);
             }
             else
@@ -288,8 +290,24 @@ namespace Telegram.Controls.Cells
             Button.Progress = 1;
         }
 
+        private void UpdateThumbnail(object target, File file)
+        {
+            var audio = GetContent(_message?.Content);
+            if (audio == null /*|| !_templateApplied*/)
+            {
+                return;
+            }
+
+            UpdateThumbnail(_message, audio.AlbumCoverThumbnail, file);
+        }
+
         private void UpdateThumbnail(MessageWithOwner message, Thumbnail thumbnail, File file)
         {
+            if (thumbnail.File.Id != file.Id)
+            {
+                return;
+            }
+
             if (file.Local.IsDownloadingCompleted)
             {
                 double ratioX = (double)48 / thumbnail.Width;
@@ -299,8 +317,16 @@ namespace Telegram.Controls.Cells
                 var width = (int)(thumbnail.Width * ratio);
                 var height = (int)(thumbnail.Height * ratio);
 
-                Texture.Background = new ImageBrush { ImageSource = UriEx.ToBitmap(file.Local.Path, width, height), Stretch = Stretch.UniformToFill, AlignmentX = AlignmentX.Center, AlignmentY = AlignmentY.Center };
-                Button.Style = BootStrapper.Current.Resources["ImmersiveFileButtonStyle"] as Style;
+                try
+                {
+                    Texture.Background = new ImageBrush { ImageSource = UriEx.ToBitmap(file.Local.Path, width, height), Stretch = Stretch.UniformToFill, AlignmentX = AlignmentX.Center, AlignmentY = AlignmentY.Center };
+                    Button.Style = BootStrapper.Current.Resources["ImmersiveFileButtonStyle"] as Style;
+                }
+                catch
+                {
+                    Texture.Background = null;
+                    Button.Style = BootStrapper.Current.Resources["InlineFileButtonStyle"] as Style;
+                }
             }
             else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
             {
