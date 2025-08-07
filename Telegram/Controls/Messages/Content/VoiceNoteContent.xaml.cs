@@ -361,12 +361,6 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            var canBeDownloaded = file.Local.CanBeDownloaded
-                && !file.Local.IsDownloadingCompleted
-                && !file.Local.IsDownloadingActive;
-
-            var size = Math.Max(file.Size, file.ExpectedSize);
-
             if (message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
                 if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
@@ -385,38 +379,46 @@ namespace Telegram.Controls.Messages.Content
 
                 Button.Progress = 1;
             }
-            else if (file.Local.IsDownloadingActive || (canBeDownloaded && message.Delegate.CanBeDownloaded(voiceNote, file)))
-            {
-                if (canBeDownloaded)
-                {
-                    _message.ClientService.DownloadFile(file.Id, 32);
-                }
-
-                Button.SetGlyph(file.Id, MessageContentState.Downloading);
-                Button.Progress = (double)file.Local.DownloadedSize / size;
-
-                UpdateDuration();
-            }
-            else if (file.Remote.IsUploadingActive || message.SendingState is MessageSendingStateFailed || (message.SendingState is MessageSendingStatePending && !file.Remote.IsUploadingCompleted))
-            {
-                Button.SetGlyph(file.Id, MessageContentState.Uploading);
-                Button.Progress = (double)file.Remote.UploadedSize / size;
-
-                UpdateDuration();
-            }
-            else if (canBeDownloaded)
-            {
-                Button.SetGlyph(file.Id, MessageContentState.Download);
-                Button.Progress = 0;
-
-                UpdateDuration();
-            }
             else
             {
-                Button.SetGlyph(file.Id, MessageContentState.Play);
-                UpdateDuration();
+                var canBeDownloaded = file.Local.CanBeDownloaded
+                    && !file.Local.IsDownloadingCompleted
+                    && !file.Local.IsDownloadingActive;
 
-                Button.Progress = 1;
+                var size = Math.Max(file.Size, file.ExpectedSize);
+                if (file.Local.IsDownloadingActive || (canBeDownloaded && message.Delegate.CanBeDownloaded(voiceNote, file)))
+                {
+                    if (canBeDownloaded)
+                    {
+                        _message.ClientService.DownloadFile(file.Id, 32);
+                    }
+
+                    Button.SetGlyph(file.Id, MessageContentState.Downloading);
+                    Button.Progress = (double)file.Local.DownloadedSize / size;
+
+                    UpdateDuration();
+                }
+                else if (file.Remote.IsUploadingActive || message.SendingState is MessageSendingStateFailed || (message.SendingState is MessageSendingStatePending && !file.Remote.IsUploadingCompleted))
+                {
+                    Button.SetGlyph(file.Id, MessageContentState.Uploading);
+                    Button.Progress = (double)file.Remote.UploadedSize / size;
+
+                    UpdateDuration();
+                }
+                else if (canBeDownloaded)
+                {
+                    Button.SetGlyph(file.Id, MessageContentState.Download);
+                    Button.Progress = 0;
+
+                    UpdateDuration();
+                }
+                else
+                {
+                    Button.SetGlyph(file.Id, MessageContentState.Play);
+                    UpdateDuration();
+
+                    Button.Progress = 1;
+                }
             }
         }
 
@@ -498,23 +500,20 @@ namespace Telegram.Controls.Messages.Content
             {
                 _message.Delegate.PlayMessage(_message);
             }
-            else
+            else if (_message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
-                if (_message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+                if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
                 {
-                    if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
-                    {
-                        TypeResolver.Current.Playback.Play();
-                    }
-                    else
-                    {
-                        TypeResolver.Current.Playback.Pause();
-                    }
+                    TypeResolver.Current.Playback.Play();
                 }
                 else
                 {
-                    _message.Delegate.PlayMessage(_message);
+                    TypeResolver.Current.Playback.Pause();
                 }
+            }
+            else
+            {
+                _message.Delegate.PlayMessage(_message);
             }
         }
 
