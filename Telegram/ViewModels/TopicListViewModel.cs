@@ -56,8 +56,6 @@ namespace Telegram.ViewModels
                 Items = new DirectMessagesChatTopicsCollection(clientService, aggregator, this, null);
             }
 
-            SearchFilters = new MvxObservableCollection<ISearchChatsFilter>();
-
             ChatsMarkCommand = new RelayCommand(ChatsMarkExecute);
             ChatsNotifyCommand = new RelayCommand(ChatsNotifyExecute);
             ChatsDeleteCommand = new RelayCommand(ChatsDeleteExecute);
@@ -108,8 +106,6 @@ namespace Telegram.ViewModels
         public ITopicListCollection Items { get; private set; }
 
         public bool IsLastSliceLoaded { get; set; }
-
-        public MvxObservableCollection<ISearchChatsFilter> SearchFilters { get; private set; }
 
         #region Open
 

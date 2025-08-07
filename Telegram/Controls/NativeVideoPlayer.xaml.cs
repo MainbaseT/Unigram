@@ -7,7 +7,6 @@
 using LibVLCSharp.Platforms.Windows;
 using LibVLCSharp.Shared;
 using System;
-using System.Diagnostics;
 using Telegram.Common;
 using Telegram.Services;
 using Telegram.Streams;

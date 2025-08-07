@@ -528,7 +528,7 @@ namespace Telegram.ViewModels
 
             if (filterByTag is false && tag != null)
             {
-                Search?.Search(Search.Query, null, null, tag);
+                Search?.Search(Search.Query, null, tag);
             }
         }
 
