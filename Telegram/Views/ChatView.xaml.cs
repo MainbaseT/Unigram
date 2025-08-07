@@ -4123,7 +4123,7 @@ namespace Telegram.Views
             }
             else if (emoji is Sticker sticker && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                if (ViewModel.IsPremium)
+                if (ViewModel.IsPremium || (ViewModel.ClientService.TryGetSupergroupFull(ViewModel.Chat, out SupergroupFullInfo fullInfo) && fullInfo.CustomEmojiStickerSetId == sticker.SetId))
                 {
                     ViewModel.InsertedCustomEmojiIds.Add(customEmoji.CustomEmojiId);
                     TextField.InsertEmoji(sticker);
