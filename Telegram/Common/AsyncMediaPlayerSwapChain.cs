@@ -11,6 +11,7 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using System;
 using System.Runtime.InteropServices;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Common
@@ -265,6 +266,9 @@ namespace Telegram.Common
                     panelNative.SwapChain = _swapChain;
                 }
 
+                newPanel.CompositionScaleChanged += OnCompositionScaleChanged;
+                newPanel.SizeChanged += OnSizeChanged;
+
                 UpdateScale();
                 UpdateSize();
             }
@@ -276,6 +280,25 @@ namespace Telegram.Common
             {
                 panelNative.SwapChain = null;
             }
+
+            panel.CompositionScaleChanged -= OnCompositionScaleChanged;
+            panel.SizeChanged -= OnSizeChanged;
+        }
+
+        private void OnCompositionScaleChanged(SwapChainPanel sender, object args)
+        {
+            if (_loaded)
+            {
+                UpdateScale();
+            }
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_loaded)
+            {
+                UpdateSize();
+            }
         }
 
         readonly Guid SWAPCHAIN_WIDTH = new Guid(0xf1b59347, 0x1643, 0x411a, 0xad, 0x6b, 0xc7, 0x80, 0x17, 0x7a, 0x6, 0xb6);
@@ -284,16 +307,18 @@ namespace Telegram.Common
         /// <summary>
         /// Associates width/height private data into the SwapChain, so that VLC knows at which size to render its video.
         /// </summary>
-        public void UpdateSize()
+        private void UpdateSize()
         {
-            if (_panel is null && _swapChain is not null && !_swapChain.IsDisposed)
+            if (_panel is null || _swapChain is null || _swapChain.IsDisposed)
             {
-                UpdateSize(320, 240);
+                if (_swapChain is not null && !_swapChain.IsDisposed)
+                {
+                    // It's important that private data for the device is set before the swap chain is passed to LibVLC
+                    UpdateSize(320, 240);
+                }
+
                 return;
             }
-
-            if (_panel is null || _swapChain is null || _swapChain.IsDisposed)
-                return;
 
             var w = (int)(_panel.ActualWidth * _panel.CompositionScaleX);
             var h = (int)(_panel.ActualHeight * _panel.CompositionScaleY);
@@ -303,6 +328,11 @@ namespace Telegram.Common
 
         private void UpdateSize(int w, int h)
         {
+            if (w <= 0 || h <= 0)
+            {
+                return;
+            }
+
             var width = IntPtr.Zero;
             var height = IntPtr.Zero;
 
@@ -327,7 +357,7 @@ namespace Telegram.Common
         /// <summary>
         /// Updates the MatrixTransform of the SwapChain.
         /// </summary>
-        public void UpdateScale()
+        private void UpdateScale()
         {
             if (_panel is null) return;
 

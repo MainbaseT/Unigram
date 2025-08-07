@@ -357,6 +357,9 @@
     <Compile Include="Controls\Messages\Content\ChecklistTaskContent.xaml.cs">
       <DependentUpon>ChecklistTaskContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PlaybackOverlay.xaml.cs">
+      <DependentUpon>PlaybackOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PremiumStarHeader.cs" />
     <Compile Include="Controls\ProfileGiftsCover.xaml.cs">
       <DependentUpon>ProfileGiftsCover.xaml</DependentUpon>
@@ -2928,6 +2931,10 @@
     <Page Include="Controls\Messages\Content\PollOptionContent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PlaybackOverlay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ProfileGiftsCover.xaml">
       <SubType>Designer</SubType>

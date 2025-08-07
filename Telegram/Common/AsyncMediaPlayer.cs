@@ -148,8 +148,7 @@ namespace Telegram.Common
         {
             if (play)
             {
-                // Not sure whether it's file or network caching and if they make any difference at all
-                var media = new Media(_library, input, ":file-caching=10000", ":network-caching=10000");
+                var media = new Media(_library, input, ":network-caching=10000");
 
                 _player.Play(media);
 

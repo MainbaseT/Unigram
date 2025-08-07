@@ -652,7 +652,8 @@
                                             TabIndex="3"
                                             HorizontalContentAlignment="Stretch"
                                             VerticalContentAlignment="Stretch"
-                                            VerticalAlignment="Top" />
+                                            VerticalAlignment="Top"
+                                            Canvas.ZIndex="1" />
 
                             <Border x:Name="DetailHeaderBackground"
                                     Visibility="Collapsed"
@@ -668,7 +669,12 @@
                                     BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
                                     BorderThickness="{ThemeResource NavigationViewContentGridBorderThickness}"
                                     CornerRadius="{TemplateBinding CornerRadius}"
-                                    Grid.RowSpan="3" />
+                                    Grid.RowSpan="3"
+                                    Canvas.ZIndex="2" />
+
+                            <local:PlaybackOverlay Visibility="Collapsed"
+                                                   Grid.Row="1"
+                                                   Grid.RowSpan="2" />
                         </Grid>
 
                         <ContentControl x:Name="MasterFrame"

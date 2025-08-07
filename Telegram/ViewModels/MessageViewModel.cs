@@ -89,7 +89,6 @@ namespace Telegram.ViewModels
         //    ReplyToMessage = null;
         //}
 
-        public IPlaybackService PlaybackService => TypeResolver.Current.Playback;
         public IMessageDelegate Delegate => _delegate.Target as IMessageDelegate;
 
         public bool IsInitial { get; set; } = true;
