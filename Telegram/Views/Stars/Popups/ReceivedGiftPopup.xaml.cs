@@ -438,7 +438,7 @@ namespace Telegram.Views.Stars.Popups
                     ResaleStarCountRoot.Visibility = Visibility.Visible;
                     ResaleStarCount.Text = gift.ResaleStarCount.ToString("N0");
 
-                    PurchaseText.Text = Locale.Declension(Strings.R.ResellGiftBuy, gift.ResaleStarCount).Replace("\u2B50", Icons.Premium + Icons.Spacing);
+                    PurchaseText.Text = Locale.Declension(Strings.R.ResellGiftBuy, gift.ResaleStarCount).ReplaceStar(Icons.Premium);
                 }
                 else
                 {
@@ -688,7 +688,7 @@ namespace Telegram.Views.Stars.Popups
                 {
                     PurchaseText.Text = _gift.PrepaidUpgradeStarCount > 0
                         ? Strings.Gift2UpgradeButtonFree
-                        : string.Format(Strings.Gift2UpgradeButton, regular.Gift.UpgradeStarCount).Replace("\u2B50", Icons.Premium);
+                        : string.Format(Strings.Gift2UpgradeButton.ReplaceStar(Icons.Premium), regular.Gift.UpgradeStarCount);
                 }
             }
         }

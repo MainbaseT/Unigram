@@ -137,7 +137,7 @@ namespace Telegram.Controls.Chats
                 PayingUser.Visibility = Visibility.Visible;
                 PayingUserText.Inlines.Clear();
 
-                var text = string.Format(Strings.MessageLockedStarsRemoveFee, "{0}", fullInfo.IncomingPaidMessageStarCount.ToString("N0")).Replace("\u2B50", Icons.Premium + "\u200A");
+                var text = string.Format(Strings.MessageLockedStarsRemoveFee.ReplaceStar(Icons.Premium), "{0}", fullInfo.IncomingPaidMessageStarCount.ToString("N0"));
 
                 var markdown = ClientEx.ParseMarkdown(text);
                 if (markdown.Entities.Count == 1)

@@ -100,7 +100,7 @@ namespace Telegram.Views.Stars.Popups
 
             TextBlockHelper.SetMarkdown(Subtitle, text);
 
-            PurchaseText.Text = Locale.Declension(Strings.R.StarsConfirmPurchaseButton, stars.StarCount).Replace("\u2B50", Icons.Premium);
+            PurchaseText.Text = Locale.Declension(Strings.R.StarsConfirmPurchaseButton.ReplaceStar(Icons.Premium), stars.StarCount);
         }
 
         private bool _submitted;

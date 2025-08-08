@@ -5296,7 +5296,7 @@ namespace Telegram.Views
             {
                 if (userFull.OutgoingPaidMessageStarCount > 0)
                 {
-                    return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), userFull.OutgoingPaidMessageStarCount.ToString("N0"));
+                    return string.Format(Strings.TypeMessageForStars.ReplaceStar(Icons.Premium), userFull.OutgoingPaidMessageStarCount.ToString("N0"));
                 }
             }
             else if (ViewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
@@ -5339,14 +5339,14 @@ namespace Telegram.Views
                 }
                 else if (supergroup.PaidMessageStarCount > 0)
                 {
-                    return string.Format(Strings.SuggestPostForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
+                    return string.Format(Strings.SuggestPostForStars.ReplaceStar(Icons.Premium), supergroup.PaidMessageStarCount.ToString("N0"));
                 }
 
                 return Strings.SuggestPostForFree;
             }
             else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator)
             {
-                return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
+                return string.Format(Strings.TypeMessageForStars.ReplaceStar(Icons.Premium), supergroup.PaidMessageStarCount.ToString("N0"));
             }
             else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetForumTopic(chat.Id, chat.LastMessage.TopicId(), out ForumTopic forumTopic))
             {
@@ -6510,7 +6510,7 @@ namespace Telegram.Views
             {
                 if (supergroup.PaidMessageStarCount > 0)
                 {
-                    TextBlockHelper.SetMarkdown(RestrictsNewChatsText, string.Format(Strings.SuggestionLockedStars.Replace("\u2B50", Icons.Premium + "\u200A"), chat.Title, supergroup.PaidMessageStarCount.ToString("N0")));
+                    TextBlockHelper.SetMarkdown(RestrictsNewChatsText, string.Format(Strings.SuggestionLockedStars.ReplaceStar(Icons.Premium), chat.Title, supergroup.PaidMessageStarCount.ToString("N0")));
                     RestrictsNewChatsButton.Visibility = Visibility.Visible;
                 }
                 else

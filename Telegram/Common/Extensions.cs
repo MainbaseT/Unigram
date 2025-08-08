@@ -1053,6 +1053,11 @@ namespace Telegram.Common
             return output;
         }
 
+        public static string ReplaceStar(this string str, string value)
+        {
+            return str.Replace("\u2B50\uFE0F", value + "\u200A");
+        }
+
         /// <summary>
         /// Creates a relative path from one file or folder to another.
         /// </summary>
