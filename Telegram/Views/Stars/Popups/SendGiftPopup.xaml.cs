@@ -108,13 +108,24 @@ namespace Telegram.Views.Stars.Popups
                 }
             }
 
+            if (clientService.TryGetChat(gift.PublisherChatId, out Chat publisherChat)
+                && clientService.TryGetSupergroup(publisherChat, out Supergroup publisher)
+                && publisher.HasActiveUsername(out string username))
+            {
+                Publisher.Visibility = Visibility.Visible;
+                TextBlockHelper.SetMarkdown(PublisherLabel, string.Format(Strings.Gift2ActionReleasedBy, $"@{username}"));
+            }
+            else
+            {
+                Publisher.Visibility = Visibility.Collapsed;
+            }
+
             if (gift.TotalCount > 0)
             {
                 LimitedRoot.Visibility = Visibility.Visible;
 
-                PrevLimit.Text = Locale.Declension(Strings.R.Gift2AvailabilitySold, gift.TotalCount - gift.RemainingCount);
-                NextLimit.Text = Locale.Declension(Strings.R.Gift2AvailabilityLeft, gift.RemainingCount);
-                NextLimitBelow.Text = Locale.Declension(Strings.R.Gift2AvailabilityLeft, gift.RemainingCount);
+                PrevLimit.Text = PrevLimitAbove.Text = Locale.Declension(Strings.R.Gift2AvailabilitySold, gift.TotalCount - gift.RemainingCount);
+                NextLimit.Text = NextLimitBelow.Text = Locale.Declension(Strings.R.Gift2AvailabilityLeft, gift.RemainingCount);
             }
 
             PurchaseText.Text = Locale.Declension(Strings.R.Gift2Send, gift.StarCount).Replace("\u2B50", Icons.Premium);

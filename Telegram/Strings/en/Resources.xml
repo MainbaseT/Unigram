@@ -11729,6 +11729,8 @@
     <string name="Gift2OwnerChange">change</string>
     <string name="Gift2CollectionNumber_one">Collectible #{0}</string>
     <string name="Gift2CollectionNumber_other">Collectible #{0}</string>
+    <string name="Gift2CollectionNumberBy_one">Collectible #{0} by **{1}**</string>
+    <string name="Gift2CollectionNumberBy_other">Collectible #{0} by **{1}**</string>
     <string name="Gift2AttributeOriginalDetails">Gifted by {0} to {1} on {2}.</string>
     <string name="Gift2AttributeOriginalDetailsComment">Gifted by {0} to {1} on {2} with the comment: \"{3}\"</string>
     <string name="Gift2AttributeOriginalDetailsSelf">Saved by {0} on {1}.</string>
@@ -12509,4 +12511,10 @@
     <string name="AutoDownloadPreloadVideoInfo">Preload the first few seconds (1-2 MB) of videos larger than {0} for instant playback.</string>
     <string name="TodoItemQuote">Reply to Item</string>
 
+    <string name="Gift2ReleasedBy">released by **{0}**</string>
+    <string name="Gift2ActionReleasedBy">Released by **{0}**</string>
+
+    <string name="Gift2ProfileInvisible4">This gift is hidden. **Show on Profile &gt;**</string>
+    <string name="Gift2ProfileVisible4">This gift is visible. **Hide from profile &gt;**</string>
+    <string name="Gift2UpgradeButtonGift">Upgrade</string>
 </resources>

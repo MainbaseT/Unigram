@@ -269,6 +269,8 @@ namespace Telegram.Controls.Messages
             {
                 var title = FindName("Title") as TextBlock;
                 var subtitle = FindName("Subtitle") as FormattedTextBlock;
+                var publisherRoot = FindName("Publisher") as Border;
+                var publisherLabel = FindName("PublisherLabel") as TextBlock;
                 var view = FindName("View") as Border;
                 var button = FindName("ViewLabel") as TextBlock;
                 var ribbonRoot = FindName("RibbonRoot") as Grid;
@@ -295,9 +297,13 @@ namespace Telegram.Controls.Messages
                     {
                         subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(string.Format(Strings.Gift2ActionUpgradeOut, user)));
                     }
-                    else
+                    else if (gift.SellStarCount > 0)
                     {
                         subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(Locale.Declension(Strings.R.Gift2ActionOutInfo, gift.SellStarCount, user)));
+                    }
+                    else
+                    {
+                        subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(string.Format(Strings.Gift2Info2OutExpired, user)));
                     }
 
                     view.Visibility = Visibility.Visible;
@@ -338,6 +344,18 @@ namespace Telegram.Controls.Messages
                 animation.LoopCount = 0;
                 animation.Source = new DelayedFileSource(message.ClientService, gift.Gift.Sticker);
                 animation.Margin = new Thickness(0, 0, 0, 8);
+
+                if (message.ClientService.TryGetChat(gift.Gift.PublisherChatId, out Chat publisherChat)
+                    && message.ClientService.TryGetSupergroup(publisherChat, out Supergroup publisher)
+                    && publisher.HasActiveUsername(out string username))
+                {
+                    publisherRoot.Visibility = Visibility.Visible;
+                    TextBlockHelper.SetMarkdown(publisherLabel, string.Format(Strings.Gift2ActionReleasedBy, $"@{username}"));
+                }
+                else
+                {
+                    publisherRoot.Visibility = Visibility.Collapsed;
+                }
 
                 if (gift.Gift.TotalCount > 0)
                 {

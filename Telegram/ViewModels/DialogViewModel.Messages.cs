@@ -2060,14 +2060,29 @@ namespace Telegram.ViewModels
             }
             else if (message.Content is MessageGift gift)
             {
-                var receivedGift = new ReceivedGift(gift.ReceivedGiftId, gift.SenderId, gift.Text, gift.IsPrivate, gift.IsSaved, false, gift.CanBeUpgraded && !gift.WasUpgraded, false, gift.WasRefunded, message.Date, new SentGiftRegular(gift.Gift), gift.SellStarCount, gift.PrepaidUpgradeStarCount, 0, 0, 0, 0);
+                ReceivedGift receivedGift = null;
+                if (gift.UpgradedReceivedGiftId.Length > 0)
+                {
+                    receivedGift = await ClientService.SendAsync(new GetReceivedGift(gift.UpgradedReceivedGiftId)) as ReceivedGift;
+                }
+                else if (gift.ReceivedGiftId.Length > 0)
+                {
+                    receivedGift = await ClientService.SendAsync(new GetReceivedGift(gift.ReceivedGiftId)) as ReceivedGift;
+                }
+
+                receivedGift ??= new ReceivedGift(gift.ReceivedGiftId, gift.SenderId, gift.Text, gift.IsPrivate, gift.IsSaved, false, gift.CanBeUpgraded && !gift.WasUpgraded, false, gift.WasRefunded, message.Date, new SentGiftRegular(gift.Gift), gift.SellStarCount, gift.PrepaidUpgradeStarCount, 0, 0, 0, 0);
 
                 ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, gift.ReceiverId, null));
             }
             else if (message.Content is MessageUpgradedGift upgradedGift)
             {
-                var text = upgradedGift.Gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText();
-                var receivedGift = new ReceivedGift(upgradedGift.ReceivedGiftId, upgradedGift.SenderId, text, true, upgradedGift.IsSaved, false, false, upgradedGift.CanBeTransferred, false, message.Date, new SentGiftUpgraded(upgradedGift.Gift), 0, 0, upgradedGift.TransferStarCount, upgradedGift.NextTransferDate, upgradedGift.NextResaleDate, upgradedGift.ExportDate);
+                ReceivedGift receivedGift = null;
+                if (upgradedGift.ReceivedGiftId.Length > 0)
+                {
+                    receivedGift = await ClientService.SendAsync(new GetReceivedGift(upgradedGift.ReceivedGiftId)) as ReceivedGift;
+                }
+
+                receivedGift ??= new ReceivedGift(upgradedGift.ReceivedGiftId, upgradedGift.SenderId, upgradedGift.Gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText(), true, upgradedGift.IsSaved, false, false, upgradedGift.CanBeTransferred, false, message.Date, new SentGiftUpgraded(upgradedGift.Gift), 0, 0, upgradedGift.TransferStarCount, upgradedGift.NextTransferDate, upgradedGift.NextResaleDate, upgradedGift.ExportDate);
 
                 ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, upgradedGift.ReceiverId, null));
             }

@@ -6444,6 +6444,9 @@ Duration: {1}</value>
   <data name="Gift2ActionOutInfo_other" xml:space="preserve">
     <value>**{1}** can add this gift to their profile or convert it to {0} Stars.</value>
   </data>
+  <data name="Gift2ActionReleasedBy" xml:space="preserve">
+    <value>Released by **{0}**</value>
+  </data>
   <data name="Gift2ActionResell" xml:space="preserve">
     <value>Sell</value>
   </data>
@@ -6575,6 +6578,12 @@ Duration: {1}</value>
   </data>
   <data name="Gift2CollectionNumber_other" xml:space="preserve">
     <value>Collectible #{0}</value>
+  </data>
+  <data name="Gift2CollectionNumberBy_one" xml:space="preserve">
+    <value>Collectible #{0} by **{1}**</value>
+  </data>
+  <data name="Gift2CollectionNumberBy_other" xml:space="preserve">
+    <value>Collectible #{0} by **{1}**</value>
   </data>
   <data name="Gift2ConvertButton" xml:space="preserve">
     <value>Convert</value>
@@ -6766,6 +6775,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2ProfileInvisible3" xml:space="preserve">
     <value>This gift is hidden from your page. **Show &gt;**</value>
   </data>
+  <data name="Gift2ProfileInvisible4" xml:space="preserve">
+    <value>This gift is hidden. **Show on Profile &gt;**</value>
+  </data>
   <data name="Gift2ProfileMakeInvisible" xml:space="preserve">
     <value>Hide from my profile</value>
   </data>
@@ -6777,6 +6789,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2ProfileVisible3" xml:space="preserve">
     <value>This gift is visible on your profile. **Hide &gt;**</value>
+  </data>
+  <data name="Gift2ProfileVisible4" xml:space="preserve">
+    <value>This gift is visible. **Hide from profile &gt;**</value>
   </data>
   <data name="Gift2Quantity" xml:space="preserve">
     <value>Quantity</value>
@@ -6795,6 +6810,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2RarityHint" xml:space="preserve">
     <value>Only {0} of such collectibles have this attribute</value>
+  </data>
+  <data name="Gift2ReleasedBy" xml:space="preserve">
+    <value>released by **{0}**</value>
   </data>
   <data name="Gift2Resale" xml:space="preserve">
     <value>resale</value>
@@ -7032,6 +7050,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2UpgradeButtonFree" xml:space="preserve">
     <value>Upgrade for Free</value>
+  </data>
+  <data name="Gift2UpgradeButtonGift" xml:space="preserve">
+    <value>Upgrade</value>
   </data>
   <data name="Gift2UpgradeFeature1Text" xml:space="preserve">
     <value>Get a unique number, model, backdrop and a symbol for your gift.</value>

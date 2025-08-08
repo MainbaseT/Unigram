@@ -5,6 +5,7 @@
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                        xmlns:controls="using:Telegram.Controls"
+                       xmlns:messages="using:Telegram.Controls.Messages"
                        mc:Ignorable="d"
                        Padding="0,0,0,24"
                        IsDismissButtonVisible="True">
@@ -69,6 +70,23 @@
                                    TextAlignment="Center"
                                    VerticalAlignment="Top"
                                    Margin="12,0" />
+
+                        <messages:MessageService x:Name="UpgradedPublisher"
+                                                 Click="UpgradedPublisher_Click"
+                                                 Background="#22000000"
+                                                 CornerRadius="12"
+                                                 HorizontalAlignment="Center"
+                                                 Padding="8,2,8,3"
+                                                 Margin="0,0,0,8"
+                                                 Visibility="Collapsed"
+                                                 Grid.Row="1">
+                            <TextBlock x:Name="UpgradedPublisherLabel"
+                                       Foreground="#DDFFFFFF"
+                                       TextAlignment="Center"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       TextWrapping="NoWrap" />
+                        </messages:MessageService>
+
                         <TextBlock x:Name="UpgradedSubtitle"
                                    Style="{StaticResource BodyTextBlockStyle}"
                                    Foreground="#AAFFFFFF"
@@ -233,33 +251,6 @@
                         <controls:TableViewItem x:Name="Availability"
                                                 Header="{CustomResource Gift2Availability}"
                                                 Visibility="Collapsed" />
-                        <controls:TableViewItem x:Name="Status"
-                                                Header="{CustomResource Gift2Status}"
-                                                Padding="0"
-                                                Visibility="Collapsed">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{CustomResource Gift2StatusNonUnique}"
-                                           Margin="8,5,8,6"
-                                           Style="{StaticResource BodyTextBlockStyle}"
-                                           VerticalAlignment="Top" />
-
-                                <controls:BadgeButton x:Name="Upgrade"
-                                                      Click="Upgrade_Click"
-                                                      Glyph="{CustomResource Gift2StatusUpgrade}"
-                                                      Style="{StaticResource SmallButtonStyle}"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="11"
-                                                      Padding="8,0"
-                                                      CornerRadius="8"
-                                                      BorderThickness="0"
-                                                      Height="16"
-                                                      Grid.Column="2" />
-                            </Grid>
-                        </controls:TableViewItem>
                     </controls:TableView>
                     <Border x:Name="CaptionRoot"
                             Background="{ThemeResource ButtonBackground}"
