@@ -291,14 +291,29 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
-                        <TextBlock x:Name="ContentPresenter"
-                                   Text="{TemplateBinding Text}"
-                                   TextWrapping="NoWrap"
-                                   TextTrimming="CharacterEllipsis"
-                                   Padding="{TemplateBinding Padding}"
-                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                   AutomationProperties.AccessibilityView="Raw" />
+                        <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="IconPresenter"
+                                       x:Load="False"
+                                       Text="{TemplateBinding Icon}"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       FontSize="20"
+                                       Margin="0,0,2,0"
+                                       AutomationProperties.AccessibilityView="Raw" />
+                            <TextBlock x:Name="ContentPresenter"
+                                       Text="{TemplateBinding Text}"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       Padding="{TemplateBinding Padding}"
+                                       VerticalAlignment="Center"
+                                       AutomationProperties.AccessibilityView="Raw"
+                                       Grid.Column="1" />
+                        </Grid>
 
                         <TextBlock Margin="4"
                                    FontSize="12"

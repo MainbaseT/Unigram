@@ -87,7 +87,7 @@ namespace Telegram.ViewModels
         {
             get
             {
-                return ReplyTo == null && Editing == null;
+                return ReplyTo == null && Editing == null && SuggestedPostInfo == null;
             }
         }
 

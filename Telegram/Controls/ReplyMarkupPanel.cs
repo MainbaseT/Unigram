@@ -269,6 +269,19 @@ namespace Telegram.Controls
 
         public InlineKeyboardButton Button { get; }
 
+        private UIElement IconPresenter;
+
+        protected override void OnApplyTemplate()
+        {
+            if (!string.IsNullOrEmpty(Icon))
+            {
+                IconPresenter = GetTemplateChild(nameof(IconPresenter)) as UIElement;
+                IconPresenter.Visibility = Visibility.Visible;
+            }
+
+            base.OnApplyTemplate();
+        }
+
         #region Text
 
         public string Text
@@ -279,6 +292,35 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(ReplyMarkupInlineButton), new PropertyMetadata(string.Empty));
+
+        #endregion
+
+        #region Icon
+
+        public string Icon
+        {
+            get { return (string)GetValue(IconProperty); }
+            set { SetValue(IconProperty, value); }
+        }
+
+        public static readonly DependencyProperty IconProperty =
+            DependencyProperty.Register("Icon", typeof(string), typeof(ReplyMarkupInlineButton), new PropertyMetadata(string.Empty, OnIconChanged));
+
+        private static void OnIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = d as ReplyMarkupInlineButton;
+            if (sender?.IconPresenter != null || !string.IsNullOrEmpty((string)e.NewValue))
+            {
+                sender.IconPresenter ??= sender.GetTemplateChild(nameof(sender.IconPresenter)) as UIElement;
+
+                if (sender.IconPresenter != null)
+                {
+                    sender.IconPresenter.Visibility = string.IsNullOrEmpty((string)e.NewValue)
+                        ? Visibility.Collapsed
+                        : Visibility.Visible;
+                }
+            }
+        }
 
         #endregion
     }

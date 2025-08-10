@@ -1551,64 +1551,49 @@ namespace Telegram.Views
                 var scheduled = ElementComposition.GetElementVisual(btnScheduled);
                 var commands = ElementComposition.GetElementVisual(btnCommands);
                 var markup = ElementComposition.GetElementVisual(btnMarkup);
+                var suggest = ElementComposition.GetElementVisual(btnSuggest);
 
                 scheduled.CenterPoint = new Vector3(24);
                 commands.CenterPoint = new Vector3(24);
                 markup.CenterPoint = new Vector3(24);
+                suggest.CenterPoint = new Vector3(24);
 
                 var show = empty && !editing;
-                if (show)
+
+                btnScheduled.Visibility = Visibility.Visible;
+                btnCommands.Visibility = Visibility.Visible;
+                btnMarkup.Visibility = Visibility.Visible;
+                btnSuggest.Visibility = Visibility.Visible;
+
+                batch = commands.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+                batch.Completed += (s, args) =>
                 {
-                    btnScheduled.Visibility = Visibility.Visible;
-                    btnCommands.Visibility = Visibility.Visible;
-                    btnMarkup.Visibility = Visibility.Visible;
+                    var visibility = _oldEmpty && !_oldEditing
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
 
-                    batch = commands.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-                    batch.Completed += (s, args) =>
-                    {
-                        btnScheduled.Visibility = Visibility.Visible;
-                        btnCommands.Visibility = Visibility.Visible;
-                        btnMarkup.Visibility = Visibility.Visible;
+                    btnScheduled.Visibility = visibility;
+                    btnCommands.Visibility = visibility;
+                    btnMarkup.Visibility = visibility;
+                    btnSuggest.Visibility = visibility;
 
-                        scheduled.Scale = commands.Scale = markup.Scale = new Vector3(1);
-                        scheduled.Opacity = commands.Opacity = markup.Opacity = 1;
-                    };
+                    scheduled.Scale = commands.Scale = markup.Scale = new Vector3(1);
+                    scheduled.Opacity = commands.Opacity = markup.Opacity = 1;
+                };
 
-                    scheduled.StartAnimation("Scale", show1);
-                    scheduled.StartAnimation("Opacity", show2);
+                scheduled.StartAnimation("Scale", show ? show1 : hide1);
+                scheduled.StartAnimation("Opacity", show ? show2 : hide2);
 
-                    commands.StartAnimation("Scale", show1);
-                    commands.StartAnimation("Opacity", show2);
+                commands.StartAnimation("Scale", show ? show1 : hide1);
+                commands.StartAnimation("Opacity", show ? show2 : hide2);
 
-                    markup.StartAnimation("Scale", show1);
-                    markup.StartAnimation("Opacity", show2);
+                markup.StartAnimation("Scale", show ? show1 : hide1);
+                markup.StartAnimation("Opacity", show ? show2 : hide2);
 
-                    batch.End();
-                }
-                else
-                {
-                    batch = commands.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-                    batch.Completed += (s, args) =>
-                    {
-                        btnScheduled.Visibility = Visibility.Collapsed;
-                        btnCommands.Visibility = Visibility.Collapsed;
-                        btnMarkup.Visibility = Visibility.Collapsed;
+                suggest.StartAnimation("Scale", show ? show1 : hide1);
+                suggest.StartAnimation("Opacity", show ? show2 : hide2);
 
-                        scheduled.Scale = commands.Scale = markup.Scale = new Vector3(1);
-                        scheduled.Opacity = commands.Opacity = markup.Opacity = 1;
-                    };
-
-                    scheduled.StartAnimation("Scale", hide1);
-                    scheduled.StartAnimation("Opacity", hide2);
-
-                    commands.StartAnimation("Scale", hide1);
-                    commands.StartAnimation("Opacity", hide2);
-
-                    markup.StartAnimation("Scale", hide1);
-                    markup.StartAnimation("Opacity", hide2);
-
-                    batch.End();
-                }
+                batch.End();
             }
 
             _oldEmpty = empty;
@@ -1670,8 +1655,8 @@ namespace Telegram.Views
                         {
                             Editing = embedded.Editing,
                             ReplyTo = embedded.ReplyTo,
-                            SuggestedPostInfo = embedded?.SuggestedPostInfo,
-                            LinkPreviewOptions = embedded?.LinkPreviewOptions,
+                            SuggestedPostInfo = embedded.SuggestedPostInfo,
+                            LinkPreviewOptions = embedded.LinkPreviewOptions,
                             LinkPreview = linkPreview,
                             LinkPreviewUrl = linkPreview.Url,
                         };
@@ -1950,6 +1935,10 @@ namespace Telegram.Views
                         ViewModel.PinnedMessages.SetLocked(message.Id);
                         ViewVisibleMessages();
                     }
+                }
+                else if (sender is not ChatPinnedMessage && ViewModel.ComposerHeader?.SuggestedPostInfo != null)
+                {
+                    ViewModel.SuggestPost();
                 }
             }
             //else if (ViewModel.ComposerHeader?.WebPagePreview != null)
@@ -5534,6 +5523,10 @@ namespace Telegram.Views
                     {
                         ComposerHeaderGlyph.Glyph = Icons.ArrowReply24;
                     }
+                    else if (header.SuggestedPostInfo != null)
+                    {
+                        ComposerHeaderGlyph.Glyph = Icons.ChatDollar24;
+                    }
                     else
                     {
                         ComposerHeaderGlyph.Glyph = Icons.Loading;
@@ -6013,6 +6006,7 @@ namespace Telegram.Views
 
             ButtonFeedback.Visibility = Visibility.Collapsed;
             ButtonGift.Visibility = Visibility.Collapsed;
+            ButtonSuggest.Visibility = Visibility.Collapsed;
 
             if (fullInfo == null)
             {
@@ -6258,6 +6252,7 @@ namespace Telegram.Views
 
             ButtonFeedback.Visibility = Visibility.Collapsed;
             ButtonGift.Visibility = Visibility.Collapsed;
+            ButtonSuggest.Visibility = Visibility.Collapsed;
 
             if (fullInfo == null)
             {
@@ -6436,6 +6431,10 @@ namespace Telegram.Views
             }
 
             ButtonFeedback.Visibility = group.HasDirectMessagesGroup
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            ButtonSuggest.Visibility = group.IsDirectMessagesGroup
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
@@ -7478,6 +7477,11 @@ namespace Telegram.Views
         private void ButtonGift_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.GiftPremium();
+        }
+
+        private void Suggest_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SuggestPost();
         }
     }
 

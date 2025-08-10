@@ -56,6 +56,7 @@ namespace Telegram.ViewModels
                 .Subscribe<UpdateMessageTranslatedText>(Handle)
                 .Subscribe<UpdateMessageFactCheck>(Handle)
                 .Subscribe<UpdateMessageEffect>(Handle)
+                .Subscribe<UpdateMessageSuggestedPostInfo>(Handle)
                 .Subscribe<UpdateAnimatedEmojiMessageClicked>(Handle)
                 .Subscribe<UpdateUser>(Handle)
                 .Subscribe<UpdateUserFullInfo>(Handle)
@@ -1113,6 +1114,40 @@ namespace Telegram.ViewModels
                 }
 
                 hashSet.Clear();
+            }
+        }
+
+        public void Handle(UpdateMessageSuggestedPostInfo update)
+        {
+            if (update.ChatId == _chat?.Id)
+            {
+                Handle(update.MessageId, message =>
+                {
+                    message.SuggestedPostInfo = update.SuggestedPostInfo;
+
+                    if (message.SuggestedPostInfo is SuggestedPostInfo { State: SuggestedPostStatePending })
+                    {
+                        message.ReplyMarkup = new ReplyMarkupInlineKeyboard(new List<IList<InlineKeyboardButton>>
+                        {
+                            new List<InlineKeyboardButton>
+                            {
+                                new InlineKeyboardButton(Strings.PostSuggestionsInlineDecline, new InlineKeyboardButtonTypeSuggestionDecline()),
+                                new InlineKeyboardButton(Strings.PostSuggestionsInlineAccept, new InlineKeyboardButtonTypeSuggestionApprove())
+                            },
+                            new List<InlineKeyboardButton>
+                            {
+                                new InlineKeyboardButton(Strings.PostSuggestionsInlineEdit, new InlineKeyboardButtonTypeSuggestionEdit())
+                            }
+                        });
+                    }
+                    else
+                    {
+                        message.ReplyMarkup = null;
+                    }
+
+                    return true;
+                },
+                (bubble, message) => bubble.UpdateMessageSuggestedPostInfo(message));
             }
         }
 

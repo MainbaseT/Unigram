@@ -1722,6 +1722,7 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Button to access scheduled messages -->
@@ -1769,8 +1770,7 @@
                                                               FontSize="{StaticResource GlyphLargeFontSize}"
                                                               VerticalAlignment="Bottom"
                                                               AutomationProperties.Name="{CustomResource AccDescrBotCommands}"
-                                                              ToolTipService.ToolTip="{CustomResource AccDescrBotCommands}"
-                                                              Grid.Column="1" />
+                                                              ToolTipService.ToolTip="{CustomResource AccDescrBotCommands}" />
                                     </Border>
 
                                     <!-- Button to use bot keyboard, bots/groups only -->
@@ -1785,8 +1785,21 @@
                                                                       FontSize="{StaticResource GlyphLargeFontSize}"
                                                                       VerticalAlignment="Bottom"
                                                                       AutomationProperties.Name="{CustomResource AccDescrBotKeyboard}"
-                                                                      ToolTipService.ToolTip="{CustomResource AccDescrBotKeyboard}"
-                                                                      Grid.Column="1" />
+                                                                      ToolTipService.ToolTip="{CustomResource AccDescrBotKeyboard}" />
+                                    </Border>
+
+                                    <Border x:Name="btnSuggest"
+                                            VerticalAlignment="Bottom"
+                                            Grid.Column="3">
+                                        <controls:GlyphButton x:Name="ButtonSuggest"
+                                                              Click="Suggest_Click"
+                                                              AllowFocusOnInteraction="False"
+                                                              Glyph="&#xEACE;"
+                                                              FontFamily="{StaticResource TelegramThemeFontFamily}"
+                                                              FontSize="{StaticResource GlyphLargeFontSize}"
+                                                              VerticalAlignment="Bottom"
+                                                              AutomationProperties.Name="{CustomResource AccDescrSuggestPost}"
+                                                              ToolTipService.ToolTip="{CustomResource AccDescrSuggestPost}" />
                                     </Border>
                                 </Grid>
 

@@ -1911,6 +1911,22 @@ namespace Telegram.ViewModels
                     }
                 }
 
+                if (message.SuggestedPostInfo is SuggestedPostInfo { State: SuggestedPostStatePending })
+                {
+                    message.ReplyMarkup = new ReplyMarkupInlineKeyboard(new List<IList<InlineKeyboardButton>>
+                    {
+                        new List<InlineKeyboardButton>
+                        {
+                            new InlineKeyboardButton(Strings.PostSuggestionsInlineDecline, new InlineKeyboardButtonTypeSuggestionDecline()),
+                            new InlineKeyboardButton(Strings.PostSuggestionsInlineAccept, new InlineKeyboardButtonTypeSuggestionApprove())
+                        },
+                        new List<InlineKeyboardButton>
+                        {
+                            new InlineKeyboardButton(Strings.PostSuggestionsInlineEdit, new InlineKeyboardButtonTypeSuggestionEdit())
+                        }
+                    });
+                }
+
                 ProcessEmoji(message);
                 ProcessReplies(chat, message);
             }
@@ -2057,7 +2073,9 @@ namespace Telegram.ViewModels
                 message.Content is MessageGameScore ||
                 message.Content is MessagePaymentSuccessful ||
                 message.Content is MessageChecklistTasksAdded ||
-                message.Content is MessageChecklistTasksDone)
+                message.Content is MessageChecklistTasksDone ||
+                message.Content is MessageSuggestedPostPaid ||
+                message.Content is MessageSuggestedPostRefunded)
             {
                 message.ReplyToState = message.Content is MessageGiveawayWinners
                     ? MessageReplyToState.Hidden
@@ -2083,7 +2101,15 @@ namespace Telegram.ViewModels
                     }
 
                     BeginOnUIThread(() => Handle(message,
-                        bubble => bubble.UpdateMessageReply(message),
+                        bubble =>
+                        {
+                            bubble.UpdateMessageReply(message);
+
+                            if (message.SuggestedPostInfo != null)
+                            {
+                                bubble.UpdateMessageSuggestedPostInfo(message);
+                            }
+                        },
                         service => service.UpdateMessage(message)));
                 });
             }
@@ -2853,7 +2879,7 @@ namespace Telegram.ViewModels
                     : new InputMessageReplyToExternalMessage(replyToChatId, replyToMessageId, quote, replyToTaskId)
                     : null;
 
-                draft = new DraftMessage(inputReply, 0, new InputMessageText(formattedText, null, false), 0, embedded.SuggestedPostInfo);
+                draft = new DraftMessage(inputReply, 0, new InputMessageText(formattedText, null, false), 0, embedded?.SuggestedPostInfo);
             }
 
             _draft = draft;
@@ -2944,7 +2970,7 @@ namespace Telegram.ViewModels
         protected override InputMessageReplyTo GetReply(bool clean, bool notify = true)
         {
             var embedded = _composerHeader;
-            if (embedded == null || embedded.ReplyTo == null)
+            if (embedded == null)
             {
                 return null;
             }
@@ -2960,13 +2986,13 @@ namespace Telegram.ViewModels
                     _composerHeader = null;
                 }
 
-                if (embedded.ReplyTo.Message.ReplyMarkup is ReplyMarkupForceReply)
+                if (embedded.ReplyTo?.Message.ReplyMarkup is ReplyMarkupForceReply)
                 {
                     ClientService.Send(new DeleteChatReplyMarkup(embedded.ReplyTo.Message.ChatId, embedded.ReplyTo.Message.Id));
                 }
             }
 
-            return embedded.ReplyTo.ToInput(this);
+            return embedded.ReplyTo?.ToInput(this);
         }
 
         #endregion
@@ -3167,6 +3193,24 @@ namespace Telegram.ViewModels
             else
             {
                 ShowPopup(new GiftPopup(ClientService, NavigationService, chat));
+            }
+        }
+
+        #endregion
+
+        #region Suggest post
+
+        public async void SuggestPost()
+        {
+            var popup = new SuggestPostPopup(ClientService);
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                ComposerHeader = new MessageComposerHeader(ClientService)
+                {
+                    SuggestedPostInfo = popup.SuggestedPostInfo
+                };
             }
         }
 

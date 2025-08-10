@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -75,7 +76,7 @@ namespace Telegram.ViewModels
         public MessageChecklistTask(MessageComposerReplyTo reply)
         {
             Message = reply.Message;
-            
+
             if (reply.Message.Content is MessageChecklist checklist)
             {
                 Task = checklist.List.Tasks.FirstOrDefault(x => x.Id == reply.ChecklistTaskId);
@@ -1598,6 +1599,102 @@ namespace Telegram.ViewModels
             {
                 MessageHelper.CopyText(XamlRoot, copyText.Text);
             }
+            else if (inline.Type is InlineKeyboardButtonTypeSuggestionDecline)
+            {
+                DeclineSuggestedPost(message);
+            }
+            else if (inline.Type is InlineKeyboardButtonTypeSuggestionApprove)
+            {
+                ApproveSuggestedPost(message);
+            }
+            else if (inline.Type is InlineKeyboardButtonTypeSuggestionEdit)
+            {
+
+            }
+        }
+
+        private async void DeclineSuggestedPost(MessageViewModel message)
+        {
+            var confirm = await ShowInputAsync(InputPopupType.Text, string.Format(Strings.SuggestedMessageDeclineInfo, ClientService.GetTitle(message.SenderId)), Strings.SuggestedMessageDecline, Strings.SuggestedMessageDeclineReasonHint, Strings.Decline, Strings.Cancel, destructive: true);
+            if (confirm.Result == ContentDialogResult.Primary)
+            {
+                ClientService.Send(new DeclineSuggestedPost(message.ChatId, message.Id, confirm.Text));
+            }
+        }
+
+        private async void ApproveSuggestedPost(MessageViewModel message)
+        {
+            var text = new StringBuilder();
+            text.AppendLine(string.Format(Strings.SuggestedMessageAcceptInfo, ClientService.GetTitle(message.SenderId)));
+            text.AppendLine();
+
+            ToastPopup disclaimer = null;
+
+            if (ClientService.TryGetSupergroup(Chat, out Supergroup supergroup) && supergroup.IsAdministeredDirectMessagesGroup)
+            {
+                var percent = message.SuggestedPostInfo.Price switch
+                {
+                    SuggestedPostPriceTon => (ClientService.Options.SuggestedPostToncoinEarningsPerMille / 1000d).ToString("0.##%"),
+                    _ => (ClientService.Options.SuggestedPostStarEarningsPerMille / 1000d).ToString("0.##%")
+                };
+
+                if (message.SuggestedPostInfo.SendDate == 0)
+                {
+                    text.AppendLine(string.Format(Strings.SuggestedMessageAcceptInfoAnytimeAdmin2, message.SuggestedPostInfo.Price.ToValue(), percent));
+                }
+                else
+                {
+                    text.AppendLine(string.Format(Strings.SuggestedMessageAcceptInfoAdmin2, message.SuggestedPostInfo.Price.ToValue(), Formatter.DateAt(message.SuggestedPostInfo.SendDate), percent));
+                }
+
+                disclaimer = ToastPopup.Show(XamlRoot, Strings.SuggestedMessageAcceptStarsDisclaimer.AsFormattedText(), ToastPopupIcon.Info, dismissAfter: TimeSpan.Zero);
+                disclaimer.PreferredPlacement = TeachingTipPlacementMode.Top;
+            }
+            else if (message.SuggestedPostInfo.SendDate == 0)
+            {
+                text.AppendLine(string.Format(Strings.SuggestedMessageAcceptInfoAnytimeUser2, message.SuggestedPostInfo.Price.ToValue()));
+            }
+            else
+            {
+                text.AppendLine(string.Format(Strings.SuggestedMessageAcceptInfoUser2, message.SuggestedPostInfo.Price.ToValue(), Formatter.DateAt(message.SuggestedPostInfo.SendDate)));
+            }
+
+            text.Append(string.Format(Strings.SuggestedMessageAcceptInfo3, (ClientService.Options.SuggestedPostLifetimeMin / 3600.0).ToString("N0")));
+
+            var confirm = await ShowPopupAsync(text.ToString(), Strings.SuggestedPostAcceptTitle, message.SuggestedPostInfo.SendDate == 0 ? Strings.Next : Strings.SuggestedPostPublish, Strings.Cancel);
+
+            if (disclaimer != null)
+            {
+                disclaimer.IsOpen = false;
+            }
+
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            var sendDate = message.SuggestedPostInfo.SendDate;
+            if (sendDate == 0)
+            {
+                var popup = new ChooseDateTimePopup
+                {
+                    Title = Strings.SuggestedPostAcceptTitle,
+                    Header = Strings.PostSuggestionsAddTimeHint,
+                    PrimaryButtonText = Strings.OK,
+                    SecondaryButtonText = Strings.Cancel,
+                };
+
+                confirm = await popup.ShowAsync();
+
+                if (confirm != ContentDialogResult.Primary)
+                {
+                    return;
+                }
+
+                sendDate = popup.Value.ToTimestamp();
+            }
+
+            ClientService.Send(new ApproveSuggestedPost(message.ChatId, message.Id, sendDate));
         }
 
         public async void KeyboardButtonExecute(MessageViewModel message, KeyboardButton keyboardButton)
@@ -1966,6 +2063,14 @@ namespace Telegram.ViewModels
             else if (message.Content is MessageChecklistTasksDone checklistTasksDone && checklistTasksDone.ChecklistMessageId != 0)
             {
                 await LoadMessageSliceAsync(message.Id, checklistTasksDone.ChecklistMessageId, checklistTaskId: checklistTasksDone.MarkedAsDoneTaskIds.Count > 0 ? checklistTasksDone.MarkedAsDoneTaskIds[0] : checklistTasksDone.MarkedAsNotDoneTaskIds[0]);
+            }
+            else if (message.Content is MessageSuggestedPostPaid suggestedPostPaid && suggestedPostPaid.SuggestedPostMessageId != 0)
+            {
+                await LoadMessageSliceAsync(message.Id, suggestedPostPaid.SuggestedPostMessageId);
+            }
+            else if (message.Content is MessageSuggestedPostRefunded suggestedPostRefunded && suggestedPostRefunded.SuggestedPostMessageId != 0)
+            {
+                await LoadMessageSliceAsync(message.Id, suggestedPostRefunded.SuggestedPostMessageId);
             }
             else if (message.Content is MessageChatEvent chatEvent)
             {

@@ -338,6 +338,9 @@
     <Compile Include="Controls\Messages\Content\StickerSetContent.xaml.cs">
       <DependentUpon>StickerSetContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
+    <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />
+    <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionEdit.cs" />
     <Compile Include="Controls\Messages\MessageEffectMenuFlyout.xaml.cs">
       <DependentUpon>MessageEffectMenuFlyout.xaml</DependentUpon>
     </Compile>
@@ -348,6 +351,9 @@
       <DependentUpon>MessageFactCheck.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Messages\ReplyMarkupInlinePanel.cs" />
+    <Compile Include="Controls\Messages\Service\SuggestedPostInfoCell.xaml.cs">
+      <DependentUpon>SuggestedPostInfoCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NativeVideoPlayer.xaml.cs">
       <DependentUpon>NativeVideoPlayer.xaml</DependentUpon>
     </Compile>
@@ -1262,6 +1268,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\ChooseDateTimePopup.xaml.cs">
+      <DependentUpon>ChooseDateTimePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\CreateChecklistPopup.xaml.cs">
       <DependentUpon>CreateChecklistPopup.xaml</DependentUpon>
     </Compile>
@@ -1304,6 +1313,9 @@
     </Compile>
     <Compile Include="Views\Popups\FactCheckPopup.xaml.cs">
       <DependentUpon>FactCheckPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\SuggestPostPopup.xaml.cs">
+      <DependentUpon>SuggestPostPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Popups\QrCodePopup.xaml.cs">
       <DependentUpon>QrCodePopup.xaml</DependentUpon>
@@ -2913,6 +2925,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\Messages\Service\SuggestedPostInfoCell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\NativeVideoPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -3253,6 +3269,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Popups\ChooseDateTimePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Popups\CreateChecklistPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -3306,6 +3326,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\FactCheckPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\SuggestPostPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

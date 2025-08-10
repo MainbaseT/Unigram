@@ -12511,10 +12511,84 @@
     <string name="AutoDownloadPreloadVideoInfo">Preload the first few seconds (1-2 MB) of videos larger than {0} for instant playback.</string>
     <string name="TodoItemQuote">Reply to Item</string>
 
+    <string name="SuggestedOfferRefundByAdminAmountF">&#11088;&#65039; {2} was returned to {0} because {1} deleted the message</string>
+    <string name="SuggestedOfferRefundByUserAmountF">{1} will not receive &#11088;&#65039; {2} because {0} requested a refund</string>
+
+    <string name="SuggestedOfferRefundByAdminAmountUnknown">Payment was returned to {0} because {1} deleted the message</string>
+    <string name="SuggestedOfferRefundByUserAmountUnknown">{1} will not receive payment because {0} requested a refund</string>
+
+    <string name="SuggestedOfferCompleteAmountF">{0} has received &#11088;&#65039; {1} for publishing post</string>
+    <string name="SuggestedOfferCompleteAmountUnknown">{0} received payment for publishing post</string>
+
+    <string name="PostSuggestionsInlineAccept">Accept</string>
+    <string name="PostSuggestionsInlineDecline">Decline</string>
+    <string name="PostSuggestionsInlineEdit">Suggest Changes</string>
+
+    <string name="SuggestionOfferInfoTitleYou">**You** suggested a post.</string>
+    <string name="SuggestionOfferInfoTitle">**{0}** suggested a post.</string>
+    <string name="SuggestionOfferInfoPrice">Price</string>
+    <string name="SuggestionOfferInfoTime">Time</string>
+
+    <string name="SuggestionOfferInfoTitleEditedFromYou">**You** suggested a new {0} for this post.</string>
+    <string name="SuggestionOfferInfoTitleEditedFromX">**{0}** suggested a new {1} for this post.</string>
+    <string name="SuggestionOfferInfoTitleEditedPrice">price</string>
+    <string name="SuggestionOfferInfoTitleEditedTime">time</string>
+    <string name="SuggestionOfferInfoTitleEditedText">text</string>
+    <string name="SuggestionOfferInfoTitleEditedMedia">media</string>
+    <string name="SuggestionOfferInfoTitleEditedAnd">and</string>
+
     <string name="Gift2ReleasedBy">released by **{0}**</string>
     <string name="Gift2ActionReleasedBy">Released by **{0}**</string>
 
     <string name="Gift2ProfileInvisible4">This gift is hidden. **Show on Profile &gt;**</string>
     <string name="Gift2ProfileVisible4">This gift is visible. **Hide from profile &gt;**</string>
     <string name="Gift2UpgradeButtonGift">Upgrade</string>
+
+    <string name="SuggestedOfferStars">Offer Stars</string>
+    <string name="SuggestedOfferTON">Offer TON</string>
+
+    <string name="AccDescrSuggestPost">Suggest a Post</string>
+    <string name="PostSuggestionsOfferTitle">Suggest a Post</string>
+
+    <string name="PostSuggestionsOfferTitlePriceStars">Enter Price in Stars</string>
+    <string name="PostSuggestionsOfferTitlePriceTON">Enter Price in TON</string>
+    <string name="PostSuggestionsOfferSubtitleStars">Choose how many Stars to pay to publish this post.</string>
+    <string name="PostSuggestionsOfferSubtitleTON">Choose how much to pay to publish this post.</string>
+    <string name="PostSuggestionsOfferTitleTime">Publishing Time</string>
+    <string name="PostSuggestionsAnytime">Anytime</string>
+    <string name="PostSuggestionsAddTime">Edit Time</string>
+    <string name="PostSuggestionsAddTimeHint">Select the date and time you want the post to be published.</string>
+    <string name="PostSuggestionsAddTimeHint2">The post will remain available for at least {0} hours from this date.</string>
+    <string name="PostSuggestionsOfferStars">Offer &#11088;&#65039;{0}</string>
+    <string name="PostSuggestionsOfferTON">Offer {0} TON</string>
+    <string name="PostSuggestionsOfferForFree">Offer for Free</string>
+    <string name="SuggestAPostTooMuch">Maximum offer: {0}</string>
+    <string name="SuggestAPostTooSmall">Minimum offer: {0}</string>
+
+    <string name="SuggestAPostBelow">Suggest a Post Below</string>
+    <string name="SuggestAPostBelowSubtitle">Click to offer a price for publishing</string>
+    <string name="SuggestAPostBelowSubtitleStars">&#11088;&#65039; {0} for publishing anytime</string>
+    <string name="SuggestAPostBelowSubtitleStarsAndTime">&#11088;&#65039; {0} {1}</string>
+
+    <string name="TonCount_one">{0} TON</string>
+    <string name="TonCount_other">{0} TON</string>
+
+    <string name="StarsCountX">{0} Stars</string>
+    <string name="TonCountX">{0} TON</string>
+
+    <string name="SuggestedPostPublish">Publish</string>
+    <string name="SuggestedPostAcceptTitle">Accept Terms</string>
+    <string name="SuggestedMessageAcceptInfo">Do you want to publish this post from **{0}**?</string>
+
+    <string name="SuggestedMessageAcceptInfoAdmin2">You will receive **{0}** ({2}) for publishing this post **{1}**.</string>
+    <string name="SuggestedMessageAcceptInfoUser2">You will pay **{0}** for publishing this post **{1}**.</string>
+    <string name="SuggestedMessageAcceptInfoAnytimeAdmin2">You will receive **{0}** ({1}) for publishing this post.</string>
+    <string name="SuggestedMessageAcceptInfoAnytimeUser2">You will pay **{0}** for publishing this post.</string>
+    <string name="SuggestedMessageAcceptInfo3">It must remain visible for at least **{0}** hours after publication.</string>
+    <string name="SuggestedMessageAcceptStarsDisclaimer">Transactions in Stars may be reversed by the payment provider within 21 days. Only accept Stars from people you trust.</string>
+    
+    <string name="SuggestedMessageDecline">Decline</string>
+    <string name="SuggestedMessageDeclineInfo">Do you want to decline this post from **{0}**?</string>
+    <string name="SuggestedMessageDeclineReasonHint">Add a reason (optional)</string>
+
 </resources>

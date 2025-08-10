@@ -84,6 +84,20 @@ namespace Telegram.Td.Api
             return last >= 24 * 60 * 7 - 1;
         }
 
+        public static string ToValue(this SuggestedPostPrice price)
+        {
+            if (price is SuggestedPostPriceStar priceStar)
+            {
+                return string.Format(Strings.StarsCountX, priceStar.StarCount);
+            }
+            else if (price is SuggestedPostPriceTon priceTon)
+            {
+                return string.Format(Strings.TonCountX, priceTon.ToncoinCentCount / 100d);
+            }
+
+            return string.Format(Strings.StarsCountX, 0);
+        }
+
         public static string CommissionPercent(this AffiliateProgramParameters parameters)
         {
             return (parameters.CommissionPerMille / 10d).ToString("0.##") + "%";
@@ -911,6 +925,25 @@ namespace Telegram.Td.Api
             }
 
             return x.Id == y.Id && x.ChatId == y.ChatId;
+        }
+
+        public static bool AreTheSame(this SuggestedPostPrice x, SuggestedPostPrice y)
+        {
+            if (x == null || y == null)
+            {
+                return x == y;
+            }
+
+            if (x is SuggestedPostPriceStar xStar && y is SuggestedPostPriceStar yStar)
+            {
+                return xStar.StarCount == yStar.StarCount;
+            }
+            else if (x is SuggestedPostPriceTon xTon && y is SuggestedPostPriceTon yTon)
+            {
+                return xTon.ToncoinCentCount == yTon.ToncoinCentCount;
+            }
+
+            return false;
         }
 
         public static IEnumerable<FormattedText> Split(this FormattedText text, long maxLength)

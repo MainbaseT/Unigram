@@ -1311,7 +1311,7 @@ namespace Telegram.Controls.Messages
 
         private void UpdateMessageReplyMarkup(MessageViewModel message)
         {
-            if (message.ReplyMarkup is ReplyMarkupInlineKeyboard)
+            if (message.ReplyMarkup is ReplyMarkupInlineKeyboard || message.SuggestedPostInfo is SuggestedPostInfo { State: SuggestedPostStateApproved })
             {
                 if (Markup == null)
                 {
@@ -1320,7 +1320,7 @@ namespace Telegram.Controls.Messages
                 }
 
                 Markup.Visibility = Visibility.Visible;
-                Markup.Update(message, message.ReplyMarkup);
+                Markup.Update(message);
 
                 if (!_hasReplyMarkup)
                 {
@@ -1542,6 +1542,16 @@ namespace Telegram.Controls.Messages
         {
             // TODO: this isn't very optimized
             UpdateMessageContent(message);
+        }
+
+        public void UpdateMessageSuggestedPostInfo(MessageViewModel message)
+        {
+            if (Parent is MessageSelector selector)
+            {
+                selector.UpdateMessageSuggestedPostInfo(message);
+            }
+
+            UpdateMessageReplyMarkup(message);
         }
 
         public void UpdateMessageContent(MessageViewModel message)

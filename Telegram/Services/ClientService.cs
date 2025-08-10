@@ -924,7 +924,9 @@ namespace Telegram.Services
                 message.Content is MessageGameScore ||
                 message.Content is MessagePaymentSuccessful ||
                 message.Content is MessageChecklistTasksAdded ||
-                message.Content is MessageChecklistTasksDone)
+                message.Content is MessageChecklistTasksDone ||
+                message.Content is MessageSuggestedPostPaid ||
+                message.Content is MessageSuggestedPostRefunded)
             {
                 Send(new GetRepliedMessage(message.ChatId, message.Id), handler);
             }

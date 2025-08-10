@@ -648,6 +648,8 @@ namespace Telegram.Controls.Messages
                 MessageChatBoost chatBoost => UpdateChatBoost(message, chatBoost, history),
                 MessageChecklistTasksAdded checklistTasksAdded => UpdateChecklistTasksAdded(message, checklistTasksAdded, history),
                 MessageChecklistTasksDone checklistTasksDone => UpdateChecklistTasksDone(message, checklistTasksDone, history),
+                MessageSuggestedPostPaid suggestedPostPaid => UpdateSuggestedPostPaid(message, suggestedPostPaid, history),
+                MessageSuggestedPostRefunded suggestedPostRefunded => UpdateSuggestedPostRefunded(message, suggestedPostRefunded, history),
                 MessageAsyncStory story => UpdateStory(message, story, history),
                 MessageStory story => UpdateStory(message, story, history),
                 // Local types:
@@ -2088,7 +2090,7 @@ namespace Telegram.Controls.Messages
                 var content = Locale.Declension(Strings.R.PaidMessagesRefundedOut, paidMessagesRefunded.StarCount);
                 return ReplaceWithLink(content, receiverUser);
             }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            else if (message.ClientService.TryGetMessageSender(message.SenderId, out Object senderUser))
             {
                 var content = Locale.Declension(Strings.R.PaidMessagesRefunded, paidMessagesRefunded.StarCount);
                 return ReplaceWithLink(content, senderUser);
@@ -2556,6 +2558,65 @@ namespace Telegram.Controls.Messages
 
                 return ReplaceWithLink(formatted, message.GetSender());
             }
+        }
+
+        private static FormattedText UpdateSuggestedPostPaid(MessageWithOwner message, MessageSuggestedPostPaid suggestedPostPaid, bool history)
+        {
+            var sender = message.ClientService.GetTitle(message.SenderId);
+
+            if (suggestedPostPaid.StarAmount.IsPositive())
+            {
+                return string.Format(Strings.SuggestedOfferCompleteAmountF.ReplaceStar(Icons.Premium), sender, suggestedPostPaid.StarAmount.ToValue()).AsFormattedText();
+            }
+            else if (suggestedPostPaid.TonAmount > 0)
+            {
+                return string.Format(Strings.SuggestedOfferCompleteAmountF.ReplaceStar(Icons.Ton), sender, suggestedPostPaid.TonAmount).AsFormattedText();
+            }
+
+            return string.Format(Strings.SuggestedOfferCompleteAmountUnknown, sender).AsFormattedText();
+        }
+
+        private static FormattedText UpdateSuggestedPostRefunded(MessageWithOwner message, MessageSuggestedPostRefunded suggestedPostRefunded, bool history)
+        {
+            var direct = message.TopicId as MessageTopicDirectMessages;
+            var topic = message.ClientService.GetDirectMessagesChatTopic(message.ChatId, direct.DirectMessagesChatTopicId);
+            var sender = message.ClientService.GetTitle(topic.SenderId);
+
+            if (suggestedPostRefunded.Reason is SuggestedPostRefundReasonPostDeleted)
+            {
+                if (message is MessageViewModel { ReplyToItem: MessageViewModel replyTo })
+                {
+                    if (replyTo.SuggestedPostInfo.Price is SuggestedPostPriceStar priceStar)
+                    {
+                        return string.Format(Strings.SuggestedOfferRefundByAdminAmountF.ReplaceStar(Icons.Premium), sender, message.Chat.Title, priceStar.StarCount).AsFormattedText();
+                    }
+                    else if (replyTo.SuggestedPostInfo.Price is SuggestedPostPriceTon priceTon)
+                    {
+                        return string.Format(Strings.SuggestedOfferRefundByAdminAmountF.ReplaceStar(Icons.Ton), sender, message.Chat.Title, priceTon.ToncoinCentCount).AsFormattedText();
+                    }
+                }
+                else
+                {
+                    return string.Format(Strings.SuggestedOfferRefundByAdminAmountUnknown, sender, message.Chat.Title).AsFormattedText();
+                }
+            }
+            else if (message is MessageViewModel { ReplyToItem: MessageViewModel replyTo })
+            {
+                if (replyTo.SuggestedPostInfo.Price is SuggestedPostPriceStar priceStar)
+                {
+                    return string.Format(Strings.SuggestedOfferRefundByUserAmountF.ReplaceStar(Icons.Premium), sender, message.Chat.Title, priceStar.StarCount).AsFormattedText();
+                }
+                else if (replyTo.SuggestedPostInfo.Price is SuggestedPostPriceTon priceTon)
+                {
+                    return string.Format(Strings.SuggestedOfferRefundByUserAmountF.ReplaceStar(Icons.Ton), sender, message.Chat.Title, priceTon.ToncoinCentCount).AsFormattedText();
+                }
+            }
+            else
+            {
+                return string.Format(Strings.SuggestedOfferRefundByUserAmountUnknown, sender, message.Chat.Title).AsFormattedText();
+            }
+
+            return _emptyString;
         }
 
         private static FormattedText UpdateChatBoost(MessageWithOwner message, MessageChatBoost chatBoost, bool history)

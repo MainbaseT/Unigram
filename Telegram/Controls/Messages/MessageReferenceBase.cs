@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Telegram.Common;
 using Telegram.Controls.Media;
+using Telegram.Converters;
 using Telegram.Native;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -87,9 +88,42 @@ namespace Telegram.Controls.Messages
                 Message = embedded.ReplyTo.Message;
                 GetMessageTemplate(embedded.ReplyTo.Message, embedded.ReplyTo.Quote?.Text, false, embedded.ReplyTo.ChecklistTaskId, embedded.ReplyTo.Quote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
             }
+            else if (embedded.SuggestedPostInfo != null)
+            {
+                Message = null;
+                GetSuggestedPostInfoTemplate(embedded.SuggestedPostInfo.Price, embedded.SuggestedPostInfo.SendDate);
+            }
         }
 
         #endregion
+
+        private void GetSuggestedPostInfoTemplate(SuggestedPostPrice price, int sendDate)
+        {
+            // 1F4C6	
+            if (price == null && sendDate == 0)
+            {
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, Strings.SuggestAPostBelowSubtitle.AsFormattedText());
+            }
+            else if (sendDate == 0)
+            {
+                if (price is SuggestedPostPriceStar priceStar)
+                {
+                    SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStars.ReplaceStar(Icons.Star), priceStar.StarCount).AsFormattedText());
+                }
+                else if (price is SuggestedPostPriceTon priceTon)
+                {
+                    SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStars.ReplaceStar(Icons.Ton), priceTon.ToncoinCentCount / 100d).AsFormattedText());
+                }
+            }
+            else if (price is SuggestedPostPriceStar priceStar)
+            {
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Star), priceStar.StarCount, string.Format("\U0001F4C6", Formatter.DateAt(sendDate))).AsFormattedText());
+            }
+            else if (price is SuggestedPostPriceTon priceTon)
+            {
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Ton), priceTon.ToncoinCentCount / 100d, string.Format("\U0001F4C6", Formatter.DateAt(sendDate))).AsFormattedText());
+            }
+        }
 
         public void Mockup(string sender, string message)
         {
