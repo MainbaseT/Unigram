@@ -13,7 +13,6 @@ using Windows.Foundation;
 using Windows.UI.Composition;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls

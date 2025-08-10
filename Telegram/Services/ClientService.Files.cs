@@ -76,7 +76,6 @@ namespace Telegram.Services
          */
 
         private readonly HashSet<int> _canceledDownloads = new();
-        private readonly HashSet<int> _persistentDownloads = new();
         private readonly HashSet<string> _completedDownloads = new();
         private readonly object _downloadsLock = new();
 
@@ -192,11 +191,6 @@ namespace Telegram.Services
 
         public async void AddFileToDownloads(File file, long chatId, long messageId, int priority = 30)
         {
-            lock (_downloadsLock)
-            {
-                _persistentDownloads.Add(file.Id);
-            }
-
             Send(new AddFileToDownloads(file.Id, chatId, messageId, priority));
 
             if (ApiInfo.HasCacheOnly || !SettingsService.Current.IsDownloadFolderEnabled || Future.Contains(file.Remote.UniqueId, true) || await Future.ContainsAsync(file.Remote.UniqueId))
@@ -297,14 +291,6 @@ namespace Telegram.Services
             lock (_downloadsLock)
             {
                 return _canceledDownloads.Contains(fileId);
-            }
-        }
-
-        public bool IsDownloadFilePartial(int fileId)
-        {
-            lock (_downloadsLock)
-            {
-                return !_persistentDownloads.Contains(fileId);
             }
         }
 
@@ -1264,6 +1250,12 @@ namespace Telegram.Services
                     if (messageGiftedStars.Sticker != null)
                     {
                         ProcessFiles(messageGiftedStars.Sticker);
+                    }
+                    break;
+                case MessageGiftedTon messageGiftedTon:
+                    if (messageGiftedTon.Sticker != null)
+                    {
+                        ProcessFiles(messageGiftedTon.Sticker);
                     }
                     break;
                 case MessageGiveaway messageGiveaway:
@@ -2360,6 +2352,24 @@ namespace Telegram.Services
                     if (tMeUrlTypeChatInvite.Info != null)
                     {
                         ProcessFiles(tMeUrlTypeChatInvite.Info);
+                    }
+                    break;
+                case TonTransaction tonTransaction:
+                    if (tonTransaction.Type != null)
+                    {
+                        ProcessFiles(tonTransaction.Type);
+                    }
+                    break;
+                case TonTransactions tonTransactions:
+                    foreach (var item in tonTransactions.Transactions)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
+                case TonTransactionTypeFragmentDeposit tonTransactionTypeFragmentDeposit:
+                    if (tonTransactionTypeFragmentDeposit.Sticker != null)
+                    {
+                        ProcessFiles(tonTransactionTypeFragmentDeposit.Sticker);
                     }
                     break;
                 case TrendingStickerSets trendingStickerSets:

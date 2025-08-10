@@ -46,7 +46,6 @@ namespace Telegram.Services
         void AddFileToDownloads(File file, long chatId, long messageId, int priority = 30);
         void CancelDownloadFile(File file, bool onlyIfPending = false);
         bool IsDownloadFileCanceled(int fileId);
-        bool IsDownloadFilePartial(int fileId);
 
         Task<bool> HasPrivacySettingsRuleAsync<T>(UserPrivacySetting setting) where T : UserPrivacySettingRule;
 
@@ -56,7 +55,7 @@ namespace Telegram.Services
 
         void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
 
-        Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, StarTransactionDirection direction, string offset, int limit);
+        Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, TransactionDirection direction, string offset, int limit);
 
         Sticker NextGreetingSticker();
 
@@ -925,7 +924,9 @@ namespace Telegram.Services
                 message.Content is MessageGameScore ||
                 message.Content is MessagePaymentSuccessful ||
                 message.Content is MessageChecklistTasksAdded ||
-                message.Content is MessageChecklistTasksDone)
+                message.Content is MessageChecklistTasksDone ||
+                message.Content is MessageSuggestedPostPaid ||
+                message.Content is MessageSuggestedPostRefunded)
             {
                 Send(new GetRepliedMessage(message.ChatId, message.Id), handler);
             }
@@ -991,7 +992,7 @@ namespace Telegram.Services
         }
 
 
-        public async Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, StarTransactionDirection direction, string offset, int limit)
+        public async Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, TransactionDirection direction, string offset, int limit)
         {
             var response = await SendAsync(new GetStarTransactions(ownerId, subscriptionId, direction, offset, limit));
             if (response is StarTransactions transactions)

@@ -77,7 +77,7 @@ namespace Telegram.Common
             {
                 for (int i = 0; i < entities.Count; i++)
                 {
-                    if (entities[i].Type is TextEntityTypeUrl)
+                    if (entities[i].Type is TextEntityTypeUrl or TextEntityTypeMention or TextEntityTypeMediaTimestamp)
                     {
                         entities.RemoveAt(i);
                         i--;

@@ -1391,7 +1391,7 @@ namespace Telegram.Views
         private void CheckButtonsVisibility()
         {
             var empty = TextField.IsEmpty;
-            var editing = ViewModel.ComposerHeader?.EditingMessage != null || ViewModel.CurrentInlineBot != null;
+            var editing = ViewModel.ComposerHeader?.Editing != null || ViewModel.CurrentInlineBot != null;
 
             if (empty != _oldEmpty)
             {
@@ -1551,64 +1551,49 @@ namespace Telegram.Views
                 var scheduled = ElementComposition.GetElementVisual(btnScheduled);
                 var commands = ElementComposition.GetElementVisual(btnCommands);
                 var markup = ElementComposition.GetElementVisual(btnMarkup);
+                var suggest = ElementComposition.GetElementVisual(btnSuggest);
 
                 scheduled.CenterPoint = new Vector3(24);
                 commands.CenterPoint = new Vector3(24);
                 markup.CenterPoint = new Vector3(24);
+                suggest.CenterPoint = new Vector3(24);
 
                 var show = empty && !editing;
-                if (show)
+
+                btnScheduled.Visibility = Visibility.Visible;
+                btnCommands.Visibility = Visibility.Visible;
+                btnMarkup.Visibility = Visibility.Visible;
+                btnSuggest.Visibility = Visibility.Visible;
+
+                batch = commands.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+                batch.Completed += (s, args) =>
                 {
-                    btnScheduled.Visibility = Visibility.Visible;
-                    btnCommands.Visibility = Visibility.Visible;
-                    btnMarkup.Visibility = Visibility.Visible;
+                    var visibility = _oldEmpty && !_oldEditing
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
 
-                    batch = commands.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-                    batch.Completed += (s, args) =>
-                    {
-                        btnScheduled.Visibility = Visibility.Visible;
-                        btnCommands.Visibility = Visibility.Visible;
-                        btnMarkup.Visibility = Visibility.Visible;
+                    btnScheduled.Visibility = visibility;
+                    btnCommands.Visibility = visibility;
+                    btnMarkup.Visibility = visibility;
+                    btnSuggest.Visibility = visibility;
 
-                        scheduled.Scale = commands.Scale = markup.Scale = new Vector3(1);
-                        scheduled.Opacity = commands.Opacity = markup.Opacity = 1;
-                    };
+                    scheduled.Scale = commands.Scale = markup.Scale = new Vector3(1);
+                    scheduled.Opacity = commands.Opacity = markup.Opacity = 1;
+                };
 
-                    scheduled.StartAnimation("Scale", show1);
-                    scheduled.StartAnimation("Opacity", show2);
+                scheduled.StartAnimation("Scale", show ? show1 : hide1);
+                scheduled.StartAnimation("Opacity", show ? show2 : hide2);
 
-                    commands.StartAnimation("Scale", show1);
-                    commands.StartAnimation("Opacity", show2);
+                commands.StartAnimation("Scale", show ? show1 : hide1);
+                commands.StartAnimation("Opacity", show ? show2 : hide2);
 
-                    markup.StartAnimation("Scale", show1);
-                    markup.StartAnimation("Opacity", show2);
+                markup.StartAnimation("Scale", show ? show1 : hide1);
+                markup.StartAnimation("Opacity", show ? show2 : hide2);
 
-                    batch.End();
-                }
-                else
-                {
-                    batch = commands.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-                    batch.Completed += (s, args) =>
-                    {
-                        btnScheduled.Visibility = Visibility.Collapsed;
-                        btnCommands.Visibility = Visibility.Collapsed;
-                        btnMarkup.Visibility = Visibility.Collapsed;
+                suggest.StartAnimation("Scale", show ? show1 : hide1);
+                suggest.StartAnimation("Opacity", show ? show2 : hide2);
 
-                        scheduled.Scale = commands.Scale = markup.Scale = new Vector3(1);
-                        scheduled.Opacity = commands.Opacity = markup.Opacity = 1;
-                    };
-
-                    scheduled.StartAnimation("Scale", hide1);
-                    scheduled.StartAnimation("Opacity", hide2);
-
-                    commands.StartAnimation("Scale", hide1);
-                    commands.StartAnimation("Opacity", hide2);
-
-                    markup.StartAnimation("Scale", hide1);
-                    markup.StartAnimation("Opacity", hide2);
-
-                    batch.End();
-                }
+                batch.End();
             }
 
             _oldEmpty = empty;
@@ -1640,9 +1625,9 @@ namespace Telegram.Views
                     {
                         viewModel.ComposerHeader = new MessageComposerHeader(viewModel.ClientService)
                         {
-                            EditingMessage = embedded.EditingMessage,
-                            ReplyToMessage = embedded.ReplyToMessage,
-                            ReplyToQuote = embedded.ReplyToQuote,
+                            Editing = embedded.Editing,
+                            ReplyTo = embedded.ReplyTo,
+                            SuggestedPostInfo = embedded.SuggestedPostInfo,
                         };
                     }
                 }
@@ -1668,12 +1653,12 @@ namespace Telegram.Views
 
                         viewModel.ComposerHeader = new MessageComposerHeader(viewModel.ClientService)
                         {
-                            EditingMessage = embedded?.EditingMessage,
-                            ReplyToMessage = embedded?.ReplyToMessage,
-                            ReplyToQuote = embedded?.ReplyToQuote,
-                            LinkPreviewOptions = embedded?.LinkPreviewOptions,
+                            Editing = embedded.Editing,
+                            ReplyTo = embedded.ReplyTo,
+                            SuggestedPostInfo = embedded.SuggestedPostInfo,
+                            LinkPreviewOptions = embedded.LinkPreviewOptions,
                             LinkPreview = linkPreview,
-                            LinkPreviewUrl = linkPreview.Url
+                            LinkPreviewUrl = linkPreview.Url,
                         };
                     }
                     else if (embedded != null)
@@ -1686,9 +1671,9 @@ namespace Telegram.Views
                         {
                             viewModel.ComposerHeader = new MessageComposerHeader(viewModel.ClientService)
                             {
-                                EditingMessage = embedded.EditingMessage,
-                                ReplyToMessage = embedded.ReplyToMessage,
-                                ReplyToQuote = embedded.ReplyToQuote,
+                                Editing = embedded.Editing,
+                                ReplyTo = embedded.ReplyTo,
+                                SuggestedPostInfo = embedded.SuggestedPostInfo,
                             };
                         }
                     }
@@ -1786,7 +1771,7 @@ namespace Telegram.Views
             var videoRights = !ViewModel.VerifyRights(chat, x => x.CanSendVideos);
             var documentRights = !ViewModel.VerifyRights(chat, x => x.CanSendDocuments);
 
-            if (header == null || header.EditingMessage == null || (header.IsEmpty && header.LinkPreviewDisabled))
+            if (header == null || header.Editing == null || (header.IsEmpty && header.LinkPreviewDisabled))
             {
                 var messageRights = !ViewModel.VerifyRights(chat, x => x.CanSendBasicMessages);
                 var pollRights = !ViewModel.VerifyRights(chat, x => x.CanSendPolls);
@@ -1853,7 +1838,7 @@ namespace Telegram.Views
                     }
                 }
             }
-            else if (header?.EditingMessage != null)
+            else if (header?.Editing != null)
             {
                 if (photoRights || videoRights)
                 {
@@ -1865,7 +1850,7 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(ViewModel.EditDocument, Strings.ChatDocument, Icons.Document);
                 }
 
-                if (header.EditingMessage.Content is MessagePhoto or MessageVideo)
+                if (header.Editing.Message.Content is MessagePhoto or MessageVideo)
                 {
                     flyout.CreateFlyoutItem(ViewModel.EditCurrent, Strings.Edit, Icons.Crop);
                 }
@@ -1950,6 +1935,10 @@ namespace Telegram.Views
                         ViewModel.PinnedMessages.SetLocked(message.Id);
                         ViewVisibleMessages();
                     }
+                }
+                else if (sender is not ChatPinnedMessage && ViewModel.ComposerHeader?.SuggestedPostInfo != null)
+                {
+                    ViewModel.SuggestPost();
                 }
             }
             //else if (ViewModel.ComposerHeader?.WebPagePreview != null)
@@ -2511,22 +2500,23 @@ namespace Telegram.Views
             var flyout = new MenuFlyout();
 
             var header = ViewModel.ComposerHeader;
-            if (header?.ReplyToMessage != null)
+            if (header?.ReplyTo != null)
             {
-                if (header.ReplyToQuote != null)
+                if (header.ReplyTo.Quote != null)
                 {
-                    var quote = new MessageQuote
-                    {
-                        Message = header.ReplyToMessage,
-                        Quote = header.ReplyToQuote.Text,
-                        Position = header.ReplyToQuote.Position
-                    };
+                    var quote = new MessageQuote(header.ReplyTo);
 
                     flyout.CreateFlyoutItem(ViewModel.QuoteToMessageInAnotherChat, quote, Strings.ReplyToAnotherChat, Icons.Replace);
                 }
+                else if (header.ReplyTo.ChecklistTaskId != 0)
+                {
+                    var checklist = new MessageChecklistTask(header.ReplyTo);
+
+                    flyout.CreateFlyoutItem(ViewModel.ReplyToChecklistTaskInAnotherChat, checklist, Strings.ReplyToAnotherChat, Icons.Replace);
+                }
                 else
                 {
-                    flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, header.ReplyToMessage, Strings.ReplyToAnotherChat, Icons.Replace);
+                    flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, header.ReplyTo.Message, Strings.ReplyToAnotherChat, Icons.Replace);
                 }
 
                 flyout.CreateFlyoutSeparator();
@@ -3034,6 +3024,7 @@ namespace Telegram.Views
                         checklistTaskItem.CreateFlyoutItem(ViewModel.MarkChecklistTask, messageTask, checklistTask.CompletionDate != 0 ? Strings.TodoUncheck : Strings.TodoCheck, checklistTask.CompletionDate != 0 ? Icons.DismissCircle : Icons.CheckmarkCircle);
                     }
 
+                    checklistTaskItem.CreateFlyoutItem(ViewModel.ReplyToChecklistTask, messageTask, Strings.TodoItemQuote, Icons.ArrowReply);
                     checklistTaskItem.CreateFlyoutItem(ViewModel.CopyText, checklistTask.Text, Strings.Copy, Icons.Copy);
 
                     if (properties.CanBeEdited)
@@ -4121,7 +4112,7 @@ namespace Telegram.Views
             }
             else if (emoji is Sticker sticker && sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                if (ViewModel.IsPremium)
+                if (ViewModel.IsPremium || (ViewModel.ClientService.TryGetSupergroupFull(ViewModel.Chat, out SupergroupFullInfo fullInfo) && fullInfo.CustomEmojiStickerSetId == sticker.SetId))
                 {
                     ViewModel.InsertedCustomEmojiIds.Add(customEmoji.CustomEmojiId);
                     TextField.InsertEmoji(sticker);
@@ -5294,7 +5285,7 @@ namespace Telegram.Views
             {
                 if (userFull.OutgoingPaidMessageStarCount > 0)
                 {
-                    return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), userFull.OutgoingPaidMessageStarCount.ToString("N0"));
+                    return string.Format(Strings.TypeMessageForStars.ReplaceStar(Icons.Premium), userFull.OutgoingPaidMessageStarCount.ToString("N0"));
                 }
             }
             else if (ViewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
@@ -5337,14 +5328,14 @@ namespace Telegram.Views
                 }
                 else if (supergroup.PaidMessageStarCount > 0)
                 {
-                    return string.Format(Strings.SuggestPostForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
+                    return string.Format(Strings.SuggestPostForStars.ReplaceStar(Icons.Premium), supergroup.PaidMessageStarCount.ToString("N0"));
                 }
 
                 return Strings.SuggestPostForFree;
             }
             else if (supergroup.PaidMessageStarCount > 0 && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator)
             {
-                return string.Format(Strings.TypeMessageForStars.Replace("\u2B50", Icons.Premium + "\u200A"), supergroup.PaidMessageStarCount.ToString("N0"));
+                return string.Format(Strings.TypeMessageForStars.ReplaceStar(Icons.Premium), supergroup.PaidMessageStarCount.ToString("N0"));
             }
             else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetForumTopic(chat.Id, chat.LastMessage.TopicId(), out ForumTopic forumTopic))
             {
@@ -5484,7 +5475,7 @@ namespace Telegram.Views
 
                 TextField.Reply = header;
 
-                var editing = header.EditingMessage;
+                var editing = header.Editing?.Message;
                 if (editing != null)
                 {
                     switch (editing.Content)
@@ -5528,9 +5519,13 @@ namespace Telegram.Views
                     {
                         ComposerHeaderGlyph.Glyph = Icons.Link24;
                     }
-                    else if (header.ReplyToMessage != null)
+                    else if (header.ReplyTo != null)
                     {
                         ComposerHeaderGlyph.Glyph = Icons.ArrowReply24;
+                    }
+                    else if (header.SuggestedPostInfo != null)
+                    {
+                        ComposerHeaderGlyph.Glyph = Icons.ChatDollar24;
                     }
                     else
                     {
@@ -6011,6 +6006,7 @@ namespace Telegram.Views
 
             ButtonFeedback.Visibility = Visibility.Collapsed;
             ButtonGift.Visibility = Visibility.Collapsed;
+            ButtonSuggest.Visibility = Visibility.Collapsed;
 
             if (fullInfo == null)
             {
@@ -6256,6 +6252,7 @@ namespace Telegram.Views
 
             ButtonFeedback.Visibility = Visibility.Collapsed;
             ButtonGift.Visibility = Visibility.Collapsed;
+            ButtonSuggest.Visibility = Visibility.Collapsed;
 
             if (fullInfo == null)
             {
@@ -6437,6 +6434,10 @@ namespace Telegram.Views
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
+            ButtonSuggest.Visibility = group.IsDirectMessagesGroup
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             if (group.IsChannel)
             {
                 if (fullInfo == null)
@@ -6508,7 +6509,7 @@ namespace Telegram.Views
             {
                 if (supergroup.PaidMessageStarCount > 0)
                 {
-                    TextBlockHelper.SetMarkdown(RestrictsNewChatsText, string.Format(Strings.SuggestionLockedStars.Replace("\u2B50", Icons.Premium + "\u200A"), chat.Title, supergroup.PaidMessageStarCount.ToString("N0")));
+                    TextBlockHelper.SetMarkdown(RestrictsNewChatsText, string.Format(Strings.SuggestionLockedStars.ReplaceStar(Icons.Premium), chat.Title, supergroup.PaidMessageStarCount.ToString("N0")));
                     RestrictsNewChatsButton.Visibility = Visibility.Visible;
                 }
                 else
@@ -7476,6 +7477,11 @@ namespace Telegram.Views
         private void ButtonGift_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.GiftPremium();
+        }
+
+        private void Suggest_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SuggestPost();
         }
     }
 

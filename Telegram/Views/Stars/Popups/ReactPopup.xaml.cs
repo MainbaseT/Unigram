@@ -91,7 +91,7 @@ namespace Telegram.Views.Stars.Popups
             hyperlink.Click += Buy_Click;
 
             var content = new TextBlock();
-            content.Inlines.Add(string.Format(Strings.Gift2MessageStarsInfo.Replace("\u2B50", Icons.Premium + "\u200A"), _clientService.OwnedStarCount.ToValue()));
+            content.Inlines.Add(string.Format(Strings.Gift2MessageStarsInfo.ReplaceStar(Icons.Premium), _clientService.OwnedStarCount.ToValue()));
             content.Inlines.Add(new LineBreak());
             content.Inlines.Add(hyperlink);
             content.HorizontalTextAlignment = TextAlignment.Center;
@@ -150,7 +150,7 @@ namespace Telegram.Views.Stars.Popups
 
             if (PurchaseText != null)
             {
-                PurchaseText.Text = string.Format(Strings.StarsReactionSend, StarCount.ToString("N0")).Replace("\u2B50", Icons.Premium);
+                PurchaseText.Text = string.Format(Strings.StarsReactionSend.ReplaceStar(Icons.Premium), StarCount.ToString("N0"));
             }
         }
 

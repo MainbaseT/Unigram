@@ -207,7 +207,7 @@ namespace Telegram.ViewModels.Profile
                 new SearchMessagesFilterDocument(),
                 new SearchMessagesFilterUrl(),
                 new SearchMessagesFilterAudio(),
-                new SearchMessagesFilterVoiceNote(),
+                new SearchMessagesFilterVoiceAndVideoNote(),
                 new SearchMessagesFilterAnimation(),
             };
 
@@ -238,7 +238,7 @@ namespace Telegram.ViewModels.Profile
                     return new Count(0);
                 }
 
-                if (sparseMessagesAvailable && filter is SearchMessagesFilterPhotoAndVideo or SearchMessagesFilterDocument or SearchMessagesFilterAudio or SearchMessagesFilterVoiceNote or SearchMessagesFilterAnimation)
+                if (sparseMessagesAvailable && filter is SearchMessagesFilterPhotoAndVideo or SearchMessagesFilterDocument or SearchMessagesFilterAudio or SearchMessagesFilterVoiceAndVideoNote or SearchMessagesFilterAnimation)
                 {
                     var source = await MediaDataSource.Create(ClientService, chat.Id, savedMessagesTopicId, filter);
                     if (source.Count > 0)
@@ -256,7 +256,7 @@ namespace Telegram.ViewModels.Profile
                             case SearchMessagesFilterAudio:
                                 Music.DataSource = source;
                                 break;
-                            case SearchMessagesFilterVoiceNote:
+                            case SearchMessagesFilterVoiceAndVideoNote:
                                 Voice.DataSource = source;
                                 break;
                             case SearchMessagesFilterAnimation:
@@ -285,7 +285,7 @@ namespace Telegram.ViewModels.Profile
                             SearchMessagesFilterDocument => new ProfileTabItem(Strings.SharedFilesTab2, typeof(ProfileFilesTabPage), null, count.CountValue, Strings.R.Files),
                             SearchMessagesFilterUrl => new ProfileTabItem(Strings.SharedLinksTab2, typeof(ProfileLinksTabPage), null, count.CountValue, Strings.R.Links),
                             SearchMessagesFilterAudio => new ProfileTabItem(Strings.SharedMusicTab2, typeof(ProfileMusicTabPage), null, count.CountValue, Strings.R.MusicFiles),
-                            SearchMessagesFilterVoiceNote => new ProfileTabItem(Strings.SharedVoiceTab2, typeof(ProfileVoiceTabPage), null, count.CountValue, Strings.R.Voice),
+                            SearchMessagesFilterVoiceAndVideoNote => new ProfileTabItem(Strings.SharedVoiceTab2, typeof(ProfileVoiceTabPage), null, count.CountValue, Strings.R.Voice),
                             SearchMessagesFilterAnimation => new ProfileTabItem(Strings.SharedGIFsTab2, typeof(ProfileAnimationsTabPage), null, count.CountValue, Strings.R.GIFs),
                             _ => null
                         };
@@ -334,7 +334,7 @@ namespace Telegram.ViewModels.Profile
                 SearchMessagesFilterVideo => Media,
                 SearchMessagesFilterDocument => Files,
                 SearchMessagesFilterAudio => Music,
-                SearchMessagesFilterVoiceNote => Voice,
+                SearchMessagesFilterVoiceAndVideoNote => Voice,
                 SearchMessagesFilterAnimation => Animations,
                 _ => null
             };

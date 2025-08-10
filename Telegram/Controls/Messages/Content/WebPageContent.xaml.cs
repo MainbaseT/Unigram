@@ -543,7 +543,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (linkPreview.Type is LinkPreviewTypeVideoChat videoChat)
             {
-                ShowButton(videoChat.IsLiveStream ? Strings.VoipGroupJoinAsSpeaker : Strings.VoipGroupJoinAsLinstener);
+                ShowButton(videoChat.JoinsAsSpeaker ? Strings.VoipGroupJoinAsSpeaker : Strings.VoipGroupJoinAsLinstener);
             }
             else if (linkPreview.Type is LinkPreviewTypeBackground)
             {

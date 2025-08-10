@@ -112,7 +112,9 @@ namespace Telegram.Controls.Media
         public const string PauseFilled24 = "\uEA18";
         public const string Checkmark = "\uE10B";
         public const string CheckmarkFilled24 = "\uEA20";
+        public const string CheckmarkCircleFilled = "\uEACC";
         public const string CheckmarkCircleFilled24 = "\uE9F4";
+        public const string DismissCircleFilled = "\uEACD";
         public const string DismissCircleFilled24 = "\uE9F3";
         public const string TtlFilled24 = "\uEA21";
         public const string Document = "\uE7C3";
@@ -400,6 +402,7 @@ namespace Telegram.Controls.Media
 
         public const string BotMarkup24 = "\uE9D5";
 
+        public const string ChatDollar24 = "\uEACE";
         public const string ChatBubblesQuestion = "\uE783";
         public const string ChatMultiple = "\uE992";
         public const string ChatMultipleFilled = "\uEA0D";
@@ -444,6 +447,7 @@ namespace Telegram.Controls.Media
 
         public const string FragmentFilled = "\uEA8E";
         public const string Premium = "\uEA87";
+        public const string Ton = "\uEA7E";
         public const string Premium16 = "\uE9B5";
         public const string LockClosed16 = "\uE9BE";
         public const string Verified16 = "\uE97A";

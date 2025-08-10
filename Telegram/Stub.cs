@@ -4626,6 +4626,18 @@ public static class CanvasGeometry_stub
             throw new RuntimeException(ex);
         }
     }
+    public static Microsoft.Graphics.Canvas.Geometry.CanvasGeometry CreateText_stub(Microsoft.Graphics.Canvas.Text.CanvasTextLayout textLayout)
+    {
+        try
+        {
+            return Microsoft.Graphics.Canvas.Geometry.CanvasGeometry.CreateText(textLayout);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
 }
 public static class CanvasPathBuilder_stub
 {
@@ -6831,6 +6843,18 @@ public static class INumberFormatter2_stub
 }
 public static class INumberParser_stub
 {
+    public static double? ParseDouble_stub(this Windows.Globalization.NumberFormatting.INumberParser sender, string text)
+    {
+        try
+        {
+            return sender.ParseDouble(text);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static long? ParseInt_stub(this Windows.Globalization.NumberFormatting.INumberParser sender, string text)
     {
         try

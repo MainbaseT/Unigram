@@ -610,15 +610,18 @@ namespace Telegram.Views.Popups
 
     public partial class ChooseChatsConfigurationReplyToMessage : ChooseChatsConfiguration
     {
-        public ChooseChatsConfigurationReplyToMessage(MessageViewModel message, InputTextQuote quote = null)
+        public ChooseChatsConfigurationReplyToMessage(MessageViewModel message, InputTextQuote quote = null, int checklistTaskId = 0)
         {
             Message = message;
             Quote = quote;
+            ChecklistTaskId = checklistTaskId;
         }
 
         public MessageViewModel Message { get; }
 
         public InputTextQuote Quote { get; }
+
+        public int ChecklistTaskId { get; }
     }
 
     public partial class ChooseChatsConfigurationShareStory : ChooseChatsConfiguration

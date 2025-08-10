@@ -59,7 +59,7 @@ namespace Telegram.Controls.Messages
 
         public long MessageId { get; }
 
-        public int ChecklistTaskId { get; } = -1;
+        public int ChecklistTaskId { get; } = 0;
 
         public TextQuote Quote { get; }
 
@@ -1311,7 +1311,7 @@ namespace Telegram.Controls.Messages
 
         private void UpdateMessageReplyMarkup(MessageViewModel message)
         {
-            if (message.ReplyMarkup is ReplyMarkupInlineKeyboard)
+            if (message.ReplyMarkup is ReplyMarkupInlineKeyboard || message.SuggestedPostInfo is SuggestedPostInfo { State: SuggestedPostStateApproved })
             {
                 if (Markup == null)
                 {
@@ -1320,7 +1320,7 @@ namespace Telegram.Controls.Messages
                 }
 
                 Markup.Visibility = Visibility.Visible;
-                Markup.Update(message, message.ReplyMarkup);
+                Markup.Update(message);
 
                 if (!_hasReplyMarkup)
                 {
@@ -1544,6 +1544,16 @@ namespace Telegram.Controls.Messages
             UpdateMessageContent(message);
         }
 
+        public void UpdateMessageSuggestedPostInfo(MessageViewModel message)
+        {
+            if (Parent is MessageSelector selector)
+            {
+                selector.UpdateMessageSuggestedPostInfo(message);
+            }
+
+            UpdateMessageReplyMarkup(message);
+        }
+
         public void UpdateMessageContent(MessageViewModel message)
         {
             var chat = message?.Chat;
@@ -1591,7 +1601,7 @@ namespace Telegram.Controls.Messages
 
                 var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
 
-                if (isFirst && !outgoing && !message.IsChannelPost && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+                if (isFirst && !outgoing && !message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
                 {
                     top = 4;
                 }
@@ -1995,7 +2005,7 @@ namespace Telegram.Controls.Messages
 
         private void Message_TextEntityClick(object sender, TextEntityClickEventArgs e)
         {
-            if (_message is not MessageViewModel message || message.Delegate == null || message.PlaybackService == null)
+            if (_message is not MessageViewModel message || message.Delegate == null)
             {
                 return;
             }
@@ -2743,7 +2753,7 @@ namespace Telegram.Controls.Messages
                     solid.Size = area.ToSizeF();
                 }
             }
-            else if (Media.Child is ChecklistContent checklist && options.ChecklistTaskId != -1)
+            else if (Media.Child is ChecklistContent checklist && options.ChecklistTaskId != 0)
             {
                 var area = checklist.Highlight(options);
                 if (!area.IsEmpty)

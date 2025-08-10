@@ -316,6 +316,9 @@
   <data name="AccDescrStoryBy" xml:space="preserve">
     <value>Story from {0}</value>
   </data>
+  <data name="AccDescrSuggestPost" xml:space="preserve">
+    <value>Suggest a Post</value>
+  </data>
   <data name="AccDescrVerified" xml:space="preserve">
     <value>Verified</value>
   </data>
@@ -6444,6 +6447,9 @@ Duration: {1}</value>
   <data name="Gift2ActionOutInfo_other" xml:space="preserve">
     <value>**{1}** can add this gift to their profile or convert it to {0} Stars.</value>
   </data>
+  <data name="Gift2ActionReleasedBy" xml:space="preserve">
+    <value>Released by **{0}**</value>
+  </data>
   <data name="Gift2ActionResell" xml:space="preserve">
     <value>Sell</value>
   </data>
@@ -6575,6 +6581,12 @@ Duration: {1}</value>
   </data>
   <data name="Gift2CollectionNumber_other" xml:space="preserve">
     <value>Collectible #{0}</value>
+  </data>
+  <data name="Gift2CollectionNumberBy_one" xml:space="preserve">
+    <value>Collectible #{0} by **{1}**</value>
+  </data>
+  <data name="Gift2CollectionNumberBy_other" xml:space="preserve">
+    <value>Collectible #{0} by **{1}**</value>
   </data>
   <data name="Gift2ConvertButton" xml:space="preserve">
     <value>Convert</value>
@@ -6766,6 +6778,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2ProfileInvisible3" xml:space="preserve">
     <value>This gift is hidden from your page. **Show &gt;**</value>
   </data>
+  <data name="Gift2ProfileInvisible4" xml:space="preserve">
+    <value>This gift is hidden. **Show on Profile &gt;**</value>
+  </data>
   <data name="Gift2ProfileMakeInvisible" xml:space="preserve">
     <value>Hide from my profile</value>
   </data>
@@ -6777,6 +6792,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2ProfileVisible3" xml:space="preserve">
     <value>This gift is visible on your profile. **Hide &gt;**</value>
+  </data>
+  <data name="Gift2ProfileVisible4" xml:space="preserve">
+    <value>This gift is visible. **Hide from profile &gt;**</value>
   </data>
   <data name="Gift2Quantity" xml:space="preserve">
     <value>Quantity</value>
@@ -6795,6 +6813,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2RarityHint" xml:space="preserve">
     <value>Only {0} of such collectibles have this attribute</value>
+  </data>
+  <data name="Gift2ReleasedBy" xml:space="preserve">
+    <value>released by **{0}**</value>
   </data>
   <data name="Gift2Resale" xml:space="preserve">
     <value>resale</value>
@@ -7032,6 +7053,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2UpgradeButtonFree" xml:space="preserve">
     <value>Upgrade for Free</value>
+  </data>
+  <data name="Gift2UpgradeButtonGift" xml:space="preserve">
+    <value>Upgrade</value>
   </data>
   <data name="Gift2UpgradeFeature1Text" xml:space="preserve">
     <value>Get a unique number, model, backdrop and a symbol for your gift.</value>
@@ -9744,6 +9768,18 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PostSuggestions" xml:space="preserve">
     <value>Direct Messages</value>
   </data>
+  <data name="PostSuggestionsAddTime" xml:space="preserve">
+    <value>Edit Time</value>
+  </data>
+  <data name="PostSuggestionsAddTimeHint" xml:space="preserve">
+    <value>Select the date and time you want the post to be published.</value>
+  </data>
+  <data name="PostSuggestionsAddTimeHint2" xml:space="preserve">
+    <value>The post will remain available for at least {0} hours from this date.</value>
+  </data>
+  <data name="PostSuggestionsAnytime" xml:space="preserve">
+    <value>Anytime</value>
+  </data>
   <data name="PostSuggestionsDisabledUpdated" xml:space="preserve">
     <value>un1 disabled direct messages</value>
   </data>
@@ -9756,8 +9792,44 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PostSuggestionsInfo" xml:space="preserve">
     <value>Allow users to send messages to your channel, with the option to charge a fee for each message.</value>
   </data>
+  <data name="PostSuggestionsInlineAccept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="PostSuggestionsInlineDecline" xml:space="preserve">
+    <value>Decline</value>
+  </data>
+  <data name="PostSuggestionsInlineEdit" xml:space="preserve">
+    <value>Suggest Changes</value>
+  </data>
   <data name="PostSuggestionsOff" xml:space="preserve">
     <value>Off</value>
+  </data>
+  <data name="PostSuggestionsOfferForFree" xml:space="preserve">
+    <value>Offer for Free</value>
+  </data>
+  <data name="PostSuggestionsOfferStars" xml:space="preserve">
+    <value>Offer ⭐️{0}</value>
+  </data>
+  <data name="PostSuggestionsOfferSubtitleStars" xml:space="preserve">
+    <value>Choose how many Stars to pay to publish this post.</value>
+  </data>
+  <data name="PostSuggestionsOfferSubtitleTON" xml:space="preserve">
+    <value>Choose how much to pay to publish this post.</value>
+  </data>
+  <data name="PostSuggestionsOfferTitle" xml:space="preserve">
+    <value>Suggest a Post</value>
+  </data>
+  <data name="PostSuggestionsOfferTitlePriceStars" xml:space="preserve">
+    <value>Enter Price in Stars</value>
+  </data>
+  <data name="PostSuggestionsOfferTitlePriceTON" xml:space="preserve">
+    <value>Enter Price in TON</value>
+  </data>
+  <data name="PostSuggestionsOfferTitleTime" xml:space="preserve">
+    <value>Publishing Time</value>
+  </data>
+  <data name="PostSuggestionsOfferTON" xml:space="preserve">
+    <value>Offer {0} TON</value>
   </data>
   <data name="PostSuggestionsPriceInfo" xml:space="preserve">
     <value>Your channel will receive {0} of the selected fee (~{1}) for each incoming message.</value>
@@ -11978,6 +12050,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="StarsCount_other" xml:space="preserve">
     <value>{0} Stars</value>
   </data>
+  <data name="StarsCountX" xml:space="preserve">
+    <value>{0} Stars</value>
+  </data>
   <data name="StarsFailed" xml:space="preserve">
     <value>Failed</value>
   </data>
@@ -12505,6 +12580,24 @@ list of viewers.</value>
   <data name="SuggestAnimatedEmojiInfo" xml:space="preserve">
     <value>Each time you enter an emoji you can replace it with an animated emoji.</value>
   </data>
+  <data name="SuggestAPostBelow" xml:space="preserve">
+    <value>Suggest a Post Below</value>
+  </data>
+  <data name="SuggestAPostBelowSubtitle" xml:space="preserve">
+    <value>Click to offer a price for publishing</value>
+  </data>
+  <data name="SuggestAPostBelowSubtitleStars" xml:space="preserve">
+    <value>⭐️ {0} for publishing anytime</value>
+  </data>
+  <data name="SuggestAPostBelowSubtitleStarsAndTime" xml:space="preserve">
+    <value>⭐️ {0} {1}</value>
+  </data>
+  <data name="SuggestAPostTooMuch" xml:space="preserve">
+    <value>Maximum offer: {0}</value>
+  </data>
+  <data name="SuggestAPostTooSmall" xml:space="preserve">
+    <value>Minimum offer: {0}</value>
+  </data>
   <data name="SuggestContacts" xml:space="preserve">
     <value>Suggest Frequent Contacts</value>
   </data>
@@ -12514,8 +12607,101 @@ list of viewers.</value>
   <data name="SuggestContactsInfo" xml:space="preserve">
     <value>Display people you message frequently at the top of the search section for quick access.</value>
   </data>
+  <data name="SuggestedMessageAcceptInfo" xml:space="preserve">
+    <value>Do you want to publish this post from **{0}**?</value>
+  </data>
+  <data name="SuggestedMessageAcceptInfo3" xml:space="preserve">
+    <value>It must remain visible for at least **{0}** hours after publication.</value>
+  </data>
+  <data name="SuggestedMessageAcceptInfoAdmin2" xml:space="preserve">
+    <value>You will receive **{0}** ({2}) for publishing this post **{1}**.</value>
+  </data>
+  <data name="SuggestedMessageAcceptInfoAnytimeAdmin2" xml:space="preserve">
+    <value>You will receive **{0}** ({1}) for publishing this post.</value>
+  </data>
+  <data name="SuggestedMessageAcceptInfoAnytimeUser2" xml:space="preserve">
+    <value>You will pay **{0}** for publishing this post.</value>
+  </data>
+  <data name="SuggestedMessageAcceptInfoUser2" xml:space="preserve">
+    <value>You will pay **{0}** for publishing this post **{1}**.</value>
+  </data>
+  <data name="SuggestedMessageAcceptStarsDisclaimer" xml:space="preserve">
+    <value>Transactions in Stars may be reversed by the payment provider within 21 days. Only accept Stars from people you trust.</value>
+  </data>
+  <data name="SuggestedMessageDecline" xml:space="preserve">
+    <value>Decline</value>
+  </data>
+  <data name="SuggestedMessageDeclineInfo" xml:space="preserve">
+    <value>Do you want to decline this post from **{0}**?</value>
+  </data>
+  <data name="SuggestedMessageDeclineReasonHint" xml:space="preserve">
+    <value>Add a reason (optional)</value>
+  </data>
+  <data name="SuggestedOfferCompleteAmountF" xml:space="preserve">
+    <value>{0} has received ⭐️ {1} for publishing post</value>
+  </data>
+  <data name="SuggestedOfferCompleteAmountUnknown" xml:space="preserve">
+    <value>{0} received payment for publishing post</value>
+  </data>
+  <data name="SuggestedOfferRefundByAdminAmountF" xml:space="preserve">
+    <value>⭐️ {2} was returned to {0} because {1} deleted the message</value>
+  </data>
+  <data name="SuggestedOfferRefundByAdminAmountUnknown" xml:space="preserve">
+    <value>Payment was returned to {0} because {1} deleted the message</value>
+  </data>
+  <data name="SuggestedOfferRefundByUserAmountF" xml:space="preserve">
+    <value>{1} will not receive ⭐️ {2} because {0} requested a refund</value>
+  </data>
+  <data name="SuggestedOfferRefundByUserAmountUnknown" xml:space="preserve">
+    <value>{1} will not receive payment because {0} requested a refund</value>
+  </data>
+  <data name="SuggestedOfferStars" xml:space="preserve">
+    <value>Offer Stars</value>
+  </data>
+  <data name="SuggestedOfferTON" xml:space="preserve">
+    <value>Offer TON</value>
+  </data>
+  <data name="SuggestedPostAcceptTitle" xml:space="preserve">
+    <value>Accept Terms</value>
+  </data>
+  <data name="SuggestedPostPublish" xml:space="preserve">
+    <value>Publish</value>
+  </data>
   <data name="SuggestionLockedStars" xml:space="preserve">
     <value>**{0}** charges **⭐️ {1}** per message to its admin.</value>
+  </data>
+  <data name="SuggestionOfferInfoPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="SuggestionOfferInfoTime" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="SuggestionOfferInfoTitle" xml:space="preserve">
+    <value>**{0}** suggested a post.</value>
+  </data>
+  <data name="SuggestionOfferInfoTitleEditedAnd" xml:space="preserve">
+    <value>and</value>
+  </data>
+  <data name="SuggestionOfferInfoTitleEditedFromX" xml:space="preserve">
+    <value>**{0}** suggested a new {1} for this post.</value>
+  </data>
+  <data name="SuggestionOfferInfoTitleEditedFromYou" xml:space="preserve">
+    <value>**You** suggested a new {0} for this post.</value>
+  </data>
+  <data name="SuggestionOfferInfoTitleEditedMedia" xml:space="preserve">
+    <value>media</value>
+  </data>
+  <data name="SuggestionOfferInfoTitleEditedPrice" xml:space="preserve">
+    <value>price</value>
+  </data>
+  <data name="SuggestionOfferInfoTitleEditedText" xml:space="preserve">
+    <value>text</value>
+  </data>
+  <data name="SuggestionOfferInfoTitleEditedTime" xml:space="preserve">
+    <value>time</value>
+  </data>
+  <data name="SuggestionOfferInfoTitleYou" xml:space="preserve">
+    <value>**You** suggested a post.</value>
   </data>
   <data name="SuggestionUnlockedStars" xml:space="preserve">
     <value>Send a direct message to the administrator of **{0}**.</value>
@@ -12935,6 +13121,9 @@ in mini apps on Telegram.</value>
   <data name="TodoEditTitle" xml:space="preserve">
     <value>Edit Checklist</value>
   </data>
+  <data name="TodoItemQuote" xml:space="preserve">
+    <value>Reply to Item</value>
+  </data>
   <data name="TodoItemsTitle" xml:space="preserve">
     <value>Checklist</value>
   </data>
@@ -13000,6 +13189,15 @@ in mini apps on Telegram.</value>
   </data>
   <data name="TodoUncheck" xml:space="preserve">
     <value>Uncheck</value>
+  </data>
+  <data name="TonCount_one" xml:space="preserve">
+    <value>{0} TON</value>
+  </data>
+  <data name="TonCount_other" xml:space="preserve">
+    <value>{0} TON</value>
+  </data>
+  <data name="TonCountX" xml:space="preserve">
+    <value>{0} TON</value>
   </data>
   <data name="TooManyTries" xml:space="preserve">
     <value>Too many tries.

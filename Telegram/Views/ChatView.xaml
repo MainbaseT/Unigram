@@ -414,6 +414,20 @@
                                            FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
                                            FontSize="16" />
 
+                                <Border x:Name="Publisher"
+                                        Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                        CornerRadius="12"
+                                        HorizontalAlignment="Center"
+                                        Padding="8,2,8,3"
+                                        Margin="0,4,0,4"
+                                        Visibility="Collapsed">
+                                    <TextBlock x:Name="PublisherLabel"
+                                               Foreground="#DDFFFFFF"
+                                               TextAlignment="Center"
+                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                               TextWrapping="NoWrap" />
+                                </Border>
+
                                 <controls:FormattedTextBlock x:Name="Subtitle"
                                                              Foreground="#FFFFFF"
                                                              TextAlignment="Center"
@@ -426,15 +440,15 @@
 
                                 <Border x:Name="View"
                                         Background="{ThemeResource MessageServiceBackgroundBrush}"
-                                        CornerRadius="12"
+                                        CornerRadius="14"
                                         HorizontalAlignment="Center"
-                                        Padding="12,4,12,4"
+                                        Padding="12,3,12,5"
                                         Margin="0,0,0,12">
                                     <TextBlock x:Name="ViewLabel"
                                                Text="{CustomResource BoostingReceivedGiftOpenBtn}"
                                                Foreground="#FFFFFF"
                                                TextAlignment="Center"
-                                               Style="{StaticResource CaptionTextBlockStyle}" />
+                                               Style="{StaticResource BaseTextBlockStyle}" />
                                 </Border>
                             </StackPanel>
                         </messages:MessageService>
@@ -560,9 +574,9 @@
 
                                     <Border x:Name="View"
                                             Background="{ThemeResource MessageServiceBackgroundBrush}"
-                                            CornerRadius="12"
+                                            CornerRadius="14"
                                             HorizontalAlignment="Center"
-                                            Padding="12,4,12,4"
+                                            Padding="12,3,12,5"
                                             Margin="0,8,0,12"
                                             Grid.ColumnSpan="2"
                                             Grid.Row="3">
@@ -570,7 +584,7 @@
                                                    Text="{CustomResource Gift2UniqueView}"
                                                    Foreground="#FFFFFF"
                                                    TextAlignment="Center"
-                                                   Style="{StaticResource CaptionTextBlockStyle}" />
+                                                   Style="{StaticResource BaseTextBlockStyle}" />
                                     </Border>
                                 </Grid>
                             </controls:PatternBackground.Footer>
@@ -604,15 +618,15 @@
 
                                 <Border x:Name="View"
                                         Background="{ThemeResource MessageServiceBackgroundBrush}"
-                                        CornerRadius="12"
+                                        CornerRadius="14"
                                         HorizontalAlignment="Center"
-                                        Padding="12,4,12,4"
+                                        Padding="12,3,12,5"
                                         Margin="0,0,0,12">
                                     <TextBlock x:Name="ViewLabel"
                                                Text="{CustomResource BoostingReceivedGiftOpenBtn}"
                                                Foreground="#FFFFFF"
                                                TextAlignment="Center"
-                                               Style="{StaticResource CaptionTextBlockStyle}" />
+                                               Style="{StaticResource BaseTextBlockStyle}" />
                                 </Border>
                             </StackPanel>-->
                         </controls:PatternBackground>
@@ -1708,6 +1722,7 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Button to access scheduled messages -->
@@ -1755,8 +1770,7 @@
                                                               FontSize="{StaticResource GlyphLargeFontSize}"
                                                               VerticalAlignment="Bottom"
                                                               AutomationProperties.Name="{CustomResource AccDescrBotCommands}"
-                                                              ToolTipService.ToolTip="{CustomResource AccDescrBotCommands}"
-                                                              Grid.Column="1" />
+                                                              ToolTipService.ToolTip="{CustomResource AccDescrBotCommands}" />
                                     </Border>
 
                                     <!-- Button to use bot keyboard, bots/groups only -->
@@ -1771,8 +1785,21 @@
                                                                       FontSize="{StaticResource GlyphLargeFontSize}"
                                                                       VerticalAlignment="Bottom"
                                                                       AutomationProperties.Name="{CustomResource AccDescrBotKeyboard}"
-                                                                      ToolTipService.ToolTip="{CustomResource AccDescrBotKeyboard}"
-                                                                      Grid.Column="1" />
+                                                                      ToolTipService.ToolTip="{CustomResource AccDescrBotKeyboard}" />
+                                    </Border>
+
+                                    <Border x:Name="btnSuggest"
+                                            VerticalAlignment="Bottom"
+                                            Grid.Column="3">
+                                        <controls:GlyphButton x:Name="ButtonSuggest"
+                                                              Click="Suggest_Click"
+                                                              AllowFocusOnInteraction="False"
+                                                              Glyph="&#xEACE;"
+                                                              FontFamily="{StaticResource TelegramThemeFontFamily}"
+                                                              FontSize="{StaticResource GlyphLargeFontSize}"
+                                                              VerticalAlignment="Bottom"
+                                                              AutomationProperties.Name="{CustomResource AccDescrSuggestPost}"
+                                                              ToolTipService.ToolTip="{CustomResource AccDescrSuggestPost}" />
                                     </Border>
                                 </Grid>
 

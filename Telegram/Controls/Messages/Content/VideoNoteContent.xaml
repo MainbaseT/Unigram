@@ -53,15 +53,15 @@
                             </Border>
                         </Border>
 
-                        <Border x:Name="Element"
-                                CornerRadius="112">
+                        <Grid x:Name="Element"
+                              CornerRadius="112">
                             <controls:AnimatedImage x:Name="Player"
                                                     AutoPlay="False"
                                                     FrameSize="0,0"
                                                     IsCachingEnabled="False"
                                                     Stretch="UniformToFill"
                                                     IsHitTestVisible="False" />
-                        </Border>
+                        </Grid>
 
                         <Border x:Name="Overlay"
                                 IsHitTestVisible="False"

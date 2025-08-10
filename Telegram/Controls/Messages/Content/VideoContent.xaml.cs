@@ -275,7 +275,7 @@ namespace Telegram.Controls.Messages.Content
             else
             {
                 var size = Math.Max(file.Size, file.ExpectedSize);
-                if (file.Local.IsDownloadingActive && !message.ClientService.IsDownloadFilePartial(file.Id))
+                if (file.Local.IsDownloadingActive)
                 {
                     if (!hasSpoiler && message.Delegate.CanBeDownloaded(video, file))
                     {
@@ -473,17 +473,24 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            var position = TimeSpan.FromSeconds(video.Duration - Math.Truncate(e.Position));
-            if (position.TotalHours >= 1)
+            try
             {
-                Subtitle.Text = position.ToString("h\\:mm\\:ss");
-            }
-            else
-            {
-                Subtitle.Text = position.ToString("mm\\:ss");
-            }
+                var position = TimeSpan.FromSeconds(video.Duration - Math.Truncate(e.Position));
+                if (position.TotalHours >= 1)
+                {
+                    Subtitle.Text = position.ToString("h\\:mm\\:ss");
+                }
+                else
+                {
+                    Subtitle.Text = position.ToString("mm\\:ss");
+                }
 
-            UpdatePosition(e.Position, Player.IsPlaying ? video.Duration : 0);
+                UpdatePosition(e.Position, Player.IsPlaying ? video.Duration : 0);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         public void Recycle()

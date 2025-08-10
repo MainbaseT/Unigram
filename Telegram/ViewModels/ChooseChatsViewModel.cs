@@ -638,7 +638,7 @@ namespace Telegram.ViewModels
             }
 
             var starCount = ClientService.PaidMessageStarCount(chat);
-            var options = new MessageSendOptions(directMessagesChatTopicId, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+            var options = new MessageSendOptions(directMessagesChatTopicId, null, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
 
             action(options, messageThreadId);
         }
@@ -675,7 +675,8 @@ namespace Telegram.ViewModels
                 NavigationService.NavigateToChat(chats[0], topic: topic, state: new NavigationState
                 {
                     { "reply_to", replyToMessage.Message },
-                    { "reply_to_quote", replyToMessage.Quote }
+                    { "reply_to_quote", replyToMessage.Quote },
+                    { "reply_to_task_id", replyToMessage.ChecklistTaskId },
                 });
             }
             else if (_configuration is ChooseChatsConfigurationShareGame shareGame)

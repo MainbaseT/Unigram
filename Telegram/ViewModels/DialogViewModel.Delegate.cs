@@ -136,7 +136,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                NavigationService.NavigateToChat(chatId, messageId, topic: messageTopic, state: new NavigationState { { "highlight", replyToMessage.Quote } });
+                NavigationService.NavigateToChat(chatId, messageId, topic: messageTopic, state: new NavigationState { { "highlight", replyToMessage.Quote }, { "checklist_task_id", replyToMessage.ChecklistTaskId } });
             }
             else if (replyToMessage.Origin != null && replyToMessage.MessageId == 0)
             {
@@ -146,7 +146,7 @@ namespace Telegram.ViewModels
             }
             else if (replyToMessage.ChatId == message.ChatId || replyToMessage.ChatId == 0)
             {
-                await LoadMessageSliceAsync(message.Id, replyToMessage.MessageId, highlight: replyToMessage.Quote);
+                await LoadMessageSliceAsync(message.Id, replyToMessage.MessageId, highlight: replyToMessage.Quote, checklistTaskId: replyToMessage.ChecklistTaskId);
             }
         }
 

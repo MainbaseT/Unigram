@@ -224,7 +224,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void Message_TextEntityClick(object sender, TextEntityClickEventArgs e)
         {
-            if (sender is not FormattedTextBlock textBlock || textBlock.Tag is not MessageViewModel message || message.Delegate == null || message.PlaybackService == null)
+            if (sender is not FormattedTextBlock textBlock || textBlock.Tag is not MessageViewModel message || message.Delegate == null)
             {
                 return;
             }

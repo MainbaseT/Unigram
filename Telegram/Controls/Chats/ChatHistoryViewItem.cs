@@ -179,7 +179,7 @@ namespace Telegram.Controls.Chats
             {
                 return child.GetAutomationName() ?? base.GetNameCore();
             }
-            
+
             var content = _parent.ItemFromContainer(_owner);
             if (content is MessageWithOwner messageWithOwner)
             {

@@ -466,7 +466,7 @@ namespace Telegram.Controls.Chats
                 }
                 else if (entity == AutocompleteEntity.Sticker)
                 {
-                    if (index == 0 && ViewModel.ComposerHeader?.EditingMessage == null)
+                    if (index == 0 && ViewModel.ComposerHeader?.Editing == null)
                     {
                         ShowOrUpdateEmojiFlyout(0, new SearchStickersCollection(ViewModel.ClientService, ViewModel.Settings, true, text, ViewModel.Chat?.Id ?? 0));
                         inline = true;
@@ -907,7 +907,7 @@ namespace Telegram.Controls.Chats
 
                 return;
             }
-            else if (ViewModel.Type == DialogType.ScheduledMessages && ViewModel.ComposerHeader?.EditingMessage == null)
+            else if (ViewModel.Type == DialogType.ScheduledMessages && ViewModel.ComposerHeader?.Editing == null)
             {
                 Schedule(false);
                 return;

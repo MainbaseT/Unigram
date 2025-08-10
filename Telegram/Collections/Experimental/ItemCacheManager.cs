@@ -43,7 +43,6 @@ namespace Telegram.Collections
 
         // List of ranges for items that are not present in the cache
         internal ItemIndexRangeList _requests;
-        internal ItemIndexRangeList _visibleRanges;
 
         private ItemIndexRange[] _trackedRanges;
 
@@ -175,7 +174,6 @@ namespace Telegram.Collections
             if (!HasRangesChanged(ranges)) { return; }
 
             //figure out what items need to be fetched because we don't have them in the cache
-            _visibleRanges = new ItemIndexRangeList(visibleRange);
             _requests = new ItemIndexRangeList(ranges);
             _trackedRanges = ranges;
 
@@ -222,16 +220,7 @@ namespace Telegram.Collections
         {
             if (_requests.Count > 0)
             {
-                ItemIndexRange range;
-                if (_visibleRanges.Count > 0 /*&& _requests.Intersects(_visibleRanges[0])*/)
-                {
-                    range = _visibleRanges[0];
-                }
-                else
-                {
-                    range = _requests[0];
-                }
-
+                var range = _requests[0];
                 if (range.Length > maxsize)
                 {
                     range = new ItemIndexRange(range.FirstIndex, (uint)maxsize);
@@ -341,7 +330,6 @@ namespace Telegram.Collections
                             }
                         }
 
-                        _visibleRanges.Subtract(data.Range);
                         _requests.Subtract(data.Range);
                     }
                 }

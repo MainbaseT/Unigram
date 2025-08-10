@@ -13,6 +13,7 @@ using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
+using Windows.UI.Xaml.Controls;
 using WM = Windows.Media;
 
 namespace Telegram.Services
@@ -59,6 +60,9 @@ namespace Telegram.Services
         void Clear();
 
         void Play(MessageWithOwner message, MessageTopic topic = null);
+
+        void Attach(SwapChainPanel panel);
+        void Detach(SwapChainPanel panel);
 
         TimeSpan Position { get; }
         TimeSpan Duration { get; }
@@ -613,7 +617,7 @@ namespace Telegram.Services
             }
 
             var offset = -49;
-            var filter = message.Content is MessageAudio ? new SearchMessagesFilterAudio() : (SearchMessagesFilter)new SearchMessagesFilterVoiceNote();
+            var filter = message.Content is MessageAudio ? new SearchMessagesFilterAudio() : (SearchMessagesFilter)new SearchMessagesFilterVoiceAndVideoNote();
 
             var response = await message.ClientService.SendAsync(new SearchChatMessages(message.ChatId, _topic, string.Empty, null, message.Id, offset, 100, filter));
             if (response is FoundChatMessages messages)
@@ -752,7 +756,7 @@ namespace Telegram.Services
         {
             if (_player == null)
             {
-                _player = new AsyncMediaPlayer(false);
+                _player = new AsyncMediaPlayer(true);
                 //_mediaPlayer.SystemMediaTransportControls.AutoRepeatMode = _settingsService.Playback.RepeatMode;
                 //_mediaPlayer.SystemMediaTransportControls.ButtonPressed += Transport_ButtonPressed;
                 //_mediaPlayer.PlaybackSession.PlaybackStateChanged += OnPlaybackStateChanged;
@@ -768,6 +772,16 @@ namespace Telegram.Services
             }
 
             return _player;
+        }
+
+        public void Attach(SwapChainPanel panel)
+        {
+            Run(player => player.Context.Attach(panel));
+        }
+
+        public void Detach(SwapChainPanel panel)
+        {
+            Run(player => player.Context.Detach(panel));
         }
     }
 

@@ -61,7 +61,7 @@ namespace Telegram.Views.Profile
 
                     if (args.Item is MessageWithOwner message)
                     {
-                        cell.UpdateMessage(ViewModel.MessageDelegate, message);
+                        cell.UpdateMessage(ViewModel, message);
                     }
                     else
                     {

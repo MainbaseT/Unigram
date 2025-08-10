@@ -338,6 +338,9 @@
     <Compile Include="Controls\Messages\Content\StickerSetContent.xaml.cs">
       <DependentUpon>StickerSetContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
+    <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />
+    <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionEdit.cs" />
     <Compile Include="Controls\Messages\MessageEffectMenuFlyout.xaml.cs">
       <DependentUpon>MessageEffectMenuFlyout.xaml</DependentUpon>
     </Compile>
@@ -348,6 +351,9 @@
       <DependentUpon>MessageFactCheck.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Messages\ReplyMarkupInlinePanel.cs" />
+    <Compile Include="Controls\Messages\Service\SuggestedPostInfoCell.xaml.cs">
+      <DependentUpon>SuggestedPostInfoCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NativeVideoPlayer.xaml.cs">
       <DependentUpon>NativeVideoPlayer.xaml</DependentUpon>
     </Compile>
@@ -357,10 +363,14 @@
     <Compile Include="Controls\Messages\Content\ChecklistTaskContent.xaml.cs">
       <DependentUpon>ChecklistTaskContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PlaybackOverlay.xaml.cs">
+      <DependentUpon>PlaybackOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PremiumStarHeader.cs" />
     <Compile Include="Controls\ProfileGiftsCover.xaml.cs">
       <DependentUpon>ProfileGiftsCover.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ProfileRating.cs" />
     <Compile Include="Controls\ProfilePatternCover.cs" />
     <Compile Include="Common\RectangleF.cs" />
     <Compile Include="Controls\SlideTextBlock.cs" />
@@ -382,6 +392,7 @@
     <Compile Include="Entities\StorageAlbum.cs" />
     <Compile Include="Entities\VideoGeneration.cs" />
     <Compile Include="Services\Calls\VoipCallBase.cs" />
+    <Compile Include="Services\Calls\VoipCoordinator.cs" />
     <Compile Include="Services\Calls\VoipGroupCallVerificationStateChangedEventArgs.cs" />
     <Compile Include="Services\Calls\VoipGroupCallJoinedStateChangedEventArgs.cs" />
     <Compile Include="Services\Calls\VoipGroupCallParticipants.cs" />
@@ -666,7 +677,6 @@
     <Compile Include="Collections\KeyedList.cs" />
     <Compile Include="Collections\MvxObservableCollection.cs" />
     <Compile Include="Collections\SearchChatMessagesCollection.cs" />
-    <Compile Include="Collections\SearchChatsCollection.cs" />
     <Compile Include="Collections\SearchCollection.cs" />
     <Compile Include="Collections\SearchMembersAndUsersCollection.cs" />
     <Compile Include="Collections\SearchStickersCollection.cs" />
@@ -1258,6 +1268,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\ChooseDateTimePopup.xaml.cs">
+      <DependentUpon>ChooseDateTimePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\CreateChecklistPopup.xaml.cs">
       <DependentUpon>CreateChecklistPopup.xaml</DependentUpon>
     </Compile>
@@ -1300,6 +1313,9 @@
     </Compile>
     <Compile Include="Views\Popups\FactCheckPopup.xaml.cs">
       <DependentUpon>FactCheckPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\SuggestPostPopup.xaml.cs">
+      <DependentUpon>SuggestPostPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Popups\QrCodePopup.xaml.cs">
       <DependentUpon>QrCodePopup.xaml</DependentUpon>
@@ -2909,6 +2925,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\Messages\Service\SuggestedPostInfoCell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\NativeVideoPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -2928,6 +2948,10 @@
     <Page Include="Controls\Messages\Content\PollOptionContent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PlaybackOverlay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ProfileGiftsCover.xaml">
       <SubType>Designer</SubType>
@@ -3245,6 +3269,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Popups\ChooseDateTimePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Popups\CreateChecklistPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -3298,6 +3326,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\FactCheckPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\SuggestPostPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -4081,7 +4113,7 @@
       <Version>2.8.7</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Web.WebView2">
-      <Version>1.0.3240.44</Version>
+      <Version>1.0.3351.48</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
@@ -4104,20 +4136,20 @@
       <Version>4.6.1</Version>
     </PackageReference>
     <PackageReference Include="Telegram.Td.UWP">
-      <Version>1.8.51</Version>
+      <Version>1.8.52</Version>
     </PackageReference>
     <PackageReference Include="VideoLAN.LibVLC.UWP">
       <Version>3.0.21</Version>
     </PackageReference>
     <PackageReference Include="Win2D.uwp">
-      <Version>1.28.2</Version>
+      <Version>1.28.3</Version>
     </PackageReference>
     <!-- Used by AppCenter -->
     <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3">
       <Version>2.1.11</Version>
     </PackageReference>
     <PackageReference Include="System.Reflection.Metadata">
-      <Version>9.0.5</Version>
+      <Version>9.0.7</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

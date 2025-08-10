@@ -1053,6 +1053,11 @@ namespace Telegram.Common
             return output;
         }
 
+        public static string ReplaceStar(this string str, string value)
+        {
+            return str.Replace("\u2B50\uFE0F", value + "\u200A");
+        }
+
         /// <summary>
         /// Creates a relative path from one file or folder to another.
         /// </summary>
@@ -1092,6 +1097,12 @@ namespace Telegram.Common
 
         public static bool IsRelativePath(string relativeTo, string path, out string relative)
         {
+            if (string.IsNullOrEmpty(relativeTo) || string.IsNullOrEmpty(path))
+            {
+                relative = null;
+                return false;
+            }
+
             var relativeFull = Path.GetFullPath(relativeTo);
             var pathFull = Path.GetFullPath(path);
 

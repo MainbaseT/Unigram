@@ -1010,6 +1010,7 @@ namespace Telegram.Views
             }
 
             Handle(new UpdateUnconfirmedSession(ViewModel.ClientService.UnconfirmedSession));
+            Handle(new UpdateActiveCall());
             Handle(ViewModel.ClientService.FreezeState);
             UpdateChatFolders();
 
@@ -1088,7 +1089,7 @@ namespace Telegram.Views
             if (show && Playback == null)
             {
                 FindName(nameof(Playback));
-                Playback.Update(ViewModel.ClientService, TypeResolver.Current.Playback, ViewModel.NavigationService);
+                Playback.Update(ViewModel.ClientService, ViewModel.NavigationService);
             }
 
             return;

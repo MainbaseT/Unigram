@@ -32,31 +32,25 @@ namespace Telegram.Controls.Messages
 
         public Vector2 CornerRadius { get; set; }
 
-        public bool Update(MessageViewModel message, ReplyMarkup markup, bool inline = true)
+        public void Update(MessageViewModel message)
         {
-            if (_empty && (message == null || markup == null))
+            if (_empty && message?.ReplyMarkup == null)
             {
-                return false;
+                return;
             }
 
-            _empty = message == null || markup == null;
+            _empty = message?.ReplyMarkup == null;
 
-            Children.Clear();
-            Rows.Clear();
+            Children.ClearIfNotEmpty();
+            Rows.ClearIfNotEmpty();
 
-            if (markup is ReplyMarkupShowKeyboard keyboardMarkup && !inline)
+            if (message.ReplyMarkup is ReplyMarkupInlineKeyboard inlineMarkup)
             {
-                return Update(message, keyboardMarkup);
+                Update(message, inlineMarkup);
             }
-            else if (markup is ReplyMarkupInlineKeyboard inlineMarkup && inline)
-            {
-                return Update(message, inlineMarkup);
-            }
-
-            return false;
         }
 
-        public bool Update(MessageViewModel message, ReplyMarkupInlineKeyboard inlineMarkup)
+        public void Update(MessageViewModel message, ReplyMarkupInlineKeyboard inlineMarkup)
         {
             var rows = inlineMarkup.Rows;
 
@@ -75,7 +69,7 @@ namespace Telegram.Controls.Messages
 
             if (rows == null)
             {
-                return false;
+                return;
             }
 
             foreach (var row in rows)
@@ -107,7 +101,7 @@ namespace Telegram.Controls.Messages
                             }
                             else
                             {
-                                button.Content = item.Text.Replace("\u2B50", Icons.Premium + "\u200A");
+                                button.Content = item.Text.ReplaceStar(Icons.Premium);
                             }
                             break;
                         case InlineKeyboardButtonTypeWebApp:
@@ -116,6 +110,16 @@ namespace Telegram.Controls.Messages
                         case InlineKeyboardButtonTypeCopyText:
                             button.Glyph = Icons.CopyFilled16;
                             break;
+
+                        case InlineKeyboardButtonTypeSuggestionDecline:
+                            button.Icon = Icons.DismissCircleFilled;
+                            break;
+                        case InlineKeyboardButtonTypeSuggestionApprove:
+                            button.Icon = Icons.CheckmarkCircleFilled;
+                            break;
+                        case InlineKeyboardButtonTypeSuggestionEdit:
+                            button.Icon = Icons.EditFilled;
+                            break;
                     }
 
                     Children.Add(button);
@@ -123,8 +127,6 @@ namespace Telegram.Controls.Messages
 
                 Rows.Add(row.Count);
             }
-
-            return false;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Telegram.Common;
 using Telegram.Controls.Media;
+using Telegram.Converters;
 using Telegram.Native;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -77,19 +78,52 @@ namespace Telegram.Controls.Messages
                     string.Empty,
                     message.AsFormattedText());
             }
-            else if (embedded.EditingMessage != null)
+            else if (embedded.Editing != null)
             {
-                Message = embedded.EditingMessage;
-                GetMessageTemplate(embedded.EditingMessage, null, false, Strings.Edit, true, false, false);
+                Message = embedded.Editing.Message;
+                GetMessageTemplate(embedded.Editing.Message, null, false, 0, Strings.Edit, true, false, false);
             }
-            else if (embedded.ReplyToMessage != null)
+            else if (embedded.ReplyTo != null)
             {
-                Message = embedded.ReplyToMessage;
-                GetMessageTemplate(embedded.ReplyToMessage, embedded.ReplyToQuote?.Text, false, embedded.ReplyToQuote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
+                Message = embedded.ReplyTo.Message;
+                GetMessageTemplate(embedded.ReplyTo.Message, embedded.ReplyTo.Quote?.Text, false, embedded.ReplyTo.ChecklistTaskId, embedded.ReplyTo.Quote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
+            }
+            else if (embedded.SuggestedPostInfo != null)
+            {
+                Message = null;
+                GetSuggestedPostInfoTemplate(embedded.SuggestedPostInfo.Price, embedded.SuggestedPostInfo.SendDate);
             }
         }
 
         #endregion
+
+        private void GetSuggestedPostInfoTemplate(SuggestedPostPrice price, int sendDate)
+        {
+            // 1F4C6	
+            if (price == null && sendDate == 0)
+            {
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, Strings.SuggestAPostBelowSubtitle.AsFormattedText());
+            }
+            else if (sendDate == 0)
+            {
+                if (price is SuggestedPostPriceStar priceStar)
+                {
+                    SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStars.ReplaceStar(Icons.Star), priceStar.StarCount).AsFormattedText());
+                }
+                else if (price is SuggestedPostPriceTon priceTon)
+                {
+                    SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStars.ReplaceStar(Icons.Ton), priceTon.ToncoinCentCount / 100d).AsFormattedText());
+                }
+            }
+            else if (price is SuggestedPostPriceStar priceStar)
+            {
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Star), priceStar.StarCount, string.Format("\U0001F4C6", Formatter.DateAt(sendDate))).AsFormattedText());
+            }
+            else if (price is SuggestedPostPriceTon priceTon)
+            {
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Ton), priceTon.ToncoinCentCount / 100d, string.Format("\U0001F4C6", Formatter.DateAt(sendDate))).AsFormattedText());
+            }
+        }
 
         public void Mockup(string sender, string message)
         {
@@ -121,7 +155,7 @@ namespace Telegram.Controls.Messages
             else if (message.ReplyToItem is MessageViewModel replyToMessage && message.ReplyTo is MessageReplyToMessage replyToMessage1)
             {
                 Visibility = Visibility.Visible;
-                GetMessageTemplate(replyToMessage, replyToMessage1.Quote?.Text, replyToMessage1.Quote?.IsManual ?? false, null, outgoing, light, message.ForwardInfo != null);
+                GetMessageTemplate(replyToMessage, replyToMessage1.Quote?.Text, replyToMessage1.Quote?.IsManual ?? false, replyToMessage1.ChecklistTaskId, null, outgoing, light, message.ForwardInfo != null);
             }
             else if (message.ReplyToItem is Story replyToStory)
             {
@@ -163,7 +197,7 @@ namespace Telegram.Controls.Messages
             else
             {
                 Message = message;
-                GetMessageTemplate(message, null, false, title, true, false, message.ForwardInfo != null);
+                GetMessageTemplate(message, null, false, 0, title, true, false, message.ForwardInfo != null);
             }
         }
 
@@ -287,7 +321,7 @@ namespace Telegram.Controls.Messages
 
         #region Reply
 
-        private void GetMessageTemplate(MessageViewModel message, FormattedText quote, bool manual, string title, bool outgoing, bool white, bool forward)
+        private void GetMessageTemplate(MessageViewModel message, FormattedText quote, bool manual, int checklistTaskId, string title, bool outgoing, bool white, bool forward)
         {
             MessageSender sender;
             if (title == null)
@@ -356,7 +390,7 @@ namespace Telegram.Controls.Messages
                     SetPollTemplate(message, sender, poll, title, outgoing, white);
                     break;
                 case MessageChecklist checklist:
-                    SetChecklistTemplate(message, sender, checklist, title, outgoing, white);
+                    SetChecklistTemplate(message, sender, checklist, checklistTaskId, title, outgoing, white);
                     break;
                 case MessageSticker sticker:
                     SetStickerTemplate(message, sender, sticker, title, outgoing, white);
@@ -439,7 +473,7 @@ namespace Telegram.Controls.Messages
                     SetPollTemplate(message, sender, poll, title, outgoing, white);
                     break;
                 case MessageChecklist checklist:
-                    SetChecklistTemplate(message, sender, checklist, title, outgoing, white);
+                    SetChecklistTemplate(message, sender, checklist, replyToMessage.ChecklistTaskId, title, outgoing, white);
                     break;
                 case MessageSticker sticker:
                     SetStickerTemplate(message, sender, sticker, title, outgoing, white);
@@ -784,18 +818,34 @@ namespace Telegram.Controls.Messages
                 white);
         }
 
-        private void SetChecklistTemplate(MessageViewModel message, MessageSender sender, MessageChecklist checklist, string title, bool outgoing, bool white)
+        private void SetChecklistTemplate(MessageViewModel message, MessageSender sender, MessageChecklist checklist, int checklistTaskId, string title, bool outgoing, bool white)
         {
             HideThumbnail();
 
-            SetText(message,
-                outgoing,
-                sender,
-                title,
-                $"\u2611",
-                checklist.List.Title,
-                false,
-                white);
+            var task = checklistTaskId > 0 ? checklist.List.Tasks.FirstOrDefault(x => x.Id == checklistTaskId) : null;
+            if (task != null)
+            {
+                // TODO: proper icon
+                SetText(message,
+                    outgoing,
+                    sender,
+                    title,
+                    $"\u2611",
+                    task.Text,
+                    false,
+                    white);
+            }
+            else
+            {
+                SetText(message,
+                    outgoing,
+                    sender,
+                    title,
+                    $"\u2611",
+                    checklist.List.Title,
+                    false,
+                    white);
+            }
         }
 
         private void SetVoiceNoteTemplate(MessageViewModel message, MessageSender sender, FormattedText quote, bool manual, MessageVoiceNote voiceNote, string title, bool outgoing, bool white)
