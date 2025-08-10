@@ -75,7 +75,7 @@ namespace Telegram.Controls.Messages.Content
             {
                 Type.Text = string.Format(Strings.MessagePersonalTodoList, message.ClientService.GetTitle(message.SenderId, true));
             }
-            else if (message.Chat.Type is ChatTypePrivate)
+            else if (message.Chat.Type is ChatTypePrivate || !checklist.List.CanMarkTasksAsDone || message.ForwardInfo != null)
             {
                 Type.Text = Strings.MessageTodoList;
             }
