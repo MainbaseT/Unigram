@@ -138,7 +138,7 @@ namespace Telegram.Views.Chats.Popups
 
                 ScrollingHost.Padding = new Thickness(24, 0, 24, 24 + 32);
 
-                PurchasePanel.Visibility = Visibility.Visible;
+                PurchaseCommand.Visibility = Visibility.Visible;
                 PurchaseCommand.Content = _channel
                     ? Strings.BoostChannel
                     : Strings.BoostGroup;
@@ -160,11 +160,6 @@ namespace Telegram.Views.Chats.Popups
         private void CopyLink_Click(object sender, RoutedEventArgs e)
         {
             MessageHelper.CopyLink(XamlRoot, _status.BoostUrl);
-        }
-
-        private void PurchaseShadow_Loaded(object sender, RoutedEventArgs e)
-        {
-            VisualUtilities.DropShadow(PurchaseShadow);
         }
 
         private async void Purchase_Click(object sender, RoutedEventArgs e)

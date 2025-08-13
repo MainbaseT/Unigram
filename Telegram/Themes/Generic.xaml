@@ -84,6 +84,8 @@
            BasedOn="{StaticResource DefaultRichEditBoxStyle}" />
     <Style TargetType="local:SettingsComboBox"
            BasedOn="{StaticResource DefaultComboBoxStyle}" />
+    <Style TargetType="local:ButtonEx"
+           BasedOn="{StaticResource DefaultButtonStyle}" />
 
     <Style TargetType="local:BlockQuote">
         <Setter Property="Foreground"
@@ -4556,12 +4558,12 @@
                                             Margin="0,0,0,24"
                                             Grid.Row="4">
 
-                                    <local:BadgeButton x:Name="Action"
-                                                       Content="{TemplateBinding ButtonText}"
-                                                       Visibility="{TemplateBinding ButtonVisibility}"
-                                                       Style="{StaticResource StartButtonStyle}"
-                                                       Background="#2ca5e0"
-                                                       Margin="0" />
+                                    <Button x:Name="Action"
+                                            Content="{TemplateBinding ButtonText}"
+                                            Visibility="{TemplateBinding ButtonVisibility}"
+                                            Style="{StaticResource StartButtonStyle}"
+                                            Background="#2ca5e0"
+                                            Margin="0" />
 
                                     <Border Child="{TemplateBinding Footer}" />
                                 </StackPanel>

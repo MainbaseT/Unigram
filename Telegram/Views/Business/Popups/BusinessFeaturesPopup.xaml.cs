@@ -66,11 +66,6 @@ namespace Telegram.Views.Business.Popups
             }
         }
 
-        private void PurchaseShadow_Loaded(object sender, RoutedEventArgs e)
-        {
-            VisualUtilities.DropShadow(PurchaseShadow);
-        }
-
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ScrollingHost.SelectedItem is BusinessFeature feature)

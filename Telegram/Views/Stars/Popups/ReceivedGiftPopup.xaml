@@ -433,34 +433,24 @@
             </Grid>
         </Grid>
 
-        <Grid x:Name="PurchasePanel"
-              VerticalAlignment="Bottom"
-              HorizontalAlignment="Stretch"
-              Margin="24,8,24,0"
-              Grid.Row="1">
-            <controls:BadgeButton x:Name="PurchaseCommand"
-                                  Click="Purchase_Click"
-                                  Style="{StaticResource AccentButtonStyle}"
-                                  FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
-                                  HorizontalAlignment="Stretch"
-                                  HorizontalContentAlignment="Center"
-                                  FontWeight="SemiBold"
-                                  CornerRadius="4"
-                                  BorderThickness="1"
-                                  Margin="0"
-                                  Height="32">
-                <Grid>
-                    <TextBlock x:Name="PurchaseText"
-                               VerticalAlignment="Center"
-                               Margin="0,3,0,5" />
-                    <muxc:ProgressRing x:Name="PurchaseRing"
-                                       Visibility="Collapsed"
-                                       Foreground="#FFFFFF"
-                                       Width="20"
-                                       Height="20" />
-                </Grid>
-            </controls:BadgeButton>
-        </Grid>
+        <Button x:Name="PurchaseCommand"
+                Click="Purchase_Click"
+                Style="{StaticResource AccentButtonStyle}"
+                FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Stretch"
+                Margin="24,8,24,0"
+                Grid.Row="1">
+            <Grid>
+                <TextBlock x:Name="PurchaseText"
+                           VerticalAlignment="Center" />
+                <muxc:ProgressRing x:Name="PurchaseRing"
+                                   Visibility="Collapsed"
+                                   Foreground="#FFFFFF"
+                                   Width="20"
+                                   Height="20" />
+            </Grid>
+        </Button>
 
         <controls:MoreButton x:Name="MoreButton"
                              Click="More_ContextRequested"

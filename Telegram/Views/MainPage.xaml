@@ -736,15 +736,15 @@
                                        Fill="#2ca5e0"
                                        RadiusX="18"
                                        RadiusY="18" />
-                            <controls:BadgeButton x:Name="UpdateCloud"
-                                                  Click="{x:Bind ViewModel.UpdateApp}"
-                                                  Visibility="{x:Bind ViewModel.IsUpdateAvailable, Mode=OneWay}"
-                                                  Content="{CustomResource UpdateTelegram}"
-                                                  Style="{StaticResource StartButtonStyle}"
-                                                  Padding="16,3,16,5"
-                                                  CornerRadius="18"
-                                                  Margin="0"
-                                                  Height="36" />
+                            <Button x:Name="UpdateCloud"
+                                    Click="{x:Bind ViewModel.UpdateApp}"
+                                    Visibility="{x:Bind ViewModel.IsUpdateAvailable, Mode=OneWay}"
+                                    Content="{CustomResource UpdateTelegram}"
+                                    Style="{StaticResource StartButtonStyle}"
+                                    Padding="16,3,16,5"
+                                    CornerRadius="18"
+                                    Margin="0"
+                                    Height="36" />
                         </Grid>
 
                         <Grid x:Name="ManagePanel"

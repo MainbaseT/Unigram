@@ -217,6 +217,7 @@
     <Compile Include="Common\VideoPreloader.cs" />
     <Compile Include="Composition\CompositionVisualColorSource.cs" />
     <Compile Include="Composition\WeakInteractionTrackerOwner.cs" />
+    <Compile Include="Controls\ButtonEx.cs" />
     <Compile Include="Controls\Calls\MediaStateBadge.xaml.cs">
       <DependentUpon>MediaStateBadge.xaml</DependentUpon>
     </Compile>

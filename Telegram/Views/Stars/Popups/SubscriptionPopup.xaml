@@ -26,7 +26,7 @@
                                                  Width="96"
                                                  Height="96" />
                         <controls:PremiumStarCount HorizontalAlignment="Right"
-                                                   VerticalAlignment="Bottom"/>
+                                                   VerticalAlignment="Bottom" />
                     </Grid>
 
                     <TextBlock x:Name="Title"
@@ -147,18 +147,18 @@
               Margin="24,12,24,24"
               Height="32"
               Grid.Row="1">
-            <controls:BadgeButton x:Name="PurchaseCommand"
-                                  Content="{CustomResource StarsSubscriptionAgain}"
-                                  Click="Purchase_Click"
-                                  Style="{StaticResource AccentButtonStyle}"
-                                  HorizontalAlignment="Stretch"
-                                  HorizontalContentAlignment="Center"
-                                  FontWeight="SemiBold"
-                                  Padding="16,3,16,5"
-                                  CornerRadius="4"
-                                  BorderThickness="1"
-                                  Margin="0"
-                                  Height="32" />
+            <Button x:Name="PurchaseCommand"
+                    Content="{CustomResource StarsSubscriptionAgain}"
+                    Click="Purchase_Click"
+                    Style="{StaticResource AccentButtonStyle}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    FontWeight="SemiBold"
+                    Padding="16,3,16,5"
+                    CornerRadius="4"
+                    BorderThickness="1"
+                    Margin="0"
+                    Height="32" />
 
             <Button x:Name="CancelCommand"
                     Content="{CustomResource StarsSubscriptionCancel}"

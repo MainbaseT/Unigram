@@ -372,15 +372,15 @@
                        Fill="#2ca5e0"
                        RadiusX="18"
                        RadiusY="18" />
-            <controls:BadgeButton x:Name="BuyCommand"
-                                  Command="{x:Bind ViewModel.SendCommand}"
-                                  Content="{x:Bind ConvertPay(ViewModel.IsReceipt, ViewModel.TotalAmount, ViewModel.Invoice.Currency), Mode=OneWay, FallbackValue=Empty}"
-                                  Style="{StaticResource StartButtonStyle}"
-                                  FontWeight="SemiBold"
-                                  Padding="16,3,16,5"
-                                  CornerRadius="18"
-                                  Margin="0"
-                                  Height="36" />
+            <Button x:Name="BuyCommand"
+                    Command="{x:Bind ViewModel.SendCommand}"
+                    Content="{x:Bind ConvertPay(ViewModel.IsReceipt, ViewModel.TotalAmount, ViewModel.Invoice.Currency), Mode=OneWay, FallbackValue=Empty}"
+                    Style="{StaticResource StartButtonStyle}"
+                    FontWeight="SemiBold"
+                    Padding="16,3,16,5"
+                    CornerRadius="18"
+                    Margin="0"
+                    Height="36" />
         </Grid>
     </Grid>
 </Page>
