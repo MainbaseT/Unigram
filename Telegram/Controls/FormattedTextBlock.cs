@@ -768,37 +768,59 @@ namespace Telegram.Controls
                         {
                             var data = text.Substring(entity.Offset, entity.Length);
 
-                            var player = new CustomEmojiIcon();
-                            player.LoopCount = 0;
-                            player.Source = new CustomEmojiFileSource(clientService, customEmoji.CustomEmojiId);
-                            player.HorizontalAlignment = HorizontalAlignment.Left;
-                            player.FlowDirection = FlowDirection.LeftToRight;
-                            player.Style = EmojiStyle;
-                            player.IsHitTestVisible = false;
-                            player.IsEnabled = false;
-                            player.Emoji = data;
+                            UIElement presenter;
+                            if (customEmoji.CustomEmojiId == -1)
+                            {
+                                presenter = new TextBlock
+                                {
+                                    Text = data,
+                                    FontSize = 16,
+                                    FontFamily = BootStrapper.Current.Resources["SymbolThemeFontFamily"] as FontFamily,
+                                    Margin = new Thickness(0, 2, 0, -2)
+                                };
 
-                            if (autoFontSize != 0)
-                            {
-                                player.Width = autoFontSize * (20d / 14d);
-                                player.Height = autoFontSize * (20d / 14d);
-                                player.Margin = new Thickness(0, -2 * (20d / 14d), 0, -6 * (20d / 14d));
-                                player.FrameSize = new Size(autoFontSize * (20d / 14d), autoFontSize * (20d / 14d));
+                                BindingOperations.SetBinding(presenter, global::Windows.UI.Xaml.Controls.TextBlock.ForegroundProperty, new Binding
+                                {
+                                    Path = new PropertyPath("IconForeground"),
+                                    Source = this
+                                });
                             }
-                            else if (xamlFontSize == 14)
+                            else
                             {
-                                player.Margin = new Thickness(0, -2, 0, -6);
-                            }
-                            else if (xamlFontSize == 12)
-                            {
-                                player.Margin = new Thickness(0, 0, 0, -4);
-                                player.Width = 16;
-                                player.Height = 16;
-                                player.FrameSize = new Size(16, 16);
+                                var player = new CustomEmojiIcon();
+                                player.LoopCount = 0;
+                                player.Source = new CustomEmojiFileSource(clientService, customEmoji.CustomEmojiId);
+                                player.HorizontalAlignment = HorizontalAlignment.Left;
+                                player.FlowDirection = FlowDirection.LeftToRight;
+                                player.Style = EmojiStyle;
+                                player.IsHitTestVisible = false;
+                                player.IsEnabled = false;
+                                player.Emoji = data;
+
+                                if (autoFontSize != 0)
+                                {
+                                    player.Width = autoFontSize * (20d / 14d);
+                                    player.Height = autoFontSize * (20d / 14d);
+                                    player.Margin = new Thickness(0, -2 * (20d / 14d), 0, -6 * (20d / 14d));
+                                    player.FrameSize = new Size(autoFontSize * (20d / 14d), autoFontSize * (20d / 14d));
+                                }
+                                else if (xamlFontSize == 14)
+                                {
+                                    player.Margin = new Thickness(0, -2, 0, -6);
+                                }
+                                else if (xamlFontSize == 12)
+                                {
+                                    player.Margin = new Thickness(0, 0, 0, -4);
+                                    player.Width = 16;
+                                    player.Height = 16;
+                                    player.FrameSize = new Size(16, 16);
+                                }
+
+                                presenter = player;
                             }
 
                             var inline = new InlineUIContainer();
-                            inline.Child = player;
+                            inline.Child = presenter;
 
                             // We are working around multiple issues here:
                             // ZWNJ is always added right after a custom emoji to make sure that the line height always matches Segoe UI.
@@ -1573,6 +1595,19 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty HyperlinkForegroundProperty =
             DependencyProperty.Register("HyperlinkForeground", typeof(Brush), typeof(FormattedTextBlock), new PropertyMetadata(null));
+
+        #endregion
+
+        #region IconForeground
+
+        public Brush IconForeground
+        {
+            get { return (Brush)GetValue(IconForegroundProperty); }
+            set { SetValue(IconForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty IconForegroundProperty =
+            DependencyProperty.Register("IconForeground", typeof(Brush), typeof(FormattedTextBlock), new PropertyMetadata(null));
 
         #endregion
 

@@ -154,6 +154,7 @@
                                                          TextTrimming="CharacterEllipsis"
                                                          TextWrapping="Wrap"
                                                          Foreground="{TemplateBinding Foreground}"
+                                                         IconForeground="{TemplateBinding SubtleBrush}"
                                                          FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                                          Style="{StaticResource ReplyBodyFormattedTextBlockStyle}"
                                                          EmojiStyle="{StaticResource MessageCustomEmojiStyle}"

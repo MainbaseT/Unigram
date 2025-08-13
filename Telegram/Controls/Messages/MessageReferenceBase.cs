@@ -11,6 +11,7 @@ using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Native;
+using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Storage.Streams;
@@ -825,13 +826,17 @@ namespace Telegram.Controls.Messages
             var task = checklistTaskId > 0 ? checklist.List.Tasks.FirstOrDefault(x => x.Id == checklistTaskId) : null;
             if (task != null)
             {
-                // TODO: proper icon
+                var text = new FormattedText(task.CompletionDate != 0 ? "\uEACF" : "\uEAD0", new[]
+                {
+                    new TextEntity(0, 1, new TextEntityTypeCustomEmoji(-1))
+                });
+
                 SetText(message,
                     outgoing,
                     sender,
                     title,
-                    $"\u2611",
-                    task.Text,
+                    string.Empty,
+                    ClientEx.Format("{0} {1}", text, task.Text),
                     false,
                     white);
             }
@@ -841,8 +846,8 @@ namespace Telegram.Controls.Messages
                     outgoing,
                     sender,
                     title,
-                    $"\u2611",
-                    checklist.List.Title,
+                    string.Empty,
+                    ClientEx.Format($"\u2611 {0}", checklist.List.Title),
                     false,
                     white);
             }
