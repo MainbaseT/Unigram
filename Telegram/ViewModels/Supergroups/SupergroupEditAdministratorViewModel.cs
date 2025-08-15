@@ -84,6 +84,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanDeleteMessages = administrator.Rights.CanDeleteMessages;
                     CanEditMessages = administrator.Rights.CanEditMessages;
                     CanInviteUsers = administrator.Rights.CanInviteUsers;
+                    CanManageDirectMessages = administrator.Rights.CanManageDirectMessages;
                     CanPinMessages = administrator.Rights.CanPinMessages;
                     CanPostMessages = administrator.Rights.CanPostMessages;
                     CanPostStories = administrator.Rights.CanPostStories;
@@ -102,6 +103,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanDeleteMessages = true;
                     CanEditMessages = true;
                     CanInviteUsers = true;
+                    CanManageDirectMessages = true;
                     CanPinMessages = true;
                     CanPostMessages = true;
                     CanPostStories = true;
@@ -169,6 +171,7 @@ namespace Telegram.ViewModels.Supergroups
                     (!supergroup.IsChannel || _canEditMessages) &&
                     (supergroup.IsChannel || _canPinMessages) &&
                     (!supergroup.IsChannel || _canPostMessages) &&
+                    (!supergroup.IsChannel || _canManageDirectMessages) &&
                     _canPostStories &&
                     _canEditStories &&
                     _canDeleteStories &&
@@ -384,6 +387,17 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        private bool _canManageDirectMessages;
+        public bool CanManageDirectMessages
+        {
+            get => _canManageDirectMessages;
+            set
+            {
+                Set(ref _canManageDirectMessages, value);
+                RaisePropertyChanged(nameof(CanTransferOwnership));
+            }
+        }
+
         private bool _canInviteUsers;
         public bool CanInviteUsers
         {
@@ -488,6 +502,7 @@ namespace Telegram.ViewModels.Supergroups
                         CanDeleteMessages = _canDeleteMessages,
                         CanEditMessages = channel && _canEditMessages,
                         CanInviteUsers = _canInviteUsers,
+                        CanManageDirectMessages = channel && _canManageDirectMessages,
                         CanPinMessages = !channel && _canPinMessages,
                         CanPostMessages = channel && _canPostMessages,
                         CanPostStories = _canPostStories,

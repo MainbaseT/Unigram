@@ -93,6 +93,7 @@ namespace Telegram.Views.Supergroups.Popups
                 CanDeleteStories.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
                 DeleteMessages.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
                 BanUsers.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
+                ManageDirectMessages.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
                 AddUsers.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
                 PinMessages.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited && !chat.Permissions.CanPinMessages;
                 ManageVideoChats.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
@@ -121,6 +122,7 @@ namespace Telegram.Views.Supergroups.Popups
                 }
 
                 ChangeInfo.Content = group.IsChannel ? Strings.EditAdminChangeChannelInfo : Strings.EditAdminChangeGroupInfo;
+                ManageDirectMessages.Visibility = group.IsChannel ? Visibility.Visible : Visibility.Collapsed;
                 BanUsers.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
                 PinMessages.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
                 IsAnonymous.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
