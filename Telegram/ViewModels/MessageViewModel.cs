@@ -294,14 +294,14 @@ namespace Telegram.ViewModels
             return false;
         }
 
-        public bool IsDirectMessagesChatTopicMessage => _directMessagesChatTopic != null && !IsOutgoing;
+        public bool IsDirectMessagesChatTopicMessage => _directMessagesChatTopic != null && _directMessagesChatTopic.SenderId.AreTheSame(SenderId);
 
         private bool? _hasSenderPhoto;
         public bool HasSenderPhoto => _hasSenderPhoto ??= GetHasSenderPhoto();
 
         private bool GetHasSenderPhoto()
         {
-            if (IsService || IsDirectMessagesChatTopicMessage)
+            if (IsService || _directMessagesChatTopic != null)
             {
                 return false;
             }
