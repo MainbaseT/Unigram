@@ -176,7 +176,7 @@ namespace Telegram.Common
             remote.ReadCallback(limit, out long bytesRead);
             remote.Close(false);
 
-            if (bytesRead >= limit)
+            if (bytesRead > 0)
             {
                 var response = new HttpResponse();
                 response.StatusCode = "206";

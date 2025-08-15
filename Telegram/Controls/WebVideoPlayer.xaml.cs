@@ -351,7 +351,7 @@ namespace Telegram.Controls
                 var bytesRead = await remote.ReadCallbackAsync(limit);
                 remote.Close(false);
 
-                if (bytesRead >= limit)
+                if (bytesRead > 0)
                 {
                     if (extension == ".m3u8")
                     {

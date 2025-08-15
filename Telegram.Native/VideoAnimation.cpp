@@ -118,7 +118,7 @@ namespace winrt::Telegram::Native::implementation
                     requestFd(info);
                 }
 
-                if (info->fd != INVALID_HANDLE_VALUE && result >= buf_size)
+                if (info->fd != INVALID_HANDLE_VALUE && result > 0)
                 {
                     DWORD bytesRead;
                     DWORD moved = SetFilePointer(info->fd, info->file.Offset(), NULL, FILE_BEGIN);
