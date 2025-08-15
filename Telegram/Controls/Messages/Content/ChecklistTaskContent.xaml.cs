@@ -7,8 +7,8 @@
 using Microsoft.UI.Xaml.Controls;
 using System.Numerics;
 using Telegram.Assets.Icons;
+using Telegram.Common;
 using Telegram.Composition;
-using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -75,7 +75,7 @@ namespace Telegram.Controls.Messages.Content
             {
                 PhotoRoot = GetTemplateChild(nameof(PhotoRoot)) as Border;
 
-                var clip = PlaceholderImageHelper.Foreground.GetEllipticalClip(20, 20, 12, -2, 10);
+                var clip = PlaceholderHelper.Foreground.GetEllipticalClip(20, 20, 12, -2, 10);
                 var photo = ElementComposition.GetElementVisual(PhotoRoot);
                 var geometry = photo.Compositor.CreatePathGeometry(clip);
                 photo.Clip = photo.Compositor.CreateGeometricClip(geometry);

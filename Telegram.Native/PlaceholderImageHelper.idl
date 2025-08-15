@@ -6,8 +6,8 @@ namespace Telegram.Native
 	[default_interface]
 	runtimeclass PlaceholderImageHelper
 	{
-		static PlaceholderImageHelper Foreground{ get; };
-		static PlaceholderImageHelper Background{ get; };
+		PlaceholderImageHelper();
+		void HandleDeviceLost();
 
 		static void WriteBytes(Windows.Foundation.Collections.IVector<byte> hash, Windows.Storage.Streams.IRandomAccessStream randomAccessStream);
 		static Windows.Storage.Streams.IBuffer DrawWebP(String fileName, Int32 maxWidth, out Int32 pixelWidth, out Int32 pixelHeight);
@@ -26,6 +26,7 @@ namespace Telegram.Native
 
 		[default_overload]
 		void DrawThumbnailPlaceholder(String fileName, Single blurAmount, Windows.Storage.Streams.IRandomAccessStream randomAccessStream);
+		void DrawThumbnailPlaceholder(String fileName, Single blurAmount, Windows.Storage.Streams.IBuffer randomAccessStream);
 		void DrawThumbnailPlaceholder(Windows.Foundation.Collections.IVector<byte> bytes, Single blurAmount, Windows.Storage.Streams.IRandomAccessStream randomAccessStream);
 		void DrawThumbnailPlaceholder(Windows.Foundation.Collections.IVector<byte> bytes, Single blurAmount, Windows.Storage.Streams.IBuffer randomAccessStream);
 

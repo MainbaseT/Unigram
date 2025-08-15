@@ -27,10 +27,6 @@ using namespace winrt::Windows::UI::Xaml::Media::Imaging;
 
 namespace winrt::Telegram::Native::implementation
 {
-    std::mutex PlaceholderImageHelper::s_criticalSection;
-    winrt::com_ptr<PlaceholderImageHelper> PlaceholderImageHelper::s_foreground{ nullptr };
-    winrt::com_ptr<PlaceholderImageHelper> PlaceholderImageHelper::s_background{ nullptr };
-
     class CustomEmojiInlineObject
         : public winrt::implements<CustomEmojiInlineObject, IDWriteInlineObject>
     {
@@ -576,8 +572,36 @@ namespace winrt::Telegram::Native::implementation
         }
 
         winrt::com_ptr<IWICBitmapDecoder> wicBitmapDecoder;
-        //ReturnIfFailed(result, m_wicFactory->CreateDecoderFromFilename(fileName->Data(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad, &wicBitmapDecoder));
-        ReturnIfFailed(result, m_wicFactory->CreateDecoderFromFileHandle(reinterpret_cast<ULONG_PTR>(file), nullptr, WICDecodeMetadataCacheOnLoad, wicBitmapDecoder.put()));
+        ReturnIfFailed(result, m_wicFactory->CreateDecoderFromFileHandle(reinterpret_cast<ULONG_PTR>(file), nullptr, WICDecodeMetadataCacheOnDemand, wicBitmapDecoder.put()));
+
+        winrt::com_ptr<IWICBitmapFrameDecode> wicFrameDecode;
+        ReturnIfFailed(result, wicBitmapDecoder->GetFrame(0, wicFrameDecode.put()));
+
+        winrt::com_ptr<IWICFormatConverter> wicFormatConverter;
+        ReturnIfFailed(result, m_wicFactory->CreateFormatConverter(wicFormatConverter.put()));
+        ReturnIfFailed(result, wicFormatConverter->Initialize(wicFrameDecode.get(), GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, nullptr, 0.f, WICBitmapPaletteTypeCustom));
+
+        ReturnIfFailed(result, InternalDrawThumbnailPlaceholder(wicFormatConverter.get(), blurAmount, randomAccessStream, false));
+
+        CloseHandle(file);
+
+        return result;
+    }
+
+    HRESULT PlaceholderImageHelper::DrawThumbnailPlaceholder(hstring fileName, float blurAmount, IBuffer randomAccessStream)
+    {
+        std::lock_guard const guard(m_criticalSection);
+        HRESULT result;
+
+        HANDLE file = CreateFile2FromAppW(fileName.data(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr);
+
+        if (file == INVALID_HANDLE_VALUE)
+        {
+            return ERROR_FILE_NOT_FOUND;
+        }
+
+        winrt::com_ptr<IWICBitmapDecoder> wicBitmapDecoder;
+        ReturnIfFailed(result, m_wicFactory->CreateDecoderFromFileHandle(reinterpret_cast<ULONG_PTR>(file), nullptr, WICDecodeMetadataCacheOnDemand, wicBitmapDecoder.put()));
 
         winrt::com_ptr<IWICBitmapFrameDecode> wicFrameDecode;
         ReturnIfFailed(result, wicBitmapDecoder->GetFrame(0, wicFrameDecode.put()));
@@ -607,7 +631,7 @@ namespace winrt::Telegram::Native::implementation
         ReturnIfFailed(result, stream->Seek({ 0 }, STREAM_SEEK_SET, nullptr));
 
         winrt::com_ptr<IWICBitmapDecoder> wicBitmapDecoder;
-        ReturnIfFailed(result, m_wicFactory->CreateDecoderFromStream(stream.get(), nullptr, WICDecodeMetadataCacheOnLoad, wicBitmapDecoder.put()));
+        ReturnIfFailed(result, m_wicFactory->CreateDecoderFromStream(stream.get(), nullptr, WICDecodeMetadataCacheOnDemand, wicBitmapDecoder.put()));
 
         winrt::com_ptr<IWICBitmapFrameDecode> wicFrameDecode;
         ReturnIfFailed(result, wicBitmapDecoder->GetFrame(0, wicFrameDecode.put()));
@@ -634,7 +658,7 @@ namespace winrt::Telegram::Native::implementation
         ReturnIfFailed(result, stream->Seek({ 0 }, STREAM_SEEK_SET, nullptr));
 
         winrt::com_ptr<IWICBitmapDecoder> wicBitmapDecoder;
-        ReturnIfFailed(result, m_wicFactory->CreateDecoderFromStream(stream.get(), nullptr, WICDecodeMetadataCacheOnLoad, wicBitmapDecoder.put()));
+        ReturnIfFailed(result, m_wicFactory->CreateDecoderFromStream(stream.get(), nullptr, WICDecodeMetadataCacheOnDemand, wicBitmapDecoder.put()));
 
         winrt::com_ptr<IWICBitmapFrameDecode> wicFrameDecode;
         ReturnIfFailed(result, wicBitmapDecoder->GetFrame(0, wicFrameDecode.put()));

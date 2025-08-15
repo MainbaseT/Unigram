@@ -11,7 +11,6 @@ using System.Linq;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
-using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -84,7 +83,7 @@ namespace Telegram.Controls.Messages
                     new TextEntity(ForwardText.Text.Length, ForwardLink.Text.Length, new TextEntityTypeBold())
                 };
 
-                var rectangles2 = PlaceholderImageHelper.Foreground.LineMetrics(ForwardLabel.Text, entities, 12, double.MaxValue, false);
+                var rectangles2 = PlaceholderHelper.Foreground.LineMetrics(ForwardLabel.Text, entities, 12, double.MaxValue, false);
 
                 //var contentEnd = ForwardLabel.ContentEnd.GetCharacterRect(ForwardLabel.ContentEnd.LogicalDirection);
                 //if (contentEnd.Right <= 0)

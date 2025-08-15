@@ -6,7 +6,7 @@
 //
 using System;
 using System.Collections.Generic;
-using Telegram.Native;
+using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Windows.Foundation;
@@ -94,7 +94,7 @@ namespace Telegram.Controls
                 waveform = new byte[1] { 0 };
             }
 
-            var clip = PlaceholderImageHelper.Foreground.GetVoiceNoteClip(waveform, waveformWidth);
+            var clip = PlaceholderHelper.Foreground.GetVoiceNoteClip(waveform, waveformWidth);
             _clip.Geometry = BootStrapper.Current.Compositor.CreatePathGeometry(clip);
         }
     }

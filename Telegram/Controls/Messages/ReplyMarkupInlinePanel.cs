@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
-using Telegram.Native;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
@@ -222,7 +221,7 @@ namespace Telegram.Controls.Messages
                 j += row;
             }
 
-            _clip.Geometry = _clip.Compositor.CreatePathGeometry(PlaceholderImageHelper.Foreground.GetReplyMarkupClip(rows, CornerRadius.X, CornerRadius.Y));
+            _clip.Geometry = _clip.Compositor.CreatePathGeometry(PlaceholderHelper.Foreground.GetReplyMarkupClip(rows, CornerRadius.X, CornerRadius.Y));
             return finalSize;
         }
     }

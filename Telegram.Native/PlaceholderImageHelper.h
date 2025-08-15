@@ -80,31 +80,31 @@ namespace winrt::Telegram::Native::implementation
             return S_OK;
         }
 
-        static winrt::Telegram::Native::PlaceholderImageHelper Background()
-        {
-            std::lock_guard const guard(s_criticalSection);
+        //static winrt::Telegram::Native::PlaceholderImageHelper Background()
+        //{
+        //    std::lock_guard const guard(s_criticalSection);
 
-            if (s_background == nullptr)
-            {
-                s_background = winrt::make_self<PlaceholderImageHelper>();
-            }
+        //    if (s_background == nullptr)
+        //    {
+        //        s_background = winrt::make_self<PlaceholderImageHelper>();
+        //    }
 
-            s_background->HandleDeviceLost();
-            return s_background.as<winrt::Telegram::Native::PlaceholderImageHelper>();
-        }
+        //    s_background->HandleDeviceLost();
+        //    return s_background.as<winrt::Telegram::Native::PlaceholderImageHelper>();
+        //}
 
-        static winrt::Telegram::Native::PlaceholderImageHelper Foreground()
-        {
-            std::lock_guard const guard(s_criticalSection);
+        //static winrt::Telegram::Native::PlaceholderImageHelper Foreground()
+        //{
+        //    std::lock_guard const guard(s_criticalSection);
 
-            if (s_foreground == nullptr)
-            {
-                s_foreground = winrt::make_self<PlaceholderImageHelper>();
-            }
+        //    if (s_foreground == nullptr)
+        //    {
+        //        s_foreground = winrt::make_self<PlaceholderImageHelper>();
+        //    }
 
-            s_foreground->HandleDeviceLost();
-            return s_foreground.as<winrt::Telegram::Native::PlaceholderImageHelper>();
-        }
+        //    s_foreground->HandleDeviceLost();
+        //    return s_foreground.as<winrt::Telegram::Native::PlaceholderImageHelper>();
+        //}
 
         static HRESULT WriteBytes(IVector<byte> hash, IRandomAccessStream randomAccessStream) noexcept;
         static IBuffer DrawWebP(hstring fileName, int32_t maxWidth, int32_t& pixelWidth, int32_t& pixelHeight) noexcept;
@@ -122,6 +122,7 @@ namespace winrt::Telegram::Native::implementation
         HRESULT DrawSvg(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi, Windows::Foundation::Size& size);
 
         HRESULT DrawThumbnailPlaceholder(hstring fileName, float blurAmount, IRandomAccessStream randomAccessStream);
+        HRESULT DrawThumbnailPlaceholder(hstring fileName, float blurAmount, IBuffer randomAccessStream);
         HRESULT DrawThumbnailPlaceholder(IVector<uint8_t> bytes, float blurAmount, IRandomAccessStream randomAccessStream);
         HRESULT DrawThumbnailPlaceholder(IVector<uint8_t> bytes, float blurAmount, IBuffer randomAccessStream);
 
@@ -149,10 +150,6 @@ namespace winrt::Telegram::Native::implementation
 
 
     public:
-        static std::mutex s_criticalSection;
-        static winrt::com_ptr<PlaceholderImageHelper> s_foreground;
-        static winrt::com_ptr<PlaceholderImageHelper> s_background;
-
         winrt::com_ptr<ID2D1Factory1> m_d2dFactory;
         winrt::com_ptr<ID2D1Device> m_d2dDevice;
         winrt::com_ptr<ID3D11Device> m_d3dDevice;

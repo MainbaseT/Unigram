@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Windows.UI;
@@ -57,7 +56,7 @@ namespace Telegram.Common
             CompositionPath path;
             if (contours?.Count > 0)
             {
-                path = PlaceholderImageHelper.Foreground.GetOutline(contours); //Parse(contours);
+                path = PlaceholderHelper.Foreground.GetOutline(contours); //Parse(contours);
             }
             else
             {

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Composition;
 using Telegram.Controls.Media;
-using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Windows.Graphics.Imaging;
@@ -297,7 +296,7 @@ namespace Telegram.Controls.Chats
                     {
                         try
                         {
-                            await Task.Run(() => PlaceholderImageHelper.Background.DrawThumbnailPlaceholder(file.Path, 3, stream));
+                            await Task.Run(() => PlaceholderHelper.Background.DrawThumbnailPlaceholder(file.Path, 3, stream));
                             await bitmap.SetSourceAsync(stream);
                         }
                         catch { }

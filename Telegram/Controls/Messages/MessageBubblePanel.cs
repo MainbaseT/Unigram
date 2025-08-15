@@ -6,7 +6,6 @@
 //
 using System;
 using Telegram.Common;
-using Telegram.Native;
 using Telegram.Navigation;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -287,7 +286,7 @@ namespace Telegram.Controls.Messages
             {
                 // TODO: this condition will be true whenever the message has more than a paragraph.
 
-                var bounds = PlaceholderImageHelper.Foreground.ContentEnd(text, entities, fontSize, width);
+                var bounds = PlaceholderHelper.Foreground.ContentEnd(text, entities, fontSize, width);
                 if (bounds.Y < block.DesiredSize.Height)
                 {
                     return bounds.X;

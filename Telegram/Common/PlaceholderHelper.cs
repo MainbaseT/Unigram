@@ -24,6 +24,51 @@ namespace Telegram.Common
 {
     public static class PlaceholderHelper
     {
+        [ThreadStatic]
+        private static PlaceholderImageHelper _foreground;
+
+        [ThreadStatic]
+        private static readonly object _foregroundLock = new();
+
+        public static PlaceholderImageHelper Foreground
+        {
+            get
+            {
+                lock (_foregroundLock)
+                {
+                    if (_foreground == null)
+                    {
+                        _foreground = new PlaceholderImageHelper();
+                    }
+
+                    _foreground.HandleDeviceLost();
+                    return _foreground;
+                }
+            }
+        }
+
+        private static PlaceholderImageHelper _background;
+        private static readonly object _backgroundLock = new();
+
+        public static PlaceholderImageHelper Background
+        {
+            get
+            {
+                lock (_backgroundLock)
+                {
+
+                    if (_background == null)
+                    {
+                        _background = new PlaceholderImageHelper();
+                    }
+
+                    _background.HandleDeviceLost();
+                    return _background;
+                }
+            }
+        }
+
+
         public static ImageSource GetBitmap(IClientService clientService, PhotoSize photoSize)
         {
             return GetBitmap(clientService, photoSize.Photo, photoSize.Width, photoSize.Height);
@@ -85,7 +130,7 @@ namespace Telegram.Common
                     using (var stream = await item.OpenAsync(FileAccessMode.ReadWrite))
                     {
                         var text = await ProcessSvgXmlAsync(file.Local.Path);
-                        await PlaceholderImageHelper.Background.DrawSvgAsync(text, Colors.White, stream, rasterizationScale);
+                        await Background.DrawSvgAsync(text, Colors.White, stream, rasterizationScale);
 
                         bitmap = LoadedImageSurface.StartLoadFromStream(stream, new Size(360, 740));
                     }
@@ -202,7 +247,7 @@ namespace Telegram.Common
             {
                 try
                 {
-                    await Task.Run(() => PlaceholderImageHelper.Background.DrawThumbnailPlaceholder(path, amount, stream));
+                    await Task.Run(() => Background.DrawThumbnailPlaceholder(path, amount, stream));
                     await bitmap.SetSourceAsync(stream);
                 }
                 catch { }
@@ -215,7 +260,7 @@ namespace Telegram.Common
             {
                 try
                 {
-                    await Task.Run(() => PlaceholderImageHelper.Background.DrawThumbnailPlaceholder(bytes, amount, stream));
+                    await Task.Run(() => Background.DrawThumbnailPlaceholder(bytes, amount, stream));
                     await bitmap.SetSourceAsync(stream);
                 }
                 catch { }

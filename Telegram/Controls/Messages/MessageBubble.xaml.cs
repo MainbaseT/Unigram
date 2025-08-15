@@ -644,7 +644,7 @@ namespace Telegram.Controls.Messages
                 var compositor = BootStrapper.Current.Compositor;
 
                 _tail ??= compositor.CreatePathGeometry();
-                _tail.Path = PlaceholderImageHelper.Foreground.GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
+                _tail.Path = PlaceholderHelper.Foreground.GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
 
                 var visual = ElementComposition.GetElementVisual(ContentPanel);
                 visual.Clip ??= compositor.CreateGeometricClip(_tail);
@@ -2177,7 +2177,7 @@ namespace Telegram.Controls.Messages
             var compositor = BootStrapper.Current.Compositor;
 
             _tail ??= compositor.CreatePathGeometry();
-            _tail.Path = PlaceholderImageHelper.Foreground.GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
+            _tail.Path = PlaceholderHelper.Foreground.GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
 
             var visual = ElementComposition.GetElementVisual(ContentPanel);
             visual.Clip ??= compositor.CreateGeometricClip(_tail);
@@ -2573,7 +2573,7 @@ namespace Telegram.Controls.Messages
                             ? quoteSize
                             : fontSize;
 
-                        var rectangles = PlaceholderImageHelper.Foreground.RangeMetrics(partial, xoffset, xlength, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft, true);
+                        var rectangles = PlaceholderHelper.Foreground.RangeMetrics(partial, xoffset, xlength, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft, true);
                         var relative = paragraph.ContentStart.GetCharacterRect(paragraph.ContentStart.LogicalDirection);
 
                         var point = new Windows.Foundation.Point(paragraph.Margin.Left + position.X, relative.Y + position.Y + inset);
