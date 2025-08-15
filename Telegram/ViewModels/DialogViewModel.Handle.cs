@@ -1091,9 +1091,18 @@ namespace Telegram.ViewModels
                 Handle(update.MessageId, message =>
                 {
                     message.TranslatedText = update.TranslatedText;
-                    return true;
                 },
-                (bubble, message) => bubble.UpdateMessageText(message));
+                (bubble, message, reply) =>
+                {
+                    if (reply)
+                    {
+                        bubble.UpdateMessageReply(message);
+                    }
+                    else
+                    {
+                        bubble.UpdateMessageText(message);
+                    }
+                });
             }
         }
 

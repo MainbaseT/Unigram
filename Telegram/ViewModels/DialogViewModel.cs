@@ -2078,6 +2078,11 @@ namespace Telegram.ViewModels
                         message.ReplyToState = message.Content is MessageGiveawayWinners
                             ? MessageReplyToState.Hidden
                             : MessageReplyToState.None;
+
+                        if (IsTranslating)
+                        {
+                            _translateService.Translate(message.ReplyToItem as MessageViewModel, Settings.Translate.To);
+                        }
                     }
                     else if (response is Story story)
                     {
