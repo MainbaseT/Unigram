@@ -8,6 +8,13 @@ namespace Telegram.Td.Api
 {
     public partial class InlineKeyboardButtonTypeSuggestionApprove : InlineKeyboardButtonType
     {
+        public InlineKeyboardButtonTypeSuggestionApprove(bool isEnabled)
+        {
+            IsEnabled = isEnabled;
+        }
+
+        public bool IsEnabled { get; set; }
+
         public override string ToString()
         {
             return nameof(InlineKeyboardButtonTypeSuggestionApprove);

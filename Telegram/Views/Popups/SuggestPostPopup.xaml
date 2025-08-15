@@ -6,12 +6,10 @@
                        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                        xmlns:controls="using:Telegram.Controls"
                        mc:Ignorable="d"
-                       Title="TITLE"
-                       PrimaryButtonText="Button1"
-                       SecondaryButtonText="Button2"
                        PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
                        SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
-                       Padding="24,12,24,24">
+                       Padding="24,12,24,24"
+                       IsDismissButtonVisible="True">
 
     <StackPanel>
         <controls:TopNavView x:Name="Navigation"
@@ -105,6 +103,15 @@
                                        VerticalAlignment="Center"
                                        Width="24"
                                        Height="24" />
+            <TextBlock x:Name="TonCount"
+                       Text="&#xEA7E;"
+                       Foreground="{ThemeResource SystemColorControlAccentBrush}"
+                       FontFamily="{StaticResource SymbolThemeFontFamily}"
+                       FontSize="20"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Width="20"
+                       Height="20" />
 
             <controls:AnimatedTextBlock x:Name="Price"
                                         TextStyle="{StaticResource InfoCaptionTextBlockStyle}"
@@ -132,7 +139,14 @@
                              BorderBrush="{ThemeResource TextControlBorderBrush}" />
 
         <TextBlock x:Name="SendDateFooter"
-                   Margin="0,8,0,0"
+                   Margin="0,8,0,24"
                    Style="{StaticResource InfoCaptionTextBlockStyle}" />
+
+        <Button x:Name="PurchaseCommand"
+                Click="Purchase_Click"
+                Content="{CustomResource PostSuggestionsOfferForFree}"
+                Style="{StaticResource AccentButtonStyle}"
+                FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                HorizontalAlignment="Stretch" />
     </StackPanel>
 </controls:ContentPopup>

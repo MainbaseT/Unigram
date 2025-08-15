@@ -1124,26 +1124,7 @@ namespace Telegram.ViewModels
                 Handle(update.MessageId, message =>
                 {
                     message.SuggestedPostInfo = update.SuggestedPostInfo;
-
-                    if (message.SuggestedPostInfo is SuggestedPostInfo { State: SuggestedPostStatePending })
-                    {
-                        message.ReplyMarkup = new ReplyMarkupInlineKeyboard(new List<IList<InlineKeyboardButton>>
-                        {
-                            new List<InlineKeyboardButton>
-                            {
-                                new InlineKeyboardButton(Strings.PostSuggestionsInlineDecline, new InlineKeyboardButtonTypeSuggestionDecline()),
-                                new InlineKeyboardButton(Strings.PostSuggestionsInlineAccept, new InlineKeyboardButtonTypeSuggestionApprove())
-                            },
-                            new List<InlineKeyboardButton>
-                            {
-                                new InlineKeyboardButton(Strings.PostSuggestionsInlineEdit, new InlineKeyboardButtonTypeSuggestionEdit())
-                            }
-                        });
-                    }
-                    else
-                    {
-                        message.ReplyMarkup = null;
-                    }
+                    message.ReplyMarkup = update.SuggestedPostInfo.ToReplyMarkup(message.IsOutgoing);
 
                     return true;
                 },

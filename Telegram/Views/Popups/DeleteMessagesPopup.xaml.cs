@@ -157,7 +157,24 @@ namespace Telegram.Views.Popups
                 }
                 else
                 {
-                    if (messages.Count == 1 && messages[0].Content is MessageGiveaway giveaway)
+                    var now = DateTime.Now.ToTimestamp();
+                    var paid = messages.FirstOrDefault(x => (x.IsPaidStarSuggestedPost || x.IsPaidTonSuggestedPost) && now < (int)clientService.Options.SuggestedPostLifetimeMin + x.GetDate());
+
+                    if (paid != null && paid.IsPaidStarSuggestedPost)
+                    {
+                        Title = Strings.SuggestionStarsWillBeLost;
+                        TextBlockHelper.SetMarkdown(Message, string.Format(Strings.SuggestionStarsWillBeLostInfo, (clientService.Options.SuggestedPostLifetimeMin / 3600.0).ToString("N0")));
+
+                        PrimaryButtonText = Strings.SuggestionStarsWillBeLostDelete;
+                    }
+                    else if (paid != null && paid.IsPaidTonSuggestedPost)
+                    {
+                        Title = Strings.SuggestionTONWillBeLost;
+                        TextBlockHelper.SetMarkdown(Message, string.Format(Strings.SuggestionTONWillBeLostInfo, (clientService.Options.SuggestedPostLifetimeMin / 3600.0).ToString("N0")));
+
+                        PrimaryButtonText = Strings.SuggestionStarsWillBeLostDelete;
+                    }
+                    else if (messages.Count == 1 && messages[0].Content is MessageGiveaway giveaway)
                     {
                         Title = Strings.BoostingGiveawayDeleteMsgTitle;
                         TextBlockHelper.SetMarkdown(Message, string.Format(Strings.BoostingGiveawayDeleteMsgText, Formatter.DateAt(giveaway.Parameters.WinnersSelectionDate)));

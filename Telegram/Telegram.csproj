@@ -324,6 +324,7 @@
     <Compile Include="Controls\GlassToggleButton.cs" />
     <Compile Include="Controls\MenuFlyoutContent.cs" />
     <Compile Include="Composition\CompositionColorSource.cs" />
+    <Compile Include="Controls\MenuFlyoutInfoItem.cs" />
     <Compile Include="Controls\Messages\Content\PaidMediaContent.xaml.cs">
       <DependentUpon>PaidMediaContent.xaml</DependentUpon>
     </Compile>

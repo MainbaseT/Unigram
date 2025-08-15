@@ -197,6 +197,27 @@ namespace Telegram.Td.Api
             return count;
         }
 
+        public static ReplyMarkup ToReplyMarkup(this SuggestedPostInfo suggestedPostInfo, bool outgoing)
+        {
+            if (suggestedPostInfo is SuggestedPostInfo { State: SuggestedPostStatePending } && !outgoing)
+            {
+                return new ReplyMarkupInlineKeyboard(new List<IList<InlineKeyboardButton>>
+                {
+                    new List<InlineKeyboardButton>
+                    {
+                        new InlineKeyboardButton(Strings.PostSuggestionsInlineDecline, new InlineKeyboardButtonTypeSuggestionDecline(suggestedPostInfo.CanBeDeclined)),
+                        new InlineKeyboardButton(Strings.PostSuggestionsInlineAccept, new InlineKeyboardButtonTypeSuggestionApprove(suggestedPostInfo.CanBeDeclined))
+                    },
+                    new List<InlineKeyboardButton>
+                    {
+                        new InlineKeyboardButton(Strings.PostSuggestionsInlineEdit, new InlineKeyboardButtonTypeSuggestionEdit())
+                    }
+                });
+            }
+
+            return null;
+        }
+
         public static int TotalReactions(this MessageInteractionInfo info)
         {
             if (info?.Reactions != null)
@@ -1873,7 +1894,7 @@ namespace Telegram.Td.Api
             return xdate.Date == ydate.Date;
         }
 
-        public static int GetDate(this MessageViewModel item)
+        public static int GetDate(this MessageWithOwner item)
         {
             if (item.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
             {

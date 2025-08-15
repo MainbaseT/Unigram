@@ -83,34 +83,23 @@ namespace Telegram.Controls.Messages.Service
 
             if (message.SuggestedPostInfo.Price == null)
             {
-                PriceTitle.Visibility = Visibility.Collapsed;
-                Price.Visibility = Visibility.Collapsed;
+                Price.Text = Strings.SuggestionOfferInfoPriceFree;
             }
             else if (message.SuggestedPostInfo.Price is SuggestedPostPriceStar priceStar)
             {
-                PriceTitle.Visibility = Visibility.Visible;
-                Price.Visibility = Visibility.Visible;
-
                 Price.Text = string.Format(Strings.StarsCountX, priceStar.StarCount);
             }
             else if (message.SuggestedPostInfo.Price is SuggestedPostPriceTon priceTon)
             {
-                PriceTitle.Visibility = Visibility.Visible;
-                Price.Visibility = Visibility.Visible;
-
                 Price.Text = string.Format(Strings.TonCountX, priceTon.ToncoinCentCount / 100d);
             }
 
             if (message.SuggestedPostInfo.SendDate == 0)
             {
-                TimeTitle.Visibility = Visibility.Collapsed;
-                Time.Visibility = Visibility.Collapsed;
+                Time.Text = Strings.SuggestionOfferInfoTimeAnytime;
             }
             else
             {
-                TimeTitle.Visibility = Visibility.Visible;
-                Time.Visibility = Visibility.Visible;
-
                 Time.Text = Formatter.DateAt(message.SuggestedPostInfo.SendDate);
             }
         }

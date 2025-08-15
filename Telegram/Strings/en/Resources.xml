@@ -12527,7 +12527,9 @@
     <string name="SuggestionOfferInfoTitleYou">**You** suggested a post.</string>
     <string name="SuggestionOfferInfoTitle">**{0}** suggested a post.</string>
     <string name="SuggestionOfferInfoPrice">Price</string>
+    <string name="SuggestionOfferInfoPriceFree">Free</string>
     <string name="SuggestionOfferInfoTime">Time</string>
+    <string name="SuggestionOfferInfoTimeAnytime">Anytime</string>
 
     <string name="SuggestionOfferInfoTitleEditedFromYou">**You** suggested a new {0} for this post.</string>
     <string name="SuggestionOfferInfoTitleEditedFromX">**{0}** suggested a new {1} for this post.</string>
@@ -12591,4 +12593,13 @@
     <string name="SuggestedMessageDeclineInfo">Do you want to decline this post from **{0}**?</string>
     <string name="SuggestedMessageDeclineReasonHint">Add a reason (optional)</string>
 
+    <string name="EditAdminManageDirect">Manage Direct Messages</string>
+
+    <string name="SuggestionStarsWillBeLost">Stars will be lost</string>
+    <string name="SuggestionTONWillBeLost">TON will be lost</string>
+    <string name="SuggestionStarsWillBeLostInfo">You won’t receive Stars for this post if you delete it now. The post must remain visible for at least **{0} hours** after it was published.</string>
+    <string name="SuggestionTONWillBeLostInfo">You won’t receive TON for this post if you delete it now. The post must remain visible for at least **{0} hours** after it was published.</string>
+    <string name="SuggestionStarsWillBeLostDelete">Delete Anyway</string>
+
+    <string name="SuggestedOfferPaidUntil">Paid until {0}</string>
 </resources>

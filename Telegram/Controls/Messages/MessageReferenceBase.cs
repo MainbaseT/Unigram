@@ -109,7 +109,7 @@ namespace Telegram.Controls.Messages
             {
                 if (price is SuggestedPostPriceStar priceStar)
                 {
-                    SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStars.ReplaceStar(Icons.Star), priceStar.StarCount).AsFormattedText());
+                    SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStars.ReplaceStar(Icons.Premium), priceStar.StarCount).AsFormattedText());
                 }
                 else if (price is SuggestedPostPriceTon priceTon)
                 {
@@ -118,11 +118,11 @@ namespace Telegram.Controls.Messages
             }
             else if (price is SuggestedPostPriceStar priceStar)
             {
-                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Star), priceStar.StarCount, string.Format("\U0001F4C6", Formatter.DateAt(sendDate))).AsFormattedText());
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Premium), priceStar.StarCount, string.Format("\U0001F4C6 {0}", Formatter.DateAt(sendDate))).AsFormattedText());
             }
             else if (price is SuggestedPostPriceTon priceTon)
             {
-                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Ton), priceTon.ToncoinCentCount / 100d, string.Format("\U0001F4C6", Formatter.DateAt(sendDate))).AsFormattedText());
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Ton), priceTon.ToncoinCentCount / 100d, string.Format("\U0001F4C6 {0}", Formatter.DateAt(sendDate))).AsFormattedText());
             }
         }
 

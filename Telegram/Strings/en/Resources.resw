@@ -5146,6 +5146,9 @@ Anyone from the channel will be able to see messages in this group.</value>
   <data name="EditAdminGroupTransfer" xml:space="preserve">
     <value>Transfer Group Ownership</value>
   </data>
+  <data name="EditAdminManageDirect" xml:space="preserve">
+    <value>Manage Direct Messages</value>
+  </data>
   <data name="EditAdminPinMessages" xml:space="preserve">
     <value>Pin Messages</value>
   </data>
@@ -12643,6 +12646,9 @@ list of viewers.</value>
   <data name="SuggestedOfferCompleteAmountUnknown" xml:space="preserve">
     <value>{0} received payment for publishing post</value>
   </data>
+  <data name="SuggestedOfferPaidUntil" xml:space="preserve">
+    <value>Paid until {0}</value>
+  </data>
   <data name="SuggestedOfferRefundByAdminAmountF" xml:space="preserve">
     <value>⭐️ {2} was returned to {0} because {1} deleted the message</value>
   </data>
@@ -12673,8 +12679,14 @@ list of viewers.</value>
   <data name="SuggestionOfferInfoPrice" xml:space="preserve">
     <value>Price</value>
   </data>
+  <data name="SuggestionOfferInfoPriceFree" xml:space="preserve">
+    <value>Free</value>
+  </data>
   <data name="SuggestionOfferInfoTime" xml:space="preserve">
     <value>Time</value>
+  </data>
+  <data name="SuggestionOfferInfoTimeAnytime" xml:space="preserve">
+    <value>Anytime</value>
   </data>
   <data name="SuggestionOfferInfoTitle" xml:space="preserve">
     <value>**{0}** suggested a post.</value>
@@ -12702,6 +12714,21 @@ list of viewers.</value>
   </data>
   <data name="SuggestionOfferInfoTitleYou" xml:space="preserve">
     <value>**You** suggested a post.</value>
+  </data>
+  <data name="SuggestionStarsWillBeLost" xml:space="preserve">
+    <value>Stars will be lost</value>
+  </data>
+  <data name="SuggestionStarsWillBeLostDelete" xml:space="preserve">
+    <value>Delete Anyway</value>
+  </data>
+  <data name="SuggestionStarsWillBeLostInfo" xml:space="preserve">
+    <value>You won’t receive Stars for this post if you delete it now. The post must remain visible for at least **{0} hours** after it was published.</value>
+  </data>
+  <data name="SuggestionTONWillBeLost" xml:space="preserve">
+    <value>TON will be lost</value>
+  </data>
+  <data name="SuggestionTONWillBeLostInfo" xml:space="preserve">
+    <value>You won’t receive TON for this post if you delete it now. The post must remain visible for at least **{0} hours** after it was published.</value>
   </data>
   <data name="SuggestionUnlockedStars" xml:space="preserve">
     <value>Send a direct message to the administrator of **{0}**.</value>

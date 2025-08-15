@@ -1676,6 +1676,7 @@ namespace Telegram.ViewModels
             var sendDate = message.SuggestedPostInfo.SendDate;
             if (sendDate == 0)
             {
+                // TODO: "Send Now" option
                 var popup = new ChooseDateTimePopup
                 {
                     Title = Strings.SuggestedPostAcceptTitle,
@@ -1694,7 +1695,7 @@ namespace Telegram.ViewModels
                 sendDate = popup.Value.ToTimestamp();
             }
 
-            ClientService.Send(new ApproveSuggestedPost(message.ChatId, message.Id, sendDate));
+            ClientService.Send(new ApproveSuggestedPost(message.ChatId, message.Id, sendDate < DateTime.Now.ToTimestamp() ? 0 : sendDate));
         }
 
         public async void KeyboardButtonExecute(MessageViewModel message, KeyboardButton keyboardButton)

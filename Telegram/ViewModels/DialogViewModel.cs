@@ -1911,20 +1911,9 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                if (message.SuggestedPostInfo is SuggestedPostInfo { State: SuggestedPostStatePending })
+                if (message.SuggestedPostInfo != null)
                 {
-                    message.ReplyMarkup = new ReplyMarkupInlineKeyboard(new List<IList<InlineKeyboardButton>>
-                    {
-                        new List<InlineKeyboardButton>
-                        {
-                            new InlineKeyboardButton(Strings.PostSuggestionsInlineDecline, new InlineKeyboardButtonTypeSuggestionDecline()),
-                            new InlineKeyboardButton(Strings.PostSuggestionsInlineAccept, new InlineKeyboardButtonTypeSuggestionApprove())
-                        },
-                        new List<InlineKeyboardButton>
-                        {
-                            new InlineKeyboardButton(Strings.PostSuggestionsInlineEdit, new InlineKeyboardButtonTypeSuggestionEdit())
-                        }
-                    });
+                    message.ReplyMarkup = message.SuggestedPostInfo.ToReplyMarkup(message.IsOutgoing);
                 }
 
                 ProcessEmoji(message);
@@ -3202,7 +3191,7 @@ namespace Telegram.ViewModels
 
         public async void SuggestPost()
         {
-            var popup = new SuggestPostPopup(ClientService);
+            var popup = new SuggestPostPopup(ClientService, ComposerHeader?.SuggestedPostInfo);
 
             var confirm = await ShowPopupAsync(popup);
             if (confirm == ContentDialogResult.Primary)

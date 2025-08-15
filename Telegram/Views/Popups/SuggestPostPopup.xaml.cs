@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Controls.Media;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -23,14 +24,6 @@ namespace Telegram.Views.Popups
 {
     public sealed partial class SuggestPostPopup : ContentPopup
     {
-        public string Text { get; set; } = string.Empty;
-        public long Value { get; set; }
-
-        public string PlaceholderText { get; set; } = string.Empty;
-
-        public int MaxLength { get; set; } = int.MaxValue;
-        public int MinLength { get; set; } = 1;
-
         public long Minimum { get; set; } = 0;
         public long Maximum { get; set; } = long.MaxValue;
 
@@ -39,7 +32,7 @@ namespace Telegram.Views.Popups
 
         private readonly IClientService _clientService;
 
-        public SuggestPostPopup(IClientService clientService)
+        public SuggestPostPopup(IClientService clientService, InputSuggestedPostInfo suggestedPostInfo)
         {
             InitializeComponent();
             Formatter = GetRegionalSettingsAwareDecimalFormatter();
@@ -48,8 +41,42 @@ namespace Telegram.Views.Popups
 
             Title = Strings.PostSuggestionsOfferTitle;
 
-            Navigation.SelectedIndex = 0;
             SendDateFooter.Text = string.Format("{0} {1}", Strings.PostSuggestionsAddTimeHint, string.Format(Strings.PostSuggestionsAddTimeHint2, (clientService.Options.SuggestedPostLifetimeMin / 3600.0).ToString("N0")));
+
+            var scope = new InputScope();
+            var name = new InputScopeName();
+
+            name.NameValue = InputScopeNameValue.Number;
+
+            scope.Names.Add(name);
+            Label.InputScope = scope;
+
+            if (suggestedPostInfo?.Price is SuggestedPostPriceStar priceStar)
+            {
+                Navigation.SelectedIndex = 0;
+                Label.Text = Formatter.FormatInt(priceStar.StarCount);
+            }
+            else if (suggestedPostInfo?.Price is SuggestedPostPriceTon priceTon)
+            {
+                Navigation.SelectedIndex = 1;
+                Label.Text = Formatter.FormatDouble(priceTon.ToncoinCentCount / 100d);
+            }
+            else
+            {
+                Navigation.SelectedIndex = 0;
+                Label.Text = Formatter.FormatInt(0);
+            }
+
+            Label.Focus(FocusState.Keyboard);
+            Label.SelectionStart = Label.Text.Length;
+            Label.Padding = new Thickness(36, Label.Padding.Top, Label.Padding.Right, Label.Padding.Bottom);
+
+            if (suggestedPostInfo != null && suggestedPostInfo.SendDate != 0)
+            {
+                SendDate.Content = Telegram.Converters.Formatter.DateAt(suggestedPostInfo.SendDate);
+            }
+
+            SuggestedPostInfo = suggestedPostInfo;
         }
 
         public InputSuggestedPostInfo SuggestedPostInfo { get; private set; }
@@ -134,11 +161,11 @@ namespace Telegram.Views.Popups
             var newValue = ParseInt(args.NewText);
             if (newValue >= Minimum && newValue <= Maximum)
             {
-                OnValueChanged(Value = newValue.Value);
+                OnValueChanged(newValue.Value);
             }
             else
             {
-                //OnValueChanged(sender.Text);
+                OnValueChanged(0);
                 SuggestedPostInfo = new InputSuggestedPostInfo(null, SuggestedPostInfo?.SendDate ?? 0);
 
                 if (newValue > Maximum)
@@ -154,11 +181,7 @@ namespace Telegram.Views.Popups
         {
             var parser = Formatter as INumberParser;
 
-            if (Navigation.SelectedIndex == 0)
-            {
-                return parser?.ParseInt(newValue);
-            }
-            else
+            if (Navigation.SelectedIndex == 1)
             {
                 var value = parser?.ParseDouble(newValue);
                 if (value.HasValue)
@@ -178,6 +201,10 @@ namespace Telegram.Views.Popups
                     return rounded;
                 }
             }
+            else
+            {
+                return parser?.ParseInt(newValue);
+            }
 
             return null;
         }
@@ -194,17 +221,7 @@ namespace Telegram.Views.Popups
 
         private void OnValueChanged(long value)
         {
-            if (Navigation.SelectedIndex == 0)
-            {
-                var xtr = value / 1000d;
-                var usd = xtr * _clientService.Options.ThousandStarToUsdRate;
-
-                SuggestedPostInfo = new InputSuggestedPostInfo(value > 0 ? new SuggestedPostPriceStar(value) : null, SuggestedPostInfo?.SendDate ?? 0);
-                Price.Text = "~" + Telegram.Converters.Formatter.FormatAmount((long)usd, "USD");
-
-                IsPrimaryButtonEnabled = value == 0 || (value >= _clientService.Options.SuggestedPostStarCountMin && value <= _clientService.Options.SuggestedPostStarCountMax);
-            }
-            else
+            if (Navigation.SelectedIndex == 1)
             {
                 var xtr = value / 1000000d;
                 var usd = xtr * _clientService.Options.MillionToncoinToUsdRate;
@@ -212,59 +229,28 @@ namespace Telegram.Views.Popups
                 SuggestedPostInfo = new InputSuggestedPostInfo(value > 0 ? new SuggestedPostPriceTon(value) : null, SuggestedPostInfo?.SendDate ?? 0);
                 Price.Text = "~" + Telegram.Converters.Formatter.FormatAmount((long)usd, "USD");
 
-                IsPrimaryButtonEnabled = value == 0 || (value >= _clientService.Options.SuggestedPostToncoinCentCountMin && value <= _clientService.Options.SuggestedPostToncoinCentCountMax);
+                PurchaseCommand.IsEnabled = value == 0 || (value >= _clientService.Options.SuggestedPostToncoinCentCountMin && value <= _clientService.Options.SuggestedPostToncoinCentCountMax);
+                PurchaseCommand.Content = string.Format(Strings.PostSuggestionsOfferTON, (value / 100d).ToString("0.##"));
+            }
+            else
+            {
+                var xtr = value / 1000d;
+                var usd = xtr * _clientService.Options.ThousandStarToUsdRate;
+
+                SuggestedPostInfo = new InputSuggestedPostInfo(value > 0 ? new SuggestedPostPriceStar(value) : null, SuggestedPostInfo?.SendDate ?? 0);
+                Price.Text = "~" + Telegram.Converters.Formatter.FormatAmount((long)usd, "USD");
+
+                PurchaseCommand.IsEnabled = value == 0 || (value >= _clientService.Options.SuggestedPostStarCountMin && value <= _clientService.Options.SuggestedPostStarCountMax);
+                PurchaseCommand.Content = string.Format(Strings.PostSuggestionsOfferStars.ReplaceStar(Icons.Premium), value);
             }
         }
 
         public override void OnCreate()
         {
-            Label.PlaceholderText = PlaceholderText;
-
-            var scope = new InputScope();
-            var name = new InputScopeName();
-
-            Label.MaxLength = 0;
-            Label.Text = Formatter.FormatInt(Value);
-
-            name.NameValue = InputScopeNameValue.Number;
-
-            scope.Names.Add(name);
-            Label.InputScope = scope;
-
-            Label.Focus(FocusState.Keyboard);
-            Label.SelectionStart = Label.Text.Length;
-
-            Label.Padding = new Thickness(36, Label.Padding.Top, Label.Padding.Right, Label.Padding.Bottom);
-            FindName(nameof(StarCount));
         }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            return;
-
-            var parser = Formatter as INumberParser;
-
-            var newValue = parser?.ParseInt(Label.Text);
-            if (newValue < Minimum || newValue > Maximum || newValue == null)
-            {
-                VisualUtilities.ShakeView(InputRoot);
-                return;
-            }
-
-            Value = newValue.Value;
-
-            if (Validating != null)
-            {
-                var temp = new InputPopupValidatingEventArgs(Text, Value);
-
-                Validating(this, temp);
-
-                if (temp.Cancel)
-                {
-                    VisualUtilities.ShakeView(InputRoot);
-                    args.Cancel = true;
-                }
-            }
         }
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -300,7 +286,22 @@ namespace Telegram.Views.Popups
                 _ => Strings.PostSuggestionsOfferSubtitleStars
             };
 
-            Label.Text = string.Empty;
+            StarCount.Visibility = Navigation.SelectedIndex == 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            TonCount.Visibility = Navigation.SelectedIndex == 1
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            Label.Text = Navigation.SelectedIndex switch
+            {
+                1 => Formatter.FormatDouble(0),
+                _ => Formatter.FormatInt(0)
+            };
+
+            Label.Focus(FocusState.Keyboard);
+            Label.SelectAll();
         }
 
         private async void SendDate_Click(object sender, RoutedEventArgs e)
@@ -323,6 +324,11 @@ namespace Telegram.Views.Popups
                 SuggestedPostInfo = new InputSuggestedPostInfo(SuggestedPostInfo?.Price, (int)popup.Value.ToTimestamp());
                 SendDate.Content = Telegram.Converters.Formatter.DateAt(popup.Value);
             }
+        }
+
+        private void Purchase_Click(object sender, RoutedEventArgs e)
+        {
+            Hide(ContentDialogResult.Primary);
         }
     }
 }

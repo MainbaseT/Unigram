@@ -240,7 +240,7 @@
         <Setter Property="BorderThickness"
                 Value="{ThemeResource ButtonBorderThemeThickness}" />
         <Setter Property="Padding"
-                Value="2,4,2,5" />
+                Value="8,4,8,5" />
         <Setter Property="HorizontalAlignment"
                 Value="Center" />
         <Setter Property="VerticalAlignment"

@@ -3038,7 +3038,24 @@ namespace Telegram.Views
 
                 if (MessageDelete_Loaded(message, properties))
                 {
-                    flyout.CreateFlyoutItem(ViewModel.DeleteMessage, message, message.SendingState is MessageSendingStatePending ? Strings.CancelSending : Strings.Delete, Icons.Delete, destructive: true);
+                    if (message.IsPaidStarSuggestedPost || message.IsPaidTonSuggestedPost && DateTime.Now.ToTimestamp() < (int)message.ClientService.Options.SuggestedPostLifetimeMin + message.GetDate())
+                    {
+                        var delete = new MenuFlyoutInfoItem
+                        {
+                            Description = string.Format(Strings.SuggestedOfferPaidUntil, Formatter.DateAt((int)message.ClientService.Options.SuggestedPostLifetimeMin + message.GetDate())),
+                            Text = Strings.Delete,
+                            Icon = MenuFlyoutHelper.CreateIcon(Icons.Delete),
+                            Foreground = BootStrapper.Current.Resources["DangerButtonBackground"] as Brush,
+                            CommandParameter = message,
+                            Command = new RelayCommand<MessageViewModel>(ViewModel.DeleteMessage)
+                        };
+
+                        flyout.Items.Add(delete);
+                    }
+                    else
+                    {
+                        flyout.CreateFlyoutItem(ViewModel.DeleteMessage, message, message.SendingState is MessageSendingStatePending ? Strings.CancelSending : Strings.Delete, Icons.Delete, destructive: true);
+                    }
                 }
 
                 flyout.CreateFlyoutItem(MessageSelect_Loaded, ViewModel.SelectMessage, message, Strings.Select, Icons.CheckmarkCircle);
@@ -3581,12 +3598,12 @@ namespace Telegram.Views
 
         private bool MessageSendNow_Loaded(MessageViewModel message)
         {
-            return message.SchedulingState != null;
+            return message.SchedulingState != null && !message.IsPaidStarSuggestedPost && !message.IsPaidTonSuggestedPost;
         }
 
         private bool MessageReschedule_Loaded(MessageViewModel message)
         {
-            return message.SchedulingState is not null and not MessageSchedulingStateSendWhenVideoProcessed;
+            return message.SchedulingState is not null and not MessageSchedulingStateSendWhenVideoProcessed && !message.IsPaidStarSuggestedPost && !message.IsPaidTonSuggestedPost;
         }
 
         private bool MessageQuote_Loaded(MessageQuote quote, MessageProperties properties)

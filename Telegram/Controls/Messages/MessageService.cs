@@ -2570,7 +2570,7 @@ namespace Telegram.Controls.Messages
             }
             else if (suggestedPostPaid.TonAmount > 0)
             {
-                return string.Format(Strings.SuggestedOfferCompleteAmountF.ReplaceStar(Icons.Ton), sender, suggestedPostPaid.TonAmount).AsFormattedText();
+                return string.Format(Strings.SuggestedOfferCompleteAmountF.ReplaceStar(Icons.Ton), sender, suggestedPostPaid.TonAmount / 1000000000d).AsFormattedText();
             }
 
             return string.Format(Strings.SuggestedOfferCompleteAmountUnknown, sender).AsFormattedText();
@@ -2578,9 +2578,7 @@ namespace Telegram.Controls.Messages
 
         private static FormattedText UpdateSuggestedPostRefunded(MessageWithOwner message, MessageSuggestedPostRefunded suggestedPostRefunded, bool history)
         {
-            var direct = message.TopicId as MessageTopicDirectMessages;
-            var topic = message.ClientService.GetDirectMessagesChatTopic(message.ChatId, direct.DirectMessagesChatTopicId);
-            var sender = message.ClientService.GetTitle(topic.SenderId);
+            var sender = message.ClientService.GetTitle(message.SenderId);
 
             if (suggestedPostRefunded.Reason is SuggestedPostRefundReasonPostDeleted)
             {

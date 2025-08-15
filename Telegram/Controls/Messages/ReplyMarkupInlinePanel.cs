@@ -111,10 +111,12 @@ namespace Telegram.Controls.Messages
                             button.Glyph = Icons.CopyFilled16;
                             break;
 
-                        case InlineKeyboardButtonTypeSuggestionDecline:
+                        case InlineKeyboardButtonTypeSuggestionDecline suggestionDecline:
+                            button.IsEnabled = suggestionDecline.IsEnabled;
                             button.Icon = Icons.DismissCircleFilled;
                             break;
-                        case InlineKeyboardButtonTypeSuggestionApprove:
+                        case InlineKeyboardButtonTypeSuggestionApprove suggestionApprove:
+                            button.IsEnabled = suggestionApprove.IsEnabled;
                             button.Icon = Icons.CheckmarkCircleFilled;
                             break;
                         case InlineKeyboardButtonTypeSuggestionEdit:
