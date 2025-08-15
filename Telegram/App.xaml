@@ -39,7 +39,7 @@
                                         TintColor="#202020"
                                         TintLuminosityOpacity="0.96"
                                         TintOpacity="0.5"
-                                        BackgroundSource="Backdrop"  />
+                                        BackgroundSource="Backdrop" />
 
                     <LinearGradientBrush x:Key="SystemGradientColorCriticalBrush"
                                          StartPoint="0,0"
@@ -373,6 +373,8 @@
             <Style x:Key="InfoBodyFormattedTextBlockStyle"
                    TargetType="controls:FormattedTextBlock">
                 <Setter Property="Foreground"
+                        Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+                <Setter Property="IconForeground"
                         Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
                 <Setter Property="FontWeight"
                         Value="Normal" />

@@ -19,6 +19,8 @@ namespace Telegram.Common
     // TODO: extracted from VideoViewBase, make it work properly
     public partial class AsyncMediaPlayerSwapChain
     {
+        private readonly object _panelLock = new();
+
         private SwapChainPanel _panel;
         private SharpDX.Direct3D11.Device _d3D11Device;
         private SharpDX.DXGI.Device3 _device3;
@@ -249,14 +251,17 @@ namespace Telegram.Common
 
         public void Attach(SwapChainPanel panel)
         {
-            OnAttach(_panel, _panel = panel);
+            lock (_panelLock)
+            {
+                OnAttach(_panel, _panel = panel);
+            }
         }
 
         private void OnAttach(SwapChainPanel oldPanel, SwapChainPanel newPanel)
         {
             if (oldPanel != null)
             {
-                Detach(oldPanel);
+                oldPanel.BeginOnUIThread(() => Detach(oldPanel));
             }
 
             if (_loaded)

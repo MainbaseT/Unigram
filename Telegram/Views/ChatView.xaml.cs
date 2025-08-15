@@ -2500,7 +2500,7 @@ namespace Telegram.Views
             var flyout = new MenuFlyout();
 
             var header = ViewModel.ComposerHeader;
-            if (header?.ReplyTo != null)
+            if (header?.ReplyTo != null && !ViewModel.IsDirectMessagesGroup)
             {
                 if (header.ReplyTo.Quote != null)
                 {
@@ -2845,7 +2845,7 @@ namespace Telegram.Views
 
                 if (MessageDelete_Loaded(message, properties))
                 {
-                    flyout.CreateFlyoutItem(ViewModel.DeleteMessage, message, Strings.Delete, Icons.Delete, destructive: true);
+                    flyout.CreateFlyoutItem(ViewModel.DeleteMessage, message, message.SendingState is MessageSendingStatePending ? Strings.CancelSending : Strings.Delete, Icons.Delete, destructive: true);
                 }
 
                 if (message.SendingState is MessageSendingStateFailed sendingStateFailed)
