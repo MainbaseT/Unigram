@@ -6,11 +6,9 @@
 //
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Telegram.Collections;
 using Telegram.Common;
-using Telegram.Controls.Media;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;

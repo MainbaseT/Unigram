@@ -5,7 +5,6 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Telegram.Td.Api;
-using Telegram.ViewModels.Chats;
 using Windows.UI.Xaml;
 
 namespace Telegram.Controls.Chats

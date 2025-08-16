@@ -187,9 +187,10 @@ namespace Telegram.Common
                 return base.Equals(obj);
             }
 
-            //    public static func == (lhs: PathSegment, rhs: PathSegment) -> Bool {
-            //return lhs.type == rhs.type && lhs.data == rhs.data
-            //}
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(type, data);
+            }
         }
 
         private static void renderPath(IList<PathSegment> segments, CanvasPathBuilder builder)
