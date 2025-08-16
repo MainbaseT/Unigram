@@ -4,7 +4,7 @@
                     xmlns:muxc="using:Microsoft.UI.Xaml.Controls">
 
     <Style x:Key="GlyphSubtitleBadgeButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource SettingsItemBackground}" />
         <Setter Property="BorderBrush"
@@ -41,7 +41,7 @@
         </Setter>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
@@ -158,7 +158,7 @@
     </Style>
 
     <Style x:Key="GlyphSubbadgeBadgeButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource SettingsItemBackground}" />
         <Setter Property="BorderBrush"
@@ -187,7 +187,7 @@
                 Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
@@ -289,7 +289,7 @@
     </Style>
 
     <Style x:Key="GlyphSubbadgeBadgeButtonPopupStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource ListViewItemBackground}" />
         <Setter Property="BorderBrush"
@@ -320,7 +320,7 @@
                 Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
@@ -422,7 +422,7 @@
     </Style>
 
     <Style x:Key="IconSubbadgeBadgeButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="Transparent" />
         <!--<Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundAccentBrush}"/>-->
@@ -452,7 +452,7 @@
                 Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid Background="{TemplateBinding Background}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -554,7 +554,7 @@
     </Style>
 
     <Style x:Key="SubtitleBadgeButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource SettingsItemBackground}" />
         <Setter Property="Foreground"
@@ -581,7 +581,7 @@
                 Value="True" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <StackPanel x:Name="RootGrid"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
@@ -657,7 +657,7 @@
     </Style>
 
     <Style x:Key="GlyphBadgeButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource SettingsItemBackground}" />
         <Setter Property="BorderBrush"
@@ -686,7 +686,7 @@
                 Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
@@ -799,7 +799,7 @@
     </Style>
 
     <Style x:Key="GlyphBadgeButtonPopupStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource ListViewItemBackground}" />
         <Setter Property="BorderBrush"
@@ -830,7 +830,7 @@
                 Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
@@ -943,7 +943,7 @@
     </Style>
 
     <Style x:Key="EmojiBadgeButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource SettingsItemBackground}" />
         <Setter Property="BorderBrush"
@@ -972,7 +972,7 @@
                 Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
@@ -1071,7 +1071,7 @@
     </Style>
 
     <Style x:Key="GlyphGridBadgeButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource SettingsItemBackground}" />
         <Setter Property="BorderBrush"
@@ -1102,7 +1102,7 @@
                 Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
@@ -1170,7 +1170,7 @@
     </Style>
 
     <Style x:Key="IconBadgeButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="Background"
                 Value="Transparent" />
         <!--<Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundAccentBrush}"/>-->
@@ -1200,7 +1200,7 @@
                 Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid Background="{TemplateBinding Background}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">

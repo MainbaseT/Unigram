@@ -111,18 +111,18 @@
                        Margin="8,0,0,0"
                        VerticalAlignment="Bottom" />
 
-            <controls:BadgeButton Click="About_Click"
-                                  Style="{StaticResource SmallButtonStyle}"
-                                  Glyph="{CustomResource SponsoredMessageAd}"
-                                  HorizontalAlignment="Left"
-                                  VerticalAlignment="Bottom"
-                                  FontSize="11"
-                                  Padding="8,0"
-                                  Margin="8,0,0,0"
-                                  CornerRadius="8"
-                                  BorderThickness="0"
-                                  Height="16"
-                                  Grid.Column="2" />
+            <controls:SettingsButton Click="About_Click"
+                                     Style="{StaticResource SmallButtonStyle}"
+                                     Glyph="{CustomResource SponsoredMessageAd}"
+                                     HorizontalAlignment="Left"
+                                     VerticalAlignment="Bottom"
+                                     FontSize="11"
+                                     Padding="8,0"
+                                     Margin="8,0,0,0"
+                                     CornerRadius="8"
+                                     BorderThickness="0"
+                                     Height="16"
+                                     Grid.Column="2" />
         </Grid>
 
         <TextBlock x:Name="MessageText"

@@ -36,7 +36,7 @@
                        Style="{StaticResource InfoCaptionTextBlockStyle}" />
         </StackPanel>
 
-        <controls:BadgeButton x:Name="ToggleButton"
+        <controls:SettingsButton x:Name="ToggleButton"
                               Click="Toggle_Click"
                               Background="{StaticResource AccentButtonBackground}"
                               Content="{CustomResource VoipChatJoin}"

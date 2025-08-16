@@ -15,7 +15,7 @@
         <ColumnDefinition />
         <ColumnDefinition Width="Auto" />
     </Grid.ColumnDefinitions>
-    <controls:BadgeButton x:Name="Button"
+    <controls:SettingsButton x:Name="Button"
                           Click="Button_Click"
                           Style="{StaticResource GlyphSubbadgeBadgeButtonStyle}"
                           Margin="-44,0,0,0" />

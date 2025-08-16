@@ -214,10 +214,10 @@
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl>
-                    <controls:BadgeButton Content="{CustomResource CreateNewTheme}"
-                                          Click="{x:Bind ViewModel.NewTheme}"
-                                          Style="{StaticResource GlyphBadgeButtonStyle}"
-                                          Glyph="&#xE90E;" />
+                    <controls:SettingsButton Content="{CustomResource CreateNewTheme}"
+                                             Click="{x:Bind ViewModel.NewTheme}"
+                                             Style="{StaticResource GlyphBadgeButtonStyle}"
+                                             Glyph="&#xE90E;" />
                 </controls:HeaderedControl>
             </controls:SettingsPanel>
         </ScrollViewer>

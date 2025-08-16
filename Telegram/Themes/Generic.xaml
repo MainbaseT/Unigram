@@ -4840,7 +4840,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:BadgeButton">
+    <Style TargetType="local:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource SettingsItemBackground}" />
         <Setter Property="Foreground"
@@ -4867,7 +4867,7 @@
                 Value="True" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:BadgeButton">
+                <ControlTemplate TargetType="local:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"

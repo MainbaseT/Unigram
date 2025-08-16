@@ -2221,7 +2221,7 @@ namespace Telegram.Views
             }
 
             var entry = args.Item as SettingsSearchEntry;
-            var button = args.ItemContainer.ContentTemplateRoot as BadgeButton;
+            var button = args.ItemContainer.ContentTemplateRoot as SettingsButton;
             button.Command = ViewModel.Settings.NavigateCommand;
             button.CommandParameter = entry;
 

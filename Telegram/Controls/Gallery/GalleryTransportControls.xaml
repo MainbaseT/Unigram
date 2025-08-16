@@ -310,23 +310,23 @@
                                FontSize="10"
                                Margin="0,5,0,6" />
 
-                    <controls:BadgeButton x:Name="SpeedButton"
-                                          Click="Speed_Click"
-                                          Glyph="&#xEA13;"
-                                          CornerRadius="4,13,4,4"
-                                          AutomationProperties.Name="{CustomResource Speed}"
-                                          ToolTipService.ToolTip="{CustomResource Speed}"
-                                          Style="{StaticResource DefaultGlyphButtonStyle}" />
+                    <controls:SettingsButton x:Name="SpeedButton"
+                                             Click="Speed_Click"
+                                             Glyph="&#xEA13;"
+                                             CornerRadius="4,13,4,4"
+                                             AutomationProperties.Name="{CustomResource Speed}"
+                                             ToolTipService.ToolTip="{CustomResource Speed}"
+                                             Style="{StaticResource DefaultGlyphButtonStyle}" />
                 </Grid>
 
                 <Grid x:Name="SettingsRoot"
                       Visibility="Collapsed"
                       Grid.Column="2">
-                    <controls:BadgeButton x:Name="SettingsButton"
-                                          Click="Settings_Click"
-                                          Glyph="&#xE713;"
-                                          Style="{StaticResource DefaultGlyphButtonStyle}"
-                                          CornerRadius="4,13,4,4" />
+                    <controls:SettingsButton x:Name="SettingsButton"
+                                             Click="Settings_Click"
+                                             Glyph="&#xE713;"
+                                             Style="{StaticResource DefaultGlyphButtonStyle}"
+                                             CornerRadius="4,13,4,4" />
                     <Border x:Name="QualityRoot"
                             IsHitTestVisible="False"
                             HorizontalAlignment="Right"

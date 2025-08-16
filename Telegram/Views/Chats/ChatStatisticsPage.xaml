@@ -220,10 +220,10 @@
                                             ItemTemplate="{StaticResource UserTemplate}"
                                             ElementPrepared="OnElementPrepared" />
 
-                        <controls:BadgeButton Click="{x:Bind ViewModel.ExpandTopSenders}"
-                                              Content="{x:Bind ConvertShowMore(ViewModel.TopSendersLeft.Count), Mode=OneWay}"
-                                              Visibility="{x:Bind ViewModel.TopSendersLeft.Count, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                              Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
+                        <controls:SettingsButton Click="{x:Bind ViewModel.ExpandTopSenders}"
+                                                 Content="{x:Bind ConvertShowMore(ViewModel.TopSendersLeft.Count), Mode=OneWay}"
+                                                 Visibility="{x:Bind ViewModel.TopSendersLeft.Count, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                 Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                     </controls:HeaderedControl>
 
                     <controls:HeaderedControl Header="{CustomResource TopAdmins}"

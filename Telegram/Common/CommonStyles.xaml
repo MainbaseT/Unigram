@@ -2103,7 +2103,7 @@
     </Style>
 
     <Style x:Key="PillButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="HorizontalAlignment"
                 Value="Center" />
         <Setter Property="VerticalAlignment"
@@ -2126,7 +2126,7 @@
                 Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           CornerRadius="{TemplateBinding CornerRadius}">
@@ -2229,7 +2229,7 @@
     </Style>
 
     <Style x:Key="SmallPillButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="HorizontalAlignment"
                 Value="Center" />
         <Setter Property="VerticalAlignment"
@@ -2254,7 +2254,7 @@
                 Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           CornerRadius="{TemplateBinding CornerRadius}">
@@ -2340,7 +2340,7 @@
     </Style>
 
     <Style x:Key="SmallButtonStyle"
-           TargetType="controls:BadgeButton">
+           TargetType="controls:SettingsButton">
         <Setter Property="HorizontalAlignment"
                 Value="Center" />
         <Setter Property="VerticalAlignment"
@@ -2363,7 +2363,7 @@
                 Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:BadgeButton">
+                <ControlTemplate TargetType="controls:SettingsButton">
                     <Grid>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">

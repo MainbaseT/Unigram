@@ -97,7 +97,7 @@
                 <Run x:Name="TitleText" />
             </TextBlock>
 
-            <controls:BadgeButton Click="About_Click"
+            <controls:SettingsButton Click="About_Click"
                                   Style="{StaticResource SmallButtonStyle}"
                                   Glyph="{CustomResource BotAdWhat}"
                                   HorizontalAlignment="Left"

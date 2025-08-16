@@ -400,18 +400,18 @@
                    Margin="0,5,0,6"
                    Grid.Column="5" />
 
-        <controls:BadgeButton x:Name="SpeedButton"
-                              Click="Speed_Click"
-                              Foreground="{ThemeResource SystemControlForegroundChromeDisabledLowBrush}"
-                              Glyph="&#xEA13;"
-                              Width="40"
-                              Height="40"
-                              Padding="8"
-                              Grid.Column="5"
-                              AutomationProperties.Name="{CustomResource Speed}"
-                              ToolTipService.ToolTip="{CustomResource Speed}"
-                              Style="{StaticResource DefaultGlyphButtonStyle}"
-                              Visibility="Collapsed" />
+        <controls:SettingsButton x:Name="SpeedButton"
+                                 Click="Speed_Click"
+                                 Foreground="{ThemeResource SystemControlForegroundChromeDisabledLowBrush}"
+                                 Glyph="&#xEA13;"
+                                 Width="40"
+                                 Height="40"
+                                 Padding="8"
+                                 Grid.Column="5"
+                                 AutomationProperties.Name="{CustomResource Speed}"
+                                 ToolTipService.ToolTip="{CustomResource Speed}"
+                                 Style="{StaticResource DefaultGlyphButtonStyle}"
+                                 Visibility="Collapsed" />
 
         <controls:GlyphToggleButton x:Name="RepeatButton"
                                     Click="Repeat_Click"

@@ -104,25 +104,25 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <controls:BadgeButton x:Name="TransferButton"
-                                                  Click="TransferButton_Click"
-                                                  Content="{CustomResource Gift2ActionTransfer}"
-                                                  Style="{StaticResource GlyphGridBadgeButtonStyle}"
-                                                  Glyph="&#xEAC6;" />
+                            <controls:SettingsButton x:Name="TransferButton"
+                                                     Click="TransferButton_Click"
+                                                     Content="{CustomResource Gift2ActionTransfer}"
+                                                     Style="{StaticResource GlyphGridBadgeButtonStyle}"
+                                                     Glyph="&#xEAC6;" />
 
-                            <controls:BadgeButton x:Name="WearButton"
-                                                  Click="WearButton_Click"
-                                                  Content="{CustomResource Gift2Wear}"
-                                                  Style="{StaticResource GlyphGridBadgeButtonStyle}"
-                                                  Glyph="&#xEAB3;"
-                                                  Grid.Column="1" />
+                            <controls:SettingsButton x:Name="WearButton"
+                                                     Click="WearButton_Click"
+                                                     Content="{CustomResource Gift2Wear}"
+                                                     Style="{StaticResource GlyphGridBadgeButtonStyle}"
+                                                     Glyph="&#xEAB3;"
+                                                     Grid.Column="1" />
 
-                            <controls:BadgeButton x:Name="ResellButton"
-                                                  Click="ResellButton_Click"
-                                                  Content="{CustomResource Gift2ActionResell}"
-                                                  Style="{StaticResource GlyphGridBadgeButtonStyle}"
-                                                  Glyph="&#xEA68;"
-                                                  Grid.Column="2" />
+                            <controls:SettingsButton x:Name="ResellButton"
+                                                     Click="ResellButton_Click"
+                                                     Content="{CustomResource Gift2ActionResell}"
+                                                     Style="{StaticResource GlyphGridBadgeButtonStyle}"
+                                                     Glyph="&#xEA68;"
+                                                     Grid.Column="2" />
                         </Grid>
                     </Grid>
                 </controls:PatternBackground.Footer>
@@ -236,16 +236,16 @@
                                            VerticalAlignment="Top"
                                            Grid.Column="1" />
 
-                                <controls:BadgeButton x:Name="Convert"
-                                                      Click="Convert_Click"
-                                                      Style="{StaticResource SmallButtonStyle}"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="11"
-                                                      Padding="8,0"
-                                                      CornerRadius="8"
-                                                      BorderThickness="0"
-                                                      Height="16"
-                                                      Grid.Column="2" />
+                                <controls:SettingsButton x:Name="Convert"
+                                                         Click="Convert_Click"
+                                                         Style="{StaticResource SmallButtonStyle}"
+                                                         VerticalAlignment="Center"
+                                                         FontSize="11"
+                                                         Padding="8,0"
+                                                         CornerRadius="8"
+                                                         BorderThickness="0"
+                                                         Height="16"
+                                                         Grid.Column="2" />
                             </Grid>
                         </controls:TableViewItem>
                         <controls:TableViewItem x:Name="Availability"
@@ -307,16 +307,16 @@
                                            Style="{StaticResource BodyTextBlockStyle}"
                                            VerticalAlignment="Top" />
 
-                                <controls:BadgeButton x:Name="UpgradedModelRarity"
-                                                      Click="UpgradedModelRarity_Click"
-                                                      Style="{StaticResource SmallButtonStyle}"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="11"
-                                                      Padding="4,0"
-                                                      CornerRadius="8"
-                                                      BorderThickness="0"
-                                                      Height="16"
-                                                      Grid.Column="1" />
+                                <controls:SettingsButton x:Name="UpgradedModelRarity"
+                                                         Click="UpgradedModelRarity_Click"
+                                                         Style="{StaticResource SmallButtonStyle}"
+                                                         VerticalAlignment="Center"
+                                                         FontSize="11"
+                                                         Padding="4,0"
+                                                         CornerRadius="8"
+                                                         BorderThickness="0"
+                                                         Height="16"
+                                                         Grid.Column="1" />
                             </Grid>
                         </controls:TableViewItem>
                         <controls:TableViewItem Header="{CustomResource Gift2AttributeBackdrop}"
@@ -331,16 +331,16 @@
                                            Style="{StaticResource BodyTextBlockStyle}"
                                            VerticalAlignment="Top" />
 
-                                <controls:BadgeButton x:Name="UpgradedBackdropRarity"
-                                                      Click="UpgradedBackdropRarity_Click"
-                                                      Style="{StaticResource SmallButtonStyle}"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="11"
-                                                      Padding="4,0"
-                                                      CornerRadius="8"
-                                                      BorderThickness="0"
-                                                      Height="16"
-                                                      Grid.Column="1" />
+                                <controls:SettingsButton x:Name="UpgradedBackdropRarity"
+                                                         Click="UpgradedBackdropRarity_Click"
+                                                         Style="{StaticResource SmallButtonStyle}"
+                                                         VerticalAlignment="Center"
+                                                         FontSize="11"
+                                                         Padding="4,0"
+                                                         CornerRadius="8"
+                                                         BorderThickness="0"
+                                                         Height="16"
+                                                         Grid.Column="1" />
                             </Grid>
                         </controls:TableViewItem>
                         <controls:TableViewItem Header="{CustomResource Gift2AttributeSymbol}"
@@ -355,16 +355,16 @@
                                            Style="{StaticResource BodyTextBlockStyle}"
                                            VerticalAlignment="Top" />
 
-                                <controls:BadgeButton x:Name="UpgradedSymbolRarity"
-                                                      Click="UpgradedSymbolRarity_Click"
-                                                      Style="{StaticResource SmallButtonStyle}"
-                                                      VerticalAlignment="Center"
-                                                      FontSize="11"
-                                                      Padding="4,0"
-                                                      CornerRadius="8"
-                                                      BorderThickness="0"
-                                                      Height="16"
-                                                      Grid.Column="1" />
+                                <controls:SettingsButton x:Name="UpgradedSymbolRarity"
+                                                         Click="UpgradedSymbolRarity_Click"
+                                                         Style="{StaticResource SmallButtonStyle}"
+                                                         VerticalAlignment="Center"
+                                                         FontSize="11"
+                                                         Padding="4,0"
+                                                         CornerRadius="8"
+                                                         BorderThickness="0"
+                                                         Height="16"
+                                                         Grid.Column="1" />
                             </Grid>
                         </controls:TableViewItem>
                         <controls:TableViewItem x:Name="UpgradedQuantity"
@@ -405,26 +405,26 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <controls:BadgeButton Content="{CustomResource Gift2UpgradeFeature1Title}"
-                                      Badge="{CustomResource Gift2UpgradeFeature1Text}"
-                                      Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
-                                      Glyph="&#xE76E;"
-                                      Margin="12,0,12,0"
-                                      IsHitTestVisible="False" />
-                <controls:BadgeButton Content="{CustomResource Gift2UpgradeFeature2Title}"
-                                      Badge="{CustomResource Gift2UpgradeFeature2Text}"
-                                      Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
-                                      Glyph="&#xE76E;"
-                                      Margin="12,-8,12,0"
-                                      IsHitTestVisible="False"
-                                      Grid.Row="1" />
-                <controls:BadgeButton Content="{CustomResource Gift2UpgradeFeature3Title}"
-                                      Badge="{CustomResource Gift2UpgradeFeature3Text}"
-                                      Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
-                                      Glyph="&#xE76E;"
-                                      Margin="12,-8,12,0"
-                                      IsHitTestVisible="False"
-                                      Grid.Row="2" />
+                <controls:SettingsButton Content="{CustomResource Gift2UpgradeFeature1Title}"
+                                         Badge="{CustomResource Gift2UpgradeFeature1Text}"
+                                         Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
+                                         Glyph="&#xE76E;"
+                                         Margin="12,0,12,0"
+                                         IsHitTestVisible="False" />
+                <controls:SettingsButton Content="{CustomResource Gift2UpgradeFeature2Title}"
+                                         Badge="{CustomResource Gift2UpgradeFeature2Text}"
+                                         Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
+                                         Glyph="&#xE76E;"
+                                         Margin="12,-8,12,0"
+                                         IsHitTestVisible="False"
+                                         Grid.Row="1" />
+                <controls:SettingsButton Content="{CustomResource Gift2UpgradeFeature3Title}"
+                                         Badge="{CustomResource Gift2UpgradeFeature3Text}"
+                                         Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
+                                         Glyph="&#xE76E;"
+                                         Margin="12,-8,12,0"
+                                         IsHitTestVisible="False"
+                                         Grid.Row="2" />
 
                 <CheckBox x:Name="KeepOriginalDetails"
                           Content="{CustomResource Gift2AddSenderName}"

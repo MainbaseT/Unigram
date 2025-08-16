@@ -96,9 +96,9 @@
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl Visibility="{x:Bind ConvertClear(ViewModel.Address, ViewModel.IsLocationValid), Mode=OneWay}">
-                    <controls:BadgeButton Click="{x:Bind ViewModel.Clear}"
-                                          Content="{CustomResource BusinessLocationClear}"
-                                          Foreground="{ThemeResource DangerButtonBackground}" />
+                    <controls:SettingsButton Click="{x:Bind ViewModel.Clear}"
+                                             Content="{CustomResource BusinessLocationClear}"
+                                             Foreground="{ThemeResource DangerButtonBackground}" />
                 </controls:HeaderedControl>
             </controls:SettingsPanel>
         </ScrollViewer>

@@ -988,7 +988,7 @@
     <Compile Include="Controls\NavigationViewItemBase.cs" />
     <Compile Include="Controls\NavigationViewItemSeparator.cs" />
     <Compile Include="Controls\PageHeader.cs" />
-    <Compile Include="Controls\BadgeButton.cs" />
+    <Compile Include="Controls\SettingsButton.cs" />
     <Compile Include="Controls\Payments\CardTextBox.cs" />
     <Compile Include="Controls\Payments\DateTextBox.cs" />
     <Compile Include="Controls\Payments\LabeledPricesPanel.cs" />

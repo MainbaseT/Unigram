@@ -14,16 +14,16 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
 {
-    public partial class BadgeButton : GlyphButton
+    public partial class SettingsButton : GlyphButton
     {
         private BadgeButtonAutomationPeer _peer;
 
         private UIElement Chevron;
         private UIElement Premium;
 
-        public BadgeButton()
+        public SettingsButton()
         {
-            DefaultStyleKey = typeof(BadgeButton);
+            DefaultStyleKey = typeof(SettingsButton);
         }
 
         protected override void OnApplyTemplate()
@@ -52,11 +52,11 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty BadgeProperty =
-            DependencyProperty.Register("Badge", typeof(object), typeof(BadgeButton), new PropertyMetadata(null, OnBadgeChanged));
+            DependencyProperty.Register("Badge", typeof(object), typeof(SettingsButton), new PropertyMetadata(null, OnBadgeChanged));
 
         private static void OnBadgeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((BadgeButton)d).OnBadgeChanged(e.NewValue, e.OldValue);
+            ((SettingsButton)d).OnBadgeChanged(e.NewValue, e.OldValue);
         }
 
         private void OnBadgeChanged(object newValue, object oldValue)
@@ -81,7 +81,7 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty BadgeTemplateProperty =
-            DependencyProperty.Register("BadgeTemplate", typeof(DataTemplate), typeof(BadgeButton), new PropertyMetadata(null));
+            DependencyProperty.Register("BadgeTemplate", typeof(DataTemplate), typeof(SettingsButton), new PropertyMetadata(null));
 
         #endregion
 
@@ -94,7 +94,7 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty BadgeVisibilityProperty =
-            DependencyProperty.Register("BadgeVisibility", typeof(Visibility), typeof(BadgeButton), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register("BadgeVisibility", typeof(Visibility), typeof(SettingsButton), new PropertyMetadata(Visibility.Visible));
 
         #endregion
 
@@ -107,7 +107,7 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty BadgeLabelProperty =
-            DependencyProperty.Register("BadgeLabel", typeof(string), typeof(BadgeButton), new PropertyMetadata(null, OnBadgeChanged));
+            DependencyProperty.Register("BadgeLabel", typeof(string), typeof(SettingsButton), new PropertyMetadata(null, OnBadgeChanged));
 
         #endregion
 
@@ -120,7 +120,7 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty DescriptionProperty =
-            DependencyProperty.Register("Description", typeof(object), typeof(BadgeButton), new PropertyMetadata(null));
+            DependencyProperty.Register("Description", typeof(object), typeof(SettingsButton), new PropertyMetadata(null));
 
         #endregion
 
@@ -133,7 +133,7 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty IconSourceProperty =
-            DependencyProperty.Register("IconSource", typeof(IAnimatedVisualSource2), typeof(BadgeButton), new PropertyMetadata(null));
+            DependencyProperty.Register("IconSource", typeof(IAnimatedVisualSource2), typeof(SettingsButton), new PropertyMetadata(null));
 
         #endregion
 
@@ -146,11 +146,11 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty IsPremiumVisibleProperty =
-            DependencyProperty.Register("IsPremiumVisible", typeof(bool), typeof(BadgeButton), new PropertyMetadata(false, OnPremiumVisibleChanged));
+            DependencyProperty.Register("IsPremiumVisible", typeof(bool), typeof(SettingsButton), new PropertyMetadata(false, OnPremiumVisibleChanged));
 
         private static void OnPremiumVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var sender = d as BadgeButton;
+            var sender = d as SettingsButton;
             if (sender?.Premium != null || (bool)e.NewValue)
             {
                 sender.Premium ??= sender.GetTemplateChild(nameof(sender.Premium)) as UIElement;
@@ -175,11 +175,11 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty IsChevronVisibleProperty =
-            DependencyProperty.Register("IsChevronVisible", typeof(bool), typeof(BadgeButton), new PropertyMetadata(false, OnChevronVisibleChanged));
+            DependencyProperty.Register("IsChevronVisible", typeof(bool), typeof(SettingsButton), new PropertyMetadata(false, OnChevronVisibleChanged));
 
         private static void OnChevronVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var sender = d as BadgeButton;
+            var sender = d as SettingsButton;
             if (sender?.Chevron != null || (bool)e.NewValue)
             {
                 sender.Chevron ??= sender.GetTemplateChild(nameof(sender.Chevron)) as UIElement;
@@ -204,7 +204,7 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty ChevronGlyphProperty =
-            DependencyProperty.Register("ChevronGlyph", typeof(string), typeof(BadgeButton), new PropertyMetadata("\uE0E3"));
+            DependencyProperty.Register("ChevronGlyph", typeof(string), typeof(SettingsButton), new PropertyMetadata("\uE0E3"));
 
         #endregion
 
@@ -214,7 +214,7 @@ namespace Telegram.Controls
         }
     }
 
-    public partial class BadgeButtonWithImage : BadgeButton
+    public partial class BadgeButtonWithImage : SettingsButton
     {
 
 
@@ -233,9 +233,9 @@ namespace Telegram.Controls
 
     public partial class BadgeButtonAutomationPeer : ButtonAutomationPeer, IValueProvider
     {
-        private readonly BadgeButton _owner;
+        private readonly SettingsButton _owner;
 
-        public BadgeButtonAutomationPeer(BadgeButton owner) : base(owner)
+        public BadgeButtonAutomationPeer(SettingsButton owner) : base(owner)
         {
             _owner = owner;
         }
