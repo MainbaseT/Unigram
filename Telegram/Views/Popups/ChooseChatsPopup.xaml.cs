@@ -697,7 +697,7 @@ namespace Telegram.Views.Popups
 
         public string GetSenderId(IClientService clientService)
         {
-            if (ChatId == clientService.Options.MyId && ForwardInfo != null)
+            if (ChatId == clientService.Options.MyId && ForwardInfo == null)
             {
                 return null;
             }
