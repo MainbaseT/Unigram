@@ -55,6 +55,17 @@
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center" />
                     </Grid>
+
+                    <controls:HeaderedControl x:Name="AddNewPanel"
+                                              Visibility="Collapsed"
+                                              Margin="0,2,0,2"
+                                              Padding="0">
+                        <controls:BadgeButton x:Name="AddNew"
+                                              Content="{CustomResource AddSubscriber}"
+                                              Click="{x:Bind ViewModel.MembersTab.Add}"
+                                              Style="{StaticResource GlyphBadgeButtonStyle}"
+                                              Glyph="&#xE8FA;" />
+                    </controls:HeaderedControl>
                 </StackPanel>
             </ListView.Header>
             <ListView.ItemTemplate>

@@ -624,6 +624,48 @@ namespace Telegram.Views.Popups
         public int ChecklistTaskId { get; }
     }
 
+    public partial class ChooseChatsConfigurationInviteToChat : ChooseChatsConfiguration
+    {
+        public ChooseChatsConfigurationInviteToChat(long chatId)
+        {
+            ChatId = chatId;
+        }
+
+        public long ChatId { get; }
+
+        public override Task<ContentDialogResult> ConfirmSelectionAsync(ChooseChatsViewModel viewModel, IList<Chat> chats)
+        {
+            if (!viewModel.ClientService.TryGetChat(ChatId, out Chat chat))
+            {
+                return Task.FromResult(ContentDialogResult.Primary);
+            }
+
+            if (chat.Type is ChatTypeSupergroup { IsChannel: true })
+            {
+                var selected = chats.FirstOrDefault(x => x.Type is ChatTypePrivate && viewModel.ClientService.GetUser(x).Type is UserTypeBot);
+                if (selected != null)
+                {
+                    return viewModel.ShowPopupAsync(Strings.AddBotAsAdmin, Strings.AddBotAdminAlert, Strings.AddAsAdmin, Strings.Cancel);
+                }
+            }
+
+            string title = Locale.Declension(Strings.R.AddManyMembersAlertTitle, chats.Count);
+            string message;
+
+            if (chats.Count <= 5)
+            {
+                var names = string.Join(", ", chats.Select(x => x.Title));
+                message = string.Format(Strings.AddMembersAlertNamesText, names, chat.Title);
+            }
+            else
+            {
+                message = Locale.Declension(Strings.R.AddManyMembersAlertNamesText, chats.Count, chat.Title);
+            }
+
+            return viewModel.ShowPopupAsync(message, title, Strings.Add, Strings.Cancel);
+        }
+    }
+
     public partial class ChooseChatsConfigurationShareStory : ChooseChatsConfiguration
     {
         public ChooseChatsConfigurationShareStory(long chatId, int storyId)
@@ -934,6 +976,58 @@ namespace Telegram.Views.Popups
     public abstract class ChooseChatsConfiguration
     {
         public virtual int NumberOfSentMessages => 0;
+
+        public virtual Task<ContentDialogResult> ConfirmSelectionAsync(ChooseChatsViewModel viewModel, IList<Chat> chats)
+        {
+            if (NumberOfSentMessages > 0)
+            {
+                var messageCount = NumberOfSentMessages;
+
+                int chatCount = 0;
+                long starCount = 0;
+
+                foreach (var chat in chats)
+                {
+                    var paidMessageStarCount = 0L;
+
+                    if (viewModel.ClientService.TryGetUserFull(chat, out UserFullInfo userFullInfo))
+                    {
+                        paidMessageStarCount = userFullInfo.OutgoingPaidMessageStarCount;
+                    }
+                    else if (viewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
+                    {
+                        paidMessageStarCount = supergroup.PaidMessageStarCount;
+                    }
+
+                    if (paidMessageStarCount > 0)
+                    {
+                        chatCount++;
+                        starCount += paidMessageStarCount;
+                    }
+                }
+
+                if (starCount != 0)
+                {
+                    if (!string.IsNullOrEmpty(viewModel.SendMessage?.Text) || !string.IsNullOrEmpty(viewModel.Caption?.Text))
+                    {
+                        messageCount++;
+                    }
+
+                    var message1 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessageMulti1, chatCount);
+                    var message3 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessageMulti2Messages, chatCount * messageCount);
+                    var message2 = Locale.Declension(Strings.R.MessageLockedStarsConfirmMessageMulti2, starCount * messageCount, message3);
+
+                    var title = Strings.MessageLockedStarsConfirmTitle;
+                    var message = string.Format("{0} {1}", message1, message2);
+                    var primaryButtonText = Icons.Premium16 + Icons.Spacing + (starCount * messageCount).ToString("N0"); //Locale.Declension(Strings.R.MessageLockedStarsConfirmMessagePay, messageCount),
+                    var secondaryButtonText = Strings.Cancel;
+
+                    return viewModel.ShowPopupAsync(message, title, primaryButtonText, secondaryButtonText);
+                }
+            }
+
+            return Task.FromResult(ContentDialogResult.Primary);
+        }
     }
 
     #endregion

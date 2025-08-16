@@ -114,6 +114,11 @@ namespace Telegram.Navigation
 
         #region Popups
 
+        public void HidePopup(Type popupType)
+        {
+            NavigationService.HidePopup(popupType);
+        }
+
         public Task<ContentDialogResult> ShowPopupAsync(ContentPopup popup, object parameter = null, ElementTheme requestedTheme = ElementTheme.Default)
         {
             return NavigationService.ShowPopupAsync(popup, parameter, requestedTheme);

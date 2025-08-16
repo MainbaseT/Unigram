@@ -13,6 +13,7 @@ using Telegram.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Profile
 {
@@ -23,6 +24,20 @@ namespace Telegram.Views.Profile
         public ProfileMembersTabPage()
         {
             InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (ViewModel.ClientService.TryGetSupergroup(ViewModel.Chat, out Supergroup supergroup))
+            {
+                AddNew.Content = supergroup.IsChannel ? Strings.AddSubscriber : Strings.AddMember;
+                AddNewPanel.Visibility = supergroup.CanInviteUsers() ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else if (ViewModel.ClientService.TryGetBasicGroup(ViewModel.Chat, out BasicGroup basicGroup))
+            {
+                AddNew.Content = Strings.AddMember;
+                AddNewPanel.Visibility = basicGroup.CanInviteUsers() ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)

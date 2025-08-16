@@ -3864,7 +3864,7 @@ namespace Telegram.ViewModels
 
         #region Invite
 
-        public async void Invite()
+        public void Invite()
         {
             var chat = _chat;
             if (chat == null)
@@ -3874,45 +3874,7 @@ namespace Telegram.ViewModels
 
             if (chat.Type is ChatTypeSupergroup or ChatTypeBasicGroup)
             {
-                var header = chat.Type is ChatTypeSupergroup supergroup && supergroup.IsChannel
-                    ? Strings.AddSubscriber
-                    : Strings.AddMember;
-
-                var selected = await ChooseChatsPopup.PickUsersAsync(ClientService, NavigationService, header);
-                if (selected == null || selected.Count == 0)
-                {
-                    return;
-                }
-
-                string title = Locale.Declension(Strings.R.AddManyMembersAlertTitle, selected.Count);
-                string message;
-
-                if (selected.Count <= 5)
-                {
-                    var names = string.Join(", ", selected.Select(x => x.FullName()));
-                    message = string.Format(Strings.AddMembersAlertNamesText, names, chat.Title);
-                }
-                else
-                {
-                    message = Locale.Declension(Strings.R.AddManyMembersAlertNamesText, selected.Count, chat.Title);
-                }
-
-                var confirm = await ShowPopupAsync(message, title, Strings.Add, Strings.Cancel);
-                if (confirm != ContentDialogResult.Primary)
-                {
-                    return;
-                }
-
-                var response = await ClientService.SendAsync(new AddChatMembers(chat.Id, selected.Select(x => x.Id).ToArray()));
-                if (response is FailedToAddMembers failed && failed.FailedToAddMembersValue.Count > 0)
-                {
-                    var popup = new ChatInviteFallbackPopup(ClientService, chat.Id, failed.FailedToAddMembersValue);
-                    await ShowPopupAsync(popup);
-                }
-                else if (response is Error error)
-                {
-
-                }
+                ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationInviteToChat(chat.Id));
             }
         }
 

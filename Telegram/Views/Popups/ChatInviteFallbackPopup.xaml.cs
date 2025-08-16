@@ -28,6 +28,8 @@ namespace Telegram.Views.Popups
             var chat = clientService.GetChat(chatId);
             var users = clientService.GetUsers(members.Select(x => x.UserId));
 
+            ScrollingHost.ItemsSource = users;
+
             _clientService = clientService;
             _inviteLink = GetInviteLink(chat);
 
@@ -59,7 +61,6 @@ namespace Telegram.Views.Popups
                 ScrollingHost.SelectionMode = ListViewSelectionMode.None;
             }
 
-            ScrollingHost.ItemsSource = users;
             TextBlockHelper.SetMarkdown(MessageLabel, message);
         }
 
