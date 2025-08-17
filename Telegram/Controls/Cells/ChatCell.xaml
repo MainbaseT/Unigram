@@ -262,19 +262,18 @@
                                                    Margin="4,2,0,0"
                                                    Visibility="Collapsed"
                                                    Grid.Column="2" />
-                            <controls:SettingsButton x:Name="BotOpen"
-                                                     Glyph="{CustomResource BotOpen}"
-                                                     Content="{CustomResource BotOpen}"
-                                                     Style="{StaticResource SmallPillButtonStyle}"
-                                                     HorizontalAlignment="Right"
-                                                     VerticalAlignment="Top"
-                                                     Margin="4,0,0,0"
-                                                     Padding="8,5,8,7"
-                                                     CornerRadius="10"
-                                                     Height="20"
-                                                     Visibility="Collapsed"
-                                                     Grid.Column="1"
-                                                     Grid.ColumnSpan="2" />
+                            <Button x:Name="BotOpen"
+                                    Content="{CustomResource BotOpen}"
+                                    Style="{StaticResource SmallPillButtonStyle}"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Margin="4,0,0,0"
+                                    Padding="8,5,8,7"
+                                    CornerRadius="10"
+                                    Height="20"
+                                    Visibility="Collapsed"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="2" />
                         </Grid>
 
                         <StackPanel x:Name="Folders"

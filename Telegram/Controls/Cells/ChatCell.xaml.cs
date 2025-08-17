@@ -123,7 +123,7 @@ namespace Telegram.Controls.Cells
         private TextBlock PinnedIcon;
         private Border UnreadMentionsBadge;
         private BadgeControl UnreadBadge;
-        private BadgeButton BotOpen;
+        private Button BotOpen;
         private Rectangle DropVisual;
         private TextBlock UnreadMentionsLabel;
         private Run FromLabel;
@@ -160,7 +160,7 @@ namespace Telegram.Controls.Cells
             PinnedIcon = GetTemplateChild(nameof(PinnedIcon)) as TextBlock;
             UnreadMentionsBadge = GetTemplateChild(nameof(UnreadMentionsBadge)) as Border;
             UnreadBadge = GetTemplateChild(nameof(UnreadBadge)) as BadgeControl;
-            BotOpen = GetTemplateChild(nameof(BotOpen)) as BadgeButton;
+            BotOpen = GetTemplateChild(nameof(BotOpen)) as Button;
             DropVisual = GetTemplateChild(nameof(DropVisual)) as Rectangle;
             UnreadMentionsLabel = GetTemplateChild(nameof(UnreadMentionsLabel)) as TextBlock;
             FromLabel = GetTemplateChild(nameof(FromLabel)) as Run;
