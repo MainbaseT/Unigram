@@ -59,7 +59,6 @@
                                               Margin="-24,0,-20,0">
                         <controls:SettingsButton Content="{CustomResource ProfileStoriesArchive}"
                                                  Click="{x:Bind ViewModel.OpenArchive}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xE7B8;"
                                                  IsChevronVisible="True" />
                     </controls:HeaderedControl>

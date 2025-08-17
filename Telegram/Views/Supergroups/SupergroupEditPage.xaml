@@ -52,7 +52,6 @@
                     </Grid>
                     <controls:SettingsButton x:Name="SetNewPhoto"
                                              Content="{CustomResource ChatSetNewPhoto}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE9FE;">
                         <Button.Flyout>
                             <MenuFlyout Placement="BottomEdgeAlignedLeft">
@@ -88,18 +87,15 @@
                     <controls:SettingsButton x:Name="ChatType"
                                              Content="{CustomResource GroupType}"
                                              Click="{x:Bind ViewModel.EditType}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True" />
 
                     <controls:SettingsButton x:Name="ChatLinked"
                                              Content="{CustomResource Discussion}"
                                              Click="{x:Bind ViewModel.EditLinkedChat}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True" />
 
                     <controls:SettingsButton x:Name="ChatHistory"
                                              Content="{CustomResource ChatHistory}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE8BD;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.AllHistoryAvailableOptions}"
@@ -110,7 +106,6 @@
 
                     <controls:SettingsButton x:Name="ChannelColor"
                                              Content="{CustomResource ChangeChannelNameColor2}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Click="{x:Bind ViewModel.EditColor}"
                                              Glyph="&#xE2B1;"
                                              IsChevronVisible="True">
@@ -140,14 +135,12 @@
                     <controls:SettingsButton x:Name="GroupTopics"
                                              Content="{CustomResource Topics}"
                                              Click="{x:Bind ViewModel.Topics}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEA67;"
                                              IsChevronVisible="True" />
 
                     <controls:SettingsButton x:Name="ChannelDirectMessagesGroup"
                                              Content="{CustomResource PostSuggestions}"
                                              Click="{x:Bind ViewModel.DirectMessagesGroup}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE992;"
                                              IsChevronVisible="True">
                         <controls:SettingsButton.Badge>
@@ -183,7 +176,6 @@
                     <controls:SettingsButton x:Name="Reactions"
                                              Content="{CustomResource Reactions}"
                                              Click="{x:Bind ViewModel.Reactions}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xE987;" />
 
@@ -191,35 +183,30 @@
                                              Content="{CustomResource InviteLinks}"
                                              Click="{x:Bind ViewModel.InviteLinks}"
                                              Badge="{x:Bind ViewModel.InviteLinksCount, Mode=OneWay}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xE9F8;" />
 
                     <controls:SettingsButton x:Name="Permissions"
                                              Content="{CustomResource ChannelPermissions}"
                                              Click="{x:Bind ViewModel.Kicked}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xE192;" />
 
                     <controls:SettingsButton x:Name="Admins"
                                              Content="{CustomResource ChannelAdministrators}"
                                              Click="{x:Bind ViewModel.Admins}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xE983;" />
 
                     <controls:SettingsButton x:Name="Members"
                                              Content="{CustomResource ChannelMembers}"
                                              Click="{x:Bind ViewModel.Members}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xE716;" />
 
                     <controls:SettingsButton x:Name="Blacklist"
                                              Content="{CustomResource ChannelBlacklist}"
                                              Click="{x:Bind ViewModel.Banned}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xF166;" />
 
@@ -227,21 +214,18 @@
                                              Visibility="Collapsed"
                                              Content="{CustomResource Statistics}"
                                              Click="{x:Bind ViewModel.Statistics}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xE9D9;" />
 
                     <controls:SettingsButton x:Name="EventLog"
                                              Content="{CustomResource EventLog}"
                                              Click="{x:Bind ViewModel.EventLog}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xE984;" />
 
                     <controls:SettingsButton x:Name="AffiliatePrograms"
                                              Content="{CustomResource ChannelAffiliatePrograms}"
                                              Click="{x:Bind ViewModel.AffiliatePrograms}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              IsChevronVisible="True"
                                              Glyph="&#xEAA6;" />
                 </controls:HeaderedControl>
@@ -249,7 +233,6 @@
                 <controls:HeaderedControl x:Name="DeletePanel">
                     <controls:SettingsButton x:Name="Delete"
                                              Click="{x:Bind ViewModel.Delete}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Foreground="{ThemeResource DangerButtonBackground}"
                                              Glyph="&#xE74D;" />
                 </controls:HeaderedControl>

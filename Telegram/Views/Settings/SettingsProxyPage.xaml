@@ -51,7 +51,6 @@
                     <controls:HeaderedControl>
                         <controls:SettingsButton Content="{CustomResource AddProxy}"
                                                  Click="{x:Bind ViewModel.Add}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xE710;" />
                     </controls:HeaderedControl>
 

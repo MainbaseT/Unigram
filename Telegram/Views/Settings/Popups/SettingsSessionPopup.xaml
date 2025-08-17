@@ -53,19 +53,16 @@
 
         <controls:SettingsButton x:Name="Application"
                                  Description="{CustomResource Application}"
-                                 Style="{StaticResource GlyphSubtitleBadgeButtonStyle}"
                                  Glyph="&#xE975;"
                                  Background="Transparent"
                                  Grid.Row="1" />
         <controls:SettingsButton x:Name="Location"
                                  Description="{CustomResource Location}"
-                                 Style="{StaticResource GlyphSubtitleBadgeButtonStyle}"
                                  Glyph="&#xE1C4;"
                                  Background="Transparent"
                                  Grid.Row="2" />
         <controls:SettingsButton x:Name="Address"
                                  Description="{CustomResource IpAddress}"
-                                 Style="{StaticResource GlyphSubtitleBadgeButtonStyle}"
                                  Glyph="&#xE774;"
                                  Background="Transparent"
                                  Grid.Row="3" />
@@ -73,7 +70,6 @@
         <controls:SettingsButton x:Name="AcceptCallsPanel"
                                  Click="AcceptCallsPanel_Click"
                                  Content="{CustomResource AcceptCalls}"
-                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                  Glyph="&#xE717;"
                                  Background="Transparent"
                                  Margin="0,0,12,0"
@@ -88,7 +84,6 @@
         <controls:SettingsButton x:Name="AcceptSecretChatsPanel"
                                  Click="AcceptSecretChatsPanel_Click"
                                  Content="{CustomResource AcceptSecretChats}"
-                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                  Glyph="&#xE72E;"
                                  Background="Transparent"
                                  Margin="0,0,12,0"

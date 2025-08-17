@@ -191,8 +191,7 @@
                         </GridView.Footer>
                     </GridView>
 
-                    <controls:SettingsButton Style="{StaticResource GlyphBadgeButtonStyle}"
-                                             Glyph="&#xE9E7;"
+                    <controls:SettingsButton Glyph="&#xE9E7;"
                                              IsChevronVisible="True">
                         <Grid>
                             <Grid.ColumnDefinitions>

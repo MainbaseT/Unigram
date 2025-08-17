@@ -211,7 +211,7 @@
                       VerticalScrollBarVisibility="Auto"
                       VerticalScrollMode="Auto"
                       Grid.Row="1">
-            <StackPanel Margin="-12,-4,-12,0">
+            <StackPanel Margin="-12,-4,-12,60">
                 <controls:HeaderedControl Background="{ThemeResource SettingsItemBackground}">
                     <Grid BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                           Padding="12,8"
@@ -325,40 +325,33 @@
                 <controls:HeaderedControl>
                     <controls:SettingsButton Click="{x:Bind ViewModel.ChooseCredentials}"
                                              Content="{x:Bind ViewModel.Credentials.Title, Mode=OneWay, FallbackValue=Empty}"
-                                             Badge="{CustomResource PaymentCheckoutMethod}"
-                                             Style="{StaticResource SubtitleBadgeButtonStyle}" />
+                                             Description="{CustomResource PaymentCheckoutMethod}" />
 
                     <controls:SettingsButton Click="{x:Bind ViewModel.ChooseAddress}"
                                              Content="{x:Bind ConvertAddress(ViewModel.Info.ShippingAddress), Mode=OneWay, FallbackValue=Empty}"
                                              Visibility="{x:Bind ViewModel.Invoice.NeedShippingAddress, Mode=OneWay, FallbackValue=Collapsed}"
-                                             Badge="{CustomResource PaymentShippingAddress}"
-                                             Style="{StaticResource SubtitleBadgeButtonStyle}" />
+                                             Description="{CustomResource PaymentShippingAddress}" />
 
                     <controls:SettingsButton Click="{x:Bind ViewModel.ChooseShipping}"
                                              Content="{x:Bind ViewModel.Shipping.Title, Mode=OneWay, FallbackValue=Empty}"
                                              Visibility="{x:Bind ViewModel.Invoice.IsFlexible, Mode=OneWay, FallbackValue=Collapsed}"
-                                             Badge="{CustomResource PaymentCheckoutShippingMethod}"
-                                             Style="{StaticResource SubtitleBadgeButtonStyle}" />
+                                             Description="{CustomResource PaymentCheckoutShippingMethod}" />
 
                     <controls:SettingsButton Click="{x:Bind ViewModel.ChooseAddress}"
                                              Content="{x:Bind ViewModel.Info.Name, Mode=OneWay, FallbackValue=Empty}"
                                              Visibility="{x:Bind ViewModel.Invoice.NeedName, Mode=OneWay, FallbackValue=Collapsed}"
-                                             Badge="{CustomResource PaymentCheckoutName}"
-                                             Style="{StaticResource SubtitleBadgeButtonStyle}" />
+                                             Description="{CustomResource PaymentCheckoutName}" />
 
                     <controls:SettingsButton Click="{x:Bind ViewModel.ChooseAddress}"
                                              Content="{x:Bind converters:Formatter.PhoneNumber(ViewModel.Info.PhoneNumber), Mode=OneWay, FallbackValue=Empty}"
                                              Visibility="{x:Bind ViewModel.Invoice.NeedPhoneNumber, Mode=OneWay, FallbackValue=Collapsed}"
-                                             Badge="{CustomResource PaymentCheckoutPhoneNumber}"
-                                             Style="{StaticResource SubtitleBadgeButtonStyle}" />
+                                             Description="{CustomResource PaymentCheckoutPhoneNumber}" />
 
                     <controls:SettingsButton Click="{x:Bind ViewModel.ChooseAddress}"
                                              Content="{x:Bind ViewModel.Info.EmailAddress, Mode=OneWay, FallbackValue=Empty}"
                                              Visibility="{x:Bind ViewModel.Invoice.NeedEmailAddress, Mode=OneWay, FallbackValue=Collapsed}"
-                                             Badge="{CustomResource PaymentCheckoutEmail}"
-                                             Style="{StaticResource SubtitleBadgeButtonStyle}" />
+                                             Description="{CustomResource PaymentCheckoutEmail}" />
                 </controls:HeaderedControl>
-
             </StackPanel>
         </ScrollViewer>
 

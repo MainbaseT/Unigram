@@ -573,9 +573,8 @@
                 <controls:HeaderedControl ItemsSource="{x:Bind ViewModel.Scopes}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="settings:SettingsNotificationsScope">
-                            <controls:SettingsButton Badge="{x:Bind ExceptionsCount, Mode=OneWay}"
+                            <controls:SettingsButton Description="{x:Bind ExceptionsCount, Mode=OneWay}"
                                                      Content="{x:Bind Title}"
-                                                     Style="{StaticResource GlyphSubbadgeBadgeButtonStyle}"
                                                      Glyph="{x:Bind Glyph}"
                                                      Click="{x:Bind Exceptions}"
                                                      IsChevronVisible="True" />
@@ -628,7 +627,6 @@
                 <controls:HeaderedControl Footer="{CustomResource UndoAllCustom}">
                     <controls:SettingsButton Content="{CustomResource ResetAllNotifications}"
                                              Foreground="{ThemeResource DangerButtonBackground}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEA09;"
                                              Click="{x:Bind ViewModel.Reset}" />
                 </controls:HeaderedControl>

@@ -35,7 +35,6 @@
                                               Margin="0,0,0,2">
                         <controls:SettingsButton Click="{x:Bind ViewModel.Create}"
                                                  Content="{CustomResource BusinessLinksAdd}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xEA85;" />
                     </controls:HeaderedControl>
                 </controls:SettingsPanel>

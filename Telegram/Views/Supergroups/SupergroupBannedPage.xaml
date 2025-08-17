@@ -59,7 +59,6 @@
                                               Margin="0,0,0,2">
                         <controls:SettingsButton Content="{CustomResource ChannelBlockUser}"
                                                  Click="{x:Bind ViewModel.Add}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xF166;" />
                     </controls:HeaderedControl>
                 </controls:SettingsPanel>

@@ -54,8 +54,7 @@
                     <controls:HeaderedControl>
                         <controls:SettingsButton Click="{x:Bind ViewModel.OpenAffiliate}"
                                                  Content="{CustomResource UserAffiliateProgramRowTitle}"
-                                                 Badge="{CustomResource UserAffiliateProgramRowText}"
-                                                 Style="{StaticResource GlyphSubbadgeBadgeButtonStyle}"
+                                                 Description="{CustomResource UserAffiliateProgramRowText}"
                                                  Glyph="&#xE9B5;"
                                                  IsChevronVisible="True" />
                     </controls:HeaderedControl>

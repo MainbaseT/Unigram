@@ -180,7 +180,6 @@
                                               Margin="0,-14,0,0">
                         <controls:SettingsButton Content="{CustomResource CreateNewFilter}"
                                                  Click="{x:Bind ViewModel.Create}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  IsChevronVisible="True"
                                                  Glyph="&#xE98A;" />
                     </controls:HeaderedControl>

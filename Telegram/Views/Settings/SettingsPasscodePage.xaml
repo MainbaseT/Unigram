@@ -26,14 +26,12 @@
                 <controls:HeaderedControl Footer="{CustomResource ChangePasscodeInfo}">
                     <controls:SettingsButton Click="{x:Bind ViewModel.Toggle}"
                                              Content="{CustomResource DisablePasscode}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Foreground="{ThemeResource DangerButtonBackground}"
                                              Glyph="&#xE9A6;" />
 
                     <controls:SettingsButton Click="{x:Bind ViewModel.Edit}"
                                              IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}"
                                              Content="{CustomResource ChangePasscode}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE98C;" />
                 </controls:HeaderedControl>
 
@@ -46,7 +44,6 @@
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
                     <controls:SettingsButton Content="{CustomResource AutoLock}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE916;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.AutolockTimeoutOptions}"

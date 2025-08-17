@@ -53,7 +53,6 @@
                                                  Badge="{x:Bind ViewModel.DoNotTranslate, Mode=OneWay}"
                                                  Click="{x:Bind ViewModel.ChangeDoNotTranslate}"
                                                  Visibility="{x:Bind ConvertDoNotTranslate(ViewModel.TranslateMessages, ViewModel.TranslateChats), Mode=OneWay}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xE98B;" />
                     </controls:HeaderedControl>
 

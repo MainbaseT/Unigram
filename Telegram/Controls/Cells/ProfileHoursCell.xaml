@@ -49,8 +49,8 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock HorizontalAlignment="Left"
-                       VerticalAlignment="Top"
-                       Margin="20,11,0,0"
+                       VerticalAlignment="Center"
+                       Margin="20,0,0,0"
                        AutomationProperties.AccessibilityView="Raw"
                        Text="&#xEA34;"
                        FontFamily="{StaticResource SymbolThemeFontFamily}"

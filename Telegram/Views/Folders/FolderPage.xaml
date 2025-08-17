@@ -178,7 +178,6 @@
                                         </controls:HeaderedControl.ItemsPanel>
                                         <controls:SettingsButton Click="{x:Bind ViewModel.AddIncluded}"
                                                                  Content="{CustomResource FilterAddChats}"
-                                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                                  BorderThickness="0"
                                                                  Glyph="&#xEA08;" />
                                     </controls:HeaderedControl>
@@ -199,7 +198,6 @@
                                                                   Margin="0,2,0,2">
                                             <controls:SettingsButton Click="{x:Bind ViewModel.Include.Load}"
                                                                      Content="{x:Bind ConvertRemanining(ViewModel.Include.RemainingCount), Mode=OneWay}"
-                                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                                      Glyph="&#xEACB;" />
                                         </controls:HeaderedControl>
 
@@ -217,7 +215,6 @@
                                         </controls:HeaderedControl.ItemsPanel>
                                         <controls:SettingsButton Click="{x:Bind ViewModel.AddExcluded}"
                                                                  Content="{CustomResource FilterAddChats}"
-                                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                                  BorderThickness="0"
                                                                  Glyph="&#xEA08;" />
                                     </controls:HeaderedControl>
@@ -257,7 +254,6 @@
                                                           Margin="0,2,0,2">
                                     <controls:SettingsButton Click="{x:Bind ViewModel.Exclude.Load}"
                                                              Content="{x:Bind ConvertRemanining(ViewModel.Exclude.RemainingCount), Mode=OneWay}"
-                                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                                              Glyph="&#xEACB;" />
                                 </controls:HeaderedControl>
 
@@ -431,7 +427,6 @@
                                 </controls:HeaderedControl.ItemsPanel>
                                 <controls:SettingsButton Click="{x:Bind ViewModel.CreateLink}"
                                                          Content="{CustomResource CreateNewLink}"
-                                                         Style="{StaticResource GlyphBadgeButtonStyle}"
                                                          BorderThickness="0"
                                                          Glyph="&#xE9F8;" />
                             </controls:HeaderedControl>

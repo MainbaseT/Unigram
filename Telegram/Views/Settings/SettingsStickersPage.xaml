@@ -39,7 +39,6 @@
                                                      Click="{x:Bind ViewModel.OpenFeaturedStickers}"
                                                      Badge="{x:Bind ViewModel.FeaturedStickersCount, Mode=OneWay}"
                                                      BadgeVisibility="{x:Bind ViewModel.FeaturedStickersCount, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                      IsChevronVisible="True"
                                                      Glyph="&#xE989;" />
 
@@ -47,19 +46,16 @@
                                                      Click="{x:Bind ViewModel.OpenArchivedStickers}"
                                                      Badge="{x:Bind ViewModel.ArchivedStickersCount, Mode=OneWay}"
                                                      Visibility="{x:Bind ViewModel.ArchivedStickersCount, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                      IsChevronVisible="True"
                                                      Glyph="&#xE7B8;" />
 
                             <!--<controls:BadgeButton Content="{CustomResource Masks}"
                                                   Click="{x:Bind ViewModel.OpenMasks}"
-                                                  Style="{StaticResource GlyphBadgeButtonStyle}"
                                                   IsChevronVisible="True"
                                                   Glyph="&#xE997;" />-->
 
                             <controls:SettingsButton Content="{CustomResource Emoji}"
                                                      Click="{x:Bind ViewModel.OpenEmoji}"
-                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                      IsChevronVisible="True"
                                                      Glyph="&#xE76E;" />
                         </controls:HeaderedControl>
@@ -90,7 +86,6 @@
                             <controls:SettingsButton Content="{CustomResource ArchivedMasks}"
                                                      Click="{x:Bind ViewModel.OpenArchivedMasks}"
                                                      Badge="{x:Bind ViewModel.ArchivedStickersCount, Mode=OneWay}"
-                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                      IsChevronVisible="True"
                                                      Glyph="&#xE7B8;" />
                         </controls:HeaderedControl>
@@ -105,7 +100,6 @@
                             <controls:SettingsButton Content="{CustomResource ArchivedEmojiPacks}"
                                                      Click="{x:Bind ViewModel.OpenArchivedEmoji}"
                                                      Badge="{x:Bind ViewModel.ArchivedStickersCount, Mode=OneWay}"
-                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                      Visibility="{x:Bind ViewModel.ArchivedStickersCount, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                      IsChevronVisible="True"
                                                      Glyph="&#xE7B8;" />

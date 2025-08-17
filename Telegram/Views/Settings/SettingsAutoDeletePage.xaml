@@ -52,7 +52,6 @@
                     </Border>
                     <controls:SettingsButton Click="{x:Bind ViewModel.SetCustomTime}"
                                              Content="{CustomResource SetCustomTime}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE916;" />
                 </controls:HeaderedControl>
             </controls:SettingsPanel>

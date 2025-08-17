@@ -45,7 +45,6 @@
                                               Margin="0,0,0,2">
                         <controls:SettingsButton Click="{x:Bind ViewModel.Create}"
                                                  Content="{CustomResource DiscussionCreateGroup}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                                  Glyph="&#xE716;" />
                     </controls:HeaderedControl>
@@ -69,7 +68,6 @@
                         <controls:SettingsButton x:Name="Unlink"
                                                  Content="{CustomResource DiscussionUnlinkGroup}"
                                                  Click="{x:Bind ViewModel.Unlink}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xF166;" />
                     </controls:HeaderedControl>
 

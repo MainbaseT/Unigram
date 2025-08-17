@@ -139,7 +139,6 @@
                                               Margin="0,-14,0,0">
                         <controls:SettingsButton Click="LoadMore_Click"
                                                  Content="{x:Bind ConvertRemaining(ViewModel.RemainingItems), Mode=OneWay}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xE0E5;" />
                     </controls:HeaderedControl>
 

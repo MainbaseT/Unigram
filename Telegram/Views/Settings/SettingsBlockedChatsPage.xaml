@@ -33,7 +33,6 @@
                     <controls:HeaderedControl>
                         <controls:SettingsButton Content="{CustomResource BlockUser}"
                                                  Click="{x:Bind ViewModel.Block}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Foreground="{ThemeResource DangerButtonBackground}"
                                                  Glyph="&#xE98B;" />
                     </controls:HeaderedControl>

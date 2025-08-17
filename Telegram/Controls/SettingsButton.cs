@@ -14,10 +14,19 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
 {
+    public enum SettingsButtonGlyphVisibility
+    {
+        Auto = -1,
+        False = 0,
+        True = 1
+    }
+
     public partial class SettingsButton : GlyphButton
     {
         private BadgeButtonAutomationPeer _peer;
 
+        private UIElement GlyphPresenter;
+        private UIElement DescriptionPresenter;
         private UIElement Chevron;
         private UIElement Premium;
 
@@ -28,16 +37,40 @@ namespace Telegram.Controls
 
         protected override void OnApplyTemplate()
         {
+            if (ComputedIsGlyphVisible is false)
+            {
+                GlyphPresenter = GetTemplateChild(nameof(GlyphPresenter)) as UIElement;
+                if (GlyphPresenter != null)
+                {
+                    GlyphPresenter.Visibility = Visibility.Collapsed;
+                }
+            }
+
+            if (ComputedIsDescriptionVisible)
+            {
+                DescriptionPresenter = GetTemplateChild(nameof(DescriptionPresenter)) as UIElement;
+                if (DescriptionPresenter != null)
+                {
+                    DescriptionPresenter.Visibility = Visibility.Visible;
+                }
+            }
+
             if (IsChevronVisible)
             {
                 Chevron = GetTemplateChild(nameof(Chevron)) as UIElement;
-                Chevron.Visibility = Visibility.Visible;
+                if (Chevron != null)
+                {
+                    Chevron.Visibility = Visibility.Visible;
+                }
             }
 
             if (IsPremiumVisible)
             {
                 Premium = GetTemplateChild(nameof(Premium)) as UIElement;
-                Premium.Visibility = Visibility.Visible;
+                if (Premium != null)
+                {
+                    Premium.Visibility = Visibility.Visible;
+                }
             }
 
             base.OnApplyTemplate();
@@ -120,7 +153,29 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty DescriptionProperty =
-            DependencyProperty.Register("Description", typeof(object), typeof(SettingsButton), new PropertyMetadata(null));
+            DependencyProperty.Register("Description", typeof(object), typeof(SettingsButton), new PropertyMetadata(null, OnDescriptionChanged));
+
+        private static void OnDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = d as SettingsButton;
+            if (sender?.DescriptionPresenter != null || sender.ComputedIsDescriptionVisible)
+            {
+                sender.DescriptionPresenter ??= sender.GetTemplateChild(nameof(sender.DescriptionPresenter)) as UIElement;
+
+                if (sender.DescriptionPresenter != null)
+                {
+                    sender.DescriptionPresenter.Visibility = sender.ComputedIsDescriptionVisible
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }
+            }
+        }
+
+        #endregion
+
+        #region IsDescriptionVisible
+
+        public bool ComputedIsDescriptionVisible => Description is string description ? !string.IsNullOrEmpty(description) : Description != null;
 
         #endregion
 
@@ -134,6 +189,49 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty IconSourceProperty =
             DependencyProperty.Register("IconSource", typeof(IAnimatedVisualSource2), typeof(SettingsButton), new PropertyMetadata(null));
+
+        #endregion
+
+        #region IsGlyphVisible
+
+        public SettingsButtonGlyphVisibility IsGlyphVisible
+        {
+            get { return (SettingsButtonGlyphVisibility)GetValue(IsGlyphVisibleProperty); }
+            set { SetValue(IsGlyphVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsGlyphVisibleProperty =
+            DependencyProperty.Register("IsGlyphVisible", typeof(SettingsButtonGlyphVisibility), typeof(SettingsButton), new PropertyMetadata(SettingsButtonGlyphVisibility.Auto, OnGlyphVisibleChanged));
+
+        private static void OnGlyphVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = d as SettingsButton;
+            if (sender?.GlyphPresenter != null || !sender.ComputedIsGlyphVisible)
+            {
+                sender.GlyphPresenter ??= sender.GetTemplateChild(nameof(sender.GlyphPresenter)) as UIElement;
+
+                if (sender.GlyphPresenter != null)
+                {
+                    sender.GlyphPresenter.Visibility = sender.ComputedIsGlyphVisible
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }
+            }
+        }
+
+        public bool ComputedIsGlyphVisible
+        {
+            get
+            {
+                var visible = IsGlyphVisible;
+                if (visible == SettingsButtonGlyphVisibility.Auto)
+                {
+                    return !string.IsNullOrEmpty(Glyph);
+                }
+
+                return visible == SettingsButtonGlyphVisibility.True;
+            }
+        }
 
         #endregion
 

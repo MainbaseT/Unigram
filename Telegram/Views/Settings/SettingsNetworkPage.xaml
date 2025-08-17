@@ -55,7 +55,6 @@
                                 <StackPanel>
                                     <controls:SettingsButton Content="{CustomResource BytesReceived}"
                                                              Badge="{x:Bind ReceivedBytes, Converter={StaticResource FileSizeConverter}}"
-                                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                                              Glyph="&#xE118;"
                                                              Background="Transparent"
                                                              BorderThickness="0,0,0,1"
@@ -63,7 +62,6 @@
 
                                     <controls:SettingsButton Content="{CustomResource BytesSent}"
                                                              Badge="{x:Bind SentBytes, Converter={StaticResource FileSizeConverter}}"
-                                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                                              Glyph="&#xEA00;"
                                                              Background="Transparent"
                                                              CornerRadius="0" />
@@ -76,12 +74,10 @@
                 <controls:HeaderedControl Header="{CustomResource TotalNetworkUsage}">
                     <controls:SettingsButton Content="{CustomResource BytesReceived}"
                                              Badge="{x:Bind ViewModel.TotalReceivedBytes, Mode=OneWay, Converter={StaticResource FileSizeConverter}}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE118;" />
 
                     <controls:SettingsButton Content="{CustomResource BytesSent}"
                                              Badge="{x:Bind ViewModel.TotalSentBytes, Mode=OneWay, Converter={StaticResource FileSizeConverter}}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEA00;" />
                 </controls:HeaderedControl>
 
@@ -89,7 +85,6 @@
                     <controls:SettingsButton Click="{x:Bind ViewModel.Reset}"
                                              Content="{CustomResource ResetStatistics}"
                                              Foreground="{ThemeResource DangerButtonBackground}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEA09;" />
                 </controls:HeaderedControl>
             </controls:SettingsPanel>

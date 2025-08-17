@@ -32,7 +32,6 @@
                         <controls:SettingsButton x:Name="EventLog"
                                                  Content="{CustomResource EventLog}"
                                                  Click="{x:Bind ViewModel.EventLog}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  IsChevronVisible="True"
                                                  Glyph="&#xE984;" />
 
@@ -40,7 +39,6 @@
                                                  Visibility="Collapsed"
                                                  Content="{CustomResource ChannelAddAdmin}"
                                                  Click="{x:Bind ViewModel.Add}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xE983;" />
 
                         <controls:FauxCheckBox x:Name="AntiSpam"

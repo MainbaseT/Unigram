@@ -99,7 +99,6 @@
                         <controls:HeaderedControl Header="{CustomResource BusinessChatsIncluded}">
                             <controls:SettingsButton Click="{x:Bind ViewModel.AddIncluded}"
                                                      Content="{CustomResource BusinessChatsIncludedAdd}"
-                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                      Glyph="&#xEA08;" />
                         </controls:HeaderedControl>
 
@@ -124,7 +123,6 @@
                         <controls:HeaderedControl Header="{CustomResource BusinessChatsExcluded}">
                             <controls:SettingsButton Click="{x:Bind ViewModel.AddExcluded}"
                                                      Content="{CustomResource BusinessChatsExcludedAdd}"
-                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                      Glyph="&#xEA08;" />
                         </controls:HeaderedControl>
 

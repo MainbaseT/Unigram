@@ -116,7 +116,6 @@
                     <controls:HeaderedControl Footer="{CustomResource ManageInviteLinksHelp}">
                         <controls:SettingsButton Click="{x:Bind ViewModel.InviteLinks}"
                                                  Content="{CustomResource ManageInviteLinks}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xE9F8;" />
                     </controls:HeaderedControl>
 

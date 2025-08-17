@@ -362,7 +362,6 @@
                                       IsFooterLink="True">
                 <controls:SettingsButton x:Name="Description"
                                          Visibility="Collapsed"
-                                         Style="{StaticResource GlyphSubtitleBadgeButtonStyle}"
                                          ContextRequested="Description_ContextRequested"
                                          Glyph="&#xE946;">
                     <RichTextBlock x:Name="DescriptionLabel"
@@ -381,7 +380,6 @@
                                          Click="{x:Bind ViewModel.OpenPhoneInfo}"
                                          Visibility="Collapsed"
                                          Description="{CustomResource Phone}"
-                                         Style="{StaticResource GlyphSubtitleBadgeButtonStyle}"
                                          Glyph="&#xE717;">
                     <Button.ContextFlyout>
                         <MenuFlyout>
@@ -405,7 +403,6 @@
 
                 <controls:SettingsButton x:Name="Username"
                                          Visibility="Collapsed"
-                                         Style="{StaticResource GlyphSubtitleBadgeButtonStyle}"
                                          Glyph="&#xE168;">
                     <Button.ContextFlyout>
                         <MenuFlyout>
@@ -443,13 +440,11 @@
                 <controls:SettingsButton x:Name="UserBirthday"
                                          Visibility="Collapsed"
                                          Click="Birthday_Click"
-                                         Style="{StaticResource GlyphSubtitleBadgeButtonStyle}"
                                          Glyph="&#xEA84;" />
 
                 <controls:SettingsButton x:Name="Location"
                                          Visibility="Collapsed"
                                          Description="{CustomResource AttachLocation}"
-                                         Style="{StaticResource GlyphSubtitleBadgeButtonStyle}"
                                          Glyph="&#xE1C4;">
                     <Button.ContextFlyout>
                         <MenuFlyout>
@@ -470,7 +465,6 @@
                 <controls:SettingsButton x:Name="ChatId"
                                          Click="{x:Bind ViewModel.CopyId}"
                                          Visibility="Collapsed"
-                                         Style="{StaticResource GlyphBadgeButtonStyle}"
                                          Glyph="&#xEA42;">
                     <Button.ContextFlyout>
                         <MenuFlyout>
@@ -521,7 +515,6 @@
                 <controls:SettingsButton x:Name="AffiliateProgram"
                                          Content="{CustomResource ProfileBotAffiliateProgram}"
                                          Click="{x:Bind ViewModel.OpenAffiliate}"
-                                         Style="{StaticResource GlyphBadgeButtonStyle}"
                                          Glyph="&#xEAA6;"
                                          Visibility="Collapsed" />
             </controls:HeaderedControl>
@@ -530,19 +523,16 @@
                 <controls:SettingsButton x:Name="Members"
                                          Content="{CustomResource ChannelSubscribers}"
                                          Click="{x:Bind ViewModel.OpenMembers}"
-                                         Style="{StaticResource GlyphBadgeButtonStyle}"
                                          Glyph="&#xE716;"
                                          Visibility="Collapsed" />
                 <controls:SettingsButton x:Name="Admins"
                                          Content="{CustomResource ChannelAdministrators}"
                                          Click="{x:Bind ViewModel.OpenAdmins}"
-                                         Style="{StaticResource GlyphBadgeButtonStyle}"
                                          Glyph="&#xE983;"
                                          Visibility="Collapsed" />
                 <controls:SettingsButton x:Name="Statistics"
                                          Click="{x:Bind ViewModel.OpenBalance}"
                                          Content="{CustomResource StarsBalance}"
-                                         Style="{StaticResource GlyphBadgeButtonStyle}"
                                          Glyph="&#xEA8D;"
                                          Visibility="Collapsed">
                     <controls:SettingsButton.Badge>
@@ -587,7 +577,6 @@
                 <controls:SettingsButton x:Name="ChannelSettings"
                                          Content="{CustomResource ChannelAdminSettings}"
                                          Click="{x:Bind ViewModel.Edit}"
-                                         Style="{StaticResource GlyphBadgeButtonStyle}"
                                          Glyph="&#xE9E9;"
                                          IsChevronVisible="True"
                                          Visibility="Collapsed" />
@@ -601,12 +590,14 @@
                 <controls:SettingsButton x:Name="SecretLifetime"
                                          Visibility="Collapsed"
                                          Command="{x:Bind ViewModel.SetTimerCommand}"
-                                         Content="{CustomResource MessageLifetime}" />
+                                         Content="{CustomResource MessageLifetime}"
+                                         Glyph="&#xE916;" />
 
                 <controls:SettingsButton x:Name="SecretHashKey"
                                          Visibility="Collapsed"
                                          Content="{CustomResource EncryptionKey}"
-                                         Click="{x:Bind ViewModel.ShowIdenticon}">
+                                         Click="{x:Bind ViewModel.ShowIdenticon}"
+                                         Glyph="&#xEAD1;">
                     <!--<controls:BadgeButton.Badge>
                                     <Image x:Name="SecretIdenticon" Width="24" Height="24"/>
                                     </controls:BadgeButton.Badge>-->

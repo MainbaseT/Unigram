@@ -82,7 +82,6 @@
 
                             <controls:SettingsButton Content="{CustomResource TerminateAllSessions}"
                                                      Click="{x:Bind ViewModel.TerminateOthers}"
-                                                     Style="{StaticResource GlyphBadgeButtonStyle}"
                                                      Foreground="{ThemeResource DangerButtonBackground}"
                                                      Glyph="&#xE98B;" />
                         </controls:HeaderedControl>

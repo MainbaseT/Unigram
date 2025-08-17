@@ -45,12 +45,10 @@
                 <controls:HeaderedControl Margin="-20,64,-20,8">
                     <controls:SettingsButton Content="{CustomResource SelectFromGallery}"
                                              Click="{x:Bind ViewModel.ChangeToLocal}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEB9F;" />
 
                     <controls:SettingsButton Content="{CustomResource SetColor}"
                                              Click="{x:Bind ViewModel.ChangeToColor}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE2B1;" />
                 </controls:HeaderedControl>
             </GridView.Header>

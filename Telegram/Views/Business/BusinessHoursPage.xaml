@@ -51,7 +51,8 @@
                     <controls:HeaderedControl>
                         <controls:SettingsButton Click="{x:Bind ViewModel.ChangeTimeZone}"
                                                  Content="{CustomResource BusinessHoursTimezone}"
-                                                 Badge="{x:Bind ViewModel.TimeZone.Name, Mode=OneWay}" />
+                                                 Badge="{x:Bind ViewModel.TimeZone.Name, Mode=OneWay}"
+                                                 IsGlyphVisible="False" />
                     </controls:HeaderedControl>
                 </controls:SettingsPanel>
             </controls:SettingsPanel>

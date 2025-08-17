@@ -109,7 +109,6 @@
                                     <controls:HeaderedControl Footer="{x:Bind ConvertNewLinkFooter(ViewModel.InviteLinks.Count, ViewModel.IsChannel), Mode=OneWay}">
                                         <controls:SettingsButton Click="{x:Bind ViewModel.CreateLink}"
                                                                  Content="{CustomResource CreateNewLink}"
-                                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                                  Glyph="&#xEA9C;" />
                                     </controls:HeaderedControl>
                                 </controls:SettingsPanel>
@@ -185,7 +184,6 @@
                         <controls:SettingsButton Click="{x:Bind ViewModel.RevokeAll}"
                                                  Content="{CustomResource DeleteAllRevokedLinks}"
                                                  Foreground="{ThemeResource DangerButtonBackground}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xE74D;" />
                     </controls:HeaderedControl>
                 </controls:SettingsPanel>

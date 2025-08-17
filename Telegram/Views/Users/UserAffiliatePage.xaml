@@ -22,16 +22,13 @@
 
                 <controls:HeaderedControl>
                     <controls:SettingsButton Content="{CustomResource BotAffiliateProgramFeature1Title}"
-                                             Badge="{CustomResource BotAffiliateProgramFeature1}"
-                                             Style="{StaticResource GlyphSubbadgeBadgeButtonStyle}"
+                                             Description="{CustomResource BotAffiliateProgramFeature1}"
                                              Glyph="&#xE9B5;" />
                     <controls:SettingsButton Content="{CustomResource BotAffiliateProgramFeature2Title}"
-                                             Badge="{CustomResource BotAffiliateProgramFeature2}"
-                                             Style="{StaticResource GlyphSubbadgeBadgeButtonStyle}"
+                                             Description="{CustomResource BotAffiliateProgramFeature2}"
                                              Glyph="&#xE95C;" />
                     <controls:SettingsButton Content="{CustomResource BotAffiliateProgramFeature3Title}"
-                                             Badge="{CustomResource BotAffiliateProgramFeature3}"
-                                             Style="{StaticResource GlyphSubbadgeBadgeButtonStyle}"
+                                             Description="{CustomResource BotAffiliateProgramFeature3}"
                                              Glyph="&#xE9F8;" />
                 </controls:HeaderedControl>
 

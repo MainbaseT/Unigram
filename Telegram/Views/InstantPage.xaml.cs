@@ -486,7 +486,7 @@ namespace Telegram.Views
         {
             var panel = new StackPanel();
 
-            var header = new SettingsButton { Content = ProcessText(details, false), Glyph = details.IsOpen ? Icons.ChevronUp : Icons.ChevronDown, Style = BootStrapper.Current.Resources["GlyphBadgeButtonStyle"] as Style, Margin = new Thickness(-12, 0, -12, 0) };
+            var header = new SettingsButton { Content = ProcessText(details, false), Glyph = details.IsOpen ? Icons.ChevronUp : Icons.ChevronDown, Margin = new Thickness(-12, 0, -12, 0) };
             var inner = new StackPanel { Padding = new Thickness(0, 12, 0, 12), Visibility = details.IsOpen ? Visibility.Visible : Visibility.Collapsed };
 
             panel.Children.Add(header);

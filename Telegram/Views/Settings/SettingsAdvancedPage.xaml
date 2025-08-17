@@ -30,8 +30,7 @@
                                              Click="{x:Bind ViewModel.Update}"
                                              Content="{x:Bind ViewModel.UpdateText, Mode=OneWay}"
                                              Glyph="{x:Bind ViewModel.UpdateGlyph, Mode=OneWay}"
-                                             IsEnabled="{x:Bind ViewModel.IsUpdateEnabled, Mode=OneWay}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}" />
+                                             IsEnabled="{x:Bind ViewModel.IsUpdateEnabled, Mode=OneWay}" />
 
                     <CheckBox Content="{CustomResource InstallBetaUpdates}"
                               IsChecked="{x:Bind ViewModel.InstallBetaUpdates, Mode=TwoWay}"

@@ -63,7 +63,6 @@
                         <controls:SettingsButton x:Name="AddNew"
                                                  Content="{CustomResource AddSubscriber}"
                                                  Click="{x:Bind ViewModel.MembersTab.Add}"
-                                                 Style="{StaticResource GlyphBadgeButtonStyle}"
                                                  Glyph="&#xE8FA;" />
                     </controls:HeaderedControl>
                 </StackPanel>

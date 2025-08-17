@@ -4843,8 +4843,6 @@
     <Style TargetType="local:SettingsButton">
         <Setter Property="Background"
                 Value="{ThemeResource SettingsItemBackground}" />
-        <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
         <Setter Property="BorderBrush"
                 Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness"
@@ -4856,15 +4854,19 @@
         <Setter Property="HorizontalAlignment"
                 Value="Stretch" />
         <Setter Property="VerticalAlignment"
-                Value="Center" />
-        <Setter Property="FontFamily"
-                Value="{ThemeResource ContentControlThemeFontFamily}" />
+                Value="Stretch" />
         <Setter Property="FontWeight"
                 Value="Normal" />
+        <Setter Property="FontFamily"
+                Value="{ThemeResource ContentControlThemeFontFamily}" />
         <Setter Property="FontSize"
                 Value="{ThemeResource ControlContentThemeFontSize}" />
         <Setter Property="UseSystemFocusVisuals"
                 Value="True" />
+        <Setter Property="Width"
+                Value="Auto" />
+        <Setter Property="Height"
+                Value="Auto" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:SettingsButton">
@@ -4901,38 +4903,80 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource SystemControlForegroundBaseLowBrush}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
-                                                                       Storyboard.TargetName="BadgePresenter">
-                                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource SystemControlForegroundBaseLowBrush}" />
-                                        </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"
+                                              MinWidth="12" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Border x:Name="GlyphPresenter"
+                                Width="56"
+                                Grid.RowSpan="2">
+                            <TextBlock FontSize="{StaticResource GlyphMediumFontSize}"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
+                                       Margin="20,0,0,0"
+                                       AutomationProperties.AccessibilityView="Raw"
+                                       Text="{TemplateBinding Glyph}"
+                                       FontFamily="{StaticResource SymbolThemeFontFamily}" />
+                        </Border>
+
                         <ContentPresenter x:Name="ContentPresenter"
+                                          FontFamily="{TemplateBinding FontFamily}"
                                           AutomationProperties.AccessibilityView="Raw"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           ContentTransitions="{TemplateBinding ContentTransitions}"
                                           Content="{TemplateBinding Content}"
                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          Padding="12,11,12,12"
-                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                          Padding="0,11,12,12"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Grid.Column="1" />
+
+                        <ContentPresenter x:Name="DescriptionPresenter"
+                                          x:Load="False"
+                                          FontSize="12"
+                                          FontFamily="{ThemeResource ContentControlThemeFontFamily}"
+                                          Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
+                                          Content="{TemplateBinding Description}"
+                                          Padding="0,-10,12,12"
+                                          Grid.Column="1"
+                                          Grid.Row="1" />
+
+                        <TextBlock x:Name="Premium"
+                                   x:Load="False"
+                                   Text="&#xE9B5;"
+                                   Foreground="{ThemeResource PremiumObliqueGradientBrush}"
+                                   FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   FontSize="16"
+                                   VerticalAlignment="Center"
+                                   Visibility="Collapsed"
+                                   Margin="-8,0,12,0"
+                                   Grid.Column="2" />
+
                         <ContentControl x:Name="BadgePresenter"
                                         Content="{TemplateBinding Badge}"
                                         Visibility="{TemplateBinding BadgeVisibility}"
+                                        FontFamily="{ThemeResource ContentControlThemeFontFamily}"
                                         Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
+                                        FontSize="14"
                                         Height="44"
-                                        Padding="12,0,12,0"
+                                        Padding="12,3,12,5"
                                         HorizontalContentAlignment="Right"
                                         VerticalContentAlignment="Center"
                                         IsTabStop="False"
-                                        Grid.Column="1">
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
+                                        Grid.ColumnSpan="2">
                             <ContentControl.ContentTransitions>
                                 <TransitionCollection>
                                     <EntranceThemeTransition />
@@ -4946,13 +4990,14 @@
                         <TextBlock x:Name="Chevron"
                                    x:Load="False"
                                    Visibility="Collapsed"
-                                   Text="&#xE0E3;"
+                                   Text="{TemplateBinding ChevronGlyph}"
                                    FontSize="20"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center"
                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
                                    Margin="-6,0,6,0"
-                                   Grid.Column="2" />
+                                   Grid.RowSpan="2"
+                                   Grid.Column="4" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

@@ -107,7 +107,6 @@
                     <controls:SettingsButton Content="{CustomResource PrivateMessagesExceptions}"
                                              Click="{x:Bind ViewModel.AllowUnpaidRules.Always}"
                                              Badge="{x:Bind ViewModel.AllowUnpaidRules.AllowedBadge, Mode=OneWay}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xF164;" />
                 </controls:HeaderedControl>
             </controls:SettingsPanel>

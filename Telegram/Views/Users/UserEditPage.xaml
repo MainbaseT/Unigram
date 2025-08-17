@@ -62,7 +62,6 @@
                     <controls:SettingsButton x:Name="BotPhoto"
                                              x:Load="False"
                                              Content="{CustomResource ChatSetNewPhoto}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE9FE;">
                         <Button.Flyout>
                             <MenuFlyout Placement="BottomEdgeAlignedLeft">
@@ -98,17 +97,14 @@
                     <controls:SettingsButton x:Name="Username"
                                              Click="{x:Bind ViewModel.ChangeUsername}"
                                              Content="{CustomResource Username}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE9F8;" />
                     <controls:SettingsButton x:Name="AffiliateProgram"
                                              Content="{CustomResource AffiliateProgramBot}"
                                              Click="{x:Bind ViewModel.OpenAffiliate}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEAA6;" />
                     <controls:SettingsButton x:Name="Stars"
                                              Click="{x:Bind ViewModel.ShowBalance}"
                                              Content="{CustomResource StarsBalance}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEA8D;">
                         <controls:SettingsButton.Badge>
                             <Grid>
@@ -128,7 +124,6 @@
                                           x:Load="False">
                     <controls:SettingsButton Click="{x:Bind ViewModel.VerifyAccounts}"
                                              Content="{CustomResource BotVerifyAccounts}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEA8B;" />
                 </controls:HeaderedControl>
 
@@ -137,15 +132,12 @@
                                           Footer="{CustomResource BotManageInfo}">
                     <controls:SettingsButton Click="{x:Bind ViewModel.EditDescription}"
                                              Content="{CustomResource BotEditIntro}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEA0A;" />
                     <controls:SettingsButton Click="{x:Bind ViewModel.EditCommands}"
                                              Content="{CustomResource BotEditCommands}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEA0B;" />
                     <controls:SettingsButton Click="{x:Bind ViewModel.EditSettings}"
                                              Content="{CustomResource BotChangeSettings}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE99A;" />
                 </controls:HeaderedControl>
 
@@ -159,7 +151,6 @@
                 <controls:HeaderedControl x:Name="PhotoPanel"
                                           x:Load="False">
                     <controls:SettingsButton x:Name="SuggestPhoto"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE9FE;"
                                              Visibility="Collapsed">
                         <Button.Flyout>
@@ -182,7 +173,6 @@
                         </Button.Flyout>
                     </controls:SettingsButton>
                     <controls:SettingsButton x:Name="PersonalPhoto"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE9FD;">
                         <Button.Flyout>
                             <MenuFlyout Placement="BottomEdgeAlignedLeft">
@@ -214,8 +204,7 @@
                     <controls:SettingsButton x:Name="ResetPhoto"
                                              Click="{x:Bind ViewModel.ResetPhoto}"
                                              Content="{CustomResource ResetToOriginalPhoto}"
-                                             Foreground="{ThemeResource DangerButtonBackground}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}" />
+                                             Foreground="{ThemeResource DangerButtonBackground}" />
                 </controls:HeaderedControl>
             </controls:SettingsPanel>
         </ScrollViewer>

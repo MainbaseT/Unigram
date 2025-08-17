@@ -79,20 +79,17 @@
                     </GridView>
 
                     <controls:SettingsButton Content="{CustomResource ChatThemes}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Click="{x:Bind ViewModel.OpenThemes}"
                                              Glyph="&#xE90E;"
                                              IsChevronVisible="True" />
 
                     <controls:SettingsButton Content="{CustomResource ChatWallpaper}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Click="{x:Bind ViewModel.OpenWallpaper}"
                                              Glyph="&#xE9E7;"
                                              IsChevronVisible="True" />
 
                     <controls:SettingsButton x:Name="NameColor"
                                              Content="{CustomResource YourNameColor}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Click="{x:Bind ViewModel.ChangeProfileColor}"
                                              Glyph="&#xE2B1;"
                                              IsChevronVisible="True">
@@ -108,7 +105,6 @@
                               IsChecked="{x:Bind ViewModel.ForceNightMode, Mode=TwoWay}" />
                     <controls:SettingsButton Content="{CustomResource AutoNightTheme}"
                                              Badge="{x:Bind ConvertNightMode(ViewModel.NightMode), Mode=OneWay}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Click="{x:Bind ViewModel.OpenNightMode}"
                                              Glyph="&#xE9EA;"
                                              IsChevronVisible="True" />
@@ -222,7 +218,6 @@
                                 Grid.ColumnSpan="3" />
                     </Grid>
                     <controls:SettingsButton Content="{CustomResource FontFamily}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xEAA9;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.FontFamilyOptions}"
@@ -240,7 +235,6 @@
 
                 <controls:HeaderedControl Footer="{CustomResource StickersNameInfo}">
                     <controls:SettingsButton Content="{CustomResource StickersName}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Click="{x:Bind ViewModel.OpenStickers}"
                                              Glyph="&#xF4AA;"
                                              IsChevronVisible="True" />
@@ -293,7 +287,6 @@
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
                     <controls:SettingsButton Content="{CustomResource SendByEnter2}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE919;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.SendByOptions}"
@@ -302,7 +295,6 @@
                         </controls:SettingsButton.Badge>
                     </controls:SettingsButton>
                     <controls:SettingsButton Content="{CustomResource DistanceUnits}"
-                                             Style="{StaticResource GlyphBadgeButtonStyle}"
                                              Glyph="&#xE1C4;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.DistanceUnitOptions}"

@@ -75,8 +75,7 @@
                             <controls:HeaderedControl>
                                 <controls:SettingsButton Click="Affiliate_Click"
                                                          Content="{CustomResource UserAffiliateProgramRowTitle}"
-                                                         Badge="{CustomResource UserAffiliateProgramRowText}"
-                                                         Style="{StaticResource GlyphSubbadgeBadgeButtonStyle}"
+                                                         Description="{CustomResource UserAffiliateProgramRowText}"
                                                          Glyph="&#xE9B5;"
                                                          IsChevronVisible="True" />
                             </controls:HeaderedControl>
