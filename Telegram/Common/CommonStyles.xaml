@@ -2229,7 +2229,7 @@
     </Style>
 
     <Style x:Key="SmallPillButtonStyle"
-           TargetType="controls:SettingsButton">
+           TargetType="Button">
         <Setter Property="HorizontalAlignment"
                 Value="Center" />
         <Setter Property="VerticalAlignment"
@@ -2254,7 +2254,7 @@
                 Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="controls:SettingsButton">
+                <ControlTemplate TargetType="Button">
                     <Grid x:Name="RootGrid"
                           Background="{TemplateBinding Background}"
                           CornerRadius="{TemplateBinding CornerRadius}">
@@ -2315,15 +2315,15 @@
                                 <VisualState x:Name="PointerFocused" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <TextBlock x:Name="ContentPresenter"
-                                   Margin="{TemplateBinding Padding}"
-                                   Text="{TemplateBinding Glyph}"
-                                   TextLineBounds="Tight"
-                                   TextAlignment="Center"
-                                   OpticalMarginAlignment="TrimSideBearings"
-                                   FontSize="11"
-                                   VerticalAlignment="Center"
-                                   Typography.NumeralAlignment="Tabular" />
+                        <ContentPresenter x:Name="ContentPresenter"
+                                          Margin="{TemplateBinding Padding}"
+                                          Content="{TemplateBinding Content}"
+                                          TextLineBounds="Tight"
+                                          HorizontalContentAlignment="Center"
+                                          OpticalMarginAlignment="TrimSideBearings"
+                                          FontSize="11"
+                                          VerticalAlignment="Center"
+                                          Typography.NumeralAlignment="Tabular" />
 
                         <Border x:Name="FocusEllipse"
                                 CornerRadius="{TemplateBinding CornerRadius}"

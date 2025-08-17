@@ -17,8 +17,6 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls
 {
-    public record PlaybackSliderPositionChanged(TimeSpan NewPosition);
-
     public partial class ProgressVoice : PlaybackSlider
     {
         private Grid RootGrid;

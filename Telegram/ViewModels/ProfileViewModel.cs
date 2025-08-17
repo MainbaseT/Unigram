@@ -861,7 +861,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public async void ShowIdenticon()
+        public void ShowIdenticon()
         {
             var chat = _chat;
             if (chat == null)
@@ -869,7 +869,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            await ShowPopupAsync(new IdenticonPopup(SessionId, chat));
+            ShowPopup(new IdenticonPopup(SessionId, chat));
         }
 
         public async void Invite()

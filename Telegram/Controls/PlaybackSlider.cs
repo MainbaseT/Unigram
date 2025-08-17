@@ -18,6 +18,8 @@ using Windows.UI.Xaml.Input;
 
 namespace Telegram.Controls
 {
+    public record PlaybackSliderPositionChanged(TimeSpan NewPosition);
+
     public partial class PlaybackSlider : Control
     {
         private UIElement ProgressBarIndicator;

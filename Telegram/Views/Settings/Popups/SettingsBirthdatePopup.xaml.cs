@@ -99,8 +99,8 @@ namespace Telegram.Views.Settings.Popups
             if (primaryRule != null)
             {
                 PrivacyInfo.Text = primaryRule is UserPrivacySettingRuleAllowContacts
-                ? Strings.EditProfileBirthdayInfoContacts
-                : Strings.EditProfileBirthdayInfo;
+                    ? Strings.EditProfileBirthdayInfoContacts
+                    : Strings.EditProfileBirthdayInfo;
             }
             else
             {

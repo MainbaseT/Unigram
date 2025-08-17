@@ -316,7 +316,7 @@ namespace Telegram.Controls
             subtitle.StartAnimation("Scale", subtitleScale);
             photo.StartAnimation("Scale", photoScale);
             photoRoot.StartAnimation("Translation.Y", photoTranslation);
-            photo.CenterPoint = new Vector3(75, 140, 0);
+            photo.CenterPoint = new Vector3(70, 140, 0);
         }
 
         #region Delegate
