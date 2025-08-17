@@ -137,7 +137,7 @@ namespace Telegram.Controls
 
         public override void AddTime(double value)
         {
-            //_core?.AddTime((long)value);
+            ExecuteScript($"playerAddTime({value})");
         }
 
         private double _position;
