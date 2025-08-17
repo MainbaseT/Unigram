@@ -426,6 +426,7 @@ namespace Telegram.Controls
 
                 Below.Children.Remove(_spoilerPresenter);
                 _spoilerPresenter = null;
+                _spoiler = null;
             }
         }
 
@@ -497,6 +498,7 @@ namespace Telegram.Controls
 
             if (string.IsNullOrEmpty(styled?.Text))
             {
+                _invalidateSpoilers = _spoiler != null;
                 return;
             }
 
