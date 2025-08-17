@@ -472,7 +472,7 @@ namespace Telegram.Common
         {
             if (length <= 0)
             {
-                return new StyledParagraph(string.Empty, startIndex, length, null);
+                return new StyledParagraph(string.Empty, startIndex, length, Array.Empty<TextEntity>());
             }
 
             var message = text.Substring(startIndex, Math.Min(text.Length - startIndex, length));
@@ -599,11 +599,21 @@ namespace Telegram.Common
                 {
                     TextEntityTypePreCode preCode => new TextParagraphTypeMonospace(preCode.Language),
                     TextEntityTypePre => new TextParagraphTypeMonospace(),
-                    TextEntityTypeBlockQuote => new TextParagraphTypeQuote(),
-                    TextEntityTypeExpandableBlockQuote => new TextParagraphTypeQuote(),
+                    TextEntityTypeBlockQuote => new TextParagraphTypeQuote(false),
+                    TextEntityTypeExpandableBlockQuote => new TextParagraphTypeQuote(true),
                     _ => null
                 };
             }
+        }
+
+        public StyledParagraph(string text, int offset, int length, IList<TextStyleRun> runs, TextDirectionality? direction = null, int padding = 0)
+        {
+            Offset = offset;
+            Length = length;
+            Entities = Array.Empty<TextEntity>();
+            Runs = runs;
+            Direction = direction ?? NativeUtils.GetDirectionality(text);
+            Padding = length > 0 ? padding : 1;
         }
 
         public int Offset { get; }
@@ -628,7 +638,12 @@ namespace Telegram.Common
 
     public partial class TextParagraphTypeQuote : TextParagraphType
     {
+        public TextParagraphTypeQuote(bool isExpandable)
+        {
+            IsExpandable = isExpandable;
+        }
 
+        public bool IsExpandable { get; }
     }
 
     public partial class TextParagraphTypeMonospace : TextParagraphType

@@ -565,15 +565,51 @@ namespace Telegram.Controls
                     _ => locale
                 };
 
-                if (part.Type is TextParagraphTypeQuote && paragraph != null)
+                if (part.Type is TextParagraphTypeQuote quote && paragraph != null)
                 {
                     var last = part == styled.Paragraphs[^1];
                     var temp = direct.GetObject(paragraph) as Paragraph;
-                    temp.Margin = new Thickness(11, 6, 24, last ? 0 : 8);
-                    temp.FontSize = Theme.Current.CaptionFontSize;
+                    direct.SetThicknessProperty(paragraph, XamlPropertyIndex.Block_Margin, new Thickness(11, 6, 24, last ? 0 : 8));
+                    direct.SetDoubleProperty(paragraph, XamlPropertyIndex.TextElement_FontSize, Theme.Current.CaptionFontSize);
                     partFontSize = Theme.Current.CaptionFontSize;
 
                     _codeBlocks.Add(new FormattedParagraph(temp, part));
+
+                    if (false && quote.IsExpandable)
+                    {
+                        var inline = new InlineUIContainer();
+                        var test = new FormattedTextBlock();
+                        test.SetText(clientService, new StyledText(text, null, new[] { new StyledParagraph(text, 0, text.Length, part.Runs, part.Direction, part.Padding) }), partFontSize);
+                        test.MaxLines = 3;
+                        test.TextTrimming = TextTrimming.CharacterEllipsis;
+                        test.IsEnabled = false;
+
+                        var hyperlink = new CheckBox();
+                        hyperlink.Content = test;
+                        hyperlink.Style = BootStrapper.Current.Resources["ExpandableQuoteCheckBoxStyle"] as Style;
+                        hyperlink.Click += (s, args) =>
+                        {
+                            test.MaxLines = test.MaxLines == 3 ? 0 : 3;
+                        };
+
+                        inline.Child = hyperlink;
+                        temp.Inlines.Add(inline);
+
+                        previous = part.Offset + part.Length;
+
+                        if (paragraph != null)
+                        {
+                            direct.AddToCollection(blocks, paragraph);
+                        }
+
+                        if (part.Offset == 0)
+                        {
+                            firstType = type;
+                        }
+
+                        lastType = type;
+                        continue;
+                    }
                 }
 
                 for (int j = 0; j < runs.Count; j++)
