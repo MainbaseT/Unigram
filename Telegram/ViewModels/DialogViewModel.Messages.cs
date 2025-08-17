@@ -272,7 +272,7 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, null, 0)
+                    ReplyTo = new MessageComposerReplyTo(message, null, checklistTask.Task.Id)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
