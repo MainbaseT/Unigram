@@ -123,9 +123,12 @@ namespace Telegram.Controls
             XamlRoot.Changed += OnRasterizationScaleChanged;
             ReplacementColor?.RegisterColorChangedCallback(OnReplacementColorChanged, ref _replacementColorToken);
 
-            if (Source != null && IsOutlineEnabled)
+            if (Source != null)
             {
-                Source.OutlineChanged += OnOutlineChanged;
+                if (IsOutlineEnabled)
+                {
+                    Source.OutlineChanged += OnOutlineChanged;
+                }
 
                 if (IsViewportAware && !_effectiveViewportRegistered)
                 {
@@ -500,6 +503,7 @@ namespace Telegram.Controls
 
         private void UpdateShimmer(AnimatedImageSource source)
         {
+            // TODO: Enable whenever IsDownloadCompleted == false
             if (_clean is false || !IsConnected || !IsOutlineEnabled)
             {
                 return;
