@@ -781,15 +781,20 @@ namespace Telegram.Controls
                             UIElement presenter;
                             if (customEmoji.CustomEmojiId == -1)
                             {
-                                presenter = new TextBlock
+                                var block = new TextBlock
                                 {
                                     Text = data,
                                     FontSize = 16,
                                     FontFamily = BootStrapper.Current.Resources["SymbolThemeFontFamily"] as FontFamily,
-                                    Margin = new Thickness(0, 2, 0, -2)
+                                    Margin = new Thickness(0, 0, 0, -4)
                                 };
 
-                                BindingOperations.SetBinding(presenter, global::Windows.UI.Xaml.Controls.TextBlock.ForegroundProperty, new Binding
+                                presenter = new Border
+                                {
+                                    Child = block
+                                };
+
+                                BindingOperations.SetBinding(block, global::Windows.UI.Xaml.Controls.TextBlock.ForegroundProperty, new Binding
                                 {
                                     Path = new PropertyPath("IconForeground"),
                                     Source = this

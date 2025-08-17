@@ -143,6 +143,11 @@ namespace Telegram.Td
             return new FormattedText("\U0001F642", new[] { new TextEntity(0, 2, new TextEntityTypeCustomEmoji(customEmojiId)) });
         }
 
+        public static FormattedText CustomEmoji(string glyph)
+        {
+            return new FormattedText(glyph, new[] { new TextEntity(0, 1, new TextEntityTypeCustomEmoji(-1)) });
+        }
+
         public static FormattedText Format(string format, params object[] args)
         {
             // TODO: doesn't support more than 10 parameters but I'm lazy

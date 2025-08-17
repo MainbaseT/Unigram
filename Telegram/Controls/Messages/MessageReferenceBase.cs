@@ -826,17 +826,12 @@ namespace Telegram.Controls.Messages
             var task = checklistTaskId > 0 ? checklist.List.Tasks.FirstOrDefault(x => x.Id == checklistTaskId) : null;
             if (task != null)
             {
-                var text = new FormattedText(task.CompletionDate != 0 ? "\uEACF" : "\uEAD0", new[]
-                {
-                    new TextEntity(0, 1, new TextEntityTypeCustomEmoji(-1))
-                });
-
                 SetText(message,
                     outgoing,
                     sender,
                     title,
                     string.Empty,
-                    ClientEx.Format("{0} {1}", text, task.Text),
+                    TdExtensions.Concat(ClientEx.CustomEmoji(task.CompletionDate != 0 ? "\uEACF " : "\uEAD0 "), task.Text),
                     false,
                     white);
             }

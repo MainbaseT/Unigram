@@ -2486,6 +2486,7 @@ namespace Telegram.Controls.Messages
             }
 
             formatted = ClientEx.ParseMarkdown(formatted);
+            formatted = TdExtensions.Concat(ClientEx.CustomEmoji("\uEAD2 "), formatted);
 
             if (message.IsOutgoing)
             {
@@ -2534,6 +2535,7 @@ namespace Telegram.Controls.Messages
                 }
 
                 var formatted = ClientEx.ParseMarkdown(text);
+                formatted = TdExtensions.Concat(ClientEx.CustomEmoji(markedAsDone ? "\uEAD3 " : "\uEAD4 "), formatted);
 
                 return ReplaceWithLink(formatted, message.GetSender());
             }
@@ -2555,6 +2557,7 @@ namespace Telegram.Controls.Messages
 
                 var formatted = ClientEx.Format(text, task.Text);
                 formatted = ClientEx.ParseMarkdown(formatted);
+                formatted = TdExtensions.Concat(ClientEx.CustomEmoji(markedAsDone ? "\uEAD3 " : "\uEAD4 "), formatted);
 
                 return ReplaceWithLink(formatted, message.GetSender());
             }

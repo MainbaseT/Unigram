@@ -666,6 +666,7 @@
                                      MaxWidth="480">
                 <controls:FormattedTextBlock x:Name="Text"
                                              Foreground="#FFFFFF"
+                                             IconForeground="#FFFFFF"
                                              TextAlignment="Center"
                                              Style="{StaticResource CaptionFormattedTextBlockStyle}"
                                              FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
