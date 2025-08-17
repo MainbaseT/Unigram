@@ -20,6 +20,7 @@ namespace Telegram.Controls.Media
         public const string ZWJ = "\u200D";
         public const string ZWNJ = "\u200C";
         public const string Spacing = "\u2004\u200A";
+        public const string Space = "\u0020";
 
         public const string DollarArrowUp = "\uEAAE";
         public const string DollarArrowUp16 = "\uEAAD";

@@ -1387,12 +1387,23 @@ namespace Telegram.Controls.Cells
             var topMessage = chat.LastMessage;
             if (topMessage != null)
             {
+                FormattedText text;
                 if (_clientService.TryGetMediaAlbum(chat.Id, topMessage.MediaAlbumId, out MessageAlbumLastMessage album))
                 {
-                    return UpdateBriefLabel(album, topMessage.IsOutgoing, chat.DraftMessage, false, out thumbnail);
+                    text = UpdateBriefLabel(album, topMessage.IsOutgoing, chat.DraftMessage, false, out thumbnail);
+                }
+                else
+                {
+                    text = UpdateBriefLabel(topMessage.Content, topMessage.IsOutgoing, chat.DraftMessage, false, out thumbnail);
                 }
 
-                return UpdateBriefLabel(topMessage.Content, topMessage.IsOutgoing, chat.DraftMessage, false, out thumbnail);
+                // TODO: this is better than nothing, although it's not the best 
+                if (topMessage.ForwardInfo != null && !topMessage.IsSaved(_clientService.Options.MyId))
+                {
+                    return TdExtensions.Concat(ClientEx.CustomEmoji(Icons.ShareFilled + Icons.Space), text);
+                }
+
+                return text;
             }
             else if (chat.Type is ChatTypeSecret secretType)
             {
