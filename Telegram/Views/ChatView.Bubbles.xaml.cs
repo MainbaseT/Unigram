@@ -103,6 +103,8 @@ namespace Telegram.Views
             var firstVisibleId = 0L;
             var lastVisibleId = 0L;
 
+            var lastVisibleIsLastMessage = panel.LastVisibleIndex == Messages.Items.Count - 1;
+
             var minItem = 2;
             var minDate = true;
             var minDateIndex = panel.FirstVisibleIndex;
@@ -309,7 +311,7 @@ namespace Telegram.Views
 
                 // This is a workaround for a bug in messages.readDiscussion that causes sent messages
                 // to be marked as read and consequently blocks following updateReadChannelDiscussionOutbox
-                if (ViewModel.ForumTopic == null || !message.IsOutgoing || (message.IsOutgoing && message.UnreadReactions?.Count > 0))
+                if ((i < panel.LastVisibleIndex || lastVisibleIsLastMessage) && (ViewModel.ForumTopic == null || !message.IsOutgoing || (message.IsOutgoing && message.UnreadReactions?.Count > 0)))
                 {
                     if (message.Content is MessageAlbum album)
                     {
