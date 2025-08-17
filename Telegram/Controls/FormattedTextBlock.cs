@@ -215,6 +215,14 @@ namespace Telegram.Controls
             }
         }
 
+        public double LastAvailableWidth { get; private set; }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            LastAvailableWidth = availableSize.Width;
+            return base.MeasureOverride(availableSize);
+        }
+
         private void OnLostFocus(object sender, RoutedEventArgs e)
         {
             TextBlock.Select(TextBlock.ContentStart, TextBlock.ContentStart);
@@ -1000,7 +1008,7 @@ namespace Telegram.Controls
             var fontSize = (AutoFontSize ? Theme.Current.MessageFontSize : TextBlock.FontSize) * BootStrapper.Current.TextScaleFactor;
             var quoteSize = (AutoFontSize ? Theme.Current.CaptionFontSize : TextBlock.FontSize) * BootStrapper.Current.TextScaleFactor;
 
-            var width = Math.Ceiling(ActualWidth + 1);
+            var width = LastAvailableWidth;
 
             foreach (var block in _codeBlocks)
             {
@@ -1014,7 +1022,7 @@ namespace Telegram.Controls
                     ? quoteSize
                     : fontSize;
 
-                var rectangles = PlaceholderImageHelper.Foreground.LayoutMetrics(partial, 0, partial.Length, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft);
+                var rectangles = PlaceholderHelper.Foreground.LayoutMetrics(partial, 0, partial.Length, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft);
                 var relative = paragraph.ContentStart.GetCharacterRect(paragraph.ContentStart.LogicalDirection);
                 var end = paragraph.ContentEnd.GetCharacterRect(paragraph.ContentEnd.LogicalDirection);
 
@@ -1067,7 +1075,7 @@ namespace Telegram.Controls
             var fontSize = (AutoFontSize ? Theme.Current.MessageFontSize : TextBlock.FontSize) * BootStrapper.Current.TextScaleFactor;
             var quoteSize = (AutoFontSize ? Theme.Current.CaptionFontSize : TextBlock.FontSize) * BootStrapper.Current.TextScaleFactor;
 
-            var width = Math.Ceiling(TextBlock.ActualWidth + 1);
+            var width = LastAvailableWidth;
             var inset = 0;
 
             var position = new Windows.Foundation.Point(0, 0);

@@ -2527,7 +2527,7 @@ namespace Telegram.Controls.Messages
                     var fontSize = Theme.Current.MessageFontSize * BootStrapper.Current.TextScaleFactor;
                     var quoteSize = Theme.Current.CaptionFontSize * BootStrapper.Current.TextScaleFactor;
 
-                    var width = Math.Ceiling(rich.ActualWidth + 1); //Panel.MeasuredWidth; //Message.ActualWidth;
+                    var width = Message.LastAvailableWidth;
                     var inset = 0;
 
                     var minX = double.MaxValue;
