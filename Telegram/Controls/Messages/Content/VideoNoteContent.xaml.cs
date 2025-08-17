@@ -459,9 +459,10 @@ namespace Telegram.Controls.Messages.Content
                     _message.ClientService.Send(new CancelPreliminaryUploadFile(file.Id));
                 }
             }
+            // This branch could be likely removed with some tuning
             else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && !file.Local.IsDownloadingCompleted)
             {
-                _message.Delegate.PlayMessage(_message);
+                _message.ClientService.DownloadFile(file.Id, 30);
             }
             else if (_message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
