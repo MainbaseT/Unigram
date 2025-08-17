@@ -6420,6 +6420,18 @@ public static class PlaceholderImageHelper_stub
             throw new RuntimeException(ex);
         }
     }
+    public static void HandleDeviceLost_stub(this Telegram.Native.PlaceholderImageHelper sender)
+    {
+        try
+        {
+            sender.HandleDeviceLost();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static bool IsWebP_stub(string fileName, out int pixelWidth, out int pixelHeight)
     {
         try
@@ -6828,6 +6840,18 @@ public static class CurrencyFormatter_stub
 }
 public static class INumberFormatter2_stub
 {
+    public static string FormatDouble_stub(this Windows.Globalization.NumberFormatting.INumberFormatter2 sender, double value)
+    {
+        try
+        {
+            return sender.FormatDouble(value);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static string FormatInt_stub(this Windows.Globalization.NumberFormatting.INumberFormatter2 sender, long value)
     {
         try
