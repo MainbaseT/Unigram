@@ -1653,10 +1653,10 @@ namespace Telegram.Views
 
                         viewModel.ComposerHeader = new MessageComposerHeader(viewModel.ClientService)
                         {
-                            Editing = embedded.Editing,
-                            ReplyTo = embedded.ReplyTo,
-                            SuggestedPostInfo = embedded.SuggestedPostInfo,
-                            LinkPreviewOptions = embedded.LinkPreviewOptions,
+                            Editing = embedded?.Editing,
+                            ReplyTo = embedded?.ReplyTo,
+                            SuggestedPostInfo = embedded?.SuggestedPostInfo,
+                            LinkPreviewOptions = embedded?.LinkPreviewOptions,
                             LinkPreview = linkPreview,
                             LinkPreviewUrl = linkPreview.Url,
                         };
