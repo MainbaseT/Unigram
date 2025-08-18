@@ -489,6 +489,7 @@ namespace Telegram.Controls.Messages.Content
             }
             catch (Exception ex)
             {
+                Logger.Info(video.Duration + " - " + e.Position);
                 Logger.Error(ex);
             }
         }
