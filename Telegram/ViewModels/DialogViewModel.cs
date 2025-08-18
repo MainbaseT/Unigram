@@ -3663,25 +3663,30 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var message = PinnedMessages.LastOrDefault();
-            if (message == null || PinnedMessages.Count > 1)
-            {
-                return;
-            }
-
             if (chat.CanPinMessages(ClientService))
             {
                 var confirm = await ShowPopupAsync(Strings.UnpinMessageAlert, Strings.AppName, Strings.OK, Strings.Cancel);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    ClientService.Send(new UnpinChatMessage(chat.Id, message.Id));
-                    PinnedMessages.Clear();
+                    if (DirectMessagesChatTopic != null)
+                    {
+                        ClientService.Send(new UnpinAllDirectMessagesChatTopicMessages(chat.Id, DirectMessagesChatTopic.Id));
+                    }
+                    else if (ForumTopic != null)
+                    {
+                        ClientService.Send(new UnpinAllMessageThreadMessages(chat.Id, ForumTopic.Info.MessageThreadId));
+                    }
+                    else
+                    {
+                        ClientService.Send(new UnpinAllChatMessages(chat.Id));
+                    }
+
                     Delegate?.UpdatePinnedMessage(chat, false);
                 }
             }
             else
             {
-                Settings.SetChatPinnedMessage(chat.Id, message.Id);
+                Settings.SetChatPinnedMessage(chat.Id, int.MaxValue);
                 Delegate?.UpdatePinnedMessage(chat, false);
             }
         }
@@ -4227,6 +4232,46 @@ namespace Telegram.ViewModels
 
         #endregion
 
+        #region Unpin Messages
+
+        public async void UnpinMessages()
+        {
+            var chat = _chat;
+            if (chat == null)
+            {
+                return;
+            }
+
+            if (chat.CanPinMessages(ClientService))
+            {
+                var confirm = await ShowPopupAsync(Strings.UnpinMessageAlert, Strings.AppName, Strings.OK, Strings.Cancel);
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    if (DirectMessagesChatTopic != null)
+                    {
+                        ClientService.Send(new UnpinAllDirectMessagesChatTopicMessages(chat.Id, DirectMessagesChatTopic.Id));
+                    }
+                    else if (ForumTopic != null)
+                    {
+                        ClientService.Send(new UnpinAllMessageThreadMessages(chat.Id, ForumTopic.Info.MessageThreadId));
+                    }
+                    else
+                    {
+                        ClientService.Send(new UnpinAllChatMessages(chat.Id));
+                    }
+
+                    Delegate?.UpdatePinnedMessage(chat, false);
+                }
+            }
+            else
+            {
+                Settings.SetChatPinnedMessage(chat.Id, int.MaxValue);
+                Delegate?.UpdatePinnedMessage(chat, false);
+            }
+        }
+
+        #endregion
+
         #region Action
 
         protected virtual void FilterExecute()
@@ -4263,32 +4308,7 @@ namespace Telegram.ViewModels
             }
             else if (Type == DialogType.Pinned)
             {
-                if (chat.CanPinMessages(ClientService))
-                {
-                    var confirm = await ShowPopupAsync(Strings.UnpinMessageAlert, Strings.AppName, Strings.OK, Strings.Cancel);
-                    if (confirm == ContentDialogResult.Primary)
-                    {
-                        if (DirectMessagesChatTopic != null)
-                        {
-                            ClientService.Send(new UnpinAllDirectMessagesChatTopicMessages(chat.Id, DirectMessagesChatTopic.Id));
-                        }
-                        else if (ForumTopic != null)
-                        {
-                            ClientService.Send(new UnpinAllMessageThreadMessages(chat.Id, ForumTopic.Info.MessageThreadId));
-                        }
-                        else
-                        {
-                            ClientService.Send(new UnpinAllChatMessages(chat.Id));
-                        }
-
-                        Delegate?.UpdatePinnedMessage(chat, false);
-                    }
-                }
-                else
-                {
-                    Settings.SetChatPinnedMessage(chat.Id, int.MaxValue);
-                    Delegate?.UpdatePinnedMessage(chat, false);
-                }
+                UnpinMessages();
             }
             else if (chat.Type is ChatTypePrivate privata)
             {

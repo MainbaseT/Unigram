@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Composition;
+using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
 using Telegram.Navigation;
 using Telegram.Td.Api;
@@ -19,6 +20,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Chats
@@ -455,6 +457,22 @@ namespace Telegram.Controls.Chats
         }
 
         #endregion
+
+        private void OnContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            var flyout = new MenuFlyout();
+
+            if (ViewModel.Chat.CanPinMessages(ViewModel.ClientService))
+            {
+                flyout.CreateFlyoutItem(ViewModel.UnpinMessages, ViewModel.PinnedMessages.Count == 1 ? Strings.UnpinMessage2 : Strings.UnpinAllMessages2, Icons.PinOff);
+            }
+            else
+            {
+                flyout.CreateFlyoutItem(ViewModel.UnpinMessages, ViewModel.PinnedMessages.Count == 1 ? Strings.HidePinnedMessage2 : Strings.HidePinnedMessages2, Icons.PinOff);
+            }
+
+            flyout.ShowAt(sender, args);
+        }
     }
 
     public partial class ChatPinnedMessageAutomationPeer : HyperlinkButtonAutomationPeer

@@ -7470,8 +7470,14 @@ They can still join via an invite link as long as they are not on the Removed Us
   <data name="HideOnTop" xml:space="preserve">
     <value>Hide</value>
   </data>
+  <data name="HidePinnedMessage2" xml:space="preserve">
+    <value>Hide Pinned Message</value>
+  </data>
   <data name="HidePinnedMessages" xml:space="preserve">
     <value>HIDE PINNED MESSAGES</value>
+  </data>
+  <data name="HidePinnedMessages2" xml:space="preserve">
+    <value>Hide Pinned Messages</value>
   </data>
   <data name="HideReadTime" xml:space="preserve">
     <value>Hide Read Time</value>
@@ -13666,11 +13672,17 @@ If you are not comfortable with Telegram&apos;s modest needs, it won&apos;t be p
   <data name="UnpinAllMessages" xml:space="preserve">
     <value>UNPIN ALL MESSAGES</value>
   </data>
+  <data name="UnpinAllMessages2" xml:space="preserve">
+    <value>Unpin All Messages</value>
+  </data>
   <data name="UnpinFromTop" xml:space="preserve">
     <value>Unpin from top</value>
   </data>
   <data name="UnpinMessage" xml:space="preserve">
     <value>Unpin</value>
+  </data>
+  <data name="UnpinMessage2" xml:space="preserve">
+    <value>Unpin Message</value>
   </data>
   <data name="UnpinMessageAlert" xml:space="preserve">
     <value>Are you sure you want to unpin this message for everyone?</value>

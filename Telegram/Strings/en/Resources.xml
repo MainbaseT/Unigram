@@ -12602,4 +12602,10 @@
     <string name="SuggestionStarsWillBeLostDelete">Delete Anyway</string>
 
     <string name="SuggestedOfferPaidUntil">Paid until {0}</string>
+
+    <string name="UnpinAllMessages2">Unpin All Messages</string>
+    <string name="HidePinnedMessages2">Hide Pinned Messages</string>
+    <string name="UnpinMessage2">Unpin Message</string>
+    <string name="HidePinnedMessage2">Hide Pinned Message</string>
+
 </resources>
