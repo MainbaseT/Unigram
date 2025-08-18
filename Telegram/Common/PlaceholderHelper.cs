@@ -27,23 +27,17 @@ namespace Telegram.Common
         [ThreadStatic]
         private static PlaceholderImageHelper _foreground;
 
-        [ThreadStatic]
-        private static readonly object _foregroundLock = new();
-
         public static PlaceholderImageHelper Foreground
         {
             get
             {
-                lock (_foregroundLock)
+                if (_foreground == null)
                 {
-                    if (_foreground == null)
-                    {
-                        _foreground = new PlaceholderImageHelper();
-                    }
-
-                    _foreground.HandleDeviceLost();
-                    return _foreground;
+                    _foreground = new PlaceholderImageHelper();
                 }
+
+                _foreground.HandleDeviceLost();
+                return _foreground;
             }
         }
 
