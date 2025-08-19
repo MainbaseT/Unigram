@@ -264,9 +264,9 @@ namespace Telegram.Controls
                     sender.Premium.Visibility = (bool)e.NewValue
                         ? Visibility.Visible
                         : Visibility.Collapsed;
-                }
 
-                Grid.SetColumnSpan(sender.ContentPresenter, (bool)e.NewValue ? 1 : 2);
+                    Grid.SetColumnSpan(sender.ContentPresenter, (bool)e.NewValue ? 1 : 2);
+                }
             }
         }
 
