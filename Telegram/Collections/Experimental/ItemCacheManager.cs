@@ -39,7 +39,7 @@ namespace Telegram.Collections
     class ItemCacheManager<T>
     {
         // data structure to hold all the items that are in the ranges the cache manager is looking after
-        private List<CacheEntryBlock<T>> _cacheBlocks;
+        private List<CacheEntryBlock> _cacheBlocks;
 
         // List of ranges for items that are not present in the cache
         internal ItemIndexRangeList _requests;
@@ -66,7 +66,7 @@ namespace Telegram.Collections
 #endif
         public ItemCacheManager(fetchDataCallbackHandler callback, int batchsize = 50, string debugName = "ItemCacheManager")
         {
-            _cacheBlocks = new List<CacheEntryBlock<T>>();
+            _cacheBlocks = new List<CacheEntryBlock>();
             _requests = new ItemIndexRangeList();
             _cachedResults = new ItemIndexRangeList();
             _fetchDataCallback = callback;
@@ -106,7 +106,7 @@ namespace Telegram.Collections
             get
             {
                 // iterates through the cache blocks to find the item
-                foreach (CacheEntryBlock<T> block in _cacheBlocks)
+                foreach (CacheEntryBlock block in _cacheBlocks)
                 {
                     if (index >= block.FirstIndex && index <= block.LastIndex)
                     {
@@ -120,7 +120,7 @@ namespace Telegram.Collections
                 // iterates through the cache blocks to find the right block
                 for (int i = 0; i < _cacheBlocks.Count; i++)
                 {
-                    CacheEntryBlock<T> block = _cacheBlocks[i];
+                    CacheEntryBlock block = _cacheBlocks[i];
                     if (index >= block.FirstIndex && index <= block.LastIndex)
                     {
                         block.Items[index - block.FirstIndex] = value;
@@ -146,18 +146,18 @@ namespace Telegram.Collections
         {
             if (insertBeforeBlock > 0)
             {
-                CacheEntryBlock<T> block = _cacheBlocks[insertBeforeBlock - 1];
+                CacheEntryBlock block = _cacheBlocks[insertBeforeBlock - 1];
                 if (block.LastIndex == index - 1)
                 {
                     T[] newItems = new T[block.Length + 1];
                     Array.Copy(block.Items, newItems, (int)block.Length);
                     newItems[block.Length] = value;
-                    _cacheBlocks[insertBeforeBlock - 1] = new CacheEntryBlock<T>(block.FirstIndex, newItems);
+                    _cacheBlocks[insertBeforeBlock - 1] = new CacheEntryBlock(block.FirstIndex, newItems);
                     return;
                 }
             }
 
-            CacheEntryBlock<T> newBlock = new CacheEntryBlock<T>(index, new T[] { value });
+            CacheEntryBlock newBlock = new CacheEntryBlock(index, new T[] { value });
             _cacheBlocks.Insert(insertBeforeBlock, newBlock);
         }
 
@@ -177,7 +177,7 @@ namespace Telegram.Collections
             _requests = new ItemIndexRangeList(ranges);
             _trackedRanges = ranges;
 
-            foreach (CacheEntryBlock<T> cached in _cacheBlocks)
+            foreach (CacheEntryBlock cached in _cacheBlocks)
             {
                 _requests.Subtract(new ItemIndexRange(cached.FirstIndex, cached.Length));
             }
@@ -381,7 +381,7 @@ namespace Telegram.Collections
         // Sees if the value is in our cache if so it returns the index
         public int IndexOf(T value)
         {
-            foreach (CacheEntryBlock<T> entry in _cacheBlocks)
+            foreach (CacheEntryBlock entry in _cacheBlocks)
             {
                 int index = Array.IndexOf<T>(entry.Items, value);
                 if (index != -1) return index + entry.FirstIndex;
@@ -390,9 +390,9 @@ namespace Telegram.Collections
         }
 
         // Type for the cache blocks
-        class CacheEntryBlock<ITEMTYPE>
+        class CacheEntryBlock
         {
-            public ITEMTYPE[] Items { get; }
+            public T[] Items { get; }
 
             public int FirstIndex { get; }
 
@@ -400,7 +400,7 @@ namespace Telegram.Collections
 
             public uint Length { get; }
 
-            public CacheEntryBlock(int firstIndex, ITEMTYPE[] items)
+            public CacheEntryBlock(int firstIndex, T[] items)
             {
                 Items = items;
                 FirstIndex = firstIndex;
