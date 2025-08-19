@@ -4940,7 +4940,8 @@
                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           Padding="0,11,12,12"
                                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          Grid.Column="1" />
+                                          Grid.Column="1"
+                                          Grid.ColumnSpan="2" />
 
                         <ContentPresenter x:Name="DescriptionPresenter"
                                           x:Load="False"
@@ -4950,6 +4951,7 @@
                                           Content="{TemplateBinding Description}"
                                           Padding="0,-10,12,12"
                                           Grid.Column="1"
+                                          Grid.ColumnSpan="2"
                                           Grid.Row="1" />
 
                         <TextBlock x:Name="Premium"

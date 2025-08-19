@@ -10,6 +10,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
@@ -26,6 +27,7 @@ namespace Telegram.Controls
         private BadgeButtonAutomationPeer _peer;
 
         private UIElement GlyphPresenter;
+        private ContentPresenter ContentPresenter;
         private UIElement DescriptionPresenter;
         private UIElement Chevron;
         private UIElement Premium;
@@ -37,6 +39,8 @@ namespace Telegram.Controls
 
         protected override void OnApplyTemplate()
         {
+            ContentPresenter = GetTemplateChild(nameof(ContentPresenter)) as ContentPresenter;
+
             if (ComputedIsGlyphVisible is false)
             {
                 GlyphPresenter = GetTemplateChild(nameof(GlyphPresenter)) as UIElement;
@@ -71,6 +75,8 @@ namespace Telegram.Controls
                 {
                     Premium.Visibility = Visibility.Visible;
                 }
+
+                Grid.SetColumnSpan(ContentPresenter, 1);
             }
 
             base.OnApplyTemplate();
@@ -259,6 +265,8 @@ namespace Telegram.Controls
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                 }
+
+                Grid.SetColumnSpan(sender.ContentPresenter, (bool)e.NewValue ? 1 : 2);
             }
         }
 
