@@ -179,7 +179,7 @@ namespace Telegram.Collections
 
             foreach (CacheEntryBlock<T> cached in _cacheBlocks)
             {
-                _requests.Subtract(cached);
+                _requests.Subtract(new ItemIndexRange(cached.FirstIndex, cached.Length));
             }
 
             StartFetchData();
@@ -390,14 +390,22 @@ namespace Telegram.Collections
         }
 
         // Type for the cache blocks
-        class CacheEntryBlock<ITEMTYPE> : ItemIndexRange
+        class CacheEntryBlock<ITEMTYPE>
         {
             public ITEMTYPE[] Items { get; }
 
+            public int FirstIndex { get; }
+
+            public int LastIndex { get; }
+
+            public uint Length { get; }
+
             public CacheEntryBlock(int firstIndex, ITEMTYPE[] items)
-                : base(firstIndex, (uint)items.Length)
             {
                 Items = items;
+                FirstIndex = firstIndex;
+                LastIndex = firstIndex + items.Length - 1;
+                Length = (uint)items.Length;
             }
         }
     }
