@@ -1547,7 +1547,7 @@ namespace Telegram.ViewModels
 
                     // If we're loading the last message and it has been read already
                     // then we want to align it at bottom, as it might be taller than the window height
-                    if (maxId == details.LastMessageId)
+                    if (maxId == details.LastMessageId && !unread)
                     {
                         alignment = VerticalAlignment.Bottom;
                         pixel = null;
