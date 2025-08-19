@@ -5,12 +5,15 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections.Generic;
 using Telegram.Common;
+using Telegram.Controls.Media;
 using Telegram.Controls.Views;
 using Telegram.Converters;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.Views.Popups;
 using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -293,7 +296,34 @@ namespace Telegram.Controls.Messages
                 Padding = new Thickness(0)
             });
 
+            if (_reactionType is ReactionTypeCustomEmoji)
+            {
+                flyout.CreateFlyoutSeparator();
+                flyout.CreateFlyoutItem(ShowCustomEmoji, Strings.AddToEmoji, Icons.Emoji);
+            }
+
             flyout.ShowAt(this, args);
+        }
+
+        private async void ShowCustomEmoji()
+        {
+            if (_reactionType is not ReactionTypeCustomEmoji customEmoji)
+            {
+                return;
+            }
+
+            var response = await _message.ClientService.SendAsync(new GetCustomEmojiStickers(new[] { customEmoji.CustomEmojiId }));
+            if (response is Stickers stickers)
+            {
+                var sets = new HashSet<long>();
+
+                foreach (var sticker in stickers.StickersValue)
+                {
+                    sets.Add(sticker.SetId);
+                }
+
+                await StickersPopup.ShowAsync(_message.Delegate.NavigationService, sets);
+            }
         }
 
         private void OnClick(object sender, RoutedEventArgs e)
