@@ -1078,7 +1078,7 @@ namespace Telegram.Controls
                     rect.Width = rectangles.Width + paragraph.Margin.Left + paragraph.Margin.Right;
                     rect.Height = Math.Max(endBottom - startY + 6 + 22, 0);
                     rect.LanguageName = monospace.Language;
-                    Canvas.SetLeft(rect, rectangles.X);
+                    Canvas.SetLeft(rect, styled.Direction == TextDirectionality.RightToLeft ? ActualWidth - rect.Width : 0);
                     Canvas.SetTop(rect, startY - 2 - 22);
 
                     Below.Children.Add(rect);
@@ -1089,7 +1089,7 @@ namespace Telegram.Controls
                     rect.Width = rectangles.Width + paragraph.Margin.Left + paragraph.Margin.Right;
                     rect.Height = Math.Max(endBottom - startY + 6, 0);
                     rect.Glyph = paragraph.FontSize == Theme.Current.MessageFontSize ? Icons.CodeFilled16 : Icons.QuoteBlockFilled16;
-                    Canvas.SetLeft(rect, rectangles.X);
+                    Canvas.SetLeft(rect, styled.Direction == TextDirectionality.RightToLeft ? ActualWidth - rect.Width : 0);
                     Canvas.SetTop(rect, startY - 2);
 
                     Below.Children.Add(rect);
