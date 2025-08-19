@@ -101,6 +101,11 @@ namespace Telegram.Common
 
         private HttpResponse Serve(HttpRequest request)
         {
+            return Serve(request, true);
+        }
+
+        private HttpResponse Serve(HttpRequest request, bool retry)
+        {
             var session = System.IO.Path.GetDirectoryName(request.Path);
             var fileName = System.IO.Path.GetFileNameWithoutExtension(request.Path);
             var extension = System.IO.Path.GetExtension(request.Path);
@@ -178,22 +183,30 @@ namespace Telegram.Common
 
             if (bytesRead > 0)
             {
-                var response = new HttpResponse();
-                response.StatusCode = "206";
-                response.Headers["Access-Control-Allow-Origin"] = "*";
-                response.Headers["Content-Type"] = "video/mp4";
-                response.Headers["Content-Range"] = string.Format("bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size);
-
-                using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                try
                 {
-                    stream.Seek(offset, System.IO.SeekOrigin.Begin);
+                    var response = new HttpResponse();
+                    response.StatusCode = "206";
+                    response.Headers["Access-Control-Allow-Origin"] = "*";
+                    response.Headers["Content-Type"] = "video/mp4";
+                    response.Headers["Content-Range"] = string.Format("bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size);
 
-                    byte[] buffer = new byte[(int)limit];
-                    stream.Read(buffer, 0, buffer.Length);
-                    response.Content = buffer;
+                    using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                    {
+                        stream.Seek(offset, System.IO.SeekOrigin.Begin);
+
+                        byte[] buffer = new byte[(int)limit];
+                        stream.Read(buffer, 0, buffer.Length);
+                        response.Content = buffer;
+                    }
+
+                    return response;
                 }
-
-                return response;
+                catch (System.IO.FileNotFoundException)
+                {
+                    // It can happen that file got copied from temp to videos, in this case we just retry
+                    return Serve(request, false);
+                }
             }
 
             return HttpResponse.NotFound;
