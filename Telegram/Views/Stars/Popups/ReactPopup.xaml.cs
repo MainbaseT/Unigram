@@ -151,6 +151,7 @@ namespace Telegram.Views.Stars.Popups
             if (PurchaseText != null)
             {
                 PurchaseText.Text = string.Format(Strings.StarsReactionSend.ReplaceStar(Icons.Premium), StarCount.ToString("N0"));
+                AutomationProperties.SetName(PurchaseCommand, PurchaseText.Text);
             }
         }
 
