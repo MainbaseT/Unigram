@@ -464,13 +464,13 @@ namespace Telegram.ViewModels
                             };
                         }
 
-                        var response = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
-                        if (response is not MessageProperties properties)
+                        var properties = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id)) as MessageProperties;
+                        if (properties == null && Type != DialogType.EventLog)
                         {
                             return;
                         }
 
-                        if (IsSingle(message.Content))
+                        if (Type == DialogType.EventLog || IsSingle(message.Content))
                         {
                             viewModel = new StandaloneGalleryViewModel(ClientService, _storageService, Aggregator, new GalleryMessage(ClientService, message, properties));
                         }
