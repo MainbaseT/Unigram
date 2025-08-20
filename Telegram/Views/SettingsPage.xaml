@@ -265,22 +265,11 @@
                     </controls:SettingsButton>
 
                     <controls:SettingsButton Click="Business_Click"
+                                             Content="{CustomResource TelegramBusiness}"
                                              Style="{StaticResource IconBadgeButtonStyle}">
                         <controls:SettingsButton.IconSource>
                             <icons:Business />
                         </controls:SettingsButton.IconSource>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{CustomResource TelegramBusiness}" />
-                            <controls:BadgeControl Text="NEW"
-                                                   VerticalAlignment="Bottom"
-                                                   CornerRadius="4"
-                                                   Margin="4,0,0,0"
-                                                   Grid.Column="1" />
-                        </Grid>
                     </controls:SettingsButton>
 
                     <controls:SettingsButton x:Name="PremiumGifting"
