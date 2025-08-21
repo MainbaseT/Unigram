@@ -119,6 +119,10 @@ namespace Telegram.Views.Supergroups.Popups
                 {
                     CanManageMessagesRoot.Visibility = Visibility.Visible;
                     DeleteMessages.Visibility = Visibility.Collapsed;
+
+                    EditRankHeader.Visibility = Visibility.Collapsed;
+                    EditRankField.Visibility = Visibility.Collapsed;
+                    EditRankFooter.Visibility = Visibility.Collapsed;
                 }
 
                 ChangeInfo.Content = group.IsChannel ? Strings.EditAdminChangeChannelInfo : Strings.EditAdminChangeGroupInfo;
