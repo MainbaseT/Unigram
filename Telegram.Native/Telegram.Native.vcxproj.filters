@@ -100,6 +100,9 @@
     <Filter Include="Detours">
       <UniqueIdentifier>{fa873c42-155d-4565-92ce-cb208010b179}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI">
+      <UniqueIdentifier>{672d3627-1f9c-4ddb-94d7-15d35e5e91e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -789,6 +792,21 @@
     <ClCompile Include="Composition\WindowVisual.cpp">
       <Filter>Composition</Filter>
     </ClCompile>
+    <ClCompile Include="AI\TextRecognizer.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI\TextRecognizerDefault.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI\RecognizedLine.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI\RecognizedText.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI\RecognizedWord.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1247,6 +1265,24 @@
     <ClInclude Include="Composition\dcomp.local.h">
       <Filter>Composition</Filter>
     </ClInclude>
+    <ClInclude Include="AI\TextRecognizer.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI\TextRecognizerDefault.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI\TextRecognizerOne.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI\RecognizedLine.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI\RecognizedText.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AI\RecognizedWord.h">
+      <Filter>AI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Telegram.Native.def" />
@@ -1292,6 +1328,18 @@
     </Midl>
     <Midl Include="Composition\WindowVisual.idl">
       <Filter>Composition</Filter>
+    </Midl>
+    <Midl Include="AI\TextRecognizer.idl">
+      <Filter>AI</Filter>
+    </Midl>
+    <Midl Include="AI\RecognizedLine.idl">
+      <Filter>AI</Filter>
+    </Midl>
+    <Midl Include="AI\RecognizedText.idl">
+      <Filter>AI</Filter>
+    </Midl>
+    <Midl Include="AI\RecognizedWord.idl">
+      <Filter>AI</Filter>
     </Midl>
   </ItemGroup>
 </Project>

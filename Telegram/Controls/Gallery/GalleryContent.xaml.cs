@@ -6,13 +6,17 @@
 //
 using System;
 using System.Numerics;
+using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Native.AI;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
 using Telegram.Views;
+using Telegram.Views.Popups;
 using Windows.Foundation;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -217,6 +221,9 @@ namespace Telegram.Controls.Gallery
                 window.ClientService.DownloadFile(video.HlsFile.Id, 30);
                 window.ClientService.DownloadFile(video.Video.Id, 29, 0, (int)((double)video.Video.Size / item.Duration));
             }
+
+            IsTextSelectionEnabled = false;
+            IsTextNotRecognized = false;
         }
 
         private void UpdateFile(object target, File file)
@@ -594,6 +601,129 @@ namespace Telegram.Controls.Gallery
             }
 
             _fileId = 0;
+        }
+
+        public bool IsTextSelectionEnabled
+        {
+            get => Selection.Visibility == Visibility.Visible;
+            private set => Selection.Visibility = value
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        public void SelectAllText()
+        {
+            VisualUtilities.QueueCallbackForCompositionRendered(Selection.SelectAll);
+        }
+
+        public void CopySelectedText()
+        {
+            MessageHelper.CopyText(XamlRoot, Selection.SelectedText);
+        }
+
+        public string SelectedText => Selection.SelectedText;
+
+        public bool IsTextSelected => Selection.SelectedText.Length > 0;
+
+        public bool IsTextNotRecognized { get; private set; }
+
+        private RecognizedText _recognizedText;
+        private int _recognizedTextFileId;
+
+        public async void RecognizeText()
+        {
+            if (IsTextSelectionEnabled)
+            {
+                Selection.ClearSelection();
+                IsTextSelectionEnabled = false;
+                return;
+            }
+            else if (_recognizedText != null && _recognizedTextFileId == _itemId)
+            {
+                IsTextSelectionEnabled = true;
+                return;
+            }
+
+            var service = TypeResolver.Current.Resolve<ITextRecognitionService>(_window.ViewModel.SessionId);
+
+            var status = await service.EnsureReadyAsync();
+            if (status is TextRecognitionStatusUnavailable unavailable)
+            {
+                // TODO: Error: not available
+                return;
+            }
+            else if (status is TextRecognitionStatusDownloading downloading)
+            {
+                var confirm = await _window.ViewModel.ShowPopupAsync(new TextRecognitionDownloadPopup(_window.ViewModel.ClientService, _window.ViewModel.Aggregator, downloading.Document), requestedTheme: ElementTheme.Dark);
+                if (confirm != ContentDialogResult.Primary)
+                {
+                    return;
+                }
+
+                status = await service.EnsureReadyAsync();
+            }
+
+            if (status is not TextRecognitionStatusAvailable available)
+            {
+                // TODO: Error: not available
+                return;
+            }
+
+            IsTextSelectionEnabled = true;
+            Selection.ShowSkeleton();
+
+            var fileId = _itemId;
+
+            var bitmap = await GetSoftwareBitmapAsync(_item.File);
+            if (bitmap == null)
+            {
+                // TODO: Error: text recognition is not available
+
+                IsTextSelectionEnabled = false;
+                return;
+            }
+
+            if (fileId != _itemId || !IsLoaded)
+            {
+                IsTextSelectionEnabled = false;
+                return;
+            }
+
+            var result = await available.Recognizer.RecognizeAsync(bitmap);
+            if (result == null || result.Lines.Empty())
+            {
+                ToastPopup.Show(XamlRoot, Strings.ScanTextNoTextDetected, ToastPopupIcon.Info);
+
+                IsTextSelectionEnabled = false;
+                IsTextNotRecognized = true;
+                return;
+            }
+
+            if (fileId != _itemId || !IsLoaded)
+            {
+                return;
+            }
+
+            _recognizedText = result;
+            _recognizedTextFileId = _itemId;
+
+            Selection.ImageSize = new Vector2(bitmap.PixelWidth, bitmap.PixelHeight);
+            Selection.RecognizedText = result;
+        }
+
+        public async Task<SoftwareBitmap> GetSoftwareBitmapAsync(File file)
+        {
+            var storage = await _window.ViewModel.ClientService.GetFileAsync(file);
+            if (storage == null)
+            {
+                return null;
+            }
+
+            using (var stream = await storage.OpenReadAsync())
+            {
+                var decoder = await BitmapDecoder.CreateAsync(stream);
+                return await decoder.GetSoftwareBitmapAsync();
+            }
         }
     }
 }

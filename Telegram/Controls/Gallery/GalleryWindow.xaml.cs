@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -19,6 +20,8 @@ using Telegram.ViewModels.Chats;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Gallery;
 using Telegram.ViewModels.Users;
+using Telegram.Views;
+using Telegram.Views.Popups;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Composition;
@@ -801,7 +804,26 @@ namespace Telegram.Controls.Gallery
             }
             else if (args.Key is VirtualKey.C && modifiers == VirtualKeyModifiers.Control)
             {
-                ViewModel?.Copy();
+                var container = GetElement(CarouselDirection.None);
+                if (container.IsTextSelectionEnabled && container.IsTextSelected)
+                {
+                    container.CopySelectedText();
+                }
+                else
+                {
+                    ViewModel?.Copy();
+                }
+
+                args.Handled = true;
+            }
+            else if (args.Key is VirtualKey.A && modifiers == VirtualKeyModifiers.Control)
+            {
+                var container = GetElement(CarouselDirection.None);
+                if (container.IsTextSelectionEnabled)
+                {
+                    container.SelectAllText();
+                }
+
                 args.Handled = true;
             }
             else if (args.Key is VirtualKey.S && modifiers == VirtualKeyModifiers.Control)
@@ -1029,6 +1051,34 @@ namespace Telegram.Controls.Gallery
 
             var flyout = new MenuFlyout();
 
+            var container = GetElement(CarouselDirection.None);
+            if (container.IsTextSelectionEnabled && args != null)
+            {
+                if (container.IsTextSelected)
+                {
+                    flyout.CreateFlyoutItem(container.CopySelectedText, Strings.Copy, Icons.Copy, VirtualKey.C, VirtualKeyModifiers.Control);
+
+                    var translate = TypeResolver.Current.Resolve<ITranslateService>(ViewModel.ClientService.SessionId);
+                    if (translate.CanTranslateText(container.SelectedText))
+                    {
+                        void handler()
+                        {
+                            var language = LanguageIdentification.IdentifyLanguage(container.SelectedText);
+                            var popup = new TranslatePopup(translate, container.SelectedText, language, SettingsService.Current.Translate.To, true);
+                            
+                            ViewModel.ShowPopup(popup, requestedTheme: ElementTheme.Dark);
+                        }
+
+                        flyout.CreateFlyoutItem(handler, Strings.TranslateMessage, Icons.Translate);
+                    }
+                }
+
+                flyout.CreateFlyoutItem(container.SelectAllText, Strings.SelectAll, key: VirtualKey.A, modifiers: VirtualKeyModifiers.Control);
+
+                flyout.ShowAt(element, args, FlyoutShowMode.Transient);
+                return;
+            }
+
             PopulateContextRequested(flyout, viewModel, item);
 
             if (args != null)
@@ -1172,6 +1222,12 @@ namespace Telegram.Controls.Gallery
             {
                 applicationView.TryEnterFullScreenMode();
             }
+        }
+
+        private void Recognize_Click(object sender, RoutedEventArgs e)
+        {
+            var container = GetElement(CarouselDirection.None);
+            container.RecognizeText();
         }
     }
 }

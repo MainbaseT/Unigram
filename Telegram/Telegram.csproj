@@ -322,6 +322,7 @@
       <DependentUpon>GalleryCompactOverlay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\GlassToggleButton.cs" />
+    <Compile Include="Controls\ImageTextSelection.cs" />
     <Compile Include="Controls\MenuFlyoutContent.cs" />
     <Compile Include="Composition\CompositionColorSource.cs" />
     <Compile Include="Controls\MenuFlyoutInfoItem.cs" />
@@ -340,6 +341,13 @@
     <Compile Include="Controls\Messages\Content\StickerSetContent.xaml.cs">
       <DependentUpon>StickerSetContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AI\RecognizedTextBlock.cs" />
+    <Compile Include="AI\RecognizedTextBoundingBoxHelper.cs" />
+    <Compile Include="AI\RecognizedTextBoundingBoxRounding.cs" />
+    <Compile Include="AI\RecognizedTextBoundingBoxSimplifier.cs" />
+    <Compile Include="AI\RecognizedTextSelection.cs" />
+    <Compile Include="AI\RecognizedTextSelectionManager.cs" />
+    <Compile Include="Services\TextRecognitionService.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionEdit.cs" />
@@ -577,6 +585,7 @@
     <Compile Include="Td\Api\UpdateMessageEffect.cs" />
     <Compile Include="Td\Api\UpdateMessageTranslatedText.cs" />
     <Compile Include="Td\Api\UpdatePaymentCompleted.cs" />
+    <Compile Include="Td\Api\UpdateTextRecognition.cs" />
     <Compile Include="TypeContainerGenerator.cs" />
     <Compile Include="TypeCrosserGenerator.cs" />
     <Compile Include="Videolan\Platforms\Windows\InitializedEventArgs.cs" />
@@ -1272,6 +1281,9 @@
     <Compile Include="Services\CaptureSessionService.cs" />
     <Compile Include="Views\Popups\ChooseDateTimePopup.xaml.cs">
       <DependentUpon>ChooseDateTimePopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\TextRecognitionDownloadPopup.xaml.cs">
+      <DependentUpon>TextRecognitionDownloadPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Popups\CreateChecklistPopup.xaml.cs">
       <DependentUpon>CreateChecklistPopup.xaml</DependentUpon>
@@ -2222,6 +2234,7 @@
     <Content Include="Assets\Animations\SendMessagesProgress.tgs" />
     <Content Include="Assets\Fonts\Nunito.ttf" />
     <Content Include="Assets\Animations\QrLogo.json" />
+    <Content Include="Assets\Animations\TextRecognitionDownload.tgs" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -3275,6 +3288,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Popups\TextRecognitionDownloadPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Popups\CreateChecklistPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -4105,6 +4122,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Clipper2">
+      <Version>1.5.4</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Bcl.HashCode">
       <Version>6.0.0</Version>
     </PackageReference>

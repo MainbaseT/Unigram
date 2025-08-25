@@ -22,6 +22,8 @@ namespace Telegram
 
         public static readonly ushort BuildNumber;
 
+        public static readonly string TextRecognizerModelKey;
+
         public static readonly Size SecretSize = new(320, 200);
 
         public const int TypingTimeout = 300;

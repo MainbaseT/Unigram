@@ -34,6 +34,7 @@ namespace Telegram.Views
         private Telegram.Services.IStorageService _storageService;
         private Telegram.Services.ITranslateService _translateService;
         private Telegram.Services.IProfilePhotoService _profilePhotoService;
+        private Telegram.Services.ITextRecognitionService _textRecognitionService;
 
         public TypeLocator(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, int session, bool active)
         {
@@ -917,6 +918,10 @@ namespace Telegram.Views
                         _eventAggregator));
                 case "Telegram.Services.IProfilePhotoService":
                     return (T)(_profilePhotoService ??= new Telegram.Services.ProfilePhotoService(_clientService));
+                case "Telegram.Services.ITextRecognitionService":
+                    return (T)(_textRecognitionService ??= new Telegram.Services.TextRecognitionService(
+                        _clientService,
+                        _eventAggregator));
                 default:
                     return default;
 

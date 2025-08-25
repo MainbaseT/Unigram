@@ -380,6 +380,24 @@
     <ClInclude Include="NativeUtils.h">
       <DependentUpon>NativeUtils.idl</DependentUpon>
     </ClInclude>
+    <ClInclude Include="AI\TextRecognizer.h">
+      <DependentUpon>AI\TextRecognizer.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="AI\TextRecognizerDefault.h" />
+    <ClInclude Include="AI\TextRecognizerOne.h" />
+    <ClInclude Include="AI\RecognizedLine.h">
+      <DependentUpon>AI\RecognizedLine.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="AI\RecognizedText.h">
+      <DependentUpon>AI\RecognizedText.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="AI\RecognizedWord.h">
+      <DependentUpon>AI\RecognizedWord.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="Opus\OpusOutput.h">
       <DependentUpon>Opus\OpusOutput.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -1008,6 +1026,23 @@
       <DependentUpon>LokiRng.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="AI\TextRecognizer.cpp">
+      <DependentUpon>AI\TextRecognizer.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="AI\TextRecognizerDefault.cpp" />
+    <ClCompile Include="AI\RecognizedLine.cpp">
+      <DependentUpon>AI\RecognizedLine.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="AI\RecognizedText.cpp">
+      <DependentUpon>AI\RecognizedText.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="AI\RecognizedWord.cpp">
+      <DependentUpon>AI\RecognizedWord.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="ParticlesAnimation.cpp">
       <DependentUpon>ParticlesAnimation.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -1263,6 +1298,10 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="NativeUtils.idl" />
+    <Midl Include="AI\TextRecognizer.idl" />
+    <Midl Include="AI\RecognizedLine.idl" />
+    <Midl Include="AI\RecognizedText.idl" />
+    <Midl Include="AI\RecognizedWord.idl" />
     <Midl Include="Opus\OpusOutput.idl">
       <SubType>Designer</SubType>
     </Midl>

@@ -12608,4 +12608,7 @@
     <string name="UnpinMessage2">Unpin Message</string>
     <string name="HidePinnedMessage2">Hide Pinned Message</string>
 
+    <string name="AccDescrScanText">Scan Text</string>
+    <string name="ScanTextNoTextDetected">There was no text detected</string>
+
 </resources>

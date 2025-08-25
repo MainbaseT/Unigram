@@ -286,6 +286,9 @@
   <data name="AccDescrRotate" xml:space="preserve">
     <value>Rotate</value>
   </data>
+  <data name="AccDescrScanText" xml:space="preserve">
+    <value>Scan Text</value>
+  </data>
   <data name="AccDescrSearchByUser" xml:space="preserve">
     <value>Filter by user</value>
   </data>
@@ -11395,6 +11398,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="ScamMessage" xml:space="preserve">
     <value>SCAM</value>
+  </data>
+  <data name="ScanTextNoTextDetected" xml:space="preserve">
+    <value>There was no text detected</value>
   </data>
   <data name="Schedule" xml:space="preserve">
     <value>Schedule</value>
