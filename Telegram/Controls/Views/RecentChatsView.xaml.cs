@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
@@ -65,33 +66,7 @@ namespace Telegram.Controls.Views
 
             if (ScrollingHost.ItemsSource != null)
             {
-                ScrollingHost.SelectedIndex = _fromStart ? 0 : ScrollingHost.Items.Count - 1;
-            }
-        }
-
-        public void Move(bool next)
-        {
-            if (next)
-            {
-                if (ScrollingHost.SelectedIndex < ScrollingHost.Items.Count - 1)
-                {
-                    ScrollingHost.SelectedIndex++;
-                }
-                else
-                {
-                    ScrollingHost.SelectedIndex = 0;
-                }
-            }
-            else
-            {
-                if (ScrollingHost.SelectedIndex > 0)
-                {
-                    ScrollingHost.SelectedIndex--;
-                }
-                else
-                {
-                    ScrollingHost.SelectedIndex = ScrollingHost.Items.Count - 1;
-                }
+                ScrollingHost.SelectedIndex = _fromStart ? Math.Min(1, ScrollingHost.Items.Count - 1) : ScrollingHost.Items.Count - 1;
             }
         }
 

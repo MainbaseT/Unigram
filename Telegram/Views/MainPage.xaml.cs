@@ -1336,15 +1336,23 @@ namespace Telegram.Views
 
         private async void ProcessChatCommands(ShortcutCommand command, KeyRoutedEventArgs args)
         {
+            if (command == ShortcutCommand.ChatRecentPrevious)
+            {
+                args.Handled = ShowChatSwitch(false);
+            }
+            else if (command == ShortcutCommand.ChatRecentNext)
+            {
+                args.Handled = ShowChatSwitch(true);
+            }
             if (command == ShortcutCommand.ChatPrevious)
             {
                 args.Handled = true;
-                args.Handled = ShowChatSwitch(false);
+                Scroll(-1, true);
             }
             else if (command == ShortcutCommand.ChatNext)
             {
                 args.Handled = true;
-                args.Handled = ShowChatSwitch(true);
+                Scroll(+1, true);
             }
             else if (command == ShortcutCommand.ChatFirst)
             {
