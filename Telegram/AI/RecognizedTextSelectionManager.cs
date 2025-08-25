@@ -97,11 +97,22 @@ namespace Telegram.AI
 
             float rotationAngle = GetRotationAngle(boxes.First());
 
+            // Helper function to rotate point back to axis-aligned
+            (float X, float Y) RotatePoint(float x, float y, float angle)
+            {
+                float cos = (float)Math.Cos(-angle);
+                float sin = (float)Math.Sin(-angle);
+                return (x * cos - y * sin, x * sin + y * cos);
+            }
+
             // Get the rotated center Y coordinate for sorting
             float GetRotatedCenterY(RecognizedTextBoundingBox box)
             {
-                var centroid = box.Center();
-                var rotated = RecognizedTextBoundingBoxHelper.RotatePoint(centroid, rotationAngle);
+                var centroid = (
+                    (box.TopLeft.X + box.TopRight.X + box.BottomRight.X + box.BottomLeft.X) / 4.0f,
+                    (box.TopLeft.Y + box.TopRight.Y + box.BottomRight.Y + box.BottomLeft.Y) / 4.0f
+                );
+                var rotated = RotatePoint(centroid.Item1, centroid.Item2, rotationAngle);
                 return rotated.Y;
             }
 
@@ -128,13 +139,21 @@ namespace Telegram.AI
 
             float rotationAngle = (GetRotationAngle(a) + GetRotationAngle(b)) / 2.0f;
 
+            // Helper function to rotate point back to axis-aligned
+            (float X, float Y) RotatePoint(Vector2 p, float angle)
+            {
+                float cos = (float)Math.Cos(-angle);
+                float sin = (float)Math.Sin(-angle);
+                return (p.X * cos - p.Y * sin, p.X * sin + p.Y * cos);
+            }
+
             // Get rotated coordinates for alignment comparison
-            var aLeftRotated = RecognizedTextBoundingBoxHelper.RotatePoint(a.TopLeft, rotationAngle);
-            var aRightRotated = RecognizedTextBoundingBoxHelper.RotatePoint(a.TopRight, rotationAngle);
+            var aLeftRotated = RotatePoint(a.TopLeft, rotationAngle);
+            var aRightRotated = RotatePoint(a.TopRight, rotationAngle);
             var aCenterRotated = ((aLeftRotated.X + aRightRotated.X) / 2.0f, (aLeftRotated.Y + aRightRotated.Y) / 2.0f);
 
-            var bLeftRotated = RecognizedTextBoundingBoxHelper.RotatePoint(b.TopLeft, rotationAngle);
-            var bRightRotated = RecognizedTextBoundingBoxHelper.RotatePoint(b.TopRight, rotationAngle);
+            var bLeftRotated = RotatePoint(b.TopLeft, rotationAngle);
+            var bRightRotated = RotatePoint(b.TopRight, rotationAngle);
             var bCenterRotated = ((bLeftRotated.X + bRightRotated.X) / 2.0f, (bLeftRotated.Y + bRightRotated.Y) / 2.0f);
 
             // Compare only X coordinates after rotation (horizontal alignment)
@@ -387,6 +406,8 @@ namespace Telegram.AI
                         content.AppendLine(line.Text);
                     }
                 }
+
+                content.AppendLine();
             }
 
             Debug.WriteLine("");
