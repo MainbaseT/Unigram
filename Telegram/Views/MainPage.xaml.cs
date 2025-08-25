@@ -1339,12 +1339,12 @@ namespace Telegram.Views
             if (command == ShortcutCommand.ChatPrevious)
             {
                 args.Handled = true;
-                Scroll(-1, true);
+                args.Handled = ShowChatSwitch(false);
             }
             else if (command == ShortcutCommand.ChatNext)
             {
                 args.Handled = true;
-                Scroll(+1, true);
+                args.Handled = ShowChatSwitch(true);
             }
             else if (command == ShortcutCommand.ChatFirst)
             {
@@ -1404,6 +1404,31 @@ namespace Telegram.Views
                     }
                 }
             }
+        }
+
+        private bool ShowChatSwitch(bool start)
+        {
+            foreach (var open in VisualTreeHelper.GetOpenPopupsForXamlRoot(XamlRoot))
+            {
+                if (open.Child is RecentChatsView)
+                {
+                    return false;
+                }
+            }
+
+            var popup = new Popup
+            {
+                XamlRoot = XamlRoot
+            };
+
+            popup.Child = new RecentChatsView(ViewModel.ClientService, MasterDetail.NavigationService, popup, start)
+            {
+                Width = ActualWidth,
+                Height = ActualHeight
+            };
+
+            popup.IsOpen = true;
+            return true;
         }
 
         public void Scroll(int offset, bool navigate)

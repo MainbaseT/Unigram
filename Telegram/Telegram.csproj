@@ -347,6 +347,9 @@
     <Compile Include="AI\RecognizedTextBoundingBoxSimplifier.cs" />
     <Compile Include="AI\RecognizedTextSelection.cs" />
     <Compile Include="AI\RecognizedTextSelectionManager.cs" />
+    <Compile Include="Controls\Views\RecentChatsView.xaml.cs">
+      <DependentUpon>RecentChatsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\TextRecognitionService.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />
@@ -3025,6 +3028,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Views\ForumView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Views\RecentChatsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
