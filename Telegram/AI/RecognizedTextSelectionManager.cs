@@ -387,8 +387,6 @@ namespace Telegram.AI
                         content.AppendLine(line.Text);
                     }
                 }
-
-                content.AppendLine();
             }
 
             Debug.WriteLine("");
