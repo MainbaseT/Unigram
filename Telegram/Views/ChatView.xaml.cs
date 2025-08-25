@@ -6859,7 +6859,7 @@ namespace Telegram.Views
 
         private float _messagesHeaderRootPadding;
         private float _messagesScrollBarPadding;
-        private bool _messageScrollBarPaddingBottom;
+        private bool _messagesScrollBarPaddingBottom;
 
         private ChatHistoryViewItem _oldestItemAsHeader;
         private ChatHistoryViewItem _oldestItem;
@@ -6870,7 +6870,7 @@ namespace Telegram.Views
         private bool? _newestItemAsFooterNeeded = false;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UpdateNewestOldestItemAsFooterHeader(bool? needed, bool? loaded, ref ChatHistoryViewItem item, ref ChatHistoryViewItem headerFooter, Index index, bool clear = true)
+        private void UpdateNewestOldestItemAsFooterHeader(bool? needed, bool? loaded, ref ChatHistoryViewItem item, ref ChatHistoryViewItem headerFooter, Index index, bool clear = true, string member = "")
         {
             if (needed is true && loaded is true)
             {
@@ -6879,24 +6879,30 @@ namespace Telegram.Views
                     item = Messages.ContainerFromIndex(index.IsFromEnd ? Messages.Items.Count - index.Value : index.Value) as ChatHistoryViewItem;
                 }
 
+                headerFooter?.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
+
                 headerFooter = item;
                 headerFooter?.UpdatePadding(index.IsFromEnd ? -1 : _messagesScrollBarPadding, index.IsFromEnd ? _messagesHeaderRootPadding : -1);
+
+                Logger.Info("Added padding to " + (index.IsFromEnd ? "newest" : "oldest") + " item", member);
             }
             else if (headerFooter != null && clear)
             {
                 headerFooter.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
                 headerFooter = null;
+
+                Logger.Info("Removed padding from " + (index.IsFromEnd ? "newest" : "oldest") + " item", member);
             }
         }
 
-        private void UpdateOldestItemAsHeader(bool clear = true)
+        private void UpdateOldestItemAsHeader(bool clear = true, [CallerMemberName] string member = "")
         {
-            UpdateNewestOldestItemAsFooterHeader(_oldestItemAsHeaderNeeded, ViewModel.IsOldestSliceLoaded, ref _oldestItem, ref _oldestItemAsHeader, 0, clear);
+            UpdateNewestOldestItemAsFooterHeader(_oldestItemAsHeaderNeeded, ViewModel.IsOldestSliceLoaded, ref _oldestItem, ref _oldestItemAsHeader, 0, clear, member);
         }
 
-        private void UpdateNewestItemAsFooter(bool clear = true)
+        private void UpdateNewestItemAsFooter(bool clear = true, [CallerMemberName] string member = "")
         {
-            UpdateNewestOldestItemAsFooterHeader(_newestItemAsFooterNeeded, ViewModel.IsNewestSliceLoaded, ref _newestItem, ref _newestItemAsFooter, ^1, clear);
+            UpdateNewestOldestItemAsFooterHeader(_newestItemAsFooterNeeded, ViewModel.IsNewestSliceLoaded, ref _newestItem, ref _newestItemAsFooter, ^1, clear, member);
         }
 
         public float AnimatedHeight => ClipperOuter.Visibility == Visibility.Visible
@@ -6963,10 +6969,10 @@ namespace Telegram.Views
             }
 
             var scrollBarChanged = _messagesScrollBarPadding != scrollBar;
-            if (scrollBarChanged || _messageScrollBarPaddingBottom != animate)
+            if (scrollBarChanged || _messagesScrollBarPaddingBottom != animate)
             {
                 _messagesScrollBarPadding = scrollBar;
-                _messageScrollBarPaddingBottom = animate;
+                _messagesScrollBarPaddingBottom = animate;
 
                 Messages.ScrollingHost.SetVerticalPadding(animate ? 0 : scrollBar, animate ? scrollBar : 0);
             }

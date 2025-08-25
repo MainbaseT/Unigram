@@ -932,18 +932,28 @@ namespace Telegram.Views
                     if (args.ItemIndex == (index.IsFromEnd ? ViewModel.Items.Count - index.Value : index.Value) && loaded is true)
                     {
                         item = container;
+                        headerFooter?.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
 
                         if (needed is true)
                         {
-                            headerFooter?.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
-
                             headerFooter = container;
                             headerFooter.UpdatePadding(index.IsFromEnd ? -1 : _messagesScrollBarPadding, index.IsFromEnd ? _messagesHeaderRootPadding : -1);
+
+                            Logger.Info("Added padding to " + (index.IsFromEnd ? "newest" : "oldest") + " item");
+                        }
+                        else
+                        {
+                            headerFooter = null;
+                            container.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
+
+                            Logger.Info("Removed padding from " + (index.IsFromEnd ? "newest" : "oldest") + " item");
                         }
                     }
                     else
                     {
                         container.UpdatePadding(index.IsFromEnd ? -1 : 0, index.IsFromEnd ? 0 : -1);
+
+                        Logger.Info("Removed padding from " + (index.IsFromEnd ? "newest" : "oldest") + " item");
                     }
                 }
 
