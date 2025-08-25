@@ -25,7 +25,6 @@ using Telegram.Views.Popups;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Composition;
-using Windows.UI.Input;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -87,7 +86,7 @@ namespace Telegram.Controls.Gallery
             _inactivityTimer.Interval = TimeSpan.FromSeconds(1.5);
             _inactivityTimer.Start();
 
-            ScrollingHost.AddHandler(PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            ScrollingHost.AddHandler(TappedEvent, new TappedEventHandler(OnTapped), true);
         }
 
         private void OnTick(object sender, object e)
@@ -128,28 +127,34 @@ namespace Telegram.Controls.Gallery
             //}
         }
 
-        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        private void OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var point = e.GetCurrentPoint((UIElement)_current ?? this);
-            if (point.Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonReleased || !_areInteractionsEnabled)
+            if (!_areInteractionsEnabled)
             {
                 return;
             }
 
-            if (e.Pointer.PointerDeviceType != PointerDeviceType.Mouse)
+            if (e.PointerDeviceType != PointerDeviceType.Mouse)
             {
                 _inactivityTimer.Stop();
                 ShowHideTransport(true);
             }
             else
             {
-                if (_current != null
-                    && point.Position.X >= 0
-                    && point.Position.Y >= 0
-                    && point.Position.X <= _current.ActualWidth
-                    && point.Position.Y <= _current.ActualHeight)
+                var container = GetElement(CarouselDirection.None);
+                var point = e.GetPosition(container);
+
+                if ((_current != null || container.IsTextSelectionEnabled)
+                    && point.X >= 0
+                    && point.Y >= 0
+                    && point.X <= container.ActualWidth
+                    && point.Y <= container.ActualHeight)
                 {
-                    Controls.TogglePlaybackState();
+                    if (_current != null)
+                    {
+                        Controls.TogglePlaybackState();
+                    }
+
                     return;
                 }
 
