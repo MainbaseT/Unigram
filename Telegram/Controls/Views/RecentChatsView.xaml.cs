@@ -248,16 +248,9 @@ namespace Telegram.Controls.Views
                     UseSystemFocusVisuals = false,
                     Margin = new Thickness(2)
                 };
-
-                args.ItemContainer.GotFocus += OnGotFocus;
             }
 
             args.IsContainerPrepared = true;
-        }
-
-        private void OnGotFocus(object sender, RoutedEventArgs e)
-        {
-            ScrollingHost.SelectedItem = ScrollingHost.ItemFromContainer(sender as DependencyObject);
         }
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
