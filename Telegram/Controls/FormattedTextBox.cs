@@ -502,7 +502,7 @@ namespace Telegram.Controls
         {
             Document.BatchDisplayUpdates();
             ClearStyle(Document.Selection, false);
-            Document.Selection.CharacterFormat.Bold = FormatEffect.Toggle;
+            Document.Selection.CharacterFormat.Weight = Document.Selection.CharacterFormat.Weight == FontWeights.SemiBold.Weight ? FontWeights.Normal.Weight : FontWeights.SemiBold.Weight;
             Document.ApplyDisplayUpdates();
 
             _selectionFlyout.Update(Document.Selection);
@@ -961,7 +961,7 @@ namespace Telegram.Controls
                         continue;
                     }
 
-                    if (range.CharacterFormat.Bold == FormatEffect.On)
+                    if (range.CharacterFormat.Weight == FontWeights.SemiBold.Weight)
                     {
                         flags |= TextStyle.Bold;
                     }
@@ -1136,7 +1136,7 @@ namespace Telegram.Controls
                         continue;
                     }
 
-                    if (range.CharacterFormat.Bold == FormatEffect.On)
+                    if (range.CharacterFormat.Weight == FontWeights.SemiBold.Weight)
                     {
                         flags |= TextStyle.Bold;
                     }
@@ -1395,7 +1395,7 @@ namespace Telegram.Controls
                         }
                         else if (entity.Type is TextEntityTypeBold && (allowedEntities & FormattedTextEntity.Bold) != 0)
                         {
-                            range.CharacterFormat.Bold = FormatEffect.On;
+                            range.CharacterFormat.Weight = FontWeights.SemiBold.Weight;
                         }
                         else if (entity.Type is TextEntityTypeItalic && (allowedEntities & FormattedTextEntity.Italic) != 0)
                         {
