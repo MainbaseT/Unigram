@@ -14,6 +14,7 @@ using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
@@ -27,6 +28,8 @@ namespace Telegram.Controls.Views
         private readonly INavigationService _navigationService;
         private readonly Popup _popup;
         private readonly bool _fromStart;
+
+        private bool _hasCurrentChat;
 
         public RecentChatsView(IClientService clientService, INavigationService navigationService, Popup popup, bool fromStart)
         {
@@ -66,7 +69,7 @@ namespace Telegram.Controls.Views
 
             if (ScrollingHost.ItemsSource != null)
             {
-                ScrollingHost.SelectedIndex = _fromStart ? Math.Min(1, ScrollingHost.Items.Count - 1) : ScrollingHost.Items.Count - 1;
+                SelectFirstChat();
             }
         }
 
@@ -77,31 +80,103 @@ namespace Telegram.Controls.Views
                 var modifiers = WindowContext.KeyModifiers();
                 if (modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift))
                 {
-                    if (ScrollingHost.SelectedIndex > 0)
-                    {
-                        ScrollingHost.SelectedIndex--;
-                    }
-                    else
-                    {
-                        ScrollingHost.SelectedIndex = ScrollingHost.Items.Count - 1;
-                    }
-
+                    MoveLeft();
                     e.Handled = true;
                 }
                 else if (modifiers == VirtualKeyModifiers.Control)
                 {
-                    if (ScrollingHost.SelectedIndex < ScrollingHost.Items.Count - 1)
-                    {
-                        ScrollingHost.SelectedIndex++;
-                    }
-                    else
-                    {
-                        ScrollingHost.SelectedIndex = 0;
-                    }
-
+                    MoveRight();
                     e.Handled = true;
                 }
             }
+            else if (e.Key == VirtualKey.Left)
+            {
+                MoveLeft();
+                e.Handled = true;
+            }
+            else if (e.Key == VirtualKey.Up)
+            {
+                MoveTop();
+                e.Handled = true;
+            }
+            else if (e.Key == VirtualKey.Right)
+            {
+                MoveRight();
+                e.Handled = true;
+            }
+            else if (e.Key == VirtualKey.Down)
+            {
+                MoveDown();
+                e.Handled = true;
+            }
+        }
+
+        private void MoveLeft()
+        {
+            if (ScrollingHost.SelectedIndex > 0)
+            {
+                ScrollingHost.SelectedIndex--;
+            }
+            else
+            {
+                ScrollingHost.SelectedIndex = ScrollingHost.Items.Count - 1;
+            }
+        }
+
+        private void MoveTop()
+        {
+            var width = (int)(ScrollingHost.ActualWidth / (80 + 2 + 2));
+            var height = (ScrollingHost.Items.Count + width - 1) / width;
+
+            int y = ScrollingHost.SelectedIndex / width;
+            int x = ScrollingHost.SelectedIndex % width;
+
+            if (y == 0)
+            {
+                y = height - 1;
+            }
+            else
+            {
+                y--;
+            }
+
+            int index = y * width + x;
+
+            ScrollingHost.SelectedIndex = Math.Clamp(index, 0, ScrollingHost.Items.Count - 1);
+        }
+
+        private void MoveRight()
+        {
+            if (ScrollingHost.SelectedIndex < ScrollingHost.Items.Count - 1)
+            {
+                ScrollingHost.SelectedIndex++;
+            }
+            else
+            {
+                ScrollingHost.SelectedIndex = 0;
+            }
+        }
+
+        private void MoveDown()
+        {
+            var width = (int)(ScrollingHost.ActualWidth / (80 + 2 + 2));
+            var height = (ScrollingHost.Items.Count + width - 1) / width;
+
+            int y = ScrollingHost.SelectedIndex / width;
+            int x = ScrollingHost.SelectedIndex % width;
+
+            if (y == height - 1)
+            {
+                y = 0;
+            }
+            else
+            {
+                y++;
+            }
+
+            int index = y * width + x;
+
+            ScrollingHost.SelectedIndex = Math.Clamp(index, 0, ScrollingHost.Items.Count - 1);
         }
 
         private void OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -114,6 +189,8 @@ namespace Telegram.Controls.Views
                 {
                     _clientService.Send(new AddRecentlyFoundChat(chat.Id));
                     _navigationService.NavigateToChat(chat, force: false, clearBackStack: true);
+
+                    e.Handled = true;
                 }
             }
         }
@@ -128,6 +205,7 @@ namespace Telegram.Controls.Views
 
                 if (clientService.TryGetChat(current.ChatId, out Chat currentChat))
                 {
+                    _hasCurrentChat = true;
                     items.Add(currentChat);
                 }
 
@@ -143,8 +221,20 @@ namespace Telegram.Controls.Views
 
                 if (IsLoaded)
                 {
-                    ScrollingHost.SelectedIndex = _fromStart ? 0 : items.Count - 1;
+                    SelectFirstChat();
                 }
+            }
+        }
+
+        private void SelectFirstChat()
+        {
+            if (_hasCurrentChat)
+            {
+                ScrollingHost.SelectedIndex = _fromStart ? Math.Min(1, ScrollingHost.Items.Count - 1) : ScrollingHost.Items.Count - 1;
+            }
+            else
+            {
+                ScrollingHost.SelectedIndex = _fromStart ? 0 : ScrollingHost.Items.Count - 1;
             }
         }
 
@@ -184,6 +274,10 @@ namespace Telegram.Controls.Views
 
                 photo.SetChat(_clientService, chat, 56);
                 textBlock.Text = chat.Title;
+
+                AutomationProperties.SetName(args.ItemContainer, chat.Title);
+
+                args.Handled = true;
             }
         }
 
