@@ -120,13 +120,17 @@ namespace Telegram.Views
         {
             var memoryUsage = Math.Round(Windows.System.MemoryManager.AppMemoryUsage / 1024.0 / 1024.0);
 
+            //var currentProcess = HeapSizeCalculator.GetHeapSizes(true);
+            //double unmanaged = currentProcess.NativeHeap / 1024.0 / 1024.0;
+            double managed = GC.GetTotalMemory(false) / 1024.0 / 1024.0; // currentProcess.ManagedHeap / 1024.0 / 1024.0;
+
             if (MasterDetail?.NavigationService?.Frame?.Content is ChatPage page)
             {
-                MemoryLabel.Text = $"- {memoryUsage:F0} MB" + page.View.GetVirtualizationInfo();
+                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB" + page.View.GetVirtualizationInfo();
             }
             else if (memoryUsage != _memoryUsage)
             {
-                MemoryLabel.Text = $"- {memoryUsage:F0} MB";
+                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB";
             }
 
             _memoryUsage = memoryUsage;
