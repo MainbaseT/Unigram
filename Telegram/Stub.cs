@@ -103,6 +103,21 @@ public static class StorageItemMostRecentlyUsedList_stub
         }
     }
 }
+public static class TextRecognizer_stub
+{
+    public static Telegram.Native.AI.ITextRecognizer GetOne_stub(string modelKey)
+    {
+        try
+        {
+            return Telegram.Native.AI.TextRecognizer.GetOne(modelKey);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class ConnectedAnimation_stub
 {
     public static bool TryStart_stub(this Windows.UI.Xaml.Media.Animation.ConnectedAnimation sender, Windows.UI.Xaml.UIElement destination)
@@ -4638,6 +4653,30 @@ public static class CanvasGeometry_stub
             throw new RuntimeException(ex);
         }
     }
+    public static void Dispose_stub(this Microsoft.Graphics.Canvas.Geometry.CanvasGeometry sender)
+    {
+        try
+        {
+            sender.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Microsoft.Graphics.Canvas.Geometry.CanvasGeometry Transform_stub(this Microsoft.Graphics.Canvas.Geometry.CanvasGeometry sender, System.Numerics.Matrix3x2 transform)
+    {
+        try
+        {
+            return sender.Transform(transform);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
 }
 public static class CanvasPathBuilder_stub
 {
@@ -5032,6 +5071,21 @@ public static class ContextRequestedEventArgs_stub
         }
     }
 }
+public static class DoubleTappedRoutedEventArgs_stub
+{
+    public static Windows.Foundation.Point GetPosition_stub(this Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs sender, Windows.UI.Xaml.UIElement relativeTo)
+    {
+        try
+        {
+            return sender.GetPosition(relativeTo);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class FocusManager_stub
 {
     public static Windows.UI.Xaml.DependencyObject FindFirstFocusableElement_stub(Windows.UI.Xaml.DependencyObject searchScope)
@@ -5171,6 +5225,21 @@ public static class PointerRoutedEventArgs_stub
         try
         {
             return sender.GetIntermediatePoints(relativeTo);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class TappedRoutedEventArgs_stub
+{
+    public static Windows.Foundation.Point GetPosition_stub(this Windows.UI.Xaml.Input.TappedRoutedEventArgs sender, Windows.UI.Xaml.UIElement relativeTo)
+    {
+        try
+        {
+            return sender.GetPosition(relativeTo);
         }
         catch (Exception ex)
         {
