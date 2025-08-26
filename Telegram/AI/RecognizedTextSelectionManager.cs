@@ -65,10 +65,9 @@ namespace Telegram.AI
                         float angleTolerance = (float)(Math.PI / 18); // 10 degrees
                         float angleScore = 1 - Math.Min(angleDiff / angleTolerance, 1);
 
-                        // --- STEP 4: merge score ---
                         float mergeScore = verticalScore * 0.5f + horizontalScore * 0.3f + angleScore * 0.2f;
+                        //mergeScore = horizontalScore * 0.5f + verticalScore * 0.3f + angleScore * 0.2f;
 
-                        // Tunable threshold
                         if (mergeScore >= 0.7)
                         {
                             queue.Enqueue(j);
@@ -211,7 +210,14 @@ namespace Telegram.AI
                 _ => throw new ArgumentException($"Unknown alignment: {alignment}")
             };
 
-            return RecognizedTextBoundingBoxHelper.Distance(ap, bp);
+            Vector2 vectorAB = bp - ap;
+
+            float length = (float)Math.Sqrt(vectorAB.X * vectorAB.X + vectorAB.Y * vectorAB.Y);
+            if (length < 1e-6f) // avoid division by zero
+                return 0f;
+
+            Vector2 columnDir = new Vector2(vectorAB.X / length, vectorAB.Y / length);
+            return vectorAB.X * columnDir.X + vectorAB.Y * columnDir.Y;
         }
 
         public static float GetLineAngle(RecognizedLine line)

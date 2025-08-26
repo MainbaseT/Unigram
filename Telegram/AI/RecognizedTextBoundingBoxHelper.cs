@@ -8,20 +8,6 @@ namespace Telegram.AI
 {
     public static class RecognizedTextBoundingBoxHelper
     {
-        public static float Distance(float x1, float y1, float x2, float y2)
-        {
-            float dx = x2 - x1;
-            float dy = y2 - y1;
-            return (float)Math.Sqrt(dx * dx + dy * dy);
-        }
-
-        public static float Distance(Vector2 p1, Vector2 p2)
-        {
-            float dx = p2.X - p1.X;
-            float dy = p2.Y - p1.Y;
-            return (float)Math.Sqrt(dx * dx + dy * dy);
-        }
-
         public static RecognizedTextBoundingBox Inflate(this RecognizedTextBoundingBox box, float amount)
         {
             float horizontalAmount = amount;
@@ -73,12 +59,16 @@ namespace Telegram.AI
 
         public static float Width(this RecognizedTextBoundingBox box)
         {
-            return Distance(box.TopLeft, box.TopRight);
+            float topWidth = Vector2.Distance(box.TopLeft, box.TopRight);
+            float bottomWidth = Vector2.Distance(box.BottomLeft, box.BottomRight);
+            return (topWidth + bottomWidth) / 2f;
         }
 
         public static float Height(this RecognizedTextBoundingBox box)
         {
-            return Distance(box.TopLeft, box.BottomLeft);
+            float leftHeight = Vector2.Distance(box.TopLeft, box.BottomLeft);
+            float rightHeight = Vector2.Distance(box.TopRight, box.BottomRight);
+            return (leftHeight + rightHeight) / 2f;
         }
 
         public static bool ContainsPoint(this IList<Vector2> pts, Vector2 point)
