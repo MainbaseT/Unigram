@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -15,15 +14,17 @@ namespace Telegram.AI
         private readonly IList<RecognizedLine> _lines;
         private readonly IList<RecognizedTextBlock> _blocks;
 
+        private readonly RecognizedTextSpatialIndex _spatialIndex;
+
         public IList<RecognizedLine> Lines => _lines;
         public IList<RecognizedTextBlock> Blocks => _blocks;
 
         public RecognizedTextSelectionManager(RecognizedText result)
         {
-            //var test = result.Lines.ToList();
-            //test.Shuffle();
             _blocks = ClusterIntoBlocks(result.Lines);
             _lines = _blocks.SelectMany(x => x.Lines).ToList();
+            
+            _spatialIndex = new RecognizedTextSpatialIndex(_blocks);
         }
 
         private static IList<RecognizedTextBlock> ClusterIntoBlocks(IList<RecognizedLine> lines)
@@ -305,12 +306,12 @@ namespace Telegram.AI
 
         public event EventHandler<RecognizedTextSelectionChangedEventArgs> SelectionChanged;
 
-        private SelectionPointer _selectionStart = SelectionPointer.Empty;
-        private SelectionPointer _selectionEnd = SelectionPointer.Empty;
+        private RecognizedTextPointer _selectionStart = RecognizedTextPointer.Empty;
+        private RecognizedTextPointer _selectionEnd = RecognizedTextPointer.Empty;
 
         public RecognizedTextSelection Selection { get; private set; }
 
-        public void SelectTextBetweenPoints(Point startPoint, Point endPoint)
+        public void SelectTextBetween(Point startPoint, Point endPoint)
         {
             var start = startPoint.ToVector2();
             var end = endPoint.ToVector2();
@@ -318,26 +319,28 @@ namespace Telegram.AI
             start *= _inverseScale;
             end *= _inverseScale;
 
-            var firstBlock = RecognizedTextBoundingBoxHelper.FindNearestIndex(_blocks, start);
-            var lastBlock = RecognizedTextBoundingBoxHelper.FindNearestIndex(_blocks, end);
+            SelectTextBetween(_spatialIndex.FindNearestWord(start), _spatialIndex.FindNearestWord(end));
+        }
 
-            if (firstBlock == -1 || lastBlock == -1)
+        private void SelectTextBetween(RecognizedTextPointer selectionStart, RecognizedTextPointer selectionEnd)
+        {
+            if (_selectionStart == selectionStart && _selectionEnd == selectionEnd)
+            {
+                return;
+            }
+
+            if (selectionStart == RecognizedTextPointer.Empty || selectionEnd == RecognizedTextPointer.Empty)
             {
                 ClearSelection();
                 return;
             }
 
-            var backwardBlocks = firstBlock > lastBlock;
-            var minBlock = Math.Min(firstBlock, lastBlock);
-            var maxBlock = Math.Max(firstBlock, lastBlock);
+            var backwardBlocks = selectionStart.BlockIndex > selectionEnd.BlockIndex;
+            var minBlock = Math.Min(selectionStart.BlockIndex, selectionEnd.BlockIndex);
+            var maxBlock = Math.Max(selectionStart.BlockIndex, selectionEnd.BlockIndex);
 
             var lines = new List<IList<RecognizedTextBoundingBox>>();
             var content = new StringBuilder();
-
-            SelectionPointer selectionStart = default;
-            SelectionPointer selectionEnd = default;
-
-            Debug.WriteLine("first block: " + firstBlock + ", last block: " + lastBlock + ", going " + (backwardBlocks ? "backward" : "forward"));
 
             for (int i = minBlock; i <= maxBlock; i++)
             {
@@ -346,23 +349,19 @@ namespace Telegram.AI
                 int firstLine = 0;
                 int lastLine = block.Lines.Count - 1;
 
-                if (i == minBlock)
+                if (i == selectionStart.BlockIndex)
                 {
-                    firstLine = RecognizedTextBoundingBoxHelper.FindNearestIndex(block.Lines, backwardBlocks ? end : start);
-                    Debug.WriteLine("  found first line " + firstLine + " for block " + i + " at the " + (backwardBlocks ? "end" : "start"));
+                    (backwardBlocks ? ref lastLine : ref firstLine) = selectionStart.LineIndex;
                 }
 
-                if (i == maxBlock)
+                if (i == selectionEnd.BlockIndex)
                 {
-                    lastLine = RecognizedTextBoundingBoxHelper.FindNearestIndex(block.Lines, backwardBlocks ? start : end);
-                    Debug.WriteLine("  found last line " + lastLine + " for block " + i + " at the " + (backwardBlocks ? "start" : "end"));
+                    (backwardBlocks ? ref firstLine : ref lastLine) = selectionEnd.LineIndex;
                 }
 
                 var backwardLines = backwardBlocks || firstLine > lastLine;
                 var minLine = Math.Min(firstLine, lastLine);
                 var maxLine = Math.Max(firstLine, lastLine);
-
-                Debug.WriteLine("    first line: " + firstLine + ", last line: " + lastLine + ", going " + (backwardLines ? "backward" : "forward"));
 
                 for (int j = minLine; j <= maxLine; j++)
                 {
@@ -371,18 +370,14 @@ namespace Telegram.AI
                     var firstWord = 0;
                     var lastWord = line.Words.Count - 1;
 
-                    if (i == minBlock && j == minLine)
+                    if (i == selectionStart.BlockIndex && j == selectionStart.LineIndex)
                     {
-                        firstWord = RecognizedTextBoundingBoxHelper.FindNearestIndex(line.Words, backwardLines ? end : start);
-                        selectionStart = new SelectionPointer(i, j, firstWord);
-                        Debug.WriteLine("    found first word " + firstWord + " for line " + j + " at the " + (backwardLines ? "end" : "start"));
+                        (backwardLines ? ref lastWord : ref firstWord) = selectionStart.WordIndex;
                     }
 
-                    if (i == maxBlock && j == maxLine)
+                    if (i == selectionEnd.BlockIndex && j == selectionEnd.LineIndex)
                     {
-                        lastWord = RecognizedTextBoundingBoxHelper.FindNearestIndex(line.Words, backwardLines ? start : end);
-                        selectionEnd = new SelectionPointer(i, j, lastWord);
-                        Debug.WriteLine("    found last word " + lastWord + " for line " + j + " at the " + (backwardLines ? "start" : "end"));
+                        (backwardLines ? ref firstWord : ref lastWord) = selectionEnd.WordIndex;
                     }
 
                     var minWord = Math.Min(firstWord, lastWord);
@@ -406,11 +401,7 @@ namespace Telegram.AI
                         content.AppendLine(line.Text);
                     }
                 }
-
-                content.AppendLine();
             }
-
-            Debug.WriteLine("");
 
             UpdateSelection(selectionStart, selectionEnd, content.ToString(), lines.Select(y => RecognizedTextBoundingBoxHelper.Compute(y)));
         }
@@ -420,44 +411,37 @@ namespace Telegram.AI
             var start = point.ToVector2();
             start *= _inverseScale;
 
-            var blockIndex = RecognizedTextBoundingBoxHelper.FindNearestIndex(_blocks, start);
-            if (blockIndex != -1)
+            var nearestWord = _spatialIndex.FindNearestWord(start);
+            if (nearestWord == RecognizedTextPointer.Empty)
             {
-                var block = _blocks[blockIndex];
-
-                if (singleLine)
-                {
-                    var lineIndex = RecognizedTextBoundingBoxHelper.FindNearestIndex(block.Lines, start);
-                    if (lineIndex != -1)
-                    {
-                        var line = block.Lines[lineIndex];
-                        var selectionStart = new SelectionPointer(blockIndex, lineIndex, 0);
-                        var selectionEnd = new SelectionPointer(blockIndex, lineIndex, line.Words.Count - 1);
-
-                        UpdateSelection(selectionStart, selectionEnd, line.Text, new[] { line.BoundingBox });
-                        return;
-                    }
-                }
-                else
-                {
-                    var selectionStart = new SelectionPointer(blockIndex, 0, 0);
-                    var selectionEnd = new SelectionPointer(blockIndex, block.Lines.Count - 1, block.Lines[^1].Words.Count - 1);
-
-                    var content = string.Join('\n', block.Lines.Select(x => x.Text));
-                    var boundingBoxes = block.Lines.Select(x => x.BoundingBox);
-
-                    UpdateSelection(selectionStart, selectionEnd, content, boundingBoxes);
-                    return;
-                }
+                ClearSelection();
+                return;
             }
 
-            ClearSelection();
+            var block = _blocks[nearestWord.BlockIndex];
+
+            if (singleLine)
+            {
+                var line = block.Lines[nearestWord.LineIndex];
+
+                SelectTextBetween(
+                    new RecognizedTextPointer(nearestWord.BlockIndex, nearestWord.LineIndex, 0),
+                    new RecognizedTextPointer(nearestWord.BlockIndex, nearestWord.LineIndex, line.Words.Count - 1));
+            }
+            else
+            {
+                var line = block.Lines[^1];
+
+                SelectTextBetween(
+                    new RecognizedTextPointer(nearestWord.BlockIndex, 0, 0),
+                    new RecognizedTextPointer(nearestWord.BlockIndex, block.Lines.Count - 1, line.Words.Count - 1));
+            }
         }
 
         public void SelectAll()
         {
-            var selectionStart = new SelectionPointer(0, 0, 0);
-            var selectionEnd = new SelectionPointer(_blocks.Count - 1, _blocks[^1].Lines.Count - 1, _blocks[^1].Lines[^1].Words.Count - 1);
+            var selectionStart = new RecognizedTextPointer(0, 0, 0);
+            var selectionEnd = new RecognizedTextPointer(_blocks.Count - 1, _blocks[^1].Lines.Count - 1, _blocks[^1].Lines[^1].Words.Count - 1);
 
             var content = string.Join('\n', _blocks.Select(x => string.Join('\n', x.Lines.Select(x => x.Text))));
             var boundingBoxes = _blocks.SelectMany(x => x.Lines.Select(x => x.BoundingBox));
@@ -467,17 +451,17 @@ namespace Telegram.AI
 
         public void ClearSelection()
         {
-            if (_selectionStart != SelectionPointer.Empty && _selectionEnd != SelectionPointer.Empty)
+            if (_selectionStart != RecognizedTextPointer.Empty && _selectionEnd != RecognizedTextPointer.Empty)
             {
-                _selectionStart = SelectionPointer.Empty;
-                _selectionEnd = SelectionPointer.Empty;
+                _selectionStart = RecognizedTextPointer.Empty;
+                _selectionEnd = RecognizedTextPointer.Empty;
 
                 Selection = null;
                 SelectionChanged?.Invoke(this, new RecognizedTextSelectionChangedEventArgs(null));
             }
         }
 
-        private void UpdateSelection(SelectionPointer start, SelectionPointer end, string content, IEnumerable<RecognizedTextBoundingBox> boundingBoxes)
+        private void UpdateSelection(RecognizedTextPointer start, RecognizedTextPointer end, string content, IEnumerable<RecognizedTextBoundingBox> boundingBoxes)
         {
             if (_selectionStart != start || _selectionEnd != end)
             {
@@ -487,28 +471,6 @@ namespace Telegram.AI
                 Selection = new RecognizedTextSelection(content, boundingBoxes.ToList());
                 SelectionChanged?.Invoke(this, new RecognizedTextSelectionChangedEventArgs(Selection));
             }
-        }
-
-        readonly struct SelectionPointer
-        {
-            public readonly int Block;
-            public readonly int Line;
-            public readonly int Word;
-
-            public SelectionPointer(int block, int line, int word)
-            {
-                Block = block;
-                Line = line;
-                Word = word;
-            }
-
-            public static bool operator ==(SelectionPointer a, SelectionPointer b) => a.Block == b.Block && a.Line == b.Line && a.Word == b.Word;
-            public static bool operator !=(SelectionPointer a, SelectionPointer b) => !(a == b);
-
-            public override bool Equals(object obj) => obj is SelectionPointer p && this == p;
-            public override int GetHashCode() => HashCode.Combine(Block, Line, Word);
-
-            public static SelectionPointer Empty { get; } = new SelectionPointer(-1, -1, -1);
         }
     }
 }

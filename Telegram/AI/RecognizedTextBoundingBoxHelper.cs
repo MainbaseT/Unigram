@@ -8,102 +8,6 @@ namespace Telegram.AI
 {
     public static class RecognizedTextBoundingBoxHelper
     {
-        public static int FindNearestIndex(IList<RecognizedTextBlock> quads, Vector2 point)
-        {
-            int index = -1;
-            float minDist = float.MaxValue;
-
-            for (int i = 0; i < quads.Count; i++)
-            {
-                var quad = quads[i];
-
-                foreach (var polygon in quad.Polygons)
-                {
-                    if (polygon.ContainsPoint(point))
-                    {
-                        // Prefer any quadrilateral that contains the point
-                        index = i;
-                        return i;
-                    }
-
-                    float dist = DistanceToBoundingBox(point, polygon);
-                    if (dist < minDist)
-                    {
-                        minDist = dist;
-                        index = i;
-                    }
-                }
-            }
-
-            return index;
-        }
-
-        public static int FindNearestIndex<T>(IList<T> quads, Vector2 point) where T : IOcrObject
-        {
-            int index = -1;
-            float minDist = float.MaxValue;
-
-            for (int i = 0; i < quads.Count; i++)
-            {
-                var quad = quads[i];
-                var pts = new[]
-                {
-                    quad.BoundingBox.TopLeft,
-                    quad.BoundingBox.TopRight,
-                    quad.BoundingBox.BottomLeft,
-                    quad.BoundingBox.BottomRight
-                };
-
-                if (pts.ContainsPoint(point))
-                {
-                    // Prefer any quadrilateral that contains the point
-                    index = i;
-                    break;
-                }
-
-                float dist = DistanceToBoundingBox(point, pts);
-                if (dist < minDist)
-                {
-                    minDist = dist;
-                    index = i;
-                }
-            }
-
-            return index;
-        }
-
-        private static float DistanceToBoundingBox(Vector2 point, IList<Vector2> pts)
-        {
-            float minDist = float.MaxValue;
-
-            for (int i = 0; i < pts.Count; i++)
-            {
-                var a = pts[i];
-                var b = pts[(i + 1) % pts.Count];
-                float dist = DistancePointToSegment(point.X, point.Y, a.X, a.Y, b.X, b.Y);
-                if (dist < minDist) minDist = dist;
-            }
-
-            return minDist;
-        }
-
-        private static float DistancePointToSegment(float px, float py, float x1, float y1, float x2, float y2)
-        {
-            float dx = x2 - x1;
-            float dy = y2 - y1;
-
-            if (dx == 0 && dy == 0)
-                return Distance(px, py, x1, y1);
-
-            float t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy);
-            t = Math.Max(0, Math.Min(1, t));
-
-            float projX = x1 + t * dx;
-            float projY = y1 + t * dy;
-
-            return Distance(px, py, projX, projY);
-        }
-
         public static float Distance(float x1, float y1, float x2, float y2)
         {
             float dx = x2 - x1;
@@ -165,14 +69,6 @@ namespace Telegram.AI
             inflated.BottomLeft = newP4;
 
             return inflated;
-        }
-
-        public static Vector2 Center(this RecognizedTextBoundingBox box)
-        {
-            float centerX = (box.TopLeft.X + box.TopRight.X + box.BottomRight.X + box.BottomLeft.X) / 4f;
-            float centerY = (box.TopLeft.Y + box.TopRight.Y + box.BottomRight.Y + box.BottomLeft.Y) / 4f;
-
-            return new Vector2(centerX, centerY);
         }
 
         public static float Width(this RecognizedTextBoundingBox box)
@@ -239,6 +135,17 @@ namespace Telegram.AI
                 points.Add(bb.TopRight);
                 points.Add(bb.BottomRight);
                 points.Add(bb.BottomLeft);
+            }
+
+            if (points.Count == 4)
+            {
+                return new RecognizedTextBoundingBox
+                {
+                    TopLeft = points[0],
+                    TopRight = points[1],
+                    BottomRight = points[2],
+                    BottomLeft = points[3],
+                };
             }
 
             var hull = ConvexHull(points);

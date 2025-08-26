@@ -117,6 +117,8 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AI\RecognizedTextPointer.cs" />
+    <Compile Include="AI\RecognizedTextSpatialIndex.cs" />
     <Compile Include="Assets\Icons\ActionFile.cs" />
     <Compile Include="Assets\Icons\ActionGame.cs" />
     <Compile Include="Assets\Icons\ActionSticker.cs" />

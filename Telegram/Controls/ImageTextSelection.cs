@@ -171,7 +171,7 @@ namespace Telegram.Controls
 
             if (_selectionPressed && Logger.TickCount > _expandSelectionDeadline)
             {
-                _selection.SelectTextBetweenPoints(startPoint, endPoint);
+                _selection.SelectTextBetween(startPoint, endPoint);
             }
 
             if (_selectionPressed || _selection.IsPointWithinText(endPoint))
