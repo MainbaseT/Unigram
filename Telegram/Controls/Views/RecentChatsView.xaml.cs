@@ -65,9 +65,7 @@ namespace Telegram.Controls.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            Focus(FocusState.Pointer);
-
-            if (ScrollingHost.ItemsSource != null)
+            if (ScrollingHost.Items.Count > 0)
             {
                 SelectFirstChat();
             }
@@ -228,6 +226,8 @@ namespace Telegram.Controls.Views
 
         private void SelectFirstChat()
         {
+            Focus(FocusState.Pointer);
+
             if (_hasCurrentChat)
             {
                 ScrollingHost.SelectedIndex = _fromStart ? Math.Min(1, ScrollingHost.Items.Count - 1) : ScrollingHost.Items.Count - 1;
