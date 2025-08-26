@@ -11399,6 +11399,15 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="ScamMessage" xml:space="preserve">
     <value>SCAM</value>
   </data>
+  <data name="ScanTextDownloadingText" xml:space="preserve">
+    <value>We’re downloading the files needed to recognize text. This is a one-time setup—next time, it will be ready instantly.</value>
+  </data>
+  <data name="ScanTextDownloadingTitle" xml:space="preserve">
+    <value>Almost there...</value>
+  </data>
+  <data name="ScanTextFirstTime" xml:space="preserve">
+    <value>Click here to grab text</value>
+  </data>
   <data name="ScanTextNoTextDetected" xml:space="preserve">
     <value>There was no text detected</value>
   </data>

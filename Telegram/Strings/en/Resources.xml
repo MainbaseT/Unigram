@@ -12610,5 +12610,8 @@
 
     <string name="AccDescrScanText">Scan Text</string>
     <string name="ScanTextNoTextDetected">There was no text detected</string>
+    <string name="ScanTextFirstTime">Click here to grab text</string>
+    <string name="ScanTextDownloadingTitle">Almost there...</string>
+    <string name="ScanTextDownloadingText">We’re downloading the files needed to recognize text. This is a one-time setup—next time, it will be ready instantly.</string>
 
 </resources>

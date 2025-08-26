@@ -73,6 +73,8 @@ namespace Telegram.ViewModels.Gallery
         public virtual bool IsPublic { get; protected set; }
         public virtual bool IsPersonal { get; protected set; }
 
+        public bool CanRecognizeText => IsPhoto && !HasProtectedContent && SettingsService.Current.Diagnostics.TextRecognizerDebug;
+
         public virtual InputMessageContent ToInput()
         {
             return null;

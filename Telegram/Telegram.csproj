@@ -353,6 +353,7 @@
     <Compile Include="Controls\Views\RecentChatsView.xaml.cs">
       <DependentUpon>RecentChatsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\Settings\ToolTipSettings.cs" />
     <Compile Include="Services\TextRecognitionService.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />

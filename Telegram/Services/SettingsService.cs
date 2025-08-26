@@ -47,6 +47,7 @@ namespace Telegram.Services
         PlaybackSettings Playback { get; }
         VideoSettings Video { get; }
         VoIPSettings VoIP { get; }
+        ToolTipSettings ToolTip { get; }
         TranslateSettings Translate { get; }
 
         DiagnosticsSettings Diagnostics { get; }
@@ -311,6 +312,9 @@ namespace Telegram.Services
 
         private static VoIPSettings _voip;
         public VoIPSettings VoIP => _voip ??= new VoIPSettings();
+
+        private static ToolTipSettings _toolTip;
+        public ToolTipSettings ToolTip => _toolTip ??= new ToolTipSettings();
 
         private static int? _verbosityLevel;
         public int VerbosityLevel

@@ -112,12 +112,13 @@
                                       TabIndex="1" />
 
                 <controls:GlyphButton x:Name="Recognize"
-                                            Click="Recognize_Click"
-                                            Visibility="{x:Bind (Visibility)ViewModel.SelectedItem.IsPhoto, Mode=OneWay}"
-                                            AutomationProperties.Name="{CustomResource AccDescrScanText}"
-                                            ToolTipService.ToolTip="{CustomResource AccDescrScanText}"
-                                            Glyph="&#xEAD6;"
-                                            TabIndex="2" />
+                                      Click="Recognize_Click"
+                                      Loaded="Recognize_Loaded"
+                                      Visibility="{x:Bind (Visibility)ViewModel.SelectedItem.CanRecognizeText, Mode=OneWay}"
+                                      AutomationProperties.Name="{CustomResource AccDescrScanText}"
+                                      ToolTipService.ToolTip="{CustomResource AccDescrScanText}"
+                                      Glyph="&#xEAD6;"
+                                      TabIndex="2" />
 
                 <controls:GlyphButton x:Name="ZoomOut"
                                       Click="ZoomOut_Click"

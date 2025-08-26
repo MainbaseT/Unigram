@@ -650,10 +650,14 @@ namespace Telegram.Controls.Gallery
             if (status is TextRecognitionStatusUnavailable unavailable)
             {
                 // TODO: Error: not available
+
+                WatchDog.TrackEvent("TextRecognizer", new Properties { { "Status", "Unavailable" } });
                 return;
             }
             else if (status is TextRecognitionStatusDownloading downloading)
             {
+                WatchDog.TrackEvent("TextRecognizer", new Properties { { "Status", "Downloading" } });
+
                 var confirm = await _window.ViewModel.ShowPopupAsync(new TextRecognitionDownloadPopup(_window.ViewModel.ClientService, _window.ViewModel.Aggregator, downloading.Document), requestedTheme: ElementTheme.Dark);
                 if (confirm != ContentDialogResult.Primary)
                 {
@@ -661,6 +665,10 @@ namespace Telegram.Controls.Gallery
                 }
 
                 status = await service.EnsureReadyAsync();
+            }
+            else
+            {
+                WatchDog.TrackEvent("TextRecognizer", new Properties { { "Status", "Available" } });
             }
 
             if (status is not TextRecognitionStatusAvailable available)

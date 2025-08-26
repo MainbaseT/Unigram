@@ -105,6 +105,10 @@
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.VideoPreloadDebug, Mode=TwoWay}"
                               Content="Video Preload Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
+
+                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.TextRecognizerDebug, Mode=TwoWay}"
+                              Content="Text Recognizer Debug"
+                              Style="{StaticResource SettingsCheckBoxStyle}" />
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl Header="Crash Mitigation">
