@@ -325,6 +325,7 @@
     </Compile>
     <Compile Include="Controls\GlassToggleButton.cs" />
     <Compile Include="Controls\ImageTextSelection.cs" />
+    <Compile Include="Controls\Media\PowerSavingBrushBase.cs" />
     <Compile Include="Controls\MenuFlyoutContent.cs" />
     <Compile Include="Composition\CompositionColorSource.cs" />
     <Compile Include="Controls\MenuFlyoutInfoItem.cs" />
