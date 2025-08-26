@@ -754,16 +754,22 @@ namespace Telegram.Controls.Messages
 
         private async void MessageToggleReaction(ReactionType reaction)
         {
-            if (reaction is not ReactionTypePaid && _message.InteractionInfo?.Reactions != null && _message.InteractionInfo.Reactions.IsChosen(reaction))
+            var message = _message;
+            if (message.Content is MessageAlbum album)
             {
-                _message.ClientService.Send(new RemoveMessageReaction(_message.ChatId, _message.Id, reaction));
+                message = album.Messages[0];
+            }
+
+            if (reaction is not ReactionTypePaid && message.InteractionInfo?.Reactions != null && message.InteractionInfo.Reactions.IsChosen(reaction))
+            {
+                message.ClientService.Send(new RemoveMessageReaction(message.ChatId, message.Id, reaction));
             }
             else
             {
                 Object added;
                 if (reaction is ReactionTypePaid)
                 {
-                    var popup = new ReactPopup(_message.ClientService, _message);
+                    var popup = new ReactPopup(message.ClientService, message);
 
                     var confirm = await popup.ShowQueuedAsync(XamlRoot);
                     if (confirm != ContentDialogResult.Primary)
@@ -771,12 +777,12 @@ namespace Telegram.Controls.Messages
                         return;
                     }
 
-                    _message.ClientService.Send(new SetPaidMessageReactionType(_message.ChatId, _message.Id, popup.Type));
-                    added = await PaidReactionService.AddPendingAsync(XamlRoot, _message, popup.StarCount, popup.Type);
+                    message.ClientService.Send(new SetPaidMessageReactionType(message.ChatId, message.Id, popup.Type));
+                    added = await PaidReactionService.AddPendingAsync(XamlRoot, message, popup.StarCount, popup.Type);
                 }
                 else
                 {
-                    added = await _message.ClientService.SendAsync(new AddMessageReaction(_message.ChatId, _message.Id, reaction, false, true));
+                    added = await message.ClientService.SendAsync(new AddMessageReaction(message.ChatId, message.Id, reaction, false, true));
                 }
 
                 if (added is Ok && _bubble != null && _bubble.IsLoaded)

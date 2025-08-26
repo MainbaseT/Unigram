@@ -597,19 +597,25 @@ namespace Telegram.Controls.Messages
 
         private async void MessageToggleReaction(ReactionType reaction)
         {
-            if (reaction is ReactionTypeCustomEmoji && !_message.ClientService.IsPremium)
+            var message = _message;
+            if (message.Content is MessageAlbum album)
             {
-                ToastPopup.ShowFeaturePromo(_message.Delegate.NavigationService, new PremiumFeatureUniqueReactions());
+                message = album.Messages[0];
+            }
+
+            if (reaction is ReactionTypeCustomEmoji && !message.ClientService.IsPremium)
+            {
+                ToastPopup.ShowFeaturePromo(message.Delegate.NavigationService, new PremiumFeatureUniqueReactions());
                 return;
             }
 
-            if (_message.InteractionInfo != null && _message.InteractionInfo.Reactions.IsChosen(reaction))
+            if (message.InteractionInfo != null && message.InteractionInfo.Reactions.IsChosen(reaction))
             {
-                _message.ClientService.Send(new RemoveMessageReaction(_message.ChatId, _message.Id, reaction));
+                message.ClientService.Send(new RemoveMessageReaction(message.ChatId, message.Id, reaction));
             }
             else
             {
-                await _message.ClientService.SendAsync(new AddMessageReaction(_message.ChatId, _message.Id, reaction, false, true));
+                await message.ClientService.SendAsync(new AddMessageReaction(message.ChatId, message.Id, reaction, false, true));
 
                 if (_bubble != null && _bubble.IsLoaded)
                 {
