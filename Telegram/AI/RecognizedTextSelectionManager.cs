@@ -23,7 +23,7 @@ namespace Telegram.AI
         {
             _blocks = ClusterIntoBlocks(result.Lines);
             _lines = _blocks.SelectMany(x => x.Lines).ToList();
-            
+
             _spatialIndex = new RecognizedTextSpatialIndex(_blocks);
         }
 
@@ -225,46 +225,71 @@ namespace Telegram.AI
 
         private static List<RecognizedTextBlock> SortReadingOrder(IEnumerable<RecognizedTextBlock> items)
         {
-            // There's large room for improvement here
+            static float VerticalOverlap(BoxInfo a, BoxInfo b)
+            {
+                float overlap = Math.Max(0, Math.Min(a.MaxY, b.MaxY) - Math.Max(a.MinY, b.MinY));
+                float minHeight = Math.Min(a.MaxY - a.MinY, b.MaxY - b.MinY);
+                return overlap / minHeight;
+            }
+
+            static float HorizontalOverlap(List<BoxInfo> column, BoxInfo box)
+            {
+                float colMinX = column.Min(b => b.MinX);
+                float colMaxX = column.Max(b => b.MaxX);
+
+                float overlap = Math.Max(0, Math.Min(colMaxX, box.MaxX) - Math.Max(colMinX, box.MinX));
+                float minWidth = Math.Min(colMaxX - colMinX, box.MaxX - box.MinX);
+                return minWidth > 0 ? overlap / minWidth : 0f;
+            }
 
             var boxInfos = items.Select(obj =>
             {
                 var b = RecognizedTextBoundingBoxHelper.Compute(obj.Lines.Select(x => x.BoundingBox));
-                var xs = new[] { b.TopLeft.X, b.TopRight.X, b.BottomRight.X, b.BottomLeft.X };
-                var ys = new[] { b.TopLeft.Y, b.TopRight.Y, b.BottomRight.Y, b.BottomLeft.Y };
 
-                return new BoxInfo(
-                    obj,
-                    xs.Min(),
-                    ys.Min(),
-                    Math.Abs(b.TopRight.X - b.TopLeft.X) + Math.Abs(b.BottomRight.X - b.BottomLeft.X) / 2f // rough width
-                );
+                float minX = Math.Min(Math.Min(b.TopLeft.X, b.TopRight.X), Math.Min(b.BottomLeft.X, b.BottomRight.X));
+                float maxX = Math.Max(Math.Max(b.TopLeft.X, b.TopRight.X), Math.Max(b.BottomLeft.X, b.BottomRight.X));
+                float minY = Math.Min(Math.Min(b.TopLeft.Y, b.TopRight.Y), Math.Min(b.BottomLeft.Y, b.BottomRight.Y));
+                float maxY = Math.Max(Math.Max(b.TopLeft.Y, b.TopRight.Y), Math.Max(b.BottomLeft.Y, b.BottomRight.Y));
+
+                return new BoxInfo(obj, minX, minY, maxX, maxY);
             }).ToList();
 
-            float avgWidth = boxInfos.Average(b => b.Width);
-            float colThreshold = avgWidth * 0.5f;
-
-            // Group into columns
-            var columns = new List<List<BoxInfo>>();
-            foreach (var info in boxInfos.OrderBy(b => b.MinX))
+            var rows = new List<List<BoxInfo>>();
+            foreach (var box in boxInfos.OrderBy(b => b.MinY))
             {
-                var col = columns.FirstOrDefault(c => Math.Abs(c[0].MinX - info.MinX) < colThreshold);
-                if (col == null)
+                var row = rows.FirstOrDefault(r => r.Any(rBox => VerticalOverlap(rBox, box) > 0.5f));
+                if (row == null)
                 {
-                    col = new List<BoxInfo>();
-                    columns.Add(col);
+                    row = new List<BoxInfo>();
+                    rows.Add(row);
                 }
-                col.Add(info);
+                row.Add(box);
             }
 
-            // Sort columns left-to-right, then top-to-bottom
-            var ordered = columns
-                .OrderBy(c => c.Min(b => b.MinX))
-                .SelectMany(c => c.OrderBy(b => b.MinY))
-                .Select(b => b.Item)
-                .ToList();
+            var orderedBlocks = new List<RecognizedTextBlock>();
 
-            return ordered;
+            foreach (var row in rows.OrderBy(r => r.Min(b => b.MinY)))
+            {
+                var columns = new List<List<BoxInfo>>();
+
+                foreach (var box in row.OrderBy(b => b.MinX))
+                {
+                    var col = columns.FirstOrDefault(c => HorizontalOverlap(c, box) > 0.5f);
+                    if (col == null)
+                    {
+                        col = new List<BoxInfo>();
+                        columns.Add(col);
+                    }
+                    col.Add(box);
+                }
+
+                foreach (var col in columns.OrderBy(c => c.Min(b => b.MinX)))
+                {
+                    orderedBlocks.AddRange(col.OrderBy(b => b.MinY).Select(b => b.Item));
+                }
+            }
+
+            return orderedBlocks;
         }
 
         private readonly struct BoxInfo
@@ -272,14 +297,16 @@ namespace Telegram.AI
             public readonly RecognizedTextBlock Item;
             public readonly float MinX;
             public readonly float MinY;
-            public readonly float Width;
+            public readonly float MaxX;
+            public readonly float MaxY;
 
-            public BoxInfo(RecognizedTextBlock item, float minX, float minY, float width)
+            public BoxInfo(RecognizedTextBlock item, float minX, float minY, float maxX, float maxY)
             {
                 Item = item;
                 MinX = minX;
                 MinY = minY;
-                Width = width;
+                MaxX = maxX;
+                MaxY = maxY;
             }
         }
 
