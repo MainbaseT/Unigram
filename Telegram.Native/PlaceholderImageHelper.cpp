@@ -1224,6 +1224,116 @@ namespace winrt::Telegram::Native::implementation
         return { metrics.left, metrics.top, metrics.width, metrics.height };
     }
 
+    MaxLinesMetrics PlaceholderImageHelper::MaxLines(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, int32_t maxLines)
+    {
+        std::lock_guard const guard(m_criticalSection);
+        HRESULT result;
+
+        //ReturnIfFailed(result, CreateTextFormat(fontSize));
+        //ReturnIfFailed(result, m_appleFormat->SetReadingDirection(rtl ? DWRITE_READING_DIRECTION_RIGHT_TO_LEFT : DWRITE_READING_DIRECTION_LEFT_TO_RIGHT));
+
+        winrt::com_ptr<IDWriteTextFormat> textFormat;
+        ReturnDefaultIfFailed(result, m_dwriteFactory->CreateTextFormat(
+            L"Segoe UI Emoji",						// font family name
+            m_fontCollection.get(),			        // system font collection
+            DWRITE_FONT_WEIGHT_NORMAL,				// font weight 
+            DWRITE_FONT_STYLE_NORMAL,				// font style
+            DWRITE_FONT_STRETCH_NORMAL,				// default font stretch
+            fontSize,								// font size
+            L"",									// locale name
+            textFormat.put()
+        ));
+        ReturnDefaultIfFailed(result, textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
+        ReturnDefaultIfFailed(result, textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
+        ReturnDefaultIfFailed(result, textFormat->SetReadingDirection(rtl ? DWRITE_READING_DIRECTION_RIGHT_TO_LEFT : DWRITE_READING_DIRECTION_LEFT_TO_RIGHT));
+
+        winrt::com_ptr<IDWriteTextLayout> textLayout;
+        ReturnDefaultIfFailed(result, m_dwriteFactory->CreateTextLayout(
+            text.data(),					// The string to be laid out and formatted.
+            text.size(),        			// The length of the string.
+            textFormat.get(),			    // The text format to apply to the string (contains font information, etc).
+            width,							// The width of the layout box.
+            INFINITY,						// The height of the layout box.
+            textLayout.put()				// The IDWriteTextLayout interface pointer.
+        ));
+
+        for (const TextEntity& entity : entities)
+        {
+            UINT32 startPosition = entity.Offset();
+            UINT32 length = entity.Length();
+            auto name = winrt::get_class_name(entity.Type());
+
+            if (name == winrt::name_of<TextEntityTypeBold>())
+            {
+                ReturnDefaultIfFailed(result, textLayout->SetFontWeight(DWRITE_FONT_WEIGHT_SEMI_BOLD, { startPosition, length }));
+            }
+            else if (name == winrt::name_of<TextEntityTypeItalic>())
+            {
+                ReturnDefaultIfFailed(result, textLayout->SetFontStyle(DWRITE_FONT_STYLE_ITALIC, { startPosition, length }));
+            }
+            else if (name == winrt::name_of<TextEntityTypeStrikethrough>())
+            {
+                ReturnDefaultIfFailed(result, textLayout->SetStrikethrough(TRUE, { startPosition, length }));
+            }
+            else if (name == winrt::name_of<TextEntityTypeUnderline>())
+            {
+                ReturnDefaultIfFailed(result, textLayout->SetUnderline(TRUE, { startPosition, length }));
+            }
+            //else if (name == winrt::name_of<TextEntityTypeCustomEmoji>())
+            //{
+            //    textLayout->SetInlineObject(m_customEmoji.get(), { startPosition, length });
+            //}
+            else if (name == winrt::name_of<TextEntityTypeCode>() || name == winrt::name_of<TextEntityTypePre>() || name == winrt::name_of<TextEntityTypePreCode>())
+            {
+                ReturnDefaultIfFailed(result, textLayout->SetFontCollection(m_systemCollection.get(), { startPosition, length }));
+                ReturnDefaultIfFailed(result, textLayout->SetFontFamilyName(L"Consolas", { startPosition, length }));
+            }
+        }
+
+        DWRITE_TEXT_METRICS metrics;
+        ReturnDefaultIfFailed(result, textLayout->GetMetrics(&metrics));
+
+        if (maxLines == 0)
+        {
+            return { metrics.left, metrics.top, metrics.width, metrics.height, metrics.height, length };
+        }
+
+        UINT32 actualLineCount;
+        DWRITE_LINE_METRICS* ranges = new DWRITE_LINE_METRICS[metrics.lineCount];
+        result = textLayout->GetLineMetrics(ranges, metrics.lineCount, &actualLineCount);
+
+        if (result == E_NOT_SUFFICIENT_BUFFER)
+        {
+            delete[] ranges;
+
+            ranges = new DWRITE_LINE_METRICS[actualLineCount];
+            result = textLayout->GetLineMetrics(ranges, actualLineCount, &actualLineCount);
+        }
+
+        ReturnDefaultIfFailed(result, result);
+
+        float truncateHeight = 0;
+        int32_t truncatePosition = 0;
+
+        // Calculate position where to truncate
+        for (UINT32 i = 0; i < maxLines && i < actualLineCount; ++i)
+        {
+            truncateHeight += ranges[i].height;
+            truncatePosition += ranges[i].length;
+        }
+
+        // Remove trailing whitespace from last included line
+        if (maxLines <= actualLineCount)
+        {
+            //truncateHeight += ranges[maxLines - 1].height;
+            truncatePosition -= ranges[maxLines - 1].trailingWhitespaceLength;
+            truncatePosition -= ranges[maxLines - 1].newlineLength;
+        }
+
+        delete[] ranges;
+        return { metrics.left, metrics.top, metrics.width, metrics.height, truncateHeight, truncatePosition };
+    }
+
     HRESULT PlaceholderImageHelper::WriteBytes(IVector<byte> hash, IRandomAccessStream randomAccessStream) noexcept
     {
         HRESULT result;

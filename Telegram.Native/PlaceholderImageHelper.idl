@@ -3,6 +3,16 @@ import "TextFormat.idl";
 
 namespace Telegram.Native
 {
+	struct MaxLinesMetrics
+	{
+		Double X;
+		Double Y;
+		Double Width;
+		Double Height;
+		Double TruncatedHeight;
+		Int32 TruncatedOffset;
+	};
+
 	[default_interface]
 	runtimeclass PlaceholderImageHelper
 	{
@@ -39,6 +49,7 @@ namespace Telegram.Native
 		Windows.Foundation.Collections.IVector<Windows.Foundation.Rect> LineMetrics(String text, Windows.Foundation.Collections.IVector<Telegram.Td.Api.TextEntity> entities, Double fontSize, Double width, Boolean rtl);
 		Windows.Foundation.Collections.IVector<Windows.Foundation.Rect> RangeMetrics(String text, Int32 offset, Int32 length, Windows.Foundation.Collections.IVector<Telegram.Td.Api.TextEntity> entities, Double fontSize, Double width, Boolean rtl, Boolean wrap);
 		Windows.Foundation.Rect LayoutMetrics(String text, Int32 offset, Int32 length, Windows.Foundation.Collections.IVector<Telegram.Td.Api.TextEntity> entities, Double fontSize, Double width, Boolean rtl);
+		MaxLinesMetrics MaxLines(String text, Int32 offset, Int32 length, Windows.Foundation.Collections.IVector<Telegram.Td.Api.TextEntity> entities, Double fontSize, Double width, Boolean rtl, Int32 maxLines);
 		//Windows.Foundation.Collections.IVector<Windows.Foundation.Rect> EntityMetrics(String text, Windows.Foundation.Collections.IVector<Telegram.Td.Api.TextEntity> entities, Double fontSize, Double width, Boolean rtl);
 	}
 } // namespace Telegram.Native

@@ -135,6 +135,7 @@ namespace winrt::Telegram::Native::implementation
         IVector<Windows::Foundation::Rect> LineMetrics(hstring text, IVector<TextEntity> entities, double fontSize, double width, bool rtl);
         IVector<Windows::Foundation::Rect> RangeMetrics(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, bool wrap);
         Windows::Foundation::Rect LayoutMetrics(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl);
+        MaxLinesMetrics MaxLines(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, int32_t maxLines);
         //IVector<Windows::Foundation::Rect> EntityMetrics(hstring text, IVector<TextEntity> entities, double fontSize, double width, bool rtl);
 
     private:
