@@ -185,42 +185,34 @@ namespace Telegram.Controls.Views
 
                 if (ScrollingHost.SelectedItem is Chat chat)
                 {
-                    _clientService.Send(new AddRecentlyFoundChat(chat.Id));
                     _navigationService.NavigateToChat(chat, force: false, clearBackStack: true);
-
                     e.Handled = true;
                 }
             }
         }
 
-        private async void InitializeChats(IClientService clientService)
+        private void InitializeChats(IClientService clientService)
         {
-            var response = await clientService.SendAsync(new SearchRecentlyFoundChats(string.Empty, 50));
-            if (response is Td.Api.Chats chats)
+            var items = _clientService.GetRecentlyOpenedChats();
+            var current = _navigationService.GetChatFromBackStack(true);
+
+            if (clientService.TryGetChat(current.ChatId, out Chat currentChat))
             {
-                var items = new List<Chat>(chats.ChatIds.Count);
-                var current = _navigationService.GetChatFromBackStack(true);
+                _hasCurrentChat = true;
 
-                if (clientService.TryGetChat(current.ChatId, out Chat currentChat))
+                if (items.Contains(currentChat))
                 {
-                    _hasCurrentChat = true;
-                    items.Add(currentChat);
+                    items.Remove(currentChat);
                 }
 
-                foreach (var chat in clientService.GetChats(chats.ChatIds))
-                {
-                    if (chat.Id != current.ChatId)
-                    {
-                        items.Add(chat);
-                    }
-                }
+                items.Insert(0, currentChat);
+            }
 
-                ScrollingHost.ItemsSource = items;
+            ScrollingHost.ItemsSource = items;
 
-                if (IsLoaded)
-                {
-                    SelectFirstChat();
-                }
+            if (IsLoaded)
+            {
+                SelectFirstChat();
             }
         }
 
@@ -279,8 +271,6 @@ namespace Telegram.Controls.Views
             if (e.ClickedItem is Chat chat)
             {
                 _popup.IsOpen = false;
-
-                _clientService.Send(new AddRecentlyFoundChat(chat.Id));
                 _navigationService.NavigateToChat(chat, force: false, clearBackStack: true);
             }
         }

@@ -2378,6 +2378,7 @@ namespace Telegram.ViewModels
             }
 
             ClientService.Send(new OpenChat(chat.Id));
+            ClientService.AddRecentlyOpenedChat(chat.Id);
 
             Delegate?.UpdateChat(chat);
             Delegate?.UpdateChatActions(chat, ClientService.GetChatActions(chat.Id));

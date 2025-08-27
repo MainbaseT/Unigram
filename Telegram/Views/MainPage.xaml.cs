@@ -1428,19 +1428,24 @@ namespace Telegram.Views
                 }
             }
 
-            var popup = new Popup
+            if (ViewModel.ClientService.RecentlyOpenedChatsCount > 1)
             {
-                XamlRoot = XamlRoot
-            };
+                var popup = new Popup
+                {
+                    XamlRoot = XamlRoot
+                };
 
-            popup.Child = new RecentChatsView(ViewModel.ClientService, MasterDetail.NavigationService, popup, start)
-            {
-                Width = ActualWidth,
-                Height = ActualHeight
-            };
+                popup.Child = new RecentChatsView(ViewModel.ClientService, MasterDetail.NavigationService, popup, start)
+                {
+                    Width = ActualWidth,
+                    Height = ActualHeight
+                };
 
-            popup.IsOpen = true;
-            return true;
+                popup.IsOpen = true;
+                return true;
+            }
+
+            return false;
         }
 
         public void Scroll(int offset, bool navigate)

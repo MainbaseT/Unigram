@@ -248,6 +248,10 @@ namespace Telegram.Services
         bool HasSuggestedAction(SuggestedAction action);
 
         Settings.NotificationsSettings Notifications { get; }
+
+        void AddRecentlyOpenedChat(long chatId);
+        int RecentlyOpenedChatsCount { get; }
+        IList<Chat> GetRecentlyOpenedChats();
     }
 
     public partial class ClientService : IClientService, ClientResultHandler
@@ -300,6 +304,9 @@ namespace Telegram.Services
         private readonly Dictionary<int, File> _files = new();
 
         private readonly ConcurrentDictionary<long, MessageAlbumLastMessageService> _lastMessageAlbums = new();
+
+        private readonly List<long> _recentChats = new();
+        private readonly object _recentChatsLock = new();
 
         private UnconfirmedSession _unconfirmedSession;
 
@@ -1138,6 +1145,45 @@ namespace Telegram.Services
                 UnreadChatCount = chatCount ?? new UpdateUnreadChatCount(),
                 UnreadMessageCount = messageCount ?? new UpdateUnreadMessageCount()
             };
+        }
+
+
+
+        public void AddRecentlyOpenedChat(long chatId)
+        {
+            lock (_recentChatsLock)
+            {
+                if (_recentChats.Contains(chatId))
+                {
+                    _recentChats.Remove(chatId);
+                }
+
+                _recentChats.Insert(0, chatId);
+
+                if (_recentChats.Count > 50)
+                {
+                    _recentChats.RemoveAt(_recentChats.Count - 1);
+                }
+            }
+        }
+
+        public int RecentlyOpenedChatsCount
+        {
+            get
+            {
+                lock (_recentChatsLock)
+                {
+                    return _recentChats.Count;
+                }
+            }
+        }
+
+        public IList<Chat> GetRecentlyOpenedChats()
+        {
+            lock (_recentChatsLock)
+            {
+                return GetChats(_recentChats).ToList();
+            }
         }
 
 
