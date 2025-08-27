@@ -217,6 +217,7 @@
     <Compile Include="Common\MediaHttpServer.cs" />
     <Compile Include="Common\SliderHelper.cs" />
     <Compile Include="Common\VideoPreloader.cs" />
+    <Compile Include="Common\WebAppStorage.cs" />
     <Compile Include="Composition\CompositionVisualColorSource.cs" />
     <Compile Include="Composition\WeakInteractionTrackerOwner.cs" />
     <Compile Include="Controls\ButtonEx.cs" />
@@ -1287,6 +1288,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\WebAppRestorePopup.xaml.cs">
+      <DependentUpon>WebAppRestorePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\ChooseDateTimePopup.xaml.cs">
       <DependentUpon>ChooseDateTimePopup.xaml</DependentUpon>
     </Compile>
@@ -3293,6 +3297,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\BackgroundPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\WebAppRestorePopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

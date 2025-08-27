@@ -73,7 +73,7 @@ namespace Telegram.Views.Profile
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Logger.Exception(ex);
             }
         }
     }

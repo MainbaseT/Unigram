@@ -327,7 +327,7 @@ namespace Telegram.Navigation.Services
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Logger.Exception(ex);
             }
 
             OverlayWindow.Current?.TryHide(ContentDialogResult.None);
@@ -637,7 +637,7 @@ namespace Telegram.Navigation.Services
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Logger.Exception(ex);
                 return false;
             }
             finally

@@ -49,6 +49,8 @@ namespace Telegram
 
         public const string DefaultDeviceId = "";
 
+        public const string WebAppHostName = "windows";
+
         public const int FontSize = 14;
         public const int CaptionFontSize = 12;
 

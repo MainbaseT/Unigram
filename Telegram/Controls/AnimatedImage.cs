@@ -785,7 +785,7 @@ namespace Telegram.Controls
                 catch (Exception ex)
                 {
                     // If it throws, let's rebuild the brush
-                    Logger.Error(ex);
+                    Logger.Exception(ex);
                 }
             }
 
@@ -847,7 +847,7 @@ namespace Telegram.Controls
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Logger.Exception(ex);
             }
         }
 

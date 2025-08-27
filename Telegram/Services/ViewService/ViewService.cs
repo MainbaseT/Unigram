@@ -98,7 +98,7 @@ namespace Telegram.Services
                 catch (Exception ex)
                 {
                     // This can happen, but it's unclear when
-                    Logger.Error(ex);
+                    Logger.Exception(ex);
 
                     // All the remote procedure calls must be wrapped in a try-catch block
                     return Task.FromResult<ViewLifetimeControl>(null);

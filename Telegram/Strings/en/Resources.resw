@@ -2613,6 +2613,21 @@ Do you want to revoke verification?</value>
   <data name="BotRestart" xml:space="preserve">
     <value>Restart Bot</value>
   </data>
+  <data name="BotRestoreStorageButton" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="BotRestoreStorageCreatedAt" xml:space="preserve">
+    <value>created on {0}</value>
+  </data>
+  <data name="BotRestoreStorageHeader" xml:space="preserve">
+    <value>Account to import data from</value>
+  </data>
+  <data name="BotRestoreStorageText" xml:space="preserve">
+    <value>**{0}** is requesting permission to import data from a previous Telegram account used on device.</value>
+  </data>
+  <data name="BotRestoreStorageTitle" xml:space="preserve">
+    <value>Import Data</value>
+  </data>
   <data name="Bots_one" xml:space="preserve">
     <value>{0} bot</value>
   </data>

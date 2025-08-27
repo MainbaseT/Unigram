@@ -28,7 +28,7 @@ namespace Telegram.Controls.Media
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex);
+                    Logger.Exception(ex);
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace Telegram.Controls.Media
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Logger.Exception(ex);
             }
 
             m_isConnected = true;

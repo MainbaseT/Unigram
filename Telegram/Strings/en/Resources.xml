@@ -12614,4 +12614,10 @@
     <string name="ScanTextDownloadingTitle">Almost there...</string>
     <string name="ScanTextDownloadingText">We’re downloading the files needed to recognize text. This is a one-time setup—next time, it will be ready instantly.</string>
 
+    <string name="BotRestoreStorageTitle">Import Data</string>
+    <string name="BotRestoreStorageText">**{0}** is requesting permission to import data from a previous Telegram account used on device.</string>
+    <string name="BotRestoreStorageHeader">Account to import data from</string>
+    <string name="BotRestoreStorageButton">Import</string>
+    <string name="BotRestoreStorageCreatedAt">created on {0}</string>
+
 </resources>

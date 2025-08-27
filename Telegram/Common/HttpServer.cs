@@ -141,7 +141,7 @@ namespace Telegram.Common
                 catch (Exception ex)
                 {
                     response = HttpResponse.InternalServerError;
-                    Logger.Error(ex);
+                    Logger.Exception(ex);
                 }
 
                 Console.WriteLine("{0} {1}", response.StatusCode, request.Path);
