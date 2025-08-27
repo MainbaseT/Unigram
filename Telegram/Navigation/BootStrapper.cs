@@ -402,9 +402,10 @@ namespace Telegram.Navigation
                 }
                 else if (key == VirtualKey.Escape)
                 {
+                    // TODO: what is this for? I have no clue anymore
                     if (popup.Child is not Grid)
                     {
-                        handled = args.Handled = true;
+                        //handled = args.Handled = true;
                         return;
                     }
                 }
