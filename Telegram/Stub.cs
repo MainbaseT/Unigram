@@ -3829,6 +3829,33 @@ public static class MediaSource_stub
         }
     }
 }
+public static class CryptographicEngine_stub
+{
+    public static Windows.Storage.Streams.IBuffer DecryptAndAuthenticate_stub(Windows.Security.Cryptography.Core.CryptographicKey key, Windows.Storage.Streams.IBuffer data, Windows.Storage.Streams.IBuffer nonce, Windows.Storage.Streams.IBuffer authenticationTag, Windows.Storage.Streams.IBuffer authenticatedData)
+    {
+        try
+        {
+            return Windows.Security.Cryptography.Core.CryptographicEngine.DecryptAndAuthenticate(key, data, nonce, authenticationTag, authenticatedData);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Security.Cryptography.Core.EncryptedAndAuthenticatedData EncryptAndAuthenticate_stub(Windows.Security.Cryptography.Core.CryptographicKey key, Windows.Storage.Streams.IBuffer data, Windows.Storage.Streams.IBuffer nonce, Windows.Storage.Streams.IBuffer authenticatedData)
+    {
+        try
+        {
+            return Windows.Security.Cryptography.Core.CryptographicEngine.EncryptAndAuthenticate(key, data, nonce, authenticatedData);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class HashAlgorithmProvider_stub
 {
     public static Windows.Storage.Streams.IBuffer HashData_stub(this Windows.Security.Cryptography.Core.HashAlgorithmProvider sender, Windows.Storage.Streams.IBuffer data)
@@ -3848,6 +3875,33 @@ public static class HashAlgorithmProvider_stub
         try
         {
             return Windows.Security.Cryptography.Core.HashAlgorithmProvider.OpenAlgorithm(algorithm);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class SymmetricKeyAlgorithmProvider_stub
+{
+    public static Windows.Security.Cryptography.Core.CryptographicKey CreateSymmetricKey_stub(this Windows.Security.Cryptography.Core.SymmetricKeyAlgorithmProvider sender, Windows.Storage.Streams.IBuffer keyMaterial)
+    {
+        try
+        {
+            return sender.CreateSymmetricKey(keyMaterial);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Security.Cryptography.Core.SymmetricKeyAlgorithmProvider OpenAlgorithm_stub(string algorithm)
+    {
+        try
+        {
+            return Windows.Security.Cryptography.Core.SymmetricKeyAlgorithmProvider.OpenAlgorithm(algorithm);
         }
         catch (Exception ex)
         {
@@ -3898,6 +3952,48 @@ public static class SystemNavigationManager_stub
         }
     }
 }
+public static class PasswordCredential_stub
+{
+    public static void RetrievePassword_stub(this Windows.Security.Credentials.PasswordCredential sender)
+    {
+        try
+        {
+            sender.RetrievePassword();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class PasswordVault_stub
+{
+    public static void Add_stub(this Windows.Security.Credentials.PasswordVault sender, Windows.Security.Credentials.PasswordCredential credential)
+    {
+        try
+        {
+            sender.Add(credential);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Security.Credentials.PasswordCredential Retrieve_stub(this Windows.Security.Credentials.PasswordVault sender, string resource, string userName)
+    {
+        try
+        {
+            return sender.Retrieve(resource, userName);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class CryptographicBuffer_stub
 {
     public static Windows.Storage.Streams.IBuffer ConvertStringToBinary_stub(string value, Windows.Security.Cryptography.BinaryStringEncoding encoding)
@@ -3929,6 +4025,30 @@ public static class CryptographicBuffer_stub
         try
         {
             return Windows.Security.Cryptography.CryptographicBuffer.CreateFromByteArray(value);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Storage.Streams.IBuffer DecodeFromBase64String_stub(string value)
+    {
+        try
+        {
+            return Windows.Security.Cryptography.CryptographicBuffer.DecodeFromBase64String(value);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static string EncodeToBase64String_stub(Windows.Storage.Streams.IBuffer buffer)
+    {
+        try
+        {
+            return Windows.Security.Cryptography.CryptographicBuffer.EncodeToBase64String(buffer);
         }
         catch (Exception ex)
         {
@@ -5607,6 +5727,42 @@ public static class JsonObject_stub
 }
 public static class JsonValue_stub
 {
+    public static Windows.Data.Json.JsonValue CreateBooleanValue_stub(bool input)
+    {
+        try
+        {
+            return Windows.Data.Json.JsonValue.CreateBooleanValue(input);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Data.Json.JsonValue CreateNullValue_stub()
+    {
+        try
+        {
+            return Windows.Data.Json.JsonValue.CreateNullValue();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Data.Json.JsonValue CreateNumberValue_stub(double input)
+    {
+        try
+        {
+            return Windows.Data.Json.JsonValue.CreateNumberValue(input);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static Windows.Data.Json.JsonValue CreateStringValue_stub(string input)
     {
         try
@@ -7461,6 +7617,18 @@ public static class StoreContext_stub
 }
 public static class DataReader_stub
 {
+    public static Windows.Storage.Streams.DataReader FromBuffer_stub(Windows.Storage.Streams.IBuffer buffer)
+    {
+        try
+        {
+            return Windows.Storage.Streams.DataReader.FromBuffer(buffer);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
     public static Windows.Storage.Streams.DataReaderLoadOperation LoadAsync_stub(this Windows.Storage.Streams.DataReader sender, uint count)
     {
         try
