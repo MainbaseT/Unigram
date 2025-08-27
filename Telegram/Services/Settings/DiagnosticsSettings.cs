@@ -221,7 +221,7 @@ namespace Telegram.Services.Settings
         private bool? _textRecognizerDebug;
         public bool TextRecognizerDebug
         {
-            get => _textRecognizerDebug ??= GetValueOrDefault("TextRecognizerDebug", ApiInfo.IsPackagedRelease);
+            get => _textRecognizerDebug ??= GetValueOrDefault("TextRecognizerDebug", true);
             set => AddOrUpdateValue(ref _textRecognizerDebug, "TextRecognizerDebug", value);
         }
 
