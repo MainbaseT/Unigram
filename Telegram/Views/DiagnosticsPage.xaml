@@ -111,6 +111,12 @@
                               Style="{StaticResource SettingsCheckBoxStyle}" />
                 </controls:HeaderedControl>
 
+                <controls:HeaderedControl>
+                    <controls:SettingsButton Click="{x:Bind services:SettingsService.Current.ToolTip.Reset}"
+                                             Content="Reset Tool Tips"
+                                             Foreground="{ThemeResource DangerButtonBackground}" />
+                </controls:HeaderedControl>
+
                 <controls:HeaderedControl Header="Crash Mitigation">
                     <CheckBox IsChecked="{x:Bind ViewModel.LegacyScrollBars, Mode=TwoWay}"
                               Content="Legacy ScrollBar Style"

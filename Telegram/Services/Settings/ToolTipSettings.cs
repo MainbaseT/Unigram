@@ -20,13 +20,21 @@ namespace Telegram.Services.Settings
             return count < 3;
         }
 
-        public void Increment(string key)
+        public bool Increment(string key)
         {
             var count = GetValueOrDefault(key, 0);
             if (count < 3)
             {
                 AddOrUpdateValue(key, count + 1);
+                return true;
             }
+
+            return false;
+        }
+
+        public void Reset()
+        {
+            _container.Values.Clear();
         }
     }
 }

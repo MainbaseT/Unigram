@@ -112,9 +112,9 @@
                                       TabIndex="1" />
 
                 <controls:GlyphButton x:Name="Recognize"
+                                      x:Load="{x:Bind ViewModel.SelectedItem.CanRecognizeText, Mode=OneWay}"
                                       Click="Recognize_Click"
                                       Loaded="Recognize_Loaded"
-                                      Visibility="{x:Bind (Visibility)ViewModel.SelectedItem.CanRecognizeText, Mode=OneWay}"
                                       AutomationProperties.Name="{CustomResource AccDescrScanText}"
                                       ToolTipService.ToolTip="{CustomResource AccDescrScanText}"
                                       Glyph="&#xEAD6;"

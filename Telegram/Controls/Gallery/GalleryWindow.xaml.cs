@@ -1235,11 +1235,19 @@ namespace Telegram.Controls.Gallery
             container.RecognizeText();
         }
 
+        private bool _recognizeLoaded;
+
         private void Recognize_Loaded(object sender, RoutedEventArgs e)
         {
-            if (SettingsService.Current.ToolTip.Required("TextRecognizer"))
+            if (_recognizeLoaded)
             {
-                SettingsService.Current.ToolTip.Increment("TextRecognizer");
+                return;
+            }
+
+            _recognizeLoaded = true;
+
+            if (SettingsService.Current.ToolTip.Increment("TextRecognizer"))
+            {
                 ToastPopup.Show(Recognize, Strings.ScanTextFirstTime, Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.Top, dismissAfter: TimeSpan.FromSeconds(3));
             }
         }
