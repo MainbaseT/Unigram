@@ -233,86 +233,257 @@ namespace Telegram.AI
         {
             static float VerticalOverlap(BoxInfo a, BoxInfo b)
             {
-                float overlap = Math.Max(0, Math.Min(a.MaxY, b.MaxY) - Math.Max(a.MinY, b.MinY));
+                // For rotated text, we need to consider the primary reading direction
+                if (Math.Abs(a.Rotation) > 45f || Math.Abs(b.Rotation) > 45f)
+                {
+                    // For significantly rotated text, use horizontal overlap as "vertical" overlap
+                    float overlap = Math.Max(0, Math.Min(a.MaxX, b.MaxX) - Math.Max(a.MinX, b.MinX));
+                    float minWidth = Math.Min(a.MaxX - a.MinX, b.MaxX - b.MinX);
+                    return minWidth > 0 ? overlap / minWidth : 0f;
+                }
+
+                float vertOverlap = Math.Max(0, Math.Min(a.MaxY, b.MaxY) - Math.Max(a.MinY, b.MinY));
                 float minHeight = Math.Min(a.MaxY - a.MinY, b.MaxY - b.MinY);
-                return overlap / minHeight;
+                return minHeight > 0 ? vertOverlap / minHeight : 0f;
             }
 
             static float HorizontalOverlap(List<BoxInfo> column, BoxInfo box)
             {
-                float colMinX = column.Min(b => b.MinX);
-                float colMaxX = column.Max(b => b.MaxX);
+                // Adjust for rotation - if text is significantly rotated, treat vertical as horizontal
+                bool isRotated = Math.Abs(box.Rotation) > 45f || column.Any(b => Math.Abs(b.Rotation) > 45f);
 
-                float overlap = Math.Max(0, Math.Min(colMaxX, box.MaxX) - Math.Max(colMinX, box.MinX));
-                float minWidth = Math.Min(colMaxX - colMinX, box.MaxX - box.MinX);
-                return minWidth > 0 ? overlap / minWidth : 0f;
+                if (isRotated)
+                {
+                    float colMinY = column.Min(b => b.MinY);
+                    float colMaxY = column.Max(b => b.MaxY);
+                    float overlap = Math.Max(0, Math.Min(colMaxY, box.MaxY) - Math.Max(colMinY, box.MinY));
+                    float minHeight = Math.Min(colMaxY - colMinY, box.MaxY - box.MinY);
+                    return minHeight > 0 ? overlap / minHeight : 0f;
+                }
+                else
+                {
+                    float colMinX = column.Min(b => b.MinX);
+                    float colMaxX = column.Max(b => b.MaxX);
+                    float overlap = Math.Max(0, Math.Min(colMaxX, box.MaxX) - Math.Max(colMinX, box.MinX));
+                    float minWidth = Math.Min(colMaxX - colMinX, box.MaxX - box.MinX);
+                    return minWidth > 0 ? overlap / minWidth : 0f;
+                }
+            }
+
+            static float CalculateVariance(List<float> values)
+            {
+                if (values.Count <= 1) return 0f;
+
+                float mean = values.Average();
+                float sumSquaredDiffs = values.Sum(v => (v - mean) * (v - mean));
+                return sumSquaredDiffs / values.Count;
+            }
+
+            static float EstimateRotation(RecognizedTextBlock block)
+            {
+                // Try to estimate rotation from bounding box shape and line orientations
+                var bbox = RecognizedTextBoundingBoxHelper.Compute(block.Lines.Select(x => x.BoundingBox));
+
+                // Calculate vectors for each side of the bounding box
+                var topVector = new { X = bbox.TopRight.X - bbox.TopLeft.X, Y = bbox.TopRight.Y - bbox.TopLeft.Y };
+                var rightVector = new { X = bbox.BottomRight.X - bbox.TopRight.X, Y = bbox.BottomRight.Y - bbox.TopRight.Y };
+
+                // Calculate angle of the top edge (primary text direction)
+                float angle = (float)(Math.Atan2(topVector.Y, topVector.X) * 180.0 / Math.PI);
+
+                // Normalize to -180 to 180 range
+                while (angle > 180) angle -= 360;
+                while (angle < -180) angle += 360;
+
+                return angle;
+            }
+
+            static ColumnAlignment DetectAlignment(List<BoxInfo> boxes)
+            {
+                if (boxes.Count <= 1) return ColumnAlignment.Left;
+
+                // Group by similar rotation angles (within 15 degrees)
+                var rotationGroups = boxes.GroupBy(b => Math.Round(b.Rotation / 15f) * 15f).ToList();
+                var largestGroup = rotationGroups.OrderByDescending(g => g.Count()).First().ToList();
+
+                // Use the largest rotation group for alignment detection
+                float avgRotation = largestGroup.Average(b => b.Rotation);
+
+                // Adjust alignment detection based on rotation
+                List<float> primaryEdges, secondaryEdges, centers;
+
+                if (Math.Abs(avgRotation) > 45f && Math.Abs(avgRotation) < 135f)
+                {
+                    // For ~90 degree rotated text, swap X and Y for alignment detection
+                    primaryEdges = largestGroup.Select(b => b.MinY).ToList();
+                    secondaryEdges = largestGroup.Select(b => b.MaxY).ToList();
+                    centers = largestGroup.Select(b => (b.MinY + b.MaxY) / 2).ToList();
+                }
+                else
+                {
+                    // Normal horizontal or near-horizontal text
+                    primaryEdges = largestGroup.Select(b => b.MinX).ToList();
+                    secondaryEdges = largestGroup.Select(b => b.MaxX).ToList();
+                    centers = largestGroup.Select(b => (b.MinX + b.MaxX) / 2).ToList();
+                }
+
+                float primaryVariance = CalculateVariance(primaryEdges);
+                float secondaryVariance = CalculateVariance(secondaryEdges);
+                float centerVariance = CalculateVariance(centers);
+
+                float minVariance = Math.Min(Math.Min(primaryVariance, secondaryVariance), centerVariance);
+                float threshold = 5.0f;
+
+                if (minVariance < threshold)
+                {
+                    if (Math.Abs(minVariance - secondaryVariance) < 0.1f) return ColumnAlignment.Right;
+                    if (Math.Abs(minVariance - primaryVariance) < 0.1f) return ColumnAlignment.Left;
+                    if (Math.Abs(minVariance - centerVariance) < 0.1f) return ColumnAlignment.Center;
+                }
+
+                return ColumnAlignment.Left;
+            }
+
+            static float GetSortingKey(List<BoxInfo> column, ColumnAlignment alignment)
+            {
+                // Determine if this column is primarily rotated
+                float avgRotation = column.Average(b => b.Rotation);
+                bool isRotated = Math.Abs(avgRotation) > 45f && Math.Abs(avgRotation) < 135f;
+
+                if (isRotated)
+                {
+                    // For rotated text, use Y coordinates for "horizontal" sorting
+                    return alignment switch
+                    {
+                        ColumnAlignment.Left => column.Min(b => b.MinY),
+                        ColumnAlignment.Right => column.Max(b => b.MaxY),
+                        ColumnAlignment.Center => column.Average(b => (b.MinY + b.MaxY) / 2),
+                        _ => column.Min(b => b.MinY)
+                    };
+                }
+                else
+                {
+                    // Normal horizontal text
+                    return alignment switch
+                    {
+                        ColumnAlignment.Left => column.Min(b => b.MinX),
+                        ColumnAlignment.Right => column.Max(b => b.MaxX),
+                        ColumnAlignment.Center => column.Average(b => (b.MinX + b.MaxX) / 2),
+                        _ => column.Min(b => b.MinX)
+                    };
+                }
+            }
+
+            static float GetPrimarySortKey(BoxInfo box)
+            {
+                // Return the primary sorting coordinate based on rotation
+                if (Math.Abs(box.Rotation) > 45f && Math.Abs(box.Rotation) < 135f)
+                {
+                    return box.MinX; // For rotated text, sort by X first
+                }
+                return box.MinY; // For normal text, sort by Y first
+            }
+
+            static float GetSecondarySortKey(BoxInfo box, ColumnAlignment alignment)
+            {
+                // Return the secondary sorting coordinate
+                if (Math.Abs(box.Rotation) > 45f && Math.Abs(box.Rotation) < 135f)
+                {
+                    // For rotated text, secondary sort is by Y
+                    return alignment switch
+                    {
+                        ColumnAlignment.Right => -box.MaxY, // Reverse for right alignment
+                        ColumnAlignment.Center => (box.MinY + box.MaxY) / 2,
+                        _ => box.MinY
+                    };
+                }
+                else
+                {
+                    // For normal text, secondary sort is by X
+                    return alignment switch
+                    {
+                        ColumnAlignment.Right => -box.MaxX, // Reverse for right alignment
+                        ColumnAlignment.Center => (box.MinX + box.MaxX) / 2,
+                        _ => box.MinX
+                    };
+                }
             }
 
             var boxInfos = items.Select(obj =>
             {
                 var b = RecognizedTextBoundingBoxHelper.Compute(obj.Lines.Select(x => x.BoundingBox));
-
                 float minX = Math.Min(Math.Min(b.TopLeft.X, b.TopRight.X), Math.Min(b.BottomLeft.X, b.BottomRight.X));
                 float maxX = Math.Max(Math.Max(b.TopLeft.X, b.TopRight.X), Math.Max(b.BottomLeft.X, b.BottomRight.X));
                 float minY = Math.Min(Math.Min(b.TopLeft.Y, b.TopRight.Y), Math.Min(b.BottomLeft.Y, b.BottomRight.Y));
                 float maxY = Math.Max(Math.Max(b.TopLeft.Y, b.TopRight.Y), Math.Max(b.BottomLeft.Y, b.BottomRight.Y));
-
-                return new BoxInfo(obj, minX, minY, maxX, maxY);
+                float rotation = EstimateRotation(obj);
+                return new BoxInfo(obj, minX, minY, maxX, maxY, rotation);
             }).ToList();
 
-            var rows = new List<List<BoxInfo>>();
-            foreach (var box in boxInfos.OrderBy(b => b.MinY))
+            // Group into rows/columns based on rotation
+            var groups = new List<List<BoxInfo>>();
+
+            foreach (var box in boxInfos.OrderBy(GetPrimarySortKey))
             {
-                var row = rows.FirstOrDefault(r => r.Any(rBox => VerticalOverlap(rBox, box) > 0.5f));
-                if (row == null)
+                var group = groups.FirstOrDefault(g => g.Any(gBox => VerticalOverlap(gBox, box) > 0.5f));
+                if (group == null)
                 {
-                    row = new List<BoxInfo>();
-                    rows.Add(row);
+                    group = new List<BoxInfo>();
+                    groups.Add(group);
                 }
-                row.Add(box);
+                group.Add(box);
             }
 
             var orderedBlocks = new List<RecognizedTextBlock>();
 
-            foreach (var row in rows.OrderBy(r => r.Min(b => b.MinY)))
+            foreach (var group in groups.OrderBy(g => g.Min(GetPrimarySortKey)))
             {
-                var columns = new List<List<BoxInfo>>();
+                var groupAlignment = DetectAlignment(group);
 
-                foreach (var box in row.OrderBy(b => b.MinX))
+                var subColumns = new List<List<BoxInfo>>();
+                var sortedGroupBoxes = group.OrderBy(b => GetSecondarySortKey(b, groupAlignment));
+
+                foreach (var box in sortedGroupBoxes)
                 {
-                    var col = columns.FirstOrDefault(c => HorizontalOverlap(c, box) > 0.5f);
+                    var col = subColumns.FirstOrDefault(c => HorizontalOverlap(c, box) > 0.5f);
                     if (col == null)
                     {
                         col = new List<BoxInfo>();
-                        columns.Add(col);
+                        subColumns.Add(col);
                     }
                     col.Add(box);
                 }
 
-                foreach (var col in columns.OrderBy(c => c.Min(b => b.MinX)))
+                var sortedColumns = subColumns.OrderBy(c => GetSortingKey(c, groupAlignment));
+
+                foreach (var col in sortedColumns)
                 {
-                    orderedBlocks.AddRange(col.OrderBy(b => b.MinY).Select(b => b.Item));
+                    var sortedColBoxes = col.OrderBy(GetPrimarySortKey)
+                                           .ThenBy(b => GetSecondarySortKey(b, groupAlignment));
+                    orderedBlocks.AddRange(sortedColBoxes.Select(b => b.Item));
                 }
             }
 
             return orderedBlocks;
         }
 
-        private readonly struct BoxInfo
+        public class BoxInfo
         {
-            public readonly RecognizedTextBlock Item;
-            public readonly float MinX;
-            public readonly float MinY;
-            public readonly float MaxX;
-            public readonly float MaxY;
+            public RecognizedTextBlock Item { get; }
+            public float MinX { get; }
+            public float MinY { get; }
+            public float MaxX { get; }
+            public float MaxY { get; }
+            public float Rotation { get; }
 
-            public BoxInfo(RecognizedTextBlock item, float minX, float minY, float maxX, float maxY)
+            public BoxInfo(RecognizedTextBlock item, float minX, float minY, float maxX, float maxY, float rotation = 0f)
             {
                 Item = item;
                 MinX = minX;
                 MinY = minY;
                 MaxX = maxX;
                 MaxY = maxY;
+                Rotation = rotation;
             }
         }
 
