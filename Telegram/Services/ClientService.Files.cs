@@ -99,6 +99,11 @@ namespace Telegram.Services
 
         public async Task<StorageFile> GetFileAsync(File file, bool completed = true)
         {
+            if (file == null)
+            {
+                return null;
+            }
+
             // Extremely important to do this only for completed,
             // as this method is being used by RemoteFileStream as well.
             if (completed)

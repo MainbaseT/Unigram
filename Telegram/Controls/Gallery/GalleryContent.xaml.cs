@@ -644,7 +644,14 @@ namespace Telegram.Controls.Gallery
                 return;
             }
 
-            var service = TypeResolver.Current.Resolve<ITextRecognitionService>(_window.ViewModel.SessionId);
+            var viewModel = _window.ViewModel;
+            if (viewModel == null)
+            {
+                return;
+            }
+
+            var fileId = _itemId;
+            var service = TypeResolver.Current.Resolve<ITextRecognitionService>(viewModel.SessionId);
 
             var status = await service.EnsureReadyAsync();
             if (status is TextRecognitionStatusUnavailable unavailable)
@@ -654,11 +661,11 @@ namespace Telegram.Controls.Gallery
                 WatchDog.TrackEvent("TextRecognizer", new Properties { { "Status", "Unavailable" } });
                 return;
             }
-            else if (status is TextRecognitionStatusDownloading downloading)
+            else if (status is TextRecognitionStatusDownloading downloading && fileId == _fileId && IsLoaded)
             {
                 WatchDog.TrackEvent("TextRecognizer", new Properties { { "Status", "Downloading" } });
 
-                var confirm = await _window.ViewModel.ShowPopupAsync(new TextRecognitionDownloadPopup(_window.ViewModel.ClientService, _window.ViewModel.Aggregator, downloading.Document), requestedTheme: ElementTheme.Dark);
+                var confirm = await viewModel.ShowPopupAsync(new TextRecognitionDownloadPopup(viewModel.ClientService, viewModel.Aggregator, downloading.Document), requestedTheme: ElementTheme.Dark);
                 if (confirm != ContentDialogResult.Primary)
                 {
                     return;
@@ -671,7 +678,7 @@ namespace Telegram.Controls.Gallery
                 WatchDog.TrackEvent("TextRecognizer", new Properties { { "Status", "Available" } });
             }
 
-            if (status is not TextRecognitionStatusAvailable available)
+            if (status is not TextRecognitionStatusAvailable available || fileId != _itemId || !IsLoaded)
             {
                 // TODO: Error: not available
                 return;
@@ -680,9 +687,7 @@ namespace Telegram.Controls.Gallery
             IsTextSelectionEnabled = true;
             Selection.ShowSkeleton();
 
-            var fileId = _itemId;
-
-            var bitmap = await GetSoftwareBitmapAsync(_item.File);
+            var bitmap = await GetSoftwareBitmapAsync(_item?.File);
             if (bitmap == null)
             {
                 // TODO: Error: text recognition is not available
@@ -721,6 +726,11 @@ namespace Telegram.Controls.Gallery
 
         public async Task<SoftwareBitmap> GetSoftwareBitmapAsync(File file)
         {
+            if (_window?.ViewModel == null)
+            {
+                return null;
+            }
+
             var storage = await _window.ViewModel.ClientService.GetFileAsync(file);
             if (storage == null)
             {
