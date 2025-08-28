@@ -487,6 +487,20 @@ namespace winrt::Telegram::Native::implementation
         return result;
     }
 
+    inline double clamp(double value, double min, double max)
+    {
+        if (value > max)
+        {
+            return max;
+        }
+        else if (value < min)
+        {
+            return min;
+        }
+
+        return value;
+    }
+
     int VideoAnimation::RenderSync(uint8_t* pixels, int32_t width, int32_t height, bool preview, double& seconds, bool& completed)
     {
         slim_lock_guard const guard(m_lock);
@@ -532,7 +546,7 @@ namespace winrt::Telegram::Native::implementation
 
                     //if (nextFrame >= prevFrame + 1.0 / 30 || framerate < 60)
                     {
-                        seconds = nextFrame;
+                        seconds = clamp(nextFrame, 0, duration);
                         prevFrame = nextFrame;
 
                         decode_frame(pixels, width, height);

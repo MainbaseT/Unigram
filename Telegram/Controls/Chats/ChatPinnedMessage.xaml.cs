@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Microsoft.Graphics.Canvas.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
@@ -612,6 +613,8 @@ namespace Telegram.Controls.Chats
 
         public void UpdateIndex(int value, int maximum, int direction)
         {
+            maximum = Math.Clamp(maximum, 0, int.MaxValue);
+
             if (_maskPath == null || (_nextValue == value && _nextMaximum == maximum))
             {
                 return;
