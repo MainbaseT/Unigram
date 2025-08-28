@@ -65,8 +65,7 @@ namespace winrt::Telegram::Native::implementation
                 // Receive and process the remaining frames
                 while (avcodec_receive_frame(video_dec_ctx, frame) >= 0)
                 {
-                    // Process the remaining decoded frames
-                    // ...
+                    av_frame_unref(frame);
                 }
             }
 
@@ -106,7 +105,7 @@ namespace winrt::Telegram::Native::implementation
             }
             if (dst_data != nullptr)
             {
-                free(dst_data);
+                av_free(dst_data);
                 dst_data = nullptr;
             }
             if (fd != INVALID_HANDLE_VALUE)
@@ -188,7 +187,7 @@ namespace winrt::Telegram::Native::implementation
         }
 
     private:
-        void decode_frame(uint8_t* pixels, int32_t width, int32_t height);
+        int decode_frame(uint8_t* pixels, int32_t width, int32_t height);
         static void requestFd(VideoAnimation* info);
         static int readCallback(void* opaque, uint8_t* buf, int buf_size);
         static int64_t seekCallback(void* opaque, int64_t offset, int whence);

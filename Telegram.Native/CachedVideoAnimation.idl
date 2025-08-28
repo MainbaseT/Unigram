@@ -11,6 +11,8 @@ namespace Telegram.Native
         void Stop();
         void Cache();
 
+        void Seek(Double seconds);
+
         Double FrameRate{ get; };
         Int32 TotalFrame{ get; };
         Boolean IsCaching{ get; };
