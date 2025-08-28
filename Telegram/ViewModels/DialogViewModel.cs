@@ -1145,7 +1145,7 @@ namespace Telegram.ViewModels
             MessageSliceLoaded = null;
         }
 
-        public async Task LoadMessageSliceAsync(long? previousId, long maxId, VerticalAlignment alignment = VerticalAlignment.Center, double? pixel = null, ScrollIntoViewAlignment? direction = null, bool? disableAnimation = null, TextQuote highlight = null, int checklistTaskId = 0, bool onlyRemote = false)
+        public async Task LoadMessageSliceAsync(long? previousId, long fromMessageId, VerticalAlignment alignment = VerticalAlignment.Center, double? pixel = null, ScrollIntoViewAlignment? direction = null, bool? disableAnimation = null, TextQuote highlight = null, int checklistTaskId = 0, int fromDateOffset = 0, bool onlyRemote = false)
         {
             if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned)
             {
@@ -1166,7 +1166,7 @@ namespace Telegram.ViewModels
 
             if (direction == null && TryGetFirstVisibleMessageId(out long firstVisibleId))
             {
-                direction = firstVisibleId < maxId ? ScrollIntoViewAlignment.Default : ScrollIntoViewAlignment.Leading;
+                direction = firstVisibleId < fromMessageId ? ScrollIntoViewAlignment.Default : ScrollIntoViewAlignment.Leading;
             }
 
             if (alignment == VerticalAlignment.Bottom && pixel == null)
@@ -1174,7 +1174,7 @@ namespace Telegram.ViewModels
                 pixel = int.MaxValue;
             }
 
-            if (onlyRemote is false && Items.TryGetValue(maxId, out MessageViewModel already))
+            if (onlyRemote is false && Items.TryGetValue(fromMessageId, out MessageViewModel already))
             {
                 if (alignment == VerticalAlignment.Center)
                 {
@@ -1199,14 +1199,14 @@ namespace Telegram.ViewModels
 
                     // If we're loading the last message and it has been read already
                     // then we want to align it at bottom, as it might be taller than the window height
-                    if (maxId == details.LastMessageId)
+                    if (fromMessageId == details.LastMessageId)
                     {
                         alignment = VerticalAlignment.Bottom;
                         pixel = null;
                     }
                 }
 
-                HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(maxId, highlight, checklistTaskId) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
+                HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(fromMessageId, highlight, checklistTaskId) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
 
                 if (previousId.HasValue && !_repliesStack.Contains(previousId.Value))
                 {
@@ -1234,12 +1234,12 @@ namespace Telegram.ViewModels
 
                 System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadMessageSliceAsync");
 
-                var response = await Task.Run(() => LoadMessageSliceImpl(chat, maxId, alignment, direction, pixel));
+                var response = await Task.Run(() => LoadMessageSliceImpl(chat, fromMessageId, fromDateOffset, alignment, direction, pixel));
                 if (response is LoadSliceResult slice)
                 {
                     _groupedMessages.Clear();
 
-                    maxId = slice.FromMessageId;
+                    fromMessageId = slice.FromMessageId;
                     pixel = slice.Pixel;
                     alignment = slice.Alignment;
 
@@ -1272,9 +1272,9 @@ namespace Telegram.ViewModels
                     IsOldestSliceLoaded = null;
                     IsNewestSliceLoaded = endReached;
 
-                    if (Items.TryGetValue(maxId, out already))
+                    if (Items.TryGetValue(fromMessageId, out already))
                     {
-                        HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(maxId, highlight, checklistTaskId) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
+                        HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(fromMessageId, highlight, checklistTaskId) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
 
                         if (previousId.HasValue && !_repliesStack.Contains(previousId.Value))
                         {
@@ -1319,7 +1319,7 @@ namespace Telegram.ViewModels
                 _loadingSlice = false;
                 IsLoading = false;
 
-                PinnedMessages.LoadSlice(maxId);
+                PinnedMessages.LoadSlice(fromMessageId);
             }
 
             if (loadMore != PanelScrollingDirection.None)
@@ -1377,39 +1377,39 @@ namespace Telegram.ViewModels
             return new Messages(foundChatMessages.TotalCount, foundChatMessages.Messages);
         }
 
-        private async Task<LoadSliceResult> LoadMessageSliceImpl(Chat chat, long maxId, VerticalAlignment alignment, ScrollIntoViewAlignment? direction, double? pixel)
+        private async Task<LoadSliceResult> LoadMessageSliceImpl(Chat chat, long fromMessageId, int fromDateOffset, VerticalAlignment alignment, ScrollIntoViewAlignment? direction, double? pixel)
         {
             Task<Object> func;
             if (Type == DialogType.Pinned)
             {
-                func = ClientService.SendAsync(new SearchChatMessages(chat.Id, Topic, string.Empty, null, maxId, -25, 50, new SearchMessagesFilterPinned()));
+                func = ClientService.SendAsync(new SearchChatMessages(chat.Id, Topic, string.Empty, null, fromMessageId, -25, 50, new SearchMessagesFilterPinned()));
             }
             else if (Search?.SavedMessagesTag != null && Search.FilterByTag)
             {
-                func = ClientService.SendAsync(new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, maxId, -25, 50));
+                func = ClientService.SendAsync(new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, fromMessageId, -25, 50));
             }
             else if (SavedMessagesTopic != null)
             {
-                func = ClientService.SendAsync(new GetSavedMessagesTopicHistory(SavedMessagesTopic.Id, maxId, -25, 50));
+                func = ClientService.SendAsync(new GetSavedMessagesTopicHistory(SavedMessagesTopic.Id, fromMessageId, -25, 50));
             }
             else if (DirectMessagesChatTopic != null)
             {
-                func = ClientService.SendAsync(new GetDirectMessagesChatTopicHistory(chat.Id, DirectMessagesChatTopic.Id, maxId, -25, 50));
+                func = ClientService.SendAsync(new GetDirectMessagesChatTopicHistory(chat.Id, DirectMessagesChatTopic.Id, fromMessageId, -25, 50));
             }
             else if (ForumTopic != null)
             {
-                func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _forumTopic.Info.MessageThreadId, maxId, -25, 50));
+                func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _forumTopic.Info.MessageThreadId, fromMessageId, -25, 50));
             }
             else if (Thread != null)
             {
                 // MaxId == 0 means that the thread was never opened
-                if (maxId == 0 || Thread.Messages.Any(x => x.Id == maxId))
+                if (fromMessageId == 0 || Thread.Messages.Any(x => x.Id == fromMessageId))
                 {
                     func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, 1, -25, 50));
                 }
                 else
                 {
-                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, maxId, -25, 50));
+                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, fromMessageId, -25, 50));
                 }
             }
             else
@@ -1447,7 +1447,7 @@ namespace Telegram.ViewModels
                     return response;
                 }
 
-                func = GetChatHistoryAsync(chat.Id, maxId, -25, 50, alignment == VerticalAlignment.Top);
+                func = GetChatHistoryAsync(chat.Id, fromMessageId, -25, 50, alignment == VerticalAlignment.Top);
             }
 
             if (alignment != VerticalAlignment.Center)
@@ -1486,7 +1486,7 @@ namespace Telegram.ViewModels
 
                     // If we're loading from the last read message
                     // then we want to skip it to align first unread message at top
-                    if (details.LastReadInboxMessageId != 0 && details.LastReadInboxMessageId != details.LastMessageId && Included(maxId) && Included(details.LastReadInboxMessageId) /*maxId >= lastReadMessageId*/)
+                    if (details.LastReadInboxMessageId != 0 && details.LastReadInboxMessageId != details.LastMessageId && Included(fromMessageId) && Included(details.LastReadInboxMessageId) /*maxId >= lastReadMessageId*/)
                     {
                         var target = default(Message);
                         var index = -1;
@@ -1527,14 +1527,14 @@ namespace Telegram.ViewModels
                                 messages.MessagesValue.Insert(index + 1, new Message(0, target.SenderId, target.ChatId, null, null, target.IsOutgoing, false, false, false, false, target.IsChannelPost, false, false, false, target.Date, 0, null, null, null, null, null, null, null, target.MessageThreadId, target.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageHeaderUnread(), null));
                                 unread = true;
                             }
-                            else if (maxId == details.LastReadInboxMessageId)
+                            else if (fromMessageId == details.LastReadInboxMessageId)
                             {
                                 Logger.Debug("Looking for first unread message, can't find it");
                             }
 
-                            if (maxId == details.LastReadInboxMessageId && pixel == null)
+                            if (fromMessageId == details.LastReadInboxMessageId && pixel == null)
                             {
-                                maxId = target.Id;
+                                fromMessageId = target.Id;
                                 pixel = 28 + 48;
                             }
                         }
@@ -1542,12 +1542,12 @@ namespace Telegram.ViewModels
 
                     if (firstVisibleItem != null && pixel == null)
                     {
-                        maxId = firstVisibleItem.Id;
+                        fromMessageId = firstVisibleItem.Id;
                     }
 
                     // If we're loading the last message and it has been read already
                     // then we want to align it at bottom, as it might be taller than the window height
-                    if (maxId == details.LastMessageId && !unread)
+                    if (fromMessageId == details.LastMessageId && !unread)
                     {
                         alignment = VerticalAlignment.Bottom;
                         pixel = null;
@@ -1556,14 +1556,16 @@ namespace Telegram.ViewModels
 
                 if (firstVisibleIndex == -1)
                 {
-                    for (int i = 0; i < messages.MessagesValue.Count; i++)
+                    firstVisibleIndex = fromDateOffset != 0
+                        ? messages.MessagesValue.FindLastIndex(m => m.Date >= fromDateOffset)
+                        : messages.MessagesValue.FindIndex(m => m.Id == fromMessageId);
+
+                    if (firstVisibleIndex != -1)
                     {
-                        if (messages.MessagesValue[i].Id == maxId)
-                        {
-                            firstVisibleIndex = i;
+                        if (fromDateOffset != 0)
+                            fromMessageId = messages.MessagesValue[firstVisibleIndex].Id;
+                        else
                             unread = false;
-                            break;
-                        }
                     }
                 }
 
@@ -1594,7 +1596,7 @@ namespace Telegram.ViewModels
 
                 if (values is IList<Message> temp)
                 {
-                    if (_forumTopic == null && _thread != null && (maxId == 0 || _thread.Messages.Any(x => x.Id == maxId)))
+                    if (_forumTopic == null && _thread != null && (fromMessageId == 0 || _thread.Messages.Any(x => x.Id == fromMessageId)))
                     {
                         await AddHeaderAsync(temp, temp.Count > 0 ? temp[^1] : null);
                     }
@@ -1605,7 +1607,7 @@ namespace Telegram.ViewModels
                 }
 
                 var replied = new MessageCollection(this, null, values, false, Type);
-                return new LoadSliceResult(replied, maxId, scrollMode, alignment, pixel, unread, messages.TotalCount);
+                return new LoadSliceResult(replied, fromMessageId, scrollMode, alignment, pixel, unread, messages.TotalCount);
             }
 
             return null;
@@ -1750,7 +1752,7 @@ namespace Telegram.ViewModels
             var response = await ClientService.SendAsync(new GetChatMessageByDate(chat.Id, dateOffset));
             if (response is Message message)
             {
-                await LoadMessageSliceAsync(null, message.Id);
+                await LoadMessageSliceAsync(null, message.Id, fromDateOffset: dateOffset, onlyRemote: true);
             }
             else
             {

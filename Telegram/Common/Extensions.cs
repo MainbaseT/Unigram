@@ -129,6 +129,20 @@ namespace Telegram.Common
             return popup.ShowQueuedAsync(frame.XamlRoot);
         }
 
+        public static int FindIndex<T>(this IList<T> list, Func<T, bool> predicate)
+        {
+            for (int i = 0; i < list.Count; i++)
+                if (predicate(list[i])) return i;
+            return -1;
+        }
+
+        public static int FindLastIndex<T>(this IList<T> list, Func<T, bool> predicate)
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+                if (predicate(list[i])) return i;
+            return -1;
+        }
+
         public static void AddCubicBezier(this PathFigure figure, Point controlPoint1, Point controlPoint2, Point endPoint)
         {
             figure.Segments.Add(new BezierSegment
