@@ -1872,7 +1872,7 @@ namespace Telegram.Controls.Messages
         {
             // TODO: markdown
 
-            if (giftedStars.GifterUserId == message.ClientService.Options.MyId)
+            if (message.IsOutgoing)
             {
                 return ReplaceWithLink(Strings.ActionGiftOutbound, "un2", giftedStars);
             }
