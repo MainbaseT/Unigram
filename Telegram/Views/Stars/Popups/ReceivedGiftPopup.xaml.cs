@@ -983,7 +983,7 @@ namespace Telegram.Views.Stars.Popups
             var confirm = await TransferGiftPopup.ShowAsync(XamlRoot, _clientService, _gift, chat, true);
             if (confirm == ContentDialogResult.Primary)
             {
-                var response = await _clientService.SendPaymentAsync(upgraded.Gift.ResaleStarCount, new SendResoldGift(upgraded.Gift.Name, _sendGiftTo, upgraded.Gift.ResaleStarCount));
+                var response = await _clientService.SendPaymentAsync(upgraded.Gift.ResaleStarCount, new SendResoldGift(upgraded.Gift.Name, _sendGiftTo ?? _clientService.MyId, upgraded.Gift.ResaleStarCount));
                 if (response is Ok)
                 {
                     _aggregator.Publish(new UpdateGiftIsSold(_gift.ReceivedGiftId));
