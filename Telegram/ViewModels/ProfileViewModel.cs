@@ -747,6 +747,36 @@ namespace Telegram.ViewModels
             }
         }
 
+        public void ViewUsername()
+        {
+            var chat = _chat;
+            if (chat == null)
+            {
+                return;
+            }
+
+            if (chat.Type is ChatTypeSupergroup super)
+            {
+                var supergroup = ClientService.GetSupergroup(super.SupergroupId);
+                if (supergroup == null || !supergroup.HasActiveUsername(out string username))
+                {
+                    return;
+                }
+
+                OpenUsernameInfo(username);
+            }
+            else
+            {
+                var user = ClientService.GetUser(chat);
+                if (user == null || !user.HasActiveUsername(out string username))
+                {
+                    return;
+                }
+
+                OpenUsernameInfo(username);
+            }
+        }
+
         public void CopyUsername()
         {
             var chat = _chat;
@@ -955,7 +985,7 @@ namespace Telegram.ViewModels
 
             if (response is CollectibleItemInfo info)
             {
-                await ShowPopupAsync(new CollectiblePopup(ClientService, Chat, info, type));
+                ShowPopup(new CollectiblePopup(ClientService, Chat, info, type));
             }
         }
 
@@ -968,7 +998,7 @@ namespace Telegram.ViewModels
 
                 if (response is CollectibleItemInfo info)
                 {
-                    await ShowPopupAsync(new CollectiblePopup(ClientService, Chat, info, type));
+                    ShowPopup(new CollectiblePopup(ClientService, Chat, info, type));
                 }
             }
         }

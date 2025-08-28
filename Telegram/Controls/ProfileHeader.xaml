@@ -402,6 +402,7 @@
                 </controls:SettingsButton>
 
                 <controls:SettingsButton x:Name="Username"
+                                         Click="{x:Bind ViewModel.ViewUsername}"
                                          Visibility="Collapsed"
                                          Glyph="&#xE168;">
                     <Button.ContextFlyout>
