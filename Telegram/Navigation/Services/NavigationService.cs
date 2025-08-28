@@ -320,6 +320,7 @@ namespace Telegram.Navigation.Services
             }
 
             Navigated?.Invoke(this, e);
+            OverlayWindow.Current?.TryHide(ContentDialogResult.None);
 
             try
             {
@@ -329,8 +330,6 @@ namespace Telegram.Navigation.Services
             {
                 Logger.Exception(ex);
             }
-
-            OverlayWindow.Current?.TryHide(ContentDialogResult.None);
         }
 
         public void Suspend()
