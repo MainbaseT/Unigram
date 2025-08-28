@@ -393,21 +393,36 @@ namespace Telegram.Controls.Messages
                 builder.Append($"{Strings.EditedMessage}, ");
             }
 
-            var date = string.Format(Strings.TodayAtFormatted, Formatter.Time(message.Date));
-            if (message.IsOutgoing)
+            if (message.SendingState is MessageSendingStatePending)
             {
-                if (message.SendingState is MessageSendingStatePending)
-                {
-                    builder.Append(Strings.AccDescrMsgSending);
-                }
-                else
-                {
-                    builder.Append(string.Format(Strings.AccDescrSentDate, date));
-                }
+                builder.Append(Strings.AccDescrMsgSending);
             }
             else
             {
-                builder.Append(string.Format(Strings.AccDescrReceivedDate, date));
+                if (message.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
+                {
+                    builder.Append(string.Format(Strings.MessageScheduledOn, Formatter.Time(sendAtDate.SendDate)));
+                }
+                else if (message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
+                {
+                    builder.Append(string.Format(Strings.MessageScheduledOn, string.Format(Strings.ScheduledTimeApprox, Formatter.Time(sendWhenVideoProcessed.SendDate))));
+                }
+                else if (message.SchedulingState is MessageSchedulingStateSendWhenOnline)
+                {
+                    builder.Append(Strings.MessageScheduledUntilOnline);
+                }
+                else
+                {
+                    var date = string.Format(Strings.TodayAtFormatted, Formatter.Time(message.Date));
+                    if (message.IsOutgoing)
+                    {
+                        builder.Append(string.Format(Strings.AccDescrSentDate, date));
+                    }
+                    else
+                    {
+                        builder.Append(string.Format(Strings.AccDescrReceivedDate, date));
+                    }
+                }
             }
 
             if (message.SendingState is MessageSendingStateFailed)

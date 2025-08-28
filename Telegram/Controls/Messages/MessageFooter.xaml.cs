@@ -519,7 +519,7 @@ namespace Telegram.Controls.Messages
 
                 text = string.Format(Strings.formatDateAtTime, date, time);
             }
-            if (message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
+            else if (message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
             {
                 text = Strings.VideoConversionTimeInfo;
             }
