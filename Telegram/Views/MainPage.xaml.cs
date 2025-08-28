@@ -1450,6 +1450,12 @@ namespace Telegram.Views
 
         public void Scroll(int offset, bool navigate)
         {
+            if (!_topicListCollapsed)
+            {
+                TopicListPresenter.Scroll(offset, navigate);
+                return;
+            }
+
             int index;
             if (offset == int.MaxValue)
             {
@@ -1842,6 +1848,11 @@ namespace Telegram.Views
             {
                 Navigate(e.ClickedItem, true);
             }
+        }
+        
+        private void ListView_ItemClick(object sender, ForumViewItemClickEventArgs e)
+        {
+            Navigate(e.ClickedItem, e.FromSelection);
         }
 
         public async void Navigate(object item, bool selectionChanged)

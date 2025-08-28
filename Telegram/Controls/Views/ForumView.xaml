@@ -506,6 +506,7 @@
                              ContainerContentChanging="OnContainerContentChanging"
                              DragItemsStarting="OnDragItemsStarting"
                              DragItemsCompleted="OnDragItemsCompleted"
+                             ItemClick="OnItemClick"
                              AllowDrop="True"
                              CanDragItems="True"
                              CanReorderItems="False"

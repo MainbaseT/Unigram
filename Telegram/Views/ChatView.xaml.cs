@@ -7027,7 +7027,7 @@ namespace Telegram.Views
             }
         }
 
-        private void ForumNavigation_ItemClick(object sender, ItemClickEventArgs e)
+        private void ForumNavigation_ItemClick(object sender, ForumViewItemClickEventArgs e)
         {
             if (e.ClickedItem is ForumTopic forumTopic && ViewModel.ClientService.TryGetChat(forumTopic.Info.ChatId, out Chat chat))
             {

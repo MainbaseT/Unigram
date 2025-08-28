@@ -30,6 +30,8 @@ namespace Telegram.Controls.Views
         Horizontal
     }
 
+    public partial record ForumViewItemClickEventArgs(object ClickedItem, bool FromSelection);
+
     public sealed partial class ForumView : UserControl, ITopicListDelegate, IAutomationNameProvider
     {
         public TopicListViewModel ViewModel
@@ -112,6 +114,35 @@ namespace Telegram.Controls.Views
             animation.Duration = duration;
 
             visual.Clip.StartAnimation(property, animation);
+        }
+
+        public void Scroll(int offset, bool navigate)
+        {
+            int index;
+            if (offset == int.MaxValue)
+            {
+                index = ViewModel.Items.Count - 1;
+            }
+            else if (offset == int.MinValue)
+            {
+                index = 0;
+            }
+            else
+            {
+                index = ScrollingHost.SelectedIndex + offset;
+            }
+
+            if (index >= 0 && index < ViewModel.Items.Count)
+            {
+                if (navigate)
+                {
+                    ItemClick?.Invoke(this, new ForumViewItemClickEventArgs(ViewModel.Items[index], false));
+                }
+            }
+            else if (index < 0 && offset == -1 && !navigate)
+            {
+                Search_Click(null, null);
+            }
         }
 
         public void UpdateChat(Chat chat)
@@ -576,17 +607,7 @@ namespace Telegram.Controls.Views
 
         #endregion
 
-        public event ItemClickEventHandler ItemClick
-        {
-            add
-            {
-                ScrollingHost.ItemClick += value;
-            }
-            remove
-            {
-                ScrollingHost.ItemClick -= value;
-            }
-        }
+        public event EventHandler<ForumViewItemClickEventArgs> ItemClick;
 
         public string GetAutomationName()
         {
@@ -620,6 +641,11 @@ namespace Telegram.Controls.Views
             }
 
             return result;
+        }
+
+        private void OnItemClick(object sender, ItemClickEventArgs e)
+        {
+            ItemClick?.Invoke(this, new ForumViewItemClickEventArgs(e.ClickedItem, true));
         }
     }
 }
