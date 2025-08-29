@@ -282,26 +282,5 @@ namespace Telegram.Common
 
             return null;
         }
-
-        public static ImageSource GetLottieFrame(string path, int frame, int width, int height, bool webp = true)
-        {
-            // Frame size affects disk cache, so we always use 256.
-            var animation = LottieAnimation.LoadFromFile(path, width, height, false, null);
-            if (animation == null)
-            {
-                if (webp)
-                {
-                    return GetWebPFrame(path, width);
-                }
-
-                return null;
-            }
-
-            var bitmap = new WriteableBitmap(width, height);
-            animation.RenderSync(bitmap.PixelBuffer, frame);
-            animation.Dispose();
-
-            return bitmap;
-        }
     }
 }
