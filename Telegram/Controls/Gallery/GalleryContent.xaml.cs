@@ -322,7 +322,7 @@ namespace Telegram.Controls.Gallery
 
         private void UpdateThumbnail(GalleryMedia item, File file, Minithumbnail minithumbnail, bool download)
         {
-            BitmapImage source = null;
+            SoftwareBitmapSource source = null;
             ImageBrush brush;
 
             if (Background is ImageBrush existing)
@@ -345,7 +345,7 @@ namespace Telegram.Controls.Gallery
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    source = new BitmapImage();
+                    source = new SoftwareBitmapSource();
                     PlaceholderHelper.GetBlurred(source, file.Local.Path, 3);
                 }
                 else
@@ -362,14 +362,14 @@ namespace Telegram.Controls.Gallery
 
                     if (minithumbnail != null)
                     {
-                        source = new BitmapImage();
+                        source = new SoftwareBitmapSource();
                         PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
                     }
                 }
             }
             else if (minithumbnail != null)
             {
-                source = new BitmapImage();
+                source = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
             }
 

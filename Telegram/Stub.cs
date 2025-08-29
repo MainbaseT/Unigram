@@ -6537,30 +6537,6 @@ public static class PlaceholderImageHelper_stub
             throw new RuntimeException(ex);
         }
     }
-    public static void DrawThumbnailPlaceholder_stub(this Telegram.Native.PlaceholderImageHelper sender, string fileName, float blurAmount, Windows.Storage.Streams.IRandomAccessStream randomAccessStream)
-    {
-        try
-        {
-            sender.DrawThumbnailPlaceholder(fileName, blurAmount, randomAccessStream);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void DrawThumbnailPlaceholder_stub(this Telegram.Native.PlaceholderImageHelper sender, System.Collections.Generic.IList<byte> bytes, float blurAmount, Windows.Storage.Streams.IRandomAccessStream randomAccessStream)
-    {
-        try
-        {
-            sender.DrawThumbnailPlaceholder(bytes, blurAmount, randomAccessStream);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace);
-            throw new RuntimeException(ex);
-        }
-    }
     public static Windows.Storage.Streams.IBuffer DrawWebP_stub(string fileName, int maxWidth, out int pixelWidth, out int pixelHeight)
     {
         try

@@ -290,21 +290,18 @@ namespace Telegram.Controls.Chats
                 var file = await ApplicationData.Current.TemporaryFolder.TryGetItemAsync("LastVideoFrame.png");
                 if (file != null)
                 {
-                    var bitmap = new BitmapImage();
+                    var source = new SoftwareBitmapSource();
 
-                    using (var stream = new InMemoryRandomAccessStream())
+                    try
                     {
-                        try
-                        {
-                            await Task.Run(() => PlaceholderHelper.Background.DrawThumbnailPlaceholder(file.Path, 3, stream));
-                            await bitmap.SetSourceAsync(stream);
-                        }
-                        catch { }
+                        var bitmap = await Task.Run(() => PlaceholderHelper.Background.DrawBlurred(file.Path, 3));
+                        await source.SetBitmapAsync(bitmap);
                     }
+                    catch { }
 
                     return new ImageBrush
                     {
-                        ImageSource = bitmap
+                        ImageSource = source
                     };
                 }
             }

@@ -840,7 +840,7 @@ namespace Telegram.Controls.Stories
 
             _thumbnailId = file.Id;
 
-            BitmapImage source = null;
+            SoftwareBitmapSource source = null;
             ImageBrush brush;
 
             if (LayoutRoot.Background is ImageBrush existing)
@@ -863,7 +863,7 @@ namespace Telegram.Controls.Stories
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    source = new BitmapImage();
+                    source = new SoftwareBitmapSource();
                     PlaceholderHelper.GetBlurred(source, file.Local.Path, 3);
                 }
                 else
@@ -880,14 +880,14 @@ namespace Telegram.Controls.Stories
 
                     if (minithumbnail != null)
                     {
-                        source = new BitmapImage();
+                        source = new SoftwareBitmapSource();
                         PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
                     }
                 }
             }
             else if (minithumbnail != null)
             {
-                source = new BitmapImage();
+                source = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
             }
 

@@ -99,7 +99,7 @@ namespace Telegram.Controls.Cells
 
         private void UpdateThumbnail(StoryViewModel story, File file, Minithumbnail minithumbnail, bool download)
         {
-            BitmapImage source = null;
+            SoftwareBitmapSource source = null;
             ImageBrush brush;
 
             if (LayoutRoot.Background is ImageBrush existing)
@@ -122,7 +122,7 @@ namespace Telegram.Controls.Cells
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    source = new BitmapImage();
+                    source = new SoftwareBitmapSource();
                     PlaceholderHelper.GetBlurred(source, file.Local.Path, 3);
                 }
                 else
@@ -139,14 +139,14 @@ namespace Telegram.Controls.Cells
 
                     if (minithumbnail != null)
                     {
-                        source = new BitmapImage();
+                        source = new SoftwareBitmapSource();
                         PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
                     }
                 }
             }
             else if (minithumbnail != null)
             {
-                source = new BitmapImage();
+                source = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
             }
 

@@ -333,14 +333,14 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateThumbnail(MessageViewModel message, VideoNote videoNote, File file, bool download, bool isSecret)
         {
-            BitmapImage source = null;
+            SoftwareBitmapSource source = null;
             ImageBrush brush = Texture;
 
             if (videoNote.Thumbnail != null && videoNote.Thumbnail.Format is ThumbnailFormatJpeg)
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    source = new BitmapImage();
+                    source = new SoftwareBitmapSource();
                     PlaceholderHelper.GetBlurred(source, file.Local.Path, isSecret ? 15 : 3);
                 }
                 else if (download)
@@ -349,7 +349,7 @@ namespace Telegram.Controls.Messages.Content
                     {
                         if (videoNote.Minithumbnail != null)
                         {
-                            source = new BitmapImage();
+                            source = new SoftwareBitmapSource();
                             PlaceholderHelper.GetBlurred(source, videoNote.Minithumbnail.Data, isSecret ? 15 : 3);
                         }
 
@@ -361,7 +361,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (videoNote.Minithumbnail != null)
             {
-                source = new BitmapImage();
+                source = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(source, videoNote.Minithumbnail.Data, isSecret ? 15 : 3);
             }
 

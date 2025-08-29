@@ -383,13 +383,13 @@ namespace Telegram.Controls
 
             if (story.Content is StoryContentPhoto photo && photo.Photo.Minithumbnail != null)
             {
-                var bitmap = new BitmapImage();
+                var bitmap = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(bitmap, photo.Photo.Minithumbnail.Data);
                 return bitmap;
             }
             else if (story.Content is StoryContentVideo video && video.Video.Minithumbnail != null)
             {
-                var bitmap = new BitmapImage();
+                var bitmap = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(bitmap, video.Video.Minithumbnail.Data);
                 return bitmap;
             }
@@ -483,7 +483,7 @@ namespace Telegram.Controls
                 var minithumbnail = chat.Photo?.Minithumbnail;
                 if (minithumbnail != null)
                 {
-                    var bitmap = new BitmapImage();
+                    var bitmap = new SoftwareBitmapSource();
                     PlaceholderHelper.GetBlurred(bitmap, minithumbnail.Data);
                     return bitmap;
                 }
@@ -563,7 +563,7 @@ namespace Telegram.Controls
                 var minithumbnail = user.ProfilePhoto?.Minithumbnail;
                 if (minithumbnail != null)
                 {
-                    var bitmap = new BitmapImage();
+                    var bitmap = new SoftwareBitmapSource();
                     PlaceholderHelper.GetBlurred(bitmap, minithumbnail.Data);
                     return bitmap;
                 }
@@ -631,7 +631,7 @@ namespace Telegram.Controls
 
             if (chat.Photo?.Minithumbnail != null)
             {
-                var bitmap = new BitmapImage();
+                var bitmap = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(bitmap, chat.Photo.Minithumbnail.Data);
                 return bitmap;
             }
@@ -692,7 +692,7 @@ namespace Telegram.Controls
 
             if (photo.Minithumbnail != null)
             {
-                var bitmap = new BitmapImage();
+                var bitmap = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(bitmap, photo.Minithumbnail.Data);
                 return bitmap;
             }

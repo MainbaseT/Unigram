@@ -206,11 +206,12 @@ namespace Telegram.Controls.Messages
         {
             if (photoSize != null && photoSize.Photo.Local.IsDownloadingCompleted)
             {
-                BitmapImage source;
+                ImageSource source;
                 if (hasSpoiler)
                 {
-                    source = new BitmapImage();
-                    PlaceholderHelper.GetBlurred(source, photoSize.Photo.Local.Path, 15);
+                    var temp = new SoftwareBitmapSource();
+                    source = temp;
+                    PlaceholderHelper.GetBlurred(temp, photoSize.Photo.Local.Path, 15);
                 }
                 else
                 {
@@ -242,11 +243,12 @@ namespace Telegram.Controls.Messages
         {
             if (thumbnail != null && thumbnail.File.Local.IsDownloadingCompleted && thumbnail.Format is ThumbnailFormatJpeg)
             {
-                BitmapImage source;
+                ImageSource source;
                 if (hasSpoiler)
                 {
-                    source = new BitmapImage();
-                    PlaceholderHelper.GetBlurred(source, thumbnail.File.Local.Path, 15);
+                    var temp = new SoftwareBitmapSource();
+                    source = temp;
+                    PlaceholderHelper.GetBlurred(temp, thumbnail.File.Local.Path, 15);
                 }
                 else
                 {
@@ -278,11 +280,12 @@ namespace Telegram.Controls.Messages
         {
             if (thumbnail != null)
             {
-                BitmapImage source;
+                ImageSource source = null;
                 if (hasSpoiler)
                 {
-                    source = new BitmapImage();
-                    PlaceholderHelper.GetBlurred(source, thumbnail.Data, 15);
+                    var temp = new SoftwareBitmapSource();
+                    source = temp;
+                    PlaceholderHelper.GetBlurred(temp, thumbnail.Data, 15);
                 }
                 else
                 {
@@ -293,14 +296,15 @@ namespace Telegram.Controls.Messages
                     var width = (int)(thumbnail.Width * ratio);
                     var height = (int)(thumbnail.Height * ratio);
 
-                    source = new BitmapImage { DecodePixelWidth = width, DecodePixelHeight = height, DecodePixelType = DecodePixelType.Logical };
+                    var temp = new BitmapImage { DecodePixelWidth = width, DecodePixelHeight = height, DecodePixelType = DecodePixelType.Logical };
+                    source = temp;
 
                     using (var stream = new InMemoryRandomAccessStream())
                     {
                         try
                         {
                             PlaceholderImageHelper.WriteBytes(thumbnail.Data, stream);
-                            source.SetSource(stream);
+                            temp.SetSource(stream);
                         }
                         catch
                         {

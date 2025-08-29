@@ -385,7 +385,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateThumbnail(MessageViewModel message, File file, Minithumbnail minithumbnail, bool download, bool isSecret, bool hasSpoiler)
         {
-            BitmapImage source = null;
+            ImageSource source = null;
             ImageBrush brush;
 
             if (Texture.Background is ImageBrush existing)
@@ -410,8 +410,9 @@ namespace Telegram.Controls.Messages.Content
                 {
                     if (isSecret || (hasSpoiler && _hidden))
                     {
-                        source = new BitmapImage();
-                        PlaceholderHelper.GetBlurred(source, file.Local.Path, 15);
+                        var temp = new SoftwareBitmapSource();
+                        source = temp;
+                        PlaceholderHelper.GetBlurred(temp, file.Local.Path, 15);
                     }
                     else
                     {
@@ -432,15 +433,17 @@ namespace Telegram.Controls.Messages.Content
 
                     if (minithumbnail != null)
                     {
-                        source = new BitmapImage();
-                        PlaceholderHelper.GetBlurred(source, minithumbnail.Data, isSecret || (hasSpoiler && _hidden) ? 15 : 3);
+                        var temp = new SoftwareBitmapSource();
+                        source = temp;
+                        PlaceholderHelper.GetBlurred(temp, minithumbnail.Data, isSecret || (hasSpoiler && _hidden) ? 15 : 3);
                     }
                 }
             }
             else if (minithumbnail != null)
             {
-                source = new BitmapImage();
-                PlaceholderHelper.GetBlurred(source, minithumbnail.Data, isSecret || (hasSpoiler && _hidden) ? 15 : 3);
+                var temp = new SoftwareBitmapSource();
+                source = temp;
+                PlaceholderHelper.GetBlurred(temp, minithumbnail.Data, isSecret || (hasSpoiler && _hidden) ? 15 : 3);
             }
 
             brush.ImageSource = source;

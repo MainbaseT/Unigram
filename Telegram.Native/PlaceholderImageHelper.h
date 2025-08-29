@@ -16,6 +16,7 @@
 #include <winrt/Windows.UI.Composition.H>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Graphics.h>
+#include <winrt/Windows.Graphics.Imaging.h>
 #include <windows.graphics.interop.h>
 
 #include <winrt/Telegram.Td.Api.h>
@@ -23,6 +24,7 @@
 using namespace concurrency;
 using namespace ABI::Windows::Graphics;
 using namespace winrt::Windows::Graphics;
+using namespace winrt::Windows::Graphics::Imaging;
 using namespace winrt::Windows::UI;
 using namespace winrt::Windows::UI::Composition;
 using namespace winrt::Windows::Foundation::Collections;
@@ -121,10 +123,8 @@ namespace winrt::Telegram::Native::implementation
         winrt::Windows::Foundation::IAsyncAction DrawSvgAsync(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi);
         HRESULT DrawSvg(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi, Windows::Foundation::Size& size);
 
-        HRESULT DrawThumbnailPlaceholder(hstring fileName, float blurAmount, IRandomAccessStream randomAccessStream);
-        HRESULT DrawThumbnailPlaceholder(hstring fileName, float blurAmount, IBuffer randomAccessStream);
-        HRESULT DrawThumbnailPlaceholder(IVector<uint8_t> bytes, float blurAmount, IRandomAccessStream randomAccessStream);
-        HRESULT DrawThumbnailPlaceholder(IVector<uint8_t> bytes, float blurAmount, IBuffer randomAccessStream);
+        SoftwareBitmap DrawBlurred(hstring fileName, float blurAmount);
+        SoftwareBitmap DrawBlurred(IVector<uint8_t> bytes, float blurAmount);
 
         winrt::Telegram::Native::SurfaceImage Create(int32_t pixelWidth, int32_t pixelHeight);
         HRESULT Invalidate(winrt::Telegram::Native::SurfaceImage imageSource, IBuffer buffer);
@@ -143,8 +143,7 @@ namespace winrt::Telegram::Native::implementation
         HRESULT CreateDeviceResources();
         HRESULT CreateTextFormat(double fontSize);
 
-        HRESULT InternalDrawThumbnailPlaceholder(IWICBitmapSource* wicBitmapSource, float blurAmount, IRandomAccessStream randomAccessStream, bool minithumbnail);
-        HRESULT InternalDrawThumbnailPlaceholder(IWICBitmapSource* wicBitmapSource, float blurAmount, IBuffer randomAccessStream, bool minithumbnail);
+        HRESULT DrawBlurredImpl(IWICBitmapSource* wicBitmapSource, float blurAmount, SoftwareBitmap& bitmap, bool minithumbnail);
         HRESULT SaveImageToStream(ID2D1Image* image, REFGUID wicFormat, IRandomAccessStream randomAccessStream);
 
         HRESULT CreateTextFormatImpl(hstring text, IVector<TextEntity> entities, double fontSize, double width, winrt::com_ptr<TextFormat>& textFormat);

@@ -4,7 +4,6 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using RLottie;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
@@ -15,7 +14,6 @@ using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.Foundation;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -33,7 +31,15 @@ namespace Telegram.Common
             {
                 if (_foreground == null)
                 {
-                    _foreground = new PlaceholderImageHelper();
+                    try
+                    {
+                        _foreground = new PlaceholderImageHelper();
+                    }
+                    catch
+                    {
+                        Logger.Error(Environment.StackTrace);
+                        throw;
+                    }
                 }
 
                 _foreground.HandleDeviceLost();
@@ -50,10 +56,17 @@ namespace Telegram.Common
             {
                 lock (_backgroundLock)
                 {
-
                     if (_background == null)
                     {
-                        _background = new PlaceholderImageHelper();
+                        try
+                        {
+                            _background = new PlaceholderImageHelper();
+                        }
+                        catch
+                        {
+                            Logger.Error(Environment.StackTrace);
+                            throw;
+                        }
                     }
 
                     _background.HandleDeviceLost();
@@ -235,52 +248,24 @@ namespace Telegram.Common
             return text;
         }
 
-        public static async void GetBlurred(BitmapImage bitmap, string path, float amount = 3)
-        {
-            using (var stream = new InMemoryRandomAccessStream())
-            {
-                try
-                {
-                    await Task.Run(() => Background.DrawThumbnailPlaceholder(path, amount, stream));
-                    await bitmap.SetSourceAsync(stream);
-                }
-                catch { }
-            }
-        }
-
-        public static async void GetBlurred(BitmapImage bitmap, IList<byte> bytes, float amount = 3)
-        {
-            using (var stream = new InMemoryRandomAccessStream())
-            {
-                try
-                {
-                    await Task.Run(() => Background.DrawThumbnailPlaceholder(bytes, amount, stream));
-                    await bitmap.SetSourceAsync(stream);
-                }
-                catch { }
-            }
-        }
-
-        public static ImageSource GetWebPFrame(string path, double maxWidth = 512)
+        public static async void GetBlurred(SoftwareBitmapSource source, string path, float amount = 3)
         {
             try
             {
-                var buffer = PlaceholderImageHelper.DrawWebP(path, (int)maxWidth, out int pixelWidth, out int pixelHeight);
-                if (pixelWidth > 0 && pixelHeight > 0)
-                {
-                    var bitmap = new WriteableBitmap(pixelWidth, pixelHeight);
-                    BufferSurface.Copy(buffer, bitmap.PixelBuffer);
-
-                    return bitmap;
-                }
-                else
-                {
-                    return UriEx.ToBitmap(path);
-                }
+                var bitmap = await Task.Run(() => Background.DrawBlurred(path, amount));
+                await source.SetBitmapAsync(bitmap);
             }
             catch { }
+        }
 
-            return null;
+        public static async void GetBlurred(SoftwareBitmapSource source, IList<byte> bytes, float amount = 3)
+        {
+            try
+            {
+                var bitmap = await Task.Run(() => Background.DrawBlurred(bytes, amount));
+                await source.SetBitmapAsync(bitmap);
+            }
+            catch { }
         }
     }
 }

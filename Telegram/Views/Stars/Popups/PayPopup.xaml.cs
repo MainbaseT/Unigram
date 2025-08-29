@@ -193,7 +193,7 @@ namespace Telegram.Views.Stars.Popups
 
         private void UpdateMedia(PaidMedia media, Grid target)
         {
-            BitmapImage source = null;
+            SoftwareBitmapSource source = null;
             ImageBrush brush;
 
             if (target.Background is ImageBrush existing)
@@ -228,7 +228,7 @@ namespace Telegram.Views.Stars.Popups
 
             if (minithumbnail != null)
             {
-                source = new BitmapImage();
+                source = new SoftwareBitmapSource();
                 PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
             }
 
