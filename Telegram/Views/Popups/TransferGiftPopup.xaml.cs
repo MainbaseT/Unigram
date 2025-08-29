@@ -30,13 +30,9 @@ namespace Telegram.Views.Popups
 
             if (gift.Gift is SentGiftUpgraded upgraded)
             {
-                var source = DelayedFileSource.FromSticker(clientService, upgraded.Gift.Symbol.Sticker);
-                var centerColor = upgraded.Gift.Backdrop.Colors.CenterColor.ToColor();
-                var edgeColor = upgraded.Gift.Backdrop.Colors.EdgeColor.ToColor();
-
                 Animated.Source = new DelayedFileSource(clientService, upgraded.Gift.Model.Sticker);
 
-                Photo1.Update(source, centerColor, edgeColor);
+                Photo1.Update(clientService, upgraded.Gift);
 
                 if (chat != null)
                 {

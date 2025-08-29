@@ -526,6 +526,7 @@
 
                         <controls:PatternBackground x:Name="Pattern"
                                                     Margin="4,8,4,4"
+                                                    Padding="0,12,0,8"
                                                     CornerRadius="12"
                                                     Width="208">
                             <controls:PatternBackground.Footer>
@@ -594,8 +595,7 @@
                                                     FrameSize="120,120"
                                                     DecodeFrameType="Logical"
                                                     IsViewportAware="True"
-                                                    LoopCount="1"
-                                                    Margin="0,12,0,8" />
+                                                    LoopCount="1" />
                             <!--<StackPanel>
 
                                 <TextBlock x:Name="Title"
@@ -637,8 +637,19 @@
                               Margin="0,6,2,0"
                               Width="72"
                               Height="72">
-                            <Path Data="M69.6569 41.1569L30.8431 2.34315C29.3429 0.842855 27.308 0 25.1863 0H2.82843C1.04662 0 0.154286 2.15429 1.41422 3.41422L68.5858 70.5858C69.8457 71.8457 72 70.9534 72 69.1716V46.8137C72 44.692 71.1571 42.6571 69.6569 41.1569Z"
-                                  Fill="{StaticResource MessageServiceBackgroundBrush}" />
+                            <Path Data="M69.6569 41.1569L30.8431 2.34315C29.3429 0.842855 27.308 0 25.1863 0H2.82843C1.04662 0 0.154286 2.15429 1.41422 3.41422L68.5858 70.5858C69.8457 71.8457 72 70.9534 72 69.1716V46.8137C72 44.692 71.1571 42.6571 69.6569 41.1569Z">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="0,0"
+                                                         EndPoint="1,1">
+                                        <GradientStop x:Name="RibbonTop"
+                                                      Color="#6ED2FF"
+                                                      Offset="0" />
+                                        <GradientStop x:Name="RibbonBottom"
+                                                      Color="#35A5FC"
+                                                      Offset="1" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
 
                             <Border Width="72"
                                     VerticalAlignment="Center"

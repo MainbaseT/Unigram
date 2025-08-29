@@ -9,32 +9,6 @@
              Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <UserControl.Resources>
-        <Style TargetType="controls:ProfilePatternCover">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="controls:ProfilePatternCover">
-                        <Grid Width="1000"
-                              Height="320">
-                            <Border x:Name="LayoutRoot" />
-                            <controls:AnimatedImage x:Name="Animated"
-                                                    FrameSize="36,36"
-                                                    DecodeFrameType="Logical"
-                                                    AutoPlay="False"
-                                                    IsViewportAware="False"
-                                                    ReplacementColor="{TemplateBinding Foreground}"
-                                                    Source="{TemplateBinding Source}"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    Width="36"
-                                                    Height="36"
-                                                    Opacity="0"
-                                                    IsTabStop="False" />
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
         <Style x:Key="HeaderRootStyle"
                TargetType="Grid">
             <Setter Property="Background"
@@ -94,6 +68,7 @@
                                               RenderTransformOrigin="0.5,0.5" />
 
                 <controls:ProfileGiftsCover x:Name="GiftsCover"
+                                            TitleRoot="{x:Bind TitleRoot}"
                                             SizeChanged="GiftsCover_SizeChanged"
                                             VerticalAlignment="Top"
                                             HorizontalAlignment="Center"

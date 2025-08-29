@@ -90,11 +90,10 @@ namespace Telegram.Controls.Cells
             }
             else if (gift.Gift is SentGiftUpgraded upgraded)
             {
-                var source = DelayedFileSource.FromSticker(clientService, upgraded.Gift.Symbol.Sticker);
                 var centerColor = upgraded.Gift.Backdrop.Colors.CenterColor.ToColor();
                 var edgeColor = upgraded.Gift.Backdrop.Colors.EdgeColor.ToColor();
 
-                Pattern.Update(source, centerColor, edgeColor);
+                Pattern.Update(clientService, upgraded.Gift);
 
                 if (gift.IsPinned)
                 {
@@ -139,8 +138,8 @@ namespace Telegram.Controls.Cells
                 {
                     Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, Formatter.ShortNumber(upgraded.Gift.MaxUpgradedCount, true));
 
-                    RibbonTop.Color = centerColor.WithBrightness(-0.1f);
-                    RibbonBottom.Color = edgeColor.WithBrightness(-0.1f);
+                    RibbonTop.Color = centerColor.WithBrightness(-0.2f);
+                    RibbonBottom.Color = edgeColor.WithBrightness(-0.2f);
 
                     if (ResaleStarCountRoot != null)
                     {
@@ -167,11 +166,7 @@ namespace Telegram.Controls.Cells
         {
             StarCountRoot.Visibility = Visibility.Collapsed;
 
-            var source = DelayedFileSource.FromSticker(clientService, gift.Gift.Symbol.Sticker);
-            var centerColor = gift.Gift.Backdrop.Colors.CenterColor.ToColor();
-            var edgeColor = gift.Gift.Backdrop.Colors.EdgeColor.ToColor();
-
-            Pattern.Update(source, centerColor, edgeColor);
+            Pattern.Update(clientService, gift.Gift);
 
             Pinned.Visibility = Visibility.Collapsed;
 
@@ -180,6 +175,9 @@ namespace Telegram.Controls.Cells
 
             Animated.Source = new DelayedFileSource(clientService, gift.Gift.Model.Sticker);
 
+            var centerColor = gift.Gift.Backdrop.Colors.CenterColor.ToColor();
+            var edgeColor = gift.Gift.Backdrop.Colors.EdgeColor.ToColor();
+
             FindName(nameof(ResaleStarCountRoot));
             ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.WithBrightness(-0.1f));
             ResaleStarCount.Text = gift.Gift.ResaleStarCount.ToString("N0");
@@ -187,8 +185,8 @@ namespace Telegram.Controls.Cells
             RibbonRoot.Visibility = Visibility.Visible;
             Ribbon.Text = string.Format("#{0:N0}", gift.Gift.Number);
 
-            RibbonTop.Color = centerColor.WithBrightness(-0.1f);
-            RibbonBottom.Color = edgeColor.WithBrightness(-0.1f);
+            RibbonTop.Color = centerColor.WithBrightness(-0.2f);
+            RibbonBottom.Color = edgeColor.WithBrightness(-0.2f);
         }
 
         private readonly Color _ribbonResaleTop = Color.FromArgb(0xFF, 0xAC, 0xDC, 0x89);

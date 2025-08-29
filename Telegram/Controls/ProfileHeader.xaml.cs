@@ -131,8 +131,8 @@ namespace Telegram.Controls
         public void ViewChanged(ScrollViewer scrollingHost, float verticalOffset)
         {
             _verticalOffset = verticalOffset;
-            Pattern.Update(verticalOffset / (32 + 140 + 384));
-            GiftsCover.Update(verticalOffset / (32 + 140 + 96), TitleRoot);
+            Pattern.TransitionFraction = verticalOffset / (32 + 140 + 384);
+            GiftsCover.TransitionFraction = verticalOffset / (32 + 140 + 96);
 
             ShowHideBackground(verticalOffset >= HeaderRoot.ActualHeight - 48);
             ShowHideSubtitle(verticalOffset >= ActualHeight - 48);
@@ -323,7 +323,7 @@ namespace Telegram.Controls
 
         public void UpdateChatGifts(Chat chat)
         {
-            GiftsCover.Update(_verticalOffset / (32 + 140 + 96), TitleRoot);
+            GiftsCover.TransitionFraction = _verticalOffset / (32 + 140 + 96);
         }
 
         public void UpdateChatAccentColors(Chat chat)
@@ -1888,8 +1888,8 @@ namespace Telegram.Controls
         {
             if (ViewModel.IsSavedMessages)
             {
-                Pattern.Update(float.MaxValue);
-                GiftsCover.Update(float.MaxValue, TitleRoot);
+                Pattern.TransitionFraction = float.MaxValue;
+                GiftsCover.TransitionFraction = float.MaxValue;
 
                 ShowHideSubtitle(true);
                 ShowHideBackground(true);
@@ -1898,7 +1898,7 @@ namespace Telegram.Controls
 
         private void GiftsCover_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            GiftsCover.Update(_verticalOffset / (32 + 140 + 96), TitleRoot);
+            GiftsCover.TransitionFraction = _verticalOffset / (32 + 140 + 96);
         }
     }
 

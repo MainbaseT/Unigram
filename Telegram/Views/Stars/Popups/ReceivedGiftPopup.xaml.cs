@@ -274,11 +274,7 @@ namespace Telegram.Views.Stars.Popups
             RegularRoot.Visibility = Visibility.Collapsed;
             MoreButton.Visibility = Visibility.Visible;
 
-            var source = DelayedFileSource.FromSticker(clientService, gift.Symbol.Sticker);
-            var centerColor = gift.Backdrop.Colors.CenterColor.ToColor();
-            var edgeColor = gift.Backdrop.Colors.EdgeColor.ToColor();
-
-            UpgradedHeader.Update(source, centerColor, edgeColor);
+            UpgradedHeader.Update(clientService, gift);
             UpgradedAnimatedPhoto.Source = DelayedFileSource.FromSticker(clientService, gift.Model.Sticker);
             UpgradedTitle.Text = gift.Title;
 
@@ -747,9 +743,10 @@ namespace Telegram.Views.Stars.Popups
             var pattern = new DelayedFileSource(_clientService, symbol.Sticker);
             var centerColor = backdrop.Colors.CenterColor.ToColor();
             var edgeColor = backdrop.Colors.EdgeColor.ToColor();
+            var symbolColor = backdrop.Colors.SymbolColor.ToColor();
 
+            UpgradedHeader.Update(pattern, centerColor, edgeColor, symbolColor);
             UpgradedAnimatedPhoto.Source = new DelayedFileSource(_clientService, model.Sticker);
-            UpgradedHeader.Update(pattern, centerColor, edgeColor);
         }
 
         protected override void OnDismissButtonClick()

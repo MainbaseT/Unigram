@@ -235,13 +235,17 @@ namespace Telegram.Controls.Messages
                     return;
                 }
 
-                var pattern = FindName("Pattern") as PatternBackground;
-
-                var source = DelayedFileSource.FromSticker(message.ClientService, upgradedGift.Gift.Symbol.Sticker);
                 var centerColor = upgradedGift.Gift.Backdrop.Colors.CenterColor.ToColor();
                 var edgeColor = upgradedGift.Gift.Backdrop.Colors.EdgeColor.ToColor();
 
-                pattern.Update(source, centerColor, edgeColor);
+                var ribbonTop = FindName("RibbonTop") as GradientStop;
+                var ribbonBottom = FindName("RibbonBottom") as GradientStop;
+
+                ribbonTop.Color = centerColor.WithBrightness(-0.2f);
+                ribbonBottom.Color = edgeColor.WithBrightness(-0.2f);
+
+                var pattern = FindName("Pattern") as PatternBackground;
+                pattern.Update(message.ClientService, upgradedGift.Gift);
 
                 var animation = FindName("Animation") as AnimatedImage;
                 animation.Source = DelayedFileSource.FromSticker(message.ClientService, upgradedGift.Gift.Model.Sticker);
