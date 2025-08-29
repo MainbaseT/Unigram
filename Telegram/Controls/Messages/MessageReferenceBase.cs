@@ -846,7 +846,7 @@ namespace Telegram.Controls.Messages
                     sender,
                     title,
                     string.Empty,
-                    ClientEx.Format($"\u2611 {0}", checklist.List.Title),
+                    ClientEx.Format("\u2611 {0}", checklist.List.Title),
                     false,
                     white);
             }
