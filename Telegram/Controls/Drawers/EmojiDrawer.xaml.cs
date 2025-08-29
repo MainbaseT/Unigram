@@ -103,8 +103,6 @@ namespace Telegram.Controls.Drawers
             _zoomer = new ZoomableListHandler(List);
             _zoomer.Opening = UnloadVisibleItems;
             _zoomer.Closing = ThrottleVisibleItems;
-            _zoomer.DownloadFile = fileId => ViewModel.ClientService.DownloadFile(fileId, 32);
-            _zoomer.SessionId = () => ViewModel.ClientService.SessionId;
 
             _typeToItemHashSetMapping.Add("EmojiSkinTemplate", new HashSet<SelectorItem>());
             _typeToItemHashSetMapping.Add("EmojiTemplate", new HashSet<SelectorItem>());

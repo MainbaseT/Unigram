@@ -35,8 +35,6 @@ namespace Telegram.Controls.Chats
             _zoomer = new ZoomableListHandler(ScrollingHost);
             _zoomer.Opening = _handler.UnloadVisibleItems;
             _zoomer.Closing = _handler.ThrottleVisibleItems;
-            _zoomer.DownloadFile = fileId => ViewModel.ClientService.DownloadFile(fileId, 32);
-            _zoomer.SessionId = () => ViewModel.ClientService.SessionId;
 
             _textBox = textBox;
             ScrollingHost.ItemsSource = itemsSource;

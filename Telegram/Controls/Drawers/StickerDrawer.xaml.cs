@@ -65,8 +65,6 @@ namespace Telegram.Controls.Drawers
             _zoomer = new ZoomableListHandler(List);
             _zoomer.Opening = UnloadVisibleItems;
             _zoomer.Closing = ThrottleVisibleItems;
-            _zoomer.DownloadFile = fileId => ViewModel.ClientService.DownloadFile(fileId, 32);
-            _zoomer.SessionId = () => ViewModel.ClientService.SessionId;
 
             _typing = new EventDebouncer<TextChangedEventArgs>(Constants.TypingTimeout, handler => SearchField.TextChanged += new TextChangedEventHandler(handler));
             _typing.Invoked += async (s, args) =>

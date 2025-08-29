@@ -108,8 +108,6 @@ namespace Telegram.Views
             _autocompleteZoomer = new ZoomableListHandler(ListAutocomplete);
             _autocompleteZoomer.Opening = _autocompleteHandler.UnloadVisibleItems;
             _autocompleteZoomer.Closing = _autocompleteHandler.ThrottleVisibleItems;
-            _autocompleteZoomer.DownloadFile = fileId => ViewModel.ClientService.DownloadFile(fileId, 32);
-            _autocompleteZoomer.SessionId = () => ViewModel.ClientService.SessionId;
 
             void AddStrategy(ChatHistoryViewItemType type, DataTemplate template)
             {

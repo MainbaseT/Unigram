@@ -75,8 +75,6 @@ namespace Telegram.Common
             // owner classes from being disposed
             Opening = null;
             Closing = null;
-            DownloadFile = null;
-            SessionId = null;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -93,19 +91,6 @@ namespace Telegram.Common
             _listView.PointerReleased -= OnPointerReleased;
             _listView.PointerCanceled -= OnPointerReleased;
             _listView.PointerCaptureLost -= OnPointerReleased;
-        }
-
-        public Action<int> DownloadFile
-        {
-            get => _popupPanel.DownloadFile;
-            set => _popupPanel.DownloadFile = value;
-        }
-
-
-        public Func<int> SessionId
-        {
-            get => _popupPanel.SessionId;
-            set => _popupPanel.SessionId = value;
         }
 
         public Action Opening { get; set; }
@@ -269,6 +254,8 @@ namespace Telegram.Common
             {
                 item = (Sticker)stickerViewModel;
             }
+
+            _popupPanel.DataContext = _listView.DataContext;
 
             if (item is Sticker sticker)
             {
