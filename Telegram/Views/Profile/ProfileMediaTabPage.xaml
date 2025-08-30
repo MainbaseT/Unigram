@@ -8,7 +8,8 @@
                       xmlns:messages="using:Telegram.Controls.Messages"
                       xmlns:selectors="using:Telegram.Selectors"
                       xmlns:local="using:Telegram.Views.Profile"
-                      mc:Ignorable="d">
+                      mc:Ignorable="d"
+                      ItemsSource="{x:Bind ViewModel.Media.ItemsView, Mode=OneWay}">
 
     <Grid>
         <Grid x:Name="TestGrid"
@@ -17,7 +18,6 @@
               Margin="24,0,16,0" />
 
         <controls:SelectGridView x:Name="ScrollingHost"
-                                 ItemsSource="{x:Bind ViewModel.Media.ItemsView, Mode=OneWay}"
                                  IsItemClickEnabled="True"
                                  ItemClick="OnItemClick"
                                  SelectionMode="None"

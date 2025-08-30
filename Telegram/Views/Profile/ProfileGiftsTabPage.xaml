@@ -9,11 +9,11 @@
                       xmlns:selectors="using:Telegram.Selectors"
                       xmlns:cells="using:Telegram.Controls.Cells"
                       xmlns:local="using:Telegram.Views.Profile"
-                      mc:Ignorable="d">
+                      mc:Ignorable="d"
+                      ItemsSource="{x:Bind ViewModel.GiftsTab.ItemsView, Mode=OneWay}">
 
     <Grid>
         <controls:SelectGridView x:Name="ScrollingHost"
-                                 ItemsSource="{x:Bind ViewModel.GiftsTab.ItemsView, Mode=OneWay}"
                                  IsItemClickEnabled="True"
                                  ItemClick="OnItemClick"
                                  SelectionMode="None"
