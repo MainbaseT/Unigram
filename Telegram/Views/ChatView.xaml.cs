@@ -2841,7 +2841,7 @@ namespace Telegram.Views
 
                 flyout.CreateFlyoutItem(MessageCopy_Loaded, ViewModel.CopyMessage, message, Strings.Copy, Icons.Copy);
 
-                if (MessageDelete_Loaded(message, properties))
+                if (properties.CanBeDeletedOnlyForSelf || properties.CanBeDeletedForAllUsers)
                 {
                     flyout.CreateFlyoutItem(ViewModel.DeleteMessage, message, message.SendingState is MessageSendingStatePending ? Strings.CancelSending : Strings.Delete, Icons.Delete, destructive: true);
                 }
@@ -3034,7 +3034,7 @@ namespace Telegram.Views
                     flyout.Items.Add(checklistTaskItem);
                 }
 
-                if (MessageDelete_Loaded(message, properties))
+                if (properties.CanBeDeletedOnlyForSelf || properties.CanBeDeletedForAllUsers)
                 {
                     if (message.IsPaidStarSuggestedPost || message.IsPaidTonSuggestedPost && DateTime.Now.ToTimestamp() < (int)message.ClientService.Options.SuggestedPostLifetimeMin + message.GetDate())
                     {
@@ -3071,7 +3071,11 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(MessageCopy_Loaded, ViewModel.CopyMessage, message, Strings.Copy, Icons.Copy);
                 }
 
-                flyout.CreateFlyoutItem(MessageCopyLink_Loaded, ViewModel.CopyMessageLink, message, Strings.CopyLink, Icons.Link);
+                if (properties.CanGetLink)
+                {
+                    flyout.CreateFlyoutItem(ViewModel.CopyMessageLink, message, Strings.CopyLink, Icons.Link);
+                }
+
                 flyout.CreateFlyoutItem(MessageCopyMedia_Loaded, ViewModel.CopyMessageMedia, message, Strings.CopyImage, Icons.Image);
 
                 if (message.Content is not MessageAlbum)
@@ -3689,16 +3693,6 @@ namespace Telegram.Views
             }
 
             return false;
-        }
-
-        private bool MessageDelete_Loaded(MessageViewModel message, MessageProperties properties)
-        {
-            if (message == null || properties == null)
-            {
-                return false;
-            }
-
-            return properties.CanBeDeletedOnlyForSelf || properties.CanBeDeletedForAllUsers;
         }
 
         private bool MessageForward_Loaded(MessageViewModel message, MessageProperties properties)
