@@ -471,10 +471,8 @@ namespace Telegram.Views
                 OnNavigatedTo();
             }
 
-            if (viewModel.NavigationService.FrameFacade.FrameId == "ChatPreview")
+            if (FromPreview)
             {
-                _fromPreview = true;
-
                 BackButton.Visibility = Visibility.Collapsed;
                 Options.Visibility = Visibility.Collapsed;
 
@@ -510,7 +508,7 @@ namespace Telegram.Views
             set => SavedMessagesTabHeader.Height = value + 4;
         }
 
-        private bool _fromPreview;
+        public bool FromPreview { get; set; }
 
         public void PopupOpened()
         {
@@ -840,7 +838,7 @@ namespace Telegram.Views
         private void Segments_Click(object sender, RoutedEventArgs e)
         {
             var chat = ViewModel.Chat;
-            if (chat == null || (chat.Id == ViewModel.ClientService.Options.MyId && ViewModel.SavedMessagesTopic == null) || sender is not ActiveStoriesSegments segments || _fromPreview)
+            if (chat == null || (chat.Id == ViewModel.ClientService.Options.MyId && ViewModel.SavedMessagesTopic == null) || sender is not ActiveStoriesSegments segments || FromPreview)
             {
                 return;
             }
@@ -1740,7 +1738,7 @@ namespace Telegram.Views
         {
             INavigationService service = null;
 
-            if (_fromPreview)
+            if (FromPreview)
             {
                 service = WindowContext.Current.NavigationServices.GetByFrameId($"Main{ViewModel.ClientService.SessionId}") as NavigationService;
 
@@ -4650,7 +4648,7 @@ namespace Telegram.Views
 
         private void ShowAction(string content, bool enabled, bool replyEnabled = false)
         {
-            if (_fromPreview)
+            if (FromPreview)
             {
                 ButtonAction.Visibility = Visibility.Collapsed;
                 ChatFooter.Visibility = Visibility.Collapsed;
@@ -4715,7 +4713,7 @@ namespace Telegram.Views
 
         private void ShowArea(long paidMessageStarCount, bool permanent = true)
         {
-            if (_fromPreview)
+            if (FromPreview)
             {
                 ButtonAction.Visibility = Visibility.Collapsed;
                 ChatFooter.Visibility = Visibility.Collapsed;
@@ -4773,7 +4771,7 @@ namespace Telegram.Views
 
         private bool StillValid(Chat chat)
         {
-            return chat?.Id == ViewModel?.Chat?.Id && !_fromPreview;
+            return chat?.Id == ViewModel?.Chat?.Id && !FromPreview;
         }
 
         #region UI delegate

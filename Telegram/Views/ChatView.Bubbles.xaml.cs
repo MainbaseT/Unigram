@@ -363,7 +363,7 @@ namespace Telegram.Views
             }
 
             // Read and play messages logic:
-            if (messages.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !_fromPreview)
+            if (messages.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !FromPreview)
             {
                 MessageSource source = ViewModel.Type switch
                 {
@@ -819,7 +819,7 @@ namespace Telegram.Views
                     selector = new ChatHistoryViewItem(Messages, typeName);
                     selector.ContentTemplate = relevantHashSet.ItemTemplate;
                     selector.Style = sender.ItemContainerStyle;
-                    selector.IsHitTestVisible = !_fromPreview;
+                    selector.IsHitTestVisible = !FromPreview;
                     selector.AddHandler(ContextRequestedEvent, _contextRequestedHandler ??= new TypedEventHandler<UIElement, ContextRequestedEventArgs>(Message_ContextRequested), true);
 
                     args.ItemContainer = selector;
