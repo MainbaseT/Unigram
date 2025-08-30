@@ -12619,5 +12619,6 @@
     <string name="BotRestoreStorageHeader">Account to import data from</string>
     <string name="BotRestoreStorageButton">Import</string>
     <string name="BotRestoreStorageCreatedAt">created on {0}</string>
+    <string name="AutoDeleteAfteTitle">Auto-delete after...</string>
 
 </resources>

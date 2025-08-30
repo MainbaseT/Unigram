@@ -28,7 +28,12 @@ namespace Telegram.Views.Popups
         {
             InitializeComponent();
 
-            Title = Strings.MessageLifetime;
+            Title = type switch
+            {
+                ChatTtlType.Auto => Strings.AutoDeleteAfteTitle,
+                _ => Strings.MessageLifetime
+            };
+
             PrimaryButtonText = Strings.OK;
             SecondaryButtonText = Strings.Cancel;
 

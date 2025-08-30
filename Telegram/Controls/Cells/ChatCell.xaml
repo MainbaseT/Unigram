@@ -93,6 +93,33 @@
                                         CornerRadius="4" />
                             </Border>
 
+                            <Grid x:Name="AutoDeleteBadge"
+                                  x:Load="False"
+                                  Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                  Width="22"
+                                  Height="22"
+                                  CornerRadius="12"
+                                  Margin="0,0,-2,-2"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Bottom">
+                                <TextBlock Text="&#xEAD5;"
+                                           FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                           FontSize="20"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="#FFFFFF" />
+
+                                <TextBlock x:Name="AutoDeleteLabel"
+                                           TextLineBounds="Tight"
+                                           TextAlignment="Center"
+                                           OpticalMarginAlignment="TrimSideBearings"
+                                           FontSize="9"
+                                           FontWeight="SemiBold"
+                                           Padding="4,0,4,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="#FFFFFF" />
+                            </Grid>
+
                             <Border x:Name="CompactBadgeRoot"
                                     x:Load="False"
                                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"

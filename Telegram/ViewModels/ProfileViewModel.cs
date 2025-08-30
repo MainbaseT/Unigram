@@ -1383,7 +1383,7 @@ namespace Telegram.ViewModels
             }
             else if (ttl == null)
             {
-                var dialog = new ChatTtlPopup(chat.Type is ChatTypeSecret ? ChatTtlType.Secret : ChatTtlType.Normal);
+                var dialog = new ChatTtlPopup(ChatTtlType.Auto);
                 dialog.Value = chat.MessageAutoDeleteTime;
 
                 var confirm = await ShowPopupAsync(dialog);

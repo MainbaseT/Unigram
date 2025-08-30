@@ -377,6 +377,11 @@ namespace Telegram.Views
             }
         }
 
+        public void Handle(UpdateChatMessageAutoDeleteTime update)
+        {
+            Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatMessageAutoDeleteTime(chat, true));
+        }
+
         public void Handle(UpdateChatAction update)
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatActions(chat, ViewModel.ClientService.GetChatActions(chat.Id)));
@@ -1063,6 +1068,7 @@ namespace Telegram.Views
                 .Subscribe<UpdateChatViewAsTopics>(Handle)
                 .Subscribe<UpdateUserStatus>(Handle)
                 .Subscribe<UpdateUser>(Handle)
+                .Subscribe<UpdateChatMessageAutoDeleteTime>(Handle)
                 .Subscribe<UpdateChatAction>(Handle)
                 .Subscribe<UpdateMessageMentionRead>(Handle)
                 .Subscribe<UpdateMessageUnreadReactions>(Handle)

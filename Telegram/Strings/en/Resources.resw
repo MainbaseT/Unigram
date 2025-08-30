@@ -1554,6 +1554,9 @@ Please take a look at the &lt;a href=&quot;https://telegram.org/faq#general-ques
   <data name="AuthorHiddenDescription" xml:space="preserve">
     <value>Senders of these messages restricted to link their name when forwarding.</value>
   </data>
+  <data name="AutoDeleteAfteTitle" xml:space="preserve">
+    <value>Auto-delete after...</value>
+  </data>
   <data name="AutoDeleteConfirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
