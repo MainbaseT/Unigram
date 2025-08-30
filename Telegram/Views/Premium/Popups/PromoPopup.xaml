@@ -16,7 +16,7 @@
                   IsItemClickEnabled="True"
                   ContainerContentChanging="OnContainerContentChanging"
                   SelectionMode="None"
-                  Padding="12,0">
+                  Padding="12,0,12,56">
             <ListView.Header>
                 <Grid>
                     <Grid.RowDefinitions>
