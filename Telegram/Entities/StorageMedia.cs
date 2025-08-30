@@ -198,7 +198,7 @@ namespace Telegram.Entities
                 return new StorageDocument(file, basicProperties.Size);
             }
 
-            if (file.HasExtension(".jpeg", ".jpg", ".png", ".bmp", ".gif"))
+            if (file.HasExtension(".jpeg", ".jpg", ".png", ".bmp", ".gif", ".heic", ".heif"))
             {
                 var photo = await StoragePhoto.CreateAsync(file, basicProperties.Size);
                 if (photo != null)
