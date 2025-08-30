@@ -87,9 +87,20 @@
                                                     Width="140"
                                                     Height="140"
                                                     AutomationProperties.Name="{CustomResource AccDescrProfilePicture}">
-                        <controls:ProfilePicture x:Name="Photo"
-                                                 Width="140"
-                                                 Height="140" />
+                        <Grid CornerRadius="75">
+                            <controls:ProfilePicture x:Name="Photo"
+                                                     Width="140"
+                                                     Height="140" />
+                            <controls:AnimatedImage x:Name="AnimatedPhoto"
+                                                    Width="140"
+                                                    Height="140"
+                                                    AutoPlay="True"
+                                                    FrameSize="140,140"
+                                                    DecodeFrameType="Logical"
+                                                    IsCachingEnabled="False"
+                                                    Stretch="UniformToFill"
+                                                    IsHitTestVisible="False" />
+                        </Grid>
                     </controls:ActiveStoriesSegments>
 
                     <controls:AnimatedImage x:Name="Icon"

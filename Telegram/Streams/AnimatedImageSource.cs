@@ -68,6 +68,8 @@ namespace Telegram.Streams
 
         public bool IsAnimated { get; set; } = true;
 
+        public double SeekToSeconds { get; set; } = 0;
+
         public override bool Equals(object obj)
         {
             if (obj is AnimatedImageSource y && !y.IsUnique && !IsUnique)

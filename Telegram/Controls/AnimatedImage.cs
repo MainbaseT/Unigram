@@ -2010,6 +2010,11 @@ namespace Telegram.Controls
             {
                 if (IsValid(animation))
                 {
+                    if (work.Presentation.Source.SeekToSeconds != 0)
+                    {
+                        animation.Seek(work.Presentation.Source.SeekToSeconds);
+                    }
+
                     NotifyDelegate(work.CorrelationId, animation, new VideoAnimatedImageTask(animation, work.Presentation));
                     return;
                 }

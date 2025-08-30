@@ -772,6 +772,19 @@ namespace Telegram.Controls
                 return;
             }
 
+            var animation = fullInfo.Photo?.SmallAnimation ?? fullInfo.Photo?.Animation;
+            if (animation != null)
+            {
+                AnimatedPhoto.Source = new DelayedFileSource(ViewModel.ClientService, animation.File)
+                {
+                    SeekToSeconds = animation.MainFrameTimestamp
+                };
+            }
+            else
+            {
+                AnimatedPhoto.Source = null;
+            }
+
             if (user.Type is UserTypeBot && fullInfo.BotInfo != null)
             {
                 GetEntities(fullInfo.BotInfo.ShortDescription);
@@ -1002,6 +1015,19 @@ namespace Telegram.Controls
                 return;
             }
 
+            var animation = fullInfo.Photo?.SmallAnimation ?? fullInfo.Photo?.Animation;
+            if (animation != null)
+            {
+                AnimatedPhoto.Source = new DelayedFileSource(ViewModel.ClientService, animation.File)
+                {
+                    SeekToSeconds = animation.MainFrameTimestamp
+                };
+            }
+            else
+            {
+                AnimatedPhoto.Source = null;
+            }
+
             GetEntities(fullInfo.Description);
 
             Description.Visibility = string.IsNullOrEmpty(fullInfo.Description)
@@ -1137,6 +1163,19 @@ namespace Telegram.Controls
             if (fullInfo == null || ViewModel.ForumTopic != null)
             {
                 return;
+            }
+
+            var animation = fullInfo.Photo?.SmallAnimation ?? fullInfo.Photo?.Animation;
+            if (animation != null)
+            {
+                AnimatedPhoto.Source = new DelayedFileSource(ViewModel.ClientService, animation.File)
+                {
+                    SeekToSeconds = animation.MainFrameTimestamp
+                };
+            }
+            else
+            {
+                AnimatedPhoto.Source = null;
             }
 
             GetEntities(fullInfo.Description);
