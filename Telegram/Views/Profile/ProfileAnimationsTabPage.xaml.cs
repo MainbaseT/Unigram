@@ -61,7 +61,7 @@ namespace Telegram.Views.Profile
                         }
                         else if (animation.Animation.Minithumbnail != null)
                         {
-                            var bitmap = new BitmapImage();
+                            var bitmap = new SoftwareBitmapSource();
                             PlaceholderHelper.GetBlurred(bitmap, animation.Animation.Minithumbnail.Data);
                             photo.Source = bitmap;
                         }
