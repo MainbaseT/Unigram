@@ -6207,6 +6207,18 @@ public static class CachedVideoAnimation_stub
             throw new RuntimeException(ex);
         }
     }
+    public static void Seek_stub(this Telegram.Native.CachedVideoAnimation sender, double seconds)
+    {
+        try
+        {
+            sender.Seek(seconds);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
 }
 public static class FileStreamFromApp_stub
 {
@@ -6530,6 +6542,30 @@ public static class PlaceholderImageHelper_stub
         try
         {
             return sender.ContentEnd(text, entities, fontSize, width);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Graphics.Imaging.SoftwareBitmap DrawBlurred_stub(this Telegram.Native.PlaceholderImageHelper sender, string fileName, float blurAmount)
+    {
+        try
+        {
+            return sender.DrawBlurred(fileName, blurAmount);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Graphics.Imaging.SoftwareBitmap DrawBlurred_stub(this Telegram.Native.PlaceholderImageHelper sender, System.Collections.Generic.IList<byte> bytes, float blurAmount)
+    {
+        try
+        {
+            return sender.DrawBlurred(bytes, blurAmount);
         }
         catch (Exception ex)
         {
