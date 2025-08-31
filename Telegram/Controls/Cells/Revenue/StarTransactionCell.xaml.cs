@@ -30,8 +30,8 @@ namespace Telegram.Controls.Cells.Revenue
 
         public void UpdateInfo(IClientService clientService, StarTransaction transaction)
         {
-            UpdateManager.Unsubscribe(this, ref _media1Token, true);
-            UpdateManager.Unsubscribe(this, ref _media2Token, true);
+            UpdateManager.Unsubscribe(this, ref _media1Token);
+            UpdateManager.Unsubscribe(this, ref _media2Token);
 
             if (transaction.Type is StarTransactionTypePremiumPurchase premiumPurchase)
             {

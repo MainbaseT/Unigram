@@ -35,7 +35,7 @@ namespace Telegram.Controls.Cells
             _navigationService = navigationService;
             _message = message;
 
-            UpdateManager.Unsubscribe(this, ref _thumbnailToken, true);
+            UpdateManager.Unsubscribe(this, ref _thumbnailToken);
 
             var caption = message.GetCaption();
             if (caption == null)

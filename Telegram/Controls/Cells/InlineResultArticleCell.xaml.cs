@@ -117,7 +117,7 @@ namespace Telegram.Controls.Cells
                 if (file.Local.IsDownloadingCompleted)
                 {
                     Photo.Source = UriEx.ToBitmap(file.Local.Path);
-                    UpdateManager.Unsubscribe(this, ref _thumbnailToken, true);
+                    UpdateManager.Unsubscribe(this, ref _thumbnailToken);
                 }
                 else
                 {
@@ -133,12 +133,12 @@ namespace Telegram.Controls.Cells
             else if (uri != null)
             {
                 Photo.Source = new BitmapImage(uri);
-                UpdateManager.Unsubscribe(this, ref _thumbnailToken, true);
+                UpdateManager.Unsubscribe(this, ref _thumbnailToken);
             }
             else
             {
                 Photo.Source = PlaceholderImage.GetNameForChat(Title.Text, Title.Text.GetHashCode());
-                UpdateManager.Unsubscribe(this, ref _thumbnailToken, true);
+                UpdateManager.Unsubscribe(this, ref _thumbnailToken);
             }
         }
 

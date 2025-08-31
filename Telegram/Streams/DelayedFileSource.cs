@@ -196,7 +196,7 @@ namespace Telegram.Streams
 
         public void Complete()
         {
-            UpdateManager.Unsubscribe(this, ref _fileToken, true);
+            UpdateManager.Unsubscribe(this, ref _fileToken);
         }
 
         public override bool Equals(object obj)

@@ -502,7 +502,7 @@ namespace Telegram.Controls.Messages.Content
             _message = null;
 
             UpdateManager.Unsubscribe(this, ref _fileToken);
-            UpdateManager.Unsubscribe(this, ref _thumbnailToken, true);
+            UpdateManager.Unsubscribe(this, ref _thumbnailToken);
 
             if (_templateApplied)
             {

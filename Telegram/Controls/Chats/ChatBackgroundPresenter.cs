@@ -84,7 +84,7 @@ namespace Telegram.Controls.Chats
         {
             XamlRoot.Changed -= OnRasterizationScaleChanged;
 
-            UpdateManager.Unsubscribe(this, ref _fileToken, true);
+            UpdateManager.Unsubscribe(this, ref _fileToken);
         }
 
         private void OnRasterizationScaleChanged(XamlRoot sender, XamlRootChangedEventArgs args)
@@ -134,7 +134,7 @@ namespace Telegram.Controls.Chats
 
         public void UpdateSource(IClientService clientService, Background background, bool thumbnail)
         {
-            UpdateManager.Unsubscribe(this, ref _fileToken, true);
+            UpdateManager.Unsubscribe(this, ref _fileToken);
 
             var clear = _background == null;
 

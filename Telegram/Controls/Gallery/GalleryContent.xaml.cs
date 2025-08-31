@@ -536,7 +536,7 @@ namespace Telegram.Controls.Gallery
             }
 
             UpdateManager.Unsubscribe(this, ref _fileToken);
-            UpdateManager.Unsubscribe(this, ref _thumbnailToken, true);
+            UpdateManager.Unsubscribe(this, ref _thumbnailToken);
         }
 
         private void OnTreeUpdated(VideoPlayerBase sender, EventArgs e)

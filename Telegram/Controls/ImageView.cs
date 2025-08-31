@@ -383,7 +383,7 @@ namespace Telegram.Controls
             _blurRadius = 0;
 
             Source = null;
-            UpdateManager.Unsubscribe(this, ref _fileToken, true);
+            UpdateManager.Unsubscribe(this, ref _fileToken);
         }
 
         #region Bitmap

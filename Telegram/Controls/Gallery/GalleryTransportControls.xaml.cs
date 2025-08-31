@@ -215,8 +215,8 @@ namespace Telegram.Controls.Gallery
 
         private void UpdateStoryboard(GalleryMedia item, bool download)
         {
-            UpdateManager.Unsubscribe(this, ref _storyboardFileToken, true);
-            UpdateManager.Unsubscribe(this, ref _storyboardMapToken, true);
+            UpdateManager.Unsubscribe(this, ref _storyboardFileToken);
+            UpdateManager.Unsubscribe(this, ref _storyboardMapToken);
 
             if (item is GalleryMessage { Content: MessageVideo video } && video.Storyboards.Count > 0)
             {

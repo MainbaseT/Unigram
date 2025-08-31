@@ -191,7 +191,7 @@ namespace Telegram.Controls.Stories
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
-            UpdateManager.Unsubscribe(this, ref _fileToken, true);
+            UpdateManager.Unsubscribe(this, ref _fileToken);
         }
 
         private StoryViewModel _story;

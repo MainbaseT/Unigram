@@ -901,7 +901,7 @@ namespace Telegram.Controls.Stories
                 return;
             }
 
-            UpdateManager.Unsubscribe(this, ref _fileToken, true);
+            UpdateManager.Unsubscribe(this, ref _fileToken);
 
             _fileId = file.Id;
             Logger.Info();
@@ -958,7 +958,7 @@ namespace Telegram.Controls.Stories
                 return;
             }
 
-            UpdateManager.Unsubscribe(this, ref _fileToken, true);
+            UpdateManager.Unsubscribe(this, ref _fileToken);
 
             _fileId = file.Id;
             //Player.Source = null;

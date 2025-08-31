@@ -73,7 +73,7 @@ namespace Telegram.Controls.Cells
                 Overlay.Visibility = Visibility.Visible;
                 Subtitle.Text = video.Video.GetDuration();
 
-                UpdateManager.Unsubscribe(this, ref _fileToken, true);
+                UpdateManager.Unsubscribe(this, ref _fileToken);
                 Texture.ImageSource = null;
 
                 var thumbnail = video.Video.Thumbnail;
@@ -157,7 +157,7 @@ namespace Telegram.Controls.Cells
         {
             if (file.Local.IsDownloadingCompleted)
             {
-                UpdateManager.Unsubscribe(this, ref _fileToken, true);
+                UpdateManager.Unsubscribe(this, ref _fileToken);
                 Texture.ImageSource = UriEx.ToBitmap(file.Local.Path, 0, 0);
             }
             else if (download)
