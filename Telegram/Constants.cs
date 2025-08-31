@@ -30,8 +30,8 @@ namespace Telegram
         public const int HoldingThrottle = 500;
         public const int AnimatedThrottle = 200;
 
-        public static readonly string[] MediaTypes = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".m4v" };
-        public static readonly string[] PhotoTypes = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+        public static readonly string[] MediaTypes = new[] { ".jpg", ".jpeg", ".png", ".gif", ".heic", ".heif", ".mp4", ".mov", ".m4v" };
+        public static readonly string[] PhotoTypes = new[] { ".jpg", ".jpeg", ".png", ".gif", ".heic", ".heif" };
         public static readonly string[] VideoTypes = new[] { ".mp4", ".mov", ".m4v" };
 
         public const int ImageStandardQuality = 1280;
