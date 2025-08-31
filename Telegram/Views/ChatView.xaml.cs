@@ -3862,19 +3862,6 @@ namespace Telegram.Views
             return false;
         }
 
-        private bool MessageCopyLink_Loaded(MessageViewModel message)
-        {
-            var chat = message.Chat;
-            if (chat != null && chat.Type is ChatTypeSupergroup)
-            {
-                //var supergroup = ViewModel.ClientService.GetSupergroup(supergroupType.SupergroupId);
-                //return !string.IsNullOrEmpty(supergroup.Username);
-                return ViewModel.Type is DialogType.History or DialogType.Thread;
-            }
-
-            return false;
-        }
-
         private bool MessageSelect_Loaded(MessageViewModel message)
         {
             if (ViewModel.Type == DialogType.EventLog || ViewModel.IsSavedMessagesTab || message.IsService)
