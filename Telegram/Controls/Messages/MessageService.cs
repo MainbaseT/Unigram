@@ -216,6 +216,8 @@ namespace Telegram.Controls.Messages
                     typeIcon.ClearStatus();
                     iconRoot.Visibility = Visibility.Collapsed;
                 }
+
+                AutomationProperties.SetName(this, title.Text);
             }
             else if (message.Content is MessageGiveawayPrizeStars giveawayPrizeStars)
             {
