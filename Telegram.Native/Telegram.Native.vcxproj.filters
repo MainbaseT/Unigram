@@ -1043,6 +1043,9 @@
     <ClInclude Include="AI\RecognizedWord.h">
       <Filter>AI</Filter>
     </ClInclude>
+    <ClInclude Include="Helpers\BlurHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Telegram.Native.def" />

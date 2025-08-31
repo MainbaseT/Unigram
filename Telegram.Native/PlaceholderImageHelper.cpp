@@ -634,7 +634,8 @@ namespace winrt::Telegram::Native::implementation
         ReturnIfFailed(result, wicBitmapSource->GetSize(&size.width, &size.height));
 
         uint32_t totalPixels = size.width * size.height;
-        if (totalPixels <= 400 * 400 && blurAmount == 3 && false)
+        // Disabled for now
+        if (false && ((totalPixels <= 400 * 400 && blurAmount == 3) || (totalPixels <= 150 * 150 && blurAmount == 15)))
         {
             UINT bytesPerPixel = 4;
             UINT stride = size.width * bytesPerPixel;
@@ -648,13 +649,24 @@ namespace winrt::Telegram::Native::implementation
             WICRect rect = { 0, 0, static_cast<INT>(size.width), static_cast<INT>(size.height) };
             ReturnIfFailed(result, wicBitmapSource->CopyPixels(&rect, stride, bufferSize, pixels));
 
-            if (totalPixels <= 100 * 100)
+            if (blurAmount == 3)
             {
-                FixedRadius3BoxBlur::ApplyFastBlur(pixels, size.width, size.height);
+                if (totalPixels <= 100 * 100)
+                {
+                    FixedRadius3Blur::ApplyBlur(pixels, size.width, size.height);
+                }
+                else
+                {
+                    FixedRadius3BoxBlur::ApplyFastBlur(pixels, size.width, size.height);
+                }
+            }
+            else if (totalPixels <= 50 * 50)
+            {
+                FixedRadius15Blur::ApplyBlur(pixels, size.width, size.height);
             }
             else
             {
-                FixedRadius3Blur::ApplyBlur(pixels, size.width, size.height);
+                FixedRadius15BoxBlur::ApplyFastBlur(pixels, size.width, size.height);
             }
 
             return S_OK;
