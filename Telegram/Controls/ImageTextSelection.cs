@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas.Geometry;
 using System;
+using System.Linq;
 using System.Numerics;
 using Telegram.AI;
 using Telegram.Native.AI;
@@ -9,6 +10,7 @@ using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
@@ -44,6 +46,11 @@ namespace Telegram.Controls
 
             DoubleTapped += OnDoubleTapped;
             Tapped += OnTapped;
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new ImageTextSelectionAutomationPeer(this);
         }
 
         protected override void OnApplyTemplate()
@@ -363,5 +370,31 @@ namespace Telegram.Controls
 
         #endregion
 
+    }
+
+    public partial class ImageTextSelectionAutomationPeer : FrameworkElementAutomationPeer
+    {
+        private readonly ImageTextSelection _owner;
+
+        public ImageTextSelectionAutomationPeer(ImageTextSelection owner)
+            : base(owner)
+        {
+            _owner = owner;
+        }
+
+        protected override string GetClassNameCore()
+        {
+            return nameof(TextBlock);
+        }
+
+        protected override AutomationControlType GetAutomationControlTypeCore()
+        {
+            return AutomationControlType.Text;
+        }
+
+        protected override string GetNameCore()
+        {
+            return string.Join('\n', _owner.RecognizedText?.Lines.Select(x => x.Text));
+        }
     }
 }
