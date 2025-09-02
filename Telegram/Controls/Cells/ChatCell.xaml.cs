@@ -933,12 +933,7 @@ namespace Telegram.Controls.Cells
             }
             else
             {
-                if (OnlineBadge != null)
-                {
-                    OnlineBadge.Visibility = Visibility.Collapsed;
-                }
-
-                ShowHideAutoDelete(chat.MessageAutoDeleteTime, animate);
+                ShowHideOnlineStatus(false, false, chat.MessageAutoDeleteTime, animate);
             }
         }
 
@@ -947,19 +942,18 @@ namespace Telegram.Controls.Cells
 
         private void ShowHideOnlineStatus(bool show, bool activeCall, int autoDeleteTime, bool animate)
         {
-            if (_onlineStatusCollapsed != show && _onlineStatusActiveCall == activeCall && _autoDeleteTime == autoDeleteTime)
-            {
-                return;
-            }
-
             if (show)
             {
                 autoDeleteTime = 0;
             }
 
-            ShowHideAutoDelete(autoDeleteTime, animate);
+            if (_onlineStatusCollapsed != show && _onlineStatusActiveCall == activeCall && _autoDeleteTime == autoDeleteTime)
+            {
+                return;
+            }
 
             _onlineStatusCollapsed = !show;
+            ShowHideAutoDelete(autoDeleteTime, animate);
 
             if (OnlineBadge == null)
             {
@@ -1203,7 +1197,7 @@ namespace Telegram.Controls.Cells
 
             if (!animate)
             {
-                AutoDeleteLabel.Visibility = autoDeleteTime != 0
+                AutoDeleteBadge.Visibility = autoDeleteTime != 0
                     ? Visibility.Visible
                     : Visibility.Collapsed;
                 return;
