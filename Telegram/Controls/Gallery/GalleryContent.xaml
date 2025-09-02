@@ -5,9 +5,14 @@
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:controls="using:Telegram.Controls"
                      mc:Ignorable="d"
-                     Background="Transparent"
                      d:DesignHeight="300"
                      d:DesignWidth="400">
+    <controls:AspectView.Background>
+        <ImageBrush x:Name="ThumbnailTexture"
+                    Stretch="UniformToFill"
+                    AlignmentX="Center"
+                    AlignmentY="Center" />
+    </controls:AspectView.Background>
 
     <Image x:Name="Texture"
            Stretch="UniformToFill" />

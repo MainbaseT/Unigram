@@ -14,7 +14,6 @@ using Telegram.ViewModels.Stars;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace Telegram.Views.Stars.Popups
 {
@@ -28,6 +27,9 @@ namespace Telegram.Views.Stars.Popups
         }
 
         private long _thumbnailToken;
+
+        private ThumbnailController _media1Controller;
+        private ThumbnailController _media2Controller;
 
         private long _media1Token;
         private long _media2Token;
@@ -65,11 +67,11 @@ namespace Telegram.Views.Stars.Popups
                 MediaPreview.Visibility = Windows.UI.Xaml.Visibility.Visible;
                 Particles.Source = new ParticlesImageSource();
 
-                UpdateMedia(ViewModel.Media[0], Media1);
+                UpdateMedia(ViewModel.Media[0], Thumbnail1, ref _media1Controller);
 
                 if (ViewModel.Media.Count > 1)
                 {
-                    UpdateMedia(ViewModel.Media[1], Media2);
+                    UpdateMedia(ViewModel.Media[1], Thumbnail2, ref _media1Controller);
 
                     Media2.Visibility = Windows.UI.Xaml.Visibility.Visible;
                 }
@@ -191,26 +193,9 @@ namespace Telegram.Views.Stars.Popups
             }
         }
 
-        private void UpdateMedia(PaidMedia media, Grid target)
+        private void UpdateMedia(PaidMedia media, ImageBrush brush, ref ThumbnailController controller)
         {
-            SoftwareBitmapSource source = null;
-            ImageBrush brush;
-
-            if (target.Background is ImageBrush existing)
-            {
-                brush = existing;
-            }
-            else
-            {
-                brush = new ImageBrush
-                {
-                    Stretch = Stretch.UniformToFill,
-                    AlignmentX = AlignmentX.Center,
-                    AlignmentY = AlignmentY.Center
-                };
-
-                target.Background = brush;
-            }
+            controller ??= new ThumbnailController(brush);
 
             Minithumbnail minithumbnail = null;
             if (media is PaidMediaPhoto photo)
@@ -228,11 +213,12 @@ namespace Telegram.Views.Stars.Popups
 
             if (minithumbnail != null)
             {
-                source = new SoftwareBitmapSource();
-                PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
+                controller.Blur(minithumbnail.Data, 3);
             }
-
-            brush.ImageSource = source;
+            else
+            {
+                controller.Recycle();
+            }
         }
     }
 }

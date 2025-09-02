@@ -63,7 +63,14 @@
                       VerticalAlignment="Bottom"
                       CornerRadius="12"
                       Width="110"
-                      Height="110" />
+                      Height="110">
+                    <Grid.Background>
+                        <ImageBrush x:Name="Thumbnail2"
+                                    Stretch="UniformToFill"
+                                    AlignmentX="Center"
+                                    AlignmentY="Center" />
+                    </Grid.Background>
+                </Grid>
                 <Grid x:Name="Media1"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top"
@@ -73,6 +80,12 @@
                       BorderBrush="{ThemeResource ContentDialogBackground}"
                       BorderThickness="2"
                       Margin="-8">
+                    <Grid.Background>
+                        <ImageBrush x:Name="Thumbnail1"
+                                    Stretch="UniformToFill"
+                                    AlignmentX="Center"
+                                    AlignmentY="Center" />
+                    </Grid.Background>
                     <controls:AnimatedImage x:Name="Particles"
                                             IsViewportAware="True"
                                             FrameSize="0,0"

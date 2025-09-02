@@ -10,15 +10,12 @@ using System.Runtime.CompilerServices;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
-using Telegram.Native;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
-using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace Telegram.Controls.Messages
 {
@@ -31,6 +28,8 @@ namespace Telegram.Controls.Messages
         protected MessageViewModel _message;
         protected bool _loading;
         protected string _title;
+
+        protected ThumbnailController _thumbnailController;
 
         protected bool _templateApplied;
 
@@ -206,12 +205,18 @@ namespace Telegram.Controls.Messages
         {
             if (photoSize != null && photoSize.Photo.Local.IsDownloadingCompleted)
             {
-                ImageSource source;
+                if (_thumbnailController == null)
+                {
+                    _thumbnailController = new ThumbnailController(ShowThumbnail());
+                }
+                else
+                {
+                    ShowThumbnail();
+                }
+
                 if (hasSpoiler)
                 {
-                    var temp = new SoftwareBitmapSource();
-                    source = temp;
-                    PlaceholderHelper.GetBlurred(temp, photoSize.Photo.Local.Path, 15);
+                    _thumbnailController.Blur(photoSize.Photo.Local.Path, 15);
                 }
                 else
                 {
@@ -222,11 +227,8 @@ namespace Telegram.Controls.Messages
                     var width = (int)(photoSize.Width * ratio);
                     var height = (int)(photoSize.Height * ratio);
 
-                    source = UriEx.ToBitmap(photoSize.Photo.Local.Path, width, height);
+                    _thumbnailController.Bitmap(photoSize.Photo.Local.Path, width, height);
                 }
-
-                ShowThumbnail();
-                SetThumbnail(source);
             }
             else
             {
@@ -243,12 +245,18 @@ namespace Telegram.Controls.Messages
         {
             if (thumbnail != null && thumbnail.File.Local.IsDownloadingCompleted && thumbnail.Format is ThumbnailFormatJpeg)
             {
-                ImageSource source;
+                if (_thumbnailController == null)
+                {
+                    _thumbnailController = new ThumbnailController(ShowThumbnail(radius));
+                }
+                else
+                {
+                    ShowThumbnail(radius);
+                }
+
                 if (hasSpoiler)
                 {
-                    var temp = new SoftwareBitmapSource();
-                    source = temp;
-                    PlaceholderHelper.GetBlurred(temp, thumbnail.File.Local.Path, 15);
+                    _thumbnailController.Blur(thumbnail.File.Local.Path, 15);
                 }
                 else
                 {
@@ -259,11 +267,8 @@ namespace Telegram.Controls.Messages
                     var width = (int)(thumbnail.Width * ratio);
                     var height = (int)(thumbnail.Height * ratio);
 
-                    source = UriEx.ToBitmap(thumbnail.File.Local.Path, width, height);
+                    _thumbnailController.Bitmap(thumbnail.File.Local.Path, width, height);
                 }
-
-                ShowThumbnail(radius);
-                SetThumbnail(source);
             }
             else
             {
@@ -280,12 +285,18 @@ namespace Telegram.Controls.Messages
         {
             if (thumbnail != null)
             {
-                ImageSource source = null;
+                if (_thumbnailController == null)
+                {
+                    _thumbnailController = new ThumbnailController(ShowThumbnail(radius));
+                }
+                else
+                {
+                    ShowThumbnail(radius);
+                }
+
                 if (hasSpoiler)
                 {
-                    var temp = new SoftwareBitmapSource();
-                    source = temp;
-                    PlaceholderHelper.GetBlurred(temp, thumbnail.Data, 15);
+                    _thumbnailController.Blur(thumbnail.Data, 15);
                 }
                 else
                 {
@@ -296,31 +307,12 @@ namespace Telegram.Controls.Messages
                     var width = (int)(thumbnail.Width * ratio);
                     var height = (int)(thumbnail.Height * ratio);
 
-                    var temp = new BitmapImage { DecodePixelWidth = width, DecodePixelHeight = height, DecodePixelType = DecodePixelType.Logical };
-                    source = temp;
-
-                    using (var stream = new InMemoryRandomAccessStream())
-                    {
-                        try
-                        {
-                            PlaceholderImageHelper.WriteBytes(thumbnail.Data, stream);
-                            temp.SetSource(stream);
-                        }
-                        catch
-                        {
-                            // Throws when the data is not a valid encoded image,
-                            // not so frequent, but if it happens during ContainerContentChanging it crashes the app.
-                        }
-                    }
+                    _thumbnailController.Bitmap(thumbnail.Data, width, height);
                 }
-
-                ShowThumbnail(radius);
-                SetThumbnail(source);
             }
             else
             {
                 HideThumbnail();
-                SetThumbnail(null);
             }
         }
 
@@ -1091,13 +1083,10 @@ namespace Telegram.Controls.Messages
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected abstract void SetThumbnail(ImageSource value);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected abstract void HideThumbnail();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected abstract void ShowThumbnail(CornerRadius radius = default);
+        protected abstract ImageBrush ShowThumbnail(CornerRadius radius = default);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected abstract void SetText(MessageViewModel message, bool outgoing, MessageSender sender, string title, string service, FormattedText quote, bool manual = false, bool white = false);

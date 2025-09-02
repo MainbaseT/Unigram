@@ -20,7 +20,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace Telegram.Controls
 {
@@ -45,12 +44,16 @@ namespace Telegram.Controls
 
         private object _parameters;
 
+        private ThumbnailController _controller;
+
         private Border LayoutRoot;
         private ImageBrush Texture;
         private LinearGradientBrush Gradient;
 
         // TODO: consider lazy loading
         private TextBlock Initials;
+
+        private bool _templateApplied;
 
         public ProfilePicture()
         {
@@ -73,7 +76,33 @@ namespace Telegram.Controls
             //UpdateCornerRadius();
             //UpdateFontSize();
 
-            OnSourceChanged(Source);
+            _templateApplied = true;
+
+            if (_parameters is ChatParameters chat)
+            {
+                SetChat(chat.ClientService, chat.Chat, chat.Side, false);
+            }
+            else if (_parameters is UserParameters user)
+            {
+                SetUser(user.ClientService, user.User, user.Side, false);
+            }
+            else if (_parameters is ChatInviteParameters chatInvite)
+            {
+                SetChat(chatInvite.ClientService, chatInvite.Chat, chatInvite.Side, false);
+            }
+            else if (_parameters is ChatPhotoParameters chatPhoto)
+            {
+                SetChatPhoto(chatPhoto.ClientService, chatPhoto.Photo, chatPhoto.Side, false);
+            }
+            else if (_parameters is StoryParameters story)
+            {
+                SetStory(story.ClientService, story.Story, story.Side, false);
+            }
+            else
+            {
+                OnSourceChanged(Source);
+            }
+
             base.OnApplyTemplate();
         }
 
@@ -262,6 +291,12 @@ namespace Telegram.Controls
 
                 Initials.Visibility = Visibility.Collapsed;
             }
+            else if (newValue is ThumbnailController)
+            {
+                LayoutRoot.Background = Texture;
+
+                Initials.Visibility = Visibility.Collapsed;
+            }
             else
             {
                 LayoutRoot.Background = null;
@@ -333,6 +368,12 @@ namespace Telegram.Controls
 
         public void SetStory(IClientService clientService, Story story, int side, bool download = true)
         {
+            if (!_templateApplied)
+            {
+                _parameters = new StoryParameters(clientService, story, side);
+                return;
+            }
+
             if (story.Content is StoryContentPhoto photo)
             {
                 SetStory(clientService, story, photo.Photo.GetSmall()?.Photo, side, download);
@@ -367,7 +408,10 @@ namespace Telegram.Controls
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    return UriEx.ToBitmap(file.Local.Path, 0, 0);
+                    _controller ??= new ThumbnailController(Texture);
+                    _controller.Bitmap(file.Local.Path, 0, 0);
+
+                    return _controller;
                 }
                 else if (download)
                 {
@@ -383,17 +427,20 @@ namespace Telegram.Controls
 
             if (story.Content is StoryContentPhoto photo && photo.Photo.Minithumbnail != null)
             {
-                var bitmap = new SoftwareBitmapSource();
-                PlaceholderHelper.GetBlurred(bitmap, photo.Photo.Minithumbnail.Data);
-                return bitmap;
+                _controller ??= new ThumbnailController(Texture);
+                _controller.Blur(photo.Photo.Minithumbnail.Data, 3);
+
+                return _controller;
             }
             else if (story.Content is StoryContentVideo video && video.Video.Minithumbnail != null)
             {
-                var bitmap = new SoftwareBitmapSource();
-                PlaceholderHelper.GetBlurred(bitmap, video.Video.Minithumbnail.Data);
-                return bitmap;
+                _controller ??= new ThumbnailController(Texture);
+                _controller.Blur(video.Video.Minithumbnail.Data, 3);
+
+                return _controller;
             }
 
+            _controller?.Recycle();
             return null;
         }
 
@@ -417,6 +464,12 @@ namespace Telegram.Controls
 
         public void SetChat(IClientService clientService, Chat chat, int side, bool download = true)
         {
+            if (!_templateApplied)
+            {
+                _parameters = new ChatParameters(clientService, chat, side);
+                return;
+            }
+
             SetChat(clientService, chat, chat.Photo?.Small, side, download);
         }
 
@@ -444,10 +497,12 @@ namespace Telegram.Controls
 
             if (chat.Id == clientService.Options.MyId)
             {
+                _controller?.Recycle();
                 return PlaceholderImage.GetGlyph(Icons.BookmarkFilled, 5);
             }
             else if (chat.Id == clientService.Options.RepliesBotChatId)
             {
+                _controller?.Recycle();
                 return PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
             }
 
@@ -467,7 +522,10 @@ namespace Telegram.Controls
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    return UriEx.ToBitmap(file.Local.Path, side, side);
+                    _controller ??= new ThumbnailController(Texture);
+                    _controller.Bitmap(file.Local.Path, side, side);
+
+                    return _controller;
                 }
                 else if (download)
                 {
@@ -483,11 +541,14 @@ namespace Telegram.Controls
                 var minithumbnail = chat.Photo?.Minithumbnail;
                 if (minithumbnail != null)
                 {
-                    var bitmap = new SoftwareBitmapSource();
-                    PlaceholderHelper.GetBlurred(bitmap, minithumbnail.Data);
-                    return bitmap;
+                    _controller ??= new ThumbnailController(Texture);
+                    _controller.Blur(minithumbnail.Data, 3);
+
+                    return _controller;
                 }
             }
+
+            _controller?.Recycle();
 
             if (clientService.TryGetUser(chat, out User user))
             {
@@ -522,6 +583,12 @@ namespace Telegram.Controls
 
         public void SetUser(IClientService clientService, User user, int side, bool download = true)
         {
+            if (!_templateApplied)
+            {
+                _parameters = new UserParameters(clientService, user, side);
+                return;
+            }
+
             SetUser(clientService, user, user.ProfilePhoto?.Small, side, download);
         }
 
@@ -547,7 +614,10 @@ namespace Telegram.Controls
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    return UriEx.ToBitmap(file.Local.Path, side, side);
+                    _controller ??= new ThumbnailController(Texture);
+                    _controller.Bitmap(file.Local.Path, side, side);
+
+                    return _controller;
                 }
                 else if (download)
                 {
@@ -563,11 +633,14 @@ namespace Telegram.Controls
                 var minithumbnail = user.ProfilePhoto?.Minithumbnail;
                 if (minithumbnail != null)
                 {
-                    var bitmap = new SoftwareBitmapSource();
-                    PlaceholderHelper.GetBlurred(bitmap, minithumbnail.Data);
-                    return bitmap;
+                    _controller ??= new ThumbnailController(Texture);
+                    _controller.Blur(minithumbnail.Data, 3);
+
+                    return _controller;
                 }
             }
+
+            _controller?.Recycle();
 
             if (user.Type is UserTypeDeleted)
             {
@@ -598,6 +671,12 @@ namespace Telegram.Controls
 
         public void SetChat(IClientService clientService, ChatInviteLinkInfo chat, int side, bool download = true)
         {
+            if (!_templateApplied)
+            {
+                _parameters = new ChatInviteParameters(clientService, chat, side);
+                return;
+            }
+
             SetChat(clientService, chat, chat.Photo?.Small, side, download);
         }
 
@@ -615,7 +694,10 @@ namespace Telegram.Controls
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    return UriEx.ToBitmap(file.Local.Path, side, side);
+                    _controller ??= new ThumbnailController(Texture);
+                    _controller.Bitmap(file.Local.Path, side, side);
+
+                    return _controller;
                 }
                 else
                 {
@@ -631,11 +713,13 @@ namespace Telegram.Controls
 
             if (chat.Photo?.Minithumbnail != null)
             {
-                var bitmap = new SoftwareBitmapSource();
-                PlaceholderHelper.GetBlurred(bitmap, chat.Photo.Minithumbnail.Data);
-                return bitmap;
+                _controller ??= new ThumbnailController(Texture);
+                _controller.Blur(chat.Photo.Minithumbnail.Data, 3);
+
+                return _controller;
             }
 
+            _controller?.Recycle();
             return PlaceholderImage.GetChat(clientService, chat);
         }
 
@@ -659,6 +743,12 @@ namespace Telegram.Controls
 
         public void SetChatPhoto(IClientService clientService, ChatPhoto photo, int side, bool download = true)
         {
+            if (!_templateApplied)
+            {
+                _parameters = new ChatPhotoParameters(clientService, photo, side);
+                return;
+            }
+
             SetChatPhoto(clientService, photo, photo.GetBig()?.Photo, side, download);
         }
 
@@ -676,7 +766,10 @@ namespace Telegram.Controls
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    return UriEx.ToBitmap(file.Local.Path, side, side);
+                    _controller ??= new ThumbnailController(Texture);
+                    _controller.Bitmap(file.Local.Path, side, side);
+
+                    return _controller;
                 }
                 else
                 {
@@ -692,11 +785,13 @@ namespace Telegram.Controls
 
             if (photo.Minithumbnail != null)
             {
-                var bitmap = new SoftwareBitmapSource();
-                PlaceholderHelper.GetBlurred(bitmap, photo.Minithumbnail.Data);
-                return bitmap;
+                _controller ??= new ThumbnailController(Texture);
+                _controller.Blur(photo.Minithumbnail.Data, 3);
+
+                return _controller;
             }
 
+            _controller?.Recycle();
             return null;
         }
 

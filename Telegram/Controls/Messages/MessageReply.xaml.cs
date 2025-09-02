@@ -234,13 +234,15 @@ namespace Telegram.Controls.Messages
 
         protected override void HideThumbnail()
         {
+            _thumbnailController?.Recycle();
+
             if (ThumbRoot != null)
             {
                 ThumbRoot.Visibility = Visibility.Collapsed;
             }
         }
 
-        protected override void ShowThumbnail(CornerRadius radius = default)
+        protected override ImageBrush ShowThumbnail(CornerRadius radius = default)
         {
             if (ThumbRoot == null)
             {
@@ -252,14 +254,8 @@ namespace Telegram.Controls.Messages
             ThumbRoot.Visibility = Visibility.Visible;
             ThumbRoot.CornerRadius =
                 ThumbEllipse.CornerRadius = radius == default ? _defaultRadius : radius;
-        }
 
-        protected override void SetThumbnail(ImageSource value)
-        {
-            if (ThumbImage != null)
-            {
-                ThumbImage.ImageSource = value;
-            }
+            return ThumbImage;
         }
 
         protected override void SetText(MessageViewModel message, bool outgoing, MessageSender messageSender, string title, string service, FormattedText text, bool quote, bool white)

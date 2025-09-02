@@ -346,15 +346,19 @@ namespace Telegram.Controls.Chats
 
         protected override void HideThumbnail()
         {
+            _thumbnailController?.Recycle();
+
             ShowHideThumbnail(false);
         }
 
-        protected override void ShowThumbnail(CornerRadius radius = default)
+        protected override ImageBrush ShowThumbnail(CornerRadius radius = default)
         {
             ShowHideThumbnail(true);
 
             ThumbRoot.CornerRadius =
                 ThumbEllipse.CornerRadius = radius == default ? _defaultRadius : radius;
+
+            return ThumbImage;
         }
 
         private bool _collapsedThumbnail = true;
@@ -405,14 +409,6 @@ namespace Telegram.Controls.Chats
             content.StartAnimation("Translation.X", translation);
 
             batch.End();
-        }
-
-        protected override void SetThumbnail(ImageSource value)
-        {
-            if (ThumbImage != null)
-            {
-                ThumbImage.ImageSource = value;
-            }
         }
 
         protected override void SetText(MessageViewModel message, bool outgoing, MessageSender sender, string title, string service, FormattedText quote, bool manual, bool white)

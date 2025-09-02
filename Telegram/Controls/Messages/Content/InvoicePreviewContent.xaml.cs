@@ -19,6 +19,8 @@ namespace Telegram.Controls.Messages.Content
         private MessageViewModel _message;
         public MessageViewModel Message => _message;
 
+        private ThumbnailController _thumbnailController;
+
         public InvoicePreviewContent(MessageViewModel message)
         {
             _message = message;
@@ -29,6 +31,7 @@ namespace Telegram.Controls.Messages.Content
         #region InitializeComponent
 
         private AspectView LayoutRoot;
+        private ImageBrush ThumbnailTexture;
         private Border Overlay;
         private TextBlock Subtitle;
         private FileButton Button;
@@ -37,6 +40,7 @@ namespace Telegram.Controls.Messages.Content
         protected override void OnApplyTemplate()
         {
             LayoutRoot = GetTemplateChild(nameof(LayoutRoot)) as AspectView;
+            ThumbnailTexture = LayoutRoot.Background as ImageBrush;
             Overlay = GetTemplateChild(nameof(Overlay)) as Border;
             Subtitle = GetTemplateChild(nameof(Subtitle)) as TextBlock;
             Button = GetTemplateChild(nameof(Button)) as FileButton;
@@ -64,7 +68,6 @@ namespace Telegram.Controls.Messages.Content
             }
 
             LayoutRoot.Constraint = message;
-            LayoutRoot.Background = null;
 
             if (preview.Duration > 0)
             {
@@ -94,37 +97,22 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateThumbnail(MessageViewModel message, Minithumbnail minithumbnail)
         {
-            SoftwareBitmapSource source = null;
-            ImageBrush brush;
-
-            if (LayoutRoot.Background is ImageBrush existing)
-            {
-                brush = existing;
-            }
-            else
-            {
-                brush = new ImageBrush
-                {
-                    Stretch = Stretch.UniformToFill,
-                    AlignmentX = AlignmentX.Center,
-                    AlignmentY = AlignmentY.Center
-                };
-
-                LayoutRoot.Background = brush;
-            }
+            _thumbnailController ??= new ThumbnailController(ThumbnailTexture);
 
             if (minithumbnail != null)
             {
-                source = new SoftwareBitmapSource();
-                PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
+                _thumbnailController.Blur(minithumbnail.Data, 3);
             }
-
-            brush.ImageSource = source;
+            else
+            {
+                _thumbnailController.Recycle();
+            }
         }
 
         public void Recycle()
         {
             _message = null;
+            _thumbnailController?.Recycle();
         }
 
         public bool IsValid(MessageContent content, bool primary)

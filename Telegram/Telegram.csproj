@@ -293,6 +293,9 @@
     <Compile Include="Controls\Cells\PremiumGiftCell.xaml.cs">
       <DependentUpon>PremiumGiftCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Cells\SharedMediaCell.xaml.cs">
+      <DependentUpon>SharedMediaCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ChatFoldersNavView.cs" />
     <Compile Include="Controls\Chats\ChatAccountInfo.xaml.cs">
       <DependentUpon>ChatAccountInfo.xaml</DependentUpon>
@@ -352,6 +355,7 @@
     <Compile Include="AI\RecognizedTextBoundingBoxSimplifier.cs" />
     <Compile Include="AI\RecognizedTextSelection.cs" />
     <Compile Include="AI\RecognizedTextSelectionManager.cs" />
+    <Compile Include="Common\ThumbnailController.cs" />
     <Compile Include="Controls\Views\RecentChatsView.xaml.cs">
       <DependentUpon>RecentChatsView.xaml</DependentUpon>
     </Compile>
@@ -2675,6 +2679,10 @@
     <Page Include="Controls\Cells\SharedVoiceCell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Cells\SharedMediaCell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Cells\WebSessionCell.xaml">
       <SubType>Designer</SubType>

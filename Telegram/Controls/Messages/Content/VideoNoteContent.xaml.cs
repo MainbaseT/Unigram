@@ -17,7 +17,6 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Messages.Content
@@ -28,6 +27,8 @@ namespace Telegram.Controls.Messages.Content
     {
         private MessageViewModel _message;
         public MessageViewModel Message => _message;
+
+        private ThumbnailController _thumbnailController;
 
         private long _fileToken;
         private long _thumbnailToken;
@@ -54,7 +55,7 @@ namespace Telegram.Controls.Messages.Content
 
         private AspectView LayoutRoot;
         private Ellipse Holder;
-        private ImageBrush Texture;
+        private ImageBrush ThumbnailTexture;
         private FileButton Button;
         private Border ViewOnce;
         private Grid Element;
@@ -67,7 +68,7 @@ namespace Telegram.Controls.Messages.Content
         {
             LayoutRoot = GetTemplateChild(nameof(LayoutRoot)) as AspectView;
             Holder = GetTemplateChild(nameof(Holder)) as Ellipse;
-            Texture = GetTemplateChild(nameof(Texture)) as ImageBrush;
+            ThumbnailTexture = GetTemplateChild(nameof(ThumbnailTexture)) as ImageBrush;
             Button = GetTemplateChild(nameof(Button)) as FileButton;
             ViewOnce = GetTemplateChild(nameof(ViewOnce)) as Border;
             Element = GetTemplateChild(nameof(Element)) as Grid;
@@ -106,7 +107,6 @@ namespace Telegram.Controls.Messages.Content
             TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
 
             LayoutRoot.Constraint = message;
-            Texture.ImageSource = null;
 
             if (message.Content is MessageVideoNote videoNoteMessage)
             {
@@ -333,39 +333,44 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateThumbnail(MessageViewModel message, VideoNote videoNote, File file, bool download, bool isSecret)
         {
-            SoftwareBitmapSource source = null;
-            ImageBrush brush = Texture;
+            _thumbnailController ??= new ThumbnailController(ThumbnailTexture);
 
             if (videoNote.Thumbnail != null && videoNote.Thumbnail.Format is ThumbnailFormatJpeg)
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    source = new SoftwareBitmapSource();
-                    PlaceholderHelper.GetBlurred(source, file.Local.Path, isSecret ? 15 : 3);
+                    _thumbnailController.Blur(file.Local.Path, isSecret ? 15 : 3);
                 }
-                else if (download)
+                else
                 {
-                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
+                    if (download)
                     {
-                        if (videoNote.Minithumbnail != null)
+                        if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
                         {
-                            source = new SoftwareBitmapSource();
-                            PlaceholderHelper.GetBlurred(source, videoNote.Minithumbnail.Data, isSecret ? 15 : 3);
+                            message.ClientService.DownloadFile(file.Id, 1);
                         }
 
-                        message.ClientService.DownloadFile(file.Id, 1);
+                        UpdateManager.Subscribe(this, message, file, ref _thumbnailToken, UpdateThumbnail, true);
                     }
 
-                    UpdateManager.Subscribe(this, message, file, ref _thumbnailToken, UpdateThumbnail, true);
+                    if (videoNote.Minithumbnail != null)
+                    {
+                        _thumbnailController.Blur(videoNote.Minithumbnail.Data, isSecret ? 15 : 3);
+                    }
+                    else
+                    {
+                        _thumbnailController.Recycle();
+                    }
                 }
             }
             else if (videoNote.Minithumbnail != null)
             {
-                source = new SoftwareBitmapSource();
-                PlaceholderHelper.GetBlurred(source, videoNote.Minithumbnail.Data, isSecret ? 15 : 3);
+                _thumbnailController.Blur(videoNote.Minithumbnail.Data, isSecret ? 15 : 3);
             }
-
-            brush.ImageSource = source;
+            else
+            {
+                _thumbnailController.Recycle();
+            }
         }
 
         public void Recycle()
@@ -377,6 +382,7 @@ namespace Telegram.Controls.Messages.Content
             RemoveMessage(_message);
 
             _message = null;
+            _thumbnailController?.Recycle();
 
             UpdateManager.Unsubscribe(this, ref _fileToken);
             UpdateManager.Unsubscribe(this, ref _thumbnailToken);

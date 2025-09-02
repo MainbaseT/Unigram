@@ -35,6 +35,8 @@ namespace Telegram.Controls.Gallery
 
         public GalleryMedia Item => _item;
 
+        private ThumbnailController _thumbnailController;
+
         private long _fileToken;
         private long _thumbnailToken;
 
@@ -322,31 +324,13 @@ namespace Telegram.Controls.Gallery
 
         private void UpdateThumbnail(GalleryMedia item, File file, Minithumbnail minithumbnail, bool download)
         {
-            SoftwareBitmapSource source = null;
-            ImageBrush brush;
-
-            if (Background is ImageBrush existing)
-            {
-                brush = existing;
-            }
-            else
-            {
-                brush = new ImageBrush
-                {
-                    Stretch = Stretch.UniformToFill,
-                    AlignmentX = AlignmentX.Center,
-                    AlignmentY = AlignmentY.Center
-                };
-
-                Background = brush;
-            }
+            _thumbnailController ??= new ThumbnailController(ThumbnailTexture);
 
             if (file != null)
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    source = new SoftwareBitmapSource();
-                    PlaceholderHelper.GetBlurred(source, file.Local.Path, 3);
+                    _thumbnailController.Blur(file.Local.Path, 3);
                 }
                 else
                 {
@@ -362,18 +346,22 @@ namespace Telegram.Controls.Gallery
 
                     if (minithumbnail != null)
                     {
-                        source = new SoftwareBitmapSource();
-                        PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
+                        _thumbnailController.Blur(minithumbnail.Data, 3);
+                    }
+                    else
+                    {
+                        _thumbnailController.Recycle();
                     }
                 }
             }
             else if (minithumbnail != null)
             {
-                source = new SoftwareBitmapSource();
-                PlaceholderHelper.GetBlurred(source, minithumbnail.Data, 3);
+                _thumbnailController.Blur(minithumbnail.Data, 3);
             }
-
-            brush.ImageSource = source;
+            else
+            {
+                _thumbnailController.Recycle();
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -534,6 +522,8 @@ namespace Telegram.Controls.Gallery
                 Video.Stop();
                 Button.Visibility = Visibility.Visible;
             }
+
+            _thumbnailController?.Recycle();
 
             UpdateManager.Unsubscribe(this, ref _fileToken);
             UpdateManager.Unsubscribe(this, ref _thumbnailToken);

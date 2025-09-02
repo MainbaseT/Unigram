@@ -3,10 +3,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:controls="using:Telegram.Controls"
-                    xmlns:local="using:Telegram.Controls.Messages.Content"
-                    mc:Ignorable="d">
+                    xmlns:local="using:Telegram.Controls.Cells"
+                    mc:Ignorable="d"
+                    d:DesignHeight="300"
+                    d:DesignWidth="400">
 
-    <Style TargetType="local:PreviewContent">
+    <Style TargetType="local:SharedMediaCell">
         <Setter Property="MinWidth"
                 Value="{ThemeResource TelegramMediaMinWidth}" />
         <Setter Property="MinHeight"
@@ -19,22 +21,29 @@
                 Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:PreviewContent">
-                    <controls:AspectView x:Name="LayoutRoot">
-                        <controls:AspectView.Background>
-                            <ImageBrush x:Name="ThumbnailTexture"
-                                        Stretch="UniformToFill"
-                                        AlignmentX="Center"
-                                        AlignmentY="Center" />
-                        </controls:AspectView.Background>
+                <ControlTemplate TargetType="local:SharedMediaCell">
+                    <Grid Background="{ThemeResource SettingsItemBackground}">
+                        <Border>
+                            <Border.Background>
+                                <ImageBrush x:Name="ThumbnailTexture" />
+                            </Border.Background>
+                        </Border>
+
+                        <!--<controls:BadgeControl Text="00:08"
+                                               Background="{ThemeResource MessageOverlayBackgroundBrush}"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Bottom"
+                                               Margin="4" />-->
+
                         <controls:AnimatedImage x:Name="Particles"
                                                 IsViewportAware="True"
                                                 FrameSize="0,0"
                                                 FitToSize="True"
                                                 DecodeFrameType="Logical"
                                                 Stretch="UniformToFill" />
+
                         <Border x:Name="Overlay"
-                                Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                Background="{ThemeResource MessageOverlayBackgroundBrush}"
                                 CornerRadius="{ThemeResource MessageOverlayCornerRadius}"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
@@ -44,9 +53,15 @@
                                        Style="{StaticResource CaptionTextBlockStyle}"
                                        Foreground="White"
                                        TextAlignment="Right"
-                                       TextWrapping="NoWrap" />
+                                       TextWrapping="NoWrap"
+                                       Typography.NumeralAlignment="Tabular" />
                         </Border>
-                    </controls:AspectView>
+
+                        <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="2">
+                        </Border>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
