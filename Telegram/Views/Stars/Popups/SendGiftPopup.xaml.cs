@@ -120,12 +120,12 @@ namespace Telegram.Views.Stars.Popups
                 Publisher.Visibility = Visibility.Collapsed;
             }
 
-            if (gift.TotalCount > 0)
+            if (gift.OverallLimits != null)
             {
                 LimitedRoot.Visibility = Visibility.Visible;
 
-                PrevLimit.Text = PrevLimitAbove.Text = Locale.Declension(Strings.R.Gift2AvailabilitySold, gift.TotalCount - gift.RemainingCount);
-                NextLimit.Text = NextLimitBelow.Text = Locale.Declension(Strings.R.Gift2AvailabilityLeft, gift.RemainingCount);
+                PrevLimit.Text = PrevLimitAbove.Text = Locale.Declension(Strings.R.Gift2AvailabilitySold, gift.OverallLimits.TotalCount - gift.OverallLimits.RemainingCount);
+                NextLimit.Text = NextLimitBelow.Text = Locale.Declension(Strings.R.Gift2AvailabilityLeft, gift.OverallLimits.RemainingCount);
             }
 
             PurchaseText.Text = Locale.Declension(Strings.R.Gift2Send, gift.StarCount).ReplaceStar(Icons.Premium);
@@ -138,7 +138,7 @@ namespace Telegram.Views.Stars.Popups
             var response = await _clientService.SendAsync(new SearchGiftsForResale(_gift.Id, new GiftForResaleOrderPrice(), Array.Empty<UpgradedGiftAttributeId>(), string.Empty, 1));
             if (response is GiftsForResale gifts && gifts.Gifts.Count > 0)
             {
-                _giftForResale = new AvailableGift(_gift, gifts.TotalCount, gifts.Gifts[0].Gift.ResaleStarCount, gifts.Gifts[0].Gift.Title);
+                _giftForResale = new AvailableGift(_gift, gifts.TotalCount, 0, gifts.Gifts[0].Gift.Title);
 
                 ResaleButton.Visibility = Visibility.Visible;
                 TextBlockHelper.SetMarkdown(Resale, string.Format("{0} **{1}**", Strings.Gift2AvailableForResale, gifts.TotalCount));
@@ -356,9 +356,9 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (response is Error error)
             {
-                if (error.Message == "STARGIFT_USAGE_LIMITED")
+                if (error.Message == "STARGIFT_USAGE_LIMITED" && _gift.OverallLimits != null)
                 {
-                    ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.Gift2SoldOutTitle, Locale.Declension(Strings.R.Gift2SoldOutHint, _gift.TotalCount)), new DelayedFileSource(_clientService, _gift.Sticker));
+                    ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.Gift2SoldOutTitle, Locale.Declension(Strings.R.Gift2SoldOutHint, _gift.OverallLimits.TotalCount)), new DelayedFileSource(_clientService, _gift.Sticker));
                 }
                 else
                 {
@@ -380,11 +380,14 @@ namespace Telegram.Views.Stars.Popups
 
         private void LimitedRoot_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var percent = (double)(_gift.TotalCount - _gift.RemainingCount) / _gift.TotalCount;
-            var width = e.NewSize.Width * percent;
+            if (_gift.OverallLimits != null)
+            {
+                var percent = (double)(_gift.OverallLimits.TotalCount - _gift.OverallLimits.RemainingCount) / _gift.OverallLimits.TotalCount;
+                var width = e.NewSize.Width * percent;
 
-            var next = ElementComposition.GetElementVisual(NextPanel);
-            next.Clip = next.Compositor.CreateInsetClip(0, 0, (float)width, 0);
+                var next = ElementComposition.GetElementVisual(NextPanel);
+                next.Clip = next.Compositor.CreateInsetClip(0, 0, (float)width, 0);
+            }
         }
 
         private void Resale_Click(object sender, RoutedEventArgs e)

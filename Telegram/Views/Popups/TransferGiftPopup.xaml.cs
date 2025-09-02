@@ -43,15 +43,15 @@ namespace Telegram.Views.Popups
                     Photo2.SetUser(clientService, user, 64);
                 }
 
-                if (resale)
+                if (resale && upgraded.Gift.ResaleParameters != null)
                 {
                     if (chat != null)
                     {
-                        TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2BuyPriceText, upgraded.Gift.ResaleStarCount, upgraded.Gift.ToName(), chat.Title));
+                        TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2BuyPriceText, upgraded.Gift.ResaleParameters.StarCount, upgraded.Gift.ToName(), chat.Title));
                     }
                     else
                     {
-                        TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2BuyPriceSelfText, upgraded.Gift.ResaleStarCount, upgraded.Gift.ToName()));
+                        TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2BuyPriceSelfText, upgraded.Gift.ResaleParameters.StarCount, upgraded.Gift.ToName()));
                     }
 
                     ActionButtonContent = Strings.Gift2TransferDo;

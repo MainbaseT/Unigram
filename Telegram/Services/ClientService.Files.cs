@@ -803,6 +803,12 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
+                case FoundPublicPosts foundPublicPosts:
+                    foreach (var item in foundPublicPosts.Messages)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
                 case FoundStories foundStories:
                     foreach (var item in foundStories.Stories)
                     {
@@ -829,6 +835,18 @@ namespace Telegram.Services
                     if (gift.Sticker != null)
                     {
                         ProcessFiles(gift.Sticker);
+                    }
+                    break;
+                case GiftCollection giftCollection:
+                    if (giftCollection.Icon != null)
+                    {
+                        ProcessFiles(giftCollection.Icon);
+                    }
+                    break;
+                case GiftCollections giftCollections:
+                    foreach (var item in giftCollections.Collections)
+                    {
+                        ProcessFiles(item);
                     }
                     break;
                 case GiftForResale giftForResale:
@@ -1023,6 +1041,12 @@ namespace Telegram.Services
                         ProcessFiles(linkPreviewTypeChat.Photo);
                     }
                     break;
+                case LinkPreviewTypeDirectMessagesChat linkPreviewTypeDirectMessagesChat:
+                    if (linkPreviewTypeDirectMessagesChat.Photo != null)
+                    {
+                        ProcessFiles(linkPreviewTypeDirectMessagesChat.Photo);
+                    }
+                    break;
                 case LinkPreviewTypeDocument linkPreviewTypeDocument:
                     if (linkPreviewTypeDocument.Document != null)
                     {
@@ -1047,6 +1071,12 @@ namespace Telegram.Services
                         ProcessFiles(linkPreviewTypeEmbeddedVideoPlayer.Thumbnail);
                     }
                     break;
+                case LinkPreviewTypeGiftCollection linkPreviewTypeGiftCollection:
+                    foreach (var item in linkPreviewTypeGiftCollection.Icons)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
                 case LinkPreviewTypePhoto linkPreviewTypePhoto:
                     if (linkPreviewTypePhoto.Photo != null)
                     {
@@ -1063,6 +1093,16 @@ namespace Telegram.Services
                     foreach (var item in linkPreviewTypeStickerSet.Stickers)
                     {
                         ProcessFiles(item);
+                    }
+                    break;
+                case LinkPreviewTypeStoryAlbum linkPreviewTypeStoryAlbum:
+                    if (linkPreviewTypeStoryAlbum.PhotoIcon != null)
+                    {
+                        ProcessFiles(linkPreviewTypeStoryAlbum.PhotoIcon);
+                    }
+                    if (linkPreviewTypeStoryAlbum.VideoIcon != null)
+                    {
+                        ProcessFiles(linkPreviewTypeStoryAlbum.VideoIcon);
                     }
                     break;
                 case LinkPreviewTypeSupergroupBoost linkPreviewTypeSupergroupBoost:
@@ -2273,6 +2313,22 @@ namespace Telegram.Services
                         ProcessFiles(story.Content);
                     }
                     break;
+                case StoryAlbum storyAlbum:
+                    if (storyAlbum.PhotoIcon != null)
+                    {
+                        ProcessFiles(storyAlbum.PhotoIcon);
+                    }
+                    if (storyAlbum.VideoIcon != null)
+                    {
+                        ProcessFiles(storyAlbum.VideoIcon);
+                    }
+                    break;
+                case StoryAlbums storyAlbums:
+                    foreach (var item in storyAlbums.Albums)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
                 case StoryContentPhoto storyContentPhoto:
                     if (storyContentPhoto.Photo != null)
                     {
@@ -2375,6 +2431,18 @@ namespace Telegram.Services
                     if (tonTransactionTypeFragmentDeposit.Sticker != null)
                     {
                         ProcessFiles(tonTransactionTypeFragmentDeposit.Sticker);
+                    }
+                    break;
+                case TonTransactionTypeUpgradedGiftPurchase tonTransactionTypeUpgradedGiftPurchase:
+                    if (tonTransactionTypeUpgradedGiftPurchase.Gift != null)
+                    {
+                        ProcessFiles(tonTransactionTypeUpgradedGiftPurchase.Gift);
+                    }
+                    break;
+                case TonTransactionTypeUpgradedGiftSale tonTransactionTypeUpgradedGiftSale:
+                    if (tonTransactionTypeUpgradedGiftSale.Gift != null)
+                    {
+                        ProcessFiles(tonTransactionTypeUpgradedGiftSale.Gift);
                     }
                     break;
                 case TrendingStickerSets trendingStickerSets:

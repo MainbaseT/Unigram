@@ -65,10 +65,10 @@ namespace Telegram.Controls.Cells
                     ? gift.SellStarCount.ToString("N0")
                     : regular.Gift.StarCount.ToString("N0");
 
-                if (regular.Gift.TotalCount > 0)
+                if (regular.Gift.OverallLimits != null)
                 {
                     RibbonRoot.Visibility = Visibility.Visible;
-                    Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, Formatter.ShortNumber(regular.Gift.TotalCount, true));
+                    Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, Formatter.ShortNumber(regular.Gift.OverallLimits.TotalCount, true));
 
                     RibbonTop.Color = _ribbonLimitedTop;
                     RibbonBottom.Color = _ribbonLimitedBottom;
@@ -114,7 +114,7 @@ namespace Telegram.Controls.Cells
 
                 RibbonRoot.Visibility = Visibility.Visible;
 
-                if (upgraded.Gift.ResaleStarCount > 0)
+                if (upgraded.Gift.ResaleParameters != null)
                 {
                     Ribbon.Text = Strings.Gift2OnSale;
 
@@ -132,7 +132,7 @@ namespace Telegram.Controls.Cells
                     }
 
                     ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.WithBrightness(-0.1f));
-                    ResaleStarCount.Text = upgraded.Gift.ResaleStarCount.ToString("N0");
+                    ResaleStarCount.Text = upgraded.Gift.ResaleParameters.StarCount.ToString("N0");
                 }
                 else
                 {
@@ -180,7 +180,7 @@ namespace Telegram.Controls.Cells
 
             FindName(nameof(ResaleStarCountRoot));
             ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.WithBrightness(-0.1f));
-            ResaleStarCount.Text = gift.Gift.ResaleStarCount.ToString("N0");
+            ResaleStarCount.Text = gift.Gift.ResaleParameters.StarCount.ToString("N0");
 
             RibbonRoot.Visibility = Visibility.Visible;
             Ribbon.Text = string.Format("#{0:N0}", gift.Gift.Number);
@@ -206,17 +206,17 @@ namespace Telegram.Controls.Cells
             StarCountParticles.Source = new ParticlesImageSource(Color.FromArgb(0x80, 0xE8, 0xAB, 0x02), Native.ParticlesType.Premium);
             Animated.Source = new DelayedFileSource(clientService, gift.Gift.Sticker);
 
-            if (gift.Gift.TotalCount > 0 && (gift.Gift.RemainingCount > 0 || gift.MinResaleStarCount == 0))
+            if (gift.Gift.OverallLimits != null && (gift.Gift.OverallLimits.RemainingCount > 0 || gift.MinResaleStarCount == 0))
             {
                 StarCount.Text = gift.Gift.StarCount.ToString("N0");
 
                 RibbonRoot.Visibility = Visibility.Visible;
-                Ribbon.Text = gift.Gift.RemainingCount > 0
+                Ribbon.Text = gift.Gift.OverallLimits.RemainingCount > 0
                     ? Strings.Gift2LimitedRibbon
                     : Strings.Gift2SoldOut;
 
-                RibbonTop.Color = gift.Gift.RemainingCount > 0 ? _ribbonLimitedTop : _ribbonSoldOutTop;
-                RibbonBottom.Color = gift.Gift.RemainingCount > 0 ? _ribbonLimitedBottom : _ribbonSoldOutBottom;
+                RibbonTop.Color = gift.Gift.OverallLimits.RemainingCount > 0 ? _ribbonLimitedTop : _ribbonSoldOutTop;
+                RibbonBottom.Color = gift.Gift.OverallLimits.RemainingCount > 0 ? _ribbonLimitedBottom : _ribbonSoldOutBottom;
             }
             else if (gift.MinResaleStarCount > 0)
             {

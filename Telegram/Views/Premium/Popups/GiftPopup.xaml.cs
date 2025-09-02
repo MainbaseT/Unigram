@@ -184,14 +184,14 @@ namespace Telegram.Views.Premium.Popups
                 var navigation = new List<GiftGroup>();
                 navigation.Add(new GiftGroup(GiftGroupType.All, all));
 
-                if (all.Any(x => x.Gift.TotalCount > 0))
+                if (all.Any(x => x.Gift.OverallLimits != null))
                 {
-                    navigation.Add(new GiftGroup(GiftGroupType.Limited, all.Where(x => x.Gift.TotalCount > 0)));
+                    navigation.Add(new GiftGroup(GiftGroupType.Limited, all.Where(x => x.Gift.OverallLimits != null)));
                 }
 
-                if (all.Any(x => x.Gift.RemainingCount > 0 || x.Gift.TotalCount == 0))
+                if (all.Any(x => x.Gift.OverallLimits == null || x.Gift.OverallLimits.RemainingCount > 0))
                 {
-                    navigation.Add(new GiftGroup(GiftGroupType.InStock, all.Where(x => x.Gift.RemainingCount > 0 || x.Gift.TotalCount == 0)));
+                    navigation.Add(new GiftGroup(GiftGroupType.InStock, all.Where(x => x.Gift.OverallLimits == null || x.Gift.OverallLimits.RemainingCount > 0)));
                 }
 
                 if (all.Any(x => x.MinResaleStarCount > 0))
@@ -220,7 +220,7 @@ namespace Telegram.Views.Premium.Popups
 
             if (e.ClickedItem is AvailableGift gift)
             {
-                if (gift.Gift.RemainingCount > 0 || gift.Gift.TotalCount == 0)
+                if (gift.Gift.OverallLimits == null || gift.Gift.OverallLimits.RemainingCount > 0)
                 {
                     await _clientService.SendAsync(new CreatePrivateChat(_clientService.Options.MyId, false));
                     confirm = await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, gift.Gift, _receiverId));

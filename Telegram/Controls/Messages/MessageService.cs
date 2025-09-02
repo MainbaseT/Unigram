@@ -363,7 +363,7 @@ namespace Telegram.Controls.Messages
                     publisherRoot.Visibility = Visibility.Collapsed;
                 }
 
-                if (gift.Gift.TotalCount > 0)
+                if (gift.Gift.OverallLimits != null)
                 {
                     ribbonRoot.Visibility = Visibility.Visible;
 

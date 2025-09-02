@@ -198,7 +198,7 @@ namespace Telegram.Views.Stars.Popups
 
             StarCount.Text = gift.StarCount.ToString("N0");
 
-            if (gift.TotalCount > 0)
+            if (gift.OverallLimits != null)
             {
                 Availability.Visibility = Visibility.Visible;
                 Availability.Content = gift.RemainingText();
@@ -260,7 +260,7 @@ namespace Telegram.Views.Stars.Popups
                 {
                     if (result is GiftsForResale gifts && gifts.Gifts.Count > 0)
                     {
-                        _resaleStarCount.TrySetResult(gifts.Gifts[0].Gift.ResaleStarCount);
+                        _resaleStarCount.TrySetResult(gifts.Gifts[0].Gift.ResaleParameters.StarCount);
                     }
                     else
                     {
@@ -395,10 +395,10 @@ namespace Telegram.Views.Stars.Popups
 
                 UpgradedButtons.Visibility = Visibility.Visible;
 
-                if (gift.ResaleStarCount > 0)
+                if (gift.ResaleParameters != null)
                 {
                     ResaleStarCountRoot.Visibility = Visibility.Visible;
-                    ResaleStarCount.Text = gift.ResaleStarCount.ToString("N0");
+                    ResaleStarCount.Text = gift.ResaleParameters.StarCount.ToString("N0");
 
                     ResellButton.Glyph = Icons.TagOffFilled;
                     ResellButton.Content = Strings.Gift2ActionUnlist;
@@ -429,12 +429,12 @@ namespace Telegram.Views.Stars.Popups
             {
                 Info.Visibility = Visibility.Collapsed;
 
-                if (gift.ResaleStarCount > 0)
+                if (gift.ResaleParameters != null)
                 {
                     ResaleStarCountRoot.Visibility = Visibility.Visible;
-                    ResaleStarCount.Text = gift.ResaleStarCount.ToString("N0");
+                    ResaleStarCount.Text = gift.ResaleParameters.StarCount.ToString("N0");
 
-                    PurchaseText.Text = Locale.Declension(Strings.R.ResellGiftBuy, gift.ResaleStarCount).ReplaceStar(Icons.Premium);
+                    PurchaseText.Text = Locale.Declension(Strings.R.ResellGiftBuy, gift.ResaleParameters.StarCount).ReplaceStar(Icons.Premium);
                 }
                 else
                 {
@@ -495,7 +495,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 Upgrade2();
             }
-            else if (_gift?.Gift is SentGiftUpgraded { Gift.ResaleStarCount: > 0 } && !IsOwned(_clientService, _receiverId))
+            else if (_gift?.Gift is SentGiftUpgraded { Gift.ResaleParameters: not null } && !IsOwned(_clientService, _receiverId))
             {
                 BuyResale();
             }
@@ -773,7 +773,7 @@ namespace Telegram.Views.Stars.Popups
             flyout.CreateFlyoutItem(CopyLink, Strings.CopyLink, Icons.Link);
             flyout.CreateFlyoutItem(Share, Strings.ShareFile, Icons.Share);
 
-            if (_gift.Gift is SentGiftUpgraded upgraded && upgraded.Gift.ResaleStarCount > 0 && upgraded.Gift.OwnerId.AreTheSame(_clientService.MyId))
+            if (_gift.Gift is SentGiftUpgraded upgraded && upgraded.Gift.ResaleParameters != null && upgraded.Gift.OwnerId.AreTheSame(_clientService.MyId))
             {
                 flyout.CreateFlyoutItem(ChangePrice, Strings.Gift2ChangePrice, Icons.Tag);
             }
@@ -830,15 +830,15 @@ namespace Telegram.Views.Stars.Popups
 
                 _navigationService.ShowPopup(message, Strings.Gift2ResellTimeoutTitle, Strings.OK);
             }
-            else if (upgraded.Gift.ResaleStarCount > 0)
+            else if (upgraded.Gift.ResaleParameters != null)
             {
                 var confirm = await _navigationService.ShowPopupAsync(Strings.Gift2UnlistText, string.Format(Strings.Gift2UnlistTitle, upgraded.Gift.ToName()), Strings.Gift2ActionUnlist, Strings.Cancel);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    var response = await _clientService.SendAsync(new SetGiftResalePrice(_gift.ReceivedGiftId, 0));
+                    var response = await _clientService.SendAsync(new SetGiftResalePrice(_gift.ReceivedGiftId, null));
                     if (response is Ok)
                     {
-                        upgraded.Gift.ResaleStarCount = 0;
+                        upgraded.Gift.ResaleParameters = null;
 
                         ResaleStarCountRoot.Visibility = Visibility.Collapsed;
 
@@ -864,7 +864,7 @@ namespace Telegram.Views.Stars.Popups
                 return;
             }
 
-            var resaleStarCount = upgraded.Gift.ResaleStarCount;
+            var resaleStarCount = upgraded.Gift.ResaleParameters?.StarCount ?? 0;
             if (resaleStarCount == 0)
             {
                 resaleStarCount = await _resaleStarCount.Task;
@@ -915,15 +915,15 @@ namespace Telegram.Views.Stars.Popups
                 return;
             }
 
-            var response = await _clientService.SendAsync(new SetGiftResalePrice(_gift.ReceivedGiftId, popup.Value));
+            var response = await _clientService.SendAsync(new SetGiftResalePrice(_gift.ReceivedGiftId, new GiftResalePriceStar(popup.Value)));
             if (response is Ok)
             {
-                upgraded.Gift.ResaleStarCount = popup.Value;
+                upgraded.Gift.ResaleParameters = new GiftResaleParameters(popup.Value, 0, false);
 
                 _aggregator.Publish(new UpdateGiftUpgraded(_gift.ReceivedGiftId, _gift));
 
                 ResaleStarCountRoot.Visibility = Visibility.Visible;
-                ResaleStarCount.Text = upgraded.Gift.ResaleStarCount.ToString("N0");
+                ResaleStarCount.Text = upgraded.Gift.ResaleParameters.StarCount.ToString("N0");
 
                 ResellButton.Glyph = Icons.TagOffFilled;
                 ResellButton.Content = Strings.Gift2ActionUnlist;
@@ -980,8 +980,8 @@ namespace Telegram.Views.Stars.Popups
             var confirm = await TransferGiftPopup.ShowAsync(XamlRoot, _clientService, _gift, chat, true);
             if (confirm == ContentDialogResult.Primary)
             {
-                var response = await _clientService.SendPaymentAsync(upgraded.Gift.ResaleStarCount, new SendResoldGift(upgraded.Gift.Name, _sendGiftTo ?? _clientService.MyId, upgraded.Gift.ResaleStarCount));
-                if (response is Ok)
+                var response = await _clientService.SendPaymentAsync(upgraded.Gift.ResaleParameters.StarCount, new SendResoldGift(upgraded.Gift.Name, _sendGiftTo ?? _clientService.MyId, new GiftResalePriceStar(upgraded.Gift.ResaleParameters.StarCount)));
+                if (response is GiftResaleResultOk)
                 {
                     _aggregator.Publish(new UpdateGiftIsSold(_gift.ReceivedGiftId));
                     Hide(ContentDialogResult.Primary);
@@ -1004,7 +1004,7 @@ namespace Telegram.Views.Stars.Popups
                 else if (response is ErrorStarsNeeded)
                 {
                     Hide();
-                    await _navigationService.ShowPopupAsync(new BuyPopup(), BuyStarsArgs.ForChannel(upgraded.Gift.ResaleStarCount, 0));
+                    await _navigationService.ShowPopupAsync(new BuyPopup(), BuyStarsArgs.ForChannel(upgraded.Gift.ResaleParameters.StarCount, 0));
                 }
             }
             else

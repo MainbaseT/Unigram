@@ -254,7 +254,7 @@ namespace Telegram.Views.Stars.Popups
                 AnimatedPhoto.Source = new DelayedFileSource(clientService, giftSale.Gift.Sticker);
                 MediaPreview.Visibility = Visibility.Collapsed;
 
-                if (giftSale.Gift.TotalCount > 0)
+                if (giftSale.Gift.OverallLimits != null)
                 {
                     Availability.Visibility = Visibility.Visible;
                     Availability.Content = giftSale.Gift.RemainingText();
@@ -310,7 +310,7 @@ namespace Telegram.Views.Stars.Popups
 
                 AnimatedPhoto.Source = new DelayedFileSource(clientService, giftPurchase.Gift.Sticker);
 
-                if (giftPurchase.Gift.TotalCount > 0)
+                if (giftPurchase.Gift.OverallLimits != null)
                 {
                     Availability.Visibility = Visibility.Visible;
                     Availability.Content = giftPurchase.Gift.RemainingText();

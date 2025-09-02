@@ -352,6 +352,7 @@ namespace Telegram.Services
         private UpdateFreezeState _freezeState = new();
 
         private StarAmount _ownedStarCount;
+        private long? _ownedTonCount;
 
         private JsonValueObject _config;
 
@@ -1224,6 +1225,20 @@ namespace Telegram.Services
                 }
 
                 return _ownedStarCount;
+            }
+        }
+
+        public long OwnedTonCount
+        {
+            get
+            {
+                if (_ownedTonCount == null)
+                {
+                    Send(new GetTonTransactions(null, string.Empty, 1));
+                    return 0;
+                }
+
+                return _ownedTonCount ?? 0;
             }
         }
 
@@ -3396,6 +3411,9 @@ namespace Telegram.Services
                     break;
                 case UpdateOwnedStarCount updateOwnedStarCount:
                     _ownedStarCount = updateOwnedStarCount.StarAmount;
+                    break;
+                case UpdateOwnedTonCount updateOwnedTonCount:
+                    _ownedTonCount = updateOwnedTonCount.TonAmount;
                     break;
                 case UpdateDefaultPaidReactionType updateDefaultPaidReactionType:
                     DefaultPaidReactionType = updateDefaultPaidReactionType.Type;

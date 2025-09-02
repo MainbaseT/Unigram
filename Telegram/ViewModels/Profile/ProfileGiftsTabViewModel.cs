@@ -284,7 +284,7 @@ namespace Telegram.ViewModels.Profile
                     var total = 0u;
                     var limit = count == 3 ? 3 : 50;
 
-                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
+                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, 0, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
                     if (response is ReceivedGifts gifts)
                     {
                         _nextOffsetId = gifts.NextOffset;

@@ -168,12 +168,12 @@ namespace Telegram.Td.Api
 
         public static string TotalText(this Gift gift)
         {
-            return Formatter.ShortNumber(gift.TotalCount);
+            return Formatter.ShortNumber(gift.OverallLimits.TotalCount);
         }
 
         public static string RemainingText(this Gift gift)
         {
-            return Locale.Declension(Strings.R.Gift2Availability4Value, gift.RemainingCount, gift.TotalCount.ToString("N0"));
+            return Locale.Declension(Strings.R.Gift2Availability4Value, gift.OverallLimits.RemainingCount, gift.OverallLimits.TotalCount.ToString("N0"));
         }
 
         public static int CountUnread(this ChatActiveStories activeStories, out bool closeFriends)
