@@ -12621,5 +12621,6 @@
     <string name="BotRestoreStorageCreatedAt">created on {0}</string>
     <string name="AutoDeleteAfteTitle">Auto-delete after...</string>
 
+    <string name="ViewCollection">VIEW COLLECTION</string>
     <string name="OpenChannelDirect">CONTACT CHANNEL</string>
 </resources>

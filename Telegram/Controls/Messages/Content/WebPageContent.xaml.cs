@@ -263,7 +263,7 @@ namespace Telegram.Controls.Messages.Content
 
             if (small)
             {
-                if (linkPreview.Type is LinkPreviewTypeStickerSet)
+                if (linkPreview.Type is LinkPreviewTypeStickerSet or LinkPreviewTypeGiftCollection)
                 {
                     Media.Child = new StickerSetContent(message);
                 }
@@ -587,6 +587,10 @@ namespace Telegram.Controls.Messages.Content
             else if (linkPreview.Type is LinkPreviewTypeDirectMessagesChat)
             {
                 ShowButton(Strings.OpenChannelDirect);
+            }
+            else if (linkPreview.Type is LinkPreviewTypeGiftCollection)
+            {
+                ShowButton(Strings.ViewCollection);
             }
             else
             {

@@ -21066,6 +21066,11 @@ namespace Telegram
         public static string ViewChatList => Resource.GetString("ViewChatList");
         
         /// <summary>
+        /// Localized resource similar to "VIEW COLLECTION"
+        /// </summary>
+        public static string ViewCollection => Resource.GetString("ViewCollection");
+        
+        /// <summary>
         /// Localized resource similar to "VIEW CONTACT"
         /// </summary>
         public static string ViewDetails => Resource.GetString("ViewDetails");

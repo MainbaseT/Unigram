@@ -14174,6 +14174,9 @@ Anonymously</value>
   <data name="ViewChatList" xml:space="preserve">
     <value>View Chat List</value>
   </data>
+  <data name="ViewCollection" xml:space="preserve">
+    <value>VIEW COLLECTION</value>
+  </data>
   <data name="ViewDetails" xml:space="preserve">
     <value>VIEW CONTACT</value>
   </data>

@@ -1324,6 +1324,7 @@ namespace Telegram.Td.Api
                 || linkPreview.Type is LinkPreviewTypeEmbeddedAudioPlayer { Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeEmbeddedAnimationPlayer { Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeEmbeddedVideoPlayer { Thumbnail: not null }
+                || linkPreview.Type is LinkPreviewTypeGiftCollection
                 || linkPreview.Type is LinkPreviewTypeSticker { Sticker.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeStickerSet
                 || linkPreview.Type is LinkPreviewTypeVideo { Cover: not null }
@@ -1755,6 +1756,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeAudio or
                 LinkPreviewTypeBackground or
                 LinkPreviewTypeDocument or
+                LinkPreviewTypeGiftCollection or
                 LinkPreviewTypeSticker or
                 LinkPreviewTypeStickerSet or
                 LinkPreviewTypeUpgradedGift or
