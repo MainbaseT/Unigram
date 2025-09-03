@@ -9191,6 +9191,9 @@ Stories</value>
   <data name="OpenChannel2" xml:space="preserve">
     <value>Open Channel</value>
   </data>
+  <data name="OpenChannelDirect" xml:space="preserve">
+    <value>CONTACT CHANNEL</value>
+  </data>
   <data name="OpenEmojiSet" xml:space="preserve">
     <value>VIEW EMOJI</value>
   </data>

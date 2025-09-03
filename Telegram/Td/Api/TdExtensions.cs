@@ -1139,6 +1139,7 @@ namespace Telegram.Td.Api
                         LinkPreviewTypeArticle article => article.Photo,
                         LinkPreviewTypeChannelBoost channelBoost => channelBoost.Photo.ToPhoto(),
                         LinkPreviewTypeChat chat => chat.Photo.ToPhoto(),
+                        LinkPreviewTypeDirectMessagesChat directMessagesChat => directMessagesChat.Photo.ToPhoto(),
                         LinkPreviewTypeSupergroupBoost supergroupBoost => supergroupBoost.Photo.ToPhoto(),
                         LinkPreviewTypeUser user => user.Photo.ToPhoto(),
                         LinkPreviewTypeVideoChat videoChat => videoChat.Photo.ToPhoto(),
@@ -1206,6 +1207,7 @@ namespace Telegram.Td.Api
                         LinkPreviewTypeAnimation animation => (animation.Animation.AnimationValue, animation.Animation.Thumbnail, animation.Animation.FileName),
                         LinkPreviewTypeAudio audio => (audio.Audio.AudioValue, audio.Audio.AlbumCoverThumbnail, audio.Audio.FileName),
                         LinkPreviewTypeBackground background => (background.Document?.DocumentValue, background.Document?.Thumbnail, background.Document?.FileName),
+                        LinkPreviewTypeDirectMessagesChat directMessagesChat => (directMessagesChat.Photo?.GetFile(), null, null),
                         LinkPreviewTypeDocument document => (document.Document.DocumentValue, document.Document.Thumbnail, document.Document.FileName),
                         LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer => (embeddedAudioPlayer.Thumbnail?.GetFile(), null, null),
                         LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => (embeddedAnimationPlayer.Thumbnail?.GetFile(), null, null),
@@ -1248,6 +1250,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeAnimation animation => animation.Animation.Minithumbnail,
                 LinkPreviewTypeAudio audio => audio.Audio.AlbumCoverMinithumbnail,
                 LinkPreviewTypeBackground background => background.Document?.Minithumbnail,
+                LinkPreviewTypeDirectMessagesChat directMessagesChat => directMessagesChat.Photo?.Minithumbnail,
                 LinkPreviewTypeDocument document => document.Document.Minithumbnail,
                 LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer => embeddedAudioPlayer.Thumbnail?.Minithumbnail,
                 LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail?.Minithumbnail,
@@ -1280,6 +1283,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeAnimation animation => animation.Animation.Thumbnail,
                 LinkPreviewTypeAudio audio => audio.Audio.AlbumCoverThumbnail,
                 LinkPreviewTypeBackground background => background.Document?.Thumbnail,
+                LinkPreviewTypeDirectMessagesChat directMessagesChat => directMessagesChat.Photo?.GetThumbnail(),
                 LinkPreviewTypeDocument document => document.Document.Thumbnail,
                 LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer => embeddedAudioPlayer.Thumbnail?.GetThumbnail(),
                 LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail?.GetThumbnail(),
@@ -1315,6 +1319,7 @@ namespace Telegram.Td.Api
             return linkPreview.Type is LinkPreviewTypeAnimation { Animation.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeAudio { Audio.AlbumCoverThumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeBackground { Document.Thumbnail: not null }
+                || linkPreview.Type is LinkPreviewTypeDirectMessagesChat { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeDocument { Document.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeEmbeddedAudioPlayer { Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeEmbeddedAnimationPlayer { Thumbnail: not null }
@@ -1388,6 +1393,7 @@ namespace Telegram.Td.Api
                         LinkPreviewTypeAnimation animation => animation.Animation.AnimationValue,
                         LinkPreviewTypeAudio audio => audio.Audio.AudioValue,
                         LinkPreviewTypeBackground background => background.Document?.DocumentValue,
+                        LinkPreviewTypeDirectMessagesChat directMessagesChat => directMessagesChat.Photo?.GetFile(),
                         LinkPreviewTypeDocument document => document.Document.DocumentValue,
                         LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer => embeddedAudioPlayer.Thumbnail?.GetFile(),
                         LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail?.GetFile(),
@@ -1772,6 +1778,7 @@ namespace Telegram.Td.Api
                 || linkPreview.Type is LinkPreviewTypeArticle { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeChannelBoost { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeChat { Photo: not null }
+                || linkPreview.Type is LinkPreviewTypeDirectMessagesChat { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeSupergroupBoost { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeUser { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeVideoChat { Photo: not null }

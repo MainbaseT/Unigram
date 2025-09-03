@@ -584,6 +584,10 @@ namespace Telegram.Controls.Messages.Content
             {
                 ShowButton(Strings.OpenUniqueGift);
             }
+            else if (linkPreview.Type is LinkPreviewTypeDirectMessagesChat)
+            {
+                ShowButton(Strings.OpenChannelDirect);
+            }
             else
             {
                 ButtonLine.Visibility = Visibility.Collapsed;
