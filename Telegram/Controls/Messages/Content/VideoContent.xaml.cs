@@ -504,7 +504,14 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (content is MessageText text && text.LinkPreview != null && !primary)
             {
-                return text.LinkPreview.Type is LinkPreviewTypeVideo || text.LinkPreview.Type is LinkPreviewTypeAlbum album && album.Media[0] is LinkPreviewAlbumMediaVideo;
+                if (text.LinkPreview.Type is LinkPreviewTypeVideo || text.LinkPreview.Type is LinkPreviewTypeAlbum album && album.Media[0] is LinkPreviewAlbumMediaVideo)
+                {
+                    return true;
+                }
+                else if (text.LinkPreview.Type is LinkPreviewTypeStoryAlbum { VideoIcon: not null })
+                {
+                    return true;
+                }
             }
             else if (content is MessageInvoice invoice && invoice.PaidMedia is PaidMediaVideo)
             {
@@ -555,6 +562,10 @@ namespace Telegram.Controls.Messages.Content
                 else if (text.LinkPreview?.Type is LinkPreviewTypeAlbum previewAlbum && previewAlbum.Media[0] is LinkPreviewAlbumMediaVideo albumVideo)
                 {
                     return albumVideo.Video;
+                }
+                else if (text.LinkPreview?.Type is LinkPreviewTypeStoryAlbum previewStoryAlbum && previewStoryAlbum.VideoIcon != null)
+                {
+                    return previewStoryAlbum.VideoIcon;
                 }
             }
             else if (content is MessageInvoice invoice && invoice.PaidMedia is PaidMediaVideo paidMedia)

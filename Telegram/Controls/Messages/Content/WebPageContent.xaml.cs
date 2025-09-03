@@ -325,6 +325,17 @@ namespace Telegram.Controls.Messages.Content
             {
                 Media.Child = new WebPageUpgradedGiftContent(message, upgradedGift);
             }
+            else if (linkPreview.Type is LinkPreviewTypeStoryAlbum storyAlbum)
+            {
+                if (storyAlbum.VideoIcon != null)
+                {
+                    Media.Child = new VideoContent(message);
+                }
+                else if (storyAlbum.PhotoIcon != null)
+                {
+                    Media.Child = new PhotoContent(message);
+                }
+            }
             else if (linkPreview.Type is LinkPreviewTypePhoto or
                                          LinkPreviewTypeEmbeddedAudioPlayer or
                                          LinkPreviewTypeEmbeddedAnimationPlayer or
@@ -591,6 +602,10 @@ namespace Telegram.Controls.Messages.Content
             else if (linkPreview.Type is LinkPreviewTypeGiftCollection)
             {
                 ShowButton(Strings.ViewCollection);
+            }
+            else if (linkPreview.Type is LinkPreviewTypeStoryAlbum)
+            {
+                ShowButton(Strings.ViewAlbum);
             }
             else
             {

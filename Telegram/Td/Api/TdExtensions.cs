@@ -1255,6 +1255,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer => embeddedAudioPlayer.Thumbnail?.Minithumbnail,
                 LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail?.Minithumbnail,
                 LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer => embeddedVideoPlayer.Thumbnail?.Minithumbnail,
+                LinkPreviewTypeStoryAlbum storyAlbum => storyAlbum.VideoIcon?.Minithumbnail ?? storyAlbum.PhotoIcon?.Minithumbnail,
                 LinkPreviewTypeVideo video => video.Cover?.Minithumbnail ?? video.Video.Minithumbnail,
                 LinkPreviewTypeVideoNote videoNote => videoNote.VideoNote.Minithumbnail,
                 LinkPreviewTypePhoto photo => photo.Photo.Minithumbnail,
@@ -1289,6 +1290,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail?.GetThumbnail(),
                 LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer => embeddedVideoPlayer.Thumbnail?.GetThumbnail(),
                 LinkPreviewTypeSticker sticker => sticker.Sticker.Thumbnail,
+                LinkPreviewTypeStoryAlbum storyAlbum => storyAlbum.VideoIcon?.Thumbnail ?? storyAlbum.PhotoIcon?.GetThumbnail(),
                 LinkPreviewTypeVideo video => video.Cover?.GetThumbnail() ?? video.Video.Thumbnail,
                 LinkPreviewTypeVideoNote videoNote => videoNote.VideoNote.Thumbnail,
                 LinkPreviewTypePhoto photo => photo.Photo.GetThumbnail(),
@@ -1327,6 +1329,8 @@ namespace Telegram.Td.Api
                 || linkPreview.Type is LinkPreviewTypeGiftCollection
                 || linkPreview.Type is LinkPreviewTypeSticker { Sticker.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeStickerSet
+                || linkPreview.Type is LinkPreviewTypeStoryAlbum { PhotoIcon: not null }
+                || linkPreview.Type is LinkPreviewTypeStoryAlbum { VideoIcon: not null }
                 || linkPreview.Type is LinkPreviewTypeVideo { Cover: not null }
                 || linkPreview.Type is LinkPreviewTypeVideo { Video.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeVideoNote { VideoNote.Thumbnail: not null }
@@ -1762,7 +1766,8 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeUpgradedGift or
                 LinkPreviewTypeVideo or
                 LinkPreviewTypeVideoNote or
-                LinkPreviewTypeVoiceNote || linkPreview.HasPhoto();
+                LinkPreviewTypeVoiceNote or
+                LinkPreviewTypeStoryAlbum { VideoIcon: not null } || linkPreview.HasPhoto();
         }
 
         public static bool HasPhoto(this LinkPreview linkPreview)
@@ -1781,6 +1786,7 @@ namespace Telegram.Td.Api
                 || linkPreview.Type is LinkPreviewTypeChannelBoost { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeChat { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeDirectMessagesChat { Photo: not null }
+                || linkPreview.Type is LinkPreviewTypeStoryAlbum { PhotoIcon: not null }
                 || linkPreview.Type is LinkPreviewTypeSupergroupBoost { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeUser { Photo: not null }
                 || linkPreview.Type is LinkPreviewTypeVideoChat { Photo: not null }

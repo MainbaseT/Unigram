@@ -21050,6 +21050,11 @@ namespace Telegram
         public static string ViewAction => Resource.GetString("ViewAction");
         
         /// <summary>
+        /// Localized resource similar to "VIEW ALBUM"
+        /// </summary>
+        public static string ViewAlbum => Resource.GetString("ViewAlbum");
+        
+        /// <summary>
         /// Localized resource similar to "View
         ///Anonymously"
         /// </summary>

@@ -461,6 +461,7 @@ namespace Telegram.Controls.Messages.Content
                     LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail,
                     LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer => embeddedVideoPlayer.Thumbnail,
                     LinkPreviewTypeSupergroupBoost supergroupBoost => supergroupBoost.Photo.ToPhoto(),
+                    LinkPreviewTypeStoryAlbum storyAlbum => storyAlbum.PhotoIcon,
                     LinkPreviewTypeUser user => user.Photo.ToPhoto(),
                     LinkPreviewTypeVideoChat videoChat => videoChat.Photo.ToPhoto(),
                     LinkPreviewTypeWebApp webApp => webApp.Photo,

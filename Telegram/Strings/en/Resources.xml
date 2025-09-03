@@ -12622,5 +12622,6 @@
     <string name="AutoDeleteAfteTitle">Auto-delete after...</string>
 
     <string name="ViewCollection">VIEW COLLECTION</string>
+    <string name="ViewAlbum">VIEW ALBUM</string>
     <string name="OpenChannelDirect">CONTACT CHANNEL</string>
 </resources>

@@ -14164,6 +14164,9 @@ If you didn&apos;t request any codes — don&apos;t worry! Most likely, someone
   <data name="ViewAction" xml:space="preserve">
     <value>View</value>
   </data>
+  <data name="ViewAlbum" xml:space="preserve">
+    <value>VIEW ALBUM</value>
+  </data>
   <data name="ViewAnonymously" xml:space="preserve">
     <value>View
 Anonymously</value>
