@@ -543,6 +543,20 @@ namespace Telegram.Td.Api
             return false;
         }
 
+        public static bool IsUser(this Chat chat, long userId)
+        {
+            if (chat.Type is ChatTypePrivate privata)
+            {
+                return userId == privata.UserId;
+            }
+            else if (chat.Type is ChatTypeSecret secret)
+            {
+                return userId == secret.UserId;
+            }
+
+            return false;
+        }
+
         public static bool IsBasicGroup(this Chat chat, out long basicGroupId)
         {
             if (chat.Type is ChatTypeBasicGroup basicGroup)
@@ -3002,6 +3016,18 @@ namespace Telegram.Td.Api
             return status is ChatMemberStatusCreator
                 or ChatMemberStatusAdministrator { Rights.CanManageTopics: true }
                 or ChatMemberStatusRestricted { Permissions.CanCreateTopics: true };
+        }
+
+        public static bool CanEditStories(this Chat chat, IClientService clientService)
+        {
+            var status = clientService.GetChatMemberStatus(chat, out bool channel);
+            if (status == null)
+            {
+                return false;
+            }
+
+            return status is ChatMemberStatusCreator
+                or ChatMemberStatusAdministrator { Rights.CanEditStories: true };
         }
 
         public static bool CanManageTopics(this Chat chat, IClientService clientService)

@@ -147,6 +147,8 @@ namespace Telegram.Services
         bool IsSavedMessages(User user);
         bool IsSavedMessages(Chat chat);
 
+        bool HasActiveUsername(Chat chat, out string username);
+
         bool IsForum(Chat chat);
         bool IsDirectMessagesGroup(Chat chat);
         bool HasTabs(Chat chat);
@@ -1683,6 +1685,21 @@ namespace Telegram.Services
                 return true;
             }
 
+            return false;
+        }
+
+        public bool HasActiveUsername(Chat chat, out string username)
+        {
+            if (TryGetUser(chat, out User user))
+            {
+                return user.HasActiveUsername(out username);
+            }
+            else if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                return supergroup.HasActiveUsername(out username);
+            }
+
+            username = null;
             return false;
         }
 

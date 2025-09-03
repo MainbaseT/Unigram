@@ -12624,4 +12624,29 @@
     <string name="ViewCollection">VIEW COLLECTION</string>
     <string name="ViewAlbum">VIEW ALBUM</string>
     <string name="OpenChannelDirect">CONTACT CHANNEL</string>
+    
+    <string name="StoriesAlbumNameAllStories">All Stories</string>
+    <string name="StoriesAlbumRename">Rename Album</string>
+    <string name="StoriesAlbumMenuAddStories">Add Stories</string>
+    <string name="StoriesAlbumMenuShareLink">Share Link</string>
+    <string name="StoriesAlbumMenuEditName">Edit Name</string>
+    <string name="StoriesAlbumMenuDeleteAlbum">Delete Album</string>
+    <string name="StoriesAlbumRenameHint">Choose a new name for your album.</string>
+    <string name="StoriesAlbumTitleInputHint">Title</string>
+    <string name="StoriesAlbumMenuDeleteAlbumAsk">Are you sure you want to delete the **{0}** album?</string>
+    <string name="StoriesAlbumAddToAlbum">Add to Album</string>
+    <string name="StoriesAlbumNewAlbum">New Album</string>
+    <string name="StoriesAlbumAddAlbum">Add Album</string>
+    <string name="StoryAddedToAlbumX">This story has been added to **{0}** album.</string>
+    <string name="StoryRemovedFromAlbumX">This story has been removed from **{0}** album.</string>
+    <string name="StoriesAlbumCreateNew">Create a New Album</string>
+    <string name="StoriesAlbumAddHint">Choose a name for your album and add your stories.</string>
+    <string name="StoriesAlbumMenuRemoveFromAlbum">Remove from Album</string>
+    <string name="StoriesAlbumOrganizeTitle">Organize Your Stories</string>
+    <string name="StoriesAlbumOrganizeDescription">Add some of your stories to this album.</string>
+    <string name="StoryAddedToAlbumTitle_one">{0} story saved to **{1}**</string>
+    <string name="StoryAddedToAlbumTitle_other">{0} stories saved to **{1}**</string>
+    <string name="StoryRemovedFromAlbumTitle_one">{0} story removed from **{1}**</string>
+    <string name="StoryRemovedFromAlbumTitle_other">{0} stories removed from **{1}**</string>
+
 </resources>

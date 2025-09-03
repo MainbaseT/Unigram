@@ -12462,6 +12462,57 @@ and enter your phone number.</value>
   <data name="Stories_other" xml:space="preserve">
     <value>{0} Stories</value>
   </data>
+  <data name="StoriesAlbumAddAlbum" xml:space="preserve">
+    <value>Add Album</value>
+  </data>
+  <data name="StoriesAlbumAddHint" xml:space="preserve">
+    <value>Choose a name for your album and add your stories.</value>
+  </data>
+  <data name="StoriesAlbumAddToAlbum" xml:space="preserve">
+    <value>Add to Album</value>
+  </data>
+  <data name="StoriesAlbumCreateNew" xml:space="preserve">
+    <value>Create a New Album</value>
+  </data>
+  <data name="StoriesAlbumMenuAddStories" xml:space="preserve">
+    <value>Add Stories</value>
+  </data>
+  <data name="StoriesAlbumMenuDeleteAlbum" xml:space="preserve">
+    <value>Delete Album</value>
+  </data>
+  <data name="StoriesAlbumMenuDeleteAlbumAsk" xml:space="preserve">
+    <value>Are you sure you want to delete the **{0}** album?</value>
+  </data>
+  <data name="StoriesAlbumMenuEditName" xml:space="preserve">
+    <value>Edit Name</value>
+  </data>
+  <data name="StoriesAlbumMenuRemoveFromAlbum" xml:space="preserve">
+    <value>Remove from Album</value>
+  </data>
+  <data name="StoriesAlbumMenuShareLink" xml:space="preserve">
+    <value>Share Link</value>
+  </data>
+  <data name="StoriesAlbumNameAllStories" xml:space="preserve">
+    <value>All Stories</value>
+  </data>
+  <data name="StoriesAlbumNewAlbum" xml:space="preserve">
+    <value>New Album</value>
+  </data>
+  <data name="StoriesAlbumOrganizeDescription" xml:space="preserve">
+    <value>Add some of your stories to this album.</value>
+  </data>
+  <data name="StoriesAlbumOrganizeTitle" xml:space="preserve">
+    <value>Organize Your Stories</value>
+  </data>
+  <data name="StoriesAlbumRename" xml:space="preserve">
+    <value>Rename Album</value>
+  </data>
+  <data name="StoriesAlbumRenameHint" xml:space="preserve">
+    <value>Choose a new name for your album.</value>
+  </data>
+  <data name="StoriesAlbumTitleInputHint" xml:space="preserve">
+    <value>Title</value>
+  </data>
   <data name="StoriesMovedToContacts" xml:space="preserve">
     <value>Stories of **{0}** were moved to the **Archive**.</value>
   </data>
@@ -12510,6 +12561,15 @@ and enter your phone number.</value>
   <data name="Story" xml:space="preserve">
     <value>Story</value>
   </data>
+  <data name="StoryAddedToAlbumTitle_one" xml:space="preserve">
+    <value>{0} story saved to **{1}**</value>
+  </data>
+  <data name="StoryAddedToAlbumTitle_other" xml:space="preserve">
+    <value>{0} stories saved to **{1}**</value>
+  </data>
+  <data name="StoryAddedToAlbumX" xml:space="preserve">
+    <value>This story has been added to **{0}** album.</value>
+  </data>
   <data name="StoryContactsHint" xml:space="preserve">
     <value>Only **{0}’s** contacts can view this story.</value>
   </data>
@@ -12545,6 +12605,15 @@ and enter your phone number.</value>
   </data>
   <data name="StoryReactionsByEmotionChartTitle" xml:space="preserve">
     <value>Story Reactions</value>
+  </data>
+  <data name="StoryRemovedFromAlbumTitle_one" xml:space="preserve">
+    <value>{0} story removed from **{1}**</value>
+  </data>
+  <data name="StoryRemovedFromAlbumTitle_other" xml:space="preserve">
+    <value>{0} stories removed from **{1}**</value>
+  </data>
+  <data name="StoryRemovedFromAlbumX" xml:space="preserve">
+    <value>This story has been removed from **{0}** album.</value>
   </data>
   <data name="StoryRemovedFromProfile" xml:space="preserve">
     <value>Story removed from your profile.</value>

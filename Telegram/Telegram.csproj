@@ -1292,6 +1292,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\ChooseStoriesPopup.xaml.cs">
+      <DependentUpon>ChooseStoriesPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\WebAppRestorePopup.xaml.cs">
       <DependentUpon>WebAppRestorePopup.xaml</DependentUpon>
     </Compile>
@@ -3305,6 +3308,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\BackgroundPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\ChooseStoriesPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

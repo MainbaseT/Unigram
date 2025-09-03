@@ -86,6 +86,8 @@ namespace Telegram.ViewModels.Stories
             CanToggleIsPostedToChatPage = story.CanToggleIsPostedToChatPage;
             CanBeEdited = story.CanBeEdited;
             CanBeDeleted = story.CanBeDeleted;
+            CanBeAddedToAlbum = story.CanBeAddedToAlbum;
+            AlbumIds = story.AlbumIds;
             IsVisibleOnlyForSelf = story.IsVisibleOnlyForSelf;
             IsPostedToChatPage = story.IsPostedToChatPage;
             HasExpiredViewers = story.HasExpiredViewers;
@@ -140,6 +142,10 @@ namespace Telegram.ViewModels.Stories
         /// True, if the story can be deleted.
         /// </summary>
         public bool CanBeDeleted { get; private set; }
+
+        public bool CanBeAddedToAlbum { get; private set; }
+
+        public IList<int> AlbumIds { get; private set; }
 
         /// <summary>
         /// True, if the story is visible only for the current user.

@@ -218,7 +218,6 @@ namespace Telegram.ViewModels
                 if (MyProfile && user.Id == ClientService.Options.MyId)
                 {
                     AddTab(new ProfileTabItem(Strings.ProfileStories, typeof(ProfileStoriesTabPage), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
-                    AddTab(new ProfileTabItem(Strings.ArchivedStories, typeof(ProfileStoriesTabPage), ChatStoriesType.Archive, ArchivedStoriesTab.Items, Strings.R.ProfileStoriesArchiveCount));
 
                     if (cached != null && cached.GiftCount > 0)
                     {
@@ -229,6 +228,8 @@ namespace Telegram.ViewModels
                             _giftsTabViewModel.Preload();
                         }
                     }
+
+                    AddTab(new ProfileTabItem(Strings.ArchivedStories, typeof(ProfileStoriesTabPage), ChatStoriesType.Archive, ArchivedStoriesTab.Items, Strings.R.ProfileStoriesArchiveCount));
                 }
                 else
                 {
@@ -755,24 +756,8 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (chat.Type is ChatTypeSupergroup super)
+            if (ClientService.HasActiveUsername(chat, out string username))
             {
-                var supergroup = ClientService.GetSupergroup(super.SupergroupId);
-                if (supergroup == null || !supergroup.HasActiveUsername(out string username))
-                {
-                    return;
-                }
-
-                OpenUsernameInfo(username);
-            }
-            else
-            {
-                var user = ClientService.GetUser(chat);
-                if (user == null || !user.HasActiveUsername(out string username))
-                {
-                    return;
-                }
-
                 OpenUsernameInfo(username);
             }
         }
@@ -785,24 +770,8 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (chat.Type is ChatTypeSupergroup super)
+            if (ClientService.HasActiveUsername(chat, out string username))
             {
-                var supergroup = ClientService.GetSupergroup(super.SupergroupId);
-                if (supergroup == null || !supergroup.HasActiveUsername(out string username))
-                {
-                    return;
-                }
-
-                MessageHelper.CopyText(XamlRoot, $"@{username}");
-            }
-            else
-            {
-                var user = ClientService.GetUser(chat);
-                if (user == null || !user.HasActiveUsername(out string username))
-                {
-                    return;
-                }
-
                 MessageHelper.CopyText(XamlRoot, $"@{username}");
             }
         }
@@ -815,24 +784,8 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (chat.Type is ChatTypeSupergroup super)
+            if (ClientService.HasActiveUsername(chat, out string username))
             {
-                var supergroup = ClientService.GetSupergroup(super.SupergroupId);
-                if (supergroup == null || !supergroup.HasActiveUsername(out string username))
-                {
-                    return;
-                }
-
-                MessageHelper.CopyLink(ClientService, XamlRoot, new InternalLinkTypePublicChat(username, string.Empty, false));
-            }
-            else
-            {
-                var user = ClientService.GetUser(chat);
-                if (user == null || !user.HasActiveUsername(out string username))
-                {
-                    return;
-                }
-
                 MessageHelper.CopyLink(ClientService, XamlRoot, new InternalLinkTypePublicChat(username, string.Empty, false));
             }
         }
