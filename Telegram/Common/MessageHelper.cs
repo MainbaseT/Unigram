@@ -590,6 +590,27 @@ namespace Telegram.Common
                 case InternalLinkTypeBotAddToChannel botAddToChannel:
                     NavigateToBotAddToChannel(clientService, navigation, botAddToChannel.BotUsername, botAddToChannel.AdministratorRights);
                     break;
+                case InternalLinkTypeDirectMessagesChat directMessagesChat:
+                    NavigateToDirectMessagesChat(clientService, navigation, directMessagesChat.ChannelUsername);
+                    break;
+            }
+        }
+
+        private static async void NavigateToDirectMessagesChat(IClientService clientService, INavigationService navigation, string channelUsername)
+        {
+            var response = await clientService.SendAsync(new SearchPublicChat(channelUsername));
+            if (response is Chat chat && clientService.TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                if (supergroup.IsChannel && supergroup.HasDirectMessagesGroup)
+                {
+                    var fullInfo = clientService.GetSupergroupFull(supergroup.Id);
+                    fullInfo ??= await clientService.SendAsync(new GetSupergroupFullInfo(supergroup.Id)) as SupergroupFullInfo;
+
+                    if (fullInfo != null && fullInfo.DirectMessagesChatId != 0)
+                    {
+                        navigation.NavigateToChat(fullInfo.DirectMessagesChatId);
+                    }
+                }
             }
         }
 
