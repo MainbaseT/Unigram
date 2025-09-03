@@ -104,7 +104,7 @@ namespace Telegram.Controls.Cells
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    _thumbnailController.Blur(file.Local.Path, 3);
+                    _thumbnailController.Bitmap(file.Local.Path);
                 }
                 else
                 {
