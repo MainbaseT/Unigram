@@ -212,6 +212,11 @@ namespace Telegram.Controls
             _core.WebResourceRequested += OnWebResourceRequested;
             _core.WebMessageReceived += OnWebMessageReceived;
 
+            if (SettingsService.Current.Diagnostics.EnableWebViewDevTools)
+            {
+                _core.OpenDevToolsWindow();
+            }
+
             _core.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
 
             if (_video.AlternativeVideos.Count > 0)
@@ -226,7 +231,8 @@ namespace Telegram.Controls
 
         private void OnNavigationCompleted(CoreWebView2 sender, CoreWebView2NavigationCompletedEventArgs args)
         {
-            ExecuteScript("playerInitialize({debug:false});playerPlay();");
+            var debug = SettingsService.Current.Diagnostics.EnableWebViewDevTools ? "true" : "false";
+            ExecuteScript("playerInitialize({debug:" + debug +"});playerPlay();");
         }
 
         private async void OnWebResourceRequested(CoreWebView2 sender, CoreWebView2WebResourceRequestedEventArgs args)
