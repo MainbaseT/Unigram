@@ -1000,6 +1000,13 @@
         </Setter>
     </Style>
 
+    <Style TargetType="local:ProfileRating">
+        <Setter Property="Fill"
+                Value="{ThemeResource ChatVerifiedBadgeBrush}" />
+        <Setter Property="Stroke"
+                Value="Transparent" />
+    </Style>
+
     <Style TargetType="local:IdentityIcon">
         <Setter Property="Foreground"
                 Value="{ThemeResource ChatVerifiedBadgeBrush}" />

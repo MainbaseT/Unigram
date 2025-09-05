@@ -183,13 +183,23 @@
                   Grid.Row="2">
                 <Grid x:Name="SubtitleMain">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
+                    <HyperlinkButton x:Name="RatingRoot"
+                                     Click="Rating_Click"
+                                     Style="{StaticResource EmptyHyperlinkButtonStyle}"
+                                     VerticalAlignment="Bottom"
+                                     Margin="0,-2,2,-4">
+                        <controls:ProfileRating x:Name="Rating" />
+                    </HyperlinkButton>
+
                     <TextBlock x:Name="Subtitle"
                                Style="{StaticResource BodyTextBlockStyle}"
                                Foreground="{ThemeResource PageHeaderDisabledBrush}"
-                               TextAlignment="Center" />
+                               TextAlignment="Center"
+                               Grid.Column="1" />
 
                     <Button x:Name="SubtitleWhen"
                             Visibility="Collapsed"
@@ -202,7 +212,7 @@
                             Margin="4,0,0,0"
                             CornerRadius="8"
                             Height="16"
-                            Grid.Column="1">
+                            Grid.Column="2">
                         <TextBlock Text="{CustomResource StatusHiddenShow}"
                                    TextLineBounds="Tight"
                                    TextAlignment="Center"

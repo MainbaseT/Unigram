@@ -182,11 +182,15 @@ namespace Telegram.Controls
                 {
                     Identity.ClearValue(ForegroundProperty);
                     BotVerified.ClearValue(AnimatedImage.ReplacementColorProperty);
+                    Rating.ClearValue(ProfileRating.FillProperty);
+                    Rating.ClearValue(ProfileRating.StrokeProperty);
                 }
                 else
                 {
                     Identity.Foreground = new SolidColorBrush(Colors.White);
                     BotVerified.ReplacementColor = new SolidColorBrush(Colors.White);
+                    Rating.Fill = new SolidColorBrush(Colors.White);
+                    Rating.Stroke = new SolidColorBrush(Color.FromArgb(0x33, 0x00, 0x00, 0x00));
                 }
 
                 TitleRoot.RequestedTheme = show ? ActualTheme : HeaderTheme;
@@ -348,6 +352,8 @@ namespace Telegram.Controls
 
                 Identity.Foreground = new SolidColorBrush(Colors.White);
                 BotVerified.ReplacementColor = new SolidColorBrush(Colors.White);
+                Rating.Fill = new SolidColorBrush(Colors.White);
+                Rating.Stroke = new SolidColorBrush(Color.FromArgb(0x33, 0x00, 0x00, 0x00));
 
                 HeaderRoot.RequestedTheme = ElementTheme.Dark;
 
@@ -382,6 +388,8 @@ namespace Telegram.Controls
             {
                 Identity.ClearValue(ForegroundProperty);
                 BotVerified.ClearValue(AnimatedImage.ReplacementColorProperty);
+                Rating.ClearValue(ProfileRating.FillProperty);
+                Rating.ClearValue(ProfileRating.StrokeProperty);
 
                 HeaderBackground.ClearValue(Panel.BackgroundProperty);
                 HeaderRoot.RequestedTheme = ElementTheme.Default;
@@ -772,6 +780,16 @@ namespace Telegram.Controls
                 return;
             }
 
+            if (fullInfo.Rating != null)
+            {
+                Rating.Visibility = Visibility.Visible;
+                Rating.Value = fullInfo.Rating.Level;
+            }
+            else
+            {
+                Rating.Visibility = Visibility.Collapsed;
+            }
+
             var animation = fullInfo.PersonalPhoto != null
                 ? fullInfo.PersonalPhoto.SmallAnimation ?? fullInfo.PersonalPhoto.Animation
                 : fullInfo.Photo?.SmallAnimation ?? fullInfo.Photo?.Animation;
@@ -950,6 +968,8 @@ namespace Telegram.Controls
             Subtitle.Text = Locale.Declension(Strings.R.Members, group.MemberCount);
             SubtitleWhen.Visibility = Visibility.Collapsed;
 
+            RatingRoot.Visibility = Visibility.Collapsed;
+
             Description.Description = Strings.DescriptionPlaceholder;
 
             UserPhone.Visibility = Visibility.Collapsed;
@@ -1060,6 +1080,8 @@ namespace Telegram.Controls
                 Subtitle.Text = Locale.Declension(group.IsChannel ? Strings.R.Subscribers : Strings.R.Members, group.MemberCount);
                 SubtitleWhen.Visibility = Visibility.Collapsed;
             }
+
+            RatingRoot.Visibility = Visibility.Collapsed;
 
             Description.Description = Strings.DescriptionPlaceholder;
 
@@ -1940,6 +1962,11 @@ namespace Telegram.Controls
         private void GiftsCover_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             GiftsCover.TransitionFraction = _verticalOffset / (32 + 140 + 96);
+        }
+
+        private void Rating_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 
