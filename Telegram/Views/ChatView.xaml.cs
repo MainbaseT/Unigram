@@ -6390,7 +6390,14 @@ namespace Telegram.Views
                 }
                 else if (!chat.Permissions.CanSendBasicMessages && (fullInfo == null || fullInfo.MyBoostCount < fullInfo.UnrestrictBoostCount))
                 {
-                    ShowAction(Strings.GlobalSendMessageRestricted, fullInfo != null && fullInfo.UnrestrictBoostCount > 0);
+                    if (fullInfo != null && fullInfo.MyBoostCount < fullInfo.UnrestrictBoostCount)
+                    {
+                        ShowAction(Strings.BoostingBoostToSendMessages, true);
+                    }
+                    else
+                    {
+                        ShowAction(Strings.GlobalSendMessageRestricted, false);
+                    }
                 }
                 else if (ViewModel.Type != DialogType.Thread && group.IsDirectMessagesGroup && group.IsAdministeredDirectMessagesGroup)
                 {

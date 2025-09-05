@@ -2003,6 +2003,9 @@ from this chat</value>
   <data name="BoostingBoostsGroupByYouServiceMsgCount_other" xml:space="preserve">
     <value>You boosted the group {0} times</value>
   </data>
+  <data name="BoostingBoostToSendMessages" xml:space="preserve">
+    <value>Boost this group to send messages</value>
+  </data>
   <data name="BoostingCongratulations" xml:space="preserve">
     <value>Congratulations!</value>
   </data>

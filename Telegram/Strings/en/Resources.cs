@@ -3266,6 +3266,11 @@ namespace Telegram
         public static string BoostingBoostsGroupByYouServiceMsg => Resource.GetString("BoostingBoostsGroupByYouServiceMsg");
         
         /// <summary>
+        /// Localized resource similar to "Boost this group to send messages"
+        /// </summary>
+        public static string BoostingBoostToSendMessages => Resource.GetString("BoostingBoostToSendMessages");
+        
+        /// <summary>
         /// Localized resource similar to "Congratulations!"
         /// </summary>
         public static string BoostingCongratulations => Resource.GetString("BoostingCongratulations");

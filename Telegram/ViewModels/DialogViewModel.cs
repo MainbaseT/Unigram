@@ -23,7 +23,9 @@ using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Chats;
 using Telegram.ViewModels.Delegates;
+using Telegram.ViewModels.Supergroups;
 using Telegram.Views;
+using Telegram.Views.Chats.Popups;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
 using Telegram.Views.Supergroups.Popups;
@@ -4398,6 +4400,20 @@ namespace Telegram.ViewModels
                     else if (group.Status is ChatMemberStatusBanned)
                     {
                         DeleteChat();
+                    }
+                    else if (ClientService.TryGetSupergroupFull(group.Id, out SupergroupFullInfo fullInfo))
+                    {
+                        if (fullInfo.MyBoostCount < fullInfo.UnrestrictBoostCount)
+                        {
+                            var response1 = await ClientService.SendAsync(new GetChatBoostFeatures(chat.Type is ChatTypeSupergroup { IsChannel: true }));
+                            var response2 = await ClientService.SendAsync(new GetAvailableChatBoostSlots());
+                            var response3 = await ClientService.SendAsync(new GetChatBoostStatus(chat.Id));
+
+                            if (response1 is ChatBoostFeatures features && response2 is ChatBoostSlots slots && response3 is ChatBoostStatus status)
+                            {
+                                ShowPopup(new ChatBoostFeaturesPopup(ClientService, NavigationService, chat, status, slots, features, ChatBoostFeature.None, fullInfo.UnrestrictBoostCount));
+                            }
+                        }
                     }
                 }
             }

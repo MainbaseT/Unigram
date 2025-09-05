@@ -12673,6 +12673,8 @@
     <string name="GiftRemovedFromollectionTitle_one">{0} gift removed from **{1}**</string>
     <string name="GiftRemovedFromCollectionTitle_other">{0} gifts removed from **{1}**</string>
 
+    <string name="BoostingBoostToSendMessages">Boost this group to send messages</string>
+
     <string name="SearchPostsTitle">Global Search</string>
     <string name="SearchPostsText">Type a keyword to search for posts from public channels.</string>
     <string name="SearchPostsButton">Search</string>
