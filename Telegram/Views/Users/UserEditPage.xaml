@@ -204,7 +204,8 @@
                     <controls:SettingsButton x:Name="ResetPhoto"
                                              Click="{x:Bind ViewModel.ResetPhoto}"
                                              Content="{CustomResource ResetToOriginalPhoto}"
-                                             Foreground="{ThemeResource DangerButtonBackground}" />
+                                             Foreground="{ThemeResource DangerButtonBackground}"
+                                             IsGlyphVisible="True" />
                 </controls:HeaderedControl>
             </controls:SettingsPanel>
         </ScrollViewer>

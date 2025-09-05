@@ -772,7 +772,9 @@ namespace Telegram.Controls
                 return;
             }
 
-            var animation = fullInfo.Photo?.SmallAnimation ?? fullInfo.Photo?.Animation;
+            var animation = fullInfo.PersonalPhoto != null
+                ? fullInfo.PersonalPhoto.SmallAnimation ?? fullInfo.PersonalPhoto.Animation
+                : fullInfo.Photo?.SmallAnimation ?? fullInfo.Photo?.Animation;
             if (animation != null)
             {
                 AnimatedPhoto.Source = new DelayedFileSource(ViewModel.ClientService, animation.File)
