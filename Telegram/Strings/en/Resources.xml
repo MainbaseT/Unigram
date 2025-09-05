@@ -12673,6 +12673,27 @@
     <string name="GiftRemovedFromollectionTitle_one">{0} gift removed from **{1}**</string>
     <string name="GiftRemovedFromCollectionTitle_other">{0} gifts removed from **{1}**</string>
 
+    <string name="SearchPostsTitle">Global Search</string>
+    <string name="SearchPostsText">Type a keyword to search for posts from public channels.</string>
+    <string name="SearchPostsButton">Search</string>
+    <string name="SearchPostsFreeSearches_one">{0} free search remaining today.</string>
+    <string name="SearchPostsFreeSearches_other">{0} free searches remaining today.</string>
+    <string name="SearchPostsButtonPay_one">Search for &#11088;&#65039;{0}</string>
+    <string name="SearchPostsButtonPay_other">Search for &#11088;&#65039;{0}</string>
+    <string name="SearchPostsFreeSearchUnlocksIn">free search unlocks in {0}</string>
+    <string name="SearchPostsLimitReached">Limit Reached</string>
+    <string name="SearchPostsLimitReachedText_one">You can make up to {0} search query per day.</string>
+    <string name="SearchPostsLimitReachedText_other">You can make up to {0} search queries per day.</string>
+    <string name="SearchPostsNotFound">Not Found</string>
+    <string name="SearchPostsNotFoundText">No posts found for \"{0}\".</string>
+    <string name="SearchPostsButtonPremium">Subscribe to Premium</string>
+    <string name="SearchPostsPremium">Global search is a Premium feature.</string>
+    <string name="SearchPostsHeaderNews">Telegram News</string>
+    <string name="SearchPostsHeaderFound">Public Posts</string>
+    <string name="SearchPosts">Posts</string>
+    <string name="SearchPaidStars_one">**{0} Star** spent on extra search.</string>
+    <string name="SearchPaidStars_other">**{0} Stars** spent on extra search.</string>
+
     <string name="StarRatingTitle">Rating</string>
     <string name="StarRatingAdded">ADDED</string>
     <string name="StarRatingDeduces">DEDUCTED</string>

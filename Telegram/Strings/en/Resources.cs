@@ -243,6 +243,10 @@ namespace Telegram
             public const string ResellGiftInfoMin = "ResellGiftInfoMin";
             public const string Restrictions = "Restrictions";
             public const string SavedMessagesCount = "SavedMessagesCount";
+            public const string SearchPaidStars = "SearchPaidStars";
+            public const string SearchPostsButtonPay = "SearchPostsButtonPay";
+            public const string SearchPostsFreeSearches = "SearchPostsFreeSearches";
+            public const string SearchPostsLimitReachedText = "SearchPostsLimitReachedText";
             public const string Seconds = "Seconds";
             public const string Shared = "Shared";
             public const string Shares = "Shares";
@@ -17193,6 +17197,66 @@ namespace Telegram
         /// Localized resource similar to "Channels you joined"
         /// </summary>
         public static string SearchMyChannels => Resource.GetString("SearchMyChannels");
+        
+        /// <summary>
+        /// Localized resource similar to "Posts"
+        /// </summary>
+        public static string SearchPosts => Resource.GetString("SearchPosts");
+        
+        /// <summary>
+        /// Localized resource similar to "Search"
+        /// </summary>
+        public static string SearchPostsButton => Resource.GetString("SearchPostsButton");
+        
+        /// <summary>
+        /// Localized resource similar to "Subscribe to Premium"
+        /// </summary>
+        public static string SearchPostsButtonPremium => Resource.GetString("SearchPostsButtonPremium");
+        
+        /// <summary>
+        /// Localized resource similar to "free search unlocks in {0}"
+        /// </summary>
+        public static string SearchPostsFreeSearchUnlocksIn => Resource.GetString("SearchPostsFreeSearchUnlocksIn");
+        
+        /// <summary>
+        /// Localized resource similar to "Public Posts"
+        /// </summary>
+        public static string SearchPostsHeaderFound => Resource.GetString("SearchPostsHeaderFound");
+        
+        /// <summary>
+        /// Localized resource similar to "Telegram News"
+        /// </summary>
+        public static string SearchPostsHeaderNews => Resource.GetString("SearchPostsHeaderNews");
+        
+        /// <summary>
+        /// Localized resource similar to "Limit Reached"
+        /// </summary>
+        public static string SearchPostsLimitReached => Resource.GetString("SearchPostsLimitReached");
+        
+        /// <summary>
+        /// Localized resource similar to "Not Found"
+        /// </summary>
+        public static string SearchPostsNotFound => Resource.GetString("SearchPostsNotFound");
+        
+        /// <summary>
+        /// Localized resource similar to "No posts found for "{0}"."
+        /// </summary>
+        public static string SearchPostsNotFoundText => Resource.GetString("SearchPostsNotFoundText");
+        
+        /// <summary>
+        /// Localized resource similar to "Global search is a Premium feature."
+        /// </summary>
+        public static string SearchPostsPremium => Resource.GetString("SearchPostsPremium");
+        
+        /// <summary>
+        /// Localized resource similar to "Type a keyword to search for posts from public channels."
+        /// </summary>
+        public static string SearchPostsText => Resource.GetString("SearchPostsText");
+        
+        /// <summary>
+        /// Localized resource similar to "Global Search"
+        /// </summary>
+        public static string SearchPostsTitle => Resource.GetString("SearchPostsTitle");
         
         /// <summary>
         /// Localized resource similar to "Similar Channels"

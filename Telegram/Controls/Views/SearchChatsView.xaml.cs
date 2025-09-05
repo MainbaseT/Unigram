@@ -15,6 +15,7 @@ using Telegram.Controls.Media;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.Views;
 using Telegram.Views.Profile;
 using Windows.Foundation;
 using Windows.UI.Composition;
@@ -417,7 +418,7 @@ namespace Telegram.Controls.Views
 
                 _prevSelectedIndex = ChatFolders.SelectedIndex;
                 MediaFrame.Navigate(page.Type, null, transition);
-                ShowHideSearch(page.Items == null);
+                ShowHideSearch(page.Type == typeof(BlankPage));
             }
         }
 
@@ -539,6 +540,11 @@ namespace Telegram.Controls.Views
             if (e.Content is not ProfileTabPage tabPage)
             {
                 return;
+            }
+
+            if (tabPage is SearchPostsTabPage)
+            {
+                tabPage.DataContext = ViewModel.Posts;
             }
 
             if (tabPage.ScrollingHost.ItemsSource != null)

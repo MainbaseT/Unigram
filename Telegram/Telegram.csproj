@@ -358,6 +358,9 @@
     <Compile Include="AI\RecognizedTextSelectionManager.cs" />
     <Compile Include="Common\ThumbnailController.cs" />
     <Compile Include="Controls\ProfileRatingSlider.cs" />
+    <Compile Include="Controls\Views\SearchPostsTabPage.xaml.cs">
+      <DependentUpon>SearchPostsTabPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Views\RecentChatsView.xaml.cs">
       <DependentUpon>RecentChatsView.xaml</DependentUpon>
     </Compile>
@@ -694,6 +697,7 @@
     <Compile Include="ViewModels\Profile\ProfileSavedChatsTabViewModel.cs" />
     <Compile Include="ViewModels\Profile\ProfileStoriesTabViewModel.cs" />
     <Compile Include="ViewModels\Profile\ProfileTabsViewModel.cs" />
+    <Compile Include="ViewModels\SearchPostsViewModel.cs" />
     <Compile Include="ViewModels\SearchWebAppsViewModel.cs" />
     <Compile Include="ViewModels\SearchChannelsViewModel.cs" />
     <Compile Include="ViewModels\SearchChatsViewModel.cs" />
@@ -3058,6 +3062,10 @@
     <Page Include="Controls\Views\ForumView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Views\SearchPostsTabPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Views\RecentChatsView.xaml">
       <SubType>Designer</SubType>

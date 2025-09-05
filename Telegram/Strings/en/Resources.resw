@@ -11540,6 +11540,66 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SearchMyChannels" xml:space="preserve">
     <value>Channels you joined</value>
   </data>
+  <data name="SearchPaidStars_one" xml:space="preserve">
+    <value>**{0} Star** spent on extra search.</value>
+  </data>
+  <data name="SearchPaidStars_other" xml:space="preserve">
+    <value>**{0} Stars** spent on extra search.</value>
+  </data>
+  <data name="SearchPosts" xml:space="preserve">
+    <value>Posts</value>
+  </data>
+  <data name="SearchPostsButton" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SearchPostsButtonPay_one" xml:space="preserve">
+    <value>Search for ⭐️{0}</value>
+  </data>
+  <data name="SearchPostsButtonPay_other" xml:space="preserve">
+    <value>Search for ⭐️{0}</value>
+  </data>
+  <data name="SearchPostsButtonPremium" xml:space="preserve">
+    <value>Subscribe to Premium</value>
+  </data>
+  <data name="SearchPostsFreeSearches_one" xml:space="preserve">
+    <value>{0} free search remaining today.</value>
+  </data>
+  <data name="SearchPostsFreeSearches_other" xml:space="preserve">
+    <value>{0} free searches remaining today.</value>
+  </data>
+  <data name="SearchPostsFreeSearchUnlocksIn" xml:space="preserve">
+    <value>free search unlocks in {0}</value>
+  </data>
+  <data name="SearchPostsHeaderFound" xml:space="preserve">
+    <value>Public Posts</value>
+  </data>
+  <data name="SearchPostsHeaderNews" xml:space="preserve">
+    <value>Telegram News</value>
+  </data>
+  <data name="SearchPostsLimitReached" xml:space="preserve">
+    <value>Limit Reached</value>
+  </data>
+  <data name="SearchPostsLimitReachedText_one" xml:space="preserve">
+    <value>You can make up to {0} search query per day.</value>
+  </data>
+  <data name="SearchPostsLimitReachedText_other" xml:space="preserve">
+    <value>You can make up to {0} search queries per day.</value>
+  </data>
+  <data name="SearchPostsNotFound" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="SearchPostsNotFoundText" xml:space="preserve">
+    <value>No posts found for &quot;{0}&quot;.</value>
+  </data>
+  <data name="SearchPostsPremium" xml:space="preserve">
+    <value>Global search is a Premium feature.</value>
+  </data>
+  <data name="SearchPostsText" xml:space="preserve">
+    <value>Type a keyword to search for posts from public channels.</value>
+  </data>
+  <data name="SearchPostsTitle" xml:space="preserve">
+    <value>Global Search</value>
+  </data>
   <data name="SearchRecommendedChannels" xml:space="preserve">
     <value>Similar Channels</value>
   </data>
