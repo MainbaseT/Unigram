@@ -147,6 +147,8 @@ namespace Telegram.Controls.Media
 
         public const string NumberSymbolFilled16 = "\uE9FB";
 
+        public const string WarningFilled = "\uEAD9";
+
         public const string TextBold = "\uE8DD";
         public const string TextItalic = "\uE8DB";
         public const string TextUnderline = "\uE8DC";

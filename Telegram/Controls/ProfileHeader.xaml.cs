@@ -1966,7 +1966,7 @@ namespace Telegram.Controls
 
         private void Rating_Click(object sender, RoutedEventArgs e)
         {
-
+            ViewModel.ShowRating();
         }
     }
 

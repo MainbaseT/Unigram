@@ -1111,7 +1111,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="HyperlinkButton">
-                    <ContentPresenter HorizontalAlignment="Stretch"
+                    <ContentPresenter Background="{TemplateBinding Background}"
+                                      HorizontalAlignment="Stretch"
                                       VerticalAlignment="Stretch" />
                 </ControlTemplate>
             </Setter.Value>

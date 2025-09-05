@@ -356,6 +356,7 @@
     <Compile Include="AI\RecognizedTextSelection.cs" />
     <Compile Include="AI\RecognizedTextSelectionManager.cs" />
     <Compile Include="Common\ThumbnailController.cs" />
+    <Compile Include="Controls\ProfileRatingSlider.cs" />
     <Compile Include="Controls\Views\RecentChatsView.xaml.cs">
       <DependentUpon>RecentChatsView.xaml</DependentUpon>
     </Compile>
@@ -1391,6 +1392,9 @@
     </Compile>
     <Compile Include="Views\Premium\Popups\ChangePrivacyPopup.xaml.cs">
       <DependentUpon>ChangePrivacyPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\Popups\ProfileRatingPopup.xaml.cs">
+      <DependentUpon>ProfileRatingPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Profile\ProfileSavedMessagesTabPage.xaml.cs">
       <DependentUpon>ProfileSavedMessagesTabPage.xaml</DependentUpon>
@@ -3440,6 +3444,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Premium\Popups\ChangePrivacyPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Profile\Popups\ProfileRatingPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

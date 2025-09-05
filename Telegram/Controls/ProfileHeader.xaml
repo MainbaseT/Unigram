@@ -190,6 +190,7 @@
                     <HyperlinkButton x:Name="RatingRoot"
                                      Click="Rating_Click"
                                      Style="{StaticResource EmptyHyperlinkButtonStyle}"
+                                     Background="Transparent"
                                      VerticalAlignment="Bottom"
                                      Margin="0,-2,2,-4">
                         <controls:ProfileRating x:Name="Rating" />

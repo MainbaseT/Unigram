@@ -12649,4 +12649,35 @@
     <string name="StoryRemovedFromAlbumTitle_one">{0} story removed from **{1}**</string>
     <string name="StoryRemovedFromAlbumTitle_other">{0} stories removed from **{1}**</string>
 
+    <string name="StarRatingTitle">Rating</string>
+    <string name="StarRatingAdded">ADDED</string>
+    <string name="StarRatingDeduces">DEDUCTED</string>
+    <string name="StarRatingFuture_one">The rating will update in {0} day after purchases.</string>
+    <string name="StarRatingFuture_other">The rating will update in {0} days after purchases.</string>
+    <string name="StarRatingFuturePreview1_one">This will be your rating in {0} day, after</string>
+    <string name="StarRatingFuturePreview1_other">This will be your rating in {0} days, after</string>
+    <string name="StarRatingFuturePreview2_one">{0} point are added.</string>
+    <string name="StarRatingFuturePreview2_other">{0} points are added.</string>
+    <string name="StarRatingFuturePendingPoints_one">{0} point is pending.</string>
+    <string name="StarRatingFuturePendingPoints_other">{0} points are pending.</string>
+    <string name="StarRatingFuturePendingPointsAndLevel1_one">{0} point and</string>
+    <string name="StarRatingFuturePendingPointsAndLevel1_other">{0} points and</string>
+    <string name="StarRatingFuturePendingPointsAndLevel2_one">Level {0} are pending.</string>
+    <string name="StarRatingFuturePendingPointsAndLevel2_other">Level {0} are pending.</string>
+    <string name="StarRatingFuturePendingPointsPreview">**Preview &gt;**</string>
+    <string name="StarRatingFuturePendingPointsPreviewBack">**Back &gt;**</string>
+    <string name="StarRatingDescription">This rating reflects **{0}\'s** activity\non Telegram. It is based on:</string>
+    <string name="StarRatingSelfDescription">This rating reflects your activity\non Telegram. It is based on:</string>
+    <string name="StarRatingTitle1">Gifts from Telegram</string>
+    <string name="StarRatingDescription1">{0} 100% of the Stars spent on gifts purchased from Telegram.</string>
+    <string name="StarRatingTitle2">Gifts and Posts from Users</string>
+    <string name="StarRatingDescription2">{0} 20% of the Stars spent on resold gifts, paid messages and channel posts.</string>
+    <string name="StarRatingTitle3">Refunds and Conversions</string>
+    <string name="StarRatingDescription3">{0} 10x refunded Stars and 85% of gifts converted back to Stars.</string>
+    <string name="StarRatingButtonUnderstood">Understood</string>
+    <string name="StarRatingLevel">Level {0}</string>
+    <string name="StarRatingLevelNegative">Negative Rating</string>
+    <string name="StarRatingLevelNegativeYou_one">A negative rating indicates that your payments are unreliable. Spend **{0} Star** to fix this issue.</string>
+    <string name="StarRatingLevelNegativeYou_other">A negative rating indicates that your payments are unreliable. Spend **{0} Stars** to fix this issue.</string>
+    <string name="StarRatingLevelNegativeOther">A negative rating indicates that **{0}’s** payments are unreliable.</string>
 </resources>
