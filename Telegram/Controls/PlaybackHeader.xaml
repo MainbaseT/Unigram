@@ -271,7 +271,7 @@
                 VerticalContentAlignment="Center"
                 Padding="54,0,96,0"
                 Background="Transparent"
-                Style="{StaticResource EmptyButtonStyle}"
+                Style="{StaticResource ListEmptyButtonStyle}"
                 AutomationProperties.Name="{CustomResource AccDescrOpenChat}"
                 Grid.ColumnSpan="10">
             <FlyoutBase.AttachedFlyout>
