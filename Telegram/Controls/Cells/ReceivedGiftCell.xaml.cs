@@ -28,6 +28,29 @@ namespace Telegram.Controls.Cells
         {
             StarCountRoot.Visibility = Visibility.Collapsed;
 
+            if (gift.IsSaved)
+            {
+                if (Hidden != null)
+                {
+                    Hidden.Visibility = Visibility.Collapsed;
+
+                    Animated.DominantColor = null;
+                    Hidden.Background = null;
+                }
+            }
+            else
+            {
+                FindName(nameof(Hidden));
+                Hidden.Visibility = Visibility.Visible;
+
+                if (Animated.DominantColor == null)
+                {
+                    var brush = new SolidColorBrush(Color.FromArgb(0x55, 0, 0, 0));
+                    Animated.DominantColor = brush;
+                    Hidden.Background = brush;
+                }
+            }
+
             if (gift.Gift is SentGiftRegular regular)
             {
                 if (gift.IsPinned)
@@ -146,19 +169,6 @@ namespace Telegram.Controls.Cells
                         ResaleStarCountRoot.Visibility = Visibility.Collapsed;
                     }
                 }
-            }
-
-            if (gift.IsSaved)
-            {
-                if (Hidden != null)
-                {
-                    Hidden.Visibility = Visibility.Collapsed;
-                }
-            }
-            else
-            {
-                FindName(nameof(Hidden));
-                Hidden.Visibility = Visibility.Visible;
             }
         }
 

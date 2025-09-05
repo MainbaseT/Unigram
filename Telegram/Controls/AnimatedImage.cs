@@ -599,7 +599,7 @@ namespace Telegram.Controls
         {
             if (bitmap == null)
             {
-                return Colors.White;
+                return Color.FromArgb(0x55, 0, 0, 0);
             }
 
             float stepH = (bitmap.PixelHeight - 1) / 10f;
@@ -630,7 +630,7 @@ namespace Telegram.Controls
             }
             if (amount == 0)
             {
-                return Colors.Transparent;
+                return Color.FromArgb(0x55, 0, 0, 0);
             }
 
             return Color.FromArgb(255, (byte)(r / amount), (byte)(g / amount), (byte)(b / amount));

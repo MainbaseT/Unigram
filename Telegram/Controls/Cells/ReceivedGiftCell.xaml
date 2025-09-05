@@ -67,7 +67,6 @@
 
         <Border x:Name="Hidden"
                 x:Load="False"
-                Background="{ThemeResource MessageServiceBackgroundBrush}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 CornerRadius="18">
