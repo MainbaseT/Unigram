@@ -23,6 +23,7 @@ namespace Telegram.Controls
     {
         public record Level(int Number, string InnerPath, string OuterPath);
 
+        private static readonly Level _minusLevel = new Level(-1, "M39.830817,19.0231646 L56.4800875,49.5468271 C57.6341067,51.6625289 56.8545088,54.3131615 54.738807,55.4671807 C54.0978386,55.8167998 53.3793897,56 52.6492704,56 L19.3507296,56 C16.9407597,56 14.9870932,54.0463335 14.9870932,51.6363636 C14.9870932,50.9062444 15.1702934,50.1877955 15.5199125,49.5468271 L32.169183,19.0231646 C33.3232021,16.9074627 35.9738347,16.1278649 38.0895366,17.2818841 C38.8250996,17.6831003 39.4296009,18.2876016 39.830817,19.0231646 Z", "M40.0049451,13.7703018 C41.4147742,14.5392995 42.5734017,15.697927 43.3423993,17.1077561 L59.9916698,47.6314185 C62.2035399,51.6865137 60.7093107,56.7668929 56.6542155,58.978763 C55.4256927,59.6488663 54.0486656,60 52.6492704,60 L19.3507296,60 C14.7316207,60 10.9870932,56.2554725 10.9870932,51.6363636 C10.9870932,50.2369685 11.3382269,48.8599414 12.0083302,47.6314185 L28.6576007,17.1077561 C30.8694708,13.0526609 35.9498499,11.5584317 40.0049451,13.7703018 Z");
         private static readonly Level[] _levels = new Level[]
         {
             new Level(1, "M53,45 C54.6943359,39.9169922 55.1925159,32.4416725 54.49454,22.5740409 C54.2708931,19.4342396 51.6589867,17.0009114 48.5112305,17 L23.4887695,17 C20.3410133,17.0009114 17.7291069,19.4342396 17.50546,22.5740409 C16.8074841,32.4416725 17.3056641,39.9169922 19,45 C20.9999787,50.9999361 32.8055802,57.9438271 36.0181519,58.0000467 C39.2307237,58.0555136 50.70353,51.8894101 53,45 Z", "M48.5123886,13 C53.7585594,13.0015192 58.1116928,17.0569317 58.4845708,22.2918105 C59.216306,32.6367133 58.6862484,40.5903656 56.7947332,46.2649111 C54.2690969,53.8418199 42.0021357,62.1042926 35.9486315,61.9990662 C30.1753042,61.89871 17.4910652,53.1223062 15.2052668,46.2649111 C13.3137516,40.5903656 12.783694,32.6367133 13.5155689,22.2898424 C13.8883072,17.0569317 18.2414406,13.0015192 23.4887695,13 L48.5123886,13 Z"),
@@ -47,6 +48,8 @@ namespace Telegram.Controls
 
         public ProfileRating()
         {
+            DefaultStyleKey = typeof(ProfileRating);
+
             Connected += OnLoaded;
             Disconnected += OnUnloaded;
         }
@@ -65,7 +68,7 @@ namespace Telegram.Controls
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            return Value > 0 ? new Size(24, 24) : new Size(0, 0);
+            return Value != 0 ? new Size(24, 24) : new Size(0, 0);
         }
 
         #region Fill
@@ -136,7 +139,7 @@ namespace Telegram.Controls
 
         private void OnValueChanged(int newValue, int oldValue)
         {
-            var level = _levels.LastOrDefault(x => x.Number <= newValue);
+            var level = newValue < 0 ? _minusLevel : _levels.LastOrDefault(x => x.Number <= newValue);
             if (level == null)
             {
                 ElementCompositionPreview.SetElementChildVisual(this, null);
@@ -160,10 +163,10 @@ namespace Telegram.Controls
                 VerticalAlignment = CanvasVerticalAlignment.Center,
             };
 
-            using var layout = new CanvasTextLayout(device, newValue.ToString(), format, 72, 68);
+            using var layout = new CanvasTextLayout(device, newValue < 0 ? "!" : newValue.ToString(), format, 72, 68);
 
             var text = CanvasGeometry.CreateText(layout);
-            var group = CanvasGeometry.CreateGroup(device, new[] { inner, text }, CanvasFilledRegionDetermination.Alternate);
+            var group = inner.CombineWith(text, Matrix3x2.Identity, CanvasGeometryCombine.Xor);
 
             var outerShape = compositor.CreateSpriteShape(compositor.CreatePathGeometry(outer));
             outerShape.StrokeThickness = 0;
