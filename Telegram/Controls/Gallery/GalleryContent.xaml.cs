@@ -166,7 +166,6 @@ namespace Telegram.Controls.Gallery
 
             Tag = item;
             RotationAngle = item?.RotationAngle ?? RotationAngle.Angle0;
-            Background = null;
             Texture.Source = null;
             Texture.Stretch = item?.Constraint != null
                 ? Stretch.UniformToFill
@@ -211,7 +210,7 @@ namespace Telegram.Controls.Gallery
             var thumbnail = item.Thumbnail;
             if (thumbnail != null && item.IsMedia && (item.IsVideo || (item.IsPhoto && !file.Local.IsDownloadingCompleted)))
             {
-                UpdateThumbnail(item, thumbnail, null, true);
+                UpdateThumbnail(item, thumbnail, item.Minithumbnail, true);
             }
 
             UpdateManager.Subscribe(this, window.ClientService, file, ref _fileToken, UpdateFile);

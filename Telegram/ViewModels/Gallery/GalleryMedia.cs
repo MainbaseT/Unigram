@@ -34,6 +34,8 @@ namespace Telegram.ViewModels.Gallery
 
         public File Thumbnail { get; protected set; }
 
+        public Minithumbnail Minithumbnail { get; protected set; }
+
         public virtual bool IsHls()
         {
             return false;

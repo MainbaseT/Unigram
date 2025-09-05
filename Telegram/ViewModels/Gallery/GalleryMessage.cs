@@ -45,12 +45,15 @@ namespace Telegram.ViewModels.Gallery
                 if (photo != null)
                 {
                     Thumbnail = photo.GetSmall()?.Photo;
+                    Minithumbnail = photo.Minithumbnail;
                 }
             }
             else if (thumbnail?.Format is ThumbnailFormatJpeg)
             {
                 Thumbnail = thumbnail.File;
             }
+
+            Minithumbnail = _message.GetMinithumbnail();
         }
 
         public GalleryMessage(IClientService clientService, MessageWithOwner message, MessageProperties properties)
