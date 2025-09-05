@@ -642,7 +642,7 @@
                                                         AutomationProperties.Name="{CustomResource ArchivedChats}"
                                                         Style="{StaticResource ListEmptyButtonStyle}"
                                                         Background="Transparent"
-                                                        Padding="4,2"
+                                                        Margin="4,2"
                                                         CornerRadius="4">
                                                     <cells:ChatCell x:Name="ArchivedChats"
                                                                     Visibility="Collapsed"

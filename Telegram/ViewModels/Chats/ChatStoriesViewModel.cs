@@ -47,6 +47,8 @@ namespace Telegram.ViewModels.Chats
             SelectedItems = new MvxObservableCollection<StoryViewModel>();
             SelectedItems.CollectionChanged += OnCollectionChanged;
 
+            ItemsView = new IncrementalCollectionView<StoryViewModel, IncrementalCollection<StoryViewModel>>(Items);
+
             Albums = new ObservableCollection<StoryAlbumViewModel>();
             Albums.Add(new StoryAlbumViewModel(this, new StoryAlbum(0, Strings.StoriesAlbumNameAllStories, null, null)));
             Albums.CollectionChanged += Albums_CollectionChanged;
@@ -84,7 +86,7 @@ namespace Telegram.ViewModels.Chats
         public IncrementalCollection<StoryViewModel> Items { get; }
         public ObservableCollection<StoryViewModel> SelectedItems { get; }
 
-        public bool HasAlbums => Albums.Count > 1 || CanEditStories;
+        public bool HasAlbums => _type == ChatStoriesType.Pinned && (Albums.Count > 1 || CanEditStories);
 
         public ObservableCollection<StoryAlbumViewModel> Albums { get; private set; }
 
@@ -96,12 +98,12 @@ namespace Telegram.ViewModels.Chats
             {
                 if (Set(ref _selectedAlbum, value ?? Albums.FirstOrDefault()))
                 {
-                    RaisePropertyChanged(nameof(ItemsView));
+                    ItemsView.SetSource(_selectedAlbum.Items);
                 }
             }
         }
 
-        public ObservableCollection<StoryViewModel> ItemsView => SelectedAlbum?.Items ?? Items;
+        public IncrementalCollectionView<StoryViewModel, IncrementalCollection<StoryViewModel>> ItemsView { get; }
 
         public bool CanSelectedToggleIsPinned => SelectedItems.All(x => x.CanToggleIsPostedToChatPage);
         public bool CanSelectedBeDeleted => SelectedItems.All(x => x.CanBeDeleted);
@@ -201,9 +203,7 @@ namespace Telegram.ViewModels.Chats
             {
                 ClientService.Send(new DeleteStoryAlbum(Chat.Id, album.Id));
 
-                var index = Albums.IndexOf(album);
-
-                Albums.RemoveAt(index);
+                Albums.Remove(album);
                 SelectedAlbum = Albums[0];
             }
         }
@@ -612,7 +612,7 @@ namespace Telegram.ViewModels.Chats
 
         public int Id { get; }
 
-        public ObservableCollection<StoryViewModel> Items { get; }
+        public IncrementalCollection<StoryViewModel> Items { get; }
 
         public async Task<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
         {

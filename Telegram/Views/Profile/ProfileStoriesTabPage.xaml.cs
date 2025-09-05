@@ -433,5 +433,15 @@ namespace Telegram.Views.Profile
         {
             ViewModel.AddStoriesToAlbum(ViewModel.SelectedAlbum);
         }
+
+        private void Hint_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBlock textBlock)
+            {
+                textBlock.Text = ViewModel.Chat.Type is ChatTypePrivate
+                    ? Strings.ProfileStoriesArchiveHint
+                    : Strings.ProfileStoriesArchiveChannelHint;
+            }
+        }
     }
 }

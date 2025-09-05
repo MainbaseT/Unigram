@@ -163,11 +163,13 @@ namespace Telegram.Collections
                 throw new ArgumentNullException(nameof(items));
             }
 
+            int insertIndex = index;
+
             using (SuppressEvents())
             {
                 foreach (T item in items)
                 {
-                    Insert(index, item);
+                    Insert(insertIndex++, item);
                 }
             }
 

@@ -74,7 +74,7 @@
 
                     <TextBlock x:Name="Hint"
                                x:Load="{x:Bind ViewModel.ShowHint, Mode=OneWay}"
-                               Text="{CustomResource ProfileStoriesArchiveChannelHint}"
+                               Loaded="Hint_Loaded"
                                TextAlignment="Center"
                                Style="{StaticResource InfoCaptionTextBlockStyle}"
                                Margin="0,12,0,8" />
@@ -148,10 +148,10 @@
                                     AutomationProperties.Name="{CustomResource StoriesAlbumAddAlbum}"
                                     Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
                                     Visibility="{x:Bind ViewModel.CanEditStories}"
-                                    Style="{StaticResource AccentTextButtonStyle}"
-                                    Padding="8,3,12,4"
+                                    Style="{StaticResource ListEmptyButtonStyle}"
+                                    VerticalAlignment="Center"
                                     CornerRadius="12">
-                                <Grid>
+                                <Grid Padding="8,3,12,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />

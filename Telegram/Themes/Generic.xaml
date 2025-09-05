@@ -2740,7 +2740,11 @@
                                       IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
                                       BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
                                       AutomationProperties.AccessibilityView="Raw">
-                            <ItemsPresenter Padding="{TemplateBinding Padding}" />
+                            <ItemsPresenter Padding="{TemplateBinding Padding}"
+                                            Header="{TemplateBinding Header}"
+                                            HeaderTemplate="{TemplateBinding HeaderTemplate}"
+                                            Footer="{TemplateBinding Footer}"
+                                            FooterTemplate="{TemplateBinding FooterTemplate}" />
                         </ScrollViewer>
                     </Border>
                 </ControlTemplate>
