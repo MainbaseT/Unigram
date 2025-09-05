@@ -45,7 +45,7 @@ namespace Telegram.Common
         {
             Start(presentation.SessionId, presentation.FileId, ref token);
 
-            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}", Port, presentation.SessionId, presentation.FileId, presentation.Duration));
+            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}&priority=24", Port, presentation.SessionId, presentation.FileId, presentation.Duration));
         }
 
         public static void Start(int sessionId, int fileId, ref long token)
@@ -132,6 +132,10 @@ namespace Telegram.Common
                 return HttpResponse.NotFound;
             }
 
+            var priority = 32;
+            request.Query.TryGetValue("priority", out string priorityValue);
+            int.TryParse(priorityValue, out priority);
+
             long offset = 0;
             long limit = 0;
 
@@ -176,7 +180,7 @@ namespace Telegram.Common
                 limit = file.Size - offset;
             }
 
-            var remote = new RemoteFileSource(clientService, file, 31, true);
+            var remote = new RemoteFileSource(clientService, file, priority, true);
             remote.SeekCallback(offset);
             remote.ReadCallback(limit, out long bytesRead);
             remote.Close(false);

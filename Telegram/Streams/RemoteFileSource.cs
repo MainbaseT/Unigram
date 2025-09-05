@@ -153,7 +153,7 @@ namespace Telegram.Streams
                 _event.Reset();
                 _count = count;
 
-                _clientService.DownloadFile(_file.Id, 32, _offset, _limit ? count : 0, false);
+                _clientService.DownloadFile(_file.Id, _priority, _offset, _limit ? count : 0, false);
 
                 Logger.Debug($"Not enough data available for {_file.Id}, offset: {_offset}, count: {count}, size: {_file.Size}");
                 return true;
