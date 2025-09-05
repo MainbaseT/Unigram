@@ -202,6 +202,7 @@
     <Compile Include="Collections\Experimental\ItemCacheManager.cs" />
     <Compile Include="Collections\Experimental\ItemIndexRangeExtensions.cs" />
     <Compile Include="Collections\Experimental\ItemIndexRangeList.cs" />
+    <Compile Include="Collections\IncrementalCollectionView.cs" />
     <Compile Include="Collections\ListWithTotalCount.cs" />
     <Compile Include="Collections\SearchEmojiCollection.cs" />
     <Compile Include="Collections\SynchronizedList.cs" />
@@ -1293,6 +1294,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\ChooseGiftsPopup.xaml.cs">
+      <DependentUpon>ChooseGiftsPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\ChooseStoriesPopup.xaml.cs">
       <DependentUpon>ChooseStoriesPopup.xaml</DependentUpon>
     </Compile>
@@ -3312,6 +3316,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\BackgroundPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\ChooseGiftsPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

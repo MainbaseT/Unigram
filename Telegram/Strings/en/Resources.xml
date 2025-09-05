@@ -12649,6 +12649,30 @@
     <string name="StoryRemovedFromAlbumTitle_one">{0} story removed from **{1}**</string>
     <string name="StoryRemovedFromAlbumTitle_other">{0} stories removed from **{1}**</string>
 
+    <string name="GiftsCollectionNameAllGifts">All Gifts</string>
+    <string name="GiftsCollectionRename">Rename Collection</string>
+    <string name="GiftsCollectionMenuAddStories">Add Gifts</string>
+    <string name="GiftsCollectionMenuShareLink">Share Link</string>
+    <string name="GiftsCollectionMenuEditName">Edit Name</string>
+    <string name="GiftsCollectionMenuDeleteCollection">Delete Collection</string>
+    <string name="GiftsCollectionRenameHint">Choose a new name for your collection.</string>
+    <string name="GiftsCollectionTitleInputHint">Title</string>
+    <string name="GiftsCollectionMenuDeleteCollectionAsk">Are you sure you want to delete the **{0}** collection?</string>
+    <string name="GiftsCollectionAddToCollection">Add to Collection</string>
+    <string name="GiftsCollectionNewCollection">New Collection</string>
+    <string name="GiftsCollectionAddCollection">Add Collection</string>
+    <string name="GiftAddedToCollectionX">This gift has been added to **{0}** collection.</string>
+    <string name="GiftRemovedFromCollectionX">This gift has been removed from **{0}** collection.</string>
+    <string name="GiftsCollectionCreateNew">Create a New Collection</string>
+    <string name="GiftsCollectionAddHint">Choose a name for your collection and add your gifts.</string>
+    <string name="GiftsCollectionMenuRemoveFromCollection">Remove from Collection</string>
+    <string name="GiftsCollectionOrganizeTitle">Organize Your Gifts</string>
+    <string name="GiftsCollectionOrganizeDescription">Add some of your gifts to this collection.</string>
+    <string name="GiftAddedToCollectionTitle_one">{0} gift saved to **{1}**</string>
+    <string name="GiftAddedToCollectionTitle_other">{0} gifts saved to **{1}**</string>
+    <string name="GiftRemovedFromollectionTitle_one">{0} gift removed from **{1}**</string>
+    <string name="GiftRemovedFromCollectionTitle_other">{0} gifts removed from **{1}**</string>
+
     <string name="StarRatingTitle">Rating</string>
     <string name="StarRatingAdded">ADDED</string>
     <string name="StarRatingDeduces">DEDUCTED</string>
@@ -12680,4 +12704,5 @@
     <string name="StarRatingLevelNegativeYou_one">A negative rating indicates that your payments are unreliable. Spend **{0} Star** to fix this issue.</string>
     <string name="StarRatingLevelNegativeYou_other">A negative rating indicates that your payments are unreliable. Spend **{0} Stars** to fix this issue.</string>
     <string name="StarRatingLevelNegativeOther">A negative rating indicates that **{0}’s** payments are unreliable.</string>
+
 </resources>

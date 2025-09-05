@@ -166,7 +166,10 @@ namespace Telegram
             public const string Gift2SoldOutHint = "Gift2SoldOutHint";
             public const string Gift2ToBalance = "Gift2ToBalance";
             public const string Gift2TransferPriceText = "Gift2TransferPriceText";
+            public const string GiftAddedToCollectionTitle = "GiftAddedToCollectionTitle";
             public const string GiftMonths = "GiftMonths";
+            public const string GiftRemovedFromCollectionTitle = "GiftRemovedFromCollectionTitle";
+            public const string GiftRemovedFromollectionTitle = "GiftRemovedFromollectionTitle";
             public const string GiftsPinLimit = "GiftsPinLimit";
             public const string GroupCallCreateInfo = "GroupCallCreateInfo";
             public const string GroupCallLinkText2Many = "GroupCallLinkText2Many";
@@ -10638,6 +10641,11 @@ namespace Telegram
         public static string Gift2Wear => Resource.GetString("Gift2Wear");
         
         /// <summary>
+        /// Localized resource similar to "This gift has been added to **{0}** collection."
+        /// </summary>
+        public static string GiftAddedToCollectionX => Resource.GetString("GiftAddedToCollectionX");
+        
+        /// <summary>
         /// Localized resource similar to "Gift Premium"
         /// </summary>
         public static string GiftPremium => Resource.GetString("GiftPremium");
@@ -10681,6 +10689,96 @@ namespace Telegram
         /// Localized resource similar to "Use Gift"
         /// </summary>
         public static string GiftPremiumUseGiftBtn => Resource.GetString("GiftPremiumUseGiftBtn");
+        
+        /// <summary>
+        /// Localized resource similar to "This gift has been removed from **{0}** collection."
+        /// </summary>
+        public static string GiftRemovedFromCollectionX => Resource.GetString("GiftRemovedFromCollectionX");
+        
+        /// <summary>
+        /// Localized resource similar to "Add Collection"
+        /// </summary>
+        public static string GiftsCollectionAddCollection => Resource.GetString("GiftsCollectionAddCollection");
+        
+        /// <summary>
+        /// Localized resource similar to "Choose a name for your collection and add your gifts."
+        /// </summary>
+        public static string GiftsCollectionAddHint => Resource.GetString("GiftsCollectionAddHint");
+        
+        /// <summary>
+        /// Localized resource similar to "Add to Collection"
+        /// </summary>
+        public static string GiftsCollectionAddToCollection => Resource.GetString("GiftsCollectionAddToCollection");
+        
+        /// <summary>
+        /// Localized resource similar to "Create a New Collection"
+        /// </summary>
+        public static string GiftsCollectionCreateNew => Resource.GetString("GiftsCollectionCreateNew");
+        
+        /// <summary>
+        /// Localized resource similar to "Add Gifts"
+        /// </summary>
+        public static string GiftsCollectionMenuAddStories => Resource.GetString("GiftsCollectionMenuAddStories");
+        
+        /// <summary>
+        /// Localized resource similar to "Delete Collection"
+        /// </summary>
+        public static string GiftsCollectionMenuDeleteCollection => Resource.GetString("GiftsCollectionMenuDeleteCollection");
+        
+        /// <summary>
+        /// Localized resource similar to "Are you sure you want to delete the **{0}** collection?"
+        /// </summary>
+        public static string GiftsCollectionMenuDeleteCollectionAsk => Resource.GetString("GiftsCollectionMenuDeleteCollectionAsk");
+        
+        /// <summary>
+        /// Localized resource similar to "Edit Name"
+        /// </summary>
+        public static string GiftsCollectionMenuEditName => Resource.GetString("GiftsCollectionMenuEditName");
+        
+        /// <summary>
+        /// Localized resource similar to "Remove from Collection"
+        /// </summary>
+        public static string GiftsCollectionMenuRemoveFromCollection => Resource.GetString("GiftsCollectionMenuRemoveFromCollection");
+        
+        /// <summary>
+        /// Localized resource similar to "Share Link"
+        /// </summary>
+        public static string GiftsCollectionMenuShareLink => Resource.GetString("GiftsCollectionMenuShareLink");
+        
+        /// <summary>
+        /// Localized resource similar to "All Gifts"
+        /// </summary>
+        public static string GiftsCollectionNameAllGifts => Resource.GetString("GiftsCollectionNameAllGifts");
+        
+        /// <summary>
+        /// Localized resource similar to "New Collection"
+        /// </summary>
+        public static string GiftsCollectionNewCollection => Resource.GetString("GiftsCollectionNewCollection");
+        
+        /// <summary>
+        /// Localized resource similar to "Add some of your gifts to this collection."
+        /// </summary>
+        public static string GiftsCollectionOrganizeDescription => Resource.GetString("GiftsCollectionOrganizeDescription");
+        
+        /// <summary>
+        /// Localized resource similar to "Organize Your Gifts"
+        /// </summary>
+        public static string GiftsCollectionOrganizeTitle => Resource.GetString("GiftsCollectionOrganizeTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Rename Collection"
+        /// </summary>
+        public static string GiftsCollectionRename => Resource.GetString("GiftsCollectionRename");
+        
+        /// <summary>
+        /// Localized resource similar to "Choose a new name for your collection."
+        /// </summary>
+        public static string GiftsCollectionRenameHint => Resource.GetString("GiftsCollectionRenameHint");
+        
+        /// <summary>
+        /// Localized resource similar to "Title"
+        /// </summary>
+        public static string GiftsCollectionTitleInputHint => Resource.GetString("GiftsCollectionTitleInputHint");
         
         /// <summary>
         /// Localized resource similar to "With Stars, **{0}** will be able to unlock content and services on Telegram."

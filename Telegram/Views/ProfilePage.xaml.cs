@@ -490,6 +490,10 @@ namespace Telegram.Views
                     tabPage.DataContext = ViewModel.PinnedStoriesTab;
                 }
             }
+            else if (e.Content is ProfileGiftsTabPage)
+            {
+                tabPage.DataContext = ViewModel.GiftsTab;
+            }
 
             if (tabPage.ScrollingHost.ItemsSource != null)
             {

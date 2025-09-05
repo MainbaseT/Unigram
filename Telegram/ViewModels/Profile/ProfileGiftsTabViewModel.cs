@@ -6,8 +6,10 @@
 //
 using Rg.DiffUtils;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -22,6 +24,8 @@ using Telegram.Td.Api;
 using Telegram.Views.Popups;
 using Telegram.Views.Stars.Popups;
 using Windows.Foundation;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Navigation;
 
@@ -29,12 +33,35 @@ namespace Telegram.ViewModels.Profile
 {
     public partial class ProfileGiftsTabViewModel : ViewModelBase, IHandle, IDiffHandler<ReceivedGift>
     {
+        private readonly ConcurrentDictionary<string, ReceivedGift> _cache = new();
+
         private MessageSender _senderId;
 
         public ProfileGiftsTabViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
-            ItemsView = new SearchCollection<ReceivedGift, ReceivedGiftsCollection>(UpdateItems, this);
+            Collections = new ObservableCollection<GiftCollectionViewModel>();
+            Collections.Add(new GiftCollectionViewModel(this, new GiftCollection(0, Strings.GiftsCollectionNameAllGifts, null, 0)));
+            Collections.CollectionChanged += Collections_CollectionChanged;
+
+            ItemsView = new IncrementalCollectionView<ReceivedGift, IncrementalCollectionView<ReceivedGift, ReceivedGiftsCollection>>(Collections[0].Items);
+            SelectedCollection = Collections[0];
+        }
+
+        public ReceivedGift GetOrCreate(ReceivedGift gift)
+        {
+            if (string.IsNullOrEmpty(gift.ReceivedGiftId))
+            {
+                return gift;
+            }
+
+            if (_cache.TryGetValue(gift.ReceivedGiftId, out ReceivedGift cached))
+            {
+                return cached;
+            }
+
+            _cache[gift.ReceivedGiftId] = gift;
+            return gift;
         }
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
@@ -57,10 +84,191 @@ namespace Telegram.ViewModels.Profile
                     _senderId = new MessageSenderUser(user.Id);
                 }
 
-                ItemsView.Reload();
+                Reload(false);
+                InitializeCollections();
             }
 
             return Task.CompletedTask;
+        }
+
+        public bool HasCollections => Collections.Count > 1 || IsOwned;
+
+        public ObservableCollection<GiftCollectionViewModel> Collections { get; private set; }
+
+        private GiftCollectionViewModel _selectedCollection;
+        public GiftCollectionViewModel SelectedCollection
+        {
+            get => _selectedCollection;
+            set
+            {
+                if (Set(ref _selectedCollection, value ?? Collections.FirstOrDefault()))
+                {
+                    ItemsView.SetSource(_selectedCollection.Items);
+                }
+            }
+        }
+
+        private void Collections_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            RaisePropertyChanged(nameof(HasCollections));
+        }
+
+        private async void InitializeCollections()
+        {
+            var response = await ClientService.SendAsync(new GetGiftCollections(_senderId));
+            if (response is GiftCollections collections)
+            {
+                foreach (var collection in collections.Collections)
+                {
+                    Collections.Add(new GiftCollectionViewModel(this, collection));
+                }
+            }
+        }
+
+        public void ShareCollection(GiftCollectionViewModel collection)
+        {
+            if (ClientService.HasActiveUsername(_senderId, out string username))
+            {
+                ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationPostLink(new InternalLinkTypeGiftCollection(username, collection.Id)));
+            }
+        }
+
+        public async void RenameCollection(GiftCollectionViewModel collection)
+        {
+            var popup = new InputPopup(InputPopupType.Text)
+            {
+                Title = Strings.GiftsCollectionMenuEditName,
+                Header = Strings.GiftsCollectionRenameHint,
+                PlaceholderText = Strings.GiftsCollectionTitleInputHint,
+                PrimaryButtonText = Strings.Rename,
+                PrimaryButtonStyle = BootStrapper.Current.Resources["AccentButtonStyle"] as Style,
+                SecondaryButtonText = Strings.Cancel,
+                Text = collection.Name,
+                MinLength = 1,
+                MaxLength = 12
+            };
+
+            var result = await popup.ShowQueuedAsync(XamlRoot);
+
+            var confirm = new InputPopupResult(result, popup.Text, popup.Value);
+            if (confirm.Result == ContentDialogResult.Primary)
+            {
+                collection.Name = confirm.Text;
+                ClientService.Send(new SetGiftCollectionName(_senderId, collection.Id, confirm.Text));
+            }
+        }
+
+        public async void DeleteCollection(GiftCollectionViewModel collection)
+        {
+            var confirm = await ShowPopupAsync(string.Format(Strings.GiftsCollectionMenuDeleteCollectionAsk, collection.Name), Strings.GiftsCollectionMenuDeleteCollection, Strings.Delete, Strings.Cancel, destructive: true);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                ClientService.Send(new DeleteGiftCollection(_senderId, collection.Id));
+
+                Collections.Remove(collection);
+                SelectedCollection = Collections[0];
+            }
+        }
+
+        public async void CreateCollection(ReceivedGift gift)
+        {
+            var popup = new InputPopup(InputPopupType.Text)
+            {
+                Title = Strings.GiftsCollectionCreateNew,
+                Header = Strings.GiftsCollectionAddHint,
+                PlaceholderText = Strings.GiftsCollectionTitleInputHint,
+                PrimaryButtonText = Strings.Create,
+                PrimaryButtonStyle = BootStrapper.Current.Resources["AccentButtonStyle"] as Style,
+                SecondaryButtonText = Strings.Cancel,
+                MinLength = 1,
+                MaxLength = 12
+            };
+
+            var result = await popup.ShowQueuedAsync(XamlRoot);
+
+            var confirm = new InputPopupResult(result, popup.Text, popup.Value);
+            if (confirm.Result == ContentDialogResult.Primary)
+            {
+                var receivedGiftIds = new List<string>();
+                if (gift != null)
+                {
+                    receivedGiftIds.Add(gift.ReceivedGiftId);
+                }
+
+                var response = await ClientService.SendAsync(new CreateGiftCollection(_senderId, popup.Text, receivedGiftIds));
+                if (response is GiftCollection collection)
+                {
+                    var viewModel = new GiftCollectionViewModel(this, collection);
+
+                    if (gift != null)
+                    {
+                        gift.CollectionIds.Add(collection.Id);
+                    }
+
+                    Collections.Add(viewModel);
+                    SelectedCollection = viewModel;
+                }
+            }
+        }
+
+        public async void AddGiftsToCollection(GiftCollectionViewModel collection)
+        {
+            var popup = new ChooseGiftsPopup(this);
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                var receivedGiftIds = new List<string>();
+
+                foreach (var gift in popup.SelectedItems)
+                {
+                    if (gift.CollectionIds.Contains(collection.Id) /*|| album.Items.Contains(gift)*/)
+                    {
+                        continue;
+                    }
+
+                    if (collection.HasLoadedItems)
+                    {
+                        collection.Items.Insert(0, gift);
+                    }
+
+                    gift.CollectionIds.Add(collection.Id);
+                    receivedGiftIds.Add(gift.ReceivedGiftId);
+                }
+
+                ClientService.Send(new AddGiftCollectionGifts(_senderId, collection.Id, receivedGiftIds));
+                ShowToast(Locale.Declension(Strings.R.GiftAddedToCollectionTitle, receivedGiftIds.Count, collection.Name), ToastPopupIcon.Info);
+            }
+        }
+
+        public void AddGiftToCollection((ReceivedGift gift, GiftCollectionViewModel collection) param)
+        {
+            if (param.gift.CollectionIds.Contains(param.collection.Id))
+            {
+                ClientService.Send(new RemoveGiftCollectionGifts(_senderId, param.collection.Id, new[] { param.gift.ReceivedGiftId }));
+
+                param.gift.CollectionIds.Remove(param.collection.Id);
+
+                if (param.collection.HasLoadedItems)
+                {
+                    param.collection.Items.Remove(param.gift);
+                }
+
+                ShowToast(string.Format(Strings.GiftRemovedFromCollectionX, param.collection.Name), ToastPopupIcon.Info);
+            }
+            else
+            {
+                ClientService.Send(new AddGiftCollectionGifts(_senderId, param.collection.Id, new[] { param.gift.ReceivedGiftId }));
+
+                param.gift.CollectionIds.Add(param.collection.Id);
+
+                if (param.collection.HasLoadedItems)
+                {
+                    param.collection.Items.Insert(0, param.gift);
+                }
+
+                ShowToast(string.Format(Strings.GiftAddedToCollectionX, param.collection.Name), ToastPopupIcon.Info);
+            }
         }
 
         public override void Subscribe()
@@ -123,6 +331,14 @@ namespace Telegram.ViewModels.Profile
             });
         }
 
+        private void Reload(bool preload = true)
+        {
+            foreach (var collection in Collections)
+            {
+                collection.Reload(preload && SelectedCollection == collection);
+            }
+        }
+
         private bool _excludeUnsaved;
         public bool ExcludeUnsaved
         {
@@ -131,7 +347,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeUnsaved, value))
                 {
-                    ItemsView.Reload();
+                    Reload();
                 }
             }
         }
@@ -144,7 +360,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeSaved, value))
                 {
-                    ItemsView.Reload();
+                    Reload();
                 }
             }
         }
@@ -157,7 +373,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeUnlimited, value))
                 {
-                    ItemsView.Reload();
+                    Reload();
                 }
             }
         }
@@ -170,7 +386,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeLimited, value))
                 {
-                    ItemsView.Reload();
+                    Reload();
                 }
             }
         }
@@ -183,7 +399,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _excludeUpgraded, value))
                 {
-                    ItemsView.Reload();
+                    Reload();
                 }
             }
         }
@@ -196,7 +412,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (Set(ref _sortByPrice, value))
                 {
-                    ItemsView.Reload();
+                    Reload();
                 }
             }
         }
@@ -205,8 +421,7 @@ namespace Telegram.ViewModels.Profile
         {
             if (Items.Empty())
             {
-                ItemsView.Reload();
-                _ = ItemsView.LoadMoreItemsAsync(50);
+                Reload();
             }
         }
 
@@ -220,7 +435,12 @@ namespace Telegram.ViewModels.Profile
 
         private ReceivedGiftsCollection UpdateItems(object arg1, string arg2)
         {
-            return new ReceivedGiftsCollection(this, _senderId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
+            return new ReceivedGiftsCollection(this, _senderId, _selectedCollection?.Id ?? 0, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
+        }
+
+        public ReceivedGiftsCollection CreateItemsSource(int collectionId)
+        {
+            return new ReceivedGiftsCollection(this, _senderId, collectionId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
         }
 
         public bool CompareItems(ReceivedGift oldItem, ReceivedGift newItem)
@@ -247,13 +467,16 @@ namespace Telegram.ViewModels.Profile
 
         }
 
-        public SearchCollection<ReceivedGift, ReceivedGiftsCollection> ItemsView { get; private set; }
-        public ReceivedGiftsCollection Items => ItemsView.Source;
+        public IncrementalCollectionView<ReceivedGift, IncrementalCollectionView<ReceivedGift, ProfileGiftsTabViewModel.ReceivedGiftsCollection>> ItemsView { get; }
+
+        //public SearchCollection<ReceivedGift, ReceivedGiftsCollection> ItemsView { get; private set; }
+        public ReceivedGiftsCollection Items => ItemsView.Source.Source;
 
         public partial class ReceivedGiftsCollection : ObservableCollection<ReceivedGift>, ISupportIncrementalLoading
         {
             private readonly ProfileGiftsTabViewModel _viewModel;
             private readonly MessageSender _ownerId;
+            private readonly int _collectionId;
             private readonly bool _excludeUnsaved;
             private readonly bool _excludeSaved;
             private readonly bool _excludeUnlimited;
@@ -264,11 +487,13 @@ namespace Telegram.ViewModels.Profile
             private readonly List<string> _pinnedGifts = new();
 
             private string _nextOffsetId = string.Empty;
+            private bool _loading;
 
-            public ReceivedGiftsCollection(ProfileGiftsTabViewModel viewModel, MessageSender ownerId, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeLimited, bool excludeUpgraded, bool sortByPrice)
+            public ReceivedGiftsCollection(ProfileGiftsTabViewModel viewModel, MessageSender ownerId, int collectionId, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeLimited, bool excludeUpgraded, bool sortByPrice)
             {
                 _viewModel = viewModel;
                 _ownerId = ownerId;
+                _collectionId = collectionId;
                 _excludeUnsaved = excludeUnsaved;
                 _excludeSaved = excludeSaved;
                 _excludeUnlimited = excludeUnlimited;
@@ -281,10 +506,20 @@ namespace Telegram.ViewModels.Profile
             {
                 return AsyncInfo.Run(async token =>
                 {
+                    if (_loading)
+                    {
+                        return new LoadMoreItemsResult
+                        {
+                            Count = 0
+                        };
+                    }
+
+                    _loading = true;
+
                     var total = 0u;
                     var limit = count == 3 ? 3 : 50;
 
-                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, 0, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
+                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _collectionId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
                     if (response is ReceivedGifts gifts)
                     {
                         _nextOffsetId = gifts.NextOffset;
@@ -296,7 +531,7 @@ namespace Telegram.ViewModels.Profile
                                 _pinnedGifts.Add(gift.ReceivedGiftId);
                             }
 
-                            Add(gift);
+                            Add(_viewModel.GetOrCreate(gift));
                             total++;
                         }
                     }
@@ -304,6 +539,7 @@ namespace Telegram.ViewModels.Profile
                     _viewModel.OnItemsReady();
                     HasMoreItems = !string.IsNullOrEmpty(_nextOffsetId);
 
+                    _loading = false;
                     return new LoadMoreItemsResult
                     {
                         Count = total
@@ -327,19 +563,24 @@ namespace Telegram.ViewModels.Profile
             ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, _senderId, null));
         }
 
-        public bool IsOwned()
+        public bool IsOwned
         {
-            if (_senderId.IsUser(ClientService.Options.MyId))
+            get
             {
-                return true;
-            }
-            else if (ClientService.TryGetSupergroup(_senderId, out Supergroup supergroup))
-            {
-                return supergroup.CanPostMessages();
-            }
+                if (_senderId.IsUser(ClientService.Options.MyId))
+                {
+                    return true;
+                }
+                else if (ClientService.TryGetSupergroup(_senderId, out Supergroup supergroup))
+                {
+                    return supergroup.CanPostMessages();
+                }
 
-            return false;
+                return false;
+            }
         }
+
+        public MessageSender OwnerId => _senderId;
 
         public async void PinGift(ReceivedGift gift)
         {
@@ -469,4 +710,110 @@ namespace Telegram.ViewModels.Profile
             NavigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationTransferGift(gift));
         }
     }
+
+    public partial class GiftCollectionViewModel : ServiceBase
+    {
+        private readonly ProfileGiftsTabViewModel _viewModel;
+        private readonly ProfileGiftsTabViewModel.ReceivedGiftsCollection _items;
+
+        private int _fromStoryId;
+
+        public GiftCollectionViewModel(ProfileGiftsTabViewModel viewModel, GiftCollection collection)
+            : base(viewModel.ClientService, viewModel.Settings, viewModel.Aggregator)
+        {
+            _viewModel = viewModel;
+
+            Name = collection.Name;
+            Id = collection.Id;
+
+            Items = new IncrementalCollectionView<ReceivedGift, ProfileGiftsTabViewModel.ReceivedGiftsCollection>(viewModel.CreateItemsSource(collection.Id));
+            Items.CollectionChanged += OnCollectionChanged;
+
+            //if (collection.Id == 0)
+            //{
+            //    Items = _viewModel.Items;
+            //}
+            //else
+            //{
+            //    Items = new IncrementalCollection<ReceivedGift>(this);
+            //    Items.CollectionChanged += OnCollectionChanged;
+            //}
+        }
+
+        public async void Reload(bool preload)
+        {
+            if (preload)
+            {
+                await Items.SetSourceAsync(_viewModel.CreateItemsSource(Id));
+            }
+            else
+            {
+                Items.SetSource(_viewModel.CreateItemsSource(Id));
+            }
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            IsEmpty = Items.Empty();
+        }
+
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set => Set(ref _name, value);
+        }
+
+        public int Id { get; }
+
+        public IncrementalCollectionView<ReceivedGift, ProfileGiftsTabViewModel.ReceivedGiftsCollection> Items { get; }
+
+        //public async Task<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
+        //{
+        //    var totalCount = 0u;
+
+        //    var response = await ClientService.SendAsync(new GetStoryAlbumStories(_viewModel.Chat.Id, Id, _fromStoryId, 50));
+        //    if (response is Td.Api.Stories stories)
+        //    {
+        //        foreach (var story in stories.StoriesValue)
+        //        {
+        //            _fromStoryId = story.Id;
+
+        //            Items.Add(_viewModel.GetOrCreate(story));
+        //            totalCount++;
+        //        }
+
+        //        //Items.TotalCount = stories.TotalCount;
+        //    }
+
+        //    IsEmpty = Items.Count == 0;
+        //    HasMoreItems = totalCount > 0;
+        //    HasLoadedItems = true;
+
+        //    return new LoadMoreItemsResult
+        //    {
+        //        Count = totalCount
+        //    };
+        //}
+
+        public bool HasMoreItems { get; private set; } = true;
+
+        public bool HasLoadedItems { get; private set; }
+
+        private bool _isEmpty;
+        public bool IsEmpty
+        {
+            get => _isEmpty;
+            set => Set(ref _isEmpty, value);
+        }
+
+        //public void ReorderStories()
+        //{
+        //    if (Id != 0)
+        //    {
+        //        ClientService.Send(new ReorderStoryAlbumStories(_viewModel.Chat.Id, Id, Items.Select(x => x.StoryId).ToList()));
+        //    }
+        //}
+    }
+
 }

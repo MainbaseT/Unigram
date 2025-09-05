@@ -7135,6 +7135,15 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2Wear" xml:space="preserve">
     <value>Wear</value>
   </data>
+  <data name="GiftAddedToCollectionTitle_one" xml:space="preserve">
+    <value>{0} gift saved to **{1}**</value>
+  </data>
+  <data name="GiftAddedToCollectionTitle_other" xml:space="preserve">
+    <value>{0} gifts saved to **{1}**</value>
+  </data>
+  <data name="GiftAddedToCollectionX" xml:space="preserve">
+    <value>This gift has been added to **{0}** collection.</value>
+  </data>
   <data name="GiftMonths_one" xml:space="preserve">
     <value>{0}-month</value>
   </data>
@@ -7167,6 +7176,66 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="GiftPremiumUseGiftBtn" xml:space="preserve">
     <value>Use Gift</value>
+  </data>
+  <data name="GiftRemovedFromCollectionTitle_other" xml:space="preserve">
+    <value>{0} gifts removed from **{1}**</value>
+  </data>
+  <data name="GiftRemovedFromCollectionX" xml:space="preserve">
+    <value>This gift has been removed from **{0}** collection.</value>
+  </data>
+  <data name="GiftRemovedFromollectionTitle_one" xml:space="preserve">
+    <value>{0} gift removed from **{1}**</value>
+  </data>
+  <data name="GiftsCollectionAddCollection" xml:space="preserve">
+    <value>Add Collection</value>
+  </data>
+  <data name="GiftsCollectionAddHint" xml:space="preserve">
+    <value>Choose a name for your collection and add your gifts.</value>
+  </data>
+  <data name="GiftsCollectionAddToCollection" xml:space="preserve">
+    <value>Add to Collection</value>
+  </data>
+  <data name="GiftsCollectionCreateNew" xml:space="preserve">
+    <value>Create a New Collection</value>
+  </data>
+  <data name="GiftsCollectionMenuAddStories" xml:space="preserve">
+    <value>Add Gifts</value>
+  </data>
+  <data name="GiftsCollectionMenuDeleteCollection" xml:space="preserve">
+    <value>Delete Collection</value>
+  </data>
+  <data name="GiftsCollectionMenuDeleteCollectionAsk" xml:space="preserve">
+    <value>Are you sure you want to delete the **{0}** collection?</value>
+  </data>
+  <data name="GiftsCollectionMenuEditName" xml:space="preserve">
+    <value>Edit Name</value>
+  </data>
+  <data name="GiftsCollectionMenuRemoveFromCollection" xml:space="preserve">
+    <value>Remove from Collection</value>
+  </data>
+  <data name="GiftsCollectionMenuShareLink" xml:space="preserve">
+    <value>Share Link</value>
+  </data>
+  <data name="GiftsCollectionNameAllGifts" xml:space="preserve">
+    <value>All Gifts</value>
+  </data>
+  <data name="GiftsCollectionNewCollection" xml:space="preserve">
+    <value>New Collection</value>
+  </data>
+  <data name="GiftsCollectionOrganizeDescription" xml:space="preserve">
+    <value>Add some of your gifts to this collection.</value>
+  </data>
+  <data name="GiftsCollectionOrganizeTitle" xml:space="preserve">
+    <value>Organize Your Gifts</value>
+  </data>
+  <data name="GiftsCollectionRename" xml:space="preserve">
+    <value>Rename Collection</value>
+  </data>
+  <data name="GiftsCollectionRenameHint" xml:space="preserve">
+    <value>Choose a new name for your collection.</value>
+  </data>
+  <data name="GiftsCollectionTitleInputHint" xml:space="preserve">
+    <value>Title</value>
   </data>
   <data name="GiftsPinLimit_one" xml:space="preserve">
     <value>You can&apos;t pin more than {0} gift.</value>
