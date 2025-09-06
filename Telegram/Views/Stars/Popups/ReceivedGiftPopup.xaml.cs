@@ -491,7 +491,11 @@ namespace Telegram.Views.Stars.Popups
 
             _submitted = true;
 
-            if (_gift?.Gift is SentGiftRegular && (_gift.PrepaidUpgradeStarCount > 0 || !_upgradeCollapsed))
+            if (_gift?.Gift is SentGiftRegular && _gift.CanBeUpgraded)
+            {
+                ShowHideUpgrade(true);
+            }
+            else if (_gift?.Gift is SentGiftRegular && (_gift.PrepaidUpgradeStarCount > 0 || !_upgradeCollapsed))
             {
                 Upgrade2();
             }
@@ -687,11 +691,6 @@ namespace Telegram.Views.Stars.Popups
                         : string.Format(Strings.Gift2UpgradeButton.ReplaceStar(Icons.Premium), regular.Gift.UpgradeStarCount);
                 }
             }
-        }
-
-        private void Upgrade_Click(object sender, RoutedEventArgs e)
-        {
-            ShowHideUpgrade(true);
         }
 
         private async void InitializeGift()
