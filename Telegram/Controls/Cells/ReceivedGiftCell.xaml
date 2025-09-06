@@ -131,15 +131,17 @@
               Height="24"
               CornerRadius="12"
               Margin="0,0,0,12"
+              Padding="8,0"
               Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <controls:PremiumStarCount Width="18"
+            <controls:PremiumStarCount x:Name="ResaleStar"
+                                       Width="18"
                                        VerticalAlignment="Top"
                                        HorizontalAlignment="Left"
-                                       Margin="8,-1,4,0">
+                                       Margin="0,-1,4,0">
                 <controls:PremiumStarCount.Template>
                     <ControlTemplate TargetType="controls:PremiumStarCount">
                         <Viewbox>
@@ -161,7 +163,7 @@
                        FontWeight="SemiBold"
                        Typography.NumeralAlignment="Tabular"
                        VerticalAlignment="Center"
-                       Margin="0,1,8,2"
+                       Margin="0,1,0,2"
                        Grid.Column="1" />
         </Grid>
 

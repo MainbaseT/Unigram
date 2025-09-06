@@ -12737,5 +12737,7 @@
     <string name="Gift2SentRemainsLimit_other">You can send **{0}** more.</string>
     <string name="Gift2PerUserLimit_one">You already sent **{0}** of these gifts, which is the limit.</string>
     <string name="Gift2PerUserLimit_other">You already sent **{0}** of these gifts, which is the limit.</string>
+    <string name="Gift2TabCollectibles">Collectibles</string>
+    <string name="Gift2TransferMine">Transfer</string>
 
 </resources>

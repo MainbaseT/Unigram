@@ -154,15 +154,15 @@ namespace Telegram.Controls.Cells
                         Grid.SetRow(ResaleStarCountRoot, 0);
                     }
 
-                    ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.WithBrightness(-0.1f));
+                    ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.Darken());
                     ResaleStarCount.Text = upgraded.Gift.ResaleParameters.StarCount.ToString("N0");
                 }
                 else
                 {
                     Ribbon.Text = string.Format(Strings.Gift2Limited1OfRibbon, Formatter.ShortNumber(upgraded.Gift.MaxUpgradedCount, true));
 
-                    RibbonTop.Color = centerColor.WithBrightness(-0.2f);
-                    RibbonBottom.Color = edgeColor.WithBrightness(-0.2f);
+                    RibbonTop.Color = centerColor.Darken();
+                    RibbonBottom.Color = edgeColor.Darken();
 
                     if (ResaleStarCountRoot != null)
                     {
@@ -189,14 +189,47 @@ namespace Telegram.Controls.Cells
             var edgeColor = gift.Gift.Backdrop.Colors.EdgeColor.ToColor();
 
             FindName(nameof(ResaleStarCountRoot));
-            ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.WithBrightness(-0.1f));
+            ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.Darken());
             ResaleStarCount.Text = gift.Gift.ResaleParameters.StarCount.ToString("N0");
 
             RibbonRoot.Visibility = Visibility.Visible;
             Ribbon.Text = string.Format("#{0:N0}", gift.Gift.Number);
 
-            RibbonTop.Color = centerColor.WithBrightness(-0.2f);
-            RibbonBottom.Color = edgeColor.WithBrightness(-0.2f);
+            RibbonTop.Color = centerColor.Darken();
+            RibbonBottom.Color = edgeColor.Darken();
+        }
+
+        public void UpdateGift(IClientService clientService, ReceivedGift gift, bool transfer)
+        {
+            if (gift.Gift is not SentGiftUpgraded upgraded)
+            {
+                return;
+            }
+
+            StarCountRoot.Visibility = Visibility.Collapsed;
+
+            Pattern.Update(clientService, upgraded.Gift);
+
+            Pinned.Visibility = Visibility.Collapsed;
+
+            Photo.Visibility = Visibility.Collapsed;
+            Pattern.Visibility = Visibility.Visible;
+
+            Animated.Source = new DelayedFileSource(clientService, upgraded.Gift.Model.Sticker);
+
+            var centerColor = upgraded.Gift.Backdrop.Colors.CenterColor.ToColor();
+            var edgeColor = upgraded.Gift.Backdrop.Colors.EdgeColor.ToColor();
+
+            FindName(nameof(ResaleStarCountRoot));
+            ResaleStarCountRoot.Background = new SolidColorBrush(edgeColor.Darken());
+            ResaleStarCount.Text = Strings.Gift2TransferMine;
+            ResaleStar.Visibility = Visibility.Collapsed;
+
+            RibbonRoot.Visibility = Visibility.Visible;
+            Ribbon.Text = string.Format("#{0:N0}", upgraded.Gift.Number);
+
+            RibbonTop.Color = centerColor.Darken();
+            RibbonBottom.Color = edgeColor.Darken();
         }
 
         private readonly Color _ribbonResaleTop = Color.FromArgb(0xFF, 0xAC, 0xDC, 0x89);

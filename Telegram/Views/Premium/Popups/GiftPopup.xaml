@@ -172,25 +172,20 @@
                         </controls:TopNavView.ItemContainerStyle>
                         <controls:TopNavView.ItemTemplate>
                             <DataTemplate x:DataType="popups:GiftGroup">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <controls:PremiumStarCount Visibility="{x:Bind popups:GiftPopup.ConvertGiftGroupStartCountVisibility(Key)}"
-                                                               Width="18"
-                                                               VerticalAlignment="Top"
-                                                               Margin="0,-1,4,0" />
-
-                                    <TextBlock Text="{x:Bind popups:GiftPopup.ConvertGiftGroupStarCountText(Key, StarCount)}"
-                                               Style="{StaticResource InfoCaptionTextBlockStyle}"
-                                               Typography.NumeralAlignment="Tabular"
-                                               VerticalAlignment="Center"
-                                               Margin="0,1,0,2"
-                                               Grid.Column="1" />
-                                </Grid>
+                                <TextBlock Text="{x:Bind popups:GiftPopup.ConvertGiftGroupStarCountText(Type)}"
+                                           Style="{StaticResource InfoCaptionTextBlockStyle}"
+                                           Typography.NumeralAlignment="Tabular"
+                                           VerticalAlignment="Center"
+                                           Margin="0,1,0,2"
+                                           Grid.Column="1" />
                             </DataTemplate>
                         </controls:TopNavView.ItemTemplate>
+                        <controls:TopNavView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"/>
+                            </ItemsPanelTemplate>
+                        </controls:TopNavView.ItemsPanel>
                     </controls:TopNavView>
                 </StackPanel>
             </GridView.Header>

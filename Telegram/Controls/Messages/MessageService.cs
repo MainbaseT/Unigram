@@ -243,8 +243,8 @@ namespace Telegram.Controls.Messages
                 var ribbonTop = FindName("RibbonTop") as GradientStop;
                 var ribbonBottom = FindName("RibbonBottom") as GradientStop;
 
-                ribbonTop.Color = centerColor.WithBrightness(-0.2f);
-                ribbonBottom.Color = edgeColor.WithBrightness(-0.2f);
+                ribbonTop.Color = centerColor.Darken();
+                ribbonBottom.Color = edgeColor.Darken();
 
                 var pattern = FindName("Pattern") as PatternBackground;
                 pattern.Update(message.ClientService, upgradedGift.Gift);
