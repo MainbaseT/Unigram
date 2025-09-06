@@ -238,6 +238,8 @@ namespace Telegram.Controls
 
         public string SelectedText { get; private set; } = string.Empty;
 
+        public string Text { get; private set; } = string.Empty;
+
         public void SelectAll()
         {
             Focus(FocusState.Pointer);
@@ -263,6 +265,7 @@ namespace Telegram.Controls
 
             _geometry.Figures.Clear();
             SelectedText = string.Empty;
+            Text = string.Join('\n', result.Lines.Select(x => x.Text));
 
             if (_selection != null)
             {
@@ -394,7 +397,7 @@ namespace Telegram.Controls
 
         protected override string GetNameCore()
         {
-            return string.Join('\n', _owner.RecognizedText?.Lines.Select(x => x.Text));
+            return _owner.Text;
         }
     }
 }

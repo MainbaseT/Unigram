@@ -610,6 +610,8 @@ namespace Telegram.Controls.Gallery
             MessageHelper.CopyText(XamlRoot, Selection.SelectedText);
         }
 
+        public string RecognizedText => Selection.Text;
+
         public string SelectedText => Selection.SelectedText;
 
         public bool IsTextSelected => Selection.SelectedText.Length > 0;

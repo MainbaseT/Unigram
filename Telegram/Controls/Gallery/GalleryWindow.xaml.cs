@@ -1070,7 +1070,23 @@ namespace Telegram.Controls.Gallery
                         {
                             var language = LanguageIdentification.IdentifyLanguage(container.SelectedText);
                             var popup = new TranslatePopup(translate, container.SelectedText, language, SettingsService.Current.Translate.To, true);
-                            
+
+                            ViewModel.ShowPopup(popup, requestedTheme: ElementTheme.Dark);
+                        }
+
+                        flyout.CreateFlyoutItem(handler, Strings.TranslateMessage, Icons.Translate);
+                    }
+                }
+                else
+                {
+                    var translate = TypeResolver.Current.Resolve<ITranslateService>(ViewModel.ClientService.SessionId);
+                    if (translate.CanTranslateText(container.RecognizedText))
+                    {
+                        void handler()
+                        {
+                            var language = LanguageIdentification.IdentifyLanguage(container.RecognizedText);
+                            var popup = new TranslatePopup(translate, container.RecognizedText, language, SettingsService.Current.Translate.To, true);
+
                             ViewModel.ShowPopup(popup, requestedTheme: ElementTheme.Dark);
                         }
 
