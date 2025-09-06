@@ -69,7 +69,7 @@ namespace Telegram.Controls
         {
             if (TypeResolver.Current.Playback.CurrentItem is MessageWithOwner message && message.Content is MessageVideoNote)
             {
-                if (VideoNoteContent.IsMessageVisible(message))
+                if (TypeResolver.Current.Playback.CurrentPlayback?.XamlRoot != XamlRoot || VideoNoteContent.IsMessageVisible(XamlRoot, message))
                 {
                     ShowHide(false);
                 }

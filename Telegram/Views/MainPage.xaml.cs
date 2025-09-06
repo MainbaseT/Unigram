@@ -1009,7 +1009,7 @@ namespace Telegram.Views
 
             OnStateChanged(null, null);
 
-            ShowHideBanner(TypeResolver.Current.Playback.CurrentItem != null);
+            ShowHideBanner(TypeResolver.Current.Playback);
 
             var update = new UpdateConnectionState(ViewModel.ClientService.ConnectionState);
             if (update.State != null)
@@ -1089,81 +1089,18 @@ namespace Telegram.Views
 
         private void OnPlaybackSourceChanged(IPlaybackService sender, object e)
         {
-            this.BeginOnUIThread(() => ShowHideBanner(sender.CurrentItem != null));
+            this.BeginOnUIThread(() => ShowHideBanner(sender));
         }
 
         private bool _bannerCollapsed;
 
-        private async void ShowHideBanner(bool show)
+        private void ShowHideBanner(IPlaybackService sender)
         {
-            if (show && Playback == null)
+            if (sender.CurrentItem != null && Playback == null)
             {
                 FindName(nameof(Playback));
                 Playback.Update(ViewModel.ClientService, ViewModel.NavigationService);
             }
-
-            return;
-
-            if ((show && Playback.Visibility == Visibility.Visible) || (!show && (Playback.Visibility == Visibility.Collapsed || _bannerCollapsed)))
-            {
-                return;
-            }
-
-            if (show)
-            {
-                _bannerCollapsed = false;
-            }
-            else
-            {
-                _bannerCollapsed = true;
-            }
-
-            Playback.Visibility = Visibility.Visible;
-            await Playback.UpdateLayoutAsync();
-
-            var detail = ElementComposition.GetElementVisual(MasterDetail.NavigationService.Frame);
-            var playback = ElementComposition.GetElementVisual(Playback);
-
-            var batch = detail.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-            batch.Completed += (s, args) =>
-            {
-                detail.Offset = new Vector3();
-                MasterDetail.NavigationService.Frame.Margin = new Thickness();
-
-                if (show)
-                {
-                    _bannerCollapsed = false;
-                }
-                else
-                {
-                    Playback.Visibility = Visibility.Collapsed;
-                }
-            };
-
-            var y = Playback.ActualSize.Y;
-
-            MasterDetail.NavigationService.Frame.Margin = new Thickness(0, 0, 0, -y);
-
-            float y0, y1;
-
-            if (show)
-            {
-                y0 = -y;
-                y1 = 0;
-            }
-            else
-            {
-                y0 = 0;
-                y1 = -y;
-            }
-
-            var offset0 = detail.Compositor.CreateVector3KeyFrameAnimation();
-            offset0.InsertKeyFrame(0, new Vector3(0, y0, 0));
-            offset0.InsertKeyFrame(1, new Vector3(0, y1, 0));
-            detail.StartAnimation("Offset", offset0);
-            playback.StartAnimation("Offset", offset0);
-
-            batch.End();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)

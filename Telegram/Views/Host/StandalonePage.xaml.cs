@@ -6,6 +6,7 @@
 //
 using Microsoft.UI.Xaml.Controls;
 using System;
+using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
@@ -27,6 +28,7 @@ namespace Telegram.Views.Host
 
     public sealed partial class StandalonePage : Page, IPopupHost, IToastHost
     {
+        private readonly IClientService _clientService;
         private readonly INavigationService _navigationService;
         private readonly IShortcutsService _shortcutsService;
 
@@ -35,6 +37,7 @@ namespace Telegram.Views.Host
             RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
 
+            _clientService = TypeResolver.Current.Resolve<IClientService>(navigationService.SessionId);
             _navigationService = navigationService;
             _shortcutsService = TypeResolver.Current.Resolve<IShortcutsService>(navigationService.SessionId);
 
@@ -45,12 +48,14 @@ namespace Telegram.Views.Host
                 ? Strings.AppDisplayName
                 : Strings.AppName;
 
-            var clientService = TypeResolver.Current.Resolve<IClientService>(navigationService.SessionId);
             var settingsService = TypeResolver.Current.Resolve<ISettingsService>(navigationService.SessionId);
             var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(navigationService.SessionId);
 
-            MasterDetail.Initialize(navigationService as NavigationService, null, new StandaloneViewModel(clientService, settingsService, aggregator), false);
+            MasterDetail.Initialize(navigationService as NavigationService, null, new StandaloneViewModel(_clientService, settingsService, aggregator), false);
             MasterDetail.NavigationService.FrameFacade.Navigating += OnNavigating;
+
+            TypeResolver.Current.Playback.SourceChanged += OnPlaybackSourceChanged;
+            ShowHideBanner(TypeResolver.Current.Playback);
 
             OnNavigating(null, new NavigatingEventArgs(null, null, null, null)
             {
@@ -187,6 +192,25 @@ namespace Telegram.Views.Host
             else if (command == ShortcutCommand.Close)
             {
                 await WindowContext.Current.ConsolidateAsync();
+            }
+        }
+
+        private void Banner_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            MasterDetail.BackgroundMargin = new Thickness(0, -e.NewSize.Height, 0, 0);
+        }
+
+        private void OnPlaybackSourceChanged(IPlaybackService sender, object args)
+        {
+            this.BeginOnUIThread(() => ShowHideBanner(sender));
+        }
+
+        private void ShowHideBanner(IPlaybackService sender)
+        {
+            if (sender.CurrentItem != null && Playback == null)
+            {
+                FindName(nameof(Playback));
+                Playback.Update(_clientService, _navigationService);
             }
         }
     }

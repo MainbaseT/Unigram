@@ -379,7 +379,7 @@ namespace Telegram.Controls.Messages.Content
             TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
             TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
 
-            RemoveMessage(_message);
+            RemoveMessage(XamlRoot, _message);
 
             _message = null;
             _thumbnailController?.Recycle();
@@ -514,7 +514,7 @@ namespace Telegram.Controls.Messages.Content
 
         public void Play()
         {
-            AddMessage(_message);
+            AddMessage(XamlRoot, _message);
             Player?.Play();
 
             UpdateSource();
@@ -522,7 +522,7 @@ namespace Telegram.Controls.Messages.Content
 
         public void Pause()
         {
-            RemoveMessage(_message);
+            RemoveMessage(XamlRoot, _message);
             Player?.Pause();
 
             UpdateSource();
@@ -532,20 +532,20 @@ namespace Telegram.Controls.Messages.Content
 
         private readonly record struct VideoNoteMessage(int SessionId, long ChatId, long MessageId);
 
-        private static readonly HashSet<VideoNoteMessage> _visibleMessages = new();
+        private static readonly HashSetDictionary<XamlRoot, VideoNoteMessage> _visibleMessages = new();
         private static readonly object _visibleMessagesLock = new();
 
-        private static void AddMessage(MessageViewModel message)
+        private static void AddMessage(XamlRoot xamlRoot, MessageViewModel message)
         {
-            UpdateMessage(message, _visibleMessages.Add);
+            UpdateMessage(xamlRoot, message, _visibleMessages.Add);
         }
 
-        private static void RemoveMessage(MessageViewModel message)
+        private static void RemoveMessage(XamlRoot xamlRoot, MessageViewModel message)
         {
-            UpdateMessage(message, _visibleMessages.Remove);
+            UpdateMessage(xamlRoot, message, _visibleMessages.Remove);
         }
 
-        private static void UpdateMessage(MessageViewModel message, Func<VideoNoteMessage, bool> action)
+        private static void UpdateMessage(XamlRoot xamlRoot, MessageViewModel message, Func<XamlRoot, VideoNoteMessage, bool> action)
         {
             if (message == null)
             {
@@ -554,7 +554,7 @@ namespace Telegram.Controls.Messages.Content
 
             Monitor.Enter(_visibleMessagesLock);
 
-            if (action(new VideoNoteMessage(message.ClientService.SessionId, message.ChatId, message.Id)))
+            if (action(xamlRoot, new VideoNoteMessage(message.ClientService.SessionId, message.ChatId, message.Id)))
             {
                 Monitor.Exit(_visibleMessagesLock);
 
@@ -568,11 +568,11 @@ namespace Telegram.Controls.Messages.Content
 
         public static event EventHandler VisibleMessagesChanged;
 
-        public static bool IsMessageVisible(MessageWithOwner message)
+        public static bool IsMessageVisible(XamlRoot xamlRoot, MessageWithOwner message)
         {
             lock (_visibleMessagesLock)
             {
-                return _visibleMessages.Contains(new VideoNoteMessage(message.ClientService.SessionId, message.ChatId, message.Id));
+                return _visibleMessages.Contains(xamlRoot, new VideoNoteMessage(message.ClientService.SessionId, message.ChatId, message.Id));
             }
         }
 

@@ -293,8 +293,15 @@ namespace Telegram.Controls.Cells
             }
             else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && !file.Local.IsDownloadingCompleted)
             {
-                //_clientService.DownloadFile(file.Id, 32);
-                TypeResolver.Current.Playback.Play(_message);
+                if (_message.Content is MessageAudio)
+                {
+                    TypeResolver.Current.Playback.Play(XamlRoot, _message);
+
+                }
+                else
+                {
+                    _message.ClientService.DownloadFile(file.Id, 32);
+                }
             }
             else
             {
@@ -311,7 +318,7 @@ namespace Telegram.Controls.Cells
                 }
                 else
                 {
-                    TypeResolver.Current.Playback.Play(_message);
+                    TypeResolver.Current.Playback.Play(XamlRoot, _message);
                 }
             }
         }

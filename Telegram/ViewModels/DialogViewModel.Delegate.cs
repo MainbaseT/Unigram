@@ -385,7 +385,7 @@ namespace Telegram.ViewModels
         {
             if (message.Content is MessageAudio or MessageVoiceNote)
             {
-                TypeResolver.Current.Playback.Play(message, Topic);
+                TypeResolver.Current.Playback.Play(XamlRoot, message, Topic);
 
                 if (timestamp > 0)
                 {
@@ -526,7 +526,7 @@ namespace Telegram.ViewModels
 
         public void PlayMessage(MessageViewModel message)
         {
-            TypeResolver.Current.Playback.Play(message, Topic);
+            TypeResolver.Current.Playback.Play(XamlRoot, message, Topic);
         }
 
         public bool RecognizeSpeech(MessageViewModel message)

@@ -211,6 +211,7 @@
     <Compile Include="Common\BezierPoint.cs" />
     <Compile Include="Common\DebouncedPropertyWithToken.cs" />
     <Compile Include="Common\FeatureTokenGenerator.cs" />
+    <Compile Include="Common\HashSetDictionary.cs" />
     <Compile Include="Common\HttpServer.cs" />
     <Compile Include="Common\MediaDeviceTracker.cs" />
     <Compile Include="Common\MediaDeviceList.cs" />

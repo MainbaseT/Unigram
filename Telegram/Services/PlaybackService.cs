@@ -13,6 +13,7 @@ using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using WM = Windows.Media;
 
@@ -59,7 +60,7 @@ namespace Telegram.Services
 
         void Clear();
 
-        void Play(MessageWithOwner message, MessageTopic topic = null);
+        void Play(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topic = null);
 
         void Attach(SwapChainPanel panel);
         void Detach(SwapChainPanel panel);
@@ -571,7 +572,7 @@ namespace Telegram.Services
             Dispose(true);
         }
 
-        public async void Play(MessageWithOwner message, MessageTopic topic)
+        public async void Play(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topic)
         {
             try
             {
@@ -600,7 +601,7 @@ namespace Telegram.Services
 
             Dispose(false);
 
-            var item = GetPlaybackItem(message);
+            var item = GetPlaybackItem(xamlRoot, message);
             var items = _items = new List<PlaybackItem>();
 
             _items.Add(item);
@@ -626,11 +627,11 @@ namespace Telegram.Services
                 {
                     if (add.Id > message.Id && add.Content is MessageAudio)
                     {
-                        items.Insert(0, GetPlaybackItem(new MessageWithOwner(message.ClientService, add)));
+                        items.Insert(0, GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add)));
                     }
                     else if (add.Id < message.Id && (add.Content is MessageVoiceNote || add.Content is MessageVideoNote))
                     {
-                        items.Insert(0, GetPlaybackItem(new MessageWithOwner(message.ClientService, add)));
+                        items.Insert(0, GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add)));
                     }
                 }
 
@@ -638,11 +639,11 @@ namespace Telegram.Services
                 {
                     if (add.Id < message.Id && add.Content is MessageAudio)
                     {
-                        items.Add(GetPlaybackItem(new MessageWithOwner(message.ClientService, add)));
+                        items.Add(GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add)));
                     }
                     else if (add.Id > message.Id && (add.Content is MessageVoiceNote || add.Content is MessageVideoNote))
                     {
-                        items.Add(GetPlaybackItem(new MessageWithOwner(message.ClientService, add)));
+                        items.Add(GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add)));
                     }
                 }
 
@@ -651,12 +652,13 @@ namespace Telegram.Services
             }
         }
 
-        private PlaybackItem GetPlaybackItem(MessageWithOwner message)
+        private PlaybackItem GetPlaybackItem(XamlRoot xamlRoot, MessageWithOwner message)
         {
             GetProperties(message, out File file, out bool speed);
 
             var item = new PlaybackItem(file)
             {
+                XamlRoot = xamlRoot,
                 Message = message,
                 CanChangePlaybackRate = speed
             };
@@ -788,6 +790,8 @@ namespace Telegram.Services
     public partial class PlaybackItem
     {
         public IClientService ClientService => Message.ClientService;
+
+        public XamlRoot XamlRoot { get; set; }
 
         public MessageWithOwner Message { get; set; }
 

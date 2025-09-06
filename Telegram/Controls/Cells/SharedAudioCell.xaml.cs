@@ -382,7 +382,7 @@ namespace Telegram.Controls.Cells
             }
             else
             {
-                TypeResolver.Current.Playback.Play(_message);
+                TypeResolver.Current.Playback.Play(XamlRoot, _message);
             }
         }
 
@@ -429,7 +429,7 @@ namespace Telegram.Controls.Cells
                 }
                 else
                 {
-                    TypeResolver.Current.Playback.Play(_message);
+                    TypeResolver.Current.Playback.Play(XamlRoot, _message);
                 }
             }
         }
