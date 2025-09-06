@@ -176,20 +176,6 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _windowResizeDebug, "WindowResizeDebug", value);
         }
 
-        private bool? _sparseMessagesDebug;
-        public bool SparseMessagesDebug
-        {
-            get => _sparseMessagesDebug ??= GetValueOrDefault("SparseMessagesDebug", true);
-            set => AddOrUpdateValue(ref _sparseMessagesDebug, "SparseMessagesDebug", value);
-        }
-
-        private bool? _savedMessagesDebug;
-        public bool SavedMessagesDebug
-        {
-            get => _savedMessagesDebug ??= GetValueOrDefault("SavedMessagesDebug", ApiInfo.IsPackagedRelease);
-            set => AddOrUpdateValue(ref _savedMessagesDebug, "SavedMessagesDebug", value);
-        }
-
         private bool? _deleteFilesDebug;
         public bool DeleteFilesDebug
         {

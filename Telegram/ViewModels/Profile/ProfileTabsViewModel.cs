@@ -223,7 +223,7 @@ namespace Telegram.ViewModels.Profile
             {
                 if (filter is SearchMessagesFilterEmpty)
                 {
-                    if (IsSavedMessages || MyProfile || !SettingsService.Current.Diagnostics.SavedMessagesDebug)
+                    if (IsSavedMessages || MyProfile)
                     {
                         return new Count(0);
                     }
