@@ -15,10 +15,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
 using Windows.ApplicationModel;
 using Windows.Data.Json;
+using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 
@@ -132,7 +134,14 @@ namespace Telegram.Controls
 
         public override void Clear()
         {
-            _core?.NavigateToString(string.Empty);
+            try
+            {
+                _core?.NavigateToString(string.Empty);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         public override void AddTime(double value)
@@ -232,7 +241,7 @@ namespace Telegram.Controls
         private void OnNavigationCompleted(CoreWebView2 sender, CoreWebView2NavigationCompletedEventArgs args)
         {
             var debug = SettingsService.Current.Diagnostics.EnableWebViewDevTools ? "true" : "false";
-            ExecuteScript("playerInitialize({debug:" + debug +"});playerPlay();");
+            ExecuteScript("playerInitialize({debug:" + debug + "});playerPlay();");
         }
 
         private async void OnWebResourceRequested(CoreWebView2 sender, CoreWebView2WebResourceRequestedEventArgs args)
@@ -270,6 +279,14 @@ namespace Telegram.Controls
                 {
                     // All bla bla bla
                 }
+            }
+
+            if (resource == "favicon.ico")
+            {
+                CreateWebResourceResponse(null, 404, "Not Found", string.Empty);
+
+                deferral.Complete();
+                return;
             }
 
             if (resource == "video.mp4")
@@ -311,7 +328,7 @@ namespace Telegram.Controls
             }
             else if (int.TryParse(fileName, out int fileId))
             {
-                var file = _video.ClientService.GetFileAsync(fileId).Result;
+                var file = await _video.ClientService.GetFileAsync(fileId);
                 if (file == null)
                 {
                     deferral.Complete();
@@ -361,34 +378,38 @@ namespace Telegram.Controls
                 {
                     if (extension == ".m3u8")
                     {
-                        var text = await System.IO.File.ReadAllTextAsync(file.Local.Path);
-                        var playlist = Regex.Replace(text, "mtproto:\\d+\\b", _playlist[fileId].Video.Id + ".mp4");
-
-                        using (var stream = await ToStreamAsync(playlist))
+                        try
                         {
-                            CreateWebResourceResponse(stream, 200, "OK", "Content-Type: application/vnd.apple.mpegurl");
+                            var storage = await StorageFile.GetFileFromPathAsync(file.Local.Path);
+                            var text = await FileIO.ReadTextAsync(storage);
+                            var playlist = Regex.Replace(text, "mtproto:\\d+\\b", _playlist[fileId].Video.Id + ".mp4");
+
+                            using (var stream = await ToStreamAsync(playlist))
+                            {
+                                CreateWebResourceResponse(stream, 200, "OK", "Content-Type: application/vnd.apple.mpegurl");
+                            }
+                        }
+                        catch
+                        {
+                            // TODO: file name changes when download is completed and a race seems to be happening some times.
                         }
                     }
                     else
                     {
                         try
                         {
-                            // TODO: would be probably better to use Storage APIs as they're asynchronous
-                            // At the same time, they're known to be slow, and they also seem to be quite buggy.
-                            using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                            var storage = await StorageFile.GetFileFromPathAsync(file.Local.Path);
+                            using (var stream = await storage.OpenReadAsync())
+                            using (var destination = new InMemoryRandomAccessStream())
                             {
-                                stream.Seek(offset, System.IO.SeekOrigin.Begin);
+                                stream.Seek((ulong)offset);
 
-                                byte[] buffer = new byte[(int)limit];
-                                await stream.ReadAsync(buffer, 0, buffer.Length);
+                                var buffer = new Windows.Storage.Streams.Buffer((uint)limit);
+                                var readBuffer = await stream.ReadAsync(buffer, (uint)limit, InputStreamOptions.None);
 
-                                using var memory = new InMemoryRandomAccessStream();
-                                using var writer = new DataWriter(memory.GetOutputStreamAt(0));
+                                await destination.WriteAsync(readBuffer);
 
-                                writer.WriteBytes(buffer);
-                                await writer.StoreAsync();
-
-                                CreateWebResourceResponse(memory, 206, "OK", string.Format("Content-Type: video/mp4\nContent-Range: bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size));
+                                CreateWebResourceResponse(destination, 206, "OK", string.Format("Content-Type: video/mp4\nContent-Range: bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size));
                             }
                         }
                         catch
