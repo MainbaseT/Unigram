@@ -1247,6 +1247,8 @@ namespace Telegram.Controls.Gallery
 
         private void Recognize_Click(object sender, RoutedEventArgs e)
         {
+            SettingsService.Current.ToolTip.Complete("TextRecognizer");
+
             var container = GetElement(CarouselDirection.None);
             container.RecognizeText();
         }

@@ -32,6 +32,11 @@ namespace Telegram.Services.Settings
             return false;
         }
 
+        public void Complete(string key)
+        {
+            AddOrUpdateValue(key, 3);
+        }
+
         public void Reset()
         {
             _container.Values.Clear();
