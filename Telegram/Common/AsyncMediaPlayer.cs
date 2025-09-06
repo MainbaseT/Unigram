@@ -272,7 +272,7 @@ namespace Telegram.Common
 
             if (_graphicsContext != null)
             {
-                _dispatcherQueue.TryEnqueue(_graphicsContext.Destroy);
+                _graphicsContext.Destroy();
             }
 
             lock (_closeLock)

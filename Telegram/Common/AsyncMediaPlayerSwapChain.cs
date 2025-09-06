@@ -232,10 +232,7 @@ namespace Telegram.Common
             _device3?.Dispose();
             _device3 = null;
 
-            if (_panel != null)
-            {
-                Detach(_panel);
-            }
+            OnAttach(_panel, _panel = null);
 
             _swapChain?.Dispose();
             _swapChain = null;
@@ -264,7 +261,7 @@ namespace Telegram.Common
                 oldPanel.BeginOnUIThread(() => Detach(oldPanel));
             }
 
-            if (_loaded)
+            if (_loaded && newPanel != null)
             {
                 using (var panelNative = ComObject.As<ISwapChainPanelNative>(newPanel))
                 {
