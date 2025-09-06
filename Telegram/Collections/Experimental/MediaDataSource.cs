@@ -179,11 +179,8 @@ namespace Telegram.Collections
         readonly struct MessagePositionRange
         {
             public readonly long FromMessageId;
-
             public readonly int Offset;
-
             public readonly int Limit;
-
             public readonly int FirstIndex;
 
             public MessagePositionRange(long fromMessageId, int offset, int limit, int firstIndex)
@@ -195,7 +192,7 @@ namespace Telegram.Collections
             }
         }
 
-        private static SemaphoreSlim _gettingPositions = new SemaphoreSlim(1);
+        private SemaphoreSlim _gettingPositions = new SemaphoreSlim(1);
 
         private async Task<MessagePositionRange> GetPositionAsync(ItemIndexRange batch, bool retry)
         {
