@@ -76,11 +76,6 @@ namespace Telegram.ViewModels.Profile
         }
     }
 
-    public partial class ProfileMyArgs
-    {
-
-    }
-
     public abstract partial class ProfileTabsViewModel : MediaTabsViewModelBase, IHandle
     {
         protected readonly ProfileSavedChatsTabViewModel _savedChatsViewModel;
@@ -142,15 +137,9 @@ namespace Telegram.ViewModels.Profile
 
         public override Task NavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
-            if (parameter is ProfileMyArgs)
+            if (parameter is long chatId)
             {
-                parameter = ClientService.Options.MyId;
-                MyProfile = true;
-            }
-
-            if (parameter is long chatId && !MyProfile)
-            {
-                IsSavedMessages = chatId == ClientService.Options.MyId;
+                MyProfile = chatId == ClientService.Options.MyId;
             }
             else if (parameter is ChatMessageTopic chatMessageTopic)
             {

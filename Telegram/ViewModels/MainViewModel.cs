@@ -609,7 +609,7 @@ namespace Telegram.ViewModels
             }
             else
             {
-                NavigationService.Navigate(typeof(ProfilePage), new ProfileMyArgs());
+                NavigationService.Navigate(typeof(ProfilePage), ClientService.Options.MyId);
             }
         }
     }
