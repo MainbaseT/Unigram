@@ -8,11 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Windows.Foundation;
 using Windows.UI.Xaml.Data;
 
 namespace Telegram.Collections
@@ -30,21 +32,21 @@ namespace Telegram.Collections
     /// <summary>
     /// A custom datasource over the file system that supports data virtualization
     /// </summary>
-    public class MediaDataSource : INotifyCollectionChanged, System.Collections.IList, IItemsRangeInfo
+    public class MediaDataSource : INotifyCollectionChanged, System.Collections.IList, IItemsRangeInfo, ISupportIncrementalLoading
     {
         private readonly IClientService _clientService;
         private readonly long _chatId;
         private readonly long _savedMessagesTopicId;
 
         private SearchMessagesFilter _filter;
-        private int _count = 1;
+        private int _count = 0;
 
         private ItemCacheManager<MessageWithOwner> _itemCache;
         private SortedList<int, MessagePosition> _positions;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        private MediaDataSource(IClientService clientService, long chatId, long savedMessagesTopicId, SearchMessagesFilter filter)
+        public MediaDataSource(IClientService clientService, long chatId, long savedMessagesTopicId, SearchMessagesFilter filter)
         {
             _clientService = clientService;
             _chatId = chatId;
@@ -61,7 +63,7 @@ namespace Telegram.Collections
         public static async Task<MediaDataSource> Create(IClientService clientService, long chatId, long savedMessagesTopicId, SearchMessagesFilter filter)
         {
             MediaDataSource ds = new MediaDataSource(clientService, chatId, savedMessagesTopicId, filter);
-            await ds.UpdateCount(true);
+            await ds.UpdateCount(false);
             return ds;
         }
 
@@ -291,10 +293,8 @@ namespace Telegram.Collections
                 throw new NotImplementedException();
             }
         }
-        public int Count
-        {
-            get { return _count; }
-        }
+
+        public int Count => _count;
 
         #endregion
 
@@ -380,6 +380,19 @@ namespace Telegram.Collections
                 CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, args.OldItem, args.NewItem, args.ItemIndex));
             }
         }
+
+        public IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
+        {
+            return AsyncInfo.Run(async token =>
+            {
+                HasMoreItems = false;
+
+                await UpdateCount(true);
+                return new LoadMoreItemsResult();
+            });
+        }
+
+        public bool HasMoreItems { get; private set; } = true;
 
         #region Parts of IList Not Implemented
 

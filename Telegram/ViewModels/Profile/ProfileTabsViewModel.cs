@@ -211,8 +211,7 @@ namespace Telegram.ViewModels.Profile
                 new SearchMessagesFilterAnimation(),
             };
 
-            var sparseMessagesAvailable = SettingsService.Current.Diagnostics.SparseMessagesDebug
-                && Topic is MessageTopicSavedMessages or null;
+            var sparseMessagesAvailable = Topic is MessageTopicSavedMessages or null;
 
             var savedMessagesTopicId = 0L;
             if (Topic is MessageTopicSavedMessages savedMessagesTopic)
@@ -240,32 +239,32 @@ namespace Telegram.ViewModels.Profile
 
                 if (sparseMessagesAvailable && filter is SearchMessagesFilterPhotoAndVideo or SearchMessagesFilterDocument or SearchMessagesFilterAudio or SearchMessagesFilterVoiceAndVideoNote or SearchMessagesFilterAnimation)
                 {
-                    var source = await MediaDataSource.Create(ClientService, chat.Id, savedMessagesTopicId, filter);
-                    if (source.Count > 0)
+                    var source = await ClientService.SendAsync(new GetChatMessageCount(chat.Id, Topic, filter, false)) as Count;
+                    if (source?.CountValue > 50)
                     {
                         switch (filter)
                         {
                             case SearchMessagesFilterPhotoAndVideo:
                             case SearchMessagesFilterPhoto:
                             case SearchMessagesFilterVideo:
-                                Media.DataSource = source;
+                                Media.DataSource = new MediaDataSource(ClientService, chat.Id, savedMessagesTopicId, filter);
                                 break;
                             case SearchMessagesFilterDocument:
-                                Files.DataSource = source;
+                                Files.DataSource = new MediaDataSource(ClientService, chat.Id, savedMessagesTopicId, filter);
                                 break;
                             case SearchMessagesFilterAudio:
-                                Music.DataSource = source;
+                                Music.DataSource = new MediaDataSource(ClientService, chat.Id, savedMessagesTopicId, filter);
                                 break;
                             case SearchMessagesFilterVoiceAndVideoNote:
-                                Voice.DataSource = source;
+                                Voice.DataSource = new MediaDataSource(ClientService, chat.Id, savedMessagesTopicId, filter);
                                 break;
                             case SearchMessagesFilterAnimation:
-                                Animations.DataSource = source;
+                                Animations.DataSource = new MediaDataSource(ClientService, chat.Id, savedMessagesTopicId, filter);
                                 break;
                         }
                     }
 
-                    return new Count(source.Count);
+                    return source;
                 }
 
                 return await ClientService.SendAsync(new GetChatMessageCount(chat.Id, Topic, filter, false)) as Count;
