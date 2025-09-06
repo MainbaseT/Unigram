@@ -22,7 +22,7 @@ namespace Telegram.Views.Settings
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (ApiInfo.IsPackagedRelease && ViewModel.ClientService.Options.CanIgnoreSensitiveContentRestrictions)
+            if (ViewModel.ClientService.Options.IgnoreSensitiveContentRestrictions || ViewModel.ClientService.Options.CanIgnoreSensitiveContentRestrictions)
             {
                 FindName(nameof(SensitiveContent));
             }

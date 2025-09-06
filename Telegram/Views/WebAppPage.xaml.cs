@@ -41,11 +41,13 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace Telegram.Views
 {
+    public partial record WebAppAgeVerificationCompletedEventArgs(bool Passed, double Age);
+
     public sealed partial class WebAppPage : UserControlEx, IToastHost, IPopupHost
     {
         private readonly IClientService _clientService;
         private readonly IViewService _viewService;
-        private readonly INavigationService _navigationService;
+        private readonly SecondaryNavigationService _navigationService;
         private readonly IEventAggregator _aggregator;
 
         private WebAppStorage _deviceStorage;
@@ -76,14 +78,14 @@ namespace Telegram.Views
         private ShapeVisual _placeholderVisual;
 
         // TODO: constructor should take a function and URL should be loaded asynchronously
-        public WebAppPage(IClientService clientService, User botUser, string url, long launchId = 0, AttachmentMenuBot menuBot = null, Chat sourceChat = null, InternalLinkType sourceLink = null, string buttonText = null)
+        public WebAppPage(IClientService clientService, INavigationService navigationService, User botUser, string url, long launchId = 0, AttachmentMenuBot menuBot = null, Chat sourceChat = null, InternalLinkType sourceLink = null, string buttonText = null)
         {
             RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
 
             _clientService = clientService;
             _viewService = TypeResolver.Current.Resolve<IViewService>(clientService.SessionId);
-            _navigationService = new SecondaryNavigationService(clientService, _viewService, WindowContext.Current);
+            _navigationService = new SecondaryNavigationService(clientService, navigationService, _viewService, WindowContext.Current);
             _aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
 
             _aggregator.Subscribe<UpdateWebAppMessageSent>(this, Handle)
@@ -110,10 +112,14 @@ namespace Telegram.Views
             Window.Current.Activated += OnActivated;
 
             SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += OnCloseRequested;
+            ApplicationView.GetForCurrentView().Consolidated += OnConsolidated;
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
 
             LoadPlaceholder();
         }
+
+        private bool _ageVerificationRaised;
+        public event EventHandler<WebAppAgeVerificationCompletedEventArgs> AgeVerificationCompleted;
 
         private async void LoadPlaceholder()
         {
@@ -174,14 +180,14 @@ namespace Telegram.Views
             return false;
         }
 
-        public WebAppPage(IClientService clientService, User botUser, string url, string title, long gameChatId = 0, long gameMessageId = 0)
+        public WebAppPage(IClientService clientService, INavigationService navigationService, User botUser, string url, string title, long gameChatId = 0, long gameMessageId = 0)
         {
             RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
 
             _clientService = clientService;
             _viewService = TypeResolver.Current.Resolve<IViewService>(clientService.SessionId);
-            _navigationService = new SecondaryNavigationService(clientService, _viewService, WindowContext.Current);
+            _navigationService = new SecondaryNavigationService(clientService, navigationService, _viewService, WindowContext.Current);
             _aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
 
             _botUser = botUser;
@@ -320,6 +326,16 @@ namespace Telegram.Views
 
                 deferral.Complete();
             }
+        }
+
+        private void OnConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
+        {
+            if (_ageVerificationRaised)
+            {
+                return;
+            }
+
+            AgeVerificationCompleted?.Invoke(this, new WebAppAgeVerificationCompletedEventArgs(false, 0));
         }
 
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)
@@ -607,6 +623,10 @@ namespace Telegram.Views
             {
                 PostEvent("gyroscope_failed", "error", "UNSUPPORTED");
             }
+            else if (eventName == "web_app_verify_age")
+            {
+                ProcessVerifyAge(eventData);
+            }
             else if (eventName == "web_app_device_storage_save_key")
             {
                 if (_botUser == null) return;
@@ -658,6 +678,19 @@ namespace Telegram.Views
             {
                 ProcessShareGame(true);
             }
+        }
+
+        private void ProcessVerifyAge(JsonObject eventData)
+        {
+            var passed = eventData.GetNamedBoolean("passed", false);
+            var age = eventData.GetNamedNumber("age", 0);
+            // gender, string
+            // genderProbability, double
+
+            _ageVerificationRaised = true;
+            AgeVerificationCompleted?.Invoke(this, new WebAppAgeVerificationCompletedEventArgs(passed, age));
+
+            _navigationService.Switch();
         }
 
         private async void SetStorageKey(WebAppStorage storage, JsonObject eventData, String eventSuccess, String eventFail)
@@ -2209,17 +2242,25 @@ namespace Telegram.Views
 
     public partial class SecondaryNavigationService : TLNavigationService
     {
-        public SecondaryNavigationService(IClientService clientService, IViewService viewService, WindowContext window)
+        private readonly INavigationService _source;
+
+        public SecondaryNavigationService(IClientService clientService, INavigationService source, IViewService viewService, WindowContext window)
             : base(clientService, viewService, window, null, string.Empty)
         {
+            _source = source;
         }
 
         public override bool Navigate(Type page, object parameter = null, NavigationState state = null, NavigationTransitionInfo infoOverride = null, bool navigationStackEnabled = true)
         {
-            WindowContext.Main.Dispatcher.Dispatch(() => WindowContext.Main.GetNavigationService().Navigate(page, parameter, state, infoOverride, navigationStackEnabled));
-            _ = ApplicationViewSwitcher.SwitchAsync(WindowContext.Main.Id);
+            _source.Dispatcher.Dispatch(() => _source.Navigate(page, parameter, state, infoOverride, navigationStackEnabled));
+            _ = ApplicationViewSwitcher.SwitchAsync(_source.Window.Id);
 
             return true;
+        }
+
+        public void Switch()
+        {
+            _ = ApplicationViewSwitcher.SwitchAsync(_source.Window.Id);
         }
     }
 }

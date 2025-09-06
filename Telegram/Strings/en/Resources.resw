@@ -1139,6 +1139,29 @@ Your prize is **{0} Stars**.</value>
   <data name="AffiliateProgramUpdateInfoLink" xml:space="preserve">
     <value>https://telegram.org/tos/affiliate-program</value>
   </data>
+  <data name="AgeVerificationButton" xml:space="preserve">
+    <value>Verify My Age</value>
+  </data>
+  <data name="AgeVerificationFailedText" xml:space="preserve">
+    <value>Sorry, you can&apos;t view 18+ content.</value>
+  </data>
+  <data name="AgeVerificationFailedTitle" xml:space="preserve">
+    <value>Age Check Failed</value>
+  </data>
+  <data name="AgeVerificationNeedCameraPermission" xml:space="preserve">
+    <value>Telegram needs access to your camera so that you can confirm your age.</value>
+  </data>
+  <data name="AgeVerificationPassedTitle" xml:space="preserve">
+    <value>Age Check Passed</value>
+  </data>
+  <data name="AgeVerificationTextGB" xml:space="preserve">
+    <value>To access such content, you must confirm that you are at least **18** years old as required by UK law.
+
+This is a one-time process using your phone&apos;s camera. Your selfie will not be stored by Telegram.</value>
+  </data>
+  <data name="AgeVerificationTitle" xml:space="preserve">
+    <value>Age Verification</value>
+  </data>
   <data name="Agree" xml:space="preserve">
     <value>Agree</value>
   </data>
@@ -4447,6 +4470,12 @@ Minimum length is 5 characters.</value>
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
+  </data>
+  <data name="ConfirmSensitiveContentText" xml:space="preserve">
+    <value>Confirm that you are over 18 years old and update your settings to see potentially explicit and sensitive content.</value>
+  </data>
+  <data name="ConfirmSensitiveContentTitle" xml:space="preserve">
+    <value>18+ Content</value>
   </data>
   <data name="Connected" xml:space="preserve">
     <value>Connected</value>
@@ -8601,6 +8630,36 @@ Minimum length is 5 characters.</value>
   <data name="MessageSeen_other" xml:space="preserve">
     <value>{0} Seen</value>
   </data>
+  <data name="MessageShowSensitiveContentAlways" xml:space="preserve">
+    <value>Always show 18+ media</value>
+  </data>
+  <data name="MessageShowSensitiveContentButton" xml:space="preserve">
+    <value>View Anyway</value>
+  </data>
+  <data name="MessageShowSensitiveContentChannelText" xml:space="preserve">
+    <value>This chat may contain sensitive content suitable only for adults. Do you still want to view it?</value>
+  </data>
+  <data name="MessageShowSensitiveContentChannelTextClosed" xml:space="preserve">
+    <value>This chat may contain sensitive content suitable only for adults.</value>
+  </data>
+  <data name="MessageShowSensitiveContentChannelTextClosedButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="MessageShowSensitiveContentChannelTitle" xml:space="preserve">
+    <value>18+</value>
+  </data>
+  <data name="MessageShowSensitiveContentMediaText" xml:space="preserve">
+    <value>This media may contain sensitive content suitable only for adults. Do you still want to view it?</value>
+  </data>
+  <data name="MessageShowSensitiveContentMediaTextClosed" xml:space="preserve">
+    <value>This media may contain sensitive content suitable only for adults.</value>
+  </data>
+  <data name="MessageShowSensitiveContentMediaTextClosedButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="MessageShowSensitiveContentMediaTitle" xml:space="preserve">
+    <value>18+</value>
+  </data>
   <data name="MessagesOverview" xml:space="preserve">
     <value>Messages</value>
   </data>
@@ -11789,6 +11848,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SendWithoutSound" xml:space="preserve">
     <value>Send Without Sound</value>
   </data>
+  <data name="SensitiveContentSettingsToast" xml:space="preserve">
+    <value>You can update the visibility of sensitive media in **Privacy and Security &gt; Show 18+ Content**</value>
+  </data>
   <data name="SensitiveDisableFiltering" xml:space="preserve">
     <value>Disable filtering</value>
   </data>
@@ -12040,6 +12102,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="ShowOriginalButton" xml:space="preserve">
     <value>Show Original</value>
+  </data>
+  <data name="ShowSensitiveContent" xml:space="preserve">
+    <value>Show 18+ Content</value>
+  </data>
+  <data name="ShowSensitiveContentInfo" xml:space="preserve">
+    <value>Do not hide media that contains content suitable only for adults</value>
   </data>
   <data name="ShowTranslateButton" xml:space="preserve">
     <value>Show Translate Button</value>

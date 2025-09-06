@@ -12740,4 +12740,27 @@
     <string name="Gift2TabCollectibles">Collectibles</string>
     <string name="Gift2TransferMine">Transfer</string>
 
+    <string name="AgeVerificationTitle">Age Verification</string>
+    <string name="AgeVerificationTextGB">To access such content, you must confirm that you are at least **18** years old as required by UK law.\n\nThis is a one-time process using your phone\'s camera. Your selfie will not be stored by Telegram.</string>
+    <string name="AgeVerificationButton">Verify My Age</string>
+    <string name="AgeVerificationFailedTitle">Age Check Failed</string>
+    <string name="AgeVerificationFailedText">Sorry, you can\'t view 18+ content.</string>
+    <string name="AgeVerificationPassedTitle">Age Check Passed</string>
+    <string name="AgeVerificationNeedCameraPermission">Telegram needs access to your camera so that you can confirm your age.</string>
+    <string name="MessageShowSensitiveContentMediaTitle">18+</string>
+    <string name="MessageShowSensitiveContentChannelTitle">18+</string>
+    <string name="MessageShowSensitiveContentMediaText">This media may contain sensitive content suitable only for adults. Do you still want to view it?</string>
+    <string name="MessageShowSensitiveContentMediaTextClosed">This media may contain sensitive content suitable only for adults.</string>
+    <string name="MessageShowSensitiveContentMediaTextClosedButton">Cancel</string>
+    <string name="MessageShowSensitiveContentChannelText">This chat may contain sensitive content suitable only for adults. Do you still want to view it?</string>
+    <string name="MessageShowSensitiveContentChannelTextClosed">This chat may contain sensitive content suitable only for adults.</string>
+    <string name="MessageShowSensitiveContentChannelTextClosedButton">Cancel</string>
+    <string name="MessageShowSensitiveContentAlways">Always show 18+ media</string>
+    <string name="MessageShowSensitiveContentButton">View Anyway</string>
+    <string name="SensitiveContentSettingsToast">You can update the visibility of sensitive media in **Privacy and Security &gt; Show 18+ Content**</string>
+    <string name="ShowSensitiveContent">Show 18+ Content</string>
+    <string name="ShowSensitiveContentInfo">Do not hide media that contains content suitable only for adults</string>
+    <string name="ConfirmSensitiveContentTitle">18+ Content</string>
+    <string name="ConfirmSensitiveContentText">Confirm that you are over 18 years old and update your settings to see potentially explicit and sensitive content.</string>
+
 </resources>
