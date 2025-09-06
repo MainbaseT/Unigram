@@ -894,7 +894,7 @@ namespace Telegram.Views.Stars.Popups
                 {
                     var xtr = args.Value / 1000d;
                     var usd = (long)(xtr * _clientService.Options.ThousandStarToUsdRate);
-                    var stars = (long)(xtr * _clientService.Options.GiftResaleEarningsPerMille);
+                    var stars = (long)(xtr * _clientService.Options.GiftResaleStarEarningsPerMille);
 
                     args.Footer = string.Format("{0} ~{1}", Locale.Declension(Strings.R.ResellGiftInfo, stars), Formatter.FormatAmount(usd, "USD"));
                 }
