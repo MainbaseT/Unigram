@@ -80,8 +80,8 @@ namespace Telegram.Controls.Cells
 
             if (message.Content is MessagePhoto photo)
             {
-                var small = photo.Photo.GetSmall();
-                UpdateThumbnail(message, small.Photo, photo.Photo.Minithumbnail, download, photo.HasSpoiler);
+                var small = photo.Photo.GetThumbnail();
+                UpdateThumbnail(message, small, photo.Photo.Minithumbnail, download, photo.HasSpoiler);
 
                 Overlay.Visibility = Visibility.Collapsed;
             }
@@ -93,14 +93,14 @@ namespace Telegram.Controls.Cells
                 var minithumbnail = video.Cover?.Minithumbnail;
                 minithumbnail ??= video.Video.Minithumbnail;
 
-                UpdateThumbnail(message, thumbnail?.File, minithumbnail, download, video.HasSpoiler);
+                UpdateThumbnail(message, thumbnail, minithumbnail, download, video.HasSpoiler);
 
                 Overlay.Visibility = Visibility.Visible;
                 Subtitle.Text = video.Video.GetDuration();
             }
             else if (message.Content is MessageAnimation animation)
             {
-                UpdateThumbnail(message, animation.Animation.Thumbnail.File, animation.Animation.Minithumbnail, download, animation.HasSpoiler);
+                UpdateThumbnail(message, animation.Animation.Thumbnail, animation.Animation.Minithumbnail, download, animation.HasSpoiler);
 
                 Overlay.Visibility = Visibility.Collapsed;
             }
@@ -122,6 +122,8 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
+            _thumbnailController?.Recycle();
+
             ThumbnailTexture.Opacity = 0;
             Overlay.Opacity = 0;
         }
@@ -131,11 +133,12 @@ namespace Telegram.Controls.Cells
             UpdateMessage(_message, false);
         }
 
-        private void UpdateThumbnail(MessageWithOwner message, File file, Minithumbnail minithumbnail, bool download, bool hasSpoiler)
+        private void UpdateThumbnail(MessageWithOwner message, Thumbnail thumbnail, Minithumbnail minithumbnail, bool download, bool hasSpoiler)
         {
             _thumbnailController ??= new ThumbnailController(ThumbnailTexture);
 
-            if (file != null)
+            var file = thumbnail?.File;
+            if (file != null && thumbnail.Format is ThumbnailFormatJpeg or ThumbnailFormatPng or ThumbnailFormatGif)
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
