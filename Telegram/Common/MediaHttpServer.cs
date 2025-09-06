@@ -133,8 +133,10 @@ namespace Telegram.Common
             }
 
             var priority = 32;
-            request.Query.TryGetValue("priority", out string priorityValue);
-            int.TryParse(priorityValue, out priority);
+            if (request.Query.TryGetValue("priority", out string priorityValue))
+            {
+                int.TryParse(priorityValue, out priority);
+            }
 
             long offset = 0;
             long limit = 0;
