@@ -14,6 +14,7 @@ using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Navigation.Services;
 using Telegram.Services;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.Views.Stars.Popups;
 using Windows.Foundation;
@@ -215,12 +216,27 @@ namespace Telegram.Views.Premium.Popups
 
         private async void OnItemClick(object sender, ItemClickEventArgs e)
         {
+            if (e.ClickedItem is AvailableGift { Gift.UserLimits.RemainingCount: 0, MinResaleStarCount: 0 } available)
+            {
+                ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.Gift2PerUserLimit, available.Gift.UserLimits.TotalCount), new DelayedFileSource(_clientService, available.Gift.Sticker));
+                return;
+            }
+
             ContentDialogResult confirm = ContentDialogResult.Primary;
             Hide();
 
             if (e.ClickedItem is AvailableGift gift)
             {
-                if (gift.Gift.OverallLimits == null || gift.Gift.OverallLimits.RemainingCount > 0)
+                if (gift.Gift.UserLimits != null && gift.Gift.UserLimits.RemainingCount == 0 && gift.MinResaleStarCount == 0)
+                {
+                    ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.Gift2PerUserLimit, gift.Gift.UserLimits.TotalCount), new DelayedFileSource(_clientService, gift.Gift.Sticker));
+                }
+                else if (gift.Gift.IsPremium && !_clientService.IsPremium)
+                {
+                    await _navigationService.ShowPopupAsync(new Views.Premium.Popups.PromoPopup(_clientService, gift));
+                    confirm = ContentDialogResult.None;
+                }
+                else if (gift.Gift.OverallLimits == null || gift.Gift.OverallLimits.RemainingCount > 0)
                 {
                     await _clientService.SendAsync(new CreatePrivateChat(_clientService.Options.MyId, false));
                     confirm = await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, gift.Gift, _receiverId));

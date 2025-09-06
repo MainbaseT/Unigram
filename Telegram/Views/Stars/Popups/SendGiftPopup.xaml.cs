@@ -350,7 +350,14 @@ namespace Telegram.Views.Stars.Popups
                 //var formatted = ClientEx.ParseMarkdown(text);
 
                 //Aggregator.Publish(new UpdateConfetti());
-                ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.StarsGiftCompleted, Locale.Declension(Strings.R.StarsGiftCompletedText, _gift.StarCount)), new DelayedFileSource(_clientService, _gift.Sticker));
+                if (_gift.UserLimits != null)
+                {
+                    ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.StarsGiftCompleted, Locale.Declension(Strings.R.Gift2SentRemainsLimit, _gift.UserLimits.RemainingCount - 1)), new DelayedFileSource(_clientService, _gift.Sticker));
+                }
+                else
+                {
+                    ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.StarsGiftCompleted, Locale.Declension(Strings.R.StarsGiftCompletedText, _gift.StarCount)), new DelayedFileSource(_clientService, _gift.Sticker));
+                }
 
                 return PayResult.Succeeded;
             }
@@ -359,6 +366,10 @@ namespace Telegram.Views.Stars.Popups
                 if (error.Message == "STARGIFT_USAGE_LIMITED" && _gift.OverallLimits != null)
                 {
                     ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.Gift2SoldOutTitle, Locale.Declension(Strings.R.Gift2SoldOutHint, _gift.OverallLimits.TotalCount)), new DelayedFileSource(_clientService, _gift.Sticker));
+                }
+                else if (error.Message == "STARGIFT_USER_USAGE_LIMITED" && _gift.UserLimits != null)
+                {
+                    ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.Gift2PerUserLimit, _gift.UserLimits.TotalCount), new DelayedFileSource(_clientService, _gift.Sticker));
                 }
                 else
                 {

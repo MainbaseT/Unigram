@@ -26,6 +26,19 @@
                 BorderThickness="1"
                 CornerRadius="4"
                 Grid.RowSpan="2" />
+        <Border x:Name="PremiumRoot"
+                x:Load="False"
+                BorderThickness="2"
+                CornerRadius="4"
+                Grid.RowSpan="2">
+            <Border.BorderBrush>
+                <LinearGradientBrush EndPoint="1,1">
+                    <GradientStop Color="#FFD58F25" />
+                    <GradientStop Color="#FFC8851D"
+                                  Offset="1" />
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+        </Border>
         <controls:PatternBackground x:Name="Pattern"
                                     BorderBrush="{ThemeResource SettingsItemBorderBrush}"
                                     BorderThickness="1"
@@ -95,7 +108,7 @@
                                     DecodeFrameType="Logical"
                                     Stretch="UniformToFill"
                                     Grid.ColumnSpan="2" />
-            
+
             <controls:PremiumStarCount Width="18"
                                        VerticalAlignment="Top"
                                        HorizontalAlignment="Left"

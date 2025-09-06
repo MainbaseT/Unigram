@@ -208,6 +208,9 @@ namespace Telegram.Controls.Cells
         private readonly Color _ribbonSoldOutTop = Color.FromArgb(0xFF, 0xFF, 0x5B, 0x54);
         private readonly Color _ribbonSoldOutBottom = Color.FromArgb(0xFF, 0xED, 0x1D, 0x27);
 
+        private readonly Color _ribbonPremiumTop = Color.FromArgb(0xFF, 0xD7, 0x90, 0x23);
+        private readonly Color _ribbonPremiumBottom = Color.FromArgb(0xFF, 0xBF, 0x7D, 0x16);
+
         public void UpdateGift(IClientService clientService, AvailableGift gift)
         {
             Photo.Visibility = Visibility.Collapsed;
@@ -220,16 +223,40 @@ namespace Telegram.Controls.Cells
             {
                 StarCount.Text = gift.Gift.StarCount.ToString("N0");
 
-                RibbonRoot.Visibility = Visibility.Visible;
-                Ribbon.Text = gift.Gift.OverallLimits.RemainingCount > 0
-                    ? Strings.Gift2LimitedRibbon
-                    : Strings.Gift2SoldOut;
+                if (gift.Gift.IsPremium)
+                {
+                    FindName(nameof(PremiumRoot));
+                    PremiumRoot.Visibility = Visibility.Visible;
 
-                RibbonTop.Color = gift.Gift.OverallLimits.RemainingCount > 0 ? _ribbonLimitedTop : _ribbonSoldOutTop;
-                RibbonBottom.Color = gift.Gift.OverallLimits.RemainingCount > 0 ? _ribbonLimitedBottom : _ribbonSoldOutBottom;
+                    RibbonRoot.Visibility = Visibility.Visible;
+                    Ribbon.Text = Strings.Gift2LimitedPremium;
+
+                    RibbonTop.Color = _ribbonPremiumTop;
+                    RibbonBottom.Color = _ribbonPremiumBottom;
+                }
+                else
+                {
+                    if (PremiumRoot != null)
+                    {
+                        PremiumRoot.Visibility = Visibility.Collapsed;
+                    }
+
+                    RibbonRoot.Visibility = Visibility.Visible;
+                    Ribbon.Text = gift.Gift.OverallLimits.RemainingCount > 0
+                        ? Strings.Gift2LimitedRibbon
+                        : Strings.Gift2SoldOut;
+
+                    RibbonTop.Color = gift.Gift.OverallLimits.RemainingCount > 0 ? _ribbonLimitedTop : _ribbonSoldOutTop;
+                    RibbonBottom.Color = gift.Gift.OverallLimits.RemainingCount > 0 ? _ribbonLimitedBottom : _ribbonSoldOutBottom;
+                }
             }
             else if (gift.MinResaleStarCount > 0)
             {
+                if (PremiumRoot != null)
+                {
+                    PremiumRoot.Visibility = Visibility.Collapsed;
+                }
+
                 StarCount.Text = gift.MinResaleStarCount.ToString("N0");
 
                 RibbonRoot.Visibility = Visibility.Visible;
@@ -240,6 +267,11 @@ namespace Telegram.Controls.Cells
             }
             else
             {
+                if (PremiumRoot != null)
+                {
+                    PremiumRoot.Visibility = Visibility.Collapsed;
+                }
+
                 StarCount.Text = gift.Gift.StarCount.ToString("N0");
 
                 RibbonRoot.Visibility = Visibility.Collapsed;

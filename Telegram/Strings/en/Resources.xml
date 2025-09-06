@@ -12728,4 +12728,14 @@
     <string name="StarRatingLevelNegativeYou_other">A negative rating indicates that your payments are unreliable. Spend **{0} Stars** to fix this issue.</string>
     <string name="StarRatingLevelNegativeOther">A negative rating indicates that **{0}’s** payments are unreliable.</string>
 
+    <string name="Gift2LimitedPremium">premium</string>
+    <string name="Gift2PremiumTitle">Premium Gift</string>
+    <string name="Gift2PremiumSubtitle">Subscribe to **Telegram Premium** to send these gifts and unlock access to powerful features.</string>
+    <string name="Gift2PremiumSubtitleMany_one">Subscribe to **Telegram Premium** to send up to **{0}** of these gifts and unlock powerful features.</string>
+    <string name="Gift2PremiumSubtitleMany_other">Subscribe to **Telegram Premium** to send up to **{0}** of these gifts and unlock powerful features.</string>
+    <string name="Gift2SentRemainsLimit_one">You can send **{0}** more.</string>
+    <string name="Gift2SentRemainsLimit_other">You can send **{0}** more.</string>
+    <string name="Gift2PerUserLimit_one">You already sent **{0}** of these gifts, which is the limit.</string>
+    <string name="Gift2PerUserLimit_other">You already sent **{0}** of these gifts, which is the limit.</string>
+
 </resources>

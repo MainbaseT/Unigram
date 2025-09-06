@@ -6733,6 +6733,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2Limited1OfRibbon" xml:space="preserve">
     <value>1 of {0}</value>
   </data>
+  <data name="Gift2LimitedPremium" xml:space="preserve">
+    <value>premium</value>
+  </data>
   <data name="Gift2LimitedRibbon" xml:space="preserve">
     <value>limited</value>
   </data>
@@ -6781,6 +6784,12 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2OwnerChange" xml:space="preserve">
     <value>change</value>
   </data>
+  <data name="Gift2PerUserLimit_one" xml:space="preserve">
+    <value>You already sent **{0}** of these gifts, which is the limit.</value>
+  </data>
+  <data name="Gift2PerUserLimit_other" xml:space="preserve">
+    <value>You already sent **{0}** of these gifts, which is the limit.</value>
+  </data>
   <data name="Gift2Pin" xml:space="preserve">
     <value>Pin</value>
   </data>
@@ -6798,6 +6807,18 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2PremiumInfoLink" xml:space="preserve">
     <value>See Features &gt;</value>
+  </data>
+  <data name="Gift2PremiumSubtitle" xml:space="preserve">
+    <value>Subscribe to **Telegram Premium** to send these gifts and unlock access to powerful features.</value>
+  </data>
+  <data name="Gift2PremiumSubtitleMany_one" xml:space="preserve">
+    <value>Subscribe to **Telegram Premium** to send up to **{0}** of these gifts and unlock powerful features.</value>
+  </data>
+  <data name="Gift2PremiumSubtitleMany_other" xml:space="preserve">
+    <value>Subscribe to **Telegram Premium** to send up to **{0}** of these gifts and unlock powerful features.</value>
+  </data>
+  <data name="Gift2PremiumTitle" xml:space="preserve">
+    <value>Premium Gift</value>
   </data>
   <data name="Gift2ProfileInvisible" xml:space="preserve">
     <value>This gift is hidden. Only you can see it.</value>
@@ -6903,6 +6924,12 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2SendPremium" xml:space="preserve">
     <value>Send a Gift for {0}</value>
+  </data>
+  <data name="Gift2SentRemainsLimit_one" xml:space="preserve">
+    <value>You can send **{0}** more.</value>
+  </data>
+  <data name="Gift2SentRemainsLimit_other" xml:space="preserve">
+    <value>You can send **{0}** more.</value>
   </data>
   <data name="Gift2ShowGift" xml:space="preserve">
     <value>Show</value>
