@@ -376,9 +376,9 @@ namespace Telegram.Common
                     return;
                 }
 
-                if (user.RestrictionReason.Length > 0)
+                if (user.RestrictionInfo?.RestrictionReason.Length > 0)
                 {
-                    await ShowPopupAsync(user.RestrictionReason, Strings.AppName, Strings.OK);
+                    await ShowPopupAsync(user.RestrictionInfo.RestrictionReason, Strings.AppName, Strings.OK);
                     return;
                 }
                 else if (user.Id == _clientService.Options.AntiSpamBotUserId)
@@ -410,9 +410,9 @@ namespace Telegram.Common
                     return;
                 }
 
-                if (supergroup.RestrictionReason.Length > 0)
+                if (supergroup.RestrictionInfo?.RestrictionReason.Length > 0)
                 {
-                    await ShowPopupAsync(supergroup.RestrictionReason, Strings.AppName, Strings.OK);
+                    await ShowPopupAsync(supergroup.RestrictionInfo.RestrictionReason, Strings.AppName, Strings.OK);
                     return;
                 }
             }

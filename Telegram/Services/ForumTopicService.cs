@@ -606,7 +606,7 @@ namespace Telegram.Services
 
         private Message MessageForumTopicCreated(ForumTopic topic)
         {
-            return new Message(topic.Info.MessageThreadId, topic.Info.CreatorId, _chatId, null, null, topic.Info.IsOutgoing, false, false, false, false, false, false, false, false, topic.Info.CreationDate, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, topic.Info.MessageThreadId, new MessageTopicForum(topic.Info.MessageThreadId), null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, false, string.Empty, new MessageForumTopicCreated(topic.Info.Name, topic.Info.Icon), null);
+            return new Message(topic.Info.MessageThreadId, topic.Info.CreatorId, _chatId, null, null, topic.Info.IsOutgoing, false, false, false, false, false, false, false, false, topic.Info.CreationDate, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, topic.Info.MessageThreadId, new MessageTopicForum(topic.Info.MessageThreadId), null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageForumTopicCreated(topic.Info.Name, topic.Info.Icon), null);
         }
 
         public void UpdateMessageSendSucceeded(Message message, long oldMessageId)

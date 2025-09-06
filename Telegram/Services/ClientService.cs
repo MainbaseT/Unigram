@@ -104,6 +104,8 @@ namespace Telegram.Services
 
         UpdateSpeechRecognitionTrial SpeechRecognitionTrial { get; }
 
+        AgeVerificationParameters AgeVerificationParameters { get; }
+
         IList<CloseBirthdayUser> CloseBirthdayUsers { get; }
 
         Background GetDefaultBackground(bool darkTheme);
@@ -1340,6 +1342,8 @@ namespace Telegram.Services
         }
 
         public UpdateSpeechRecognitionTrial SpeechRecognitionTrial => _speechRecognitionTrial ??= new();
+
+        public AgeVerificationParameters AgeVerificationParameters { get; private set; }
 
         public IList<CloseBirthdayUser> CloseBirthdayUsers => _contactCloseBirthdays?.CloseBirthdayUsers ?? Array.Empty<CloseBirthdayUser>();
 
@@ -3453,6 +3457,9 @@ namespace Telegram.Services
                     break;
                 case UpdateFreezeState updateFreezeState:
                     _freezeState = updateFreezeState;
+                    break;
+                case UpdateAgeVerificationParameters updateAgeVerificationParameters:
+                    AgeVerificationParameters = updateAgeVerificationParameters.Parameters;
                     break;
                 case UpdateSavedMessagesTopicCount updateSavedMessagesTopicCount:
                     SavedMessagesTopicCount = updateSavedMessagesTopicCount.TopicCount;
