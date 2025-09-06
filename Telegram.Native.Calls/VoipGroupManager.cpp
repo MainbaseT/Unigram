@@ -276,14 +276,20 @@ namespace winrt::Telegram::Native::Calls::implementation
 
         for (const VoipVideoChannelInfo& x : descriptions)
         {
-            auto user = x.ParticipantId().try_as<MessageSenderUser>();
-
             tgcalls::VideoChannelDescription item;
             item.audioSsrc = x.AudioSource();
-            item.userId = user.UserId();
             item.endpointId = winrt::to_string(x.EndpointId());
             item.minQuality = (tgcalls::VideoChannelDescription::Quality)x.MinQuality();
             item.maxQuality = (tgcalls::VideoChannelDescription::Quality)x.MaxQuality();
+
+            if (auto user = x.ParticipantId().try_as<MessageSenderUser>())
+            {
+                item.userId = user.UserId();
+            }
+            else if (auto chat = x.ParticipantId().try_as<MessageSenderChat>())
+            {
+                item.userId = chat.ChatId();
+            }
 
             for (const GroupCallVideoSourceGroup& group : x.SourceGroups())
             {
