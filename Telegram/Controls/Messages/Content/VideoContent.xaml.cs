@@ -116,7 +116,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else
             {
-                thumbnail = video.Thumbnail?.Format is ThumbnailFormatJpeg or ThumbnailFormatPng ? video.Thumbnail.File : null;
+                thumbnail = video.Thumbnail?.Format is ThumbnailFormatJpeg or ThumbnailFormatPng or ThumbnailFormatGif ? video.Thumbnail.File : null;
                 minithumbnail = video.Minithumbnail;
             }
 
