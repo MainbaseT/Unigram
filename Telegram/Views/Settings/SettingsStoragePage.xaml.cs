@@ -57,13 +57,27 @@ namespace Telegram.Views.Settings
             }
             else if (args.ItemContainer.ContentTemplateRoot is ProfileCell content)
             {
-                content.UpdateStatisticsByChat(ViewModel.ClientService, args, OnContainerContentChanging);
+                if (args.Item is StorageStatisticsByChat statistics && statistics.ByFileType == null)
+                {
+                    content.Opacity = (10 - args.ItemIndex) / 10d;
+                    content.ShowHideSkeleton(true);
+                }
+                else
+                {
+                    content.Opacity = 1;
+                    content.ShowHideSkeleton(false);
+
+                    content.UpdateStatisticsByChat(ViewModel.ClientService, args, OnContainerContentChanging);
+                }
             }
         }
 
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            ViewModel.Clear(e.ClickedItem as StorageStatisticsByChat);
+            if (e.ClickedItem is StorageStatisticsByChat { ByFileType: not null } statistics)
+            {
+                ViewModel.Clear(statistics);
+            }
         }
 
         #region Binding

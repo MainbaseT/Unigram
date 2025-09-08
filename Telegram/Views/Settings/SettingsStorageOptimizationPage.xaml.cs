@@ -28,7 +28,7 @@ namespace Telegram.Views.Settings
 
             var chat = clientService.GetChat(statistics.ChatId);
 
-            Title = chat == null
+            TitleLabel.Text = chat == null
                 ? Strings.ClearMediaCache
                 : clientService.GetTitle(chat);
 

@@ -28,6 +28,16 @@ namespace Telegram.ViewModels.Settings
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
+            var chats = new List<StorageStatisticsByChat>(10);
+            
+            for (int i = 0; i < 10; i++)
+            {
+                chats.Add(new StorageStatisticsByChat(0, 0, 0, null));
+            }
+
+            _statistics = new StorageStatistics(0, 0, chats);
+            RaisePropertyChanged(nameof(Statistics));
+
             IsLoading = true;
 
             ClientService.Send(new GetStorageStatisticsFast(), result =>

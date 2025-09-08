@@ -23,7 +23,7 @@ namespace Telegram.Controls
         private const float MIN_TRIM = 0.0001f;
         private const float PAD_TRIM = 0.03f;
 
-        private const float THICKNESS = 6;
+        private const float THICKNESS = 8;
 
         private readonly ShapeVisual _visual;
 
