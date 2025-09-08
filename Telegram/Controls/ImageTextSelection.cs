@@ -264,8 +264,6 @@ namespace Telegram.Controls
             HideSkeleton();
 
             _geometry.Figures.Clear();
-            SelectedText = string.Empty;
-            Text = string.Join('\n', result.Lines.Select(x => x.Text));
 
             if (_selection != null)
             {
@@ -274,6 +272,9 @@ namespace Telegram.Controls
 
             _selection = new RecognizedTextSelectionManager(result);
             _selection.SelectionChanged += OnSelectionChanged;
+
+            SelectedText = string.Empty;
+            Text = string.Join('\n', _selection.Blocks.Select(x => string.Join('\n', x.Lines.Select(x => x.Text))));
 
             UpdateOverlay();
         }
