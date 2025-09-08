@@ -153,7 +153,7 @@ namespace Telegram.Common
                 stream.Close();
                 stream = null;
             }
-            catch (IOException)
+            catch
             {
                 // Connection was aborted
             }
