@@ -275,7 +275,7 @@ namespace Telegram.ViewModels
                 RaisePropertyChanged(nameof(IsPrimaryFolderSelected));
             }
 
-            Chats.Delegate?.UpdateChatFolders();
+            Chats.Delegate?.UpdateChatFoldersLayout();
         }
 
         private void Merge(IList<ChatFolderViewModel> destination, IList<ChatFolderInfo> origin, int selectedFolderId, out bool updateSelection)
