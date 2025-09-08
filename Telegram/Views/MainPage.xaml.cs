@@ -1037,6 +1037,8 @@ namespace Telegram.Views
                 Bindings.Update();
             }
 
+            WatchDog.TrackEvent("MainPage");
+
             if (SettingsService.Current.Diagnostics.IsLastErrorDiskFull)
             {
                 SettingsService.Current.Diagnostics.IsLastErrorDiskFull = false;
