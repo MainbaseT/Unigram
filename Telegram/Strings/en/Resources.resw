@@ -8476,6 +8476,15 @@ Minimum length is 5 characters.</value>
   <data name="MessageContainsEmojiPacks_other" xml:space="preserve">
     <value>This message contains emoji from **{0} Packs**.</value>
   </data>
+  <data name="MessageContainsReactionPack" xml:space="preserve">
+    <value>This reaction is from {0} emoji pack.</value>
+  </data>
+  <data name="MessageContainsReactionsPack" xml:space="preserve">
+    <value>Emoji from {0} pack were used as reactions.</value>
+  </data>
+  <data name="MessageContainsReactionsPacks_other" xml:space="preserve">
+    <value>Emoji from **{0} packs** were used as reactions.</value>
+  </data>
   <data name="MessageGroupTodoList" xml:space="preserve">
     <value>Group Checklist</value>
   </data>

@@ -12763,4 +12763,10 @@
     <string name="ConfirmSensitiveContentTitle">18+ Content</string>
     <string name="ConfirmSensitiveContentText">Confirm that you are over 18 years old and update your settings to see potentially explicit and sensitive content.</string>
 
+    <string name="MessageContainsEmojiPack">This message contains emoji from {0} pack.</string>
+    <string name="MessageContainsEmojiPacks_other">This message contains emoji from **{0} Packs**.</string>
+    <string name="MessageContainsReactionsPack">Emoji from {0} pack were used as reactions.</string>
+    <string name="MessageContainsReactionsPacks_other">Emoji from **{0} packs** were used as reactions.</string>
+    <string name="MessageContainsReactionPack">This reaction is from {0} emoji pack.</string>
+
 </resources>

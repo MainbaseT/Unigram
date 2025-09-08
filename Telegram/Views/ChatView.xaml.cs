@@ -45,6 +45,7 @@ using Telegram.Views.Settings;
 using Telegram.Views.Stars.Popups;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Core;
 using Windows.UI.Text;
@@ -3093,7 +3094,6 @@ namespace Telegram.Views
                 flyout.CreateFlyoutSeparator();
 
                 // Stickers
-                flyout.CreateFlyoutItem(MessageAddEmoji_Loaded, ViewModel.ShowMessageEmoji, message, Strings.AddToEmoji, Icons.Emoji);
                 flyout.CreateFlyoutItem(MessageAddSticker_Loaded, ViewModel.AddStickerFromMessage, message, Strings.AddToStickers, Icons.Sticker);
                 flyout.CreateFlyoutItem(MessageFaveSticker_Loaded, ViewModel.AddFavoriteSticker, message, Strings.AddToFavorites, Icons.Star);
                 flyout.CreateFlyoutItem(MessageUnfaveSticker_Loaded, ViewModel.RemoveFavoriteSticker, message, Strings.DeleteFromFavorites, Icons.StarOff);
@@ -3110,6 +3110,11 @@ namespace Telegram.Views
                 // Contacts
                 flyout.CreateFlyoutItem(MessageAddContact_Loaded, ViewModel.AddToContacts, message, Strings.AddContactTitle, Icons.Person);
                 //CreateFlyoutItem(ref flyout, MessageSaveDownload_Loaded, ViewModel.MessageSaveDownloadCommand, messageCommon, Strings.SaveToDownloads);
+
+                if (CanGetMessageEmojis(message, out var customEmojiIds))
+                {
+                    LoadMessageEmojis(message, flyout, customEmojiIds);
+                }
 
                 if (SettingsService.Current.Diagnostics.DeleteFilesDebug)
                 {
@@ -3469,6 +3474,201 @@ namespace Telegram.Views
             {
                 placeholder.Text = Strings.NobodyViewed;
                 placeholder.IsEnabled = false;
+            }
+        }
+
+        private bool CanGetMessageEmojis(MessageViewModel message, out IList<long> customEmojiIds)
+        {
+            var caption = message.GetCaption();
+            if (caption?.Entities == null || caption.Entities.Empty())
+            {
+                customEmojiIds = null;
+                return false;
+            }
+
+            HashSet<long> temp = null;
+
+            foreach (var item in caption.Entities)
+            {
+                if (item.Type is TextEntityTypeCustomEmoji customEmoji)
+                {
+                    temp ??= new();
+                    temp.Add(customEmoji.CustomEmojiId);
+                }
+            }
+
+            if (temp != null)
+            {
+                customEmojiIds = temp.ToList();
+                return true;
+            }
+
+            customEmojiIds = null;
+            return false;
+        }
+
+        private async void LoadMessageEmojis(MessageViewModel message, MenuFlyout flyout, IList<long> customEmojiIds)
+        {
+            void ShowSkeleton(UIElement element)
+            {
+                var size = new Vector2(200, 48);
+                var itemHeight = 6 + 36 + 6;
+
+                var shapes = new List<CanvasGeometry>();
+
+                shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, 8, 6, 180, 14, 4, 4));
+                shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, 8, 6 + 16, 140, 14, 4, 4));
+
+                var compositor = BootStrapper.Current.Compositor;
+
+                var geometries = shapes.ToArray();
+                var path = compositor.CreatePathGeometry(new CompositionPath(CanvasGeometry.CreateGroup(null, geometries, CanvasFilledRegionDetermination.Winding)));
+
+                var transparent = Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF);
+                var foregroundColor = Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF);
+                var backgroundColor = Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF);
+
+                var lookup = ThemeService.GetLookup(ActualTheme);
+                if (lookup.TryGet("MenuFlyoutItemBackgroundPointerOver", out Color color))
+                {
+                    foregroundColor = color;
+                    backgroundColor = color;
+                }
+
+                var gradient = compositor.CreateLinearGradientBrush();
+                gradient.StartPoint = new Vector2(0, 0);
+                gradient.EndPoint = new Vector2(1, 0);
+                gradient.ColorStops.Add(compositor.CreateColorGradientStop(0.0f, transparent));
+                gradient.ColorStops.Add(compositor.CreateColorGradientStop(0.5f, foregroundColor));
+                gradient.ColorStops.Add(compositor.CreateColorGradientStop(1.0f, transparent));
+
+                var background = compositor.CreateRectangleGeometry();
+                background.Size = size;
+                var backgroundShape = compositor.CreateSpriteShape(background);
+                backgroundShape.FillBrush = compositor.CreateColorBrush(backgroundColor);
+
+                var foreground = compositor.CreateRectangleGeometry();
+                foreground.Size = size;
+                var foregroundShape = compositor.CreateSpriteShape(foreground);
+                foregroundShape.FillBrush = gradient;
+
+                var clip = compositor.CreateGeometricClip(path);
+                var visual = compositor.CreateShapeVisual();
+                visual.Clip = clip;
+                visual.Shapes.Add(backgroundShape);
+                visual.Shapes.Add(foregroundShape);
+                visual.RelativeSizeAdjustment = Vector2.One;
+
+                var animation = compositor.CreateVector2KeyFrameAnimation();
+                animation.InsertKeyFrame(0, new Vector2(-size.X, 0));
+                animation.InsertKeyFrame(1, new Vector2(size.X, 0));
+                animation.IterationBehavior = AnimationIterationBehavior.Forever;
+                animation.Duration = TimeSpan.FromSeconds(1);
+
+                foregroundShape.StartAnimation("Offset", animation);
+
+                ElementCompositionPreview.SetElementChildVisual(element, visual);
+            }
+
+            var grid = new Grid
+            {
+                // Approximate height for two lines of text
+                //Height = 46,
+                Width = 200 - 4 - 4,
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+
+            ShowSkeleton(grid);
+
+            var button = new Button
+            {
+                Content = grid,
+                Style = BootStrapper.Current.Resources["ListEmptyButtonStyle"] as Style,
+                CornerRadius = new CornerRadius(4),
+                IsEnabled = false
+            };
+
+            var block = new RichTextBlock
+            {
+                // Needed due to reactions menu, as it can't be repositioned
+                MaxLines = 2,
+                FontSize = 12,
+                IsTextSelectionEnabled = false,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                Margin = new Thickness(11, 3, 11, 5),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            var paragraph = new Paragraph();
+            paragraph.Inlines.Add("\n");
+            block.Blocks.Add(paragraph);
+            grid.Children.Add(block);
+
+            void click(object sender, RoutedEventArgs e)
+            {
+                button.Click -= click;
+                flyout.Hide();
+
+                ViewModel.ShowMessageEmoji(message);
+            }
+
+            button.Click += click;
+
+            var content = new MenuFlyoutContent
+            {
+                Content = button,
+                Padding = new Thickness(4, 2, 4, 2)
+            };
+
+            flyout.CreateFlyoutSeparator();
+            flyout.Items.Add(content);
+
+            var function = message.ClientService.GetCustomEmojiStickerSets(customEmojiIds);
+
+            // Currently unneeded because we fix size to two lines
+            //await Task.WhenAll(function, Task.Delay(250));
+
+            var response = await function;
+            if (response is StickerSets stickerSets)
+            {
+                button.IsEnabled = true;
+
+                if (stickerSets.Sets.Count != 1)
+                {
+                    TextBlockHelper.SetMarkdown(block, paragraph.Inlines, Locale.Declension(Strings.R.MessageContainsEmojiPacks, stickerSets.Sets.Count));
+                }
+                else
+                {
+                    var player = new CustomEmojiIcon();
+                    player.LoopCount = 0;
+                    player.Source = DelayedFileSource.FromStickerSetInfo(message.ClientService, stickerSets.Sets[0]);
+
+                    player.HorizontalAlignment = HorizontalAlignment.Left;
+                    player.FlowDirection = FlowDirection.LeftToRight;
+                    player.Margin = new Thickness(0, -2, 0, -6);
+
+                    var inline = new InlineUIContainer();
+                    inline.Child = player;
+
+                    var text = Strings.MessageContainsEmojiPack;
+                    var index = text.IndexOf("{0}");
+
+                    var prefix = text.Substring(0, index);
+                    var suffix = text.Substring(index + 3);
+
+                    paragraph.Inlines.Clear();
+                    paragraph.Inlines.Add(prefix);
+                    paragraph.Inlines.Add(inline);
+                    paragraph.Inlines.Add($" {stickerSets.Sets[0].Title}", FontWeights.SemiBold);
+                    paragraph.Inlines.Add(suffix);
+                }
+
+                var visual = ElementCompositionPreview.GetElementChildVisual(grid);
+                var animation = visual.Compositor.CreateScalarKeyFrameAnimation();
+                animation.InsertKeyFrame(0, 1);
+                animation.InsertKeyFrame(1, 0);
+
+                visual.StartAnimation("Opacity", animation);
             }
         }
 
@@ -3886,25 +4086,6 @@ namespace Telegram.Views
             else if (message.Content is MessageText text && text.LinkPreview?.Type is LinkPreviewTypeSticker previewSticker && previewSticker.Sticker.SetId != 0)
             {
                 return !ViewModel.ClientService.IsStickerSetInstalled(previewSticker.Sticker.SetId);
-            }
-
-            return false;
-        }
-
-        private bool MessageAddEmoji_Loaded(MessageViewModel message)
-        {
-            var caption = message.GetCaption();
-            if (caption?.Entities == null)
-            {
-                return false;
-            }
-
-            foreach (var item in caption.Entities)
-            {
-                if (item.Type is TextEntityTypeCustomEmoji customEmoji)
-                {
-                    return true;
-                }
             }
 
             return false;
