@@ -2514,7 +2514,6 @@
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
                                 <Border Background="{TemplateBinding Background}"
-                                        CompositeMode="MinBlend"
                                         Height="40"
                                         CornerRadius="0" />
                                 <Grid Padding="12,0">
@@ -2557,7 +2556,6 @@
                                       Opacity="1"
                                       Data="M0 0V2C0.923101 2 1.80835 2.36668 2.46113 3.01945L6.76205 7.32038C7.66822 8.22654 9.13736 8.22654 10.0435 7.32038L14.3444 3.01945C14.9972 2.36668 15.8825 2 16.8056 2H16.81V0H0Z"
                                       Fill="{TemplateBinding Background}"
-                                      CompositeMode="MinBlend"
                                       Stretch="Uniform"
                                       Height="8"
                                       HorizontalAlignment="Center"

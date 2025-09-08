@@ -20,7 +20,7 @@
 
             <StackPanel Padding="12,24">
                 <Grid>
-                    <Grid Background="#FFFFFF"
+                    <Grid Background="{ThemeResource ControlFillColorDefaultBrush}"
                           CornerRadius="4"
                           Control.IsTemplateFocusTarget="True"
                           Margin="12,0,12,0"
@@ -135,7 +135,7 @@
                                        Grid.Column="1"
                                        Grid.Row="1" />
                     </Grid>
-                    <Grid Padding="12,8,12,16">
+                    <Grid Padding="12,8,12,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
