@@ -41,7 +41,7 @@ namespace Telegram.ViewModels.Settings
             {
                 if (result is StorageStatisticsFast statistics)
                 {
-                    StorageUsage = FileSizeConverter.Convert(statistics.FilesSize, true);
+                    BeginOnUIThread(() => StorageUsage = FileSizeConverter.Convert(statistics.FilesSize, true));
                 }
             });
 
@@ -53,7 +53,7 @@ namespace Telegram.ViewModels.Settings
                         .OfType<NetworkStatisticsEntryFile>()
                         .Sum(x => x.ReceivedBytes + x.SentBytes);
 
-                    NetworkUsage = FileSizeConverter.Convert(sum, true);
+                    BeginOnUIThread(() => NetworkUsage = FileSizeConverter.Convert(sum, true));
                 }
             });
 
