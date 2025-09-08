@@ -429,32 +429,39 @@ namespace Telegram.Converters
             var number = (long)size;
             if (number >= 1000 * 1000)
             {
-                var remainder = Math.Floor((size % (1000 * 1000)) / (1000.0 * 100.0));
-                if (remainder != 0 || forceDecimal)
+                var K = string.Empty;
+                var lastDec = 0L;
+
+                while (number / 1000 > 0)
                 {
-                    return string.Format("{0}.{1}M", number / (1000 * 1000), remainder);
+                    K += "K";
+                    lastDec = (number % 1000) / 100;
+                    number /= 1000;
+                }
+
+                if (lastDec != 0 || forceDecimal)
+                {
+                    if (K.Length >= 2)
+                    {
+                        return string.Format("{0}.{1}M", number, lastDec);
+                    }
+                    else
+                    {
+                        return string.Format("{0}.{1}{2}", number, lastDec, K);
+                    }
+                }
+
+                if (K.Length >= 2)
+                {
+                    return string.Format("{0}M", number);
                 }
                 else
                 {
-                    return string.Format("{0}M", number / (1000 * 1000));
+                    return string.Format("{0}{1}", number, K);
                 }
             }
-            else if (number >= 100000)
-            {
-                var remainder = (size % (1000)) / (100);
-                if (remainder != 0 || forceDecimal)
-                {
-                    return string.Format("{0}.{1}K", number / 1000, remainder);
-                }
-                else
-                {
-                    return string.Format("{0}K", number / 1000);
-                }
-            }
-            else
-            {
-                return size.ToString("N0");
-            }
+
+            return size.ToString("N0");
         }
 
         public static string ShortNumber(long number)
