@@ -47,6 +47,7 @@ namespace Telegram.Services
         void CancelDownloadFile(File file, bool onlyIfPending = false);
         bool IsDownloadFileCanceled(int fileId);
 
+        Task<Object> GetCustomEmojiStickerSets(IList<long> customEmojiIds);
         Task<bool> HasPrivacySettingsRuleAsync<T>(UserPrivacySetting setting) where T : UserPrivacySettingRule;
 
         Task<Chats> GetChatListAsync(ChatList chatList, int offset, int limit);
@@ -1020,6 +1021,34 @@ namespace Telegram.Services
             return response;
         }
 
+        public async Task<Object> GetCustomEmojiStickerSets(IList<long> customEmojiIds)
+        {
+            var stickers = await SendAsync(new GetCustomEmojiStickers(customEmojiIds)) as Stickers;
+            if (stickers?.StickersValue.Count > 0)
+            {
+                var setIds = new HashSet<long>();
+
+                foreach (var sticker in stickers.StickersValue)
+                {
+                    setIds.Add(sticker.SetId);
+                }
+
+                var result = new List<StickerSetInfo>();
+
+                foreach (var setId in setIds)
+                {
+                    var response = await SendAsync(new GetStickerSet(setId));
+                    if (response is StickerSet stickerSet)
+                    {
+                        result.Add(stickerSet.ToInfo());
+                    }
+                }
+
+                return new StickerSets(result.Count, result);
+            }
+
+            return new Error();
+        }
 
         public async Task<bool> HasPrivacySettingsRuleAsync<T>(UserPrivacySetting setting) where T : UserPrivacySettingRule
         {
