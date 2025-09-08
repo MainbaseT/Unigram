@@ -11,7 +11,7 @@ public static class StorageItemAccessList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -23,7 +23,7 @@ public static class StorageItemAccessList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -35,7 +35,7 @@ public static class StorageItemAccessList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -47,7 +47,7 @@ public static class StorageItemAccessList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -59,7 +59,7 @@ public static class StorageItemAccessList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -71,7 +71,7 @@ public static class StorageItemAccessList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -86,7 +86,7 @@ public static class StorageItemMostRecentlyUsedList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -98,7 +98,7 @@ public static class StorageItemMostRecentlyUsedList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -113,7 +113,7 @@ public static class TextRecognizer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -128,7 +128,7 @@ public static class ConnectedAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -143,7 +143,7 @@ public static class ConnectedAnimationService_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -155,7 +155,7 @@ public static class ConnectedAnimationService_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -167,7 +167,7 @@ public static class ConnectedAnimationService_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -182,7 +182,7 @@ public static class Storyboard_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -194,7 +194,7 @@ public static class Storyboard_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -206,7 +206,7 @@ public static class Storyboard_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -221,7 +221,7 @@ public static class FormattedText_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -236,7 +236,7 @@ public static class AppCapability_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -248,7 +248,7 @@ public static class AppCapability_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -263,7 +263,7 @@ public static class LimitedAccessFeatures_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -278,7 +278,7 @@ public static class SuspendingDeferral_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -293,7 +293,7 @@ public static class SuspendingOperation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -308,7 +308,7 @@ public static class StartupTask_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -323,7 +323,7 @@ public static class AudioFileInputNode_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -338,7 +338,7 @@ public static class AudioGraph_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -350,7 +350,7 @@ public static class AudioGraph_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -362,7 +362,7 @@ public static class AudioGraph_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -377,7 +377,7 @@ public static class AutomationProperties_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -389,7 +389,7 @@ public static class AutomationProperties_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -401,7 +401,7 @@ public static class AutomationProperties_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -413,7 +413,7 @@ public static class AutomationProperties_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -425,7 +425,7 @@ public static class AutomationProperties_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -437,7 +437,7 @@ public static class AutomationProperties_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -449,7 +449,7 @@ public static class AutomationProperties_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -464,7 +464,7 @@ public static class BackgroundExecutionManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -479,7 +479,7 @@ public static class BackgroundTaskBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -491,7 +491,7 @@ public static class BackgroundTaskBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -506,7 +506,7 @@ public static class BackgroundTaskDeferral_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -521,7 +521,7 @@ public static class IBackgroundTaskInstance_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -536,7 +536,7 @@ public static class IBackgroundTaskRegistration_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -551,7 +551,7 @@ public static class VoipCaptureBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -563,7 +563,7 @@ public static class VoipCaptureBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -575,7 +575,7 @@ public static class VoipCaptureBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -590,7 +590,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -602,7 +602,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -614,7 +614,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -626,7 +626,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -638,7 +638,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -650,7 +650,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -662,7 +662,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -674,7 +674,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -686,7 +686,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -698,7 +698,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -710,7 +710,7 @@ public static class VoipGroupManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -725,7 +725,7 @@ public static class VoipManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -737,7 +737,7 @@ public static class VoipManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -749,7 +749,7 @@ public static class VoipManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -761,7 +761,7 @@ public static class VoipManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -773,7 +773,7 @@ public static class VoipManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -785,7 +785,7 @@ public static class VoipManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -797,7 +797,7 @@ public static class VoipManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -812,7 +812,7 @@ public static class VoipScreenCapture_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -827,7 +827,7 @@ public static class VoipVideoCapture_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -842,7 +842,7 @@ public static class VoipVideoOutputSink_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -857,7 +857,7 @@ public static class VoipCallCoordinator_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -869,7 +869,7 @@ public static class VoipCallCoordinator_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -881,7 +881,7 @@ public static class VoipCallCoordinator_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -893,7 +893,7 @@ public static class VoipCallCoordinator_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -905,7 +905,7 @@ public static class VoipCallCoordinator_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -920,7 +920,7 @@ public static class VoipPhoneCall_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -932,7 +932,7 @@ public static class VoipPhoneCall_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -944,7 +944,7 @@ public static class VoipPhoneCall_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -956,7 +956,7 @@ public static class VoipPhoneCall_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -971,7 +971,7 @@ public static class CanvasActiveLayer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -986,7 +986,7 @@ public static class CanvasBitmap_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -998,7 +998,7 @@ public static class CanvasBitmap_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1010,7 +1010,7 @@ public static class CanvasBitmap_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1022,7 +1022,7 @@ public static class CanvasBitmap_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1037,7 +1037,7 @@ public static class CanvasDevice_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1049,7 +1049,7 @@ public static class CanvasDevice_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1064,7 +1064,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1076,7 +1076,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1088,7 +1088,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1100,7 +1100,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1112,7 +1112,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1124,7 +1124,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1136,7 +1136,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1148,7 +1148,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1160,7 +1160,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1172,7 +1172,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1184,7 +1184,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1196,7 +1196,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1208,7 +1208,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1220,7 +1220,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1232,7 +1232,7 @@ public static class CanvasDrawingSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1247,7 +1247,7 @@ public static class CanvasRenderTarget_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1262,7 +1262,7 @@ public static class Direct3D11CaptureFramePool_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1274,7 +1274,7 @@ public static class Direct3D11CaptureFramePool_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1286,7 +1286,7 @@ public static class Direct3D11CaptureFramePool_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1298,7 +1298,7 @@ public static class Direct3D11CaptureFramePool_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1313,7 +1313,7 @@ public static class GraphicsCaptureItem_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1325,7 +1325,7 @@ public static class GraphicsCaptureItem_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1340,7 +1340,7 @@ public static class GraphicsCaptureSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1352,7 +1352,7 @@ public static class GraphicsCaptureSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1367,7 +1367,7 @@ public static class MediaCapture_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1379,7 +1379,7 @@ public static class MediaCapture_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1394,7 +1394,7 @@ public static class CanvasComposition_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1406,7 +1406,7 @@ public static class CanvasComposition_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1421,7 +1421,7 @@ public static class CompositionDevice_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1433,7 +1433,7 @@ public static class CompositionDevice_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1448,7 +1448,7 @@ public static class DirectRectangleClip_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1460,7 +1460,7 @@ public static class DirectRectangleClip_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1472,7 +1472,7 @@ public static class DirectRectangleClip_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1484,7 +1484,7 @@ public static class DirectRectangleClip_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1499,7 +1499,7 @@ public static class DirectRectangleClip2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1511,7 +1511,7 @@ public static class DirectRectangleClip2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1526,7 +1526,7 @@ public static class WindowVisual_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1538,7 +1538,7 @@ public static class WindowVisual_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1550,7 +1550,7 @@ public static class WindowVisual_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1562,7 +1562,7 @@ public static class WindowVisual_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1577,7 +1577,7 @@ public static class AnimationController_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1589,7 +1589,7 @@ public static class AnimationController_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1604,7 +1604,7 @@ public static class BooleanKeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1619,7 +1619,7 @@ public static class ColorKeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1631,7 +1631,7 @@ public static class ColorKeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1646,7 +1646,7 @@ public static class CompositionAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1658,7 +1658,7 @@ public static class CompositionAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1670,7 +1670,7 @@ public static class CompositionAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1685,7 +1685,7 @@ public static class CompositionCapabilities_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1697,7 +1697,7 @@ public static class CompositionCapabilities_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1712,7 +1712,7 @@ public static class CompositionDrawingSurface_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1727,7 +1727,7 @@ public static class CompositionEffectBrush_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1742,7 +1742,7 @@ public static class CompositionEffectFactory_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1757,7 +1757,7 @@ public static class CompositionGraphicsDevice_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1772,7 +1772,7 @@ public static class CompositionObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1784,7 +1784,7 @@ public static class CompositionObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1796,7 +1796,7 @@ public static class CompositionObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1808,7 +1808,7 @@ public static class CompositionObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1820,7 +1820,7 @@ public static class CompositionObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1835,7 +1835,7 @@ public static class CompositionPropertySet_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1847,7 +1847,7 @@ public static class CompositionPropertySet_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1859,7 +1859,7 @@ public static class CompositionPropertySet_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1871,7 +1871,7 @@ public static class CompositionPropertySet_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1883,7 +1883,7 @@ public static class CompositionPropertySet_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1895,7 +1895,7 @@ public static class CompositionPropertySet_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1910,7 +1910,7 @@ public static class CompositionScopedBatch_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1925,7 +1925,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1937,7 +1937,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1949,7 +1949,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1961,7 +1961,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1973,7 +1973,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1985,7 +1985,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -1997,7 +1997,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2009,7 +2009,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2021,7 +2021,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2033,7 +2033,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2045,7 +2045,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2057,7 +2057,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2069,7 +2069,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2081,7 +2081,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2093,7 +2093,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2105,7 +2105,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2117,7 +2117,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2129,7 +2129,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2141,7 +2141,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2153,7 +2153,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2165,7 +2165,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2177,7 +2177,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2189,7 +2189,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2201,7 +2201,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2213,7 +2213,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2225,7 +2225,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2237,7 +2237,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2249,7 +2249,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2261,7 +2261,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2273,7 +2273,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2285,7 +2285,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2297,7 +2297,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2309,7 +2309,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2321,7 +2321,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2333,7 +2333,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2345,7 +2345,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2357,7 +2357,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2369,7 +2369,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2381,7 +2381,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2393,7 +2393,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2405,7 +2405,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2417,7 +2417,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2429,7 +2429,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2441,7 +2441,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2453,7 +2453,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2465,7 +2465,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2477,7 +2477,7 @@ public static class Compositor_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2492,7 +2492,7 @@ public static class KeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2507,7 +2507,7 @@ public static class PathKeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2519,7 +2519,7 @@ public static class PathKeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2534,7 +2534,7 @@ public static class ScalarKeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2546,7 +2546,7 @@ public static class ScalarKeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2561,7 +2561,7 @@ public static class Vector2KeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2573,7 +2573,7 @@ public static class Vector2KeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2588,7 +2588,7 @@ public static class Vector3KeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2600,7 +2600,7 @@ public static class Vector3KeyFrameAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2615,7 +2615,7 @@ public static class VisualCollection_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2627,7 +2627,7 @@ public static class VisualCollection_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2639,7 +2639,7 @@ public static class VisualCollection_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2651,7 +2651,7 @@ public static class VisualCollection_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2666,7 +2666,7 @@ public static class ConnectionProfile_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2678,7 +2678,7 @@ public static class ConnectionProfile_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2693,7 +2693,7 @@ public static class NetworkInformation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2708,7 +2708,7 @@ public static class ContactManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2723,7 +2723,7 @@ public static class BackdropMaterial_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2738,7 +2738,7 @@ public static class IAnimatedVisualSource_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2753,7 +2753,7 @@ public static class IAnimatedVisualSource2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2768,7 +2768,7 @@ public static class ItemsSourceView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2783,7 +2783,7 @@ public static class WebView2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2798,7 +2798,7 @@ public static class CalendarView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2813,7 +2813,7 @@ public static class Canvas_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2825,7 +2825,7 @@ public static class Canvas_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2837,7 +2837,7 @@ public static class Canvas_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2852,7 +2852,7 @@ public static class ContainerContentChangingEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2864,7 +2864,7 @@ public static class ContainerContentChangingEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2879,7 +2879,7 @@ public static class ContentDialog_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2894,7 +2894,7 @@ public static class ContentDialogButtonClickDeferral_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2909,7 +2909,7 @@ public static class ContentDialogButtonClickEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2924,7 +2924,7 @@ public static class ContentDialogClosingDeferral_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2939,7 +2939,7 @@ public static class ContentDialogClosingEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2954,7 +2954,7 @@ public static class Control_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2969,7 +2969,7 @@ public static class DataTemplateSelector_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2984,7 +2984,7 @@ public static class Frame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -2996,7 +2996,7 @@ public static class Frame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3008,7 +3008,7 @@ public static class Frame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3020,7 +3020,7 @@ public static class Frame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3032,7 +3032,7 @@ public static class Frame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3044,7 +3044,7 @@ public static class Frame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3056,7 +3056,7 @@ public static class Frame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3071,7 +3071,7 @@ public static class Grid_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3083,7 +3083,7 @@ public static class Grid_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3095,7 +3095,7 @@ public static class Grid_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3107,7 +3107,7 @@ public static class Grid_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3119,7 +3119,7 @@ public static class Grid_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3134,7 +3134,7 @@ public static class HandwritingView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3149,7 +3149,7 @@ public static class Image_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3164,7 +3164,7 @@ public static class ItemsControl_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3176,7 +3176,7 @@ public static class ItemsControl_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3188,7 +3188,7 @@ public static class ItemsControl_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3200,7 +3200,7 @@ public static class ItemsControl_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3212,7 +3212,7 @@ public static class ItemsControl_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3227,7 +3227,7 @@ public static class ListViewBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3239,7 +3239,7 @@ public static class ListViewBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3251,7 +3251,7 @@ public static class ListViewBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3266,7 +3266,7 @@ public static class ListViewPersistenceHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3281,7 +3281,7 @@ public static class MenuFlyout_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3296,7 +3296,7 @@ public static class PasswordBox_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3311,7 +3311,7 @@ public static class RichTextBlock_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3323,7 +3323,7 @@ public static class RichTextBlock_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3338,7 +3338,7 @@ public static class ScrollViewer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3350,7 +3350,7 @@ public static class ScrollViewer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3362,7 +3362,7 @@ public static class ScrollViewer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3374,7 +3374,7 @@ public static class ScrollViewer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3386,7 +3386,7 @@ public static class ScrollViewer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3398,7 +3398,7 @@ public static class ScrollViewer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3410,7 +3410,7 @@ public static class ScrollViewer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3422,7 +3422,7 @@ public static class ScrollViewer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3437,7 +3437,7 @@ public static class TextBlock_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3452,7 +3452,7 @@ public static class TextBox_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3467,7 +3467,7 @@ public static class ToolTipService_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3479,7 +3479,7 @@ public static class ToolTipService_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3494,7 +3494,7 @@ public static class UIElementCollection_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3509,7 +3509,7 @@ public static class WebView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3521,7 +3521,7 @@ public static class WebView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3533,7 +3533,7 @@ public static class WebView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3545,7 +3545,7 @@ public static class WebView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3560,7 +3560,7 @@ public static class CoreWebView2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3572,7 +3572,7 @@ public static class CoreWebView2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3584,7 +3584,7 @@ public static class CoreWebView2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3596,7 +3596,7 @@ public static class CoreWebView2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3608,7 +3608,19 @@ public static class CoreWebView2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void OpenDevToolsWindow_stub(this Microsoft.Web.WebView2.Core.CoreWebView2 sender)
+    {
+        try
+        {
+            sender.OpenDevToolsWindow();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3620,7 +3632,7 @@ public static class CoreWebView2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3635,7 +3647,7 @@ public static class CoreWebView2Environment_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3647,7 +3659,7 @@ public static class CoreWebView2Environment_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3662,7 +3674,7 @@ public static class CoreWebView2HttpRequestHeaders_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3674,7 +3686,7 @@ public static class CoreWebView2HttpRequestHeaders_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3689,7 +3701,7 @@ public static class CoreWebView2ScriptDialogOpeningEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3701,7 +3713,7 @@ public static class CoreWebView2ScriptDialogOpeningEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3716,7 +3728,7 @@ public static class CoreWebView2WebMessageReceivedEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3731,7 +3743,7 @@ public static class CoreWebView2WebResourceRequestedEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3746,7 +3758,7 @@ public static class CoreApplication_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3758,7 +3770,7 @@ public static class CoreApplication_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3770,7 +3782,7 @@ public static class CoreApplication_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3785,7 +3797,7 @@ public static class ResourceContext_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3797,7 +3809,7 @@ public static class ResourceContext_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3809,7 +3821,7 @@ public static class ResourceContext_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3824,7 +3836,7 @@ public static class MediaSource_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3839,7 +3851,7 @@ public static class CryptographicEngine_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3851,7 +3863,7 @@ public static class CryptographicEngine_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3866,7 +3878,7 @@ public static class HashAlgorithmProvider_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3878,7 +3890,7 @@ public static class HashAlgorithmProvider_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3893,7 +3905,7 @@ public static class SymmetricKeyAlgorithmProvider_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3905,7 +3917,7 @@ public static class SymmetricKeyAlgorithmProvider_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3920,7 +3932,7 @@ public static class CoreWindow_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3932,7 +3944,7 @@ public static class CoreWindow_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3947,7 +3959,7 @@ public static class SystemNavigationManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3962,7 +3974,7 @@ public static class PasswordCredential_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3977,7 +3989,7 @@ public static class PasswordVault_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -3989,7 +4001,7 @@ public static class PasswordVault_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4004,7 +4016,7 @@ public static class CryptographicBuffer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4016,7 +4028,7 @@ public static class CryptographicBuffer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4028,7 +4040,7 @@ public static class CryptographicBuffer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4040,7 +4052,7 @@ public static class CryptographicBuffer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4052,7 +4064,7 @@ public static class CryptographicBuffer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4064,7 +4076,7 @@ public static class CryptographicBuffer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4079,7 +4091,7 @@ public static class BindingOperations_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4094,7 +4106,7 @@ public static class Clipboard_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4106,7 +4118,7 @@ public static class Clipboard_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4118,7 +4130,7 @@ public static class Clipboard_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4133,7 +4145,7 @@ public static class DataPackage_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4145,7 +4157,7 @@ public static class DataPackage_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4157,7 +4169,7 @@ public static class DataPackage_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4169,7 +4181,7 @@ public static class DataPackage_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4184,7 +4196,7 @@ public static class DataPackageView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4199,7 +4211,7 @@ public static class DataTransferManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4214,7 +4226,7 @@ public static class PackageManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4229,7 +4241,7 @@ public static class MediaDevice_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4241,7 +4253,7 @@ public static class MediaDevice_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4256,7 +4268,7 @@ public static class VideoDeviceController_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4271,7 +4283,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4283,7 +4295,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4295,7 +4307,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4307,7 +4319,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4319,7 +4331,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4331,7 +4343,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4343,7 +4355,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4355,7 +4367,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4367,7 +4379,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4379,7 +4391,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4391,7 +4403,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4403,7 +4415,7 @@ public static class XamlDirect_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4418,7 +4430,7 @@ public static class DisplayServices_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4433,7 +4445,7 @@ public static class DisplayRequest_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4445,7 +4457,7 @@ public static class DisplayRequest_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4460,7 +4472,7 @@ public static class TextPointer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4475,7 +4487,7 @@ public static class Typography_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4490,7 +4502,7 @@ public static class XmlDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4502,7 +4514,7 @@ public static class XmlDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4517,7 +4529,7 @@ public static class XmlElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4532,7 +4544,7 @@ public static class DeviceAccessInformation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4547,7 +4559,7 @@ public static class DeviceInformation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4562,7 +4574,7 @@ public static class DeviceWatcher_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4574,7 +4586,7 @@ public static class DeviceWatcher_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4589,7 +4601,7 @@ public static class ExtendedExecutionSession_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4604,7 +4616,7 @@ public static class Deferral_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4619,7 +4631,7 @@ public static class AudioMediaFrame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4634,7 +4646,7 @@ public static class MediaFrameReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4646,7 +4658,7 @@ public static class MediaFrameReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4661,7 +4673,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4673,7 +4685,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4685,7 +4697,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4697,7 +4709,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4709,7 +4721,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4721,7 +4733,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4733,7 +4745,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4745,7 +4757,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4757,7 +4769,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4769,7 +4781,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4781,7 +4793,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4793,7 +4805,7 @@ public static class CanvasGeometry_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4808,7 +4820,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4820,7 +4832,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4832,7 +4844,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4844,7 +4856,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4856,7 +4868,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4868,7 +4880,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4880,7 +4892,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4892,7 +4904,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4904,7 +4916,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4916,7 +4928,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4928,7 +4940,7 @@ public static class CanvasPathBuilder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4943,7 +4955,7 @@ public static class CanvasStrokeStyle_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4958,7 +4970,7 @@ public static class GeographicRegion_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4973,7 +4985,7 @@ public static class Language_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -4988,7 +5000,7 @@ public static class ElementCompositionPreview_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5000,7 +5012,7 @@ public static class ElementCompositionPreview_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5012,7 +5024,7 @@ public static class ElementCompositionPreview_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5024,7 +5036,7 @@ public static class ElementCompositionPreview_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5036,7 +5048,7 @@ public static class ElementCompositionPreview_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5048,7 +5060,7 @@ public static class ElementCompositionPreview_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5063,7 +5075,7 @@ public static class BitmapEncoder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5075,7 +5087,7 @@ public static class BitmapEncoder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5090,22 +5102,22 @@ public static class PixelDataProvider_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
 }
-public static class BitmapSource_stub
+public static class SoftwareBitmap_stub
 {
-    public static void SetSource_stub(this Windows.UI.Xaml.Media.Imaging.BitmapSource sender, Windows.Storage.Streams.IRandomAccessStream streamSource)
+    public static void Dispose_stub(this Windows.Graphics.Imaging.SoftwareBitmap sender)
     {
         try
         {
-            sender.SetSource(streamSource);
+            sender.Dispose();
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5120,7 +5132,7 @@ public static class WriteableBitmap_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5135,7 +5147,7 @@ public static class GestureRecognizer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5147,7 +5159,7 @@ public static class GestureRecognizer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5159,7 +5171,7 @@ public static class GestureRecognizer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5171,7 +5183,7 @@ public static class GestureRecognizer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5186,7 +5198,7 @@ public static class ContextRequestedEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5201,7 +5213,7 @@ public static class DoubleTappedRoutedEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5216,7 +5228,7 @@ public static class FocusManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5228,7 +5240,7 @@ public static class FocusManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5240,7 +5252,7 @@ public static class FocusManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5252,7 +5264,7 @@ public static class FocusManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5267,7 +5279,7 @@ public static class GettingFocusEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5279,7 +5291,7 @@ public static class GettingFocusEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5294,7 +5306,7 @@ public static class LosingFocusEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5306,7 +5318,7 @@ public static class LosingFocusEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5321,7 +5333,7 @@ public static class ManipulationDeltaRoutedEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5336,7 +5348,7 @@ public static class PointerRoutedEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5348,7 +5360,7 @@ public static class PointerRoutedEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5363,7 +5375,7 @@ public static class TappedRoutedEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5378,7 +5390,7 @@ public static class CompositionInteractionSourceCollection_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5393,7 +5405,7 @@ public static class InteractionTracker_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5405,7 +5417,7 @@ public static class InteractionTracker_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5417,7 +5429,7 @@ public static class InteractionTracker_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5429,7 +5441,7 @@ public static class InteractionTracker_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5444,7 +5456,7 @@ public static class InteractionTrackerInertiaRestingValue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5459,7 +5471,7 @@ public static class VisualInteractionSource_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5471,7 +5483,7 @@ public static class VisualInteractionSource_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5486,7 +5498,7 @@ public static class IJsonValue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5498,7 +5510,7 @@ public static class IJsonValue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5513,7 +5525,7 @@ public static class JsonArray_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5525,7 +5537,7 @@ public static class JsonArray_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5537,7 +5549,7 @@ public static class JsonArray_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5549,7 +5561,7 @@ public static class JsonArray_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5564,7 +5576,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5576,7 +5588,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5588,7 +5600,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5600,7 +5612,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5612,7 +5624,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5624,7 +5636,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5636,7 +5648,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5648,7 +5660,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5660,7 +5672,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5672,7 +5684,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5684,7 +5696,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5696,7 +5708,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5708,7 +5720,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5720,7 +5732,7 @@ public static class JsonObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5735,7 +5747,7 @@ public static class JsonValue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5747,7 +5759,7 @@ public static class JsonValue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5759,7 +5771,7 @@ public static class JsonValue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5771,7 +5783,7 @@ public static class JsonValue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5783,7 +5795,7 @@ public static class JsonValue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5798,7 +5810,7 @@ public static class XamlMarkupHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5813,7 +5825,7 @@ public static class AudioBuffer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5828,7 +5840,7 @@ public static class AudioFrame_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5843,7 +5855,7 @@ public static class SystemMediaTransportControls_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5858,7 +5870,7 @@ public static class SystemMediaTransportControlsDisplayUpdater_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5870,7 +5882,7 @@ public static class SystemMediaTransportControlsDisplayUpdater_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5885,7 +5897,7 @@ public static class GeneralTransform_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5900,7 +5912,7 @@ public static class LoadedImageSurface_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5912,7 +5924,7 @@ public static class LoadedImageSurface_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5924,7 +5936,7 @@ public static class LoadedImageSurface_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5939,7 +5951,7 @@ public static class VisualTreeHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5951,7 +5963,7 @@ public static class VisualTreeHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5963,7 +5975,7 @@ public static class VisualTreeHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5975,7 +5987,7 @@ public static class VisualTreeHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5987,7 +5999,7 @@ public static class VisualTreeHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -5999,7 +6011,7 @@ public static class VisualTreeHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6011,7 +6023,7 @@ public static class VisualTreeHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6023,7 +6035,7 @@ public static class VisualTreeHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6038,7 +6050,7 @@ public static class MediaEncodingProfile_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6050,7 +6062,7 @@ public static class MediaEncodingProfile_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6065,7 +6077,7 @@ public static class ApiInformation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6077,7 +6089,7 @@ public static class ApiInformation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6089,7 +6101,7 @@ public static class ApiInformation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6101,7 +6113,7 @@ public static class ApiInformation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6113,7 +6125,7 @@ public static class ApiInformation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6128,7 +6140,7 @@ public static class BufferSurface_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6140,7 +6152,7 @@ public static class BufferSurface_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6152,7 +6164,7 @@ public static class BufferSurface_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6167,7 +6179,7 @@ public static class CachedVideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6179,7 +6191,7 @@ public static class CachedVideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6191,7 +6203,7 @@ public static class CachedVideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6203,7 +6215,7 @@ public static class CachedVideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6215,7 +6227,7 @@ public static class CachedVideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6230,7 +6242,7 @@ public static class FileStreamFromApp_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6242,7 +6254,7 @@ public static class FileStreamFromApp_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6254,7 +6266,7 @@ public static class FileStreamFromApp_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6269,7 +6281,7 @@ public static class LanguageIdentification_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6284,7 +6296,7 @@ public static class LokiRng_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6299,7 +6311,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6311,7 +6323,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6323,7 +6335,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6335,7 +6347,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6347,7 +6359,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6359,7 +6371,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6371,7 +6383,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6383,7 +6395,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6395,7 +6407,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6407,7 +6419,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6419,7 +6431,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6431,7 +6443,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6443,7 +6455,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6455,7 +6467,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6467,7 +6479,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6479,7 +6491,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6491,7 +6503,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6503,7 +6515,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6515,7 +6527,7 @@ public static class NativeUtils_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6530,7 +6542,7 @@ public static class ParticlesAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6545,7 +6557,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6557,7 +6569,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6569,7 +6581,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6581,7 +6593,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6593,7 +6605,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6605,7 +6617,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6617,7 +6629,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6629,7 +6641,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6641,7 +6653,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6653,7 +6665,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6665,7 +6677,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6677,7 +6689,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6689,7 +6701,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6701,7 +6713,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6713,7 +6725,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6725,7 +6737,7 @@ public static class PlaceholderImageHelper_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6740,7 +6752,7 @@ public static class QrBuffer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6755,7 +6767,7 @@ public static class VideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6767,7 +6779,7 @@ public static class VideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6779,7 +6791,7 @@ public static class VideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6791,7 +6803,7 @@ public static class VideoAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6806,7 +6818,7 @@ public static class BadgeUpdateManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6818,7 +6830,7 @@ public static class BadgeUpdateManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6833,7 +6845,7 @@ public static class BadgeUpdater_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6845,7 +6857,7 @@ public static class BadgeUpdater_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6860,7 +6872,7 @@ public static class TileUpdateManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6875,7 +6887,7 @@ public static class TileUpdater_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6890,7 +6902,7 @@ public static class ToastNotificationHistory_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6902,7 +6914,7 @@ public static class ToastNotificationHistory_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6914,7 +6926,7 @@ public static class ToastNotificationHistory_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6929,7 +6941,7 @@ public static class ToastNotificationManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6941,7 +6953,7 @@ public static class ToastNotificationManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6956,7 +6968,7 @@ public static class ToastNotificationManagerForUser_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6971,7 +6983,7 @@ public static class ToastNotifier_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6986,7 +6998,7 @@ public static class CurrencyFormatter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -6998,7 +7010,7 @@ public static class CurrencyFormatter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7010,7 +7022,7 @@ public static class CurrencyFormatter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7022,7 +7034,7 @@ public static class CurrencyFormatter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7034,7 +7046,7 @@ public static class CurrencyFormatter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7046,7 +7058,7 @@ public static class CurrencyFormatter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7058,7 +7070,7 @@ public static class CurrencyFormatter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7070,7 +7082,7 @@ public static class CurrencyFormatter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7085,7 +7097,7 @@ public static class INumberFormatter2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7097,7 +7109,7 @@ public static class INumberFormatter2_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7112,7 +7124,7 @@ public static class INumberParser_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7124,7 +7136,7 @@ public static class INumberParser_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7139,7 +7151,7 @@ public static class OpusOutput_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7154,7 +7166,7 @@ public static class AutomationPeer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7166,7 +7178,7 @@ public static class AutomationPeer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7178,7 +7190,7 @@ public static class AutomationPeer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7190,7 +7202,7 @@ public static class AutomationPeer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7202,7 +7214,7 @@ public static class AutomationPeer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7217,7 +7229,7 @@ public static class FrameworkElementAutomationPeer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7229,7 +7241,7 @@ public static class FrameworkElementAutomationPeer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7244,7 +7256,7 @@ public static class MediaPlayer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7256,7 +7268,7 @@ public static class MediaPlayer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7271,7 +7283,7 @@ public static class CoreAppWindowPreview_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7286,7 +7298,7 @@ public static class SystemNavigationCloseRequestedPreviewEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7301,7 +7313,7 @@ public static class SystemNavigationManagerPreview_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7316,7 +7328,7 @@ public static class FlyoutBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7328,7 +7340,7 @@ public static class FlyoutBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7340,7 +7352,7 @@ public static class FlyoutBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7352,7 +7364,7 @@ public static class FlyoutBase_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7367,7 +7379,7 @@ public static class IInvokeProvider_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7382,7 +7394,7 @@ public static class ResourceLoader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7394,7 +7406,7 @@ public static class ResourceLoader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7409,7 +7421,7 @@ public static class LottieAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7421,7 +7433,7 @@ public static class LottieAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7433,7 +7445,7 @@ public static class LottieAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7445,7 +7457,7 @@ public static class LottieAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7457,7 +7469,7 @@ public static class LottieAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7469,7 +7481,7 @@ public static class LottieAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7481,7 +7493,7 @@ public static class LottieAnimation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7496,7 +7508,7 @@ public static class Shape_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7511,7 +7523,7 @@ public static class ShareOperation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7523,7 +7535,7 @@ public static class ShareOperation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7535,7 +7547,7 @@ public static class ShareOperation_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7550,7 +7562,7 @@ public static class JumpList_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7565,7 +7577,7 @@ public static class JumpListItem_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7580,7 +7592,7 @@ public static class SecondaryTile_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7595,7 +7607,7 @@ public static class ApplicationDataContainer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7607,7 +7619,7 @@ public static class ApplicationDataContainer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7622,7 +7634,7 @@ public static class StoreContext_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7637,7 +7649,7 @@ public static class DataReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7649,7 +7661,7 @@ public static class DataReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7661,7 +7673,7 @@ public static class DataReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7673,7 +7685,7 @@ public static class DataReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7685,7 +7697,7 @@ public static class DataReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7697,7 +7709,7 @@ public static class DataReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7709,7 +7721,7 @@ public static class DataReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7721,7 +7733,7 @@ public static class DataReader_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7736,7 +7748,7 @@ public static class DataWriter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7748,7 +7760,7 @@ public static class DataWriter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7760,7 +7772,7 @@ public static class DataWriter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7772,7 +7784,7 @@ public static class DataWriter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7784,7 +7796,7 @@ public static class DataWriter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7796,7 +7808,7 @@ public static class DataWriter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7808,7 +7820,7 @@ public static class DataWriter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7820,7 +7832,7 @@ public static class DataWriter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7835,7 +7847,7 @@ public static class IInputStream_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7850,7 +7862,7 @@ public static class InMemoryRandomAccessStream_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7862,7 +7874,7 @@ public static class InMemoryRandomAccessStream_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7874,7 +7886,19 @@ public static class InMemoryRandomAccessStream_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.Foundation.IAsyncOperationWithProgress<uint, uint> WriteAsync_stub(this Windows.Storage.Streams.InMemoryRandomAccessStream sender, Windows.Storage.Streams.IBuffer buffer)
+    {
+        try
+        {
+            return sender.WriteAsync(buffer);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7889,7 +7913,7 @@ public static class IOutputStream_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7904,7 +7928,7 @@ public static class IRandomAccessStream_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7916,7 +7940,19 @@ public static class IRandomAccessStream_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Seek_stub(this Windows.Storage.Streams.IRandomAccessStream sender, ulong position)
+    {
+        try
+        {
+            sender.Seek(position);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7931,7 +7967,7 @@ public static class RandomAccessStream_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7946,7 +7982,7 @@ public static class RandomAccessStreamReference_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7958,7 +7994,7 @@ public static class RandomAccessStreamReference_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7973,7 +8009,7 @@ public static class DispatcherQueue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7985,7 +8021,7 @@ public static class DispatcherQueue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -7997,7 +8033,7 @@ public static class DispatcherQueue_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8012,7 +8048,7 @@ public static class Client_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8024,7 +8060,7 @@ public static class Client_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8036,7 +8072,7 @@ public static class Client_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8048,7 +8084,7 @@ public static class Client_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8063,7 +8099,7 @@ public static class CanvasTextFormat_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8075,7 +8111,7 @@ public static class CanvasTextFormat_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8090,7 +8126,7 @@ public static class CanvasTextLayout_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8102,7 +8138,7 @@ public static class CanvasTextLayout_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8117,7 +8153,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8129,7 +8165,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8141,7 +8177,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8153,7 +8189,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8165,7 +8201,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8177,7 +8213,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8189,7 +8225,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8201,7 +8237,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8213,7 +8249,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8225,7 +8261,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8237,7 +8273,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8249,7 +8285,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8261,7 +8297,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8273,7 +8309,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8285,7 +8321,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8297,7 +8333,7 @@ public static class ITextDocument_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8312,7 +8348,7 @@ public static class ITextParagraphFormat_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8327,7 +8363,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8339,7 +8375,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8351,7 +8387,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8363,7 +8399,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8375,7 +8411,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8387,7 +8423,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8399,7 +8435,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8411,7 +8447,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8423,7 +8459,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8435,7 +8471,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8447,7 +8483,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8459,7 +8495,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8471,7 +8507,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8483,7 +8519,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8495,7 +8531,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8507,7 +8543,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8519,7 +8555,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8531,7 +8567,7 @@ public static class ITextRange_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8546,7 +8582,7 @@ public static class MediaTranscoder_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8561,7 +8597,7 @@ public static class PrepareTranscodeResult_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8576,7 +8612,7 @@ public static class ApplicationView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8588,7 +8624,7 @@ public static class ApplicationView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8600,7 +8636,7 @@ public static class ApplicationView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8612,7 +8648,7 @@ public static class ApplicationView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8624,7 +8660,7 @@ public static class ApplicationView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8636,7 +8672,7 @@ public static class ApplicationView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8648,7 +8684,7 @@ public static class ApplicationView_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8663,7 +8699,7 @@ public static class UISettings_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8678,7 +8714,7 @@ public static class UIViewSettings_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8693,7 +8729,7 @@ public static class ViewModePreferences_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8708,7 +8744,7 @@ public static class AppWindow_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8723,7 +8759,7 @@ public static class AppWindowPresenter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8735,7 +8771,7 @@ public static class AppWindowPresenter_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8750,7 +8786,7 @@ public static class WindowServices_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8765,7 +8801,7 @@ public static class CanvasAnimatedControl_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8780,7 +8816,7 @@ public static class CanvasControl_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8792,7 +8828,7 @@ public static class CanvasControl_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8807,7 +8843,7 @@ public static class DependencyObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8819,7 +8855,7 @@ public static class DependencyObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8831,7 +8867,7 @@ public static class DependencyObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8843,7 +8879,7 @@ public static class DependencyObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8855,7 +8891,7 @@ public static class DependencyObject_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8870,7 +8906,7 @@ public static class DependencyProperty_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8882,7 +8918,7 @@ public static class DependencyProperty_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8897,7 +8933,7 @@ public static class DispatcherTimer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8909,7 +8945,7 @@ public static class DispatcherTimer_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8924,7 +8960,7 @@ public static class DragOperationDeferral_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8939,7 +8975,7 @@ public static class DragStartingEventArgs_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8954,7 +8990,7 @@ public static class DragUI_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8969,7 +9005,7 @@ public static class FrameworkElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8981,7 +9017,7 @@ public static class FrameworkElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -8993,7 +9029,7 @@ public static class FrameworkElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9008,7 +9044,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9020,7 +9056,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9032,7 +9068,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9044,7 +9080,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9056,7 +9092,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9068,7 +9104,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9080,7 +9116,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9092,7 +9128,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9104,7 +9140,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9116,7 +9152,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9128,7 +9164,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9140,7 +9176,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9152,7 +9188,7 @@ public static class UIElement_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9167,7 +9203,7 @@ public static class VisualStateManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9179,7 +9215,7 @@ public static class VisualStateManager_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9194,7 +9230,7 @@ public static class Window_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9206,7 +9242,7 @@ public static class Window_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -9218,7 +9254,7 @@ public static class Window_stub
         }
         catch (Exception ex)
         {
-            Logger.Error(Environment.StackTrace);
+            Logger.Error(Environment.StackTrace, ex);
             throw new RuntimeException(ex);
         }
     }
