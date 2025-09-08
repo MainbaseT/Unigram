@@ -366,7 +366,7 @@ namespace Telegram.Controls.Gallery
 
         private Task<ContentDialogResult> ShowAsyncInternal(XamlRoot xamlRoot, GalleryViewModelBase parameter, FrameworkElement closing = null, VideoPlayerBase player = null)
         {
-            if (closing != null && !SettingsService.Current.FullScreenGallery)
+            if (closing != null && closing.IsConnected() && !SettingsService.Current.FullScreenGallery)
             {
                 _closing = new WeakReference<FrameworkElement>(closing);
                 ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("FullScreenPicture", closing);
