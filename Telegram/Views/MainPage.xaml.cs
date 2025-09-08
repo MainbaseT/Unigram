@@ -676,7 +676,7 @@ namespace Telegram.Views
 
         public void Handle(UpdateChatFoldersLayout update)
         {
-            this.BeginOnUIThread(UpdateChatFolders);
+            this.BeginOnUIThread(UpdateChatFoldersLayout);
         }
 
         #endregion
@@ -2325,7 +2325,7 @@ namespace Telegram.Views
             this.BeginOnUIThread(() => ArchivedChats.UpdateChatList(ViewModel.ClientService, new ChatListArchive()));
         }
 
-        public void UpdateChatFolders()
+        public void UpdateChatFoldersLayout()
         {
             void handler(object sender, object e)
             {
@@ -2339,6 +2339,11 @@ namespace Telegram.Views
             ChatsList.LayoutUpdated += handler;
             ChatsList.UpdateVisibleChats();
 
+            ConvertFolder(ViewModel.SelectedFolder);
+        }
+
+        public void UpdateChatFolders()
+        {
             ConvertFolder(ViewModel.SelectedFolder);
         }
 
