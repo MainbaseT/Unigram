@@ -107,7 +107,7 @@ namespace Telegram.Views.Premium.Popups
                 var hyperlink = new Hyperlink();
                 hyperlink.Click += StickerSet_Click;
                 hyperlink.UnderlineStyle = UnderlineStyle.None;
-                hyperlink.Inlines.Add($" {stickerSet.Name}");
+                hyperlink.Inlines.Add($" {stickerSet.Title}");
 
                 var text = string.Format(Strings.TelegramPremiumUserStatusDialogTitle, title, "{0}");
                 var index = text.IndexOf("{0}");

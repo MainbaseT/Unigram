@@ -1047,11 +1047,11 @@ namespace Telegram.Views
                 photos.Click += MediaShowPhotos_Click;
                 videos.Click += MediaShowVideos_Click;
 
-                if (SettingsService.Current.Diagnostics.SparseMessagesDebug)
-                {
-                    flyout.Items.Add(zoomIn);
-                    flyout.Items.Add(zoomOut);
-                }
+                //if (SettingsService.Current.Diagnostics.SparseMessagesDebug)
+                //{
+                //    flyout.Items.Add(zoomIn);
+                //    flyout.Items.Add(zoomOut);
+                //}
 
                 if (ViewModel.Media.UseDataSource && ViewModel.Media.DataSource.HasPositions)
                 {

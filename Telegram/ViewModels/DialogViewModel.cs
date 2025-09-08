@@ -40,7 +40,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels
 {
-    public partial class ChatMessageTopic
+    public partial class ChatMessageTopic : IEquatable<ChatMessageTopic>
     {
         public ChatMessageTopic(long chatId, MessageTopic messageTopic)
         {
@@ -51,6 +51,30 @@ namespace Telegram.ViewModels
         public long ChatId { get; }
 
         public MessageTopic MessageTopic { get; }
+
+        public bool Equals(ChatMessageTopic other)
+        {
+            if (other == null) return false;
+            return ChatId == other.ChatId && MessageTopic.AreTheSame(other.MessageTopic);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ChatMessageTopic);
+        }
+
+        public override int GetHashCode()
+        {
+            long messageTopicId = MessageTopic switch
+            {
+                MessageTopicDirectMessages directMessages => directMessages.DirectMessagesChatTopicId,
+                MessageTopicForum forum => forum.ForumTopicId,
+                MessageTopicSavedMessages savedMessages => savedMessages.SavedMessagesTopicId,
+                _ => 0
+            };
+
+            return HashCode.Combine(ChatId, messageTopicId);
+        }
     }
 
     public partial class ChatBusinessRepliesIdNavigationArgs

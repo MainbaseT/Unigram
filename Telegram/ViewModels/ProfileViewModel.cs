@@ -24,6 +24,7 @@ using Telegram.Views.Chats;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
 using Telegram.Views.Profile;
+using Telegram.Views.Profile.Popups;
 using Telegram.Views.Stars.Popups;
 using Telegram.Views.Supergroups;
 using Telegram.Views.Supergroups.Popups;
@@ -1116,6 +1117,14 @@ namespace Telegram.ViewModels
             }
 
             ClientService.Send(new JoinChat(chat.Id));
+        }
+
+        public void ShowRating()
+        {
+            if (ClientService.TryGetUser(Chat, out User user) && ClientService.TryGetUserFull(Chat, out UserFullInfo fullInfo))
+            {
+                ShowPopup(new ProfileRatingPopup(ClientService, user, fullInfo.Rating, fullInfo.PendingRating, fullInfo.PendingRatingDate));
+            }
         }
 
         public async void ShowPromo()

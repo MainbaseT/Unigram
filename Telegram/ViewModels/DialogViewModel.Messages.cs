@@ -2198,11 +2198,11 @@ namespace Telegram.ViewModels
                 var amount = new StarAmount(giftedStars.StarCount, 0);
                 var transaction = new StarTransaction(giftedStars.TransactionId, amount, false, message.Date, type);
 
-                await ShowPopupAsync(new Views.Stars.Popups.ReceiptPopup(ClientService, NavigationService, transaction));
+                ShowPopup(new Views.Stars.Popups.ReceiptPopup(ClientService, NavigationService, transaction));
             }
             else if (message.Content is MessageGiftedPremium giftedPremium)
             {
-                await ShowPopupAsync(new Views.Premium.Popups.PromoPopup(ClientService, giftedPremium));
+                ShowPopup(new Views.Premium.Popups.PromoPopup(ClientService, giftedPremium));
             }
         }
 
