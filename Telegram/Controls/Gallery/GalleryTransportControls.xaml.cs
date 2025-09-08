@@ -463,6 +463,11 @@ namespace Telegram.Controls.Gallery
             {
                 Slider.Value = e.NewValue;
                 TimeText.Text = FormatTime(e.NewValue);
+
+                if (_player != null)
+                {
+                    _player.Position = e.NewValue;
+                }
             }
 
             var closest = _storyboardFrames?.LastOrDefault(x => x.Key <= e.NewValue);
