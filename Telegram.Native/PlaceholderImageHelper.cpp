@@ -349,23 +349,6 @@ namespace winrt::Telegram::Native::implementation
         WebPIterator iter;
         if (WebPDemuxGetFrame(spDemuxer.get(), 1, &iter))
         {
-            WebPDecoderConfig config;
-            int ret = WebPInitDecoderConfig(&config);
-            if (!ret)
-            {
-                //throw ref new FailureException(ref new String(L"WebPInitDecoderConfig failed"));
-                free(buffer);
-                return false;
-            }
-
-            ret = (WebPGetFeatures(iter.fragment.bytes, iter.fragment.size, &config.input) == VP8_STATUS_OK);
-            if (!ret)
-            {
-                //throw ref new FailureException(ref new String(L"WebPGetFeatures failed"));
-                free(buffer);
-                return false;
-            }
-
             pixelWidth = iter.width;
             pixelHeight = iter.height;
         }
