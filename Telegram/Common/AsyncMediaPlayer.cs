@@ -49,7 +49,7 @@ namespace Telegram.Common
         private MediaInput _input;
 
         private readonly object _closeLock = new();
-        private bool _closed;
+        private volatile bool _closed;
 
         public AsyncMediaPlayer(bool createGraphicsContext, params string[] options)
         {
@@ -237,6 +237,11 @@ namespace Telegram.Common
 
         private void CloseImpl()
         {
+            lock (_closeLock)
+            {
+                _closed = true;
+            }
+
             MediaDevice.DefaultAudioRenderDeviceChanged -= OnDefaultAudioRenderDeviceChanged;
 
             _player.ESSelected -= OnESSelected;
@@ -275,13 +280,8 @@ namespace Telegram.Common
                 _graphicsContext.Destroy();
             }
 
-            lock (_closeLock)
-            {
-                _closed = true;
-
-                //_player.Dispose();
-                //_library.Dispose();
-            }
+            _player.Dispose();
+            _library.Dispose();
         }
 
         private AsyncMediaTrack GetTrack()
@@ -395,6 +395,11 @@ namespace Telegram.Common
 
         private void TryEnqueue(DispatcherQueueHandler action)
         {
+            lock (_closeLock)
+            {
+                if (_closed) return;
+            }
+
             if (_dispatcherQueue != null)
             {
                 _dispatcherQueue.TryEnqueue(action);
@@ -431,7 +436,7 @@ namespace Telegram.Common
 
         #endregion
 
-        private bool _workStarted;
+        private volatile bool _workStarted;
         private Thread _workThread;
 
         private readonly WorkQueue _workQueue = new();
@@ -443,13 +448,10 @@ namespace Telegram.Common
         {
             lock (_closeLock)
             {
-                if (_closed)
-                {
-                    return default;
-                }
-
-                return value();
+                if (_closed) return default;
             }
+
+            return value();
         }
 
         private void Write(Action action)
@@ -464,19 +466,19 @@ namespace Telegram.Common
 
         private void Write(object workItem)
         {
+            lock (_closeLock)
+            {
+                if (_closed) return;
+            }
+
             _workQueue.Push(workItem);
 
             lock (_workLock)
             {
-                if (_workStarted is false)
+                if (!_workStarted)
                 {
-                    if (_workThread?.IsAlive is false)
-                    {
-                        _workThread.Join();
-                    }
-
                     _workStarted = true;
-                    _workThread = new Thread(Work);
+                    _workThread = new Thread(Work) { IsBackground = true };
                     _workThread.Start();
                 }
             }
@@ -484,35 +486,48 @@ namespace Telegram.Common
 
         private void Work()
         {
-            while (_workStarted)
+            try
             {
-                var work = _workQueue.WaitAndPop();
-                if (work == null || _closed)
+                while (true)
+                {
+                    var work = _workQueue.WaitAndPop();
+                    if (work == null)
+                    {
+                        break;
+                    }
+
+                    lock (_closeLock)
+                    {
+                        if (_closed) break;
+                    }
+
+                    try
+                    {
+                        if (work is VersionedWorkItem versioned)
+                        {
+                            versioned.Action(versioned.Version == Interlocked.Read(ref _workVersion));
+                        }
+                        else if (work is WorkItem item)
+                        {
+                            item.Action();
+                        }
+                    }
+                    catch
+                    {
+                        // Shit happens...
+                    }
+
+                    lock (_closeLock)
+                    {
+                        if (_closed) break;
+                    }
+                }
+            }
+            finally
+            {
+                lock (_workLock)
                 {
                     _workStarted = false;
-                    return;
-                }
-
-                try
-                {
-                    if (work is VersionedWorkItem versioned)
-                    {
-                        versioned.Action(versioned.Version == Interlocked.Read(ref _workVersion));
-                    }
-                    else if (work is WorkItem item)
-                    {
-                        item.Action();
-                    }
-                }
-                catch
-                {
-                    // Shit happens...
-                }
-
-                if (_closed)
-                {
-                    _workStarted = false;
-                    return;
                 }
             }
         }
@@ -524,36 +539,38 @@ namespace Telegram.Common
         {
             private readonly object _workAvailable = new();
             private readonly Queue<object> _work = new();
+            private bool _shutdown;
 
             public void Push(object item)
             {
                 lock (_workAvailable)
                 {
-                    var was_empty = _work.Count == 0;
-
                     _work.Enqueue(item);
-
-                    if (was_empty)
-                    {
-                        Monitor.Pulse(_workAvailable);
-                    }
+                    Monitor.Pulse(_workAvailable);
                 }
             }
 
-            public object WaitAndPop()
+            public object WaitAndPop(int timeoutMs = 3000)
             {
                 lock (_workAvailable)
                 {
-                    while (_work.Count == 0)
+                    while (true)
                     {
-                        var timeout = Monitor.Wait(_workAvailable, 3000);
-                        if (timeout is false)
+                        if (_shutdown)
+                        {
+                            return null;
+                        }
+
+                        if (_work.TryDequeue(out object item))
+                        {
+                            return item;
+                        }
+
+                        if (!Monitor.Wait(_workAvailable, timeoutMs))
                         {
                             return null;
                         }
                     }
-
-                    return _work.Dequeue();
                 }
             }
 
@@ -561,7 +578,9 @@ namespace Telegram.Common
             {
                 lock (_workAvailable)
                 {
+                    _shutdown = true;
                     _work.Clear();
+                    Monitor.PulseAll(_workAvailable);
                 }
             }
         }
