@@ -593,6 +593,12 @@ namespace Telegram.Common
                 case InternalLinkTypeDirectMessagesChat directMessagesChat:
                     NavigateToDirectMessagesChat(clientService, navigation, directMessagesChat.ChannelUsername);
                     break;
+                case InternalLinkTypeStoryAlbum storyAlbum:
+                    NavigateToUsername(clientService, navigation, storyAlbum.StoryAlbumOwnerUsername);
+                    break;
+                case InternalLinkTypeGiftCollection giftCollection:
+                    NavigateToUsername(clientService, navigation, giftCollection.GiftOwnerUsername);
+                    break;
             }
         }
 
