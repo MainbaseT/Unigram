@@ -211,7 +211,10 @@ namespace Telegram.Common
                 catch (System.IO.FileNotFoundException)
                 {
                     // It can happen that file got copied from temp to videos, in this case we just retry
-                    return Serve(request, false);
+                    if (retry)
+                    {
+                        return Serve(request, false);
+                    }
                 }
             }
 
