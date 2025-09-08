@@ -1825,7 +1825,7 @@ namespace Telegram.Controls
             }
         }
 
-        private bool _workStarted;
+        private volatile bool _workStarted;
         private Thread _workThread;
 
         private readonly WorkQueue _workQueue = new();
@@ -1884,15 +1884,10 @@ namespace Telegram.Controls
 
             lock (_workLock)
             {
-                if (_workStarted is false)
+                if (!_workStarted)
                 {
-                    if (_workThread?.IsAlive is false)
-                    {
-                        _workThread.Join();
-                    }
-
                     _workStarted = true;
-                    _workThread = new Thread(Work);
+                    _workThread = new Thread(Work) { IsBackground = true };
                     _workThread.Start();
                 }
             }
@@ -1900,76 +1895,85 @@ namespace Telegram.Controls
 
         private void Work()
         {
-            while (_workStarted)
+            try
             {
-                var work = _workQueue.WaitAndPop();
-                if (work == null)
+                while (true)
                 {
-                    _workStarted = false;
-                    return;
-                }
-
-                if (!_delegates.ContainsKey(work.CorrelationId))
-                {
-                    continue;
-                }
-
-                try
-                {
-                    if (work.Presentation.Source is LocalFileSource local)
+                    var work = _workQueue.WaitAndPop();
+                    if (work == null)
                     {
-                        if (local.Format is StickerFormatTgs)
+                        break;
+                    }
+
+                    if (!_delegates.TryRemove(work.CorrelationId, out var weakDelegate))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        if (work.Presentation.Source is LocalFileSource local)
                         {
-                            LoadLottie(work, local);
-                        }
-                        else if (local.Format is StickerFormatWebp)
-                        {
-                            LoadWebP(work, local);
-                        }
-                        else if (local.Format is StickerFormatWebm)
-                        {
-                            LoadCachedVideo(work);
-                        }
-                        else
-                        {
-                            if (local.FilePath.HasExtension(".tgs", ".json"))
+                            if (local.Format is StickerFormatTgs)
                             {
-                                LoadLottie(work, local);
+                                LoadLottie(weakDelegate, work, local);
                             }
-                            else if (local.FilePath.HasExtension(".webp"))
+                            else if (local.Format is StickerFormatWebp)
                             {
-                                LoadWebP(work, local);
+                                LoadWebP(weakDelegate, work, local);
+                            }
+                            else if (local.Format is StickerFormatWebm)
+                            {
+                                LoadCachedVideo(weakDelegate, work);
                             }
                             else
                             {
-                                LoadCachedVideo(work);
+                                if (local.FilePath.HasExtension(".tgs", ".json"))
+                                {
+                                    LoadLottie(weakDelegate, work, local);
+                                }
+                                else if (local.FilePath.HasExtension(".webp"))
+                                {
+                                    LoadWebP(weakDelegate, work, local);
+                                }
+                                else
+                                {
+                                    LoadCachedVideo(weakDelegate, work);
+                                }
                             }
                         }
+                        else if (work.Presentation.Source is ParticlesImageSource particles)
+                        {
+                            LoadParticles(weakDelegate, work, particles);
+                        }
+                        else
+                        {
+                            LoadCachedVideo(weakDelegate, work);
+                        }
                     }
-                    else if (work.Presentation.Source is ParticlesImageSource particles)
+                    catch
                     {
-                        LoadParticles(work, particles);
-                    }
-                    else
-                    {
-                        LoadCachedVideo(work);
+                        // Shit happens...
+                        NotifyDelegate(weakDelegate, null, null);
                     }
                 }
-                catch
+            }
+            finally
+            {
+                lock (_workLock)
                 {
-                    // Shit happens...
-                    NotifyDelegate(work.CorrelationId, null, null);
+                    _workStarted = false;
                 }
             }
         }
 
-        private void LoadParticles(WorkItem work, ParticlesImageSource particles)
+        private void LoadParticles(WeakReference<AnimatedImagePresenter> weakDelegate, WorkItem work, ParticlesImageSource particles)
         {
             var animation = new ParticlesAnimation(work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.RasterizationScale, particles.Type, particles.Foreground, particles.Background);
-            NotifyDelegate(work.CorrelationId, null, new ParticlesAnimatedImageTask(animation, work.Presentation));
+            NotifyDelegate(weakDelegate, null, new ParticlesAnimatedImageTask(animation, work.Presentation));
         }
 
-        private void LoadLottie(WorkItem work, LocalFileSource local)
+        private void LoadLottie(WeakReference<AnimatedImagePresenter> weakDelegate, WorkItem work, LocalFileSource local)
         {
             static bool IsValid(AnimatedImagePresentation presentation)
             {
@@ -1984,17 +1988,16 @@ namespace Telegram.Controls
             {
                 if (IsValid(work.Presentation))
                 {
-                    NotifyDelegate(work.CorrelationId, animation, new LottieAnimatedImageTask(animation, work.Presentation));
-                    return;
+                    NotifyDelegate(weakDelegate, animation, new LottieAnimatedImageTask(animation, work.Presentation));
                 }
-
-                animation.Dispose();
+                else
+                {
+                    animation.Dispose();
+                }
             }
-
-            _delegates.TryRemove(work.CorrelationId, out _);
         }
 
-        private void LoadCachedVideo(WorkItem work)
+        private void LoadCachedVideo(WeakReference<AnimatedImagePresenter> weakDelegate, WorkItem work)
         {
             static bool IsValid(CachedVideoAnimation animation)
             {
@@ -2015,17 +2018,16 @@ namespace Telegram.Controls
                         animation.Seek(work.Presentation.Source.SeekToSeconds);
                     }
 
-                    NotifyDelegate(work.CorrelationId, animation, new VideoAnimatedImageTask(animation, work.Presentation));
-                    return;
+                    NotifyDelegate(weakDelegate, animation, new VideoAnimatedImageTask(animation, work.Presentation));
                 }
-
-                animation.Dispose();
+                else
+                {
+                    animation.Dispose();
+                }
             }
-
-            _delegates.TryRemove(work.CorrelationId, out _);
         }
 
-        private async void LoadWebP(WorkItem work, LocalFileSource local)
+        private async void LoadWebP(WeakReference<AnimatedImagePresenter> weakDelegate, WorkItem work, LocalFileSource local)
         {
             static bool IsValid(IBuffer animation, int pixelWidth, int pixelHeight)
             {
@@ -2041,8 +2043,7 @@ namespace Telegram.Controls
             {
                 if (IsValid(animation, pixelWidth, pixelHeight))
                 {
-                    NotifyDelegate(work.CorrelationId, null, new WebpAnimatedImageTask(animation, pixelWidth, pixelHeight, work.Presentation));
-                    return;
+                    NotifyDelegate(weakDelegate, null, new WebpAnimatedImageTask(animation, pixelWidth, pixelHeight, work.Presentation));
                 }
             }
             else
@@ -2081,22 +2082,18 @@ namespace Telegram.Controls
 
                     if (IsValid(animation, pixelWidth, pixelHeight))
                     {
-                        NotifyDelegate(work.CorrelationId, null, new WebpAnimatedImageTask(animation, pixelWidth, pixelHeight, work.Presentation));
-                        return;
+                        NotifyDelegate(weakDelegate, null, new WebpAnimatedImageTask(animation, pixelWidth, pixelHeight, work.Presentation));
                     }
                 }
                 catch
                 {
                     // All the remote procedure calls must be wrapped in a try-catch block
-                    NotifyDelegate(work.CorrelationId, null, null);
-                    return;
+                    NotifyDelegate(weakDelegate, null, null);
                 }
             }
-
-            _delegates.TryRemove(work.CorrelationId, out _);
         }
 
-        private bool NotifyDelegate(int correlationId, IDisposable disposable, AnimatedImageTask task)
+        private bool NotifyDelegate(WeakReference<AnimatedImagePresenter> weakDelegate, IDisposable disposable, AnimatedImageTask task)
         {
             static bool IsValid(AnimatedImageTask task)
             {
@@ -2107,7 +2104,7 @@ namespace Telegram.Controls
                     && task.PixelHeight > 0;
             }
 
-            if (TryGetDelegate(correlationId, out var target) && IsValid(task))
+            if (TryGetDelegate(weakDelegate, out var target) && IsValid(task))
             {
                 target.Ready(task);
                 return true;
@@ -2117,14 +2114,11 @@ namespace Telegram.Controls
             return false;
         }
 
-        private bool TryGetDelegate(int correlationId, out AnimatedImagePresenter target)
+        private bool TryGetDelegate(WeakReference<AnimatedImagePresenter> weakDelegate, out AnimatedImagePresenter target)
         {
-            if (_delegates.TryRemove(correlationId, out var weak))
+            if (weakDelegate.TryGetTarget(out target))
             {
-                if (weak.TryGetTarget(out target))
-                {
-                    return true;
-                }
+                return true;
             }
 
             target = null;
@@ -2136,37 +2130,49 @@ namespace Telegram.Controls
         class WorkQueue
         {
             private readonly object _workAvailable = new();
-            private readonly Stack<WorkItem> _work = new();
+            private readonly Queue<WorkItem> _work = new();
+            private bool _shutdown;
 
             public void Push(WorkItem item)
             {
                 lock (_workAvailable)
                 {
-                    var was_empty = _work.Count == 0;
-
-                    _work.Push(item);
-
-                    if (was_empty)
-                    {
-                        Monitor.Pulse(_workAvailable);
-                    }
+                    _work.Enqueue(item);
+                    Monitor.Pulse(_workAvailable);
                 }
             }
 
-            public WorkItem WaitAndPop()
+            public WorkItem WaitAndPop(int timeoutMs = 3000)
             {
                 lock (_workAvailable)
                 {
-                    while (_work.Count == 0)
+                    while (true)
                     {
-                        var timeout = Monitor.Wait(_workAvailable, 3000);
-                        if (timeout is false)
+                        if (_shutdown)
+                        {
+                            return null;
+                        }
+
+                        if (_work.TryDequeue(out WorkItem item))
+                        {
+                            return item;
+                        }
+
+                        if (!Monitor.Wait(_workAvailable, timeoutMs))
                         {
                             return null;
                         }
                     }
+                }
+            }
 
-                    return _work.Pop();
+            public void Clear()
+            {
+                lock (_workAvailable)
+                {
+                    _shutdown = true;
+                    _work.Clear();
+                    Monitor.PulseAll(_workAvailable);
                 }
             }
         }
