@@ -1651,6 +1651,8 @@ namespace Telegram.Controls
             }
 
             var range = Document.GetRange(0, 0);
+            var lastPosition = -1;
+
             var firstCall = true;
 
             HashSet<long> emoji = null;
@@ -1658,11 +1660,12 @@ namespace Telegram.Controls
 
             do
             {
-                if (range.EndOf(TextRangeUnit.Hidden, true) <= 0 && !firstCall)
+                if (range.StartPosition == lastPosition || (range.EndOf(TextRangeUnit.Hidden, true) <= 0 && !firstCall))
                 {
                     break;
                 }
 
+                lastPosition = range.StartPosition;
                 firstCall = false;
 
                 if (range.CharacterFormat.Hidden == FormatEffect.On && range.Link.Length == 0)
@@ -1720,13 +1723,16 @@ namespace Telegram.Controls
         private void UpdateFormat()
         {
             var range = Document.GetRange(0, 0);
+            var lastPosition = -1;
 
             do
             {
-                if (range.MoveEnd(TextRangeUnit.CharacterFormat, 1) <= 0)
+                if (lastPosition == range.StartPosition || range.MoveEnd(TextRangeUnit.CharacterFormat, 1) <= 0)
                 {
                     break;
                 }
+
+                lastPosition = range.StartPosition;
 
                 if (range.CharacterFormat.Hidden == FormatEffect.On && range.Link.Length == 0)
                 {
@@ -1763,14 +1769,18 @@ namespace Telegram.Controls
             }
 
             var range = Document.GetRange(0, 0);
+            var lastPosition = -1;
+
             var rects = 0;
 
             do
             {
-                if (range.MoveEnd(TextRangeUnit.HardParagraph, 1) <= 0)
+                if (lastPosition == range.StartPosition || range.MoveEnd(TextRangeUnit.HardParagraph, 1) <= 0)
                 {
                     break;
                 }
+
+                lastPosition = range.StartPosition;
 
                 if (range.StartPosition == 0)
                 {
