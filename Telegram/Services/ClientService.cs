@@ -840,16 +840,22 @@ namespace Telegram.Services
             return false;
         }
 
-        public void CleanUp()
+        private void Clear()
         {
             _options.Clear();
 
             _files.Clear();
+            _effects.Clear();
 
             _activeReactions = Array.Empty<string>();
+            _cachedReactions.Clear();
 
             _chats.Clear();
+            _chatList.Clear();
+            _haveFullChatList.Clear();
+
             _chatActions.Clear();
+            _topicActions.Clear();
 
             _secretChats.Clear();
 
@@ -864,6 +870,17 @@ namespace Telegram.Services
             _supergroups.Clear();
             _supergroupsFull.Clear();
 
+            _forums.Clear();
+            _directMessagesChats.Clear();
+
+            _storyList.Clear();
+            _haveFullStoryList.Clear();
+
+            _haveFullSavedMessages = false;
+            _savedMessages.Clear();
+            _savedMessagesTopics.Clear();
+            _savedMessagesTags.Clear();
+
             _settings.Notifications.Scope.Clear();
 
             _unreadCounts.Clear();
@@ -873,6 +890,7 @@ namespace Telegram.Services
             _suggestedActions.Clear();
 
             _savedAnimations = null;
+            _recentStickers = null;
             _favoriteStickers = null;
             _installedStickerSets = null;
             _installedMaskSets = null;
@@ -880,6 +898,8 @@ namespace Telegram.Services
 
             _chatFolders = Array.Empty<ChatFolderInfo>();
             _chatFolders2.Clear();
+            _mainChatListPosition = 0;
+            _areTagsEnabled = false;
 
             _timezones.Clear();
 
@@ -888,6 +908,43 @@ namespace Telegram.Services
             _authorizationStateTask = new();
             _authorizationState = null;
             _connectionState = null;
+            _freezeState = new();
+
+            _config = null;
+            _defaultReaction = null;
+            _attachmentMenuBots = Array.Empty<AttachmentMenuBot>();
+            _availableMessageEffects = null;
+            _speechRecognitionTrial = null;
+            _chatThemes = null;
+            _storyStealthMode = new();
+            _contactCloseBirthdays = null;
+            _unconfirmedSession = null;
+            AccentColors = null;
+            AvailableAccentColors = null;
+            ProfileColors = null;
+            AvailableProfileColors = null;
+            _ownedStarCount = null;
+            _ownedTonCount = null;
+            DefaultPaidReactionType = new PaidReactionTypeRegular();
+            AgeVerificationParameters = null;
+            SavedMessagesTopicCount = 0;
+            _quickReplyShortcuts.Clear();
+            _quickReplyShortcutIds = null;
+            _selectedBackground = null;
+            _selectedBackgroundDark = null;
+
+            _lastMessageAlbums.Clear();
+
+            lock (_recentChatsLock)
+            {
+                _recentChats.Clear();
+            }
+
+            _greetingStickers = null;
+            _nextGreetingSticker = null;
+            _waitGreetingSticker = false;
+
+            _chatAccessibleUntil.Clear();
 
             if (_initializeAfterClose)
             {
@@ -2833,7 +2890,7 @@ namespace Telegram.Services
                             _settings.Clear();
                             break;
                         case AuthorizationStateClosed:
-                            CleanUp();
+                            Clear();
                             break;
                         case AuthorizationStateReady:
                             InitializeReady();
