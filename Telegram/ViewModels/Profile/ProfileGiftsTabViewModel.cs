@@ -435,12 +435,12 @@ namespace Telegram.ViewModels.Profile
 
         private ReceivedGiftsCollection UpdateItems(object arg1, string arg2)
         {
-            return new ReceivedGiftsCollection(this, _senderId, _selectedCollection?.Id ?? 0, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
+            return new ReceivedGiftsCollection(this, _senderId, _selectedCollection, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
         }
 
-        public ReceivedGiftsCollection CreateItemsSource(int collectionId)
+        public ReceivedGiftsCollection CreateItemsSource(GiftCollectionViewModel collection)
         {
-            return new ReceivedGiftsCollection(this, _senderId, collectionId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
+            return new ReceivedGiftsCollection(this, _senderId, collection, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
         }
 
         public bool CompareItems(ReceivedGift oldItem, ReceivedGift newItem)
@@ -476,7 +476,7 @@ namespace Telegram.ViewModels.Profile
         {
             private readonly ProfileGiftsTabViewModel _viewModel;
             private readonly MessageSender _ownerId;
-            private readonly int _collectionId;
+            private readonly GiftCollectionViewModel _collection;
             private readonly bool _excludeUnsaved;
             private readonly bool _excludeSaved;
             private readonly bool _excludeUnlimited;
@@ -489,11 +489,11 @@ namespace Telegram.ViewModels.Profile
             private string _nextOffsetId = string.Empty;
             private bool _loading;
 
-            public ReceivedGiftsCollection(ProfileGiftsTabViewModel viewModel, MessageSender ownerId, int collectionId, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeLimited, bool excludeUpgraded, bool sortByPrice)
+            public ReceivedGiftsCollection(ProfileGiftsTabViewModel viewModel, MessageSender ownerId, GiftCollectionViewModel collection, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeLimited, bool excludeUpgraded, bool sortByPrice)
             {
                 _viewModel = viewModel;
                 _ownerId = ownerId;
-                _collectionId = collectionId;
+                _collection = collection;
                 _excludeUnsaved = excludeUnsaved;
                 _excludeSaved = excludeSaved;
                 _excludeUnlimited = excludeUnlimited;
@@ -519,7 +519,7 @@ namespace Telegram.ViewModels.Profile
                     var total = 0u;
                     var limit = count == 3 ? 3 : 50;
 
-                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _collectionId, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
+                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _collection.Id, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
                     if (response is ReceivedGifts gifts)
                     {
                         _nextOffsetId = gifts.NextOffset;
@@ -537,6 +537,11 @@ namespace Telegram.ViewModels.Profile
                     }
 
                     _viewModel.OnItemsReady();
+
+                    _collection.IsEmpty = Items.Count == 0;
+                    _collection.HasMoreItems = !string.IsNullOrEmpty(_nextOffsetId);
+                    _collection.HasLoadedItems = true;
+
                     HasMoreItems = !string.IsNullOrEmpty(_nextOffsetId);
 
                     _loading = false;
@@ -726,7 +731,7 @@ namespace Telegram.ViewModels.Profile
             Name = collection.Name;
             Id = collection.Id;
 
-            Items = new IncrementalCollectionView<ReceivedGift, ProfileGiftsTabViewModel.ReceivedGiftsCollection>(viewModel.CreateItemsSource(collection.Id));
+            Items = new IncrementalCollectionView<ReceivedGift, ProfileGiftsTabViewModel.ReceivedGiftsCollection>(viewModel.CreateItemsSource(this));
             Items.CollectionChanged += OnCollectionChanged;
 
             //if (collection.Id == 0)
@@ -744,11 +749,11 @@ namespace Telegram.ViewModels.Profile
         {
             if (preload)
             {
-                await Items.SetSourceAsync(_viewModel.CreateItemsSource(Id));
+                await Items.SetSourceAsync(_viewModel.CreateItemsSource(this));
             }
             else
             {
-                Items.SetSource(_viewModel.CreateItemsSource(Id));
+                Items.SetSource(_viewModel.CreateItemsSource(this));
             }
         }
 
@@ -796,9 +801,9 @@ namespace Telegram.ViewModels.Profile
         //    };
         //}
 
-        public bool HasMoreItems { get; private set; } = true;
+        public bool HasMoreItems { get; set; } = true;
 
-        public bool HasLoadedItems { get; private set; }
+        public bool HasLoadedItems { get; set; }
 
         private bool _isEmpty;
         public bool IsEmpty

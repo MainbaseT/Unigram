@@ -1109,7 +1109,7 @@ namespace Telegram.Views
                 flyout.Items.Add(limited);
                 flyout.Items.Add(unique);
 
-                if (ViewModel.ClientService.IsSavedMessages(ViewModel.Chat) || ViewModel.ClientService.TryGetSupergroup(ViewModel.Chat, out Supergroup supergroup) && supergroup.CanPostMessages())
+                if (ViewModel.GiftsTab.IsOwned)
                 {
                     var displayed = new MenuFlyoutItem
                     {
