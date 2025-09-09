@@ -379,7 +379,7 @@ namespace Telegram.Common
 
                 if (user.Id == _clientService.Options.MyId && chat.ViewAsTopics && topic == null)
                 {
-                    Navigate(typeof(ProfilePage), chat.Id, infoOverride: new SuppressNavigationTransitionInfo());
+                    Navigate(typeof(ProfilePage), new ChatMessageTopic(chat.Id, null), infoOverride: new SuppressNavigationTransitionInfo());
                     return;
                 }
 

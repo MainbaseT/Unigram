@@ -3494,7 +3494,7 @@ namespace Telegram.ViewModels
             await ClientService.SendAsync(new ToggleChatViewAsTopics(chat.Id, true));
 
             var target = typeof(ProfilePage);
-            var parameter = chat.Id;
+            var parameter = new ChatMessageTopic(chat.Id, null);
 
             NavigationService.GoBackAt(0, false);
 
