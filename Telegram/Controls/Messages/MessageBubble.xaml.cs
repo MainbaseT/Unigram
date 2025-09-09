@@ -497,7 +497,7 @@ namespace Telegram.Controls.Messages
             {
                 if (isFirst && isLast)
                 {
-                    bottomOutgoing = SettingsService.Current.Diagnostics.BubbleTailDebug;
+                    bottomOutgoing = true;
                 }
                 else if (isFirst)
                 {
@@ -506,7 +506,7 @@ namespace Telegram.Controls.Messages
                 else if (isLast)
                 {
                     topRight = small;
-                    bottomOutgoing = SettingsService.Current.Diagnostics.BubbleTailDebug;
+                    bottomOutgoing = true;
                 }
                 else
                 {
@@ -518,7 +518,7 @@ namespace Telegram.Controls.Messages
             {
                 if (isFirst && isLast)
                 {
-                    bottomIncoming = SettingsService.Current.Diagnostics.BubbleTailDebug;
+                    bottomIncoming = true;
                 }
                 else if (isFirst)
                 {
@@ -527,7 +527,7 @@ namespace Telegram.Controls.Messages
                 else if (isLast)
                 {
                     topLeft = small;
-                    bottomIncoming = SettingsService.Current.Diagnostics.BubbleTailDebug;
+                    bottomIncoming = true;
                 }
                 else
                 {
