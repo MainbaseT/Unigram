@@ -8,7 +8,6 @@ using Telegram.Common;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Td.Api;
-using Telegram.ViewModels;
 using Telegram.ViewModels.Profile;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;

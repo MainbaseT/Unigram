@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
-using Telegram.Td.Api;
 using Telegram.ViewModels.Chats;
 using Telegram.ViewModels.Stories;
 using Windows.UI.Xaml.Controls;

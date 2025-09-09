@@ -4,21 +4,16 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using Rg.DiffUtils;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Collections;
-using Telegram.Collections.Handlers;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views.Popups;
 using Telegram.Views.Stars.Popups;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
 namespace Telegram.ViewModels
