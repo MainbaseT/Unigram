@@ -10,12 +10,14 @@ using System.Linq;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
+using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Settings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Settings
@@ -273,6 +275,13 @@ namespace Telegram.Views.Settings
 
             SizeLabel.Text = readable[0];
             UnitLabel.Text = readable[1];
+        }
+
+        private void Menu_ContextRequested(object sender, RoutedEventArgs e)
+        {
+            var flyout = new MenuFlyout();
+            flyout.CreateFlyoutItem(ViewModel.ClearDatabase, Strings.ClearLocalDatabase, Icons.Delete, destructive: true);
+            flyout.ShowAt(sender as UIElement, FlyoutPlacementMode.BottomEdgeAlignedRight);
         }
     }
 }

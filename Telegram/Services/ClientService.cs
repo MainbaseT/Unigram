@@ -24,6 +24,7 @@ namespace Telegram.Services
     {
         bool TryInitialize();
         void Close(bool restart);
+        void Delete(bool restart);
 
         //void Send(Function function);
         //void Send(Function function, ClientResultHandler handler);
@@ -365,6 +366,7 @@ namespace Telegram.Services
         private Background _selectedBackground;
         private Background _selectedBackgroundDark;
 
+        private bool _cleanAfterClose;
         private bool _initializeAfterClose;
 
         private static volatile Task _longRunningTask;
@@ -408,6 +410,14 @@ namespace Telegram.Services
         public void Close(bool restart)
         {
             _initializeAfterClose = restart;
+            _cleanAfterClose = false;
+            _client.Send(new Close());
+        }
+
+        public void Delete(bool restart)
+        {
+            _initializeAfterClose = restart;
+            _cleanAfterClose = true;
             _client.Send(new Close());
         }
 
@@ -946,6 +956,12 @@ namespace Telegram.Services
 
             _chatAccessibleUntil.Clear();
 
+            if (_cleanAfterClose)
+            {
+                _cleanAfterClose = false;
+                DeleteDatabase();
+            }
+
             if (_initializeAfterClose)
             {
                 _initializeAfterClose = false;
@@ -953,7 +969,43 @@ namespace Telegram.Services
             }
         }
 
-
+        private void DeleteDatabase()
+        {
+            var databasePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session}", "db.sqlite");
+            if (System.IO.File.Exists(databasePath))
+            {
+                try
+                {
+                    System.IO.File.Delete(databasePath);
+                }
+                catch
+                {
+                    // Shit happens...
+                }
+            }
+            if (System.IO.File.Exists(databasePath + "-shm"))
+            {
+                try
+                {
+                    System.IO.File.Delete(databasePath + "-shm");
+                }
+                catch
+                {
+                    // Shit happens...
+                }
+            }
+            if (System.IO.File.Exists(databasePath + "-wal"))
+            {
+                try
+                {
+                    System.IO.File.Delete(databasePath + "-wal");
+                }
+                catch
+                {
+                    // Shit happens...
+                }
+            }
+        }
 
         public void Send(Function function, Action<Object> handler = null)
         {

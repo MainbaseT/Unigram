@@ -619,6 +619,10 @@
         </Style>
     </Page.Resources>
 
+    <local:HostedPage.Action>
+        <controls:MoreButton Click="Menu_ContextRequested" />
+    </local:HostedPage.Action>
+    
     <Grid Background="{ThemeResource SettingsPageBackground}">
         <controls:TableListView x:Name="ScrollingHost"
                                 ItemsSource="{x:Bind ViewModel.Statistics.ByChat, Mode=OneWay}"
@@ -627,7 +631,7 @@
                                 SelectionMode="None"
                                 ContainerContentChanging="OnContainerContentChanging">
             <ListView.Header>
-                <controls:SettingsPanel>
+                <controls:SettingsPanel IsHeader="True">
                     <Grid MaxWidth="1000"
                           Margin="24,0">
                         <Grid.RowDefinitions>
@@ -731,7 +735,7 @@
 
                     <controls:HeaderedControl x:Name="KeepMediaPanel"
                                               Header="{CustomResource KeepMedia}"
-                                              Footer="{CustomResource KeepMediaInfo}"
+                                              Footer="{CustomResource KeepMediaInfoPart}"
                                               Background="{ThemeResource SettingsItemBackground}">
                         <Grid x:Name="KeepMediaTicks"
                               Padding="12,6,12,6">
@@ -754,14 +758,9 @@
                         </Grid>
                     </controls:HeaderedControl>
 
-                    <controls:HeaderedControl>
-                        <controls:SettingsButton Content="{CustomResource LocalDatabase}"
-                                                 Badge="{x:Bind ViewModel.StatisticsFast.DatabaseSize, Mode=OneWay, Converter={StaticResource FileSizeConverter}, ConverterParameter=allowGb}" />
-                        <controls:SettingsButton Click="{x:Bind ViewModel.ClearCache}"
-                                                 Content="{CustomResource ClearMediaCache}"
-                                                 Badge="{x:Bind ViewModel.Statistics.Size, Mode=OneWay, Converter={StaticResource FileSizeConverter}, ConverterParameter=allowGb}"
-                                                 IsEnabled="{x:Bind ConvertEnabled(ViewModel.Statistics), Mode=OneWay}" />
-                    </controls:HeaderedControl>
+                    <TextBlock Text="{CustomResource FilterChats}"
+                               Style="{StaticResource BaseTextBlockStyle}"
+                               Margin="24,16,24,6" />
                 </controls:SettingsPanel>
             </ListView.Header>
             <ListView.Footer>

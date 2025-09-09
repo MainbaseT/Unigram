@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -141,7 +142,7 @@ namespace Telegram.ViewModels.Settings
 
         public async void ClearCache()
         {
-            var confirm = await ShowPopupAsync(Strings.ClearCache, Strings.StorageUsageInfo, Strings.ClearCache, Strings.Cancel, destructive: true);
+            var confirm = await ShowPopupAsync(Strings.StorageUsageInfo, Strings.ClearCache, Strings.ClearCache, Strings.Cancel, destructive: true);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
@@ -349,6 +350,19 @@ namespace Telegram.ViewModels.Settings
             {
                 return (0, 0);
             }
+        }
+
+        public async void ClearDatabase()
+        {
+            var size = string.Format(Strings.LocalDatabaseClearText2, FileSizeConverter.Convert(StatisticsFast.DatabaseSize, true));
+
+            var confirm = await ShowPopupAsync(Strings.LocalDatabaseClearText + "\n\n" + size + "\n\n" + Strings.LocalDatabaseClearText3, Strings.LocalDatabaseClearTextTitle, Strings.CacheClear, Strings.Cancel, destructive: true);
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            ClientService.Delete(true);
         }
     }
 }
