@@ -78,10 +78,6 @@
                               Content="Delete Files Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
-                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.MediaServerDebug, Mode=TwoWay}"
-                              Content="Media Server Debug"
-                              Style="{StaticResource SettingsCheckBoxStyle}" />
-
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.AlbumPreloadDebug, Mode=TwoWay}"
                               Content="Album Preload Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />

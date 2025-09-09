@@ -8,8 +8,6 @@ using LibVLCSharp.Platforms.Windows;
 using LibVLCSharp.Shared;
 using System;
 using Telegram.Common;
-using Telegram.Services;
-using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
 using Windows.UI.Xaml;
@@ -87,15 +85,7 @@ namespace Telegram.Controls
             }
             else
             {
-                if (SettingsService.Current.Diagnostics.MediaServerDebug)
-                {
-                    _core.Play(MediaHttpServer.Start(video, ref _httpServerToken));
-                }
-                else
-                {
-                    _core.Play(new RemoteFileStream(video.ClientService, video.File));
-                }
-
+                _core.Play(MediaHttpServer.Start(video, ref _httpServerToken));
                 _core.Time = (long)(position * 1000);
             }
 
@@ -247,15 +237,7 @@ namespace Telegram.Controls
 
             if (_video != null)
             {
-                if (SettingsService.Current.Diagnostics.MediaServerDebug)
-                {
-                    _core.Play(MediaHttpServer.Start(_video, ref _httpServerToken));
-                }
-                else
-                {
-                    _core.Play(new RemoteFileStream(_video.ClientService, _video.File));
-                }
-
+                _core.Play(MediaHttpServer.Start(_video, ref _httpServerToken));
                 _core.Time = _initialPosition;
             }
 

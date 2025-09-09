@@ -169,13 +169,6 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _deleteFilesDebug, "DeleteFilesDebug", value);
         }
 
-        private bool? _mediaServerDebug;
-        public bool MediaServerDebug
-        {
-            get => _mediaServerDebug ??= GetValueOrDefault("MediaServerDebug", true);
-            set => AddOrUpdateValue(ref _mediaServerDebug, "MediaServerDebug", value);
-        }
-
         private bool? _albumPreloadDebug;
         public bool AlbumPreloadDebug
         {
