@@ -5,16 +5,12 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Telegram.Common;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
 using Telegram.Views.Popups;
 using Telegram.Views.Supergroups.Popups;
-using Windows.UI.Xaml.Controls;
 
 namespace Telegram.ViewModels.Supergroups
 {

@@ -138,7 +138,7 @@ namespace Telegram.Views.Profile.Popups
                 {
                     RatingSlider.MaximumVisibility = Visibility.Collapsed;
                 }
-                
+
                 if (pendingRating != null)
                 {
                     var diff = pendingRatingDate - DateTime.Now.ToTimestamp();

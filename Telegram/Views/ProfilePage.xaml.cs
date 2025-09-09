@@ -17,7 +17,6 @@ using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
-using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -1109,7 +1108,7 @@ namespace Telegram.Views
                 flyout.Items.Add(limited);
                 flyout.Items.Add(unique);
 
-                if (ViewModel.ClientService.IsSavedMessages(ViewModel.Chat) || ViewModel.ClientService.TryGetSupergroup(ViewModel.Chat, out Supergroup supergroup) && supergroup.CanPostMessages())
+                if (ViewModel.GiftsTab.IsOwned)
                 {
                     var displayed = new MenuFlyoutItem
                     {

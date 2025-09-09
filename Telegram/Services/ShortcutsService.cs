@@ -18,7 +18,7 @@ namespace Telegram.Services
 {
     public interface IShortcutsService
     {
-        InvokedShortcut Process(KeyRoutedEventArgs args);
+        InvokedShortcut Process(KeyRoutedEventArgs args, out VirtualKeyModifiers modifiers);
 
         bool TryGetShortcut(KeyRoutedEventArgs args, out Shortcut shortcut);
 
@@ -189,14 +189,16 @@ namespace Telegram.Services
             InitializeCustom();
         }
 
-        public InvokedShortcut Process(KeyRoutedEventArgs args)
+        public InvokedShortcut Process(KeyRoutedEventArgs args, out VirtualKeyModifiers modifiers)
         {
+            modifiers = WindowContext.KeyModifiers();
+
             if (args.Key is >= VirtualKey.NumberPad0 and <= VirtualKey.NumberPad9)
             {
-                return Process(WindowContext.KeyModifiers(), VirtualKey.Number0 + (args.Key - VirtualKey.NumberPad0));
+                return Process(modifiers, VirtualKey.Number0 + (args.Key - VirtualKey.NumberPad0));
             }
 
-            return Process(WindowContext.KeyModifiers(), args.Key);
+            return Process(modifiers, args.Key);
         }
 
         private InvokedShortcut Process(VirtualKeyModifiers modifiers, VirtualKey key)

@@ -16,11 +16,13 @@
             <controls:SettingsPanel>
                 <controls:HeaderedControl Header="{CustomResource DataUsage}">
                     <controls:SettingsButton Content="{CustomResource StorageUsage}"
+                                             Badge="{x:Bind ViewModel.StorageUsage, Mode=OneWay}"
                                              Glyph="&#xEB05;"
                                              Click="{x:Bind ViewModel.OpenStorage}"
                                              IsChevronVisible="True" />
 
                     <controls:SettingsButton Content="{CustomResource NetworkUsage}"
+                                             Badge="{x:Bind ViewModel.NetworkUsage, Mode=OneWay}"
                                              Glyph="&#xE91F;"
                                              Click="{x:Bind ViewModel.OpenStats}"
                                              IsChevronVisible="True" />

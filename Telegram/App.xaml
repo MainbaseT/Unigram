@@ -230,7 +230,6 @@
             <x:Int32 x:Key="UserFirstNameMaxLength">255</x:Int32>
             <x:Int32 x:Key="UserLastNameMaxLength">255</x:Int32>
 
-            <converters:FileTypeToStringConverter x:Key="FileTypeToStringConverter" />
             <converters:MessageTtlConverter x:Key="MessageTtlConverter" />
             <converters:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />

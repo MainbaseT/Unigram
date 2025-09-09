@@ -231,8 +231,7 @@ namespace Telegram.Common
 
         public void Close()
         {
-            _workQueue.Clear();
-            Write(CloseImpl);
+            _workQueue.Clear(new WorkItem(CloseImpl));
         }
 
         private void CloseImpl()
@@ -539,12 +538,15 @@ namespace Telegram.Common
         {
             private readonly object _workAvailable = new();
             private readonly Queue<object> _work = new();
+            private readonly Queue<object> _criticalWork = new(); // For shutdown-critical operations
             private bool _shutdown;
 
             public void Push(object item)
             {
                 lock (_workAvailable)
                 {
+                    if (_shutdown) return;
+
                     _work.Enqueue(item);
                     Monitor.Pulse(_workAvailable);
                 }
@@ -556,6 +558,11 @@ namespace Telegram.Common
                 {
                     while (true)
                     {
+                        if (_criticalWork.TryDequeue(out object criticalItem))
+                        {
+                            return criticalItem;
+                        }
+
                         if (_shutdown)
                         {
                             return null;
@@ -574,12 +581,18 @@ namespace Telegram.Common
                 }
             }
 
-            public void Clear()
+            public void Clear(object criticalFinalItem = null)
             {
                 lock (_workAvailable)
                 {
-                    _shutdown = true;
                     _work.Clear();
+
+                    if (criticalFinalItem != null)
+                    {
+                        _criticalWork.Enqueue(criticalFinalItem);
+                    }
+
+                    _shutdown = true;
                     Monitor.PulseAll(_workAvailable);
                 }
             }

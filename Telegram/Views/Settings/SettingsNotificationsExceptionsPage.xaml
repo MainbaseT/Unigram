@@ -53,7 +53,7 @@
                                Visibility="{x:Bind ViewModel.Items.Count, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                                Text="{CustomResource NotificationsExceptions}"
                                Style="{StaticResource BaseTextBlockStyle}"
-                               Margin="24,16,24,4" />
+                               Margin="24,16,24,6" />
                 </controls:SettingsPanel>
             </ListView.Header>
             <ListView.ItemTemplate>

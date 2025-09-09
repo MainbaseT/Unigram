@@ -12769,4 +12769,19 @@
     <string name="MessageContainsReactionsPacks_other">Emoji from **{0} packs** were used as reactions.</string>
     <string name="MessageContainsReactionPack">This reaction is from {0} emoji pack.</string>
 
+    <string name="YourNetworkUsageSince">Your network usage since {0}</string>
+    <string name="NoNetworkUsageSince">No network usage since {0}</string>
+    <string name="ResetStatisticsAlertTitle">Reset statistics</string>
+
+    <string name="StorageUsageCalculating">Calculating cache size...</string>
+    <string name="StorageUsageTelegram">Telegram uses {0} of your device storage.</string>
+    <string name="StorageUsageTelegramLess">Telegram uses {0} of your device storage.</string>
+    <string name="StorageUsageInfo">All media will stay in the Telegram cloud and can be re-downloaded if you need them again.</string>
+    <string name="KeepMediaInfoPart">Photos, videos and other files from cloud chats that you have **not accessed** during this period will be removed from this device to save disk space.</string>
+    <string name="ClearLocalDatabase">Clear Local Database</string>
+    <string name="LocalDatabaseClearTextTitle">Clear local database</string>
+    <string name="LocalDatabaseClearText">Are you sure you want to clear cached text messages?</string>
+    <string name="LocalDatabaseClearText2">Local database size: **{0}**</string>
+    <string name="LocalDatabaseClearText3">**WARNING:**\nSecret chats and pending messages will be lost.</string>
+
 </resources>

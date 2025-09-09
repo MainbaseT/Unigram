@@ -220,6 +220,7 @@
     <Compile Include="Common\SliderHelper.cs" />
     <Compile Include="Common\VideoPreloader.cs" />
     <Compile Include="Common\WebAppStorage.cs" />
+    <Compile Include="Composition\CompositionPropertySetColorSource.cs" />
     <Compile Include="Composition\CompositionVisualColorSource.cs" />
     <Compile Include="Composition\WeakInteractionTrackerOwner.cs" />
     <Compile Include="Controls\ButtonEx.cs" />
@@ -359,6 +360,7 @@
     <Compile Include="AI\RecognizedTextSelectionManager.cs" />
     <Compile Include="Common\ThumbnailController.cs" />
     <Compile Include="Controls\ProfileRatingSlider.cs" />
+    <Compile Include="Controls\ProgressRingIndeterminate.cs" />
     <Compile Include="Controls\Views\SearchPostsTabPage.xaml.cs">
       <DependentUpon>SearchPostsTabPage.xaml</DependentUpon>
     </Compile>
@@ -1583,7 +1585,6 @@
     </Compile>
     <Compile Include="Converters\BooleanNegationConverter.cs" />
     <Compile Include="Converters\ChannelParticipantToTypeConverter.cs" />
-    <Compile Include="Converters\FileTypeToStringConverter.cs" />
     <Compile Include="Converters\MessageTtlConverter.cs" />
     <Compile Include="Converters\MeUrlPrefixConverter.cs" />
     <Compile Include="Converters\ProportionsToLabelConverter.cs" />

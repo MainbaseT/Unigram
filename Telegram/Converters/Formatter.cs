@@ -464,6 +464,11 @@ namespace Telegram.Converters
             return size.ToString("N0");
         }
 
+        public static string Percent(double percent)
+        {
+            return (percent * 100).ToString("0.##") + "%";
+        }
+
         public static string ShortNumber(long number)
         {
             return ShortNumber(number, false);

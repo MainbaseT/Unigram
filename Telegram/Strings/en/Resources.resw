@@ -4363,6 +4363,9 @@ Minimum length is 5 characters.</value>
   <data name="ClearHistoryTitleSingle" xml:space="preserve">
     <value>Unsave messages from {0}</value>
   </data>
+  <data name="ClearLocalDatabase" xml:space="preserve">
+    <value>Clear Local Database</value>
+  </data>
   <data name="ClearMediaCache" xml:space="preserve">
     <value>Clear Cache</value>
   </data>
@@ -7854,6 +7857,9 @@ This setting does not affect group chats.</value>
 
 All media will stay in the Telegram cloud and can be re-downloaded if you need it again.</value>
   </data>
+  <data name="KeepMediaInfoPart" xml:space="preserve">
+    <value>Photos, videos and other files from cloud chats that you have **not accessed** during this period will be removed from this device to save disk space.</value>
+  </data>
   <data name="KickFromGroup" xml:space="preserve">
     <value>Remove from group</value>
   </data>
@@ -8244,6 +8250,19 @@ Upgrade to **Telegram Premium** to increase this limit to **{1}**.</value>
   </data>
   <data name="LocalDatabase" xml:space="preserve">
     <value>Local Database</value>
+  </data>
+  <data name="LocalDatabaseClearText" xml:space="preserve">
+    <value>Are you sure you want to clear cached text messages?</value>
+  </data>
+  <data name="LocalDatabaseClearText2" xml:space="preserve">
+    <value>Local database size: **{0}**</value>
+  </data>
+  <data name="LocalDatabaseClearText3" xml:space="preserve">
+    <value>**WARNING:**
+Secret chats and pending messages will be lost.</value>
+  </data>
+  <data name="LocalDatabaseClearTextTitle" xml:space="preserve">
+    <value>Clear local database</value>
   </data>
   <data name="LocalDocumentCache" xml:space="preserve">
     <value>Documents</value>
@@ -9076,6 +9095,9 @@ people by username.</value>
   </data>
   <data name="NoMessagesGreetingsDescription" xml:space="preserve">
     <value>Send a message or tap the greeting below.</value>
+  </data>
+  <data name="NoNetworkUsageSince" xml:space="preserve">
+    <value>No network usage since {0}</value>
   </data>
   <data name="NoOneJoined" xml:space="preserve">
     <value>No one joined</value>
@@ -11332,6 +11354,9 @@ seamlessly and efficiently.</value>
   <data name="ResetStatisticsAlert" xml:space="preserve">
     <value>Do you want to reset your usage statistics?</value>
   </data>
+  <data name="ResetStatisticsAlertTitle" xml:space="preserve">
+    <value>Reset statistics</value>
+  </data>
   <data name="ResetToOriginalPhoto" xml:space="preserve">
     <value>Reset to Original Photo</value>
   </data>
@@ -12789,6 +12814,18 @@ and enter your phone number.</value>
   </data>
   <data name="StorageUsage" xml:space="preserve">
     <value>Storage Usage</value>
+  </data>
+  <data name="StorageUsageCalculating" xml:space="preserve">
+    <value>Calculating cache size...</value>
+  </data>
+  <data name="StorageUsageInfo" xml:space="preserve">
+    <value>All media will stay in the Telegram cloud and can be re-downloaded if you need them again.</value>
+  </data>
+  <data name="StorageUsageTelegram" xml:space="preserve">
+    <value>Telegram uses {0} of your device storage.</value>
+  </data>
+  <data name="StorageUsageTelegramLess" xml:space="preserve">
+    <value>Telegram uses {0} of your device storage.</value>
   </data>
   <data name="Stories_one" xml:space="preserve">
     <value>{0} Story</value>
@@ -15194,6 +15231,9 @@ If you forget your password, you will lose access to your Telegram account. Ther
   </data>
   <data name="YourNameColor" xml:space="preserve">
     <value>Your Name Color</value>
+  </data>
+  <data name="YourNetworkUsageSince" xml:space="preserve">
+    <value>Your network usage since {0}</value>
   </data>
   <data name="YourNewEmail" xml:space="preserve">
     <value>Your new email</value>

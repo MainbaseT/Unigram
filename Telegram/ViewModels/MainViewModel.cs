@@ -20,7 +20,6 @@ using Telegram.Services.Updates;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Folders;
-using Telegram.ViewModels.Profile;
 using Telegram.ViewModels.Stories;
 using Telegram.Views;
 using Telegram.Views.Folders;

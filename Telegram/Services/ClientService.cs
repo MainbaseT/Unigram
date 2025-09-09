@@ -24,6 +24,7 @@ namespace Telegram.Services
     {
         bool TryInitialize();
         void Close(bool restart);
+        void Delete(bool restart);
 
         //void Send(Function function);
         //void Send(Function function, ClientResultHandler handler);
@@ -365,6 +366,7 @@ namespace Telegram.Services
         private Background _selectedBackground;
         private Background _selectedBackgroundDark;
 
+        private bool _cleanAfterClose;
         private bool _initializeAfterClose;
 
         private static volatile Task _longRunningTask;
@@ -408,6 +410,14 @@ namespace Telegram.Services
         public void Close(bool restart)
         {
             _initializeAfterClose = restart;
+            _cleanAfterClose = false;
+            _client.Send(new Close());
+        }
+
+        public void Delete(bool restart)
+        {
+            _initializeAfterClose = restart;
+            _cleanAfterClose = true;
             _client.Send(new Close());
         }
 
@@ -840,16 +850,22 @@ namespace Telegram.Services
             return false;
         }
 
-        public void CleanUp()
+        private void Clear()
         {
             _options.Clear();
 
             _files.Clear();
+            _effects.Clear();
 
             _activeReactions = Array.Empty<string>();
+            _cachedReactions.Clear();
 
             _chats.Clear();
+            _chatList.Clear();
+            _haveFullChatList.Clear();
+
             _chatActions.Clear();
+            _topicActions.Clear();
 
             _secretChats.Clear();
 
@@ -864,6 +880,17 @@ namespace Telegram.Services
             _supergroups.Clear();
             _supergroupsFull.Clear();
 
+            _forums.Clear();
+            _directMessagesChats.Clear();
+
+            _storyList.Clear();
+            _haveFullStoryList.Clear();
+
+            _haveFullSavedMessages = false;
+            _savedMessages.Clear();
+            _savedMessagesTopics.Clear();
+            _savedMessagesTags.Clear();
+
             _settings.Notifications.Scope.Clear();
 
             _unreadCounts.Clear();
@@ -873,6 +900,7 @@ namespace Telegram.Services
             _suggestedActions.Clear();
 
             _savedAnimations = null;
+            _recentStickers = null;
             _favoriteStickers = null;
             _installedStickerSets = null;
             _installedMaskSets = null;
@@ -880,6 +908,8 @@ namespace Telegram.Services
 
             _chatFolders = Array.Empty<ChatFolderInfo>();
             _chatFolders2.Clear();
+            _mainChatListPosition = 0;
+            _areTagsEnabled = false;
 
             _timezones.Clear();
 
@@ -888,6 +918,49 @@ namespace Telegram.Services
             _authorizationStateTask = new();
             _authorizationState = null;
             _connectionState = null;
+            _freezeState = new();
+
+            _config = null;
+            _defaultReaction = null;
+            _attachmentMenuBots = Array.Empty<AttachmentMenuBot>();
+            _availableMessageEffects = null;
+            _speechRecognitionTrial = null;
+            _chatThemes = null;
+            _storyStealthMode = new();
+            _contactCloseBirthdays = null;
+            _unconfirmedSession = null;
+            AccentColors = null;
+            AvailableAccentColors = null;
+            ProfileColors = null;
+            AvailableProfileColors = null;
+            _ownedStarCount = null;
+            _ownedTonCount = null;
+            DefaultPaidReactionType = new PaidReactionTypeRegular();
+            AgeVerificationParameters = null;
+            SavedMessagesTopicCount = 0;
+            _quickReplyShortcuts.Clear();
+            _quickReplyShortcutIds = null;
+            _selectedBackground = null;
+            _selectedBackgroundDark = null;
+
+            _lastMessageAlbums.Clear();
+
+            lock (_recentChatsLock)
+            {
+                _recentChats.Clear();
+            }
+
+            _greetingStickers = null;
+            _nextGreetingSticker = null;
+            _waitGreetingSticker = false;
+
+            _chatAccessibleUntil.Clear();
+
+            if (_cleanAfterClose)
+            {
+                _cleanAfterClose = false;
+                DeleteDatabase();
+            }
 
             if (_initializeAfterClose)
             {
@@ -896,7 +969,43 @@ namespace Telegram.Services
             }
         }
 
-
+        private void DeleteDatabase()
+        {
+            var databasePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session}", "db.sqlite");
+            if (System.IO.File.Exists(databasePath))
+            {
+                try
+                {
+                    System.IO.File.Delete(databasePath);
+                }
+                catch
+                {
+                    // Shit happens...
+                }
+            }
+            if (System.IO.File.Exists(databasePath + "-shm"))
+            {
+                try
+                {
+                    System.IO.File.Delete(databasePath + "-shm");
+                }
+                catch
+                {
+                    // Shit happens...
+                }
+            }
+            if (System.IO.File.Exists(databasePath + "-wal"))
+            {
+                try
+                {
+                    System.IO.File.Delete(databasePath + "-wal");
+                }
+                catch
+                {
+                    // Shit happens...
+                }
+            }
+        }
 
         public void Send(Function function, Action<Object> handler = null)
         {
@@ -2833,7 +2942,7 @@ namespace Telegram.Services
                             _settings.Clear();
                             break;
                         case AuthorizationStateClosed:
-                            CleanUp();
+                            Clear();
                             break;
                         case AuthorizationStateReady:
                             InitializeReady();

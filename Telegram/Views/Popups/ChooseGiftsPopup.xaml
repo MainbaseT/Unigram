@@ -47,5 +47,12 @@
 
         <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogBackground}"
                                     ScrollingHost="{x:Bind ScrollingHost}" />
+
+        <controls:MoreButton x:Name="MoreButton"
+                             Click="More_ContextRequested"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Top"
+                             Margin="0,-62,0,0"
+                             CornerRadius="20" />
     </Grid>
 </controls:ContentPopup>
