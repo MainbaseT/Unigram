@@ -40,23 +40,30 @@ namespace Telegram.Common
             try
             {
                 var bitmap = await Task.Run(() => PlaceholderHelper.Background.DrawBlurred(path, amount));
-                if (generation == _generation)
-                {
-                    if (_source is not SoftwareBitmapSource bitmapSource)
-                    {
-                        _source = bitmapSource = new SoftwareBitmapSource();
-                    }
 
-                    if (_brush.ImageSource != bitmapSource)
-                    {
-                        _brush.ImageSource = bitmapSource;
-                    }
-
-                    await bitmapSource.SetBitmapAsync(_bitmap = bitmap);
-                }
-                else if (bitmap != null)
+                if (_generation != generation)
                 {
                     bitmap.Dispose();
+                    return;
+                }
+
+                if (_source is not SoftwareBitmapSource bitmapSource)
+                {
+                    bitmapSource = new SoftwareBitmapSource();
+                }
+
+                await bitmapSource.SetBitmapAsync(_bitmap = bitmap);
+
+                if (_generation != generation)
+                {
+                    return;
+                }
+
+                _source = bitmapSource;
+
+                if (_brush.ImageSource != bitmapSource)
+                {
+                    _brush.ImageSource = bitmapSource;
                 }
             }
             catch { }
@@ -69,23 +76,30 @@ namespace Telegram.Common
             try
             {
                 var bitmap = await Task.Run(() => PlaceholderHelper.Background.DrawBlurred(bytes, amount));
-                if (generation == _generation)
-                {
-                    if (_source is not SoftwareBitmapSource bitmapSource)
-                    {
-                        _source = bitmapSource = new SoftwareBitmapSource();
-                    }
 
-                    if (_brush.ImageSource != bitmapSource)
-                    {
-                        _brush.ImageSource = bitmapSource;
-                    }
-
-                    await bitmapSource.SetBitmapAsync(_bitmap = bitmap);
-                }
-                else if (bitmap != null)
+                if (_generation != generation)
                 {
                     bitmap.Dispose();
+                    return;
+                }
+
+                if (_source is not SoftwareBitmapSource bitmapSource)
+                {
+                    bitmapSource = new SoftwareBitmapSource();
+                }
+
+                await bitmapSource.SetBitmapAsync(_bitmap = bitmap);
+
+                if (_generation != generation)
+                {
+                    return;
+                }
+
+                _source = bitmapSource;
+
+                if (_brush.ImageSource != bitmapSource)
+                {
+                    _brush.ImageSource = bitmapSource;
                 }
             }
             catch { }
@@ -122,6 +136,11 @@ namespace Telegram.Common
                     }
 
                     await bitmapSource.SetSourceAsync(stream);
+                }
+
+                if (_generation != generation)
+                {
+                    return;
                 }
 
                 _source = bitmapSource;
@@ -164,6 +183,11 @@ namespace Telegram.Common
                     await bitmapSource.SetSourceAsync(stream);
                 }
 
+                if (_generation != generation)
+                {
+                    return;
+                }
+
                 _source = bitmapSource;
 
                 if (_brush.ImageSource != bitmapSource)
@@ -177,6 +201,12 @@ namespace Telegram.Common
         public void Recycle()
         {
             _brush.ImageSource = null;
+
+            if (_source is SoftwareBitmapSource software)
+            {
+                software.Dispose();
+            }
+
             _source = null;
 
             _bitmap?.Dispose();
