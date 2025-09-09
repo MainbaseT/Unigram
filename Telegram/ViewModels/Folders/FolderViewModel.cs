@@ -281,13 +281,10 @@ namespace Telegram.ViewModels.Folders
                     Links.ReplaceWith(links.InviteLinks);
                     Exclude.Clear();
                     Exclude.SynchronizeHead();
-
-                    IsShareable = true;
                 }
                 else
                 {
                     Links.Clear();
-                    IsShareable = false;
                 }
             }
         }
@@ -589,9 +586,15 @@ namespace Telegram.ViewModels.Folders
             if (shareableItems.Count > 0)
             {
                 var response = await ClientService.SendAsync(new CreateChatFolderInviteLink(Id.Value, string.Empty, shareableItems));
-                if (response is ChatFolderInviteLink link)
+                if (response is ChatFolderInviteLink inviteLink)
                 {
-                    OpenLink(link);
+                    Links.Insert(0, inviteLink);
+                    Exclude.Clear();
+                    Exclude.SynchronizeHead();
+
+                    IsShareable = true;
+
+                    OpenLink(inviteLink);
                 }
                 else if (response is Error error)
                 {
