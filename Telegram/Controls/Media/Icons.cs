@@ -228,6 +228,7 @@ namespace Telegram.Controls.Media
         public const string BotFilled = "\uEA77";
 
         public const string Image = "\uEB9F";
+        public const string ImageFilled = "\uEADA";
         public const string ImageFilled24 = "\uEA1D";
 
         public const string ArrowUpload = "\uEA01";

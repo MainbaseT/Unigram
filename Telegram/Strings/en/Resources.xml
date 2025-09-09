@@ -12769,4 +12769,8 @@
     <string name="MessageContainsReactionsPacks_other">Emoji from **{0} packs** were used as reactions.</string>
     <string name="MessageContainsReactionPack">This reaction is from {0} emoji pack.</string>
 
+    <string name="YourNetworkUsageSince">Your network usage since {0}</string>
+    <string name="NoNetworkUsageSince">No network usage since {0}</string>
+    <string name="ResetStatisticsAlertTitle">Reset statistics</string>
+
 </resources>

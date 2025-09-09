@@ -93,7 +93,7 @@ namespace Telegram.Views.Settings
             ScrollingHost.ItemsSource = items;
             Chart.Items = items;
 
-            var size = Chart.Items.Where(x => x.IsVisible).Sum(x => x.Size);
+            var size = Chart.Items.Where(x => x.IsVisible).Sum(x => x.TotalBytes);
             var readable = FileSizeConverter.Convert(size, true).Split(' ');
 
             SizeLabel.Text = readable[0];
@@ -125,7 +125,7 @@ namespace Telegram.Views.Settings
                 check.Tag = item;
 
                 title.Text = item.Name;
-                subtitle.Text = FileSizeConverter.Convert(item.Size, true);
+                subtitle.Text = FileSizeConverter.Convert(item.TotalBytes, true);
 
                 args.Handled = true;
             }
@@ -179,7 +179,7 @@ namespace Telegram.Views.Settings
                 VisualUtilities.ShakeView(check);
             }
 
-            var size = Chart.Items.Where(x => x.IsVisible).Sum(x => x.Size);
+            var size = Chart.Items.Where(x => x.IsVisible).Sum(x => x.TotalBytes);
             var readable = FileSizeConverter.Convert(size, true).Split(' ');
 
             SizeLabel.Text = readable[0];

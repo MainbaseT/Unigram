@@ -9077,6 +9077,9 @@ people by username.</value>
   <data name="NoMessagesGreetingsDescription" xml:space="preserve">
     <value>Send a message or tap the greeting below.</value>
   </data>
+  <data name="NoNetworkUsageSince" xml:space="preserve">
+    <value>No network usage since {0}</value>
+  </data>
   <data name="NoOneJoined" xml:space="preserve">
     <value>No one joined</value>
   </data>
@@ -11331,6 +11334,9 @@ seamlessly and efficiently.</value>
   </data>
   <data name="ResetStatisticsAlert" xml:space="preserve">
     <value>Do you want to reset your usage statistics?</value>
+  </data>
+  <data name="ResetStatisticsAlertTitle" xml:space="preserve">
+    <value>Reset statistics</value>
   </data>
   <data name="ResetToOriginalPhoto" xml:space="preserve">
     <value>Reset to Original Photo</value>
@@ -15194,6 +15200,9 @@ If you forget your password, you will lose access to your Telegram account. Ther
   </data>
   <data name="YourNameColor" xml:space="preserve">
     <value>Your Name Color</value>
+  </data>
+  <data name="YourNetworkUsageSince" xml:space="preserve">
+    <value>Your network usage since {0}</value>
   </data>
   <data name="YourNewEmail" xml:space="preserve">
     <value>Your new email</value>

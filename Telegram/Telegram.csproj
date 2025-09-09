@@ -1583,7 +1583,6 @@
     </Compile>
     <Compile Include="Converters\BooleanNegationConverter.cs" />
     <Compile Include="Converters\ChannelParticipantToTypeConverter.cs" />
-    <Compile Include="Converters\FileTypeToStringConverter.cs" />
     <Compile Include="Converters\MessageTtlConverter.cs" />
     <Compile Include="Converters\MeUrlPrefixConverter.cs" />
     <Compile Include="Converters\ProportionsToLabelConverter.cs" />
