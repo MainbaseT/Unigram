@@ -70,10 +70,6 @@
                               Content="Forum Tabs Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
-                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.SpoilerEffectDebug, Mode=TwoWay}"
-                              Content="Spoiler Effect Debug"
-                              Style="{StaticResource SettingsCheckBoxStyle}" />
-
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.WindowResizeDebug, Mode=TwoWay}"
                               Content="Window Resize Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />

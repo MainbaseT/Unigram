@@ -155,13 +155,6 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _forumTabsDebug, "ForumTabsDebug", value);
         }
 
-        private bool? _spoilerEffectDebug;
-        public bool SpoilerEffectDebug
-        {
-            get => _spoilerEffectDebug ??= GetValueOrDefault("SpoilerEffectDebug", true);
-            set => AddOrUpdateValue(ref _spoilerEffectDebug, "SpoilerEffectDebug", value);
-        }
-
         private bool? _windowResizeDebug;
         public bool WindowResizeDebug
         {

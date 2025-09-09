@@ -700,10 +700,7 @@ namespace Telegram.Controls
                                 hyperlink.UnderlineStyle = UnderlineStyle.None;
                                 hyperlink.FontFamily = BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily;
 
-                                if (SettingsService.Current.Diagnostics.SpoilerEffectDebug)
-                                {
-                                    _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
-                                }
+                                _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
 
                                 spoiler ??= new TextHighlighter();
                                 spoiler.Ranges.Add(new TextRange { StartIndex = offset, Length = entity.Length });
@@ -791,10 +788,7 @@ namespace Telegram.Controls
                             direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_Foreground, null);
                             direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_FontFamily, BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily);
 
-                            if (SettingsService.Current.Diagnostics.SpoilerEffectDebug)
-                            {
-                                _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
-                            }
+                            _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
 
                             if (textOffset == -1)
                             {
@@ -967,7 +961,7 @@ namespace Telegram.Controls
             if (spoiler?.Ranges.Count > 0)
             {
                 spoiler.Foreground = new SolidColorBrush(Colors.Transparent);
-                spoiler.Background = new SolidColorBrush(SettingsService.Current.Diagnostics.SpoilerEffectDebug ? Colors.Transparent : Colors.Black);
+                spoiler.Background = new SolidColorBrush(Colors.Transparent);
 
                 _invalidateSpoilers = _spoiler != null;
                 _spoiler = spoiler;
