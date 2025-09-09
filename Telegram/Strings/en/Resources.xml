@@ -12651,7 +12651,7 @@
 
     <string name="GiftsCollectionNameAllGifts">All Gifts</string>
     <string name="GiftsCollectionRename">Rename Collection</string>
-    <string name="GiftsCollectionMenuAddStories">Add Gifts</string>
+    <string name="GiftsCollectionMenuAddGifts">Add Gifts</string>
     <string name="GiftsCollectionMenuShareLink">Share Link</string>
     <string name="GiftsCollectionMenuEditName">Edit Name</string>
     <string name="GiftsCollectionMenuDeleteCollection">Delete Collection</string>
@@ -12670,7 +12670,7 @@
     <string name="GiftsCollectionOrganizeDescription">Add some of your gifts to this collection.</string>
     <string name="GiftAddedToCollectionTitle_one">{0} gift saved to **{1}**</string>
     <string name="GiftAddedToCollectionTitle_other">{0} gifts saved to **{1}**</string>
-    <string name="GiftRemovedFromollectionTitle_one">{0} gift removed from **{1}**</string>
+    <string name="GiftRemovedFromCollectionTitle_one">{0} gift removed from **{1}**</string>
     <string name="GiftRemovedFromCollectionTitle_other">{0} gifts removed from **{1}**</string>
 
     <string name="BoostingBoostToSendMessages">Boost this group to send messages</string>

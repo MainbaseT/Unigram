@@ -201,7 +201,7 @@ namespace Telegram.Views.Profile
 
             if (ViewModel.IsOwned)
             {
-                flyout.CreateFlyoutItem(ViewModel.AddGiftsToCollection, collection, Strings.GiftsCollectionMenuAddStories, Icons.AddCircle);
+                flyout.CreateFlyoutItem(ViewModel.AddGiftsToCollection, collection, Strings.GiftsCollectionMenuAddGifts, Icons.AddCircle);
             }
 
             if (ViewModel.ClientService.HasActiveUsername(ViewModel.OwnerId, out _))

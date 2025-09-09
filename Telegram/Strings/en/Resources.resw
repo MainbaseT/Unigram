@@ -7242,14 +7242,14 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="GiftPremiumUseGiftBtn" xml:space="preserve">
     <value>Use Gift</value>
   </data>
+  <data name="GiftRemovedFromCollectionTitle_one" xml:space="preserve">
+    <value>{0} gift removed from **{1}**</value>
+  </data>
   <data name="GiftRemovedFromCollectionTitle_other" xml:space="preserve">
     <value>{0} gifts removed from **{1}**</value>
   </data>
   <data name="GiftRemovedFromCollectionX" xml:space="preserve">
     <value>This gift has been removed from **{0}** collection.</value>
-  </data>
-  <data name="GiftRemovedFromollectionTitle_one" xml:space="preserve">
-    <value>{0} gift removed from **{1}**</value>
   </data>
   <data name="GiftsCollectionAddCollection" xml:space="preserve">
     <value>Add Collection</value>
@@ -7263,7 +7263,7 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="GiftsCollectionCreateNew" xml:space="preserve">
     <value>Create a New Collection</value>
   </data>
-  <data name="GiftsCollectionMenuAddStories" xml:space="preserve">
+  <data name="GiftsCollectionMenuAddGifts" xml:space="preserve">
     <value>Add Gifts</value>
   </data>
   <data name="GiftsCollectionMenuDeleteCollection" xml:space="preserve">

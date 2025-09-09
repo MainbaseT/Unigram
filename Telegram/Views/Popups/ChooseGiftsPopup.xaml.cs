@@ -32,8 +32,8 @@ namespace Telegram.Views.Popups
             _clientService = viewModel.ClientService;
             _viewModel = viewModel;
 
-            Title = Strings.GiftsCollectionMenuAddStories;
-            PrimaryButtonText = Strings.GiftsCollectionMenuAddStories;
+            Title = Strings.GiftsCollectionMenuAddGifts;
+            PrimaryButtonText = Strings.GiftsCollectionMenuAddGifts;
             SecondaryButtonText = Strings.Cancel;
 
             ScrollingHost.ItemsSource = viewModel.Collections[0].Items;
