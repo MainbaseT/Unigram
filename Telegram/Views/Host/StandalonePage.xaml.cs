@@ -166,7 +166,7 @@ namespace Telegram.Views.Host
 
         private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs args)
         {
-            var invoked = _shortcutsService.Process(args);
+            var invoked = _shortcutsService.Process(args, out _);
             if (invoked == null)
             {
                 return;

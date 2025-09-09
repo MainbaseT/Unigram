@@ -1153,9 +1153,14 @@ namespace Telegram.Views
 
         public void ProcessKeyboardAccelerators(KeyRoutedEventArgs args)
         {
-            var invoked = ViewModel?.ShortcutService.Process(args);
+            var invoked = ViewModel.ShortcutService.Process(args, out VirtualKeyModifiers modifiers);
             if (invoked == null)
             {
+                if (SettingsService.Current.Diagnostics.ShowMemoryUsage && args.Key == VirtualKey.Q && modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift))
+                {
+                    ViewModel.ClientService.Close(true);
+                }
+
                 return;
             }
 
@@ -1794,7 +1799,7 @@ namespace Telegram.Views
                 Navigate(e.ClickedItem, true);
             }
         }
-        
+
         private void ListView_ItemClick(object sender, ForumViewItemClickEventArgs e)
         {
             Navigate(e.ClickedItem, e.FromSelection);
