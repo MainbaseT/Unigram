@@ -88,7 +88,7 @@ namespace Telegram.Views.Settings
                 stickers,
                 stories,
                 local
-            }.Where(x => x != null).ToList();
+            }.Where(x => x != null).OrderByDescending(x => x.TotalBytes).ToList();
 
             ScrollingHost.ItemsSource = items;
             Chart.Items = items;

@@ -12796,6 +12796,18 @@ and enter your phone number.</value>
   <data name="StorageUsage" xml:space="preserve">
     <value>Storage Usage</value>
   </data>
+  <data name="StorageUsageCalculating" xml:space="preserve">
+    <value>Calculating cache size...</value>
+  </data>
+  <data name="StorageUsageInfo" xml:space="preserve">
+    <value>All media will stay in the Telegram cloud and can be re-downloaded if you need them again.</value>
+  </data>
+  <data name="StorageUsageTelegram" xml:space="preserve">
+    <value>Telegram uses {0} of your device storage.</value>
+  </data>
+  <data name="StorageUsageTelegramLess" xml:space="preserve">
+    <value>Telegram uses {0} of your device storage.</value>
+  </data>
   <data name="Stories_one" xml:space="preserve">
     <value>{0} Story</value>
   </data>

@@ -5,13 +5,18 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.ComponentModel;
+using System.Linq;
 using Telegram.Common;
+using Telegram.Controls;
 using Telegram.Controls.Cells;
+using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Settings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Settings
 {
@@ -25,6 +30,60 @@ namespace Telegram.Views.Settings
             Title = Strings.StorageUsage;
 
             InitializeKeepMediaTicks();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            ViewModel.PropertyChanged += OnPropertyChanged;
+
+            UpdateTotalBytes(ViewModel.TotalBytes, ViewModel.SystemCapacity, ViewModel.SystemFreeSpace);
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            ViewModel.PropertyChanged -= OnPropertyChanged;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ViewModel.TotalBytes))
+            {
+                UpdateTotalBytes(ViewModel.TotalBytes, ViewModel.SystemCapacity, ViewModel.SystemFreeSpace);
+            }
+        }
+
+        private void UpdateTotalBytes(long totalBytes, ulong totalDeviceSize, ulong totalDeviceFreeSize)
+        {
+            if (totalBytes < 0)
+            {
+                SizeLabel.Text = string.Empty;
+                UnitLabel.Text = string.Empty;
+
+                TextBlockHelper.SetMarkdown(Subtitle, Strings.StorageUsageCalculating);
+
+                FindName(nameof(Ring));
+            }
+            else
+            {
+                var readable = FileSizeConverter.Convert(totalBytes, true).Split(' ');
+
+                var percent = totalDeviceSize <= 0 ? 0 : (float)totalBytes / totalDeviceSize;
+                var usedPercent = totalDeviceFreeSize <= 0 || totalDeviceSize <= 0 ? 0 : (float)(totalDeviceSize - totalDeviceFreeSize) / totalDeviceSize;
+
+                if (percent < 0.01f)
+                {
+                    TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.StorageUsageTelegramLess, Formatter.Percent(percent)));
+                }
+                else
+                {
+                    TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.StorageUsageTelegram, Formatter.Percent(percent)));
+                }
+
+                SizeLabel.Text = readable[0];
+                UnitLabel.Text = readable[1];
+
+                UnloadObject(Ring);
+            }
         }
 
         private void InitializeKeepMediaTicks()
@@ -176,5 +235,44 @@ namespace Telegram.Views.Settings
         }
 
         #endregion
+
+        private void StorageChartItem_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox check || check.DataContext is not StorageChartItem item)
+            {
+                return;
+            }
+
+            var index = Chart.Items.IndexOf(item);
+            if (index < 0)
+            {
+                return;
+            }
+
+            if (item.IsVisible && Chart.Items.Except(new[] { item }).Any(x => x.IsVisible))
+            {
+                item.IsVisible = false;
+                check.IsChecked = false;
+
+                Chart.Update(index, item.IsVisible);
+            }
+            else if (!item.IsVisible)
+            {
+                item.IsVisible = true;
+                check.IsChecked = true;
+
+                Chart.Update(index, item.IsVisible);
+            }
+            else
+            {
+                VisualUtilities.ShakeView(check);
+            }
+
+            var size = Chart.Items.Where(x => x.IsVisible).Sum(x => x.TotalBytes);
+            var readable = FileSizeConverter.Convert(size, true).Split(' ');
+
+            SizeLabel.Text = readable[0];
+            UnitLabel.Text = readable[1];
+        }
     }
 }

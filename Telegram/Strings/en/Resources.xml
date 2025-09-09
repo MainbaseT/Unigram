@@ -12773,4 +12773,9 @@
     <string name="NoNetworkUsageSince">No network usage since {0}</string>
     <string name="ResetStatisticsAlertTitle">Reset statistics</string>
 
+    <string name="StorageUsageCalculating">Calculating cache size...</string>
+    <string name="StorageUsageTelegram">Telegram uses {0} of your device storage.</string>
+    <string name="StorageUsageTelegramLess">Telegram uses {0} of your device storage.</string>
+    <string name="StorageUsageInfo">All media will stay in the Telegram cloud and can be re-downloaded if you need them again.</string>
+
 </resources>
