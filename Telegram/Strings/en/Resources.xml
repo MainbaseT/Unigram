@@ -12784,4 +12784,6 @@
     <string name="LocalDatabaseClearText2">Local database size: **{0}**</string>
     <string name="LocalDatabaseClearText3">**WARNING:**\nSecret chats and pending messages will be lost.</string>
 
+    <string name="Gift2FilterUpgradable">Upgradable</string>
+
 </resources>

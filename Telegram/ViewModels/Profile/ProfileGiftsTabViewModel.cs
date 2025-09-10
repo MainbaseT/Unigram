@@ -378,13 +378,26 @@ namespace Telegram.ViewModels.Profile
             }
         }
 
-        private bool _excludeLimited;
-        public bool ExcludeLimited
+        private bool _excludeUpgradable;
+        public bool ExcludeUpgradable
         {
-            get => _excludeLimited;
+            get => _excludeUpgradable;
             set
             {
-                if (Set(ref _excludeLimited, value))
+                if (Set(ref _excludeUpgradable, value))
+                {
+                    Reload();
+                }
+            }
+        }
+
+        private bool _excludeNonUpgradable;
+        public bool ExcludeNonUpgradable
+        {
+            get => _excludeNonUpgradable;
+            set
+            {
+                if (Set(ref _excludeNonUpgradable, value))
                 {
                     Reload();
                 }
@@ -435,12 +448,12 @@ namespace Telegram.ViewModels.Profile
 
         private ReceivedGiftsCollection UpdateItems(object arg1, string arg2)
         {
-            return new ReceivedGiftsCollection(this, _senderId, _selectedCollection, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
+            return new ReceivedGiftsCollection(this, _senderId, _selectedCollection, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeUpgradable, _excludeNonUpgradable, _excludeUpgraded, _sortByPrice);
         }
 
         public ReceivedGiftsCollection CreateItemsSource(GiftCollectionViewModel collection)
         {
-            return new ReceivedGiftsCollection(this, _senderId, collection, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice);
+            return new ReceivedGiftsCollection(this, _senderId, collection, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeUpgradable, _excludeNonUpgradable, _excludeUpgraded, _sortByPrice);
         }
 
         public bool CompareItems(ReceivedGift oldItem, ReceivedGift newItem)
@@ -480,7 +493,8 @@ namespace Telegram.ViewModels.Profile
             private readonly bool _excludeUnsaved;
             private readonly bool _excludeSaved;
             private readonly bool _excludeUnlimited;
-            private readonly bool _excludeLimited;
+            private readonly bool _excludeUpgradable;
+            private readonly bool _excludeNonUpgradable;
             private readonly bool _excludeUpgraded;
             private readonly bool _sortByPrice;
 
@@ -489,7 +503,7 @@ namespace Telegram.ViewModels.Profile
             private string _nextOffsetId = string.Empty;
             private bool _loading;
 
-            public ReceivedGiftsCollection(ProfileGiftsTabViewModel viewModel, MessageSender ownerId, GiftCollectionViewModel collection, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeLimited, bool excludeUpgraded, bool sortByPrice)
+            public ReceivedGiftsCollection(ProfileGiftsTabViewModel viewModel, MessageSender ownerId, GiftCollectionViewModel collection, bool excludeUnsaved, bool excludeSaved, bool excludeUnlimited, bool excludeUpgradable, bool excludeNonUpgradable, bool excludeUpgraded, bool sortByPrice)
             {
                 _viewModel = viewModel;
                 _ownerId = ownerId;
@@ -497,7 +511,8 @@ namespace Telegram.ViewModels.Profile
                 _excludeUnsaved = excludeUnsaved;
                 _excludeSaved = excludeSaved;
                 _excludeUnlimited = excludeUnlimited;
-                _excludeLimited = excludeLimited;
+                _excludeUpgradable = excludeUpgradable;
+                _excludeNonUpgradable = excludeNonUpgradable;
                 _excludeUpgraded = excludeUpgraded;
                 _sortByPrice = sortByPrice;
             }
@@ -519,7 +534,7 @@ namespace Telegram.ViewModels.Profile
                     var total = 0u;
                     var limit = count == 3 ? 3 : 50;
 
-                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _collection.Id, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeLimited, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
+                    var response = await _viewModel.ClientService.SendAsync(new GetReceivedGifts(string.Empty, _ownerId, _collection.Id, _excludeUnsaved, _excludeSaved, _excludeUnlimited, _excludeUpgradable, _excludeNonUpgradable, _excludeUpgraded, _sortByPrice, _nextOffsetId, limit));
                     if (response is ReceivedGifts gifts)
                     {
                         _nextOffsetId = gifts.NextOffset;

@@ -1080,7 +1080,13 @@ namespace Telegram.Views
                 var limited = new MenuFlyoutItem
                 {
                     Text = Strings.Gift2FilterLimited,
-                    Icon = ViewModel.GiftsTab.ExcludeLimited ? null : MenuFlyoutHelper.CreateIcon(Icons.Checkmark)
+                    Icon = ViewModel.GiftsTab.ExcludeNonUpgradable ? null : MenuFlyoutHelper.CreateIcon(Icons.Checkmark)
+                };
+
+                var upgradable = new MenuFlyoutItem
+                {
+                    Text = Strings.Gift2FilterUpgradable,
+                    Icon = ViewModel.GiftsTab.ExcludeUpgradable ? null : MenuFlyoutHelper.CreateIcon(Icons.Checkmark)
                 };
 
                 var unique = new MenuFlyoutItem
@@ -1099,13 +1105,15 @@ namespace Telegram.Views
 
                 sort.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.SortByPrice = !ViewModel.GiftsTab.SortByPrice);
                 unlimited.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeUnlimited = !ViewModel.GiftsTab.ExcludeUnlimited);
-                limited.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeLimited = !ViewModel.GiftsTab.ExcludeLimited);
+                limited.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeNonUpgradable = !ViewModel.GiftsTab.ExcludeNonUpgradable);
+                upgradable.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeUpgradable = !ViewModel.GiftsTab.ExcludeUpgradable);
                 unique.Click += (s, args) => UpdateFilters(() => ViewModel.GiftsTab.ExcludeUpgraded = !ViewModel.GiftsTab.ExcludeUpgraded);
 
                 flyout.Items.Add(sort);
                 flyout.CreateFlyoutSeparator();
                 flyout.Items.Add(unlimited);
                 flyout.Items.Add(limited);
+                flyout.Items.Add(upgradable);
                 flyout.Items.Add(unique);
 
                 if (ViewModel.GiftsTab.IsOwned)

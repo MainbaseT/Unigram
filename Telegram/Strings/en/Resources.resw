@@ -6702,6 +6702,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2FilterUnlimited" xml:space="preserve">
     <value>Unlimited</value>
   </data>
+  <data name="Gift2FilterUpgradable" xml:space="preserve">
+    <value>Upgradable</value>
+  </data>
   <data name="Gift2From" xml:space="preserve">
     <value>From</value>
   </data>
