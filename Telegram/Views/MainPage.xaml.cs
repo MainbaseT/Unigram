@@ -704,6 +704,7 @@ namespace Telegram.Views
             }
 
             Stories.TabsTopCollapsed = !show;
+            Stories.ChatTabs = ChatTabs;
             Stories.ControlledList = ChatsList;
 
             void ShowHideTopTabsCompleted()
@@ -2380,20 +2381,12 @@ namespace Telegram.Views
         {
             if (sender is ListViewBase listView && listView.SelectedItem is ChatFolderViewModel folder)
             {
-                var index = int.MaxValue - folder.ChatFolderId;
-                if (index >= INDEX_CHATS && index <= INDEX_SETTINGS)
+                if (ViewModel.Chats.Items.ChatList is not ChatListArchive)
                 {
-                    SetPivotSelectedIndex(index);
+                    UpdateFolder(folder);
                 }
-                else
-                {
-                    if (ViewModel.Chats.Items.ChatList is not ChatListArchive)
-                    {
-                        UpdateFolder(folder);
-                    }
 
-                    SetPivotSelectedIndex(INDEX_CHATS);
-                }
+                SetPivotSelectedIndex(INDEX_CHATS);
 
                 if (MasterDetail.CurrentState == MasterDetailState.Minimal && MasterDetail.NavigationService.CurrentPageType != typeof(BlankPage))
                 {
@@ -3731,7 +3724,6 @@ namespace Telegram.Views
             _viewModel = null;
             LayoutRoot.Children.Clear();
 
-            NavigationResults = null;
             LayoutRoot = null;
             State = null;
             TitleBarrr = null;

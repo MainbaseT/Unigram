@@ -22,12 +22,6 @@
         </TransitionCollection>
     </Page.Transitions>
 
-    <Page.Resources>
-        <CollectionViewSource x:Name="NavigationResults"
-                              Source="{x:Bind ViewModel.NavigationItems}"
-                              IsSourceGrouped="True" />
-    </Page.Resources>
-
     <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -133,7 +127,7 @@
 
             <controls:ChatFoldersNavView x:Name="ChatFoldersSide"
                                          AutomationProperties.Name="{CustomResource Filters}"
-                                         ItemsSource="{x:Bind NavigationResults.View}"
+                                         ItemsSource="{x:Bind ViewModel.Folders}"
                                          SelectedItem="{x:Bind ViewModel.SelectedFolder, Mode=OneWay}"
                                          SelectionChanged="ChatFolders_SelectionChanged"
                                          IsItemClickEnabled="True"
@@ -255,27 +249,14 @@
                         </Setter>
                     </Style>
                 </controls:ChatFoldersNavView.ItemContainerStyle>
-                <controls:ChatFoldersNavView.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.HeaderContainerStyle>
-                            <Style TargetType="ListViewHeaderItem">
-                                <Setter Property="MinHeight"
-                                        Value="0" />
-                                <Setter Property="IsTabStop"
-                                        Value="False" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Rectangle Fill="{ThemeResource CardStrokeColorDefaultBrush}"
-                                                       Margin="8,4"
-                                                       Height="1" />
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </GroupStyle.HeaderContainerStyle>
-                    </GroupStyle>
-                </controls:ChatFoldersNavView.GroupStyle>
+                <controls:ChatFoldersNavView.ItemContainerTransitions>
+                    <TransitionCollection>
+                        <AddDeleteThemeTransition />
+                        <ContentThemeTransition />
+                        <ReorderThemeTransition />
+                        <RepositionThemeTransition />
+                    </TransitionCollection>
+                </controls:ChatFoldersNavView.ItemContainerTransitions>
             </controls:ChatFoldersNavView>
         </Grid>
 

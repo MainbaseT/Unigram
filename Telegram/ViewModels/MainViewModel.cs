@@ -55,14 +55,6 @@ namespace Telegram.ViewModels
             _shortcutService = shortcutService;
 
             Folders = new ChatFolderCollection();
-            NavigationItems = new List<IEnumerable<ChatFolderViewModel>>
-            {
-                Folders,
-                new ChatFolderViewModel[]
-                {
-                    new ChatFolderViewModel(ClientService, int.MaxValue - 1, Strings.Settings, "\uE98F", "\uE98E"),
-                }
-            };
 
             ChatList chatList = ClientService.MainChatListPosition > 0 && ClientService.ChatFolders.Count > 0
                 ? new ChatListFolder(ClientService.ChatFolders[0].Id)
@@ -349,8 +341,6 @@ namespace Telegram.ViewModels
             get => _folders;
             set => Set(ref _folders, value);
         }
-
-        public List<IEnumerable<ChatFolderViewModel>> NavigationItems { get; private set; }
 
         private ChatFolderViewModel _selectedFolder;
         public ChatFolderViewModel SelectedFolder
