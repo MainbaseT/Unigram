@@ -1998,9 +1998,10 @@ namespace Telegram.Views
             {
                 Stories.Collapse();
 
+                // TODO: add settings button back to sidebar
                 if (ChatFoldersSide != null)
                 {
-                    ChatFoldersSide.SelectedIndex = ViewModel.Folders.Count + _prevIndex - 1;
+                    ChatFoldersSide.SelectedItem = null;
                 }
             }
             else if (ChatFoldersSide != null)
