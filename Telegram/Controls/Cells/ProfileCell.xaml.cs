@@ -1216,11 +1216,14 @@ namespace Telegram.Controls.Cells
             if (_skeletonCollapsed && show)
             {
                 _skeletonCollapsed = false;
+                SizeChanged += OnSizeChanged;
+
                 ShowSkeleton();
             }
             else if (_skeletonCollapsed is false && !show)
             {
                 _skeletonCollapsed = true;
+                SizeChanged -= OnSizeChanged;
 
                 var visual = ElementCompositionPreview.GetElementChildVisual(this);
                 var animation = visual.Compositor.CreateScalarKeyFrameAnimation();
@@ -1239,12 +1242,15 @@ namespace Telegram.Controls.Cells
             var rows = Math.Min(10, Math.Ceiling(size.Y / itemHeight));
             var shapes = new List<CanvasGeometry>();
 
+            var borderTop = (float)BorderThickness.Top;
+            var borderLeft = (float)BorderThickness.Left;
+
             var maxWidth = (int)Math.Clamp(size.X - 32 - 12 - 12 - 48 - 12, 80, 280);
             var random = new Random();
 
-            shapes.Add(CanvasGeometry.CreateEllipse(null, 12 + 18, 6 + 18, 18, 18));
-            shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, 12 + 36 + 8, 6, random.Next(80, maxWidth), 18, 4, 4));
-            shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, 12 + 36 + 8, 6 + 18 + 4, random.Next(80, maxWidth), 14, 4, 4));
+            shapes.Add(CanvasGeometry.CreateEllipse(null, borderLeft + 12 + 18, borderTop + 6 + 18, 18, 18));
+            shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, borderLeft + 12 + 36 + 8, borderTop + 6, random.Next(80, maxWidth), 18, 4, 4));
+            shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, borderLeft + 12 + 36 + 8, borderTop + 6 + 18 + 4, random.Next(80, maxWidth), 14, 4, 4));
 
             var compositor = BootStrapper.Current.Compositor;
 
@@ -1285,6 +1291,7 @@ namespace Telegram.Controls.Cells
             visual.Shapes.Add(backgroundShape);
             visual.Shapes.Add(foregroundShape);
             visual.RelativeSizeAdjustment = Vector2.One;
+            visual.Size = size;
 
             var animation = compositor.CreateVector2KeyFrameAnimation();
             animation.InsertKeyFrame(0, new Vector2(-size.X, 0));
@@ -1297,5 +1304,12 @@ namespace Telegram.Controls.Cells
             ElementCompositionPreview.SetElementChildVisual(this, visual);
         }
 
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (!_skeletonCollapsed)
+            {
+                ShowSkeleton();
+            }
+        }
     }
 }
