@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -586,7 +587,7 @@ namespace Telegram.Controls.Chats
             };
 
             _emojiFlyout.Opened += EmojiFlyout_Opened;
-            _emojiFlyout.Closed += EmojiFlyout_Closed;
+            _emojiFlyout.Closing += EmojiFlyout_Closing;
 
             _emojiFlyout.ShowAt(this, new FlyoutShowOptions
             {
@@ -606,16 +607,16 @@ namespace Telegram.Controls.Chats
                 var child = VisualTreeHelper.GetChild(flyout, 0);
                 if (child is UIElement element)
                 {
-                    element.Translation = new System.Numerics.Vector3(0, 0, 12);
+                    element.Translation = new Vector3(0, 0, 12);
                     element.Shadow = new ThemeShadow();
                 }
             }
         }
 
-        private void EmojiFlyout_Closed(object sender, object e)
+        private void EmojiFlyout_Closing(object sender, object e)
         {
-            _emojiFlyout.Opened += EmojiFlyout_Opened;
-            _emojiFlyout.Closed += EmojiFlyout_Closed;
+            _emojiFlyout.Opened -= EmojiFlyout_Opened;
+            _emojiFlyout.Closing -= EmojiFlyout_Closing;
 
             _emojiFlyout = null;
 
