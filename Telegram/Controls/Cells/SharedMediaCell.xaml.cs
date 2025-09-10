@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using Telegram.Common;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -144,11 +145,11 @@ namespace Telegram.Controls.Cells
                 {
                     if (hasSpoiler)
                     {
-                        _thumbnailController.Blur(file.Local.Path, 15);
+                        _thumbnailController.Blur(file.Local.Path, 15, HashCode.Combine(message.ChatId, message.Id));
                     }
                     else
                     {
-                        _thumbnailController.Bitmap(file.Local.Path);
+                        _thumbnailController.Bitmap(file.Local.Path, hashCode: HashCode.Combine(message.ChatId, message.Id));
                     }
                 }
                 else
@@ -165,7 +166,7 @@ namespace Telegram.Controls.Cells
 
                     if (minithumbnail != null)
                     {
-                        _thumbnailController.Blur(minithumbnail.Data, hasSpoiler ? 15 : 3);
+                        _thumbnailController.Blur(minithumbnail.Data, hasSpoiler ? 15 : 3, HashCode.Combine(message.ChatId, message.Id));
                     }
                     else
                     {
@@ -175,7 +176,7 @@ namespace Telegram.Controls.Cells
             }
             else if (minithumbnail != null)
             {
-                _thumbnailController.Blur(minithumbnail.Data, hasSpoiler ? 15 : 3);
+                _thumbnailController.Blur(minithumbnail.Data, hasSpoiler ? 15 : 3, HashCode.Combine(message.ChatId, message.Id));
             }
             else
             {

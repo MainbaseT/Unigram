@@ -320,10 +320,7 @@ namespace Telegram.Controls.Stories
                 }
 
                 var thumbnail = photoContent.Photo.GetSmall();
-                if (thumbnail != null /*&& (file == null || !file.Photo.Local.IsDownloadingCompleted)*/)
-                {
-                    UpdateThumbnail(story, thumbnail.Photo, photoContent.Photo.Minithumbnail, true);
-                }
+                UpdateThumbnail(story, thumbnail?.Photo, photoContent.Photo.Minithumbnail, true);
 
                 Mute.Visibility = Visibility.Collapsed;
                 MutePlaceholder.Visibility = Visibility.Collapsed;
@@ -333,11 +330,7 @@ namespace Telegram.Controls.Stories
                 var video = SelectVideoFile(videoContent);
 
                 var thumbnail = video.Thumbnail;
-                if (thumbnail != null /*&& (file == null || !file.Photo.Local.IsDownloadingCompleted)*/)
-                {
-                    UpdateThumbnail(story, thumbnail.File, video.Minithumbnail, true);
-                }
-
+                UpdateThumbnail(story, thumbnail?.File, video.Minithumbnail, true);
                 UpdateVideo(story, /*video.AlternativeVideo?.Video ??*/ video.Video, true);
 
                 Mute.Visibility = Visibility.Visible;
@@ -844,7 +837,7 @@ namespace Telegram.Controls.Stories
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    _thumbnailController.Blur(file.Local.Path, 3);
+                    _thumbnailController.Blur(file.Local.Path, 3, HashCode.Combine(story.ChatId, story.StoryId));
                 }
                 else
                 {
@@ -860,7 +853,7 @@ namespace Telegram.Controls.Stories
 
                     if (minithumbnail != null)
                     {
-                        _thumbnailController.Blur(minithumbnail.Data, 3);
+                        _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(story.ChatId, story.StoryId));
                     }
                     else
                     {
@@ -870,7 +863,7 @@ namespace Telegram.Controls.Stories
             }
             else if (minithumbnail != null)
             {
-                _thumbnailController.Blur(minithumbnail.Data, 3);
+                _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(story.ChatId, story.StoryId));
             }
             else
             {

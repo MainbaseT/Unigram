@@ -394,11 +394,11 @@ namespace Telegram.Controls.Messages.Content
                 {
                     if (isSecret || (hasSpoiler && _hidden))
                     {
-                        _thumbnailController.Blur(file.Local.Path, 15);
+                        _thumbnailController.Blur(file.Local.Path, 15, HashCode.Combine(message.ChatId, message.Id));
                     }
                     else
                     {
-                        _thumbnailController.Bitmap(file.Local.Path);
+                        _thumbnailController.Bitmap(file.Local.Path, hashCode: HashCode.Combine(message.ChatId, message.Id));
                     }
                 }
                 else
@@ -415,7 +415,7 @@ namespace Telegram.Controls.Messages.Content
 
                     if (minithumbnail != null)
                     {
-                        _thumbnailController.Blur(minithumbnail.Data, isSecret || (hasSpoiler && _hidden) ? 15 : 3);
+                        _thumbnailController.Blur(minithumbnail.Data, isSecret || (hasSpoiler && _hidden) ? 15 : 3, HashCode.Combine(message.ChatId, message.Id));
                     }
                     else
                     {
@@ -425,7 +425,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (minithumbnail != null)
             {
-                _thumbnailController.Blur(minithumbnail.Data, isSecret || (hasSpoiler && _hidden) ? 15 : 3);
+                _thumbnailController.Blur(minithumbnail.Data, isSecret || (hasSpoiler && _hidden) ? 15 : 3, HashCode.Combine(message.ChatId, message.Id));
             }
             else
             {

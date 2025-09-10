@@ -376,15 +376,15 @@ namespace Telegram.Controls
 
             if (story.Content is StoryContentPhoto photo)
             {
-                SetStory(clientService, story, photo.Photo.GetSmall()?.Photo, side, download);
+                SetStory(clientService, story, photo.Photo.Sizes[0].Photo.Id, photo.Photo.GetSmall()?.Photo, side, download);
             }
             else if (story.Content is StoryContentVideo video)
             {
-                SetStory(clientService, story, video.Video.Thumbnail?.File, side, download);
+                SetStory(clientService, story, video.Video.Video.Id, video.Video.Thumbnail?.File, side, download);
             }
         }
 
-        private void SetStory(IClientService clientService, Story story, File file, int side, bool download = true)
+        private void SetStory(IClientService clientService, Story story, int fileId, File file, int side, bool download = true)
         {
             UpdateManager.Unsubscribe(this, ref _fileToken);
 
@@ -393,12 +393,12 @@ namespace Telegram.Controls
                 _referenceId = story.Id;
                 _fileId = file?.Id;
 
-                Source = GetStory(clientService, story, file, side, out var shape, download);
+                Source = GetStory(clientService, story, fileId, file, side, out var shape, download);
                 Shape = shape;
             }
         }
 
-        private object GetStory(IClientService clientService, Story story, File file, int side, out ProfilePictureShape shape, bool download = true)
+        private object GetStory(IClientService clientService, Story story, int fileId, File file, int side, out ProfilePictureShape shape, bool download = true)
         {
             System.Diagnostics.Debug.Assert(side == Width);
 
@@ -409,7 +409,7 @@ namespace Telegram.Controls
                 if (file.Local.IsDownloadingCompleted)
                 {
                     _controller ??= new ThumbnailController(Texture);
-                    _controller.Bitmap(file.Local.Path, 0, 0);
+                    _controller.Bitmap(file.Local.Path, fileId);
 
                     return _controller;
                 }
@@ -428,14 +428,14 @@ namespace Telegram.Controls
             if (story.Content is StoryContentPhoto photo && photo.Photo.Minithumbnail != null)
             {
                 _controller ??= new ThumbnailController(Texture);
-                _controller.Blur(photo.Photo.Minithumbnail.Data, 3);
+                _controller.Blur(photo.Photo.Minithumbnail.Data, 3, fileId);
 
                 return _controller;
             }
             else if (story.Content is StoryContentVideo video && video.Video.Minithumbnail != null)
             {
                 _controller ??= new ThumbnailController(Texture);
-                _controller.Blur(video.Video.Minithumbnail.Data, 3);
+                _controller.Blur(video.Video.Minithumbnail.Data, 3, fileId);
 
                 return _controller;
             }
@@ -523,7 +523,7 @@ namespace Telegram.Controls
                 if (file.Local.IsDownloadingCompleted)
                 {
                     _controller ??= new ThumbnailController(Texture);
-                    _controller.Bitmap(file.Local.Path, side, side);
+                    _controller.Bitmap(file.Local.Path, side, side, chat.Id);
 
                     return _controller;
                 }
@@ -542,7 +542,7 @@ namespace Telegram.Controls
                 if (minithumbnail != null)
                 {
                     _controller ??= new ThumbnailController(Texture);
-                    _controller.Blur(minithumbnail.Data, 3);
+                    _controller.Blur(minithumbnail.Data, 3, chat.Id);
 
                     return _controller;
                 }
@@ -615,7 +615,7 @@ namespace Telegram.Controls
                 if (file.Local.IsDownloadingCompleted)
                 {
                     _controller ??= new ThumbnailController(Texture);
-                    _controller.Bitmap(file.Local.Path, side, side);
+                    _controller.Bitmap(file.Local.Path, side, side, user.Id);
 
                     return _controller;
                 }
@@ -634,7 +634,7 @@ namespace Telegram.Controls
                 if (minithumbnail != null)
                 {
                     _controller ??= new ThumbnailController(Texture);
-                    _controller.Blur(minithumbnail.Data, 3);
+                    _controller.Blur(minithumbnail.Data, 3, user.Id);
 
                     return _controller;
                 }
@@ -695,7 +695,7 @@ namespace Telegram.Controls
                 if (file.Local.IsDownloadingCompleted)
                 {
                     _controller ??= new ThumbnailController(Texture);
-                    _controller.Bitmap(file.Local.Path, side, side);
+                    _controller.Bitmap(file.Local.Path, side, side, chat.ChatId);
 
                     return _controller;
                 }
@@ -714,7 +714,7 @@ namespace Telegram.Controls
             if (chat.Photo?.Minithumbnail != null)
             {
                 _controller ??= new ThumbnailController(Texture);
-                _controller.Blur(chat.Photo.Minithumbnail.Data, 3);
+                _controller.Blur(chat.Photo.Minithumbnail.Data, 3, chat.ChatId);
 
                 return _controller;
             }
@@ -725,7 +725,7 @@ namespace Telegram.Controls
 
         #endregion
 
-        #region Chat invite
+        #region Chat photo
 
         struct ChatPhotoParameters
         {
@@ -767,7 +767,7 @@ namespace Telegram.Controls
                 if (file.Local.IsDownloadingCompleted)
                 {
                     _controller ??= new ThumbnailController(Texture);
-                    _controller.Bitmap(file.Local.Path, side, side);
+                    _controller.Bitmap(file.Local.Path, side, side, photo.Id);
 
                     return _controller;
                 }
@@ -786,7 +786,7 @@ namespace Telegram.Controls
             if (photo.Minithumbnail != null)
             {
                 _controller ??= new ThumbnailController(Texture);
-                _controller.Blur(photo.Minithumbnail.Data, 3);
+                _controller.Blur(photo.Minithumbnail.Data, 3, photo.Id);
 
                 return _controller;
             }

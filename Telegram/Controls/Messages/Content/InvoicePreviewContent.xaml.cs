@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using Telegram.Common;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -100,7 +101,7 @@ namespace Telegram.Controls.Messages.Content
 
             if (minithumbnail != null)
             {
-                _thumbnailController.Blur(minithumbnail.Data, 3);
+                _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(message.ChatId, message.Id));
             }
             else
             {

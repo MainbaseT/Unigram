@@ -22,6 +22,8 @@ namespace Telegram.Common
         private readonly double _maxWidth;
         private readonly double _maxHeight;
 
+        private long _hashCode;
+
         private ImageSource _source;
         private SoftwareBitmap _bitmap;
         private int _generation;
@@ -33,12 +35,18 @@ namespace Telegram.Common
             _maxHeight = maxHeight;
         }
 
-        public async void Blur(string path, float amount)
+        public async void Blur(string path, float amount, long hashCode = 0)
         {
             var generation = ++_generation;
 
             try
             {
+                if (_hashCode != hashCode)
+                {
+                    _hashCode = hashCode;
+                    _brush.ImageSource = null;
+                }
+
                 var bitmap = await Task.Run(() => PlaceholderHelper.Background.DrawBlurred(path, amount));
 
                 if (_generation != generation)
@@ -69,12 +77,18 @@ namespace Telegram.Common
             catch { }
         }
 
-        public async void Blur(IList<byte> bytes, float amount)
+        public async void Blur(IList<byte> bytes, float amount, long hashCode = 0)
         {
             var generation = ++_generation;
 
             try
             {
+                if (_hashCode != hashCode)
+                {
+                    _hashCode = hashCode;
+                    _brush.ImageSource = null;
+                }
+
                 var bitmap = await Task.Run(() => PlaceholderHelper.Background.DrawBlurred(bytes, amount));
 
                 if (_generation != generation)
@@ -105,12 +119,18 @@ namespace Telegram.Common
             catch { }
         }
 
-        public async void Bitmap(string path, int width = 0, int height = 0)
+        public async void Bitmap(string path, int width = 0, int height = 0, long hashCode = 0)
         {
             var generation = ++_generation;
 
             try
             {
+                if (_hashCode != hashCode)
+                {
+                    _hashCode = hashCode;
+                    _brush.ImageSource = null;
+                }
+
                 if (_source is not BitmapImage bitmapSource)
                 {
                     bitmapSource = new BitmapImage
@@ -153,13 +173,18 @@ namespace Telegram.Common
             catch { }
         }
 
-
-        public async void Bitmap(IList<byte> bytes, int width = 0, int height = 0)
+        public async void Bitmap(IList<byte> bytes, int width = 0, int height = 0, long hashCode = 0)
         {
             var generation = ++_generation;
 
             try
             {
+                if (_hashCode != hashCode)
+                {
+                    _hashCode = hashCode;
+                    _brush.ImageSource = null;
+                }
+
                 if (_source is not BitmapImage bitmapSource)
                 {
                     bitmapSource = new BitmapImage
@@ -213,6 +238,7 @@ namespace Telegram.Common
             _bitmap = null;
 
             _generation = 0;
+            _hashCode = 0;
         }
     }
 }

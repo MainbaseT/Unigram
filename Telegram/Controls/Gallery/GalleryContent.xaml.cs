@@ -207,10 +207,9 @@ namespace Telegram.Controls.Gallery
                 DocumentName.Text = string.Empty;
             }
 
-            var thumbnail = item.Thumbnail;
-            if (thumbnail != null && item.IsMedia && (item.IsVideo || (item.IsPhoto && !file.Local.IsDownloadingCompleted)))
+            if (item.IsMedia && (item.IsVideo || (item.IsPhoto && !file.Local.IsDownloadingCompleted)))
             {
-                UpdateThumbnail(item, thumbnail, item.Minithumbnail, true);
+                UpdateThumbnail(item, item.Thumbnail, item.Minithumbnail, true);
             }
 
             UpdateManager.Subscribe(this, window.ClientService, file, ref _fileToken, UpdateFile);
@@ -329,7 +328,7 @@ namespace Telegram.Controls.Gallery
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    _thumbnailController.Blur(file.Local.Path, 3);
+                    _thumbnailController.Blur(file.Local.Path, 3, item.File.Id);
                 }
                 else
                 {
@@ -345,7 +344,7 @@ namespace Telegram.Controls.Gallery
 
                     if (minithumbnail != null)
                     {
-                        _thumbnailController.Blur(minithumbnail.Data, 3);
+                        _thumbnailController.Blur(minithumbnail.Data, 3, item.File.Id);
                     }
                     else
                     {
@@ -355,7 +354,7 @@ namespace Telegram.Controls.Gallery
             }
             else if (minithumbnail != null)
             {
-                _thumbnailController.Blur(minithumbnail.Data, 3);
+                _thumbnailController.Blur(minithumbnail.Data, 3, item.File.Id);
             }
             else
             {

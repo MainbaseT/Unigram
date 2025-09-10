@@ -216,7 +216,7 @@ namespace Telegram.Controls.Messages
 
                 if (hasSpoiler)
                 {
-                    _thumbnailController.Blur(photoSize.Photo.Local.Path, 15);
+                    _thumbnailController.Blur(photoSize.Photo.Local.Path, 15, HashCode.Combine(message.ChatId, message.Id));
                 }
                 else
                 {
@@ -227,12 +227,12 @@ namespace Telegram.Controls.Messages
                     var width = (int)(photoSize.Width * ratio);
                     var height = (int)(photoSize.Height * ratio);
 
-                    _thumbnailController.Bitmap(photoSize.Photo.Local.Path, width, height);
+                    _thumbnailController.Bitmap(photoSize.Photo.Local.Path, width, height, HashCode.Combine(message.ChatId, message.Id));
                 }
             }
             else
             {
-                UpdateThumbnail(minithumbnail, hasSpoiler);
+                UpdateThumbnail(minithumbnail, hasSpoiler, default, HashCode.Combine(message.ChatId, message.Id));
 
                 if (photoSize != null && photoSize.Photo.Local.CanBeDownloaded && !photoSize.Photo.Local.IsDownloadingActive)
                 {
@@ -256,7 +256,7 @@ namespace Telegram.Controls.Messages
 
                 if (hasSpoiler)
                 {
-                    _thumbnailController.Blur(thumbnail.File.Local.Path, 15);
+                    _thumbnailController.Blur(thumbnail.File.Local.Path, 15, HashCode.Combine(message.ChatId, message.Id));
                 }
                 else
                 {
@@ -267,12 +267,12 @@ namespace Telegram.Controls.Messages
                     var width = (int)(thumbnail.Width * ratio);
                     var height = (int)(thumbnail.Height * ratio);
 
-                    _thumbnailController.Bitmap(thumbnail.File.Local.Path, width, height);
+                    _thumbnailController.Bitmap(thumbnail.File.Local.Path, width, height, HashCode.Combine(message.ChatId, message.Id));
                 }
             }
             else
             {
-                UpdateThumbnail(minithumbnail, hasSpoiler, radius);
+                UpdateThumbnail(minithumbnail, hasSpoiler, radius, HashCode.Combine(message.ChatId, message.Id));
 
                 if (thumbnail != null && thumbnail.File.Local.CanBeDownloaded && !thumbnail.File.Local.IsDownloadingActive)
                 {
@@ -281,7 +281,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private void UpdateThumbnail(Minithumbnail thumbnail, bool hasSpoiler, CornerRadius radius = default)
+        private void UpdateThumbnail(Minithumbnail thumbnail, bool hasSpoiler, CornerRadius radius, int hashCode)
         {
             if (thumbnail != null)
             {
@@ -296,7 +296,7 @@ namespace Telegram.Controls.Messages
 
                 if (hasSpoiler)
                 {
-                    _thumbnailController.Blur(thumbnail.Data, 15);
+                    _thumbnailController.Blur(thumbnail.Data, 15, hashCode);
                 }
                 else
                 {
@@ -307,7 +307,7 @@ namespace Telegram.Controls.Messages
                     var width = (int)(thumbnail.Width * ratio);
                     var height = (int)(thumbnail.Height * ratio);
 
-                    _thumbnailController.Bitmap(thumbnail.Data, width, height);
+                    _thumbnailController.Bitmap(thumbnail.Data, width, height, hashCode);
                 }
             }
             else
@@ -770,7 +770,7 @@ namespace Telegram.Controls.Messages
                 false,
                 white);
 
-            UpdateThumbnail(message, game.Game.Photo?.GetSmall(), game.Game.Photo?.Minithumbnail);
+            UpdateThumbnail(message, game.Game.Photo.GetSmall(), game.Game.Photo?.Minithumbnail);
         }
 
         private void SetContactTemplate(MessageViewModel message, MessageSender sender, MessageContact contact, string title, bool outgoing, bool white)
