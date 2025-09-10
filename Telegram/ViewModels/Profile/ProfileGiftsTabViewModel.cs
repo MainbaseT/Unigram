@@ -345,7 +345,14 @@ namespace Telegram.ViewModels.Profile
             get => _excludeUnsaved;
             set
             {
-                if (Set(ref _excludeUnsaved, value))
+                if (value && _excludeSaved)
+                {
+                    value = false;
+                    _excludeSaved = false;
+
+                    Reload();
+                }
+                else if (Set(ref _excludeUnsaved, value))
                 {
                     Reload();
                 }
@@ -358,7 +365,14 @@ namespace Telegram.ViewModels.Profile
             get => _excludeSaved;
             set
             {
-                if (Set(ref _excludeSaved, value))
+                if (_excludeUnsaved && value)
+                {
+                    _excludeUnsaved = false;
+                    value = false;
+
+                    Reload();
+                }
+                else if (Set(ref _excludeSaved, value))
                 {
                     Reload();
                 }
@@ -371,7 +385,16 @@ namespace Telegram.ViewModels.Profile
             get => _excludeUnlimited;
             set
             {
-                if (Set(ref _excludeUnlimited, value))
+                if (value && _excludeUpgradable && _excludeNonUpgradable && _excludeUpgraded)
+                {
+                    value = false;
+                    _excludeUpgradable = false;
+                    _excludeNonUpgradable = false;
+                    _excludeUpgraded = false;
+
+                    Reload();
+                }
+                else if (Set(ref _excludeUnlimited, value))
                 {
                     Reload();
                 }
@@ -384,7 +407,16 @@ namespace Telegram.ViewModels.Profile
             get => _excludeUpgradable;
             set
             {
-                if (Set(ref _excludeUpgradable, value))
+                if (_excludeUnlimited && value && _excludeNonUpgradable && _excludeUpgraded)
+                {
+                    _excludeUnlimited = false;
+                    value = false;
+                    _excludeNonUpgradable = false;
+                    _excludeUpgraded = false;
+
+                    Reload();
+                }
+                else if (Set(ref _excludeUpgradable, value))
                 {
                     Reload();
                 }
@@ -397,7 +429,16 @@ namespace Telegram.ViewModels.Profile
             get => _excludeNonUpgradable;
             set
             {
-                if (Set(ref _excludeNonUpgradable, value))
+                if (_excludeUnlimited && _excludeUpgradable && value && _excludeUpgraded)
+                {
+                    _excludeUnlimited = false;
+                    _excludeUpgradable = false;
+                    value = false;
+                    _excludeUpgraded = false;
+
+                    Reload();
+                }
+                else if (Set(ref _excludeNonUpgradable, value))
                 {
                     Reload();
                 }
@@ -410,7 +451,16 @@ namespace Telegram.ViewModels.Profile
             get => _excludeUpgraded;
             set
             {
-                if (Set(ref _excludeUpgraded, value))
+                if (_excludeUnlimited && _excludeUpgradable && _excludeNonUpgradable && value)
+                {
+                    _excludeUnlimited = false;
+                    _excludeUpgradable = false;
+                    _excludeNonUpgradable = false;
+                    value = false;
+
+                    Reload();
+                }
+                else if (Set(ref _excludeUpgraded, value))
                 {
                     Reload();
                 }
