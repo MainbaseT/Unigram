@@ -1863,6 +1863,18 @@ public static class CompositionPropertySet_stub
             throw new RuntimeException(ex);
         }
     }
+    public static void InsertVector2_stub(this Windows.UI.Composition.CompositionPropertySet sender, string propertyName, System.Numerics.Vector2 value)
+    {
+        try
+        {
+            sender.InsertVector2(propertyName, value);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
     public static void InsertVector3_stub(this Windows.UI.Composition.CompositionPropertySet sender, string propertyName, System.Numerics.Vector3 value)
     {
         try
@@ -5110,6 +5122,21 @@ public static class PixelDataProvider_stub
 public static class SoftwareBitmap_stub
 {
     public static void Dispose_stub(this Windows.Graphics.Imaging.SoftwareBitmap sender)
+    {
+        try
+        {
+            sender.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class SoftwareBitmapSource_stub
+{
+    public static void Dispose_stub(this Windows.UI.Xaml.Media.Imaging.SoftwareBitmapSource sender)
     {
         try
         {
