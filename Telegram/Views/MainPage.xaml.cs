@@ -1233,6 +1233,11 @@ namespace Telegram.Views
                 Downloads_Click(null, null);
                 args.Handled = true;
             }
+            else if (command is ShortcutCommand.MediaStop)
+            {
+                TypeResolver.Current.Playback.Clear();
+                args.Handled = true;
+            }
             else if (command is ShortcutCommand.CallAccept && ViewModel.VoipService.ActiveCall is VoipCall acceptCall)
             {
                 acceptCall.Accept(false);

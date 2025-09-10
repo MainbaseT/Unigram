@@ -94,7 +94,7 @@ namespace Telegram.Services
             //{ "media_play"        , ShortcutCommand.MediaPlay },
             //{ "media_pause"       , ShortcutCommand.MediaPause },
             //{ "media_playpause"   , ShortcutCommand.MediaPlayPause },
-            //{ "media_stop"        , ShortcutCommand.MediaStop },
+            { "media_stop"        , ShortcutCommand.MediaStop },
             //{ "media_previous"    , ShortcutCommand.MediaPrevious },
             //{ "media_next"        , ShortcutCommand.MediaNext },
 
@@ -142,7 +142,7 @@ namespace Telegram.Services
             //{ ShortcutCommand.MediaPlay      , "media_play" },
             //{ ShortcutCommand.MediaPause     , "media_pause" },
             //{ ShortcutCommand.MediaPlayPause , "media_playpause" },
-            //{ ShortcutCommand.MediaStop      , "media_stop" },
+            { ShortcutCommand.MediaStop      , "media_stop" },
             //{ ShortcutCommand.MediaPrevious  , "media_previous" },
             //{ ShortcutCommand.MediaNext      , "media_next" },
 
@@ -370,6 +370,8 @@ namespace Telegram.Services
             Set("ctrl+l", ShortcutCommand.Lock);
             Set("ctrl+m", ShortcutCommand.Minimize);
             Set("ctrl+q", ShortcutCommand.Quit);
+
+            Set("ctrl+shift+w", ShortcutCommand.MediaStop);
 
             Set("ctrl+shift+f", ShortcutCommand.SearchChats);
             Set("ctrl+e", ShortcutCommand.SearchChats);
@@ -712,7 +714,7 @@ namespace Telegram.Services
         //MediaPlay,
         //MediaPause,
         //MediaPlayPause,
-        //MediaStop,
+        MediaStop,
         //MediaPrevious,
         //MediaNext,
 

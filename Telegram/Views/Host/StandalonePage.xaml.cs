@@ -193,6 +193,11 @@ namespace Telegram.Views.Host
             {
                 await WindowContext.Current.ConsolidateAsync();
             }
+            else if (command == ShortcutCommand.MediaStop)
+            {
+                TypeResolver.Current.Playback.Clear();
+                args.Handled = true;
+            }
         }
 
         private void Banner_SizeChanged(object sender, SizeChangedEventArgs e)
