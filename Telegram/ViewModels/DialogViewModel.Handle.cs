@@ -1073,6 +1073,11 @@ namespace Telegram.ViewModels
                 },
                 (bubble, message) =>
                 {
+                    if (bubble.Parent is MessageSelector selector)
+                    {
+                        selector.PrepareForItemOverride(message, true);
+                    }
+
                     bubble.UpdateMessage(message);
                     Delegate?.ViewVisibleMessages();
                 }, newMessageId: update.Message.Id);

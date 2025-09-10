@@ -593,14 +593,20 @@ namespace Telegram.Controls.Messages
 
         public async void PrepareForItemOverride(MessageViewModel message, bool canReply)
         {
-            var properties = await message.ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id)) as MessageProperties;
-            if (properties == null)
-            {
-                return;
-            }
+            bool share = false;
+            bool reply = false;
 
-            var share = SettingsService.Current.SwipeToShare && properties.CanBeForwarded;
-            var reply = SettingsService.Current.SwipeToReply && (properties.CanBeReplied || properties.CanBeRepliedInAnotherChat);
+            if (message.SendingState == null)
+            {
+                var properties = await message.ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id)) as MessageProperties;
+                if (properties == null)
+                {
+                    return;
+                }
+
+                share = SettingsService.Current.SwipeToShare && properties.CanBeForwarded;
+                reply = SettingsService.Current.SwipeToReply && (properties.CanBeReplied || properties.CanBeRepliedInAnotherChat);
+            }
 
             if (_tracker != null)
             {
