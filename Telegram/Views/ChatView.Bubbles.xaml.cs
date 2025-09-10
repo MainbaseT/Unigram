@@ -15,6 +15,7 @@ using Telegram.Controls.Chats;
 using Telegram.Controls.Messages;
 using Telegram.Converters;
 using Telegram.Navigation;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Chats;
@@ -910,6 +911,11 @@ namespace Telegram.Views
 
                     if (checkbox.Content is MessageBubble bubble)
                     {
+                        if (bubble.NeedShadow && ApiInfo.CanCreateThemeShadow && SettingsService.Current.Diagnostics.BubbleElevationDebug)
+                        {
+                            bubble.UpdateShadow(_shadow);
+                        }
+
                         bubble.UpdateQuery(ViewModel.Search?.Query, false);
                         bubble.UpdateMessage(args.Item as MessageViewModel);
 

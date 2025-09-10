@@ -156,6 +156,11 @@
                                                      Height="30" />
                         </HyperlinkButton>
 
+                        <Rectangle x:Name="ShadowCaster"
+                                   RadiusX="15"
+                                   RadiusY="15"
+                                   Grid.Column="1" />
+
                         <Grid x:Name="ContentPanel"
                               Background="{ThemeResource MessageBackgroundBrush}"
                               MaxWidth="{StaticResource MessageMaxWidth}"

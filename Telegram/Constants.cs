@@ -54,6 +54,8 @@ namespace Telegram
         public const int FontSize = 14;
         public const int CaptionFontSize = 12;
 
+        public const float BubbleElevation = 8.0f;
+
         public static readonly string[] TelegramHosts = new string[]
         {
             "telegram.org",

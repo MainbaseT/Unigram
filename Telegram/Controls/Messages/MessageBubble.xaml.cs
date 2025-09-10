@@ -37,6 +37,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Messages
 {
@@ -122,10 +123,37 @@ namespace Telegram.Controls.Messages
             }
         }
 
+        private ThemeShadow _shadow;
+
+        public bool NeedShadow => (ContentPanel?.Shadow ?? _shadow) == null;
+
+        public void UpdateShadow(ThemeShadow shadow)
+        {
+            if (ShadowCaster != null)
+            {
+                ShadowCaster.Shadow = shadow;
+
+                var radius = _topLeft == 0 && _topRight == 0 && _bottomRight == 0 && _bottomLeft == 0;
+                if (radius)
+                {
+                    ShadowCaster.Translation = Vector3.Zero;
+                }
+                else
+                {
+                    ShadowCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+                }
+            }
+            else
+            {
+                _shadow = shadow;
+            }
+        }
+
         #region InitializeComponent
 
         private ColumnDefinition PhotoColumn;
 
+        private Rectangle ShadowCaster;
         private Grid ContentPanel;
         private Grid Header;
         private MessageBubblePanel Panel;
@@ -169,6 +197,7 @@ namespace Telegram.Controls.Messages
         protected override void OnApplyTemplate()
         {
             PhotoColumn = GetTemplateChild(nameof(PhotoColumn)) as ColumnDefinition;
+            ShadowCaster = GetTemplateChild(nameof(ShadowCaster)) as Rectangle;
             ContentPanel = GetTemplateChild(nameof(ContentPanel)) as Grid;
             Header = GetTemplateChild(nameof(Header)) as Grid;
             Panel = GetTemplateChild(nameof(Panel)) as MessageBubblePanel;
@@ -181,6 +210,12 @@ namespace Telegram.Controls.Messages
             ContentPanel.SizeChanged += OnSizeChanged;
             Message.ContextMenuOpening += Message_ContextMenuOpening;
             Message.TextEntityClick += Message_TextEntityClick;
+
+            if (_shadow != null)
+            {
+                ShadowCaster.Shadow = _shadow;
+                _shadow = null;
+            }
 
             ElementCompositionPreview.SetIsTranslationEnabled(Header, true);
             ElementCompositionPreview.SetIsTranslationEnabled(Message, true);
@@ -638,6 +673,15 @@ namespace Telegram.Controls.Messages
             var height = (float)Math.Truncate(ContentPanel.ActualHeight);
 
             var radius = topLeft == 0 && topRight == 0 && bottomRight == 0 && bottomLeft == 0;
+            if (radius)
+            {
+                ShadowCaster.Translation = Vector3.Zero;
+            }
+            else
+            {
+                ShadowCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+            }
+
             radius |= bottomLeft != 0 && bottomRight != 0;
             radius |= width == 0 && height == 0;
 

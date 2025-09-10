@@ -1191,6 +1191,9 @@
                 <RowDefinition x:Name="KeyboardPlaceholder"
                                Height="Auto" />
             </Grid.RowDefinitions>
+            <Border x:Name="ShadowReceiver"
+                    Grid.RowSpan="5" />
+
             <Grid Padding="0,0,0,8"
                   VerticalAlignment="Bottom"
                   Grid.RowSpan="4">
@@ -1594,12 +1597,14 @@
 
             <Grid x:Name="Footer"
                   Grid.Row="3">
+                <Rectangle x:Name="ShadowCaster"
+                           RadiusX="15"
+                           RadiusY="15" />
+
                 <ContentControl x:Name="TextArea"
                                 IsTabStop="False"
                                 HorizontalContentAlignment="Stretch"
-                                VerticalContentAlignment="Stretch"
-                                Margin="12,0,12,8"
-                                Grid.Row="3">
+                                VerticalContentAlignment="Stretch">
                     <Grid x:Name="TextRoot"
                           Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
                           MinHeight="{StaticResource TelegramToolBarHeight}"
@@ -1930,14 +1935,10 @@
                                      StartTyping="ChatRecord_StartTyping"
                                      CancelTyping="ChatRecord_CancelTyping"
                                      ControlledButton="{x:Bind btnVoiceMessage}"
-                                     Margin="12,0,12,8"
-                                     Visibility="Collapsed"
-                                     Grid.Row="3" />
+                                     Visibility="Collapsed" />
 
                 <Grid x:Name="ChatFooter"
-                      Margin="12,0,12,8"
-                      CornerRadius="15"
-                      Grid.Row="3">
+                      CornerRadius="15">
                     <chats:ChatBottomButton x:Name="ButtonAction"
                                             LosingFocus="ButtonAction_LosingFocus"
                                             Click="{x:Bind ViewModel.Action}"
@@ -1968,9 +1969,7 @@
                       Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
                       VerticalAlignment="Bottom"
                       Visibility="Collapsed"
-                      Margin="12,0,12,8"
-                      CornerRadius="15"
-                      Grid.Row="3">
+                      CornerRadius="15">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />

@@ -155,6 +155,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _forumTabsDebug, "ForumTabsDebug", value);
         }
 
+        private bool? _bubbleElevationDebug;
+        public bool BubbleElevationDebug
+        {
+            get => _bubbleElevationDebug ??= GetValueOrDefault("BubbleElevationDebug", true);
+            set => AddOrUpdateValue(ref _bubbleElevationDebug, "BubbleElevationDebug", value);
+        }
+
         private bool? _windowResizeDebug;
         public bool WindowResizeDebug
         {

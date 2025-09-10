@@ -214,7 +214,18 @@ namespace Telegram.Views
 
             _textShadowVisual = VisualUtilities.DropShadow(Separator);
             _textShadowVisual.IsVisible = false;
+
+            if (ApiInfo.CanCreateThemeShadow && SettingsService.Current.Diagnostics.BubbleElevationDebug)
+            {
+                _shadow = new ThemeShadow();
+                _shadow.Receivers.Add(ShadowReceiver);
+
+                ShadowCaster.Shadow = _shadow;
+                ShadowCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+            }
         }
+
+        private ThemeShadow _shadow;
 
         private bool CanFocusText(FocusState state)
         {
@@ -6105,17 +6116,17 @@ namespace Telegram.Views
 
             if (radius > 0)
             {
-                TextArea.MaxWidth = ChatRecord.MaxWidth = ChatFooter.MaxWidth = ManagePanel.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth =
+                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth =
                     SettingsService.Current.IsAdaptiveWideEnabled ? 1000 : double.PositiveInfinity;
-                TextArea.Margin = ChatRecord.Margin = ChatFooter.Margin = ManagePanel.Margin = Separator.Margin = new Thickness(12, 0, 12, 8);
+                Footer.Margin = Separator.Margin = new Thickness(12, 0, 12, 8);
                 InlinePanel.Margin = new Thickness(12, 0, 12, -radius);
                 ReplyMarkupPanel.Margin = new Thickness(12, -8 - radius, 12, 8);
             }
             else
             {
-                TextArea.MaxWidth = ChatRecord.MaxWidth = ChatFooter.MaxWidth = ManagePanel.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth =
+                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth =
                     SettingsService.Current.IsAdaptiveWideEnabled ? 1024 : double.PositiveInfinity;
-                TextArea.Margin = ChatRecord.Margin = ChatFooter.Margin = ManagePanel.Margin = Separator.Margin = new Thickness();
+                Footer.Margin = Separator.Margin = new Thickness();
                 InlinePanel.Margin = new Thickness();
                 ReplyMarkupPanel.Margin = new Thickness();
             }
@@ -7519,7 +7530,7 @@ namespace Telegram.Views
             var margin = (width - (ActualSize.X - 24)) / 2;
 
             // 12,0,12,8
-            ChatFooter.Margin = new Thickness(12 + margin, 0, 12 + margin, 8);
+            Footer.Margin = new Thickness(12 + margin, 0, 12 + margin, 8);
 
             var visual = ElementComposition.GetElementVisual(ChatFooter);
 
@@ -7563,7 +7574,7 @@ namespace Telegram.Views
             var margin = (width - (ActualSize.X - 24)) / 2;
 
             // 12,0,12,8
-            ManagePanel.Margin = new Thickness(12 + 0, 0, 12 + margin + margin, 8);
+            Footer.Margin = new Thickness(12 + 0, 0, 12 + margin + margin, 8);
 
             var delete = ElementComposition.GetElementVisual(ButtonDelete);
             var forward = ElementComposition.GetElementVisual(ButtonForward);
@@ -7611,7 +7622,7 @@ namespace Telegram.Views
             var margin = (width - (ActualSize.X - 24)) / 2;
 
             // 12,0,12,8
-            TextArea.Margin = new Thickness(12 + 0, 0, 12 + margin + margin, 8);
+            Footer.Margin = new Thickness(12 + 0, 0, 12 + margin + margin, 8);
 
             var delete = ElementComposition.GetElementVisual(ButtonsRoot);
             var visual = ElementComposition.GetElementVisual(TextArea);

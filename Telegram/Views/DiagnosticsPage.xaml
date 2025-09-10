@@ -70,6 +70,10 @@
                               Content="Forum Tabs Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
+                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.BubbleElevationDebug, Mode=TwoWay}"
+                              Content="Bubble Elevation Debug"
+                              Style="{StaticResource SettingsCheckBoxStyle}" />
+
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.WindowResizeDebug, Mode=TwoWay}"
                               Content="Window Resize Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
