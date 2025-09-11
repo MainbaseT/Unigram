@@ -69,6 +69,9 @@ namespace Telegram.Services
         bool IsPremium { get; }
         bool IsPremiumAvailable { get; }
 
+        bool TranslateMessages { get; }
+        bool TranslateChats { get; }
+
         PaidReactionType DefaultPaidReactionType { get; }
 
         StarAmount OwnedStarCount { get; }
@@ -671,13 +674,26 @@ namespace Telegram.Services
             });
         }
 
+        private bool _translateMessages;
+        private bool _translateChats;
+
         private void UpdateConfig(Object value)
         {
             if (value is JsonValueObject obj)
             {
                 _config = obj;
+
+                var translationsManual = obj.GetNamedString("translations_manual_enabled", "disabled");
+                var translationsAuto = obj.GetNamedString("translations_auto_enabled", "disabled");
+
+                _translateMessages = translationsManual != "disabled";
+                _translateChats = translationsAuto != "disabled";
             }
         }
+
+        public bool TranslateMessages => _translateMessages && _settings.Translate.Messages;
+
+        public bool TranslateChats => _translateChats && _settings.Translate.Chats;
 
         private void UpdateTimeZones()
         {
@@ -921,6 +937,8 @@ namespace Telegram.Services
             _freezeState = new();
 
             _config = null;
+            _translateMessages = false;
+            _translateChats = false;
             _defaultReaction = null;
             _attachmentMenuBots = Array.Empty<AttachmentMenuBot>();
             _availableMessageEffects = null;

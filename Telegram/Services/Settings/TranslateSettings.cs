@@ -21,7 +21,7 @@ namespace Telegram.Services.Settings
         private bool? _messages;
         public bool Messages
         {
-            get => _messages ??= GetValueOrDefault("IsTranslateEnabled", false);
+            get => _messages ??= GetValueOrDefault("IsTranslateEnabled", true);
             set => AddOrUpdateValue(ref _messages, "IsTranslateEnabled", value);
         }
 
