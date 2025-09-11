@@ -667,6 +667,12 @@
   <data name="ActionPinnedVoice" xml:space="preserve">
     <value>un1 pinned a voice message</value>
   </data>
+  <data name="ActionPrepaidGiftInbound" xml:space="preserve">
+    <value>un1 sent an upgrade worth **un2** for your gift</value>
+  </data>
+  <data name="ActionPrepaidGiftOutbound" xml:space="preserve">
+    <value>You sent an upgrade worth **un2** for **un1**&apos;s gift</value>
+  </data>
   <data name="ActionReactionsChanged" xml:space="preserve">
     <value>un1 changed chat reactions
 from: {0} 
@@ -6708,6 +6714,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2From" xml:space="preserve">
     <value>From</value>
   </data>
+  <data name="Gift2GiftAnUpgrade" xml:space="preserve">
+    <value>Gift an Upgrade</value>
+  </data>
   <data name="Gift2Hide" xml:space="preserve">
     <value>Hide My Name</value>
   </data>
@@ -6854,6 +6863,24 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="Gift2PremiumTitle" xml:space="preserve">
     <value>Premium Gift</value>
+  </data>
+  <data name="Gift2PrepayUpgradeButton" xml:space="preserve">
+    <value>Pay ⭐️{0} for Upgrade</value>
+  </data>
+  <data name="Gift2PrepayUpgradeFeature1Text" xml:space="preserve">
+    <value>{0} will get a unique number, model, backdrop, and symbol for the gift.</value>
+  </data>
+  <data name="Gift2PrepayUpgradeFeature2Text" xml:space="preserve">
+    <value>{0} will be able to send the gift to anyone on Telegram.</value>
+  </data>
+  <data name="Gift2PrepayUpgradeFeature3Text" xml:space="preserve">
+    <value>{0} will be able to auction the gift on third-party NFT marketplaces.</value>
+  </data>
+  <data name="Gift2PrepayUpgradeText" xml:space="preserve">
+    <value>Let {0} turn your gift into a unique collectible.</value>
+  </data>
+  <data name="Gift2PrepayUpgradeTitle" xml:space="preserve">
+    <value>Make Unique</value>
   </data>
   <data name="Gift2ProfileInvisible" xml:space="preserve">
     <value>This gift is hidden. Only you can see it.</value>
@@ -12477,6 +12504,12 @@ on Telegram. It is based on:</value>
   </data>
   <data name="StarsGiftSent" xml:space="preserve">
     <value>Sent Gift</value>
+  </data>
+  <data name="StarsGiftUpgradeCompleted" xml:space="preserve">
+    <value>Gift Upgrade sent!</value>
+  </data>
+  <data name="StarsGiftUpgradeCompletedText" xml:space="preserve">
+    <value>{0} can now upgrade this gift for free.</value>
   </data>
   <data name="StarsGiveawayPrizeReceived" xml:space="preserve">
     <value>Received Prize</value>

@@ -12785,5 +12785,16 @@
     <string name="LocalDatabaseClearText3">**WARNING:**\nSecret chats and pending messages will be lost.</string>
 
     <string name="Gift2FilterUpgradable">Upgradable</string>
+    <string name="Gift2GiftAnUpgrade">Gift an Upgrade</string>
+    <string name="Gift2PrepayUpgradeButton">Pay ⭐️{0} for Upgrade</string>
+    <string name="Gift2PrepayUpgradeFeature1Text">{0} will get a unique number, model, backdrop, and symbol for the gift.</string>
+    <string name="Gift2PrepayUpgradeFeature2Text">{0} will be able to send the gift to anyone on Telegram.</string>
+    <string name="Gift2PrepayUpgradeFeature3Text">{0} will be able to auction the gift on third-party NFT marketplaces.</string>
+    <string name="Gift2PrepayUpgradeText">Let {0} turn your gift into a unique collectible.</string>
+    <string name="Gift2PrepayUpgradeTitle">Make Unique</string>
+    <string name="StarsGiftUpgradeCompleted">Gift Upgrade sent!</string>
+    <string name="StarsGiftUpgradeCompletedText">{0} can now upgrade this gift for free.</string>
+    <string name="ActionPrepaidGiftInbound">un1 sent an upgrade worth **un2** for your gift</string>
+    <string name="ActionPrepaidGiftOutbound">You sent an upgrade worth **un2** for **un1**\'s gift</string>
 
 </resources>

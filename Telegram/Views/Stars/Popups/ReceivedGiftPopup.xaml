@@ -405,20 +405,23 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <controls:SettingsButton Content="{CustomResource Gift2UpgradeFeature1Title}"
+                <controls:SettingsButton x:Name="UpgradeText1"
+                                         Content="{CustomResource Gift2UpgradeFeature1Title}"
                                          Badge="{CustomResource Gift2UpgradeFeature1Text}"
                                          Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
                                          Glyph="&#xE76E;"
                                          Margin="12,0,12,0"
                                          IsHitTestVisible="False" />
-                <controls:SettingsButton Content="{CustomResource Gift2UpgradeFeature2Title}"
+                <controls:SettingsButton x:Name="UpgradeText2"
+                                         Content="{CustomResource Gift2UpgradeFeature2Title}"
                                          Badge="{CustomResource Gift2UpgradeFeature2Text}"
                                          Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
                                          Glyph="&#xE76E;"
                                          Margin="12,-8,12,0"
                                          IsHitTestVisible="False"
                                          Grid.Row="1" />
-                <controls:SettingsButton Content="{CustomResource Gift2UpgradeFeature3Title}"
+                <controls:SettingsButton x:Name="UpgradeText3"
+                                         Content="{CustomResource Gift2UpgradeFeature3Title}"
                                          Badge="{CustomResource Gift2UpgradeFeature3Text}"
                                          Style="{StaticResource GlyphSubbadgeBadgeButtonPopupStyle}"
                                          Glyph="&#xE76E;"

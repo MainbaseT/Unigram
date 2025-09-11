@@ -62,7 +62,7 @@ namespace Telegram.Views.Stars.Popups
 
             if (gift.Gift is SentGiftRegular regular)
             {
-                if (gift.CanBeUpgraded && IsOwned(clientService, receiverId))
+                if (gift.PrepaidUpgradeHash.Length > 0 || (gift.CanBeUpgraded && IsOwned(clientService, receiverId)))
                 {
                     InitializeGift();
                 }
@@ -181,7 +181,14 @@ namespace Telegram.Views.Stars.Popups
                 Convert.Visibility = Visibility.Collapsed;
                 Info.Visibility = Visibility.Collapsed;
 
-                PurchaseText.Text = Strings.OK;
+                if (string.IsNullOrEmpty(receivedGift.PrepaidUpgradeHash))
+                {
+                    PurchaseText.Text = Strings.OK;
+                }
+                else
+                {
+                    PurchaseText.Text = Strings.Gift2GiftAnUpgrade;
+                }
 
                 if (receivedGift.CanBeUpgraded)
                 {
@@ -491,15 +498,37 @@ namespace Telegram.Views.Stars.Popups
 
             _submitted = true;
 
-            if (_gift?.Gift is SentGiftRegular && _gift.CanBeUpgraded)
+            if (IsOwned(_clientService, _receiverId))
             {
-                ShowHideUpgrade(true);
+                if (_gift?.Gift is SentGiftRegular && _gift.CanBeUpgraded && _upgradeCollapsed)
+                {
+                    ShowHideUpgrade(true);
+                }
+                else if (_gift?.Gift is SentGiftRegular && (_gift.PrepaidUpgradeStarCount > 0 || !_upgradeCollapsed))
+                {
+                    Upgrade2();
+                }
+                else if (_gift?.Gift is SentGiftUpgraded { Gift.ResaleParameters: not null } && !IsOwned(_clientService, _receiverId))
+                {
+                    BuyResale();
+                }
+                else
+                {
+                    Hide(ContentDialogResult.Primary);
+                }
             }
-            else if (_gift?.Gift is SentGiftRegular && (_gift.PrepaidUpgradeStarCount > 0 || !_upgradeCollapsed))
+            else if (_gift.PrepaidUpgradeHash.Length > 0)
             {
-                Upgrade2();
+                if (_upgradeCollapsed)
+                {
+                    ShowHideUpgrade(true);
+                }
+                else
+                {
+                    Upgrade2();
+                }
             }
-            else if (_gift?.Gift is SentGiftUpgraded { Gift.ResaleParameters: not null } && !IsOwned(_clientService, _receiverId))
+            else if (_gift?.Gift is SentGiftUpgraded { Gift.ResaleParameters: not null })
             {
                 BuyResale();
             }
@@ -539,7 +568,19 @@ namespace Telegram.Views.Stars.Popups
 
             //await Task.Delay(2000);
 
-            var response = await _clientService.SendAsync(new UpgradeGift(string.Empty, _gift.ReceivedGiftId, KeepOriginalDetails.IsChecked is true, _gift.PrepaidUpgradeStarCount > 0 ? 0 : regular.Gift.UpgradeStarCount));
+            var starCount = _gift.PrepaidUpgradeStarCount > 0 ? 0 : regular.Gift.UpgradeStarCount;
+
+            Function function;
+            if (IsOwned(_clientService, _receiverId))
+            {
+                function = new UpgradeGift(string.Empty, _gift.ReceivedGiftId, KeepOriginalDetails.IsChecked is true, starCount);
+            }
+            else
+            {
+                function = new BuyGiftUpgrade(_receiverId, _gift.PrepaidUpgradeHash, starCount);
+            }
+
+            var response = await _clientService.SendPaymentAsync(starCount, function);
             if (response is UpgradeGiftResult result)
             {
                 var id = _gift.ReceivedGiftId;
@@ -563,6 +604,11 @@ namespace Telegram.Views.Stars.Popups
                 UpgradeRoot.Visibility = Visibility.Collapsed;
 
                 InitializeUpgraded(_clientService, _gift, result.Gift);
+            }
+            else if (response is Ok)
+            {
+                Hide();
+                ToastPopup.Show(XamlRoot, string.Format("**{0}**\n{1}", Strings.StarsGiftUpgradeCompleted, string.Format(Strings.StarsGiftUpgradeCompletedText, _clientService.GetTitle(_receiverId, true))), ToastPopupIcon.Gift);
             }
             else if (response is Error error)
             {
@@ -668,7 +714,24 @@ namespace Telegram.Views.Stars.Popups
             }
 
             _upgradeCollapsed = !show;
+            _submitted = false;
 
+            if (IsOwned(_clientService, _receiverId))
+            {
+                UpgradedTitle.Text = Strings.Gift2UpgradeTitle;
+                UpgradedSubtitle.Text = Strings.Gift2UpgradeText;
+            }
+            else
+            {
+                UpgradedTitle.Text = Strings.Gift2PrepayUpgradeTitle;
+                UpgradedSubtitle.Text = string.Format(Strings.Gift2PrepayUpgradeText, _clientService.GetTitle(_receiverId, true));
+
+                UpgradeText1.Badge = string.Format(Strings.Gift2PrepayUpgradeFeature1Text, _clientService.GetTitle(_receiverId, true));
+                UpgradeText2.Badge = string.Format(Strings.Gift2PrepayUpgradeFeature2Text, _clientService.GetTitle(_receiverId, true));
+                UpgradeText3.Badge = string.Format(Strings.Gift2PrepayUpgradeFeature3Text, _clientService.GetTitle(_receiverId, true));
+
+                KeepOriginalDetails.Visibility = Visibility.Collapsed;
+            }
 
             DismissButtonRequestedTheme = show ? ElementTheme.Dark : ElementTheme.Default;
             Header.Visibility = show ? Visibility.Collapsed : Visibility.Visible;
@@ -677,16 +740,15 @@ namespace Telegram.Views.Stars.Popups
             DetailRoot.Visibility = show ? Visibility.Collapsed : Visibility.Visible;
             UpgradeRoot.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
 
-            UpgradedTitle.Text = Strings.Gift2UpgradeTitle;
-            UpgradedSubtitle.Text = Strings.Gift2UpgradeText;
-
             if (show)
             {
                 UpdateGift();
 
                 if (_gift.Gift is SentGiftRegular regular)
                 {
-                    PurchaseText.Text = _gift.PrepaidUpgradeStarCount > 0
+                    PurchaseText.Text = _gift.PrepaidUpgradeHash.Length > 0
+                        ? string.Format(Strings.Gift2PrepayUpgradeButton.ReplaceStar(Icons.Premium), regular.Gift.UpgradeStarCount)
+                        : _gift.PrepaidUpgradeStarCount > 0
                         ? Strings.Gift2UpgradeButtonFree
                         : string.Format(Strings.Gift2UpgradeButton.ReplaceStar(Icons.Premium), regular.Gift.UpgradeStarCount);
                 }

@@ -1834,14 +1834,23 @@ namespace Telegram.Controls.Messages
             }
             if (message.IsOutgoing)
             {
+                if (gift.IsPrepaidUpgrade && message.ClientService.TryGetMessageSender(gift.ReceiverId, out Object receiver))
+                {
+                    return ReplaceWithLink(Strings.ActionPrepaidGiftOutbound, receiver, gift);
+                }
+
                 return ReplaceWithLink(Strings.ActionGiftOutbound, "un2", gift);
             }
             else if (message.ClientService.TryGetMessageSender(gift.SenderId, out Object sender))
             {
                 if (gift.ReceiverId.IsUser(message.ClientService.Options.MyId))
                 {
-                    return ReplaceWithLink(Strings.ActionGiftInbound, sender, gift);
+                    if (gift.IsPrepaidUpgrade)
+                    {
+                        return ReplaceWithLink(Strings.ActionPrepaidGiftInbound, sender, gift);
+                    }
 
+                    return ReplaceWithLink(Strings.ActionGiftInbound, sender, gift);
                 }
                 else if (message.ClientService.TryGetMessageSender(gift.ReceiverId, out Object outboundUser))
                 {
