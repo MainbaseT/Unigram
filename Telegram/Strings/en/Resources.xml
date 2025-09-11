@@ -12814,4 +12814,6 @@
     <string name="GiftValueOnSaleFragment">for sale on Fragment &gt;</string>
     <string name="GiftValueOnSaleTelegram">for sale on Telegram &gt;</string>
 
+    <string name="BotCantJoinGroups">This bot can\'t join groups.</string>
+
 </resources>

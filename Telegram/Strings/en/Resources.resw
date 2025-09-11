@@ -2545,6 +2545,9 @@ from **{0}**.</value>
   <data name="BotAffiliateProgramTitle" xml:space="preserve">
     <value>Affiliate Program</value>
   </data>
+  <data name="BotCantJoinGroups" xml:space="preserve">
+    <value>This bot can&apos;t join groups.</value>
+  </data>
   <data name="BotChangeSettings" xml:space="preserve">
     <value>Change Bot Settings</value>
   </data>

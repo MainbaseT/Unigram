@@ -633,6 +633,22 @@ namespace Telegram.Views.Popups
 
         public long ChatId { get; }
 
+        public override bool CanBeSelected(ChooseChatsViewModel viewModel, Chat chat)
+        {
+            if (viewModel.ClientService.TryGetChat(ChatId, out Chat target)
+                && target.Type is ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false }
+                && viewModel.ClientService.TryGetUser(chat, out User user))
+            {
+                if (user.Type is UserTypeBot { CanJoinGroups: false })
+                {
+                    viewModel.ShowToast(Strings.BotCantJoinGroups, ToastPopupIcon.Info);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public override Task<ContentDialogResult> ConfirmSelectionAsync(ChooseChatsViewModel viewModel, IList<Chat> chats)
         {
             if (!viewModel.ClientService.TryGetChat(ChatId, out Chat chat))
@@ -976,6 +992,11 @@ namespace Telegram.Views.Popups
     public abstract class ChooseChatsConfiguration
     {
         public virtual int NumberOfSentMessages => 0;
+
+        public virtual bool CanBeSelected(ChooseChatsViewModel viewModel, Chat chat)
+        {
+            return true;
+        }
 
         public virtual Task<ContentDialogResult> ConfirmSelectionAsync(ChooseChatsViewModel viewModel, IList<Chat> chats)
         {
@@ -1950,7 +1971,11 @@ namespace Telegram.Views.Popups
 
         private bool ItemClick(Chat chat, bool origin)
         {
-            if (ViewModel.Options.CanPostMessages && ViewModel.Configuration is not ChooseChatsConfigurationShareOperation && ViewModel.ClientService.IsSavedMessages(chat))
+            if (!ViewModel.Configuration.CanBeSelected(ViewModel, chat))
+            {
+                return true;
+            }
+            else if (ViewModel.Options.CanPostMessages && ViewModel.Configuration is not ChooseChatsConfigurationShareOperation && ViewModel.ClientService.IsSavedMessages(chat))
             {
                 if (ViewModel.SelectedItems.Empty())
                 {
