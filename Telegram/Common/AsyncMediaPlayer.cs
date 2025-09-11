@@ -232,6 +232,16 @@ namespace Telegram.Common
         public void Close()
         {
             _workQueue.Clear(new WorkItem(CloseImpl));
+
+            lock (_workLock)
+            {
+                if (!_workStarted)
+                {
+                    _workStarted = true;
+                    _workThread = new Thread(Work) { IsBackground = true };
+                    _workThread.Start();
+                }
+            }
         }
 
         private void CloseImpl()
