@@ -376,6 +376,8 @@ namespace Telegram.Controls
         public StorageChartItem Add(NetworkStatisticsEntryFile statistics)
         {
             _types.Add(statistics.FileType);
+            SentBytes += statistics.SentBytes;
+            ReceivedBytes += statistics.ReceivedBytes;
             TotalBytes += statistics.SentBytes + statistics.ReceivedBytes;
             return this;
         }
