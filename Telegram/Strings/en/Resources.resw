@@ -14037,6 +14037,9 @@ If you are not comfortable with Telegram&apos;s modest needs, it won&apos;t be p
   <data name="TranslateMessagesInfo2" xml:space="preserve">
     <value>Google may have access to the text of messages you translate.</value>
   </data>
+  <data name="TranslateSelectedText" xml:space="preserve">
+    <value>Translate Selected Text</value>
+  </data>
   <data name="TranslateTo" xml:space="preserve">
     <value>Translate To</value>
   </data>

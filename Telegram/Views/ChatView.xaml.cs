@@ -3095,7 +3095,7 @@ namespace Telegram.Views
 
                 if (quote != null)
                 {
-                    flyout.CreateFlyoutItem(MessageTranslate_Loaded, ViewModel.TranslateMessage, quote, Strings.TranslateMessage, Icons.Translate);
+                    flyout.CreateFlyoutItem(MessageTranslate_Loaded, ViewModel.TranslateMessage, quote, Strings.TranslateSelectedText, Icons.Translate);
                 }
                 else
                 {

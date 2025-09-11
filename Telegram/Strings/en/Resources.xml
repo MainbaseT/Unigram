@@ -12816,4 +12816,5 @@
 
     <string name="BotCantJoinGroups">This bot can\'t join groups.</string>
 
+    <string name="TranslateSelectedText">Translate Selected Text</string>
 </resources>
