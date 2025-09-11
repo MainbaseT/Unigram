@@ -380,8 +380,6 @@ namespace Telegram.ViewModels.Settings
                 }
 
                 HasPassword = passwordState?.HasPassword ?? false;
-                HasEmailAddress = passwordState?.LoginEmailAddressPattern.Length > 0;
-                EmailAddressPattern = UpdateEmailAddressPattern(passwordState?.LoginEmailAddressPattern);
             }
         }
 
