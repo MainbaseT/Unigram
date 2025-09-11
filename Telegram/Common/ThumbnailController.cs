@@ -43,8 +43,7 @@ namespace Telegram.Common
             {
                 if (_hashCode != hashCode)
                 {
-                    _hashCode = hashCode;
-                    _brush.ImageSource = null;
+                    Recycle(generation, hashCode);
                 }
 
                 var bitmap = await Task.Run(() => PlaceholderHelper.Background.DrawBlurred(path, amount));
@@ -85,8 +84,7 @@ namespace Telegram.Common
             {
                 if (_hashCode != hashCode)
                 {
-                    _hashCode = hashCode;
-                    _brush.ImageSource = null;
+                    Recycle(generation, hashCode);
                 }
 
                 var bitmap = await Task.Run(() => PlaceholderHelper.Background.DrawBlurred(bytes, amount));
@@ -127,8 +125,7 @@ namespace Telegram.Common
             {
                 if (_hashCode != hashCode)
                 {
-                    _hashCode = hashCode;
-                    _brush.ImageSource = null;
+                    Recycle(generation, hashCode);
                 }
 
                 if (_source is not BitmapImage bitmapSource)
@@ -146,10 +143,6 @@ namespace Telegram.Common
                 var file = await StorageFile.GetFileFromPathAsync(path);
                 using (var stream = await file.OpenReadAsync())
                 {
-                    bitmapSource.DecodePixelWidth = width;
-                    bitmapSource.DecodePixelHeight = height;
-                    bitmapSource.DecodePixelType = DecodePixelType.Logical;
-
                     if (_generation != generation)
                     {
                         return;
@@ -181,8 +174,7 @@ namespace Telegram.Common
             {
                 if (_hashCode != hashCode)
                 {
-                    _hashCode = hashCode;
-                    _brush.ImageSource = null;
+                    Recycle(generation, hashCode);
                 }
 
                 if (_source is not BitmapImage bitmapSource)
@@ -199,10 +191,6 @@ namespace Telegram.Common
 
                 using (var stream = new InMemoryRandomAccessStream())
                 {
-                    bitmapSource.DecodePixelWidth = width;
-                    bitmapSource.DecodePixelHeight = height;
-                    bitmapSource.DecodePixelType = DecodePixelType.Logical;
-
                     PlaceholderImageHelper.WriteBytes(bytes, stream);
 
                     await bitmapSource.SetSourceAsync(stream);
@@ -225,6 +213,11 @@ namespace Telegram.Common
 
         public void Recycle()
         {
+            Recycle(0, 0);
+        }
+
+        private void Recycle(int generation, long hashCode)
+        {
             _brush.ImageSource = null;
 
             if (_source is SoftwareBitmapSource software)
@@ -237,8 +230,8 @@ namespace Telegram.Common
             _bitmap?.Dispose();
             _bitmap = null;
 
-            _generation = 0;
-            _hashCode = 0;
+            _generation = generation;
+            _hashCode = hashCode;
         }
     }
 }
