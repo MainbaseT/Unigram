@@ -417,7 +417,8 @@ namespace Telegram.Views.Stars.Popups
         private readonly IClientService _clientService;
         private readonly INavigationService _navigationService;
 
-        private readonly AvailableGift _gift;
+        private readonly long _giftId;
+        private readonly int _resaleCount;
         private readonly MessageSender _receiverId;
 
         private ResoldGiftsCollection _gifts;
@@ -433,7 +434,8 @@ namespace Telegram.Views.Stars.Popups
             _clientService = clientService;
             _navigationService = navigationService;
 
-            _gift = gift;
+            _giftId = gift.Gift.Id;
+            _resaleCount = gift.ResaleCount;
             _receiverId = receiverId;
 
             Title = gift.Title;
@@ -442,7 +444,40 @@ namespace Telegram.Views.Stars.Popups
             _gifts = new ResoldGiftsCollection(clientService, this, gift.Gift.Id);
             ScrollingHost.ItemsSource = _gifts;
 
-            if (_gift.ResaleCount >= 18)
+            if (_resaleCount >= 18)
+            {
+                OrderIcon.Text = Icons.DollarArrowUp16;
+                OrderText.Text = Strings.ResellGiftFilterSortPriceShort;
+                ModelButton.Content = Strings.Gift2ResaleFilterModel;
+                BackdropButton.Content = Strings.Gift2ResaleFilterBackdrop;
+                SymbolButton.Content = Strings.Gift2ResaleFilterSymbol;
+            }
+            else
+            {
+                FiltersRoot.Visibility = Visibility.Collapsed;
+            }
+
+            Opened += OnOpened;
+        }
+
+        public ResoldGiftsPopup(IClientService clientService, INavigationService navigationService, UpgradedGift gift, UpgradedGiftValueInfo valueInfo, MessageSender receiverId)
+        {
+            InitializeComponent();
+
+            _clientService = clientService;
+            _navigationService = navigationService;
+
+            _giftId = gift.RegularGiftId;
+            _resaleCount = valueInfo.TelegramListedGiftCount;
+            _receiverId = receiverId;
+
+            Title = gift.Title;
+            Subtitle.Text = Locale.Declension(Strings.R.Gift2ResaleCount, valueInfo.TelegramListedGiftCount);
+
+            _gifts = new ResoldGiftsCollection(clientService, this, gift.RegularGiftId);
+            ScrollingHost.ItemsSource = _gifts;
+
+            if (valueInfo.TelegramListedGiftCount >= 18)
             {
                 OrderIcon.Text = Icons.DollarArrowUp16;
                 OrderText.Text = Strings.ResellGiftFilterSortPriceShort;
@@ -515,7 +550,7 @@ namespace Telegram.Views.Stars.Popups
             var itemHeight = 136 + 4;
             var itemWidth = (size.X - 4) / 3;
 
-            var rows = Math.Min(_gift.ResaleCount / 3, Math.Ceiling(size.Y / itemHeight));
+            var rows = Math.Min(_resaleCount / 3, Math.Ceiling(size.Y / itemHeight));
             var shapes = new List<CanvasGeometry>();
 
             for (int i = 0; i < rows; i++)
@@ -659,7 +694,7 @@ namespace Telegram.Views.Stars.Popups
 
         public void UpdateItems(GiftForResaleOrder order, IList<UpgradedGiftAttributeId> attributes)
         {
-            _gifts = new ResoldGiftsCollection(_clientService, this, _gift.Gift.Id, order, attributes);
+            _gifts = new ResoldGiftsCollection(_clientService, this, _giftId, order, attributes);
             ScrollingHost.ItemsSource = _gifts;
             ShowHideSkeleton();
         }

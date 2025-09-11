@@ -7359,6 +7359,51 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="GiftTelegramPremiumTitle" xml:space="preserve">
     <value>Gift Telegram Premium</value>
   </data>
+  <data name="GiftValue2" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="GiftValue2LearnMore" xml:space="preserve">
+    <value>learn more</value>
+  </data>
+  <data name="GiftValueAverage" xml:space="preserve">
+    <value>This is average sale price of **{0}** on Telegram and Fragment over the past month.</value>
+  </data>
+  <data name="GiftValueAveragePrice" xml:space="preserve">
+    <value>Average Price</value>
+  </data>
+  <data name="GiftValueAveragePriceInfo" xml:space="preserve">
+    <value>**{0}** is the average sale price of **{1}** gifts over the past month.</value>
+  </data>
+  <data name="GiftValueInitialPrice" xml:space="preserve">
+    <value>Initial Price</value>
+  </data>
+  <data name="GiftValueInitialSale" xml:space="preserve">
+    <value>Initial Sale</value>
+  </data>
+  <data name="GiftValueLastFragment" xml:space="preserve">
+    <value>This is the price at which **{0}** was last sold on Fragment.</value>
+  </data>
+  <data name="GiftValueLastPrice" xml:space="preserve">
+    <value>Last Price</value>
+  </data>
+  <data name="GiftValueLastSale" xml:space="preserve">
+    <value>Last Sale</value>
+  </data>
+  <data name="GiftValueLastTelegram" xml:space="preserve">
+    <value>This is the price at which **{0}** was last sold on Telegram.</value>
+  </data>
+  <data name="GiftValueMinPrice" xml:space="preserve">
+    <value>Minimum Price</value>
+  </data>
+  <data name="GiftValueMinPriceInfo" xml:space="preserve">
+    <value>**{0}** is the floor price for **{1}** gifts listed on Telegram and Fragment.</value>
+  </data>
+  <data name="GiftValueOnSaleFragment" xml:space="preserve">
+    <value>for sale on Fragment &gt;</value>
+  </data>
+  <data name="GiftValueOnSaleTelegram" xml:space="preserve">
+    <value>for sale on Telegram &gt;</value>
+  </data>
   <data name="GlobalAttachGifRestricted" xml:space="preserve">
     <value>Sending GIFs is not allowed in this group.</value>
   </data>

@@ -12797,4 +12797,21 @@
     <string name="ActionPrepaidGiftInbound">un1 sent an upgrade worth **un2** for your gift</string>
     <string name="ActionPrepaidGiftOutbound">You sent an upgrade worth **un2** for **un1**\'s gift</string>
 
+    <string name="GiftValue2">Value</string>
+    <string name="GiftValue2LearnMore">learn more</string>
+
+    <string name="GiftValueAverage">This is average sale price of **{0}** on Telegram and Fragment over the past month.</string>
+    <string name="GiftValueAveragePrice">Average Price</string>
+    <string name="GiftValueAveragePriceInfo">**{0}** is the average sale price of **{1}** gifts over the past month.</string>
+    <string name="GiftValueInitialPrice">Initial Price</string>
+    <string name="GiftValueInitialSale">Initial Sale</string>
+    <string name="GiftValueLastFragment">This is the price at which **{0}** was last sold on Fragment.</string>
+    <string name="GiftValueLastPrice">Last Price</string>
+    <string name="GiftValueLastSale">Last Sale</string>
+    <string name="GiftValueLastTelegram">This is the price at which **{0}** was last sold on Telegram.</string>
+    <string name="GiftValueMinPrice">Minimum Price</string>
+    <string name="GiftValueMinPriceInfo">**{0}** is the floor price for **{1}** gifts listed on Telegram and Fragment.</string>
+    <string name="GiftValueOnSaleFragment">for sale on Fragment &gt;</string>
+    <string name="GiftValueOnSaleTelegram">for sale on Telegram &gt;</string>
+
 </resources>

@@ -1557,6 +1557,9 @@
     <Compile Include="Views\Chats\ChatInviteLinksPage.xaml.cs">
       <DependentUpon>ChatInviteLinksPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Stars\Popups\UpgradedGiftValuePopup.xaml.cs">
+      <DependentUpon>UpgradedGiftValuePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Stars\StarsPage.xaml.cs">
       <DependentUpon>StarsPage.xaml</DependentUpon>
     </Compile>
@@ -3667,6 +3670,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Chats\ChatInviteLinksPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Stars\Popups\UpgradedGiftValuePopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

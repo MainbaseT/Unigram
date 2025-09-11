@@ -367,6 +367,32 @@
                                                          Grid.Column="1" />
                             </Grid>
                         </controls:TableViewItem>
+                        <controls:TableViewItem x:Name="UpgradedValueRoot"
+                                                Header="{CustomResource GiftValue2}"
+                                                Padding="0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="UpgradedValue"
+                                           Margin="8,5,8,6"
+                                           Style="{StaticResource BodyTextBlockStyle}"
+                                           VerticalAlignment="Top" />
+
+                                <controls:SettingsButton x:Name="UpgradedValueRarity"
+                                                         Click="UpgradedValueRarity_Click"
+                                                         Glyph="{CustomResource GiftValue2LearnMore}"
+                                                         Style="{StaticResource SmallButtonStyle}"
+                                                         VerticalAlignment="Center"
+                                                         FontSize="11"
+                                                         Padding="4,0"
+                                                         CornerRadius="8"
+                                                         BorderThickness="0"
+                                                         Height="16"
+                                                         Grid.Column="1" />
+                            </Grid>
+                        </controls:TableViewItem>
                         <controls:TableViewItem x:Name="UpgradedQuantity"
                                                 Header="{CustomResource Gift2Quantity}" />
                     </controls:TableView>

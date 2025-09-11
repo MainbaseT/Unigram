@@ -45,6 +45,8 @@ namespace Telegram.Views.Stars.Popups
 
         private TaskCompletionSource<long> _resaleStarCount;
 
+        private TaskCompletionSource<UpgradedGiftValueInfo> _valueInfo;
+
         private GiftUpgradePreview _preview;
         private int _index;
 
@@ -71,6 +73,7 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (gift.Gift is SentGiftUpgraded upgraded)
             {
+                InitializeValue(upgraded.Gift);
                 InitializeUpgraded(clientService, gift, upgraded.Gift);
             }
         }
@@ -327,6 +330,15 @@ namespace Telegram.Views.Stars.Popups
             UpgradedBackdropRarity.Glyph = (gift.Backdrop.RarityPerMille / 10d).ToString("0.##") + "%";
             UpgradedSymbol.Text = gift.Symbol.Name;
             UpgradedSymbolRarity.Glyph = (gift.Symbol.RarityPerMille / 10d).ToString("0.##") + "%";
+
+            if (gift.ValueAmount != 0)
+            {
+                UpgradedValue.Text = "~" + Locale.FormatCurrency(gift.ValueAmount, gift.ValueCurrency);
+            }
+            else
+            {
+                UpgradedValueRoot.Visibility = Visibility.Collapsed;
+            }
 
             UpgradedQuantity.Content =
                 Locale.Declension(Strings.R.Gift2QuantityIssued1, gift.TotalUpgradedCount) +
@@ -755,6 +767,21 @@ namespace Telegram.Views.Stars.Popups
             }
         }
 
+        private async void InitializeValue(UpgradedGift gift)
+        {
+            _valueInfo = new TaskCompletionSource<UpgradedGiftValueInfo>();
+
+            var response = await _clientService.SendAsync(new GetUpgradedGiftValueInfo(gift.Name));
+            if (response is UpgradedGiftValueInfo valueInfo)
+            {
+                _valueInfo.SetResult(valueInfo);
+            }
+            else
+            {
+                _valueInfo.SetResult(null);
+            }
+        }
+
         private async void InitializeGift()
         {
             UpgradedAnimatedPhoto.LoopCompleted += OnLoopCompleted;
@@ -1122,6 +1149,15 @@ namespace Telegram.Views.Stars.Popups
             else if (_gift.Gift is SentGiftUpgraded upgraded)
             {
                 _navigationService.NavigateToChat(upgraded.Gift.PublisherChatId);
+            }
+        }
+
+        private async void UpgradedValueRarity_Click(object sender, RoutedEventArgs e)
+        {
+            var valueInfo = await _valueInfo.Task;
+            if (valueInfo != null && _gift.Gift is SentGiftUpgraded upgraded)
+            {
+                await UpgradedGiftValuePopup.ShowAsync(XamlRoot, _clientService, _navigationService, upgraded.Gift, valueInfo);
             }
         }
     }
