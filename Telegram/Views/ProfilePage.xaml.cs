@@ -7,6 +7,7 @@
 using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
@@ -88,7 +89,7 @@ namespace Telegram.Views
                 void handler(object sender, RoutedEventArgs e)
                 {
                     _hasBeenScrolled = false;
-                    RootGrid.Update(-1, false);
+                    RootGrid.Unsnap();
 
                     ScrollingHost.Loaded -= handler;
                     ScrollingHost.ChangeView(null, listViewPosition.ScrollPosition, null, true);
@@ -188,6 +189,12 @@ namespace Telegram.Views
         {
             ViewModel.PropertyChanged -= OnPropertyChanged;
             ViewModel.Delegate = null;
+
+            if (_notifyCollectionChanged != null)
+            {
+                _notifyCollectionChanged.CollectionChanged -= OnCollectionChanged;
+                _notifyCollectionChanged = null;
+            }
 
             if (MediaFrame.Content is ProfileSavedMessagesTabPage savedMessagesPage)
             {
@@ -407,6 +414,12 @@ namespace Telegram.Views
 
         private void OnNavigating(object sender, NavigatingCancelEventArgs e)
         {
+            if (_notifyCollectionChanged != null)
+            {
+                _notifyCollectionChanged.CollectionChanged -= OnCollectionChanged;
+                _notifyCollectionChanged = null;
+            }
+
             if (MediaFrame.Content is ProfileSavedMessagesTabPage savedMessagesPage)
             {
                 var args = new NavigatingEventArgs
@@ -451,7 +464,7 @@ namespace Telegram.Views
                 if (_fromItemClick)
                 {
                     _fromItemClick = false;
-                    RootGrid.Update(-1, false);
+                    RootGrid.Unsnap();
                 }
                 return;
             }
@@ -498,10 +511,8 @@ namespace Telegram.Views
             {
                 LoadMore(tabPage.ScrollingHost);
             }
-            else
-            {
-                tabPage.ScrollingHost.RegisterPropertyChangedCallback(ItemsControl.ItemsSourceProperty, OnItemsSourceChanged, ref _itemsSourceToken);
-            }
+
+            tabPage.ScrollingHost.RegisterPropertyChangedCallback(ItemsControl.ItemsSourceProperty, OnItemsSourceChanged, ref _itemsSourceToken);
 
             if (e.Content is not ProfileStoriesTabPage)
             {
@@ -511,9 +522,11 @@ namespace Telegram.Views
             if (_fromItemClick)
             {
                 _fromItemClick = false;
-                RootGrid.Update(-1, false);
+                RootGrid.Unsnap();
             }
         }
+
+        private INotifyCollectionChanged _notifyCollectionChanged;
 
         private void OnItemsSourceChanged(DependencyObject sender, DependencyProperty dp)
         {
@@ -522,7 +535,30 @@ namespace Telegram.Views
                 return;
             }
 
+            if (_notifyCollectionChanged != null)
+            {
+                _notifyCollectionChanged.CollectionChanged -= OnCollectionChanged;
+            }
+
+            _notifyCollectionChanged = scrollingHost.ItemsSource as INotifyCollectionChanged;
+
+            if (_notifyCollectionChanged != null)
+            {
+                _notifyCollectionChanged.CollectionChanged += OnCollectionChanged;
+            }
+
+            _hasBeenScrolled = false;
+            RootGrid.Unsnap();
+
             LoadMore(scrollingHost);
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                ScrollToContent(true);
+            }
         }
 
         private void ProfileHeader_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -686,7 +722,7 @@ namespace Telegram.Views
             {
                 if (e.FinalView.VerticalOffset.AlmostEquals(RootGrid.HeaderHeight, 0.5))
                 {
-                    if (RootGrid.Update(-1, false))
+                    if (RootGrid.Unsnap())
                     {
                         Logger.Info("Unsnap");
                     }
@@ -748,7 +784,7 @@ namespace Telegram.Views
                     : ProfileHeader.HeaderHeight - 48
                     : contentOffset;
 
-                if (RootGrid.Update(direction == PanelScrollingDirection.Forward ? snap : 0, !_initialDirectManipulation))
+                if (RootGrid.Snap(direction == PanelScrollingDirection.Forward ? snap : 0, !_initialDirectManipulation))
                 {
                     if (direction == PanelScrollingDirection.Forward)
                     {
@@ -765,7 +801,7 @@ namespace Telegram.Views
                 var diff = e.FinalView.VerticalOffset - (ProfileHeader.ActualSize.Y - 48);
                 var threshold = _initialDirectManipulation ? 24 : 32;
 
-                if (RootGrid.Update(diff >= -1 && diff <= threshold ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10) : -1, false))
+                if (RootGrid.Snap(diff >= -1 && diff <= threshold ? Math.Max(ProfileHeader.ActualSize.Y - 24, 48 + 10) : -1, false))
                 {
                     if (diff >= 0 && diff <= threshold)
                     {
@@ -962,7 +998,7 @@ namespace Telegram.Views
         private void ScrollToContent(bool disableAnimation)
         {
             _hasBeenScrolled = false;
-            RootGrid.Update(-1, false);
+            RootGrid.Unsnap();
 
             Logger.Info(disableAnimation + ", " + ScrollingHost.ScrollableHeight);
             ScrollingHost.ChangeView(null, ViewModel.IsSavedMessages ? 0 : Math.Round(ProfileHeader.ActualSize.Y - 24), null, disableAnimation);
@@ -986,7 +1022,7 @@ namespace Telegram.Views
                     };
 
                 _hasBeenScrolled = false;
-                RootGrid.Update(-1, false);
+                RootGrid.Unsnap();
 
                 _prevSelectedIndex = Navigation.SelectedIndex;
                 MediaFrame.Navigate(page.Type, page.Parameter, transition);
@@ -1098,7 +1134,7 @@ namespace Telegram.Views
                 void UpdateFilters(Action action)
                 {
                     _hasBeenScrolled = false;
-                    RootGrid.Update(-1, false);
+                    RootGrid.Unsnap();
 
                     action();
                 }
@@ -1178,7 +1214,7 @@ namespace Telegram.Views
                     int y = closest.Position / panel.MaximumRowsOrColumns;
 
                     _hasBeenScrolled = false;
-                    RootGrid.Update(-1, false);
+                    RootGrid.Unsnap();
 
                     ScrollingHost.ChangeView(null, (ViewModel.IsSavedMessages ? ProfileHeader.ActualHeight - 48 + 24 : 0) + (y * panel.ItemHeight), null, false);
                 }
@@ -1321,7 +1357,12 @@ namespace Telegram.Views
 
         public float HeaderHeight => _headerHeight;
 
-        public bool Update(float headerHeight, bool snapToTop)
+        public bool Unsnap()
+        {
+            return Snap(-1, false);
+        }
+
+        public bool Snap(float headerHeight, bool snapToTop)
         {
             if (_headerHeight == headerHeight && _snapToTop == snapToTop)
             {
