@@ -44,7 +44,17 @@
                                              Content="{CustomResource EmailLogin}"
                                              Glyph="&#xE9F2;"
                                              Click="{x:Bind ViewModel.ChangeEmail}"
-                                             IsChevronVisible="True" />
+                                             IsChevronVisible="True">
+                        <controls:SettingsButton.Badge>
+                            <controls:FormattedTextBlock x:Name="ChangeEmailPattern"
+                                                         Loaded="ChangeEmailPattern_Loaded"
+                                                         IsTextSelectionEnabled="False"
+                                                         TextWrapping="NoWrap"
+                                                         TextTrimming="CharacterEllipsis"
+                                                         MaxLines="1"
+                                                         AutoFontSize="False" />
+                        </controls:SettingsButton.Badge>
+                    </controls:SettingsButton>
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl Header="{CustomResource PrivacyTitle}"
