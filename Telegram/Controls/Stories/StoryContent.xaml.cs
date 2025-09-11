@@ -800,7 +800,10 @@ namespace Telegram.Controls.Stories
 
         private void UpdateThumbnail(object target, File file)
         {
-            UpdateThumbnail(_viewModel.SelectedItem, file, null, false);
+            if (_viewModel.SelectedItem != null)
+            {
+                UpdateThumbnail(_viewModel.SelectedItem, file, null, false);
+            }
         }
 
         private void UpdatePhoto(object target, File file)
