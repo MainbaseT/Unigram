@@ -71,6 +71,7 @@ namespace Telegram.Controls.Cells
                 Overlay.Visibility = Visibility.Visible;
                 Subtitle.Text = video.Video.GetDuration();
 
+                Texture.ImageSource = null;
                 UpdateManager.Unsubscribe(this, ref _fileToken);
 
                 UpdateThumbnail(story, video.Video.Thumbnail?.File, video.Video.Minithumbnail, true);
