@@ -75,6 +75,11 @@ namespace Telegram.ViewModels
 
             return HashCode.Combine(ChatId, messageTopicId);
         }
+
+        public override string ToString()
+        {
+            return $"ChatId: {ChatId}, MessageTopic: {MessageTopic}";
+        }
     }
 
     public partial class ChatBusinessRepliesIdNavigationArgs
