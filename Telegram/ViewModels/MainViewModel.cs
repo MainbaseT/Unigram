@@ -588,10 +588,8 @@ namespace Telegram.ViewModels
             ShowPopup(new SettingsArchivePopup(ClientService));
         }
 
-        public async void NavigateToMyProfile(bool savedMessages)
+        public void NavigateToMyProfile(bool savedMessages)
         {
-            await ClientService.SendAsync(new CreatePrivateChat(ClientService.Options.MyId, false));
-
             if (savedMessages)
             {
                 NavigationService.NavigateToChat(ClientService.Options.MyId, force: false);

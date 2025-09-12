@@ -320,7 +320,6 @@ namespace Telegram.Views.Premium.Popups
                 }
                 else if (availableGift.Gift.OverallLimits == null || availableGift.Gift.OverallLimits.RemainingCount > 0)
                 {
-                    await _clientService.SendAsync(new CreatePrivateChat(_clientService.Options.MyId, false));
                     confirm = await _navigationService.ShowPopupAsync(new SendGiftPopup(_clientService, _navigationService, availableGift.Gift, _receiverId));
                 }
                 else if (availableGift.MinResaleStarCount > 0)
