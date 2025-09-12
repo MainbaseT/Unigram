@@ -17,16 +17,9 @@ namespace Telegram.Td
 {
     static class ClientEx
     {
-        public static void Send(this Client client, Function function, Action<Object> handler)
+        public static void Send(this Client client, Function function, RefAction<Object> closure, Action<Object> handler)
         {
-            if (handler == null)
-            {
-                client.Send(function, null);
-            }
-            else
-            {
-                client.Send(function, new TdHandler(handler));
-            }
+            client.Send(function, new TdHandler(closure, handler));
         }
 
         public static void Send(this Client client, Function function)
@@ -34,7 +27,7 @@ namespace Telegram.Td
             client.Send(function, null);
         }
 
-        public static Task<Object> SendAsync(this Client client, Function function, Action<Object> closure)
+        public static Task<Object> SendAsync(this Client client, Function function, RefAction<Object> closure)
         {
             var tsc = new TdCompletionSource(closure);
             client.Send(function, tsc);

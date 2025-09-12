@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 global using DispatcherQueue = Windows.System.DispatcherQueue;
+global using Chat = Telegram.Td.Api.ChatProjection;
 global using Object = Telegram.Td.Api.Object;
 global using Point = Windows.Foundation.Point;
 global using TimeZone = Telegram.Td.Api.TimeZone;

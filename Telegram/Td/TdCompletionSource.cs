@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 
 namespace Telegram.Td
 {
+    public delegate void RefAction<T>(ref T value);
+
     partial class TdCompletionSource : TaskCompletionSource<Object>, ClientResultHandler
     {
-        private readonly Action<Object> _closure;
+        private readonly RefAction<Object> _closure;
 
-        public TdCompletionSource(Action<Object> closure)
+        public TdCompletionSource(RefAction<Object> closure)
         {
             _closure = closure;
         }
@@ -22,12 +24,12 @@ namespace Telegram.Td
         public void OnResult(Object result)
 #else
         public void OnResult(BaseObject result)
-#else
-        public void OnResult(Object result)
 #endif
         {
-            _closure(result as Object);
-            SetResult(result as Object);
+            var temp = result as Object;
+
+            _closure(ref temp);
+            SetResult(temp);
         }
     }
 }

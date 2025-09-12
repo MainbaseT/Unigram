@@ -24,7 +24,7 @@ using Telegram.ViewModels;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 
-namespace Telegram.Td.Api
+namespace Telegram
 {
     public static class TdExtensions
     {

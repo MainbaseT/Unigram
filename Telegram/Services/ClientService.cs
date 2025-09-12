@@ -290,7 +290,7 @@ namespace Telegram.Services
 
         private readonly ConcurrentDictionary<long, MessageEffect> _effects = new();
 
-        private readonly Action<Object> _processFilesDelegate;
+        private readonly RefAction<Object> _processFilesDelegate;
 
         private readonly Dictionary<long, Chat> _chats = new();
         private readonly ConcurrentDictionary<long, ConcurrentDictionary<MessageSender, ChatAction>> _chatActions = new();
@@ -384,7 +384,7 @@ namespace Telegram.Services
             _options = new OptionsService(this);
             _aggregator = aggregator;
 
-            _processFilesDelegate = new Action<Object>(ProcessFiles);
+            _processFilesDelegate = new RefAction<Object>(ProcessFiles);
 
             Initialize(online);
         }
@@ -593,7 +593,7 @@ namespace Telegram.Services
                     DeviceModel = deviceModel,
                     UseTestDc = _settings.UseTestDC
                 });
-                _client.Send(new GetApplicationConfig(), UpdateConfig);
+                Send(new GetApplicationConfig(), UpdateConfig);
             });
         }
 
@@ -1027,14 +1027,7 @@ namespace Telegram.Services
 
         public void Send(Function function, Action<Object> handler = null)
         {
-            if (handler != null)
-            {
-                _client.Send(function, _processFilesDelegate + handler);
-            }
-            else
-            {
-                _client.Send(function, _processFilesDelegate);
-            }
+            _client.Send(function, _processFilesDelegate, handler);
         }
 
         public Task<Object> SendAsync(Function function)
@@ -2876,14 +2869,15 @@ namespace Telegram.Services
                     break;
                 case UpdateNewChat updateNewChat:
                     {
-                        _chats[updateNewChat.Chat.Id] = updateNewChat.Chat;
+                        var projection = new ChatProjection(updateNewChat.Chat);
+                        _chats[updateNewChat.Chat.Id] = projection;
 
-                        Monitor.Enter(updateNewChat.Chat);
+                        Monitor.Enter(projection);
 
-                        UpdateChatLastMessage(updateNewChat.Chat, updateNewChat.Chat.LastMessage);
-                        SetChatPositions(updateNewChat.Chat, updateNewChat.Chat.Positions);
+                        UpdateChatLastMessage(projection, updateNewChat.Chat.LastMessage);
+                        SetChatPositions(projection, updateNewChat.Chat.Positions);
 
-                        Monitor.Exit(updateNewChat.Chat);
+                        Monitor.Exit(projection);
 
                         if (updateNewChat.Chat.Type is ChatTypePrivate privata)
                         {

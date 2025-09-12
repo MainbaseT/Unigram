@@ -369,6 +369,7 @@
     </Compile>
     <Compile Include="Services\Settings\ToolTipSettings.cs" />
     <Compile Include="Services\TextRecognitionService.cs" />
+    <Compile Include="Td\Api\ChatProjection.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionEdit.cs" />
