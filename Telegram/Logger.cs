@@ -141,12 +141,22 @@ namespace Telegram
         }
     }
 
-    public partial class RuntimeException : Exception
+    public partial class RuntimeException : AggregateException
     {
         public RuntimeException(Exception innerException)
-            : base(innerException.Message, innerException)
+            : base(innerException.Message, StowException(innerException))
         {
 
+        }
+
+        private static IList<Exception> StowException(Exception innerException)
+        {
+            if (innerException is AggregateException aggregate)
+            {
+                return aggregate.InnerExceptions;
+            }
+
+            return new[] { innerException };
         }
     }
 }
