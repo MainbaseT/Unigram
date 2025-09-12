@@ -43,17 +43,46 @@ namespace Telegram.ViewModels.Settings
             var response = await ClientService.SendAsync(new GetLocalizationTargetInfo(false));
             if (response is LocalizationTargetInfo pack)
             {
-                var customs = pack.LanguagePacks.Where(x => x.IsInstalled).OrderBy(k => k.Name).ToList();
-                var results = pack.LanguagePacks.Where(x => !x.IsInstalled).OrderBy(k => k.Name).ToList();
+                var customs = pack.LanguagePacks.Where(x => x.IsInstalled).OrderBy(x => x.IsBeta).ThenBy(k => k.Name).ToList();
+                var results = pack.LanguagePacks.Where(x => !x.IsInstalled).OrderBy(k => k.IsBeta).ThenBy(x => x.Name).ToList();
 
                 var items = new List<List<LanguagePackInfo>>();
 
                 if (customs.Count > 0)
                 {
+                    var current = customs.FirstOrDefault(x => x.Id == ClientService.Options.LanguagePackId);
+                    if (current != null)
+                    {
+                        customs.Remove(current);
+                        customs.Insert(0, current);
+                    }
+
                     items.Add(customs);
                 }
+
                 if (results.Count > 0)
                 {
+                    var english = results.FirstOrDefault(x => x.Id == "en");
+                    if (english != null)
+                    {
+                        results.Remove(english);
+                        results.Insert(0, english);
+                    }
+
+                    var suggested = results.FirstOrDefault(x => x.Id == ClientService.Options.SuggestedLanguagePackId);
+                    if (suggested != null && suggested != english)
+                    {
+                        results.Remove(suggested);
+                        results.Insert(0, suggested);
+                    }
+
+                    var current = results.FirstOrDefault(x => x.Id == ClientService.Options.LanguagePackId);
+                    if (current != null && current != suggested && current != english)
+                    {
+                        results.Remove(current);
+                        results.Insert(0, current);
+                    }
+
                     items.Add(results);
                 }
 
