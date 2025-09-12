@@ -555,7 +555,7 @@ namespace Telegram.Views
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Reset)
+            if (e.Action == NotifyCollectionChangedAction.Reset && _hasBeenScrolled)
             {
                 ScrollToContent(true);
             }
@@ -720,14 +720,6 @@ namespace Telegram.Views
 
             if (e.IsInertial && e.NextView.VerticalOffset.AlmostEquals(e.FinalView.VerticalOffset, 1e-02))
             {
-                if (e.FinalView.VerticalOffset.AlmostEquals(RootGrid.HeaderHeight, 0.5))
-                {
-                    if (RootGrid.Unsnap())
-                    {
-                        Logger.Info("Unsnap");
-                    }
-                }
-
                 _initialViewChanging = true;
                 return;
             }
@@ -821,6 +813,11 @@ namespace Telegram.Views
             {
                 ScrollToContent(true);
                 return;
+            }
+
+            if (!e.IsIntermediate && RootGrid.Unsnap())
+            {
+                Logger.Info("Unsnap");
             }
 
             UpdateBackButton();
