@@ -256,16 +256,32 @@ namespace Telegram.Controls.Cells
             {
                 StarCount.Text = gift.Gift.StarCount.ToString("N0");
 
-                if (gift.Gift.IsPremium)
+                if (gift.Gift.OverallLimits.RemainingCount > 0)
                 {
-                    FindName(nameof(PremiumRoot));
-                    PremiumRoot.Visibility = Visibility.Visible;
+                    if (gift.Gift.IsPremium)
+                    {
+                        FindName(nameof(PremiumRoot));
+                        PremiumRoot.Visibility = Visibility.Visible;
 
-                    RibbonRoot.Visibility = Visibility.Visible;
-                    Ribbon.Text = Strings.Gift2LimitedPremium;
+                        RibbonRoot.Visibility = Visibility.Visible;
+                        Ribbon.Text = Strings.Gift2LimitedPremium;
 
-                    RibbonTop.Color = _ribbonPremiumTop;
-                    RibbonBottom.Color = _ribbonPremiumBottom;
+                        RibbonTop.Color = _ribbonPremiumTop;
+                        RibbonBottom.Color = _ribbonPremiumBottom;
+                    }
+                    else
+                    {
+                        if (PremiumRoot != null)
+                        {
+                            PremiumRoot.Visibility = Visibility.Collapsed;
+                        }
+
+                        RibbonRoot.Visibility = Visibility.Visible;
+                        Ribbon.Text = Strings.Gift2LimitedRibbon;
+
+                        RibbonTop.Color = _ribbonLimitedTop;
+                        RibbonBottom.Color = _ribbonLimitedBottom;
+                    }
                 }
                 else
                 {
@@ -275,12 +291,10 @@ namespace Telegram.Controls.Cells
                     }
 
                     RibbonRoot.Visibility = Visibility.Visible;
-                    Ribbon.Text = gift.Gift.OverallLimits.RemainingCount > 0
-                        ? Strings.Gift2LimitedRibbon
-                        : Strings.Gift2SoldOut;
+                    Ribbon.Text = Strings.Gift2SoldOut;
 
-                    RibbonTop.Color = gift.Gift.OverallLimits.RemainingCount > 0 ? _ribbonLimitedTop : _ribbonSoldOutTop;
-                    RibbonBottom.Color = gift.Gift.OverallLimits.RemainingCount > 0 ? _ribbonLimitedBottom : _ribbonSoldOutBottom;
+                    RibbonTop.Color = _ribbonSoldOutTop;
+                    RibbonBottom.Color = _ribbonSoldOutBottom;
                 }
             }
             else if (gift.MinResaleStarCount > 0)
