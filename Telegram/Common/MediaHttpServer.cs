@@ -146,7 +146,7 @@ namespace Telegram.Common
                 long chunk;
                 if (request.Query.TryGetValue("duration", out string durationValue) && int.TryParse(durationValue, out int duration))
                 {
-                    chunk = (long)(((double)file.Size / duration) * 15);
+                    chunk = Math.Min((long)(((double)file.Size / duration) * 15), 4 * 1024 * 1024);
                 }
                 else
                 {
@@ -215,6 +215,20 @@ namespace Telegram.Common
                     {
                         return Serve(request, false);
                     }
+                }
+                catch (Exception ex)
+                {
+                    // Generic error (probably OOM)
+                    Logger.Error(ex);
+
+                    // We return a valid but empty response, VLC should try again
+                    var response = new HttpResponse();
+                    response.StatusCode = "206";
+                    response.Headers["Access-Control-Allow-Origin"] = "*";
+                    response.Headers["Content-Type"] = "video/mp4";
+                    response.Headers["Content-Range"] = string.Format("bytes {0}-{1}/{2}", offset, offset, file.Size);
+
+                    return response;
                 }
             }
 

@@ -355,7 +355,7 @@ namespace Telegram.Controls
                             }
                             else
                             {
-                                limit = Math.Min(file.Size - offset, 5 * 1024 * 1024);
+                                limit = Math.Min(file.Size - offset, 4 * 1024 * 1024);
                             }
 
                             break;
