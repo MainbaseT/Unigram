@@ -369,7 +369,15 @@ namespace Telegram.ViewModels
 
         protected override void RemoveItem(int index)
         {
-            _messages?.Remove(this[index].Id);
+            if (this[index].Content is MessageAlbum album)
+            {
+                foreach (var child in album.Messages)
+                {
+                    _messages.Remove(child.Id);
+                }
+            }
+
+            _messages.Remove(this[index].Id);
 
             if (_suppressOperations)
             {
@@ -377,31 +385,31 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var next = index > 0 ? this[index - 1] : null;
-            var previous = index < Count - 1 ? this[index + 1] : null;
+            var previous = index > 0 ? this[index - 1] : null;
+            var next = index < Count - 1 ? this[index + 1] : null;
 
-            UpdateForumTopicSeparatorOnRemove(ref next, ref previous, ref index);
+            UpdateForumTopicSeparatorOnRemove(ref previous, ref next, ref index);
 
-            var hash2 = AttachHash(next);
-            var hash3 = AttachHash(previous);
+            var hash2 = AttachHash(previous);
+            var hash3 = AttachHash(next);
 
-            UpdateAttach(previous, next);
+            UpdateAttach(next, previous);
 
-            var update2 = AttachHash(next);
-            var update3 = AttachHash(previous);
+            var update2 = AttachHash(previous);
+            var update3 = AttachHash(next);
 
             if (hash3 != update3 || hash2 != update2)
             {
                 AttachChanged?.Invoke(new[]
                 {
-                    hash3 != update3 ? previous : null,
-                    hash2 != update2 ? next : null
+                    hash3 != update3 ? next : null,
+                    hash2 != update2 ? previous : null
                 });
             }
 
-            base.RemoveItem(index);
+            UpdateSeparatorOnRemove(ref previous, ref next, ref index);
 
-            UpdateSeparatorOnRemove(ref next, ref previous, ref index);
+            base.RemoveItem(index);
         }
 
         // TODO: Support MoveItem to optimize UpdateMessageSendSucceeded
@@ -437,50 +445,50 @@ namespace Telegram.ViewModels
             return null;
         }
 
-        private void UpdateSeparatorOnRemove(ref MessageViewModel next, ref MessageViewModel previous, ref int index)
+        private void UpdateSeparatorOnRemove(ref MessageViewModel previous, ref MessageViewModel next, ref int index)
         {
-            if (next != null && next.Content is MessageHeaderDate)
+            if (previous != null && previous.Content is MessageHeaderDate)
             {
-                if (previous == null || !next.AreOnTheSameDay(previous))
+                if (next == null || !next.AreOnTheSameDay(previous))
                 {
                     base.RemoveItem(index - 1);
 
                     index--;
-                    next = index > 0 ? this[index - 1] : null;
+                    previous = index > 0 ? this[index - 1] : null;
                 }
             }
 
-            if (previous != null && previous.Content is MessageHeaderDate)
+            if (next != null && next.Content is MessageHeaderDate)
             {
-                if (next == null || next.AreOnTheSameDay(previous))
+                if (previous == null || previous.AreOnTheSameDay(next))
                 {
                     base.RemoveItem(index + 1);
 
-                    previous = index < Count - 1 ? this[index + 1] : null;
+                    next = index < Count - 1 ? this[index + 1] : null;
                 }
             }
         }
 
-        private void UpdateForumTopicSeparatorOnRemove(ref MessageViewModel next, ref MessageViewModel previous, ref int index)
+        private void UpdateForumTopicSeparatorOnRemove(ref MessageViewModel previous, ref MessageViewModel next, ref int index)
         {
-            if (next != null && next.Content is MessageHeaderMessageTopic forumTopic)
+            if (previous != null && previous.Content is MessageHeaderMessageTopic forumTopic)
             {
-                if (previous == null || !next.TopicId.AreTheSame(previous.TopicId))
+                if (next == null || !next.TopicId.AreTheSame(previous.TopicId))
                 {
                     base.RemoveItem(index - 1);
 
                     index--;
-                    next = index > 0 ? this[index - 1] : null;
+                    previous = index > 0 ? this[index - 1] : null;
                 }
             }
 
-            if (previous != null && previous.Content is MessageHeaderMessageTopic)
+            if (next != null && next.Content is MessageHeaderMessageTopic)
             {
-                if (next == null || next.TopicId.AreTheSame(previous.TopicId))
+                if (previous == null || previous.TopicId.AreTheSame(next.TopicId))
                 {
                     base.RemoveItem(index + 1);
 
-                    previous = index < Count - 1 ? this[index + 1] : null;
+                    next = index < Count - 1 ? this[index + 1] : null;
                 }
             }
         }
