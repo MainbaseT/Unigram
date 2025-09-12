@@ -25,7 +25,7 @@ namespace Telegram.Collections
 {
     public interface IMvxObservableCollection : IList
     {
-        void ReplaceWith(IEnumerable collection);
+        void ReplaceWithT(IEnumerable collection);
     }
 
     public partial class MvxObservableCollection<T>
@@ -176,7 +176,7 @@ namespace Telegram.Collections
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems: items, startingIndex: index));
         }
 
-        public void ReplaceWith(IEnumerable items)
+        public void ReplaceWithT(IEnumerable items)
         {
             ReplaceWith(items.Cast<T>());
         }
