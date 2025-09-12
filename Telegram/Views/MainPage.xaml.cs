@@ -1624,6 +1624,8 @@ namespace Telegram.Views
 
             UpdatePaneToggleButtonVisibility();
             UpdateListViewsSelectedItem(MasterDetail.NavigationService.GetChatFromBackStack());
+
+            SettingsView?.UpdateSelection(false);
         }
 
         private void OnStateChanged(object sender, EventArgs e)

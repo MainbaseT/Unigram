@@ -825,8 +825,7 @@
                         </ListView.ItemTemplate>
                     </ListView>
 
-                    <local:SettingsPage x:Name="SettingsView"
-                                        MasterDetail="{x:Bind MasterDetail}" />
+                    <local:SettingsPage x:Name="SettingsView" />
                 </Grid>
 
                 <stories:StoriesStrip x:Name="Stories"
