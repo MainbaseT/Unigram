@@ -33,6 +33,13 @@ namespace Telegram.Controls
 
     public partial class ProfilePicture : Control
     {
+        public enum State
+        {
+            Template,
+            Download,
+            Update
+        }
+
         private long _fileToken;
         private int? _fileId;
         private long? _referenceId;
@@ -78,32 +85,37 @@ namespace Telegram.Controls
 
             _templateApplied = true;
 
+            ApplyParameters(State.Template);
+
+            base.OnApplyTemplate();
+        }
+
+        private void ApplyParameters(State state)
+        {
             if (_parameters is ChatParameters chat)
             {
-                SetChat(chat.ClientService, chat.Chat, chat.Side, false);
+                SetChat(chat.ClientService, chat.Chat, chat.Side, state);
             }
             else if (_parameters is UserParameters user)
             {
-                SetUser(user.ClientService, user.User, user.Side, false);
+                SetUser(user.ClientService, user.User, user.Side, state);
             }
             else if (_parameters is ChatInviteParameters chatInvite)
             {
-                SetChat(chatInvite.ClientService, chatInvite.Chat, chatInvite.Side, false);
+                SetChat(chatInvite.ClientService, chatInvite.Chat, chatInvite.Side, state);
             }
             else if (_parameters is ChatPhotoParameters chatPhoto)
             {
-                SetChatPhoto(chatPhoto.ClientService, chatPhoto.Photo, chatPhoto.Side, false);
+                SetChatPhoto(chatPhoto.ClientService, chatPhoto.Photo, chatPhoto.Side, state);
             }
             else if (_parameters is StoryParameters story)
             {
-                SetStory(story.ClientService, story.Story, story.Side, false);
+                SetStory(story.ClientService, story.Story, story.Side, state);
             }
-            else
+            else if (state != State.Update)
             {
                 OnSourceChanged(Source);
             }
-
-            base.OnApplyTemplate();
         }
 
         private void UpdateCornerRadius()
@@ -312,39 +324,20 @@ namespace Telegram.Controls
 
         private void UpdateFile(object target, File file)
         {
-            if (_parameters is ChatParameters chat)
-            {
-                SetChat(chat.ClientService, chat.Chat, chat.Side, false);
-            }
-            else if (_parameters is UserParameters user)
-            {
-                SetUser(user.ClientService, user.User, user.Side, false);
-            }
-            else if (_parameters is ChatInviteParameters chatInvite)
-            {
-                SetChat(chatInvite.ClientService, chatInvite.Chat, chatInvite.Side, false);
-            }
-            else if (_parameters is ChatPhotoParameters chatPhoto)
-            {
-                SetChatPhoto(chatPhoto.ClientService, chatPhoto.Photo, chatPhoto.Side, false);
-            }
-            else if (_parameters is StoryParameters story)
-            {
-                SetStory(story.ClientService, story.Story, story.Side, false);
-            }
+            ApplyParameters(State.Update);
         }
 
         #region MessageSender
 
-        public void SetMessageSender(IClientService clientService, MessageSender sender, int side, bool download = true)
+        public void SetMessageSender(IClientService clientService, MessageSender sender, int side)
         {
             if (clientService.TryGetUser(sender, out User user))
             {
-                SetUser(clientService, user, side, download);
+                SetUser(clientService, user, side, State.Download);
             }
             else if (clientService.TryGetChat(sender, out Chat chat))
             {
-                SetChat(clientService, chat, side, download);
+                SetChat(clientService, chat, side, State.Download);
             }
         }
 
@@ -366,7 +359,7 @@ namespace Telegram.Controls
             }
         }
 
-        public void SetStory(IClientService clientService, Story story, int side, bool download = true)
+        public void SetStory(IClientService clientService, Story story, int side, State state = State.Download)
         {
             if (!_templateApplied)
             {
@@ -376,29 +369,29 @@ namespace Telegram.Controls
 
             if (story.Content is StoryContentPhoto photo)
             {
-                SetStory(clientService, story, photo.Photo.Sizes[0].Photo.Id, photo.Photo.GetSmall()?.Photo, side, download);
+                SetStory(clientService, story, photo.Photo.Sizes[0].Photo.Id, photo.Photo.GetSmall()?.Photo, side, state);
             }
             else if (story.Content is StoryContentVideo video)
             {
-                SetStory(clientService, story, video.Video.Video.Id, video.Video.Thumbnail?.File, side, download);
+                SetStory(clientService, story, video.Video.Video.Id, video.Video.Thumbnail?.File, side, state);
             }
         }
 
-        private void SetStory(IClientService clientService, Story story, int fileId, File file, int side, bool download = true)
+        private void SetStory(IClientService clientService, Story story, int fileId, File file, int side, State state = State.Download)
         {
             UpdateManager.Unsubscribe(this, ref _fileToken);
 
-            if (_referenceId != story.Id || _fileId != file?.Id || Source == null || !download)
+            if (_referenceId != story.Id || _fileId != file?.Id || Source == null || state != State.Download)
             {
                 _referenceId = story.Id;
                 _fileId = file?.Id;
 
-                Source = GetStory(clientService, story, fileId, file, side, out var shape, download);
+                Source = GetStory(clientService, story, fileId, file, side, out var shape, state);
                 Shape = shape;
             }
         }
 
-        private object GetStory(IClientService clientService, Story story, int fileId, File file, int side, out ProfilePictureShape shape, bool download = true)
+        private object GetStory(IClientService clientService, Story story, int fileId, File file, int side, out ProfilePictureShape shape, State state = State.Download)
         {
             System.Diagnostics.Debug.Assert(side == Width);
 
@@ -413,9 +406,9 @@ namespace Telegram.Controls
 
                     return _controller;
                 }
-                else if (download)
+                else
                 {
-                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
+                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && state != State.Update)
                     {
                         clientService.DownloadFile(file.Id, 1);
                     }
@@ -462,7 +455,7 @@ namespace Telegram.Controls
             }
         }
 
-        public void SetChat(IClientService clientService, Chat chat, int side, bool download = true)
+        public void SetChat(IClientService clientService, Chat chat, int side, State state = State.Download)
         {
             if (!_templateApplied)
             {
@@ -470,24 +463,24 @@ namespace Telegram.Controls
                 return;
             }
 
-            SetChat(clientService, chat, chat.Photo?.Small, side, download);
+            SetChat(clientService, chat, chat.Photo?.Small, side, state);
         }
 
-        private void SetChat(IClientService clientService, Chat chat, File file, int side, bool download = true)
+        private void SetChat(IClientService clientService, Chat chat, File file, int side, State state = State.Download)
         {
             UpdateManager.Unsubscribe(this, ref _fileToken);
 
-            if (_referenceId != chat.Id || _fileId != file?.Id || Source == null || !download)
+            if (_referenceId != chat.Id || _fileId != file?.Id || Source == null || state != State.Download)
             {
                 _referenceId = chat.Id;
                 _fileId = file?.Id;
 
-                Source = GetChat(clientService, chat, file, side, out var shape, download);
+                Source = GetChat(clientService, chat, file, side, out var shape, state);
                 Shape = shape;
             }
         }
 
-        private object GetChat(IClientService clientService, Chat chat, File file, int side, out ProfilePictureShape shape, bool download = true)
+        private object GetChat(IClientService clientService, Chat chat, File file, int side, out ProfilePictureShape shape, State state = State.Download)
         {
             // TODO: this method may throw a NullReferenceException in some conditions
 
@@ -527,9 +520,9 @@ namespace Telegram.Controls
 
                     return _controller;
                 }
-                else if (download)
+                else
                 {
-                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
+                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && state != State.Update)
                     {
                         clientService.DownloadFile(file.Id, 1);
                     }
@@ -581,7 +574,7 @@ namespace Telegram.Controls
             }
         }
 
-        public void SetUser(IClientService clientService, User user, int side, bool download = true)
+        public void SetUser(IClientService clientService, User user, int side, State state = State.Download)
         {
             if (!_templateApplied)
             {
@@ -589,24 +582,24 @@ namespace Telegram.Controls
                 return;
             }
 
-            SetUser(clientService, user, user.ProfilePhoto?.Small, side, download);
+            SetUser(clientService, user, user.ProfilePhoto?.Small, side, state);
         }
 
-        public void SetUser(IClientService clientService, User user, File file, int side, bool download = true)
+        private void SetUser(IClientService clientService, User user, File file, int side, State state = State.Download)
         {
             UpdateManager.Unsubscribe(this, ref _fileToken);
 
-            if (_referenceId != user.Id || _fileId != file?.Id || Source == null || !download)
+            if (_referenceId != user.Id || _fileId != file?.Id || Source == null || state != State.Download)
             {
                 _referenceId = user.Id;
                 _fileId = file?.Id;
 
-                Source = GetUser(clientService, user, file, side, download);
+                Source = GetUser(clientService, user, file, side, state);
                 Shape = ProfilePictureShape.Ellipse;
             }
         }
 
-        private object GetUser(IClientService clientService, User user, File file, int side, bool download = true)
+        private object GetUser(IClientService clientService, User user, File file, int side, State state = State.Download)
         {
             System.Diagnostics.Debug.Assert(side == Width);
 
@@ -619,9 +612,9 @@ namespace Telegram.Controls
 
                     return _controller;
                 }
-                else if (download)
+                else
                 {
-                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
+                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && state != State.Update)
                     {
                         clientService.DownloadFile(file.Id, 1);
                     }
@@ -669,7 +662,7 @@ namespace Telegram.Controls
             }
         }
 
-        public void SetChat(IClientService clientService, ChatInviteLinkInfo chat, int side, bool download = true)
+        public void SetChat(IClientService clientService, ChatInviteLinkInfo chat, int side, State state = State.Download)
         {
             if (!_templateApplied)
             {
@@ -677,18 +670,18 @@ namespace Telegram.Controls
                 return;
             }
 
-            SetChat(clientService, chat, chat.Photo?.Small, side, download);
+            SetChat(clientService, chat, chat.Photo?.Small, side, state);
         }
 
-        private void SetChat(IClientService clientService, ChatInviteLinkInfo chat, File file, int side, bool download = true)
+        private void SetChat(IClientService clientService, ChatInviteLinkInfo chat, File file, int side, State state = State.Download)
         {
             UpdateManager.Unsubscribe(this, ref _fileToken);
 
-            Source = GetChat(clientService, chat, file, side, download);
+            Source = GetChat(clientService, chat, file, side, state);
             Shape = ProfilePictureShape.Ellipse;
         }
 
-        private object GetChat(IClientService clientService, ChatInviteLinkInfo chat, File file, int side, bool download = true)
+        private object GetChat(IClientService clientService, ChatInviteLinkInfo chat, File file, int side, State state = State.Download)
         {
             if (file != null)
             {
@@ -701,7 +694,7 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && download)
+                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && state != State.Update)
                     {
                         clientService.DownloadFile(file.Id, 1);
                     }
@@ -741,7 +734,7 @@ namespace Telegram.Controls
             }
         }
 
-        public void SetChatPhoto(IClientService clientService, ChatPhoto photo, int side, bool download = true)
+        public void SetChatPhoto(IClientService clientService, ChatPhoto photo, int side, State state = State.Download)
         {
             if (!_templateApplied)
             {
@@ -749,18 +742,18 @@ namespace Telegram.Controls
                 return;
             }
 
-            SetChatPhoto(clientService, photo, photo.GetBig()?.Photo, side, download);
+            SetChatPhoto(clientService, photo, photo.GetBig()?.Photo, side, state);
         }
 
-        private void SetChatPhoto(IClientService clientService, ChatPhoto photo, File file, int side, bool download = true)
+        private void SetChatPhoto(IClientService clientService, ChatPhoto photo, File file, int side, State state = State.Download)
         {
             UpdateManager.Unsubscribe(this, ref _fileToken);
 
-            Source = GetChatPhoto(clientService, photo, file, side, download);
+            Source = GetChatPhoto(clientService, photo, file, side, state);
             Shape = ProfilePictureShape.Ellipse;
         }
 
-        private object GetChatPhoto(IClientService clientService, ChatPhoto photo, File file, int side, bool download = true)
+        private object GetChatPhoto(IClientService clientService, ChatPhoto photo, File file, int side, State state = State.Download)
         {
             if (file != null)
             {
@@ -773,7 +766,7 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && download)
+                    if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && state != State.Update)
                     {
                         clientService.DownloadFile(file.Id, 1);
                     }
