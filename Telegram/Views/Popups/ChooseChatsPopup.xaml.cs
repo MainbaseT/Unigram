@@ -1971,7 +1971,7 @@ namespace Telegram.Views.Popups
 
         private bool ItemClick(Chat chat, bool origin)
         {
-            if (!ViewModel.Configuration.CanBeSelected(ViewModel, chat))
+            if (ViewModel.Configuration != null && !ViewModel.Configuration.CanBeSelected(ViewModel, chat))
             {
                 return true;
             }

@@ -529,7 +529,7 @@ namespace Telegram.Views.Stars.Popups
                     Hide(ContentDialogResult.Primary);
                 }
             }
-            else if (_gift.PrepaidUpgradeHash.Length > 0)
+            else if (_gift?.PrepaidUpgradeHash.Length > 0)
             {
                 if (_upgradeCollapsed)
                 {
