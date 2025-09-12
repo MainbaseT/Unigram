@@ -117,6 +117,10 @@ namespace Telegram.ViewModels.Chats
                 _chat = ClientService.GetChat(args.ChatId);
                 _type = args.Type;
             }
+            else if (parameter is ChatMessageTopic chatMessageTopic)
+            {
+                _chat = ClientService.GetChat(chatMessageTopic.ChatId);
+            }
             else if (parameter is long chatId)
             {
                 _chat = ClientService.GetChat(chatId);
@@ -128,7 +132,7 @@ namespace Telegram.ViewModels.Chats
                 //_type = ChatStoriesType.Pinned;
             }
 
-            if (_type == ChatStoriesType.Pinned)
+            if (_chat != null && _type == ChatStoriesType.Pinned)
             {
                 InitializeAlbums();
             }
