@@ -28,11 +28,12 @@ namespace Telegram.ViewModels
 {
     public partial class SearchChatsTabItem
     {
-        public SearchChatsTabItem(string text, Type type, SearchCollection<MessageWithOwner, MediaCollection> items)
+        public SearchChatsTabItem(string text, Type type, SearchCollection<MessageWithOwner, MediaCollection> items = null, bool isNew = false)
         {
             Text = text;
             Type = type;
             Items = items;
+            IsNew = isNew;
         }
 
         public string Text { get; }
@@ -40,6 +41,8 @@ namespace Telegram.ViewModels
         public Type Type { get; }
 
         public SearchCollection<MessageWithOwner, MediaCollection> Items { get; }
+
+        public bool IsNew { get; }
     }
 
     public partial class SearchChatsViewModel : MediaTabsViewModelBase, IIncrementalCollectionOwner
@@ -80,10 +83,10 @@ namespace Telegram.ViewModels
 
             Tabs = new List<SearchChatsTabItem>
             {
-                new SearchChatsTabItem(Strings.FilterChats, typeof(BlankPage), null),
-                new SearchChatsTabItem(Strings.FilterChannels, typeof(BlankPage), null),
-                new SearchChatsTabItem(Strings.AppsTab, typeof(BlankPage), null),
-                new SearchChatsTabItem(Strings.SearchPosts, typeof(SearchPostsTabPage), null),
+                new SearchChatsTabItem(Strings.FilterChats, typeof(BlankPage)),
+                new SearchChatsTabItem(Strings.FilterChannels, typeof(BlankPage)),
+                new SearchChatsTabItem(Strings.AppsTab, typeof(BlankPage)),
+                new SearchChatsTabItem(Strings.SearchPosts, typeof(SearchPostsTabPage), isNew: true),
                 new SearchChatsTabItem(Strings.SharedMediaTab2, typeof(ProfileMediaTabPage), Media.Items),
                 new SearchChatsTabItem(Strings.SharedFilesTab2, typeof(ProfileFilesTabPage), Files.Items),
                 new SearchChatsTabItem(Strings.SharedLinksTab2, typeof(ProfileLinksTabPage), Links.Items),
