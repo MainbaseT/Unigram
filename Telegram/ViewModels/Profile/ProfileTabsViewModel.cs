@@ -157,12 +157,6 @@ namespace Telegram.ViewModels.Profile
             }
 
             var chatId = (long)parameter;
-
-            if (state.TryGet("selectedIndex", out int selectedIndex))
-            {
-                SelectedIndex = selectedIndex;
-            }
-
             Chat = ClientService.GetChat(chatId);
 
             Media.UpdateQuery(string.Empty);
@@ -304,13 +298,6 @@ namespace Telegram.ViewModels.Profile
         {
             get => _chat;
             set => Set(ref _chat, value);
-        }
-
-        private int _selectedIndex;
-        public int SelectedIndex
-        {
-            get => _selectedIndex;
-            set => Set(ref _selectedIndex, value);
         }
 
         public override MediaCollection SetSearch(object sender, string query)
