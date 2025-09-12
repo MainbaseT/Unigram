@@ -2225,6 +2225,12 @@ namespace Telegram.Services
                         ProcessFiles(starTransactionTypeGiftUpgrade.Gift);
                     }
                     break;
+                case StarTransactionTypeGiftUpgradePurchase starTransactionTypeGiftUpgradePurchase:
+                    if (starTransactionTypeGiftUpgradePurchase.Gift != null)
+                    {
+                        ProcessFiles(starTransactionTypeGiftUpgradePurchase.Gift);
+                    }
+                    break;
                 case StarTransactionTypePremiumPurchase starTransactionTypePremiumPurchase:
                     if (starTransactionTypePremiumPurchase.Sticker != null)
                     {
