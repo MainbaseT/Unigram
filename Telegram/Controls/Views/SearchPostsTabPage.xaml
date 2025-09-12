@@ -13,6 +13,7 @@
         <ListView x:Name="ScrollingHost"
                   IsItemClickEnabled="True"
                   SelectionMode="None"
+                  ItemClick="OnItemClick"
                   ChoosingItemContainer="OnChoosingItemContainer"
                   ContainerContentChanging="OnContainerContentChanging">
             <ListView.Template>

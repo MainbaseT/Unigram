@@ -12,6 +12,7 @@ using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
+using Telegram.Controls.Views;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -264,6 +265,12 @@ namespace Telegram.Views.Profile
             foregroundShape.StartAnimation("Offset", animation);
 
             ElementCompositionPreview.SetElementChildVisual(LoadingState, visual);
+        }
+
+        private void OnItemClick(object sender, ItemClickEventArgs e)
+        {
+            var view = this.GetParent<SearchChatsView>();
+            view?.RaiseItemClick(e);
         }
     }
 }

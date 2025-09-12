@@ -93,6 +93,11 @@ namespace Telegram.Controls.Views
 
         public event ItemClickEventHandler ItemClick;
 
+        public void RaiseItemClick(ItemClickEventArgs e)
+        {
+            ItemClick?.Invoke(this, e);
+        }
+
         public event TypedEventHandler<UIElement, ItemContextRequestedEventArgs> ItemContextRequested;
 
         public ListView Root => ItemsHost;
