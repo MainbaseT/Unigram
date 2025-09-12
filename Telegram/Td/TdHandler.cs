@@ -17,7 +17,9 @@ namespace Telegram.Td
             _callback = callback;
         }
 
-#if TD_CX
+#if TD_WINRT
+        public void OnResult(Object result)
+#else
         public void OnResult(BaseObject result)
 #else
         public void OnResult(Object result)

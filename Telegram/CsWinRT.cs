@@ -11,7 +11,7 @@ global using TimeZone = Telegram.Td.Api.TimeZone;
 global using User = Telegram.Td.Api.User;
 global using VirtualKey = Windows.System.VirtualKey;
 global using VirtualKeyModifiers = Windows.System.VirtualKeyModifiers;
-#if TD_CX
+#if !TD_WINRT
 global using DeleteFile = Telegram.Td.Api.DeleteFileW;
 global using BaseObject = Telegram.Td.Api.BaseObject;
 #endif
@@ -58,7 +58,7 @@ using WinRT;
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Collections.MvxObservableCollection<Telegram.Td.Api.PremiumFeature>))]
 #endif
 
-#if !TD_CX
+#if TD_WINRT
 namespace Telegram.Td.Api
 {
     public class NativeObject

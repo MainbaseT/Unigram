@@ -435,10 +435,10 @@ namespace Telegram.Services
                 }
             }
 
-#if TD_CX
-            _client = Client.Create(this);
-#else
+#if TD_WINRT
             _client = new Client(this);
+#else
+            _client = Client.Create(this);
 #endif
 
 #if MOCKUP
@@ -2781,10 +2781,10 @@ namespace Telegram.Services
             }
         }
 
-#if TD_CX
-        public void OnResult(BaseObject update)
-#else
+#if TD_WINRT
         public void OnResult(Object update)
+#else
+        public void OnResult(BaseObject update)
 #endif
         {
             ProcessFiles(update);
