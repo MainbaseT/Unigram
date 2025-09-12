@@ -207,26 +207,28 @@ namespace Telegram.Navigation
 
         public UIElement Content
         {
-            get => _window.Content;
+            get => _lockedContent ?? _window.Content;
             set
             {
-                _window.Content = value;
-
-                if (value != null)
+                if (_locked != null)
                 {
-                    IsCallInProgress = value is VoipPage or GroupCallPage or LiveStreamPage;
+                    _lockedContent = value;
 
-                    if (_locked != null)
-                    {
-                        value.Visibility = Visibility.Collapsed;
-                    }
-
-                    if (value is FrameworkElement element)
-                    {
-                        element.Loading += OnLoading;
-                        element.Loaded += OnLoaded;
-                    }
+                    // We need to set some content or the window won't initialize
+                    _window.Content = new Border();
                 }
+                else
+                {
+                    _window.Content = value;
+                }
+
+                if (value is Control control)
+                {
+                    control.Loading += OnLoading;
+                    control.Loaded += OnLoaded;
+                }
+
+                IsCallInProgress = value is VoipPage or GroupCallPage or LiveStreamPage;
             }
         }
 
@@ -242,9 +244,9 @@ namespace Telegram.Navigation
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (sender is FrameworkElement element)
+            if (sender is Control control)
             {
-                element.Loaded -= OnLoaded;
+                control.Loaded -= OnLoaded;
             }
 
             ViewService.OnWindowLoaded();
@@ -423,6 +425,7 @@ namespace Telegram.Navigation
 
         #region Lock
 
+        private UIElement _lockedContent;
         private PasscodePage _locked;
 
         public async void Lock(bool biometrics)
@@ -434,7 +437,8 @@ namespace Telegram.Navigation
 
             if (_window.Content != null)
             {
-                _window.Content.Visibility = Visibility.Collapsed;
+                _lockedContent = _window.Content;
+                _window.Content = new Border();
             }
 
             _locked = new PasscodePage(biometrics && IsInMainView);
@@ -443,9 +447,12 @@ namespace Telegram.Navigation
             {
                 s.Closing -= handler;
 
-                if (_window.Content != null)
+                _locked = null;
+
+                if (_lockedContent != null)
                 {
-                    _window.Content.Visibility = Visibility.Visible;
+                    _window.Content = _lockedContent;
+                    _lockedContent = null;
                 }
             }
 
@@ -455,7 +462,10 @@ namespace Telegram.Navigation
             _locked.Closing += handler;
             await _locked.ShowQueuedAsync(Content?.XamlRoot);
 
-            _locked = null;
+            if (_window.Content is Control control)
+            {
+                control.Focus(FocusState.Programmatic);
+            }
         }
 
         public void Unlock()

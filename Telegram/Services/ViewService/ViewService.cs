@@ -116,7 +116,7 @@ namespace Telegram.Services
 
             await CoreApplication.MainView.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
             {
-                if (Window.Current.Content is RootPage root)
+                if (WindowContext.Current.Content is RootPage root)
                 {
                     root.PresentContent(options.Content(null));
                     await ApplicationViewSwitcher.TryShowAsStandaloneAsync(ApplicationView.GetForCurrentView().Id);
