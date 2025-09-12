@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using System;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
@@ -171,13 +172,20 @@ namespace Telegram.Views.Profile
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.InRecycleQueue)
+            try
             {
-                return;
+                if (args.InRecycleQueue || ViewModel == null)
+                {
+                    return;
+                }
+                else if (args.ItemContainer.ContentTemplateRoot is ProfileCell content)
+                {
+                    content.UpdateChatSharedMembers(ViewModel.ClientService, args, OnContainerContentChanging);
+                }
             }
-            else if (args.ItemContainer.ContentTemplateRoot is ProfileCell content)
+            catch (Exception ex)
             {
-                content.UpdateChatSharedMembers(ViewModel.ClientService, args, OnContainerContentChanging);
+                Logger.Exception(ex);
             }
         }
 
