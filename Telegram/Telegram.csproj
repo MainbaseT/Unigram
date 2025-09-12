@@ -455,6 +455,7 @@
     <Compile Include="Services\ForumTopicService.cs" />
     <Compile Include="Td\Api\ErrorStarsNeeded.cs" />
     <Compile Include="Td\Api\InputMessageReplyToTopicMessage.cs" />
+    <Compile Include="Services\MessageAlbumLastMessageService.cs" />
     <Compile Include="Td\Api\MessageHeaderAccountInfo.cs" />
     <Compile Include="Td\Api\MessageHeaderMessageTopic.cs" />
     <Compile Include="Td\Api\PremiumLimitTypeFileSize.cs" />
