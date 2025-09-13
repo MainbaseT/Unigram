@@ -538,6 +538,11 @@ namespace Telegram.Controls
                 ReleasePointerCaptures();
                 forumTopicCell.ShowPreview(args);
             }
+            else if (args.HoldingState == HoldingState.Started && args.Position.X is >= 8 and <= 56 && args.Position.Y is >= 8 and <= 56 && ContentTemplateRoot is ForumTopicVerticalCell forumTopicVerticalCell)
+            {
+                ReleasePointerCaptures();
+                forumTopicVerticalCell.ShowPreview(args);
+            }
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)

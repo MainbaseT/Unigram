@@ -507,47 +507,52 @@ namespace Telegram.Controls.Cells
             flyout.Items.Add(tooltip);
 
             var chat = _chat;
-            var message = chat?.LastMessage;
-
             if (chat == null)
             {
                 return;
             }
 
+            var context = WindowContext.ForXamlRoot(this);
+            var service = context.NavigationServices.GetByFrameId($"Main{_viewModel.SessionId}") as NavigationService;
+
             var grid = new Grid();
-            var frame = new Frame
+            var chatView = new ChatView
             {
+                FromPreview = true,
                 Width = 320,
                 Height = 360
             };
 
-            var context = WindowContext.ForXamlRoot(this);
+            var viewModel = TypeResolver.Current.Resolve<DialogViewModel, IDialogDelegate>(chatView, service.SessionId);
+            viewModel.NavigationService = service;
+            viewModel.Dispatcher = service.Dispatcher;
+            chatView.Activate(viewModel);
 
-            var service = new TLNavigationService(_viewModel.ClientService, null, context, frame, "ChatPreview");
-            service.NavigateToChat(chat);
-
-            var chatPage = frame.Content as ChatPage;
-            var chatView = chatPage?.Content as ChatView;
-
-            if (chatView != null)
+            if (_forumTopic != null)
             {
-                void handler(object sender, RoutedEventArgs e)
-                {
-                    Logger.Info("Unloaded");
-
-                    chatView.Unloaded -= handler;
-                    chatView.ViewModel.NavigatedFrom(null, false);
-                    chatView.Deactivate(false);
-                }
-
-                chatView.Unloaded += handler;
+                _ = viewModel.NavigatedToAsync(new ChatMessageTopic(chat.Id, new MessageTopicForum(_forumTopic.Info.ForumTopicId)), Windows.UI.Xaml.Navigation.NavigationMode.New, new Telegram.Navigation.Services.NavigationState());
             }
+            else if (_directMessagesChatTopic != null)
+            {
+                _ = viewModel.NavigatedToAsync(new ChatMessageTopic(chat.Id, new MessageTopicDirectMessages(_directMessagesChatTopic.Id)), Windows.UI.Xaml.Navigation.NavigationMode.New, new Telegram.Navigation.Services.NavigationState());
+            }
+
+            void handler(object sender, object e)
+            {
+                Logger.Info("Unloaded");
+
+                flyout.Closing -= handler;
+                chatView.ViewModel.NavigatedFrom(null, false);
+                chatView.Deactivate(true);
+            }
+
+            flyout.Closing += handler;
 
             var background = new ChatBackgroundControl();
             background.Update(_viewModel.ClientService, null);
 
             grid.Children.Add(background);
-            grid.Children.Add(frame);
+            grid.Children.Add(chatView);
             grid.CornerRadius = new CornerRadius(8);
 
             tooltip.Content = grid;
