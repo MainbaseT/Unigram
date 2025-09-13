@@ -3032,22 +3032,7 @@ namespace Telegram.ViewModels
 
         public override LinkPreviewOptions GetLinkPreviewOptions()
         {
-            var header = _composerHeader;
-            if (header?.LinkPreviewOptions != null)
-            {
-                return new LinkPreviewOptions
-                {
-                    ForceLargeMedia = header.LinkPreviewOptions.ForceLargeMedia,
-                    ForceSmallMedia = header.LinkPreviewOptions.ForceSmallMedia,
-                    ShowAboveText = header.LinkPreviewOptions.ShowAboveText,
-                    IsDisabled = header.LinkPreviewOptions.IsDisabled,
-                    Url = header.LinkPreviewOptions.ForceLargeMedia || header.LinkPreviewOptions.ForceSmallMedia
-                        ? header.LinkPreviewUrl ?? string.Empty
-                        : string.Empty
-                };
-            }
-
-            return null;
+            return _composerHeader?.LinkPreviewOptions;
         }
 
         protected override Function CreateSendMessage(long chatId, long messageThreadId, InputMessageReplyTo replyTo, MessageSendOptions messageSendOptions, InputMessageContent inputMessageContent)
