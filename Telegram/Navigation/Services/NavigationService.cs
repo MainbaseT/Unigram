@@ -17,6 +17,7 @@ using Telegram.ViewModels.Gallery;
 using Telegram.Views;
 using Telegram.Views.Popups;
 using Telegram.Views.Settings;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -229,6 +230,16 @@ namespace Telegram.Navigation.Services
             FrameFacade = new FrameFacade(this, frame, id);
             FrameFacade.Navigating += OnNavigating;
             FrameFacade.Navigated += OnNavigated;
+
+            if (frame != null)
+            {
+                Application.Current.Suspending += OnSuspending;
+            }
+        }
+
+        private void OnSuspending(object sender, SuspendingEventArgs e)
+        {
+            Suspend();
         }
 
         private void OnNavigating(object sender, NavigatingEventArgs e)
