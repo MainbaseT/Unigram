@@ -1438,9 +1438,9 @@ namespace Telegram.Views
             var cached = new TextHighlighter();
             var marked = new TextHighlighter();
 
-            ProcessRichText(text, span, textBlock, TextEffects.None, ref offset, cached.Ranges, marked.Ranges);
+            ProcessRichText(text, span, TextEffects.None, ref offset, cached.Ranges, marked.Ranges);
 
-            if (cached.Ranges.Count > 0)
+            if (cached.Ranges.Count > 0 && textBlock != null)
             {
                 cached.Background = new SolidColorBrush(Theme.Accent.WithAlpha(22));
                 cached.Foreground = new SolidColorBrush(Theme.Accent);
@@ -1448,7 +1448,7 @@ namespace Telegram.Views
                 textBlock.TextHighlighters.Add(cached);
             }
 
-            if (marked.Ranges.Count > 0)
+            if (marked.Ranges.Count > 0 && textBlock != null)
             {
                 marked.Background = new SolidColorBrush(Colors.PaleGoldenrod);
 
@@ -1459,7 +1459,7 @@ namespace Telegram.Views
         private static int _target;
         private int _current;
 
-        private bool ProcessRichText(RichText text, Span span, RichTextBlock textBlock, TextEffects effects, ref int offset, IList<TextRange> cached, IList<TextRange> marked)
+        private bool ProcessRichText(RichText text, Span span, TextEffects effects, ref int offset, IList<TextRange> cached, IList<TextRange> marked)
         {
             switch (text)
             {
@@ -1488,7 +1488,7 @@ namespace Telegram.Views
                     {
                         var concatRun = new Span();
 
-                        if (ProcessRichText(concat, concatRun, textBlock, effects, ref offset, cached, marked))
+                        if (ProcessRichText(concat, concatRun, effects, ref offset, cached, marked))
                         {
                             span.Inlines.Add(concatRun);
                             added = true;
@@ -1498,27 +1498,27 @@ namespace Telegram.Views
                     return added;
                 case RichTextBold boldText:
                     span.FontWeight = FontWeights.SemiBold;
-                    return ProcessRichText(boldText.Text, span, textBlock, effects, ref offset, cached, marked);
+                    return ProcessRichText(boldText.Text, span, effects, ref offset, cached, marked);
                 case RichTextEmailAddress emailText:
-                    return ProcessRichText(emailText.Text, span, textBlock, effects, ref offset, cached, marked);
+                    return ProcessRichText(emailText.Text, span, effects, ref offset, cached, marked);
                 case RichTextFixed fixedText:
                     span.FontFamily = new FontFamily("Consolas");
-                    return ProcessRichText(fixedText.Text, span, textBlock, effects, ref offset, cached, marked);
+                    return ProcessRichText(fixedText.Text, span, effects, ref offset, cached, marked);
                 case RichTextItalic italicText:
                     span.FontStyle |= FontStyle.Italic;
-                    return ProcessRichText(italicText.Text, span, textBlock, effects, ref offset, cached, marked);
+                    return ProcessRichText(italicText.Text, span, effects, ref offset, cached, marked);
                 case RichTextStrikethrough strikeText:
                     span.TextDecorations |= TextDecorations.Strikethrough;
-                    return ProcessRichText(strikeText.Text, span, textBlock, effects, ref offset, cached, marked);
+                    return ProcessRichText(strikeText.Text, span, effects, ref offset, cached, marked);
                 case RichTextUnderline underlineText:
                     span.TextDecorations |= TextDecorations.Underline;
-                    return ProcessRichText(underlineText.Text, span, textBlock, effects, ref offset, cached, marked);
+                    return ProcessRichText(underlineText.Text, span, effects, ref offset, cached, marked);
                 case RichTextAnchorLink anchorLinkText:
                     try
                     {
                         var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
 
-                        if (ProcessRichText(anchorLinkText.Text, hyperlink, textBlock, effects | TextEffects.Cached, ref offset, cached, marked))
+                        if (ProcessRichText(anchorLinkText.Text, hyperlink, effects | TextEffects.Cached, ref offset, cached, marked))
                         {
                             span.Inlines.Add(hyperlink);
                             hyperlink.Click += (s, args) => Hyperlink_Click(anchorLinkText);
@@ -1534,7 +1534,7 @@ namespace Telegram.Views
                     catch
                     {
                         Logger.Info("InstantPage: Probably nesting anchorLink inside textUrl");
-                        return ProcessRichText(anchorLinkText.Text, span, textBlock, effects, ref offset, cached, marked);
+                        return ProcessRichText(anchorLinkText.Text, span, effects, ref offset, cached, marked);
                     }
                 case RichTextUrl urlText:
                     try
@@ -1546,7 +1546,7 @@ namespace Telegram.Views
 
                         var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
 
-                        if (ProcessRichText(urlText.Text, hyperlink, textBlock, effects, ref offset, cached, marked))
+                        if (ProcessRichText(urlText.Text, hyperlink, effects, ref offset, cached, marked))
                         {
                             span.Inlines.Add(hyperlink);
                             hyperlink.Click += (s, args) => Hyperlink_Click(urlText);
@@ -1561,14 +1561,14 @@ namespace Telegram.Views
                     catch
                     {
                         Logger.Info("InstantPage: Probably nesting textUrl inside textUrl");
-                        return ProcessRichText(urlText.Text, span, textBlock, effects, ref offset, cached, marked);
+                        return ProcessRichText(urlText.Text, span, effects, ref offset, cached, marked);
                     }
                 case RichTextReference reference:
                     try
                     {
                         var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
 
-                        if (ProcessRichText(reference.Text, hyperlink, textBlock, effects | TextEffects.Cached, ref offset, cached, marked))
+                        if (ProcessRichText(reference.Text, hyperlink, effects | TextEffects.Cached, ref offset, cached, marked))
                         {
                             span.Inlines.Add(hyperlink);
                             //hyperlink.Click += (s, args) => Hyperlink_Click(reference);
@@ -1584,7 +1584,7 @@ namespace Telegram.Views
                     catch
                     {
                         Logger.Info("InstantPage: Probably nesting reference inside textUrl");
-                        return ProcessRichText(reference.Text, span, textBlock, effects, ref offset, cached, marked);
+                        return ProcessRichText(reference.Text, span, effects, ref offset, cached, marked);
                     }
                 case RichTextIcon icon:
                     var photo = new ImageView
@@ -1605,26 +1605,26 @@ namespace Telegram.Views
                     return true;
                 case RichTextMarked markedText:
                     // ???
-                    return ProcessRichText(markedText.Text, span, textBlock, effects | TextEffects.Marked, ref offset, cached, marked);
+                    return ProcessRichText(markedText.Text, span, effects | TextEffects.Marked, ref offset, cached, marked);
                 case RichTextPhoneNumber phoneNumber:
                     try
                     {
                         var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
                         span.Inlines.Add(hyperlink);
                         hyperlink.Click += (s, args) => Hyperlink_Click(phoneNumber);
-                        return ProcessRichText(phoneNumber.Text, hyperlink, textBlock, effects, ref offset, cached, marked);
+                        return ProcessRichText(phoneNumber.Text, hyperlink, effects, ref offset, cached, marked);
                     }
                     catch
                     {
                         Logger.Debug("InstantPage: Probably nesting phoneNumber inside textUrl");
-                        return ProcessRichText(phoneNumber.Text, span, textBlock, effects, ref offset, cached, marked);
+                        return ProcessRichText(phoneNumber.Text, span, effects, ref offset, cached, marked);
                     }
                 case RichTextSubscript subscript:
                     Typography.SetVariants(span, FontVariants.Subscript);
-                    return ProcessRichText(subscript.Text, span, textBlock, effects, ref offset, cached, marked);
+                    return ProcessRichText(subscript.Text, span, effects, ref offset, cached, marked);
                 case RichTextSuperscript superscript:
                     Typography.SetVariants(span, FontVariants.Superscript);
-                    return ProcessRichText(superscript.Text, span, textBlock, effects, ref offset, cached, marked);
+                    return ProcessRichText(superscript.Text, span, effects, ref offset, cached, marked);
                 default:
                     return false;
             }
