@@ -241,7 +241,7 @@ namespace Telegram.Controls
             {
                 // TODO: should the if be simplified to focused is null or not Control?
 
-                var focused = FocusManager.GetFocusedElement();
+                var focused = FocusManagerEx.TryGetFocusedElement();
                 if (focused is null or (not TextBox and not RichEditBox and not Button and not MenuFlyoutItem))
                 {
                     Hide(ContentDialogResult.Primary);

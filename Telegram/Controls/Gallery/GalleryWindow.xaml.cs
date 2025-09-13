@@ -778,7 +778,7 @@ namespace Telegram.Controls.Gallery
             {
                 if (args.Key == VirtualKey.Left)
                 {
-                    var focused = FocusManager.GetFocusedElement();
+                    var focused = FocusManagerEx.TryGetFocusedElement();
                     if (focused is Slider)
                     {
                         return;
@@ -792,7 +792,7 @@ namespace Telegram.Controls.Gallery
             {
                 if (args.Key == VirtualKey.Right)
                 {
-                    var focused = FocusManager.GetFocusedElement();
+                    var focused = FocusManagerEx.TryGetFocusedElement();
                     if (focused is Slider)
                     {
                         return;

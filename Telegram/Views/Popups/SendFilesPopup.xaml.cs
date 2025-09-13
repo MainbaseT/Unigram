@@ -1192,7 +1192,7 @@ namespace Telegram.Views.Popups
                 return;
             }
 
-            var focused = FocusManager.GetFocusedElement();
+            var focused = FocusManagerEx.TryGetFocusedElement();
             if (focused is null or (not TextBox and not RichEditBox and not Button and not MenuFlyoutItem))
             {
                 var popups = VisualTreeHelper.GetOpenPopupsForXamlRoot(XamlRoot);

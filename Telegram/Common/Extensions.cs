@@ -48,6 +48,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
@@ -1633,6 +1634,22 @@ namespace Telegram.Common
             catch
             {
                 // All the remote procedure calls must be wrapped in a try-catch block
+            }
+        }
+    }
+
+    public static class FocusManagerEx
+    {
+        public static object TryGetFocusedElement()
+        {
+            try
+            {
+                return FocusManager.GetFocusedElement();
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+                return null;
             }
         }
     }

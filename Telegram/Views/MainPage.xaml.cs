@@ -1134,7 +1134,7 @@ namespace Telegram.Views
                 return;
             }
 
-            var focused = FocusManager.GetFocusedElement();
+            var focused = FocusManagerEx.TryGetFocusedElement();
             if (focused is null or (not TextBox and not RichEditBox))
             {
                 var popups = VisualTreeHelper.GetOpenPopupsForXamlRoot(XamlRoot);
@@ -1739,28 +1739,35 @@ namespace Telegram.Views
 
             if (ViewModel.Chats.SelectionMode != ListViewSelectionMode.Multiple)
             {
-                if (ViewModel.ClientService.TryGetChat(openChat.ChatId, out Chat chat) && ViewModel.Chats.Items.Contains(chat))
+                try
                 {
-                    if (fromSelection)
+                    if (ViewModel.ClientService.TryGetChat(openChat.ChatId, out Chat chat) && ViewModel.Chats.Items.Contains(chat))
+                    {
+                        if (fromSelection)
+                        {
+                            // If we come from selection we need to delay this as ItemClick comes before SelectionChanged,
+                            // hence, if we unselect here, the ListView internal code will re-select the item right away.
+                            VisualUtilities.QueueCallbackForCompositionRendered(this, () => ChatsList.SelectedItem = chat);
+                        }
+                        else if (ChatsList.SelectedItem != chat)
+                        {
+                            ChatsList.SelectedItem = chat;
+                        }
+                    }
+                    else if (fromSelection)
                     {
                         // If we come from selection we need to delay this as ItemClick comes before SelectionChanged,
                         // hence, if we unselect here, the ListView internal code will re-select the item right away.
-                        VisualUtilities.QueueCallbackForCompositionRendered(this, () => ChatsList.SelectedItem = chat);
+                        VisualUtilities.QueueCallbackForCompositionRendered(this, () => ChatsList.ClearValue(Selector.SelectedItemProperty));
                     }
-                    else if (ChatsList.SelectedItem != chat)
+                    else
                     {
-                        ChatsList.SelectedItem = chat;
+                        ChatsList.ClearValue(Selector.SelectedItemProperty);
                     }
                 }
-                else if (fromSelection)
+                catch
                 {
-                    // If we come from selection we need to delay this as ItemClick comes before SelectionChanged,
-                    // hence, if we unselect here, the ListView internal code will re-select the item right away.
-                    VisualUtilities.QueueCallbackForCompositionRendered(this, () => ChatsList.ClearValue(Selector.SelectedItemProperty));
-                }
-                else
-                {
-                    ChatsList.ClearValue(Selector.SelectedItemProperty);
+                    // In some cases setting SelectedItem can trigger
                 }
             }
         }
