@@ -555,9 +555,19 @@ namespace Telegram.Views
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Reset && _hasBeenScrolled)
+            if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                ScrollToContent(true);
+                if (_hasBeenScrolled)
+                {
+                    ScrollToContent(true);
+                }
+
+                if (MediaFrame.Content is not ProfileTabPage tabPage || tabPage.ScrollingHost is not ListViewBase scrollingHost)
+                {
+                    return;
+                }
+
+                LoadMore(scrollingHost);
             }
         }
 
