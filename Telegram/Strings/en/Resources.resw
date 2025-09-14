@@ -4629,6 +4629,9 @@ Minimum length is 5 characters.</value>
   <data name="CopySelectedText" xml:space="preserve">
     <value>Copy Selected Text</value>
   </data>
+  <data name="CopyUsername" xml:space="preserve">
+    <value>Copy Username</value>
+  </data>
   <data name="Country" xml:space="preserve">
     <value>Country</value>
   </data>
@@ -14490,6 +14493,9 @@ However, it is currently available for purchase. **Learn more…**</value>
   </data>
   <data name="UsernameInvalidStartNumber" xml:space="preserve">
     <value>Usernames can&apos;t start with a number.</value>
+  </data>
+  <data name="UsernameNotOnTelegram" xml:space="preserve">
+    <value>This username is not on Telegram</value>
   </data>
   <data name="UsernamePlaceholder" xml:space="preserve">
     <value>Your Username</value>

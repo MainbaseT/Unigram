@@ -12817,4 +12817,7 @@
     <string name="BotCantJoinGroups">This bot can\'t join groups.</string>
 
     <string name="TranslateSelectedText">Translate Selected Text</string>
+
+    <string name="CopyUsername">Copy Username</string>
+    <string name="UsernameNotOnTelegram">This username is not on Telegram</string>
 </resources>

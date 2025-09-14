@@ -93,6 +93,39 @@ namespace Telegram.Controls.Cells
             Identity.SetStatus(clientService, user, BotVerified);
         }
 
+        public void UpdateChat(IClientService clientService, Chat chat, int photoSize, bool phoneNumber = false)
+        {
+            TitleLabel.Text = chat.Title;
+
+            //if (phoneNumber)
+            //{
+            //    if (SettingsService.Current.Diagnostics.HidePhoneNumber)
+            //    {
+            //        SubtitleLabel.Text = "+42 --- --- ----";
+            //    }
+            //    else
+            //    {
+            //        SubtitleLabel.Text = PhoneNumber.Format(user.PhoneNumber);
+            //    }
+            //}
+            //else if (user.Type is UserTypeBot bot)
+            //{
+            //    SubtitleLabel.Text = bot.ActiveUserCount > 0 ? Locale.Declension(Strings.R.BotDAU, bot.ActiveUserCount) : Strings.Bot;
+            //    SubtitleLabel.Style = BootStrapper.Current.Resources["InfoCaptionTextBlockStyle"] as Style;
+            //}
+            //else
+            //{
+            //    SubtitleLabel.Text = LastSeenConverter.GetLabel(user, false);
+            //    SubtitleLabel.Style = BootStrapper.Current.Resources[user.Status is UserStatusOnline ? "AccentCaptionTextBlockStyle" : "InfoCaptionTextBlockStyle"] as Style;
+            //}
+
+            Photo.Width = Segments.Width = photoSize;
+            Photo.Height = Segments.Height = photoSize;
+            Photo.SetChat(clientService, chat, photoSize);
+
+            Identity.SetStatus(clientService, chat, BotVerified);
+        }
+
         public void UpdateUser(IClientService clientService, User user, ContainerContentChangingEventArgs args, TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> callback)
         {
             if (args.Phase == 0)
