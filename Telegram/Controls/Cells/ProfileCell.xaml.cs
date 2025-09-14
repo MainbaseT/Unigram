@@ -121,7 +121,15 @@ namespace Telegram.Controls.Cells
 
             Photo.Width = Segments.Width = photoSize;
             Photo.Height = Segments.Height = photoSize;
-            Photo.SetChat(clientService, chat, photoSize);
+
+            if (clientService.TryGetUser(chat, out User user))
+            {
+                Photo.SetUser(clientService, user, photoSize);
+            }
+            else
+            {
+                Photo.SetChat(clientService, chat, photoSize);
+            }
 
             Identity.SetStatus(clientService, chat, BotVerified);
         }
