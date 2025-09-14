@@ -137,7 +137,7 @@ namespace Telegram.ViewModels.Profile
 
         private async void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            var selectedItems = SelectedItems.ToList();
+            var selectedItems = SelectedItems.Where(x => x != null).ToList();
             var properties = await ClientService.GetMessagePropertiesAsync(selectedItems.Select(x => new MessageId(x)));
 
             CanDeleteSelectedMessages = properties.Count > 0 && properties.Values.All(x => x.CanBeDeletedForAllUsers || x.CanBeDeletedOnlyForSelf);
@@ -413,7 +413,7 @@ namespace Telegram.ViewModels.Profile
 
         public void ForwardSelectedMessages()
         {
-            var selectedItems = SelectedItems.ToDictionary(x => new MessageId(x));
+            var selectedItems = SelectedItems.Where(x => x != null).ToDictionary(x => new MessageId(x));
 
             UnselectMessages();
             ForwardMessages(selectedItems);
