@@ -59,7 +59,7 @@ namespace Telegram.Common
                     bitmapSource = new SoftwareBitmapSource();
                 }
 
-                await bitmapSource.SetBitmapAsync(_bitmap = bitmap);
+                await bitmapSource.SetBitmapAsync(bitmap);
 
                 if (_generation != generation)
                 {
@@ -67,6 +67,7 @@ namespace Telegram.Common
                 }
 
                 _source = bitmapSource;
+                _bitmap = bitmap;
 
                 if (_brush.ImageSource != bitmapSource)
                 {
@@ -100,7 +101,7 @@ namespace Telegram.Common
                     bitmapSource = new SoftwareBitmapSource();
                 }
 
-                await bitmapSource.SetBitmapAsync(_bitmap = bitmap);
+                await bitmapSource.SetBitmapAsync(bitmap);
 
                 if (_generation != generation)
                 {
@@ -108,6 +109,7 @@ namespace Telegram.Common
                 }
 
                 _source = bitmapSource;
+                _bitmap = bitmap;
 
                 if (_brush.ImageSource != bitmapSource)
                 {
