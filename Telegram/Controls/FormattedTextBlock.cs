@@ -225,7 +225,14 @@ namespace Telegram.Controls
 
         private void OnLostFocus(object sender, RoutedEventArgs e)
         {
-            TextBlock.Select(TextBlock.ContentStart, TextBlock.ContentStart);
+            try
+            {
+                TextBlock.Select(TextBlock.ContentStart, TextBlock.ContentStart);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
