@@ -590,6 +590,7 @@ namespace Telegram.Controls.Messages.Content
                 if (_panel == null)
                 {
                     _panel = new SwapChainPanel();
+                    _panel.IsHitTestVisible = false;
 
                     Element.Children.Add(_panel);
                     TypeResolver.Current.Playback.Attach(_panel);
