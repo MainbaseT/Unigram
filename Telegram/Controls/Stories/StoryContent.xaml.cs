@@ -800,10 +800,7 @@ namespace Telegram.Controls.Stories
 
         private void UpdateThumbnail(object target, File file)
         {
-            if (_viewModel.SelectedItem != null)
-            {
-                UpdateThumbnail(_viewModel.SelectedItem, file, null, false);
-            }
+            UpdateThumbnail(_viewModel.SelectedItem, file, null, false);
         }
 
         private void UpdatePhoto(object target, File file)
@@ -828,7 +825,7 @@ namespace Telegram.Controls.Stories
 
         private void UpdateThumbnail(StoryViewModel story, File file, Minithumbnail minithumbnail, bool download)
         {
-            if (file.Id == _thumbnailId && download)
+            if (file?.Id == _thumbnailId && download)
             {
                 return;
             }
@@ -840,7 +837,7 @@ namespace Telegram.Controls.Stories
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    _thumbnailController.Blur(file.Local.Path, 3, HashCode.Combine(story.ChatId, story.StoryId));
+                    _thumbnailController.Blur(file.Local.Path, 3, 0);
                 }
                 else
                 {
@@ -856,7 +853,7 @@ namespace Telegram.Controls.Stories
 
                     if (minithumbnail != null)
                     {
-                        _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(story.ChatId, story.StoryId));
+                        _thumbnailController.Blur(minithumbnail.Data, 3, 0);
                     }
                     else
                     {
@@ -866,7 +863,7 @@ namespace Telegram.Controls.Stories
             }
             else if (minithumbnail != null)
             {
-                _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(story.ChatId, story.StoryId));
+                _thumbnailController.Blur(minithumbnail.Data, 3, 0);
             }
             else
             {
