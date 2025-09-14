@@ -475,7 +475,9 @@ namespace Telegram.ViewModels
 
         public void ForwardSelectedMessages()
         {
-            var selectedItems = SelectedItems.Values.ToDictionary(x => new MessageId(x));
+            var selectedItems = SelectedItems.Values
+                .DistinctBy(x => x.Id)
+                .ToDictionary(x => new MessageId(x));
 
             IsSelectionEnabled = false;
             ForwardMessages(selectedItems);

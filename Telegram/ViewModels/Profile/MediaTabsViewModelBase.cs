@@ -413,7 +413,10 @@ namespace Telegram.ViewModels.Profile
 
         public void ForwardSelectedMessages()
         {
-            var selectedItems = SelectedItems.Where(x => x != null).ToDictionary(x => new MessageId(x));
+            var selectedItems = SelectedItems
+                .Where(x => x != null)
+                .DistinctBy(x => x.Id)
+                .ToDictionary(x => new MessageId(x));
 
             UnselectMessages();
             ForwardMessages(selectedItems);
