@@ -155,5 +155,11 @@
                        Foreground="{ThemeResource DangerButtonBackground}"
                        Margin="0,4,0,0" />
         </Border>
+
+        <Border x:Name="TitleBar"
+                Background="Transparent"
+                Height="32"
+                VerticalAlignment="Top"
+                Grid.RowSpan="3" />
     </Grid>
 </controls:ContentPopup>

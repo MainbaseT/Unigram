@@ -435,13 +435,20 @@ namespace Telegram.Navigation
                 return;
             }
 
+            if (_window.Content is IPopupHost popupHost)
+            {
+                popupHost.PopupOpened();
+            }
+
             if (_window.Content != null)
             {
                 _lockedContent = _window.Content;
                 _window.Content = new Border();
             }
 
-            _locked = new PasscodePage(biometrics && IsInMainView);
+            // TODO: replace window content with passcode
+            // Transition from splash screen to passcode
+            _locked = new PasscodePage(this, biometrics && IsInMainView);
 
             void handler(ContentDialog s, ContentDialogClosingEventArgs args)
             {
@@ -453,6 +460,11 @@ namespace Telegram.Navigation
                 {
                     _window.Content = _lockedContent;
                     _lockedContent = null;
+                }
+
+                if (_window.Content is IPopupHost popupHost)
+                {
+                    popupHost.PopupClosed();
                 }
             }
 

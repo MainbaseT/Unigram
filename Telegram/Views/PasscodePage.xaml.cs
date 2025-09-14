@@ -21,6 +21,8 @@ namespace Telegram.Views
 {
     public sealed partial class PasscodePage : ContentPopup
     {
+        private readonly WindowContext _window;
+
         private readonly IPasscodeService _passcodeService;
         private readonly bool _biometrics;
 
@@ -28,9 +30,12 @@ namespace Telegram.Views
 
         private bool _accepted;
 
-        public PasscodePage(bool biometrics)
+        public PasscodePage(WindowContext window, bool biometrics)
         {
             InitializeComponent();
+
+            _window = window;
+            _window.SetTitleBar(TitleBar);
 
             _passcodeService = TypeResolver.Current.Passcode;
             _biometrics = biometrics;
@@ -112,12 +117,8 @@ namespace Telegram.Views
 
         private async void OnLoaded(object sender, RoutedEventArgs args)
         {
-            var context = WindowContext.ForXamlRoot(this);
-            if (context != null)
-            {
-                context.Activated += Window_Activated;
-                context.SizeChanged += Window_SizeChanged;
-            }
+            _window.Activated += Window_Activated;
+            _window.SizeChanged += Window_SizeChanged;
 
             Field.LosingFocus += Field_LosingFocus;
 
@@ -140,12 +141,8 @@ namespace Telegram.Views
 
         private void OnUnloaded(object sender, RoutedEventArgs args)
         {
-            var context = WindowContext.ForXamlRoot(this);
-            if (context != null)
-            {
-                context.Activated -= Window_Activated;
-                context.SizeChanged -= Window_SizeChanged;
-            }
+            _window.Activated -= Window_Activated;
+            _window.SizeChanged -= Window_SizeChanged;
 
             Field.LosingFocus -= Field_LosingFocus;
 
@@ -164,6 +161,8 @@ namespace Telegram.Views
 
         private void Window_Activated(object sender, WindowActivatedEventArgs e)
         {
+            _window.SetTitleBar(TitleBar);
+
             if (e.WindowActivationState != CoreWindowActivationState.Deactivated)
             {
                 Field.Focus(FocusState.Keyboard);
