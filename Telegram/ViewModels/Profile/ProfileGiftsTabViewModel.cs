@@ -85,13 +85,20 @@ namespace Telegram.ViewModels.Profile
                 }
 
                 Reload(false);
-                InitializeCollections();
+
+                if (!_collectionsLoaded)
+                {
+                    _collectionsLoaded = true;
+                    InitializeCollections();
+                }
             }
 
             return Task.CompletedTask;
         }
 
         public bool HasCollections => Collections.Count > 1 || IsOwned;
+
+        private bool _collectionsLoaded;
 
         public ObservableCollection<GiftCollectionViewModel> Collections { get; private set; }
 

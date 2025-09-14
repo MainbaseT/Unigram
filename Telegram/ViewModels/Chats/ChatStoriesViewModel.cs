@@ -88,6 +88,8 @@ namespace Telegram.ViewModels.Chats
 
         public bool HasAlbums => _type == ChatStoriesType.Pinned && (Albums.Count > 1 || CanEditStories);
 
+        private bool _albumsLoaded;
+
         public ObservableCollection<StoryAlbumViewModel> Albums { get; private set; }
 
         private StoryAlbumViewModel _selectedAlbum;
@@ -132,8 +134,9 @@ namespace Telegram.ViewModels.Chats
                 //_type = ChatStoriesType.Pinned;
             }
 
-            if (_chat != null && _type == ChatStoriesType.Pinned)
+            if (_chat != null && !_albumsLoaded && _type == ChatStoriesType.Pinned)
             {
+                _albumsLoaded = true;
                 InitializeAlbums();
             }
 
