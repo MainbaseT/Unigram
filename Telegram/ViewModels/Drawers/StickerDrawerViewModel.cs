@@ -663,6 +663,8 @@ namespace Telegram.ViewModels.Drawers
         public long SetId { get; private set; }
         public EmojiStatusType EmojiStatusType { get; set; }
 
+        public AvailableReaction Reaction { get; set; }
+
         public ReactionType ToReactionType()
         {
             if (FullType is StickerFullTypeCustomEmoji customEmoji)

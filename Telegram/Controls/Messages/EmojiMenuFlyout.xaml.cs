@@ -16,6 +16,7 @@ using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Drawers;
 using Telegram.ViewModels.Stories;
 using Telegram.Views.Popups;
+using Telegram.Views.Stars.Popups;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -58,6 +59,8 @@ namespace Telegram.Controls.Messages
         private readonly StoryViewModel _story;
         private readonly FrameworkElement _reserved;
 
+        private readonly bool _allowCustomEmoji = true;
+
         private readonly Popup _popup;
 
         public event EventHandler<EmojiSelectedEventArgs> EmojiSelected;
@@ -77,6 +80,7 @@ namespace Telegram.Controls.Messages
             _mode = EmojiDrawerMode.Reactions;
             _message = message;
             _bubble = bubble;
+            _allowCustomEmoji = reactions.AllowCustomEmoji;
 
             _popup = new Popup();
             _popup.Closed += OnClosed;
@@ -182,6 +186,11 @@ namespace Telegram.Controls.Messages
             view.Width = width;
             view.Height = height;
             view.ItemClick += OnStatusClick;
+
+            if (!_allowCustomEmoji)
+            {
+                view.HideNavigation();
+            }
 
             if (_mode == EmojiDrawerMode.EmojiStatus)
             {
@@ -290,7 +299,7 @@ namespace Telegram.Controls.Messages
             }
             else if (alignment == EmojiFlyoutAlignment.Center)
             {
-                y = position.Y - 44;
+                y = _allowCustomEmoji ? position.Y - 44 : position.Y + 36;
                 x = position.X - 8;
             }
             else if (alignment == EmojiFlyoutAlignment.BottomRight)
@@ -338,7 +347,15 @@ namespace Telegram.Controls.Messages
             pillShadow.StartAnimation("Opacity", opacity);
 
             var test = ElementComposition.GetElementVisual(LayoutRoot);
-            test.CenterPoint = new Vector3(220, 138, 0); // 148
+            if (_allowCustomEmoji)
+            {
+                test.CenterPoint = new Vector3(220, 138, 0); // 148
+            }
+            else
+            {
+                test.CenterPoint = new Vector3(220, 50, 0); // 148
+            }
+
             drawer.Clip = compositor.CreateGeometricClip(clip);
             visualPill.Clip = compositor.CreateGeometricClip(clip);
 
@@ -376,8 +393,16 @@ namespace Telegram.Controls.Messages
             var move = compositor.CreateVector2KeyFrameAnimation();
             if (alignment == EmojiFlyoutAlignment.Center)
             {
-                move.InsertKeyFrame(0, new Vector2(0, yy + 82));
-                move.InsertKeyFrame(1, new Vector2(0, yy));
+                if (_allowCustomEmoji)
+                {
+                    move.InsertKeyFrame(0, new Vector2(0, yy + 82));
+                    move.InsertKeyFrame(1, new Vector2(0, yy));
+                }
+                else
+                {
+                    move.InsertKeyFrame(0, new Vector2(0, yy));
+                    move.InsertKeyFrame(1, new Vector2(0, yy));
+                }
             }
             else if (alignment == EmojiFlyoutAlignment.TopRight)
             {
@@ -532,11 +557,11 @@ namespace Telegram.Controls.Messages
 
                 if (_story != null)
                 {
-                    StoryToggleReaction(sticker.ToReactionType());
+                    StoryToggleReaction(sticker.Reaction);
                 }
                 else if (_message != null)
                 {
-                    MessageToggleReaction(sticker.ToReactionType());
+                    MessageToggleReaction(sticker.Reaction);
                 }
                 else if (_mode == EmojiDrawerMode.EmojiStatus)
                 {
@@ -544,7 +569,7 @@ namespace Telegram.Controls.Messages
                 }
                 else if (_mode == EmojiDrawerMode.Reactions)
                 {
-                    _clientService.Send(new SetDefaultReactionType(sticker.ToReactionType()));
+                    _clientService.Send(new SetDefaultReactionType(sticker.Reaction.Type));
                 }
                 else
                 {
@@ -572,21 +597,21 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private async void StoryToggleReaction(ReactionType reaction)
+        private async void StoryToggleReaction(AvailableReaction reaction)
         {
-            if (reaction is ReactionTypeCustomEmoji && !_story.ClientService.IsPremium)
+            if (reaction.NeedsPremium && !_story.ClientService.IsPremium)
             {
                 ToastPopup.ShowFeaturePromo(WindowContext.GetNavigationService(this), new PremiumFeatureUniqueReactions());
                 return;
             }
 
-            if (_story.ChosenReactionType != null && _story.ChosenReactionType.AreTheSame(reaction))
+            if (_story.ChosenReactionType != null && _story.ChosenReactionType.AreTheSame(reaction.Type))
             {
                 _story.ClientService.Send(new SetStoryReaction(_story.ChatId, _story.StoryId, null, true));
             }
             else
             {
-                await _story.ClientService.SendAsync(new SetStoryReaction(_story.ChatId, _story.StoryId, reaction, true));
+                await _story.ClientService.SendAsync(new SetStoryReaction(_story.ChatId, _story.StoryId, reaction.Type, true));
 
                 if (_reserved != null && _reserved.IsLoaded)
                 {
@@ -595,7 +620,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private async void MessageToggleReaction(ReactionType reaction)
+        private async void MessageToggleReaction(AvailableReaction reaction)
         {
             var message = _message;
             if (message.Content is MessageAlbum album)
@@ -603,23 +628,40 @@ namespace Telegram.Controls.Messages
                 message = album.Messages[0];
             }
 
-            if (reaction is ReactionTypeCustomEmoji && !message.ClientService.IsPremium)
+            if (reaction.NeedsPremium && !message.ClientService.IsPremium)
             {
                 ToastPopup.ShowFeaturePromo(message.Delegate.NavigationService, new PremiumFeatureUniqueReactions());
                 return;
             }
 
-            if (message.InteractionInfo != null && message.InteractionInfo.Reactions.IsChosen(reaction))
+            if (message.InteractionInfo != null && message.InteractionInfo.Reactions.IsChosen(reaction.Type))
             {
-                message.ClientService.Send(new RemoveMessageReaction(message.ChatId, message.Id, reaction));
+                message.ClientService.Send(new RemoveMessageReaction(message.ChatId, message.Id, reaction.Type));
             }
             else
             {
-                await message.ClientService.SendAsync(new AddMessageReaction(message.ChatId, message.Id, reaction, false, true));
-
-                if (_bubble != null && _bubble.IsLoaded)
+                Object added;
+                if (reaction.Type is ReactionTypePaid)
                 {
-                    var unread = new UnreadReaction(reaction, null, false);
+                    var popup = new ReactPopup(message.ClientService, message);
+
+                    var confirm = await popup.ShowQueuedAsync(XamlRoot);
+                    if (confirm != ContentDialogResult.Primary)
+                    {
+                        return;
+                    }
+
+                    message.ClientService.Send(new SetPaidMessageReactionType(message.ChatId, message.Id, popup.Type));
+                    added = await PaidReactionService.AddPendingAsync(XamlRoot, message, popup.StarCount, popup.Type);
+                }
+                else
+                {
+                    added = await message.ClientService.SendAsync(new AddMessageReaction(message.ChatId, message.Id, reaction.Type, false, true));
+                }
+
+                if (added is Ok && _bubble != null && _bubble.IsLoaded)
+                {
+                    var unread = new UnreadReaction(reaction.Type, null, false);
 
                     _message.UnreadReactions.Add(unread);
                     _bubble.UpdateMessageReactions(_message, true);

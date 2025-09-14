@@ -158,6 +158,13 @@ namespace Telegram.Controls.Drawers
             };
         }
 
+        public void HideNavigation()
+        {
+            ToolbarContainer.Visibility = Visibility.Collapsed;
+            SearchField.Visibility = Visibility.Collapsed;
+            List.Padding = new Thickness(8, 8, 0, 0);
+        }
+
         public void UpdateTopicIcon(string name, int color)
         {
             var brush = ForumTopicCell.GetIconGradient(new ForumTopicIcon(color, 0));
