@@ -18,7 +18,6 @@ using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Telegram.Views;
-using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
@@ -494,7 +493,7 @@ namespace Telegram.Controls.Cells
 
         #endregion
 
-        public void ShowPreview(HoldingEventArgs args)
+        public void ShowPreview(Point? position)
         {
             Logger.Info();
 
@@ -559,7 +558,7 @@ namespace Telegram.Controls.Cells
             tooltip.Padding = new Thickness();
             tooltip.MaxWidth = double.PositiveInfinity;
 
-            flyout.ShowAt(this, args.Position);
+            flyout.ShowAt(this, position ?? this.TransformToPointerPosition());
         }
 
         protected override void OnDragEnter(DragEventArgs e)

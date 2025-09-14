@@ -1934,13 +1934,20 @@ namespace Telegram.Views
                     else
                     {
                         var modifiers = WindowContext.KeyModifiers();
-                        var createNewWindow = selectionChanged && modifiers == Windows.System.VirtualKeyModifiers.Control;
+                        if (modifiers == VirtualKeyModifiers.Menu && selectionChanged)
+                        {
+                            Handle(chat, (cell, chat) => cell.ShowPreview(null));
+                        }
+                        else
+                        {
+                            var createNewWindow = selectionChanged && modifiers == VirtualKeyModifiers.Control;
 
-                        // TODO: new display mode
-                        var messageThreadId = chat.LastMessage != null && ViewModel.ClientService.IsForum(chat) ? chat.LastMessage.TopicId() : 0;
-                        messageThreadId = 0;
+                            // TODO: new display mode
+                            var messageThreadId = chat.LastMessage != null && ViewModel.ClientService.IsForum(chat) ? chat.LastMessage.TopicId() : 0;
+                            messageThreadId = 0;
 
-                        MasterDetail.NavigationService.NavigateToChat(chat, force: false, createNewWindow: createNewWindow, clearBackStack: true);
+                            MasterDetail.NavigationService.NavigateToChat(chat, force: false, createNewWindow: createNewWindow, clearBackStack: true);
+                        }
                     }
 
                     HideTopicList();
@@ -1948,9 +1955,19 @@ namespace Telegram.Views
             }
             else if (item is ForumTopic topic)
             {
-                ViewModel.Chats.SelectedItem = topic.Info.ChatId;
-                ViewModel.Topics.SelectedItem = topic.ToId();
-                MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, topic: topic.ToId(), force: false, clearBackStack: true);
+                var modifiers = WindowContext.KeyModifiers();
+                if (modifiers == VirtualKeyModifiers.Menu && selectionChanged)
+                {
+                    TopicListPresenter.HandleForumTopic(topic, (cell, chat) => cell.ShowPreview(null));
+                }
+                else
+                {
+                    var createNewWindow = selectionChanged && modifiers == VirtualKeyModifiers.Control;
+
+                    ViewModel.Chats.SelectedItem = topic.Info.ChatId;
+                    ViewModel.Topics.SelectedItem = topic.ToId();
+                    MasterDetail.NavigationService.NavigateToChat(ViewModel.Topics.Chat, topic: topic.ToId(), force: false, createNewWindow: createNewWindow, clearBackStack: true);
+                }
             }
         }
 

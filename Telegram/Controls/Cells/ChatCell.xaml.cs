@@ -32,7 +32,6 @@ using Windows.Foundation;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Composition;
-using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
@@ -1953,7 +1952,7 @@ namespace Telegram.Controls.Cells
             return string.Empty;
         }
 
-        public void ShowPreview(HoldingEventArgs args)
+        public void ShowPreview(Point? position)
         {
             Logger.Info();
 
@@ -2015,7 +2014,7 @@ namespace Telegram.Controls.Cells
             tooltip.Padding = new Thickness();
             tooltip.MaxWidth = double.PositiveInfinity;
 
-            flyout.ShowAt(this, args.Position);
+            flyout.ShowAt(this, position ?? this.TransformToPointerPosition());
         }
 
         protected override void OnDragEnter(DragEventArgs e)

@@ -1301,6 +1301,19 @@ namespace Telegram.Common
             return element.TransformToVisual(visual).TransformPoint(new Point());
         }
 
+        public static Point TransformToPointerPosition(this UIElement element)
+        {
+            var transform = element.TransformToPoint(Window.Current.Content);
+
+            var bounds = Window.Current.Bounds;
+            var point = Window.Current.CoreWindow.PointerPosition;
+
+            point = new Point(point.X - bounds.X, point.Y - bounds.Y);
+            point = new Point(point.X - transform.X, point.Y - transform.Y);
+
+            return point;
+        }
+
         public static void BeginOnUIThread(this DependencyObject element, Action action)
         {
             try

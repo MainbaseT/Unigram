@@ -531,17 +531,17 @@ namespace Telegram.Controls
             if (args.HoldingState == HoldingState.Started && args.Position.X is >= 8 and <= 56 && args.Position.Y is >= 8 and <= 56 && ContentTemplateRoot is ChatCell chatCell)
             {
                 ReleasePointerCaptures();
-                chatCell.ShowPreview(args);
+                chatCell.ShowPreview(args.Position);
             }
             else if (args.HoldingState == HoldingState.Started && args.Position.X is >= 8 and <= 56 && args.Position.Y is >= 8 and <= 56 && ContentTemplateRoot is ForumTopicCell forumTopicCell)
             {
                 ReleasePointerCaptures();
-                forumTopicCell.ShowPreview(args);
+                forumTopicCell.ShowPreview(args.Position);
             }
             else if (args.HoldingState == HoldingState.Started && args.Position.X is >= 8 and <= 56 && args.Position.Y is >= 8 and <= 56 && ContentTemplateRoot is ForumTopicVerticalCell forumTopicVerticalCell)
             {
                 ReleasePointerCaptures();
-                forumTopicVerticalCell.ShowPreview(args);
+                forumTopicVerticalCell.ShowPreview(args.Position);
             }
         }
 
