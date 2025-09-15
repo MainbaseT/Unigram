@@ -446,6 +446,11 @@ namespace Telegram.Navigation
 
         public void Unlock()
         {
+            if (_locked == null)
+            {
+                return;
+            }
+
             _window.Content = _lockedContent;
 
             _locked = null;
