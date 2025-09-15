@@ -144,7 +144,7 @@ namespace Telegram.Common
             if (request.Headers.TryGetValue("Range", out var range) && RangeHeaderValue.TryParse(range, out var ranges))
             {
                 long chunk;
-                if (request.Query.TryGetValue("duration", out string durationValue) && int.TryParse(durationValue, out int duration))
+                if (request.Query.TryGetValue("duration", out string durationValue) && int.TryParse(durationValue, out int duration) && duration > 0)
                 {
                     chunk = Math.Min((long)(((double)file.Size / duration) * 15), 4 * 1024 * 1024);
                 }
