@@ -104,11 +104,6 @@ namespace Telegram.Controls.Messages
                 _trackerOwner.InteractingStateEntered -= OnInteractingStateEntered;
                 _trackerOwner.IdleStateEntered -= OnIdleStateEntered;
             }
-
-            if (_message != null)
-            {
-                Recycle();
-            }
         }
 
         public MessageViewModel Message => _message;
