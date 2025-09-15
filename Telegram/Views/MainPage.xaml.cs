@@ -1596,6 +1596,9 @@ namespace Telegram.Views
                 e.SourcePageType == typeof(ChatBusinessRepliesPage) ||
                 e.SourcePageType == typeof(BlankPage);
 
+            var animate = MasterDetail.CurrentState != MasterDetailState.Minimal ||
+                (e.SourcePageType != typeof(BlankPage) && e.Content is not BlankPage);
+
             var type = allowed ? BackgroundKind.Background : BackgroundKind.Material;
 
             if (MasterDetail.CurrentState == MasterDetailState.Minimal && e.SourcePageType == typeof(BlankPage))
@@ -1605,7 +1608,7 @@ namespace Telegram.Views
 
             if (MasterDetail.CurrentState != MasterDetailState.Unknown)
             {
-                MasterDetail.ShowHideBackground(type, true);
+                MasterDetail.ShowHideBackground(type, animate);
             }
         }
 
