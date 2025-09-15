@@ -785,7 +785,7 @@ namespace Telegram.Controls.Gallery
                     }
                 }
 
-                ChangeView(CarouselDirection.Previous, false);
+                ChangeView(CarouselDirection.Previous);
                 args.Handled = true;
             }
             else if (args.Key is VirtualKey.Right or VirtualKey.GamepadRightShoulder && modifiers == VirtualKeyModifiers.None)
@@ -799,7 +799,7 @@ namespace Telegram.Controls.Gallery
                     }
                 }
 
-                ChangeView(CarouselDirection.Next, false);
+                ChangeView(CarouselDirection.Next);
                 args.Handled = true;
             }
             else if (args.Key is VirtualKey.R && modifiers == VirtualKeyModifiers.Control)
@@ -867,12 +867,12 @@ namespace Telegram.Controls.Gallery
 
         private void PrevButton_Click(object sender, RoutedEventArgs e)
         {
-            ChangeView(CarouselDirection.Previous, false);
+            ChangeView(CarouselDirection.Previous);
         }
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
-            ChangeView(CarouselDirection.Next, false);
+            ChangeView(CarouselDirection.Next);
         }
 
         public GalleryContent CurrentElement => LayoutRoot.CurrentElement as GalleryContent;
@@ -907,15 +907,10 @@ namespace Telegram.Controls.Gallery
             return base.ArrangeOverride(finalSize);
         }
 
-        private bool ChangeView(CarouselDirection direction, bool disableAnimation)
+        private bool ChangeView(CarouselDirection direction)
         {
-            if (ChangeView(direction))
+            if (ShouldChangeView(direction))
             {
-                if (disableAnimation)
-                {
-                    return true;
-                }
-
                 LayoutRoot.ChangeView(direction);
                 return true;
             }
@@ -923,7 +918,7 @@ namespace Telegram.Controls.Gallery
             return false;
         }
 
-        private bool ChangeView(CarouselDirection direction)
+        private bool ShouldChangeView(CarouselDirection direction)
         {
             var viewModel = ViewModel;
             if (viewModel == null || LayoutRoot.IsScrolling)
