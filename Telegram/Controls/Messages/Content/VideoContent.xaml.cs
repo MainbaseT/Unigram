@@ -278,9 +278,13 @@ namespace Telegram.Controls.Messages.Content
                 var size = Math.Max(file.Size, file.ExpectedSize);
                 if (file.Local.IsDownloadingActive)
                 {
-                    if (!hasSpoiler && message.Delegate.CanBeDownloaded(video, file))
+                    if (video.SupportsStreaming && !hasSpoiler && message.Delegate.CanBeDownloaded(video, file))
                     {
                         UpdateSource(message, file);
+                    }
+                    else
+                    {
+                        UpdateSource(null, null);
                     }
 
                     Button.SetGlyph(file.Id, MessageContentState.Play);
@@ -291,7 +295,7 @@ namespace Telegram.Controls.Messages.Content
 
                     if (Player.Source == null)
                     {
-                        Subtitle.Text = video.GetDuration() + Environment.NewLine + string.Format("{0} / {1}", FileSizeConverter.Convert(file.Local.DownloadedSize, size), FileSizeConverter.Convert(size));
+                        Subtitle.Text = GetDuration(video) + string.Format("{0} / {1}", FileSizeConverter.Convert(file.Local.DownloadedSize, size), FileSizeConverter.Convert(size));
                     }
                 }
                 else if (file.Remote.IsUploadingActive || message.SendingState is MessageSendingStateFailed || (message.SendingState is MessageSendingStatePending && !file.Remote.IsUploadingCompleted))
@@ -306,11 +310,11 @@ namespace Telegram.Controls.Messages.Content
 
                     if (generating)
                     {
-                        Subtitle.Text = video.GetDuration() + Environment.NewLine + Strings.ProcessingVideo;
+                        Subtitle.Text = GetDuration(video) + Strings.ProcessingVideo;
                     }
                     else
                     {
-                        Subtitle.Text = video.GetDuration() + Environment.NewLine + string.Format("{0} / {1}", FileSizeConverter.Convert(file.Remote.UploadedSize, size), FileSizeConverter.Convert(size));
+                        Subtitle.Text = GetDuration(video) + string.Format("{0} / {1}", FileSizeConverter.Convert(file.Remote.UploadedSize, size), FileSizeConverter.Convert(size));
                     }
                 }
                 else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingCompleted)
@@ -321,9 +325,9 @@ namespace Telegram.Controls.Messages.Content
                     Overlay.Progress = 0;
                     Overlay.ProgressVisibility = Visibility.Visible;
 
-                    Subtitle.Text = video.GetDuration() + Environment.NewLine + FileSizeConverter.Convert(size);
+                    Subtitle.Text = GetDuration(video) + FileSizeConverter.Convert(size);
 
-                    if (!hasSpoiler && message.Delegate.CanBeDownloaded(video, file))
+                    if (video.SupportsStreaming && !hasSpoiler && message.Delegate.CanBeDownloaded(video, file))
                     {
                         _message.ClientService.DownloadFile(file.Id, 32);
                         UpdateSource(message, file);
@@ -359,6 +363,16 @@ namespace Telegram.Controls.Messages.Content
             }
 
             Button.Opacity = Player.Source == null ? 1 : 0;
+        }
+
+        private string GetDuration(Video video)
+        {
+            if (video.Duration > 0)
+            {
+                return video.GetDuration() + "\n";
+            }
+
+            return string.Empty;
         }
 
         private void UpdateThumbnail(object target, File file)
@@ -644,7 +658,7 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            if (isSecret)
+            if (isSecret || !video.SupportsStreaming)
             {
                 var file = video.VideoValue;
                 if (file.Local.IsDownloadingActive)

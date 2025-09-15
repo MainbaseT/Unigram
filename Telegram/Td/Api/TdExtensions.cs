@@ -2881,15 +2881,7 @@ namespace Telegram
 
         public static string GetDuration(this StoryVideo video)
         {
-            var duration = TimeSpan.FromSeconds(video.Duration);
-            if (duration.TotalHours >= 1)
-            {
-                return duration.ToString("h\\:mm\\:ss");
-            }
-            else
-            {
-                return duration.ToString("mm\\:ss");
-            }
+            return ToDuration(video.Duration);
         }
 
         public static string GetDuration(this Audio audio)
@@ -2908,6 +2900,19 @@ namespace Telegram
         }
 
         public static string ToDuration(this int totalSeconds)
+        {
+            var duration = TimeSpan.FromSeconds(totalSeconds);
+            if (duration.TotalHours >= 1)
+            {
+                return duration.ToString("h\\:mm\\:ss");
+            }
+            else
+            {
+                return duration.ToString("mm\\:ss");
+            }
+        }
+
+        public static string ToDuration(this double totalSeconds)
         {
             var duration = TimeSpan.FromSeconds(totalSeconds);
             if (duration.TotalHours >= 1)
