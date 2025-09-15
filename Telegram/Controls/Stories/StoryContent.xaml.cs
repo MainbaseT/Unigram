@@ -830,7 +830,7 @@ namespace Telegram.Controls.Stories
                 return;
             }
 
-            _thumbnailId = file.Id;
+            _thumbnailId = file?.Id ?? 0;
             _thumbnailController ??= new ThumbnailController(ThumbnailTexture);
 
             if (file != null)
