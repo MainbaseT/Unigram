@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views
 {
-    public sealed partial class PasscodePage : ContentPopup
+    public sealed partial class PasscodePage : UserControlEx
     {
         private readonly WindowContext _window;
 
@@ -27,8 +27,6 @@ namespace Telegram.Views
         private readonly bool _biometrics;
 
         private readonly DispatcherTimer _retryTimer;
-
-        private bool _accepted;
 
         public PasscodePage(WindowContext window, bool biometrics)
         {
@@ -92,7 +90,7 @@ namespace Telegram.Views
 
         private void Field_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key == Windows.System.VirtualKey.Enter)
+            if (e.Key == VirtualKey.Enter)
             {
                 TryUnlock();
             }
@@ -149,14 +147,6 @@ namespace Telegram.Views
             _retryTimer.Stop();
         }
 
-        private void OnClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
-        {
-            if (_passcodeService.IsLocked || !_accepted)
-            {
-                args.Cancel = true;
-            }
-        }
-
         #region Bounds
 
         private void Window_Activated(object sender, WindowActivatedEventArgs e)
@@ -204,15 +194,7 @@ namespace Telegram.Views
         private void Unlock()
         {
             _passcodeService.Unlock();
-
             _retryTimer.Stop();
-            _accepted = true;
-        }
-
-        public void Update()
-        {
-            _accepted = true;
-            Hide();
         }
 
         private async void Biometrics_Click(object sender, RoutedEventArgs e)

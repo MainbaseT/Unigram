@@ -348,8 +348,6 @@ namespace Telegram.Views
                 ViewModel.HistoryField = null;
                 ViewModel.Sticker_Click = null;
 
-                Messages.Suspend();
-
                 if (navigation is false)
                 {
                     _albumIdToSelector.Clear();
@@ -372,6 +370,13 @@ namespace Telegram.Views
             _newestItemAsFooterNeeded = null;
 
             ButtonStickers.Collapse();
+
+            Messages.Suspend();
+
+            if (navigation)
+            {
+                Messages.Disconnect();
+            }
         }
 
         private readonly SynchronizedList<MessageViewModel> _messages = new();

@@ -119,7 +119,10 @@ namespace Telegram.Controls.Chats
             _waitItemsPanelRoot = new();
 
             _raiseViewChanged = false;
+        }
 
+        public void Disconnect()
+        {
             // Note, this is done because of the following:
             // In some conditions (always?) ListView starts to store
             // all the created containers in the ItemsPanelRoot (on Unload presumably).

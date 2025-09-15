@@ -207,15 +207,12 @@ namespace Telegram.Navigation
 
         public UIElement Content
         {
-            get => _lockedContent ?? _window.Content;
+            get => _locked != null ? _lockedContent : _window.Content;
             set
             {
                 if (_locked != null)
                 {
                     _lockedContent = value;
-
-                    // We need to set some content or the window won't initialize
-                    _window.Content = new Border();
                 }
                 else
                 {
@@ -428,7 +425,7 @@ namespace Telegram.Navigation
         private UIElement _lockedContent;
         private PasscodePage _locked;
 
-        public async void Lock(bool biometrics)
+        public void Lock(bool biometrics)
         {
             if (_locked != null)
             {
@@ -440,49 +437,29 @@ namespace Telegram.Navigation
                 popupHost.PopupOpened();
             }
 
-            if (_window.Content != null)
-            {
-                _lockedContent = _window.Content;
-                _window.Content = new Border();
-            }
-
-            // TODO: replace window content with passcode
-            // Transition from splash screen to passcode
+            // TODO: Transition from splash screen to passcode
             _locked = new PasscodePage(this, biometrics && IsInMainView);
+            _lockedContent = _window.Content;
 
-            void handler(ContentDialog s, ContentDialogClosingEventArgs args)
+            _window.Content = _locked;
+        }
+
+        public void Unlock()
+        {
+            _window.Content = _lockedContent;
+
+            _locked = null;
+            _lockedContent = null;
+
+            if (_window.Content is IPopupHost popupHost)
             {
-                s.Closing -= handler;
-
-                _locked = null;
-
-                if (_lockedContent != null)
-                {
-                    _window.Content = _lockedContent;
-                    _lockedContent = null;
-                }
-
-                if (_window.Content is IPopupHost popupHost)
-                {
-                    popupHost.PopupClosed();
-                }
+                popupHost.PopupClosed();
             }
-
-            // TODO: WinUI - most likely XamlRoot is going to be null at this stage.
-            // As well, Content may be null too.
-
-            _locked.Closing += handler;
-            await _locked.ShowQueuedAsync(Content?.XamlRoot);
 
             if (_window.Content is Control control)
             {
                 control.Focus(FocusState.Programmatic);
             }
-        }
-
-        public void Unlock()
-        {
-            _locked?.Update();
         }
 
         #endregion

@@ -8,7 +8,6 @@
       xmlns:controls="using:Telegram.Controls"
       xmlns:payments="using:Telegram.Controls.Payments"
       xmlns:converters="using:Telegram.Converters"
-      xmlns:local="using:Telegram.Views"
       mc:Ignorable="d"
       muxc:BackdropMaterial.ApplyToRootOrPageBackground="True">
 
