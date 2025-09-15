@@ -674,24 +674,15 @@ namespace Telegram.ViewModels.Drawers
                         // and in that case reaction won't work
                         reaction.ActivateAnimation.Emoji = emoji.Emoji;
 
-                        target.Add(new StickerViewModel(ClientService, reaction.ActivateAnimation)
-                        {
-                            Reaction = item
-                        });
+                        target.Add(new StickerViewModel(ClientService, reaction.ActivateAnimation, reaction: item));
                     }
                     else if (item.Type is ReactionTypeCustomEmoji customEmoji && assets.TryGetValue(customEmoji.CustomEmojiId, out Sticker sticker))
                     {
-                        target.Add(new StickerViewModel(ClientService, sticker)
-                        {
-                            Reaction = item
-                        });
+                        target.Add(new StickerViewModel(ClientService, sticker, reaction: item));
                     }
                     else if (item.Type is ReactionTypePaid)
                     {
-                        target.Add(new StickerViewModel(ClientService, new Sticker(0, 0, 512, 512, "\u2B50", new StickerFormatTgs(), new StickerFullTypeRegular(), null, TdExtensions.GetLocalFile("Assets\\Animations\\PaidReactionActivate.tgs")))
-                        {
-                            Reaction = item
-                        });
+                        target.Add(new StickerViewModel(ClientService, new Sticker(0, 0, 512, 512, "\u2B50", new StickerFormatTgs(), new StickerFullTypeRegular(), null, TdExtensions.GetLocalFile("Assets\\Animations\\PaidReactionActivate.tgs")), reaction: item));
                     }
                 }
             }
