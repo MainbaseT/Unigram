@@ -5755,6 +5755,9 @@ namespace Telegram.Views
                 return;
             }
 
+            _composerHeaderCollapsed = !show;
+            ComposerHeader.Visibility = Visibility.Visible;
+
             var composer = ElementComposition.GetElementVisual(ComposerHeader);
             var messages = ElementComposition.GetElementVisual(Messages);
             var messagesRoot = ElementComposition.GetElementVisual(MessagesRoot);
@@ -5783,8 +5786,16 @@ namespace Telegram.Views
 
             composer.Clip = textArea.Compositor.CreateInsetClip(0, 0, 0, value);
 
-            var batch = composer.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-            batch.Completed += (s, args) =>
+            if (sendout)
+            {
+                ContentPanel.Margin = new Thickness(0, 0, 0, -48);
+            }
+            else
+            {
+                ContentPanel.Margin = new Thickness(0, -48, 0, 0);
+            }
+
+            void Completed()
             {
                 textArea.Clip = null;
                 composer.Clip = null;
@@ -5805,6 +5816,12 @@ namespace Telegram.Views
                 }
 
                 UpdateTextAreaRadius();
+            }
+
+            var batch = composer.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            batch.Completed += (s, args) =>
+            {
+                Completed();
             };
 
             var animClip = textArea.Compositor.CreateScalarKeyFrameAnimation();
@@ -5839,25 +5856,6 @@ namespace Telegram.Views
             composer.StartAnimation("Offset.Y", anim1);
 
             batch.End();
-
-            if (sendout)
-            {
-                ContentPanel.Margin = new Thickness(0, 0, 0, -48);
-            }
-            else
-            {
-                ContentPanel.Margin = new Thickness(0, -48, 0, 0);
-            }
-
-            if (show)
-            {
-                _composerHeaderCollapsed = false;
-                ComposerHeader.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                _composerHeaderCollapsed = true;
-            }
         }
 
         enum SideButton
