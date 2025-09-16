@@ -345,7 +345,7 @@ namespace Telegram.ViewModels
         private ChatFolderViewModel _selectedFolder;
         public ChatFolderViewModel SelectedFolder
         {
-            get => _selectedFolder;
+            get => _isSettingsSelected || _selectedFolder?.ChatFolderId is Constants.ChatListArchive ? null : _selectedFolder;
             set
             {
                 if (Set(ref _selectedFolder, value))
@@ -362,6 +362,19 @@ namespace Telegram.ViewModels
         }
 
         public bool IsPrimaryFolderSelected => Folders.Count > 0 ? _selectedFolder == Folders[0] : true;
+
+        private bool _isSettingsSelected;
+        public bool IsSettingsSelected
+        {
+            get => _isSettingsSelected;
+            set
+            {
+                if (Set(ref _isSettingsSelected, value))
+                {
+                    RaisePropertyChanged(nameof(SelectedFolder));
+                }
+            }
+        }
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {

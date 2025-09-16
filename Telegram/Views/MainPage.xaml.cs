@@ -911,6 +911,11 @@ namespace Telegram.Views
 
         private void LoadAtIndex(int index)
         {
+            if (index == _prevIndex)
+            {
+                return;
+            }
+
             if (index == 0)
             {
                 if (SettingsRoot != null)
@@ -2032,17 +2037,11 @@ namespace Telegram.Views
             if (_prevIndex != INDEX_CHATS)
             {
                 Stories.Collapse();
-
-                // TODO: add settings button back to sidebar
-                if (ChatFoldersSide != null)
-                {
-                    // Setting this to null causes a chain of issues with updates
-                    //ChatFoldersSide.SelectedItem = null;
-                }
+                ViewModel.IsSettingsSelected = true;
             }
-            else if (ChatFoldersSide != null)
+            else
             {
-                ViewModel.RaisePropertyChanged(nameof(ViewModel.SelectedFolder));
+                ViewModel.IsSettingsSelected = false;
             }
 
             _shouldGoBackWithDetail = false;
@@ -2291,9 +2290,9 @@ namespace Telegram.Views
             args.Handled = true;
         }
 
-        private void SetPivotSelectedIndex(int index)
+        private void SetPivotSelectedIndex(int index, bool updateBackStack = false)
         {
-            if (_prevIndex != index)
+            if (_prevIndex != index || updateBackStack)
             {
                 LoadAtIndex(index);
 
@@ -2403,7 +2402,7 @@ namespace Telegram.Views
 
             UpdatePaneToggleButtonVisibility();
 
-            if (_prevIndex != INDEX_CHATS && MasterDetail.CurrentState != MasterDetailState.Minimal)
+            if (MasterDetail.CurrentState != MasterDetailState.Minimal)
             {
                 SetPivotSelectedIndex(INDEX_CHATS);
             }
@@ -2418,12 +2417,9 @@ namespace Telegram.Views
         {
             if (sender is ListViewBase listView && listView.SelectedItem is ChatFolderViewModel folder)
             {
-                if (ViewModel.Chats.Items.ChatList is not ChatListArchive)
-                {
-                    UpdateFolder(folder);
-                }
+                UpdateFolder(folder);
 
-                SetPivotSelectedIndex(INDEX_CHATS);
+                SetPivotSelectedIndex(INDEX_CHATS, true);
                 HideTopicList();
             }
         }
