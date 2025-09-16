@@ -12820,4 +12820,8 @@
 
     <string name="CopyUsername">Copy Username</string>
     <string name="UsernameNotOnTelegram">This username is not on Telegram</string>
+
+    <string name="LiteOptionsAnimationEffects">Animation Effects</string>
+    <string name="LiteOptionsAnimationEffectsInfo">Enable or disable animation effects throughout the app.</string>
+    <string name="LiteOptionsAnimationEffectsDisabled">Animation effects are currently disabled system-wide. You can change this in **Accessibility &gt; Visual effects**.</string>
 </resources>

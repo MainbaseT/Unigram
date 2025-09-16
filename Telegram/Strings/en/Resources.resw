@@ -8260,6 +8260,15 @@ Upgrade to **Telegram Premium** to increase this limit to **{1}**.</value>
   <data name="Listening" xml:space="preserve">
     <value>listening</value>
   </data>
+  <data name="LiteOptionsAnimationEffects" xml:space="preserve">
+    <value>Animation Effects</value>
+  </data>
+  <data name="LiteOptionsAnimationEffectsDisabled" xml:space="preserve">
+    <value>Animation effects are currently disabled system-wide. You can change this in **Accessibility &gt; Visual effects**.</value>
+  </data>
+  <data name="LiteOptionsAnimationEffectsInfo" xml:space="preserve">
+    <value>Enable or disable animation effects throughout the app.</value>
+  </data>
   <data name="LiteOptionsAutoplayChat" xml:space="preserve">
     <value>Autoplay in chat</value>
   </data>
