@@ -189,6 +189,11 @@ namespace Telegram.Navigation
             return ToastPopup.Show(XamlRoot, ClientEx.ParseMarkdown(text), icon, requestedTheme, dismissAfter);
         }
 
+        public void ShowToast(Error error)
+        {
+            ToastPopup.ShowError(XamlRoot, error);
+        }
+
         #endregion
 
         public virtual void BeginOnUIThread(DispatcherQueueHandler action)

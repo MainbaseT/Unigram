@@ -522,9 +522,9 @@ namespace Telegram.ViewModels.Supergroups
                 Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, Member, new ChatMember(member.MemberId, ClientService.Options.MyId, member.JoinedChatDate, status)));
                 Delegate?.Hide();
             }
-            else
+            else if (response is Error error)
             {
-                // TODO: ...
+                ShowToast(error);
             }
         }
 
@@ -600,6 +600,14 @@ namespace Telegram.ViewModels.Supergroups
                 {
 
                 }
+                else if (response is Error error)
+                {
+                    ShowToast(error);
+                }
+            }
+            else if (canTransfer is Error error)
+            {
+                ShowToast(error);
             }
         }
 
@@ -623,9 +631,9 @@ namespace Telegram.ViewModels.Supergroups
                 Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, Member, new ChatMember(member.MemberId, ClientService.Options.MyId, member.JoinedChatDate, new ChatMemberStatusMember())));
                 Delegate?.Hide();
             }
-            else
+            else if (response is Error error)
             {
-                // TODO: ...
+                ShowToast(error);
             }
         }
     }
