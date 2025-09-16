@@ -854,7 +854,7 @@ namespace Telegram.Controls.Gallery
 
         private void LayoutRoot_ViewChanging(object sender, CarouselViewChangingEventArgs e)
         {
-            ChangeView(e.Direction);
+            TryChangeView(e.Direction);
         }
 
         private void LayoutRoot_ViewChanged(object sender, CarouselViewChangedEventArgs e)
@@ -909,7 +909,7 @@ namespace Telegram.Controls.Gallery
 
         private bool ChangeView(CarouselDirection direction)
         {
-            if (ShouldChangeView(direction))
+            if (TryChangeView(direction))
             {
                 LayoutRoot.ChangeView(direction);
                 return true;
@@ -918,7 +918,7 @@ namespace Telegram.Controls.Gallery
             return false;
         }
 
-        private bool ShouldChangeView(CarouselDirection direction)
+        private bool TryChangeView(CarouselDirection direction)
         {
             var viewModel = ViewModel;
             if (viewModel == null || LayoutRoot.IsScrolling)
