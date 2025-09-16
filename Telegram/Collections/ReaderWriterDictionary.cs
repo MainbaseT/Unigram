@@ -32,6 +32,19 @@ namespace Telegram.Collections
             }
         }
 
+        public void Remove(TKey key)
+        {
+            _lock.EnterWriteLock();
+            try
+            {
+                _dictionary.Remove(key);
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+        }
+
         public void Clear()
         {
             _lock.EnterWriteLock();
