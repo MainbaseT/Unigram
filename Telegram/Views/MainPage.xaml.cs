@@ -942,6 +942,12 @@ namespace Telegram.Views
             }
 
             element.Visibility = Visibility.Visible;
+
+            if (!PowerSavingPolicy.AreSmoothTransitionsEnabled)
+            {
+                return;
+            }
+
             ElementCompositionPreview.SetIsTranslationEnabled(element, true);
 
             var visualIn = ElementComposition.GetElementVisual(element);
