@@ -302,7 +302,7 @@ namespace Telegram.ViewModels
 
             #endregion
 
-            if (IsCommentEnabled)
+            if (IsCommentEnabled || parameter is ChooseChatsConfigurationReplyToMessage)
             {
                 LoadFolders();
             }
