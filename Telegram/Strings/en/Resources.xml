@@ -3422,7 +3422,7 @@
 
     <string name="PrivacyInvites">Invites</string>
 
-    <string name="WhoCanAddMe">Who can add me to group chats?</string>
+    <string name="WhoCanAddMe">Who can add me?</string>
     <string name="WhoCanAddMeInfo">You can restrict who can add you to groups and channels with granular precision.</string>
     <string name="AlwaysAllow">Always Allow</string>
     <string name="NeverAllow">Never Allow</string>
@@ -12088,7 +12088,7 @@
     <string name="SelectAccount">Select Account</string>
     <string name="AccDescrReactionMentionDown">Go to next unread reactions</string>
 
-    <string name="Gift2ProfileInvisible3">This gift is hidden from your page. **Show &gt;**</string>
+    <string name="Gift2ProfileInvisible3">This gift is hidden from your profile. **Show &gt;**</string>
     <string name="Gift2ProfileVisible3">This gift is visible on your profile. **Hide &gt;**</string>
     <string name="Gift2ChannelProfileVisible3">This gift is visible on your channel\'s profile. **Hide &gt;**</string>
     <string name="Gift2ChannelProfileInvisible3">This gift is hidden from visitors to your channel. **Show &gt;**</string>
@@ -12786,7 +12786,7 @@
 
     <string name="Gift2FilterUpgradable">Upgradable</string>
     <string name="Gift2GiftAnUpgrade">Gift an Upgrade</string>
-    <string name="Gift2PrepayUpgradeButton">Pay ⭐️{0} for Upgrade</string>
+    <string name="Gift2PrepayUpgradeButton">Pay &#11088;&#65039;{0} for Upgrade</string>
     <string name="Gift2PrepayUpgradeFeature1Text">{0} will get a unique number, model, backdrop, and symbol for the gift.</string>
     <string name="Gift2PrepayUpgradeFeature2Text">{0} will be able to send the gift to anyone on Telegram.</string>
     <string name="Gift2PrepayUpgradeFeature3Text">{0} will be able to auction the gift on third-party NFT marketplaces.</string>
@@ -12824,4 +12824,92 @@
     <string name="LiteOptionsAnimationEffects">Animation Effects</string>
     <string name="LiteOptionsAnimationEffectsInfo">Enable or disable animation effects throughout the app.</string>
     <string name="LiteOptionsAnimationEffectsDisabled">Animation effects are currently disabled system-wide. You can change this in **Accessibility &gt; Visual effects**.</string>
+
+  <!-- new from translations.telegram.org -->
+
+  <string name="Gift2CollectionNumberBy_zero">Collectible #{0} by **{1}**</string>
+  <string name="Gift2CollectionNumberBy_two">Collectible #{0} by **{1}**</string>
+  <string name="Gift2CollectionNumberBy_few">Collectible #{0} by **{1}**</string>
+  <string name="Gift2CollectionNumberBy_many">Collectible #{0} by **{1}**</string>
+  <string name="Gift2PerUserLimit_zero">You already sent **{0}** of these gifts, which is the limit.</string>
+  <string name="Gift2PerUserLimit_two">You already sent **{0}** of these gifts, which is the limit.</string>
+  <string name="Gift2PerUserLimit_few">You already sent **{0}** of these gifts, which is the limit.</string>
+  <string name="Gift2PerUserLimit_many">You already sent **{0}** of these gifts, which is the limit.</string>
+  <string name="Gift2PremiumSubtitleMany_zero">Subscribe to **Telegram Premium** to send up to **{0}** of these gifts and unlock powerful features.</string>
+  <string name="Gift2PremiumSubtitleMany_two">Subscribe to **Telegram Premium** to send up to **{0}** of these gifts and unlock powerful features.</string>
+  <string name="Gift2PremiumSubtitleMany_few">Subscribe to **Telegram Premium** to send up to **{0}** of these gifts and unlock powerful features.</string>
+  <string name="Gift2PremiumSubtitleMany_many">Subscribe to **Telegram Premium** to send up to **{0}** of these gifts and unlock powerful features.</string>
+  <string name="Gift2SentRemainsLimit_zero">You can send **{0}** more.</string>
+  <string name="Gift2SentRemainsLimit_two">You can send **{0}** more.</string>
+  <string name="Gift2SentRemainsLimit_few">You can send **{0}** more.</string>
+  <string name="Gift2SentRemainsLimit_many">You can send **{0}** more.</string>
+  <string name="GiftAddedToCollectionTitle_zero">{0} gifts saved to **{1}**</string>
+  <string name="GiftAddedToCollectionTitle_two">{0} gifts saved to **{1}**</string>
+  <string name="GiftAddedToCollectionTitle_few">{0} gifts saved to **{1}**</string>
+  <string name="GiftAddedToCollectionTitle_many">{0} gifts saved to **{1}**</string>
+  <string name="GiftRemovedFromCollectionTitle_zero">{0} gifts removed from **{1}**</string>
+  <string name="GiftRemovedFromCollectionTitle_two">{0} gifts removed from **{1}**</string>
+  <string name="GiftRemovedFromCollectionTitle_few">{0} gifts removed from **{1}**</string>
+  <string name="GiftRemovedFromCollectionTitle_many">{0} gifts removed from **{1}**</string>
+  <string name="MessageContainsReactionsPacks_zero">Emoji from **{0} packs** were used as reactions.</string>
+  <string name="MessageContainsReactionsPacks_one"></string>
+  <string name="MessageContainsReactionsPacks_two">Emoji from **{0} packs** were used as reactions.</string>
+  <string name="MessageContainsReactionsPacks_few">Emoji from **{0} packs** were used as reactions.</string>
+  <string name="MessageContainsReactionsPacks_many">Emoji from **{0} packs** were used as reactions.</string>
+  <string name="SearchPaidStars_zero">**{0} Stars** spent on extra search.</string>
+  <string name="SearchPaidStars_two">**{0} Stars** spent on extra search.</string>
+  <string name="SearchPaidStars_few">**{0} Stars** spent on extra search.</string>
+  <string name="SearchPaidStars_many">**{0} Stars** spent on extra search.</string>
+  <string name="SearchPostsButtonPay_zero">Search for &#11088;&#65039;{0}</string>
+  <string name="SearchPostsButtonPay_two">Search for &#11088;&#65039;{0}</string>
+  <string name="SearchPostsButtonPay_few">Search for &#11088;&#65039;{0}</string>
+  <string name="SearchPostsButtonPay_many">Search for &#11088;&#65039;{0}</string>
+  <string name="SearchPostsFreeSearches_zero">{0} free searches remaining today.</string>
+  <string name="SearchPostsFreeSearches_two">{0} free searches remaining today.</string>
+  <string name="SearchPostsFreeSearches_few">{0} free searches remaining today.</string>
+  <string name="SearchPostsFreeSearches_many">{0} free searches remaining today.</string>
+  <string name="SearchPostsLimitReachedText_zero">You can make up to {0} search queries per day.</string>
+  <string name="SearchPostsLimitReachedText_two">You can make up to {0} search queries per day.</string>
+  <string name="SearchPostsLimitReachedText_few">You can make up to {0} search queries per day.</string>
+  <string name="SearchPostsLimitReachedText_many">You can make up to {0} search queries per day.</string>
+  <string name="StarRatingFuture_zero">The rating will update in {0} days after purchases.</string>
+  <string name="StarRatingFuture_two">The rating will update in {0} days after purchases.</string>
+  <string name="StarRatingFuture_few">The rating will update in {0} days after purchases.</string>
+  <string name="StarRatingFuture_many">The rating will update in {0} days after purchases.</string>
+  <string name="StarRatingFuturePendingPoints_zero">{0} points are pending.</string>
+  <string name="StarRatingFuturePendingPoints_two">{0} points are pending.</string>
+  <string name="StarRatingFuturePendingPoints_few">{0} points are pending.</string>
+  <string name="StarRatingFuturePendingPoints_many">{0} points are pending.</string>
+  <string name="StarRatingFuturePendingPointsAndLevel1_zero">{0} points and</string>
+  <string name="StarRatingFuturePendingPointsAndLevel1_two">{0} points and</string>
+  <string name="StarRatingFuturePendingPointsAndLevel1_few">{0} points and</string>
+  <string name="StarRatingFuturePendingPointsAndLevel1_many">{0} points and</string>
+  <string name="StarRatingFuturePendingPointsAndLevel2_zero">Level {0} are pending.</string>
+  <string name="StarRatingFuturePendingPointsAndLevel2_two">Level {0} are pending.</string>
+  <string name="StarRatingFuturePendingPointsAndLevel2_few">Level {0} are pending.</string>
+  <string name="StarRatingFuturePendingPointsAndLevel2_many">Level {0} are pending.</string>
+  <string name="StarRatingFuturePreview1_zero">This will be your rating in {0} days, after</string>
+  <string name="StarRatingFuturePreview1_two">This will be your rating in {0} days, after</string>
+  <string name="StarRatingFuturePreview1_few">This will be your rating in {0} days, after</string>
+  <string name="StarRatingFuturePreview1_many">This will be your rating in {0} days, after</string>
+  <string name="StarRatingFuturePreview2_zero">{0} points are added.</string>
+  <string name="StarRatingFuturePreview2_two">{0} points are added.</string>
+  <string name="StarRatingFuturePreview2_few">{0} points are added.</string>
+  <string name="StarRatingFuturePreview2_many">{0} points are added.</string>
+  <string name="StarRatingLevelNegativeYou_zero">A negative rating indicates that your payments are unreliable. Spend **{0} Stars** to fix this issue.</string>
+  <string name="StarRatingLevelNegativeYou_two">A negative rating indicates that your payments are unreliable. Spend **{0} Stars** to fix this issue.</string>
+  <string name="StarRatingLevelNegativeYou_few">A negative rating indicates that your payments are unreliable. Spend **{0} Stars** to fix this issue.</string>
+  <string name="StarRatingLevelNegativeYou_many">A negative rating indicates that your payments are unreliable. Spend **{0} Stars** to fix this issue.</string>
+  <string name="StoryAddedToAlbumTitle_zero">{0} stories saved to **{1}**</string>
+  <string name="StoryAddedToAlbumTitle_two">{0} stories saved to **{1}**</string>
+  <string name="StoryAddedToAlbumTitle_few">{0} stories saved to **{1}**</string>
+  <string name="StoryAddedToAlbumTitle_many">{0} stories saved to **{1}**</string>
+  <string name="StoryRemovedFromAlbumTitle_zero">{0} stories removed from **{1}**</string>
+  <string name="StoryRemovedFromAlbumTitle_two">{0} stories removed from **{1}**</string>
+  <string name="StoryRemovedFromAlbumTitle_few">{0} stories removed from **{1}**</string>
+  <string name="StoryRemovedFromAlbumTitle_many">{0} stories removed from **{1}**</string>
+  <string name="TonCount_zero">{0} TON</string>
+  <string name="TonCount_two">{0} TON</string>
+  <string name="TonCount_few">{0} TON</string>
+  <string name="TonCount_many">{0} TON</string>
 </resources>
