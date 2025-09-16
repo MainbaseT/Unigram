@@ -240,7 +240,15 @@ namespace Telegram.ViewModels
                         files.Add(file);
                     }
 
-                    SendFileExecute(files);
+                    var header = _composerHeader;
+                    if (header?.Editing != null && files.Count > 0)
+                    {
+                        await EditMediaAsync(files[0], false);
+                    }
+                    else
+                    {
+                        SendFileExecute(files);
+                    }
                 }
                 else if (package.AvailableFormats.Contains(StandardDataFormats.WebLink))
                 {
