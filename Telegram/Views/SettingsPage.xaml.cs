@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using Telegram.Common;
-using Telegram.Controls;
 using Telegram.Controls.Gallery;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -18,7 +17,6 @@ using Telegram.Views.Settings;
 using Telegram.Views.Stars;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views
 {

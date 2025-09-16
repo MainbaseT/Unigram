@@ -7,7 +7,6 @@
 using System;
 using System.Numerics;
 using Telegram.Common;
-using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Settings;

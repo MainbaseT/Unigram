@@ -6,7 +6,6 @@
 //
 using System.ComponentModel;
 using Telegram.Common;
-using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Settings;
 using Windows.UI.Xaml;

@@ -14,7 +14,6 @@ using Windows.Security.Credentials;
 using Windows.Security.Cryptography;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views
