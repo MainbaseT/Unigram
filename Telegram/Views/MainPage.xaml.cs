@@ -2036,7 +2036,8 @@ namespace Telegram.Views
                 // TODO: add settings button back to sidebar
                 if (ChatFoldersSide != null)
                 {
-                    ChatFoldersSide.SelectedItem = null;
+                    // Setting this to null causes a chain of issues with updates
+                    //ChatFoldersSide.SelectedItem = null;
                 }
             }
             else if (ChatFoldersSide != null)
@@ -2402,7 +2403,7 @@ namespace Telegram.Views
 
             UpdatePaneToggleButtonVisibility();
 
-            if (_prevIndex != INDEX_CHATS)
+            if (_prevIndex != INDEX_CHATS && MasterDetail.CurrentState != MasterDetailState.Minimal)
             {
                 SetPivotSelectedIndex(INDEX_CHATS);
             }
@@ -2423,12 +2424,6 @@ namespace Telegram.Views
                 }
 
                 SetPivotSelectedIndex(INDEX_CHATS);
-
-                if (MasterDetail.CurrentState == MasterDetailState.Minimal && MasterDetail.NavigationService.CurrentPageType != typeof(BlankPage))
-                {
-                    MasterDetail.NavigationService.GoBackAt(0);
-                }
-
                 HideTopicList();
             }
         }
