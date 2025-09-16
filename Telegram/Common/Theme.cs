@@ -551,6 +551,11 @@ namespace Telegram.Common
                     // The exception MIGHT be related to StaticResources
                     // but I'm not able to confirm this.
                 }
+                catch (Exception ex)
+                {
+                    // Some other errors seem to be randomly thrown
+                    Logger.Error(ex);
+                }
             }
         }
 
