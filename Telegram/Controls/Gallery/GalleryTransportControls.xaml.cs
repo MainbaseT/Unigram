@@ -60,9 +60,6 @@ namespace Telegram.Controls.Gallery
 
             Automation.SetToolTip(VolumeButton, muted ? Strings.PlayerAudioUnmute : Strings.PlayerAudioMute);
 
-            SpeedText.Text = string.Format("{0:N1}x", speed);
-            SpeedButton.Badge = string.Format("{0:N1}x", speed);
-
             _tooltip = new Border
             {
                 CornerRadius = new CornerRadius(4),
@@ -357,22 +354,17 @@ namespace Telegram.Controls.Gallery
             }
         }
 
-        private bool _settingsCollapsed = true;
+        private bool _qualityCollapsed = true;
 
-        private void ShowHideSettings(bool show)
+        private void ShowHideQuality(bool show)
         {
-            if (_settingsCollapsed != show)
+            if (_qualityCollapsed != show)
             {
                 return;
             }
 
-            _settingsCollapsed = !show;
-
-            SpeedRoot.Visibility = show
-                ? Visibility.Collapsed
-                : Visibility.Visible;
-
-            SettingsRoot.Visibility = show
+            _qualityCollapsed = !show;
+            QualityRoot.Visibility = show
                 ? Visibility.Visible
                 : Visibility.Collapsed;
         }
@@ -386,7 +378,7 @@ namespace Telegram.Controls.Gallery
 
         private void OnLevelsChanged(VideoPlayerBase sender, VideoPlayerLevelsChangedEventArgs args)
         {
-            ShowHideSettings(args.Levels.Count > 0);
+            ShowHideQuality(args.Levels.Count > 0);
 
             if (args.CurrentLevel != null && !args.IsAuto)
             {
@@ -516,56 +508,58 @@ namespace Telegram.Controls.Gallery
             var auto = _player.IsCurrentLevelAuto;
 
             var flyout = new MenuFlyout();
-            var quality = new MenuFlyoutSubItem
-            {
-                Text = Strings.Quality,
-                Icon = MenuFlyoutHelper.CreateIcon(Icons.Options),
-                Style = BootStrapper.Current.Resources["DefaultMenuFlyoutSubItemStyle"] as Style
-            };
 
-            var item = new ToggleMenuFlyoutItem();
-            item.Text = current != null && auto ? string.Format("{0} ({1})", Strings.QualityAuto, current.ToP()) : Strings.QualityAuto;
-            item.IsChecked = _player.IsCurrentLevelAuto;
-            item.Click += (s, args) =>
+            if (_player.Levels.Count > 0)
             {
-                _player.CurrentLevel = null;
-            };
-
-            quality.Items.Add(item);
-
-            foreach (var level in _player.Levels.OrderBy(x => x.Bitrate))
-            {
-                var option = new ToggleMenuFlyoutItem();
-                option.Text = level.ToP();
-                option.IsChecked = current?.Index == level.Index && !auto;
-                option.Click += (s, args) =>
+                var quality = new MenuFlyoutSubItem
                 {
-                    _player.CurrentLevel = level;
+                    Text = Strings.Quality,
+                    Icon = MenuFlyoutHelper.CreateIcon(Icons.Options),
+                    Style = BootStrapper.Current.Resources["DefaultMenuFlyoutSubItemStyle"] as Style
                 };
 
-                quality.Items.Add(option);
+                var item = new ToggleMenuFlyoutItem();
+                item.Text = current != null && auto ? string.Format("{0} ({1})", Strings.QualityAuto, current.ToP()) : Strings.QualityAuto;
+                item.IsChecked = _player.IsCurrentLevelAuto;
+                item.Click += (s, args) =>
+                {
+                    _player.CurrentLevel = null;
+                };
+
+                quality.Items.Add(item);
+
+                foreach (var level in _player.Levels.OrderBy(x => x.Bitrate))
+                {
+                    var option = new ToggleMenuFlyoutItem();
+                    option.Text = level.ToP();
+                    option.IsChecked = current?.Index == level.Index && !auto;
+                    option.Click += (s, args) =>
+                    {
+                        _player.CurrentLevel = level;
+                    };
+
+                    quality.Items.Add(option);
+                }
+
+                flyout.Items.Add(quality);
+
+                var speed = new MenuFlyoutSubItem
+                {
+                    Text = Strings.Speed,
+                    Icon = MenuFlyoutHelper.CreateIcon(Icons.TopSpeed),
+                    Style = BootStrapper.Current.Resources["DefaultMenuFlyoutSubItemStyle"] as Style
+                };
+
+                speed.CreatePlaybackSpeed(_player.Rate, FlyoutPlacementMode.Bottom, UpdatePlaybackSpeed);
+
+                flyout.Items.Add(speed);
+            }
+            else
+            {
+                flyout.CreatePlaybackSpeed(_player.Rate, FlyoutPlacementMode.Bottom, UpdatePlaybackSpeed);
             }
 
-            var speed = new MenuFlyoutSubItem
-            {
-                Text = Strings.Speed,
-                Icon = MenuFlyoutHelper.CreateIcon(Icons.TopSpeed),
-                Style = BootStrapper.Current.Resources["DefaultMenuFlyoutSubItemStyle"] as Style
-            };
-
-            speed.CreatePlaybackSpeed(_player.Rate, FlyoutPlacementMode.Bottom, UpdatePlaybackSpeed);
-
-            flyout.Items.Add(quality);
-            flyout.Items.Add(speed);
-
             flyout.ShowAt(SettingsButton, FlyoutPlacementMode.TopEdgeAlignedRight);
-        }
-
-        private void Speed_Click(object sender, RoutedEventArgs e)
-        {
-            var flyout = new MenuFlyout();
-            flyout.CreatePlaybackSpeed(_player.Rate, FlyoutPlacementMode.Top, UpdatePlaybackSpeed);
-            flyout.ShowAt(SpeedButton, FlyoutPlacementMode.TopEdgeAlignedRight);
         }
 
         private void UpdatePlaybackSpeed(double value)
@@ -577,9 +571,6 @@ namespace Telegram.Controls.Gallery
             {
                 _player.Rate = value;
             }
-
-            SpeedText.Text = string.Format("{0:N1}x", value);
-            SpeedButton.Badge = string.Format("{0:N1}x", value);
         }
 
         private void ChangePlaybackSpeed(float amount)
