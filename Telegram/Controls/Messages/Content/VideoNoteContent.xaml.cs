@@ -6,6 +6,7 @@
 //
 using System;
 using System.Threading;
+using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Services;
 using Telegram.Streams;

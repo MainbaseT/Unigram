@@ -6,7 +6,7 @@
 //
 using System.Collections.Generic;
 
-namespace Telegram.Common
+namespace Telegram.Collections
 {
     public partial class HashSetDictionary<TKey, TValue> : Dictionary<TKey, ISet<TValue>>
     {

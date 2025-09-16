@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Native;
 using Telegram.Td;
@@ -288,32 +289,34 @@ namespace Telegram.Services
         private readonly ILocaleService _locale;
         private readonly IEventAggregator _aggregator;
 
-        private readonly ConcurrentDictionary<long, MessageEffect> _effects = new();
-
         private readonly RefAction<Object> _processFilesDelegate;
 
-        private readonly Dictionary<long, Chat> _chats = new();
+        private readonly ReaderWriterDictionary<long, MessageEffect> _effects = new();
+
+        private readonly ReaderWriterDictionary<long, Chat> _chats = new();
+
         private readonly ConcurrentDictionary<long, ConcurrentDictionary<MessageSender, ChatAction>> _chatActions = new();
         private readonly ConcurrentDictionary<ChatMessageId, ConcurrentDictionary<MessageSender, ChatAction>> _topicActions = new();
 
-        private readonly Dictionary<int, SecretChat> _secretChats = new();
+        private readonly ReaderWriterDictionary<int, SecretChat> _secretChats = new();
 
-        private readonly Dictionary<long, long> _usersToChats = new();
+        private readonly ReaderWriterDictionary<long, long> _usersToChats = new();
 
-        private readonly Dictionary<long, User> _users = new();
-        private readonly ConcurrentDictionary<long, UserFullInfo> _usersFull = new();
+        private readonly ReaderWriterDictionary<long, User> _users = new();
+        private readonly ReaderWriterDictionary<long, UserFullInfo> _usersFull = new();
 
-        private readonly Dictionary<long, BasicGroup> _basicGroups = new();
-        private readonly ConcurrentDictionary<long, BasicGroupFullInfo> _basicGroupsFull = new();
+        private readonly ReaderWriterDictionary<long, BasicGroup> _basicGroups = new();
+        private readonly ReaderWriterDictionary<long, BasicGroupFullInfo> _basicGroupsFull = new();
 
-        private readonly Dictionary<long, Supergroup> _supergroups = new();
-        private readonly ConcurrentDictionary<long, SupergroupFullInfo> _supergroupsFull = new();
+        private readonly ReaderWriterDictionary<long, Supergroup> _supergroups = new();
+        private readonly ReaderWriterDictionary<long, SupergroupFullInfo> _supergroupsFull = new();
 
         private readonly ConcurrentDictionary<int, ChatListUnreadCount> _unreadCounts = new();
 
-        private readonly Dictionary<int, File> _files = new();
+        private readonly ReaderWriterDictionary<long, MessageAlbumLastMessageService> _lastMessageAlbums = new();
 
-        private readonly ConcurrentDictionary<long, MessageAlbumLastMessageService> _lastMessageAlbums = new();
+        // Files are currently accessed only from TDLib thread
+        private readonly Dictionary<int, File> _files = new();
 
         private readonly List<long> _recentChats = new();
         private readonly object _recentChatsLock = new();
@@ -2182,7 +2185,7 @@ namespace Telegram.Services
 
         public SecretChat GetSecretChatForUser(long id)
         {
-            return _secretChats.FirstOrDefault(x => x.Value.UserId == id).Value;
+            return _secretChats.Find(x => x.UserId == id);
         }
 
         public User GetUser(Chat chat)
@@ -2730,7 +2733,7 @@ namespace Telegram.Services
 
             if (lastMessage == null || lastMessage.MediaAlbumId == 0 || lastMessage.Content is not MessagePhoto and not MessageVideo || !SettingsService.Current.Diagnostics.AlbumPreloadDebug)
             {
-                _lastMessageAlbums.TryRemove(chat.Id, out _);
+                _lastMessageAlbums.Remove(chat.Id);
                 return;
             }
 

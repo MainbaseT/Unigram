@@ -11,7 +11,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Telegram.Collection;
 using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls.Media;

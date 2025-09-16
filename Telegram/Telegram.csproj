@@ -204,6 +204,7 @@
     <Compile Include="Collections\Experimental\ItemIndexRangeList.cs" />
     <Compile Include="Collections\IncrementalCollectionView.cs" />
     <Compile Include="Collections\ListWithTotalCount.cs" />
+    <Compile Include="Collections\ReaderWriterDictionary.cs" />
     <Compile Include="Collections\SearchEmojiCollection.cs" />
     <Compile Include="Collections\SynchronizedList.cs" />
     <Compile Include="Common\AsyncMediaPlayerSwapChain.cs" />
@@ -211,7 +212,7 @@
     <Compile Include="Common\BezierPoint.cs" />
     <Compile Include="Common\DebouncedPropertyWithToken.cs" />
     <Compile Include="Common\FeatureTokenGenerator.cs" />
-    <Compile Include="Common\HashSetDictionary.cs" />
+    <Compile Include="Collections\HashSetDictionary.cs" />
     <Compile Include="Common\HttpServer.cs" />
     <Compile Include="Common\MediaDeviceTracker.cs" />
     <Compile Include="Common\MediaDeviceList.cs" />
@@ -1270,7 +1271,7 @@
     <Compile Include="Views\Folders\Popups\ShareFolderPopup.xaml.cs">
       <DependentUpon>ShareFolderPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\MultiValueDictionary.cs" />
+    <Compile Include="Collections\MultiValueDictionary.cs" />
     <Compile Include="Views\HostedPage.cs" />
     <Compile Include="Views\Host\SharePage.xaml.cs">
       <DependentUpon>SharePage.xaml</DependentUpon>

@@ -5,8 +5,9 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System.Collections.Generic;
+using Telegram.Common;
 
-namespace Telegram.Common
+namespace Telegram.Collections
 {
     public partial class MultiValueDictionary<TKey, TValue> : Dictionary<TKey, IList<TValue>>
     {
