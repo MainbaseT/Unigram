@@ -9,6 +9,7 @@ using Telegram.Common;
 using Telegram.Services;
 using Windows.Foundation;
 using Windows.UI.Composition;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
@@ -133,7 +134,7 @@ namespace Telegram.Controls
                 VisualStateManager.GoToState(this, "PointerOver", true);
                 CapturePointer(e.Pointer);
 
-                UpdateValue(TimeSpan.FromSeconds(point.Position.X / ActualWidth * _duration.TotalSeconds), _duration, PlaybackState.None);
+                UpdateValue(CalculatePosition(point), _duration, PlaybackState.None);
             }
 
             base.OnPointerPressed(e);
@@ -143,8 +144,7 @@ namespace Telegram.Controls
         {
             if (_pressed)
             {
-                var point = e.GetCurrentPoint(this);
-                UpdateValue(TimeSpan.FromSeconds(point.Position.X / ActualWidth * _duration.TotalSeconds), _duration, PlaybackState.None);
+                UpdateValue(CalculatePosition(e.GetCurrentPoint(this)), _duration, PlaybackState.None);
             }
 
             VisualStateManager.GoToState(this, "PointerOver", true);
@@ -188,8 +188,7 @@ namespace Telegram.Controls
         {
             if (_pressed)
             {
-                var point = e.GetCurrentPoint(this);
-                SetValue(TimeSpan.FromSeconds(point.Position.X / ActualWidth * _duration.TotalSeconds));
+                SetValue(CalculatePosition(e.GetCurrentPoint(this)));
             }
 
             _pressed = false;
@@ -212,6 +211,11 @@ namespace Telegram.Controls
                 _entered = false;
                 VisualStateManager.GoToState(this, "Normal", true);
             }
+        }
+
+        private TimeSpan CalculatePosition(PointerPoint point)
+        {
+            return TimeSpan.FromSeconds(Math.Clamp(point.Position.X, 0, ActualWidth) / ActualWidth * _duration.TotalSeconds);
         }
 
         public void SetValue(TimeSpan position)
