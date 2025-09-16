@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -221,6 +222,11 @@ namespace Telegram.Navigation
 
                 if (value is Control control)
                 {
+                    if (_locked == null)
+                    {
+                        BackdropMaterial.SetApplyToRootOrPageBackground(control, true);
+                    }
+
                     control.Loading += OnLoading;
                     control.Loaded += OnLoaded;
                 }
@@ -437,6 +443,8 @@ namespace Telegram.Navigation
                 popupHost.PopupOpened();
             }
 
+            Logger.Info("Showing passcode lock");
+
             // TODO: Transition from splash screen to passcode
             _locked = new PasscodePage(this, biometrics && IsInMainView);
             _lockedContent = _window.Content;
@@ -451,6 +459,8 @@ namespace Telegram.Navigation
                 return;
             }
 
+            Logger.Info("Hiding passcode lock");
+
             _window.Content = _lockedContent;
 
             _locked = null;
@@ -463,6 +473,7 @@ namespace Telegram.Navigation
 
             if (_window.Content is Control control)
             {
+                BackdropMaterial.SetApplyToRootOrPageBackground(control, true);
                 control.Focus(FocusState.Programmatic);
             }
         }
