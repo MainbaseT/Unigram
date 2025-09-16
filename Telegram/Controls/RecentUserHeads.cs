@@ -141,7 +141,7 @@ namespace Telegram.Controls
                 visual.Offset = new Vector3(i * (_itemSize + 4 - _itemOverlap), 0, 0);
 
                 Canvas.SetZIndex(container, -i);
-                _layoutRoot.Children.Insert(i, container);
+                _layoutRoot.Children.Add(container);
             }
         }
 
