@@ -33,7 +33,7 @@ namespace Telegram.Streams
 
         public static DelayedFileSource FromSticker(IClientService clientService, Sticker sticker)
         {
-            if (sticker == null)
+            if (clientService == null || sticker == null)
             {
                 return null;
             }

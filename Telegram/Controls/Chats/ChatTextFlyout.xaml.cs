@@ -112,7 +112,7 @@ namespace Telegram.Controls.Chats
                 var content = args.ItemContainer.ContentTemplateRoot as Grid;
 
                 var animated = content.Children[0] as AnimatedImage;
-                animated.Source = new DelayedFileSource(ViewModel.ClientService, sticker);
+                animated.Source = DelayedFileSource.FromSticker(ViewModel?.ClientService, sticker);
 
                 AutomationProperties.SetName(args.ItemContainer, sticker.Emoji);
             }
