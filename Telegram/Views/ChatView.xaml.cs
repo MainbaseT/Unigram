@@ -3318,12 +3318,15 @@ namespace Telegram.Views
                 _viewModel.SearchExecute(string.Empty, sender);
             }
 
-            if (mention != null)
+            if (message.Chat.Type is not ChatTypeSupergroup { IsChannel: true })
             {
-                flyout.CreateFlyoutItem(Mention, Strings.Mention, Icons.Mention);
-            }
+                if (mention != null)
+                {
+                    flyout.CreateFlyoutItem(Mention, Strings.Mention, Icons.Mention);
+                }
 
-            flyout.CreateFlyoutItem(SearchMessages, message.SenderId, Strings.AvatarPreviewSearchMessages, Icons.Search);
+                flyout.CreateFlyoutItem(SearchMessages, message.SenderId, Strings.AvatarPreviewSearchMessages, Icons.Search);
+            }
 
             flyout.ShowAt(profilePicture, args);
         }
