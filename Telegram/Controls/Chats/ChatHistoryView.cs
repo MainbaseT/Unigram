@@ -18,7 +18,9 @@ using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
+using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
@@ -160,6 +162,21 @@ namespace Telegram.Controls.Chats
         private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
             HasBeenScrolled = true;
+
+            var modifiers = WindowContext.KeyModifiers();
+            if (modifiers == VirtualKeyModifiers.Control)
+            {
+                try
+                {
+                    var point = e.GetCurrentPoint(ScrollingHost);
+                    var peer = FrameworkElementAutomationPeer.FromElement(ScrollingHost) as IScrollProvider;
+                    peer?.Scroll(ScrollAmount.NoAmount, point.Properties.MouseWheelDelta < 0 ? ScrollAmount.LargeIncrement : ScrollAmount.LargeDecrement);
+                }
+                catch
+                {
+                    // All the remote procedure calls must be wrapped in a try-catch block
+                }
+            }
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -184,8 +201,16 @@ namespace Telegram.Controls.Chats
 
         private void OnViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
-            ViewChanging(e.FinalView.VerticalOffset != e.NextView.VerticalOffset ?
-                e.FinalView.VerticalOffset < e.NextView.VerticalOffset
+            var finalOffset = e.FinalView.VerticalOffset;
+            var nextOffset = e.NextView.VerticalOffset;
+
+            if (finalOffset == nextOffset && !e.IsInertial)
+            {
+                nextOffset = ScrollingHost.VerticalOffset;
+            }
+
+            ViewChanging(e.FinalView.VerticalOffset != nextOffset ?
+                finalOffset < nextOffset
                 ? PanelScrollingDirection.Backward
                 : PanelScrollingDirection.Forward
                 : PanelScrollingDirection.None);
