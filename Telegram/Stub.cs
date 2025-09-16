@@ -7411,6 +7411,21 @@ public static class IInvokeProvider_stub
         }
     }
 }
+public static class IScrollProvider_stub
+{
+    public static void Scroll_stub(this Windows.UI.Xaml.Automation.Provider.IScrollProvider sender, Windows.UI.Xaml.Automation.ScrollAmount horizontalAmount, Windows.UI.Xaml.Automation.ScrollAmount verticalAmount)
+    {
+        try
+        {
+            sender.Scroll(horizontalAmount, verticalAmount);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class ResourceLoader_stub
 {
     public static Windows.ApplicationModel.Resources.ResourceLoader GetForViewIndependentUse_stub(string name)
