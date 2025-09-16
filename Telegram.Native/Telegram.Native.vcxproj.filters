@@ -1104,5 +1104,6 @@
     <Midl Include="AI\RecognizedWord.idl">
       <Filter>AI</Filter>
     </Midl>
+    <Midl Include="AnimationEffects.idl" />
   </ItemGroup>
 </Project>

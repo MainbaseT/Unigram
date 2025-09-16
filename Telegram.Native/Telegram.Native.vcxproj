@@ -303,6 +303,10 @@
     <ClInclude Include="..\Libraries\libwebp\src\webp\mux.h" />
     <ClInclude Include="..\Libraries\libwebp\src\webp\mux_types.h" />
     <ClInclude Include="..\Libraries\libwebp\src\webp\types.h" />
+    <ClInclude Include="AnimationEffects.h">
+      <DependentUpon>AnimationEffects.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="AudioPitchEffect.h">
       <DependentUpon>AudioPitchEffect.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -965,6 +969,10 @@
     <ClCompile Include="..\Libraries\libwebp\src\utils\utils.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="AnimationEffects.cpp">
+      <DependentUpon>AnimationEffects.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="Composition\DirectRectangleClip2.cpp" />
     <ClCompile Include="Composition\WindowVisual.cpp" />
     <ClCompile Include="FatalError.cpp">
@@ -1090,6 +1098,9 @@
     <None Include="Telegram.Native.def" />
   </ItemGroup>
   <ItemGroup>
+    <Midl Include="AnimationEffects.idl">
+      <SubType>Designer</SubType>
+    </Midl>
     <Midl Include="AudioPitchEffect.idl">
       <SubType>Designer</SubType>
     </Midl>
