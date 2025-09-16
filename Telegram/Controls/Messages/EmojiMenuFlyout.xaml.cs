@@ -571,10 +571,8 @@ namespace Telegram.Controls.Messages
                 {
                     _clientService.Send(new SetDefaultReactionType(sticker.Reaction.Type));
                 }
-                else
-                {
-                    EmojiSelected?.Invoke(this, new EmojiSelectedEventArgs(sticker.ToReactionType()));
-                }
+
+                EmojiSelected?.Invoke(this, new EmojiSelectedEventArgs(sticker.ToReactionType()));
             }
         }
 

@@ -620,7 +620,7 @@ namespace Telegram.ViewModels.Drawers
         public StickerViewModel(IClientService clientService, Sticker sticker, EmojiStatusType emojiStatusType = null, AvailableReaction reaction = null)
         {
             _clientService = clientService;
-            Update(sticker, emojiStatusType);
+            Update(sticker, emojiStatusType, reaction);
         }
 
         public void Update(Sticker sticker, EmojiStatusType emojiStatusType = null, AvailableReaction reaction = null)
