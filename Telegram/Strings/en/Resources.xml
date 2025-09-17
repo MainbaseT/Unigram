@@ -12110,6 +12110,8 @@
     <string name="GroupCallLinkText2Two">**{0}** and **{1}** already joined this call.</string>
     <string name="GroupCallLinkText2Many_one">**{1}**, **{2}** and **{0}** more person already joined this call.</string>
     <string name="GroupCallLinkText2Many_other">**{1}**, **{2}** and **{0}** more people already joined this call.</string>
+    <string name="GroupCallLinkText2Unknown_one">**{0}** person already joined this call.</string>
+    <string name="GroupCallLinkText2Unknown_other">**{0}** people already joined this call.</string>
     <string name="GroupCallLinkJoin">Join Group Call</string>
     <string name="LinkIsNoActive">This link is no longer active.</string>
     <string name="GroupCallCreate">Start New Call</string>
@@ -12912,4 +12914,12 @@
   <string name="TonCount_two">{0} TON</string>
   <string name="TonCount_few">{0} TON</string>
   <string name="TonCount_many">{0} TON</string>
+
+    <string name="GroupJoinLinkText2One">**{0}** already joined this group.</string>
+    <string name="GroupJoinLinkText2Two">**{0}** and **{1}** already joined this group.</string>
+    <string name="GroupJoinLinkText2Many_one">**{1}**, **{2}** and **{0}** more person already joined this group.</string>
+    <string name="GroupJoinLinkText2Many_other">**{1}**, **{2}** and **{0}** more people already joined this group.</string>
+    <string name="GroupJoinLinkText2Unknown_one">**{0}** person already joined this group.</string>
+    <string name="GroupJoinLinkText2Unknown_other">**{0}** people already joined this group.</string>
+
 </resources>

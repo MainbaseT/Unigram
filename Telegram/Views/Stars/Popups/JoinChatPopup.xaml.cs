@@ -25,7 +25,7 @@ namespace Telegram.Views.Popups2
 
             Photo.SetChat(clientService, info, 96);
 
-            Identity.SetStatus(info);
+            Identity.SetStatus(clientService, info);
 
             Title.Text = info.Title;
             Subtitle.Text = ConvertCount(info.MemberCount, info.Type is InviteLinkChatTypeChannel);

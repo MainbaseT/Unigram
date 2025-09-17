@@ -45,7 +45,7 @@
                                   ItemOverlap="16"
                                   RecentUserHeadChanged="Participants_RecentUserHeadChanged"
                                   HorizontalAlignment="Center"
-                                  Margin="0,24,0,8"
+                                  Margin="0,24,0,4"
                                   Grid.Row="2" />
 
         <TextBlock x:Name="JoinRequestInfo"

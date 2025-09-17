@@ -7504,6 +7504,12 @@ about Telegram?</value>
   <data name="GroupCallLinkText2Two" xml:space="preserve">
     <value>**{0}** and **{1}** already joined this call.</value>
   </data>
+  <data name="GroupCallLinkText2Unknown_one" xml:space="preserve">
+    <value>**{0}** person already joined this call.</value>
+  </data>
+  <data name="GroupCallLinkText2Unknown_other" xml:space="preserve">
+    <value>**{0}** people already joined this call.</value>
+  </data>
   <data name="GroupCallLinkTitle" xml:space="preserve">
     <value>Group Call</value>
   </data>
@@ -7530,6 +7536,24 @@ about Telegram?</value>
   </data>
   <data name="GroupEmojiStatusInfo" xml:space="preserve">
     <value>Choose a status that will be shown next to the group&apos;s name.</value>
+  </data>
+  <data name="GroupJoinLinkText2Many_one" xml:space="preserve">
+    <value>**{1}**, **{2}** and **{0}** more person already joined this group.</value>
+  </data>
+  <data name="GroupJoinLinkText2Many_other" xml:space="preserve">
+    <value>**{1}**, **{2}** and **{0}** more people already joined this group.</value>
+  </data>
+  <data name="GroupJoinLinkText2One" xml:space="preserve">
+    <value>**{0}** already joined this group.</value>
+  </data>
+  <data name="GroupJoinLinkText2Two" xml:space="preserve">
+    <value>**{0}** and **{1}** already joined this group.</value>
+  </data>
+  <data name="GroupJoinLinkText2Unknown_one" xml:space="preserve">
+    <value>**{0}** person already joined this group.</value>
+  </data>
+  <data name="GroupJoinLinkText2Unknown_other" xml:space="preserve">
+    <value>**{0}** people already joined this group.</value>
   </data>
   <data name="GroupMembersChartTitle" xml:space="preserve">
     <value>Group members</value>

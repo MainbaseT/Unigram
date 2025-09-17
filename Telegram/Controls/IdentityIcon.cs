@@ -69,7 +69,7 @@ namespace Telegram.Controls
             }
             else if (_parameter is ChatInviteLinkInfo chatInviteLinkInfo)
             {
-                SetStatus(chatInviteLinkInfo);
+                SetStatus(_clientService, chatInviteLinkInfo);
             }
 
             _clientService = null;
@@ -201,10 +201,27 @@ namespace Telegram.Controls
             }
         }
 
-        public void SetStatus(ChatInviteLinkInfo chat)
+        public void SetStatus(IClientService clientService, ChatInviteLinkInfo chat, CustomEmojiIcon botVerified)
+        {
+            SetStatus(clientService, chat);
+
+            if (chat.VerificationStatus?.BotVerificationIconCustomEmojiId is not null and not 0)
+            {
+                botVerified.Source = new CustomEmojiFileSource(clientService, chat.VerificationStatus.BotVerificationIconCustomEmojiId);
+                botVerified.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                botVerified.Source = null;
+                botVerified.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public void SetStatus(IClientService clientService, ChatInviteLinkInfo chat)
         {
             if (!_templateApplied)
             {
+                _clientService = clientService;
                 _parameter = chat;
                 return;
             }
