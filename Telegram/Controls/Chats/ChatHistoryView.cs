@@ -168,9 +168,17 @@ namespace Telegram.Controls.Chats
             {
                 try
                 {
+                    var presenter = ScrollingHost.GetChild<ScrollContentPresenter>();
+
                     var point = e.GetCurrentPoint(ScrollingHost);
-                    var peer = FrameworkElementAutomationPeer.FromElement(ScrollingHost) as IScrollProvider;
-                    peer?.Scroll(ScrollAmount.NoAmount, point.Properties.MouseWheelDelta < 0 ? ScrollAmount.LargeIncrement : ScrollAmount.LargeDecrement);
+                    if (point.Properties.MouseWheelDelta < 0)
+                    {
+                        presenter.PageDown();
+                    }
+                    else
+                    {
+                        presenter.PageUp();
+                    }
                 }
                 catch
                 {
