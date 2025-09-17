@@ -257,9 +257,16 @@ namespace Telegram.Views.Popups
                     }
                     else if (clientService.TryGetUser(privata.UserId, out User user))
                     {
-                        if (user.Type is UserTypeBot)
+                        if (user.Type is UserTypeDeleted)
                         {
-                            return AllowBotChats && !CanShareContact;
+                            return false;
+                        }
+                        else if (user.Type is UserTypeBot)
+                        {
+                            return AllowBotChats
+                                && !CanShareContact
+                                && chat.Id != clientService.Options.RepliesBotChatId
+                                && chat.Id != clientService.Options.VerificationCodesBotChatId;
                         }
                         else if (CanShareContact)
                         {
@@ -362,6 +369,11 @@ namespace Telegram.Views.Popups
         {
             if (clientService.TryGetUser(chat, out User user))
             {
+                if (chat.Id == clientService.Options.RepliesBotChatId || chat.Id == clientService.Options.VerificationCodesBotChatId)
+                {
+                    return false;
+                }
+
                 return Allow(clientService, user);
             }
 
