@@ -970,9 +970,9 @@ namespace Telegram.Views
             visualIn.StartAnimation("Opacity", opacityIn);
         }
 
-        private void SettingsRoot_Loaded(object sender, object e)
+        private void SettingsRoot_Loaded(object sender, RoutedEventArgs e)
         {
-            SettingsRoot.LayoutUpdated -= SettingsRoot_Loaded;
+            SettingsRoot.Loaded -= SettingsRoot_Loaded;
             Show(SettingsRoot, _prevIndex > 1, 1);
         }
 
