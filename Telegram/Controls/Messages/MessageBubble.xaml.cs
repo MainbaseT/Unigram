@@ -642,7 +642,7 @@ namespace Telegram.Controls.Messages
                     }
                     else
                     {
-                        if (message.IsOutgoing && !message.IsChannelPost)
+                        if (outgoing)
                         {
                             Margin = new Thickness(50, top, 12, 0);
                         }
@@ -1624,7 +1624,7 @@ namespace Telegram.Controls.Messages
             Panel.ForceNewLine = message?.GeneratedContent is MessageBigEmoji;
 
             // TODO: this probably needs to go in MessageViewModel
-            var outgoing = (message.IsOutgoing && !message.IsChannelPost && message.SenderId is MessageSenderUser) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
+            var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
 
             var aboveMedia = message.ShowCaptionAboveMedia();
             var factCheck = message.FactCheck == null ? 0 : 1;
