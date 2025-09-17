@@ -229,6 +229,7 @@
                            TextAlignment="Center"
                            Style="{StaticResource BodyTextBlockStyle}"
                            Foreground="{ThemeResource PageHeaderDisabledBrush}"
+                           IsHitTestVisible="False"
                            Visibility="Collapsed" />
             </Grid>
 
