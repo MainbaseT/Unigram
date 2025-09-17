@@ -1,6 +1,7 @@
 ﻿using System;
-using Telegram.Common;
+using System.Collections.Generic;
 using Telegram.Controls;
+using Telegram.Native;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -29,7 +30,7 @@ namespace LibVLCSharp.Platforms.Windows
             Disconnected += OnDisconnected;
         }
 
-        public event EventHandler<InitializedEventArgs> Initialized;
+        public event EventHandler<VideoViewInitializedEventArgs> Initialized;
 
         public bool IsUnloadedExpected { get; set; }
 
@@ -89,7 +90,7 @@ namespace LibVLCSharp.Platforms.Windows
             }
             else if (_context.Create(false))
             {
-                Initialized?.Invoke(this, new InitializedEventArgs(SwapChainOptions));
+                Initialized?.Invoke(this, new VideoViewInitializedEventArgs(SwapChainOptions));
             }
         }
 
@@ -113,7 +114,7 @@ namespace LibVLCSharp.Platforms.Windows
         /// Calling this property will throw an <see cref="InvalidOperationException"/> if the VideoView is not yet full Loaded.
         /// </summary>
         /// <returns>The list of arguments to be given to the <see cref="LibVLC"/> constructor.</returns>
-        public string[] SwapChainOptions => _context.SwapChainOptions;
+        public IList<string> SwapChainOptions => _context.SwapChainOptions;
     }
 
 #if WINUI

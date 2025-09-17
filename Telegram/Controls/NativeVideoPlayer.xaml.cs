@@ -222,7 +222,7 @@ namespace Telegram.Controls
             }
         }
 
-        private void OnInitialized(object sender, InitializedEventArgs e)
+        private void OnInitialized(object sender, VideoViewInitializedEventArgs e)
         {
             _core = new AsyncMediaPlayer(false, e.SwapChainOptions);
             _core.Vout += OnVout;

@@ -307,6 +307,10 @@
       <DependentUpon>AnimationEffects.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="AsyncMediaPlayerSwapChain.h">
+      <DependentUpon>AsyncMediaPlayerSwapChain.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="AudioPitchEffect.h">
       <DependentUpon>AudioPitchEffect.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -973,6 +977,10 @@
       <DependentUpon>AnimationEffects.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="AsyncMediaPlayerSwapChain.cpp">
+      <DependentUpon>AsyncMediaPlayerSwapChain.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="Composition\DirectRectangleClip2.cpp" />
     <ClCompile Include="Composition\WindowVisual.cpp" />
     <ClCompile Include="FatalError.cpp">
@@ -1099,6 +1107,9 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="AnimationEffects.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="AsyncMediaPlayerSwapChain.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="AudioPitchEffect.idl">

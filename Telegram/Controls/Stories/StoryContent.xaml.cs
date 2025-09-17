@@ -745,7 +745,7 @@ namespace Telegram.Controls.Stories
                     if (Video.IsConnected)
                     {
                         _mediaStream = stream;
-                        Video_Initialized(Video, new LibVLCSharp.Platforms.Windows.InitializedEventArgs(Video.SwapChainOptions));
+                        Video_Initialized(Video, new LibVLCSharp.Platforms.Windows.VideoViewInitializedEventArgs(Video.SwapChainOptions));
                     }
                     else
                     {
@@ -1222,7 +1222,7 @@ namespace Telegram.Controls.Stories
             }
         }
 
-        private void Video_Initialized(object sender, LibVLCSharp.Platforms.Windows.InitializedEventArgs e)
+        private void Video_Initialized(object sender, LibVLCSharp.Platforms.Windows.VideoViewInitializedEventArgs e)
         {
             if (_unloaded)
             {

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Telegram.Native;
 using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
@@ -51,7 +52,13 @@ namespace Telegram.Common
         private readonly object _closeLock = new();
         private volatile bool _closed;
 
-        public AsyncMediaPlayer(bool createGraphicsContext, params string[] options)
+        public AsyncMediaPlayer(bool createGraphicsContext, params string[] opts)
+            : this(createGraphicsContext, options: opts)
+        {
+
+        }
+
+        public AsyncMediaPlayer(bool createGraphicsContext, IList<string> options)
         {
             _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             _enableDebugLogs = SettingsService.Current.VerbosityLevel >= 4;

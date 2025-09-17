@@ -289,6 +289,11 @@ namespace LibVLCSharp.Shared
         {
         }
 
+        public LibVLC(bool enableDebugLogs, IList<string> options)
+            : base(MarshalUtils.CreateWithOptions(PatchOptions(options, enableDebugLogs), Native.LibVLCNew))
+        {
+        }
+
         protected override bool ReleaseHandle()
         {
             Native.LibVLCRelease(handle);
@@ -301,19 +306,19 @@ namespace LibVLCSharp.Shared
         /// <param name="options">The options given by the user</param>
         /// <param name="enableDebugLogs">enable debug logs</param>
         /// <returns>The patched options</returns>
-        static string[] PatchOptions(string[] options, bool enableDebugLogs = false)
+        static string[] PatchOptions(IList<string> options, bool enableDebugLogs = false)
         {
             string[] newOptions;
             int newCount = Core.UseSpeex ? 2 : 1;
 
             if (enableDebugLogs)
             {
-                newOptions = new string[options.Length + newCount + 1];
-                newOptions[options.Length] = "--verbose=2";
+                newOptions = new string[options.Count + newCount + 1];
+                newOptions[options.Count] = "--verbose=2";
             }
             else
             {
-                newOptions = new string[options.Length + newCount];
+                newOptions = new string[options.Count + newCount];
             }
 
             newOptions[^1] = "--aout=winstore";
@@ -323,9 +328,9 @@ namespace LibVLCSharp.Shared
                 newOptions[^2] = "--audio-resampler=speex_resampler";
             }
 
-            if (options.Length > 0)
+            if (options.Count > 0)
             {
-                Array.Copy(options, newOptions, options.Length);
+                options.CopyTo(newOptions, 0);
             }
 
             return newOptions;

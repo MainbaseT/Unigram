@@ -1105,5 +1105,6 @@
       <Filter>AI</Filter>
     </Midl>
     <Midl Include="AnimationEffects.idl" />
+    <Midl Include="AsyncMediaPlayerSwapChain.idl" />
   </ItemGroup>
 </Project>
