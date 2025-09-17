@@ -29,9 +29,20 @@ namespace Telegram.Common
         private DeviceContext _deviceContext;
         private bool _loaded;
 
-        public AsyncMediaPlayerSwapChain()
+        public AsyncMediaPlayerSwapChain(bool create)
         {
-            Create();
+            if (create)
+            {
+                Create(false);
+            }
+        }
+
+        public bool IsLoaded => _loaded;
+
+        public void Trim()
+        {
+            // When the app is suspended, UWP apps should call Trim so that the DirectX data is cleaned.
+            _device3?.Trim();
         }
 
         public void Clear()
@@ -82,7 +93,7 @@ namespace Telegram.Common
         /// <summary>
         /// Initializes the SwapChain for use with LibVLC
         /// </summary>
-        public void Create()
+        public bool Create(bool subscribe)
         {
             //// Do not create the swapchain when the VideoView is collapsed.
             //if (_panel == null || _panel.ActualHeight == 0)
@@ -189,11 +200,6 @@ namespace Telegram.Common
 
                 device.MaximumFrameLatency = 1;
 
-                if (_panel != null)
-                {
-                    OnAttach(null, _panel);
-                }
-
                 // This is necessary so we can call Trim() on suspend
                 _device3 = device.QueryInterface<SharpDX.DXGI.Device3>();
                 if (_device3 == null)
@@ -210,15 +216,22 @@ namespace Telegram.Common
                     throw new InvalidOperationException("Failed to query interface \"SwapChain2\"");
                 }
 
-                UpdateScale();
-                UpdateSize();
                 _loaded = true;
+
+                if (_panel != null)
+                {
+                    OnAttach(null, _panel, subscribe);
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
                 Destroy();
                 Telegram.Logger.Error(ex.ToString());
             }
+
+            return false;
         }
 
         /// <summary>
@@ -232,7 +245,7 @@ namespace Telegram.Common
             _device3?.Dispose();
             _device3 = null;
 
-            OnAttach(_panel, _panel = null);
+            OnAttach(_panel, _panel = null, false);
 
             _swapChain?.Dispose();
             _swapChain = null;
@@ -246,15 +259,15 @@ namespace Telegram.Common
             _loaded = false;
         }
 
-        public void Attach(SwapChainPanel panel)
+        public void Attach(SwapChainPanel panel, bool subscribe)
         {
             lock (_panelLock)
             {
-                OnAttach(_panel, _panel = panel);
+                OnAttach(_panel, _panel = panel, subscribe);
             }
         }
 
-        private void OnAttach(SwapChainPanel oldPanel, SwapChainPanel newPanel)
+        private void OnAttach(SwapChainPanel oldPanel, SwapChainPanel newPanel, bool subscribe)
         {
             if (oldPanel != null)
             {
@@ -268,8 +281,11 @@ namespace Telegram.Common
                     panelNative.SwapChain = _swapChain;
                 }
 
-                newPanel.CompositionScaleChanged += OnCompositionScaleChanged;
-                newPanel.SizeChanged += OnSizeChanged;
+                if (subscribe)
+                {
+                    newPanel.CompositionScaleChanged += OnCompositionScaleChanged;
+                    newPanel.SizeChanged += OnSizeChanged;
+                }
 
                 UpdateScale();
                 UpdateSize();
@@ -309,7 +325,7 @@ namespace Telegram.Common
         /// <summary>
         /// Associates width/height private data into the SwapChain, so that VLC knows at which size to render its video.
         /// </summary>
-        private void UpdateSize()
+        public void UpdateSize()
         {
             if (_panel is null || _swapChain is null || _swapChain.IsDisposed)
             {
@@ -359,7 +375,7 @@ namespace Telegram.Common
         /// <summary>
         /// Updates the MatrixTransform of the SwapChain.
         /// </summary>
-        private void UpdateScale()
+        public void UpdateScale()
         {
             if (_panel is null) return;
 

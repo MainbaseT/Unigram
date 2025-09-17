@@ -58,7 +58,7 @@ namespace Telegram.Common
 
             if (createGraphicsContext && _dispatcherQueue != null)
             {
-                _graphicsContext = new AsyncMediaPlayerSwapChain();
+                _graphicsContext = new AsyncMediaPlayerSwapChain(true);
                 _library = new LibVLC(_enableDebugLogs, _graphicsContext.SwapChainOptions);
             }
             else

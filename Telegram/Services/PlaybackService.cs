@@ -778,7 +778,7 @@ namespace Telegram.Services
 
         public void Attach(SwapChainPanel panel)
         {
-            Run(player => player.Context.Attach(panel));
+            Run(player => player.Context.Attach(panel, true));
         }
 
         public void Detach(SwapChainPanel panel)

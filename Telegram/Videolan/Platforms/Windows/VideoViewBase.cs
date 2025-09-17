@@ -1,10 +1,5 @@
-﻿using LibVLCSharp.Shared;
-using SharpDX;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using SharpDX.Mathematics.Interop;
-using System;
-using System.Runtime.InteropServices;
+﻿using System;
+using Telegram.Common;
 using Telegram.Controls;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
@@ -16,28 +11,25 @@ namespace LibVLCSharp.Platforms.Windows
     /// VideoView base class for the UWP platform
     /// </summary>
     [TemplatePart(Name = PartSwapChainPanelName, Type = typeof(SwapChainPanel))]
-    public abstract class VideoViewBase : ControlEx, IVideoView
+    public class VideoView : ControlEx
     {
         private const string PartSwapChainPanelName = "SwapChainPanel";
 
-        SwapChainPanel _panel;
-        SharpDX.Direct3D11.Device _d3D11Device;
-        SharpDX.DXGI.Device3 _device3;
-        SwapChain2 _swapChain2;
-        SwapChain1 _swapChain;
-        DeviceContext _deviceContext;
-        bool _loaded;
+        private AsyncMediaPlayerSwapChain _context = new(false);
+        private SwapChainPanel _panel;
 
         /// <summary>
         /// The constructor
         /// </summary>
-        public VideoViewBase()
+        public VideoView()
         {
-            DefaultStyleKey = typeof(VideoViewBase);
+            DefaultStyleKey = typeof(VideoView);
 
             Connected += OnConnected;
             Disconnected += OnDisconnected;
         }
+
+        public event EventHandler<InitializedEventArgs> Initialized;
 
         public bool IsUnloadedExpected { get; set; }
 
@@ -56,13 +48,13 @@ namespace LibVLCSharp.Platforms.Windows
                 return;
             }
 
-            DestroySwapChain();
+            _context.Destroy();
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            // When the app is suspended, UWP apps should call Trim so that the DirectX data is cleaned.
-            _device3?.Trim();
+            // TODO: Move to AsyncMediaPlayerSwapChain
+            _context.Trim();
         }
 
         /// <summary>
@@ -78,7 +70,8 @@ namespace LibVLCSharp.Platforms.Windows
             if (DesignMode.DesignModeEnabled)
                 return;
 #endif
-            DestroySwapChain();
+            _context.Destroy();
+            _context.Attach(_panel, false);
 
             _panel.SizeChanged += OnSizeChanged;
             _panel.CompositionScaleChanged += OnCompositionScaleChanged;
@@ -88,43 +81,29 @@ namespace LibVLCSharp.Platforms.Windows
         {
             if (IsDisconnected && !IsUnloadedExpected)
             {
-                DestroySwapChain();
+                _context.Destroy();
             }
-            else if (_loaded)
+            else if (_context.IsLoaded)
             {
-                UpdateSize();
+                _context.UpdateSize();
             }
-            else
+            else if (_context.Create(false))
             {
-                CreateSwapChain();
+                Initialized?.Invoke(this, new InitializedEventArgs(SwapChainOptions));
             }
         }
 
         private void OnCompositionScaleChanged(SwapChainPanel sender, object args)
         {
-            if (_loaded)
+            if (_context.IsLoaded)
             {
-                UpdateScale();
+                _context.UpdateScale();
             }
         }
 
         public void Clear()
         {
-            if (_swapChain != null)
-            {
-                try
-                {
-                    using var backBuffer = _swapChain.GetBackBuffer<Texture2D>(0);
-                    using var target = new RenderTargetView(_d3D11Device, backBuffer);
-
-                    _deviceContext.ClearRenderTargetView(target, new RawColor4(0, 0, 0, 0));
-                    _swapChain.Present(0, PresentFlags.None);
-                }
-                catch
-                {
-                    // All the remote procedure calls must be wrapped in a try-catch block
-                }
-            }
+            _context.Clear();
         }
 
         /// <summary>
@@ -134,308 +113,7 @@ namespace LibVLCSharp.Platforms.Windows
         /// Calling this property will throw an <see cref="InvalidOperationException"/> if the VideoView is not yet full Loaded.
         /// </summary>
         /// <returns>The list of arguments to be given to the <see cref="LibVLC"/> constructor.</returns>
-        public string[] SwapChainOptions
-        {
-            get
-            {
-                if (!_loaded)
-                {
-                    throw new InvalidOperationException("You must wait for the VideoView to be loaded before calling GetSwapChainOptions()");
-                }
-
-                _deviceContext = _d3D11Device!.ImmediateContext;
-
-                return new string[]
-                {
-                    $"--winrt-d3dcontext=0x{_deviceContext.NativePointer.ToString("x")}",
-                    $"--winrt-swapchain=0x{_swapChain!.NativePointer.ToString("x")}"
-                };
-            }
-        }
-
-        /// <summary>
-        /// Called when the video view is fully loaded
-        /// </summary>
-        protected abstract void OnInitialized();
-
-        /// <summary>
-        /// Initializes the SwapChain for use with LibVLC
-        /// </summary>
-        void CreateSwapChain()
-        {
-            // Do not create the swapchain when the VideoView is collapsed.
-            if (_panel == null || _panel.ActualHeight == 0)
-            {
-                return;
-            }
-
-            if (IsDisconnected)
-            {
-                DestroySwapChain();
-                return;
-            }
-
-            // TODO: this whole code and player doesn't support device loss
-            // This means that device loss CAN'T be recovered without creating a new
-            // LibVLC/MediaPlayer instance and everything else associated.
-            SharpDX.DXGI.Factory2 dxgiFactory = null;
-            try
-            {
-                var creationFlags =
-                    DeviceCreationFlags.BgraSupport /*| DeviceCreationFlags.VideoSupport*/;
-
-                if (Telegram.Constants.DEBUG)
-                {
-                    creationFlags |= DeviceCreationFlags.Debug;
-
-                    try
-                    {
-                        dxgiFactory = new SharpDX.DXGI.Factory2(true);
-                    }
-                    catch (SharpDXException)
-                    {
-                        dxgiFactory = new SharpDX.DXGI.Factory2(false);
-                    }
-                }
-                else
-                {
-                    dxgiFactory = new SharpDX.DXGI.Factory2(false);
-                }
-
-                _d3D11Device = null;
-                int i_adapter = 0;
-                int adapterCount = dxgiFactory.GetAdapterCount();
-
-                while (_d3D11Device == null)
-                {
-                    if (i_adapter == adapterCount)
-                    {
-                        if (creationFlags.HasFlag(DeviceCreationFlags.VideoSupport))
-                        {
-                            i_adapter = 0;
-                            creationFlags &= ~DeviceCreationFlags.VideoSupport;
-                            continue;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    try
-                    {
-                        var adapter = dxgiFactory.GetAdapter(i_adapter++);
-                        _d3D11Device = new SharpDX.Direct3D11.Device(adapter, creationFlags);
-                        adapter.Dispose();
-                        adapter = null;
-                        break;
-                    }
-                    catch (SharpDXException)
-                    {
-                    }
-                }
-
-                if (_d3D11Device is null)
-                {
-                    throw new VLCException("Could not create Direct3D11 device : No compatible adapter found.");
-                }
-
-                var device = _d3D11Device.QueryInterface<SharpDX.DXGI.Device1>();
-
-                //Create the swapchain
-                var swapChainDescription = new SharpDX.DXGI.SwapChainDescription1
-                {
-                    Width = (int)(_panel.ActualWidth * _panel.CompositionScaleX),
-                    Height = (int)(_panel.ActualHeight * _panel.CompositionScaleY),
-                    Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm,
-                    Stereo = false,
-                    SampleDescription =
-                    {
-                        Count = 1,
-                        Quality = 0
-                    },
-                    Usage = Usage.RenderTargetOutput,
-                    BufferCount = 2,
-                    SwapEffect = SwapEffect.FlipSequential,
-                    Flags = SwapChainFlags.None,
-                    AlphaMode = AlphaMode.Premultiplied
-                };
-
-                _swapChain = new SharpDX.DXGI.SwapChain1(dxgiFactory, _d3D11Device, ref swapChainDescription);
-                dxgiFactory.Dispose();
-                dxgiFactory = null;
-
-                device.MaximumFrameLatency = 1;
-
-                using (var panelNative = ComObject.As<ISwapChainPanelNative>(_panel))
-                {
-                    panelNative.SwapChain = _swapChain;
-                }
-
-                // This is necessary so we can call Trim() on suspend
-                _device3 = device.QueryInterface<SharpDX.DXGI.Device3>();
-                if (_device3 == null)
-                {
-                    throw new VLCException("Failed to query interface \"Device3\"");
-                }
-
-                device.Dispose();
-                device = null;
-
-                _swapChain2 = _swapChain.QueryInterface<SharpDX.DXGI.SwapChain2>();
-                if (_swapChain2 == null)
-                {
-                    throw new VLCException("Failed to query interface \"SwapChain2\"");
-                }
-
-                UpdateScale();
-                UpdateSize();
-                _loaded = true;
-                OnInitialized();
-            }
-            catch (Exception ex)
-            {
-                DestroySwapChain();
-                Telegram.Logger.Error(ex.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Destroys the SwapChain and all related instances.
-        /// </summary>
-        void DestroySwapChain()
-        {
-            _swapChain2?.Dispose();
-            _swapChain2 = null;
-
-            _device3?.Dispose();
-            _device3 = null;
-
-            if (_panel != null)
-            {
-                using (var panelNative = ComObject.As<ISwapChainPanelNative>(_panel))
-                {
-                    panelNative.SwapChain = null;
-                }
-            }
-
-            _swapChain?.Dispose();
-            _swapChain = null;
-
-            _deviceContext?.Dispose();
-            _deviceContext = null;
-
-            _d3D11Device?.Dispose();
-            _d3D11Device = null;
-
-            _loaded = false;
-        }
-
-        readonly Guid SWAPCHAIN_WIDTH = new Guid(0xf1b59347, 0x1643, 0x411a, 0xad, 0x6b, 0xc7, 0x80, 0x17, 0x7a, 0x6, 0xb6);
-        readonly Guid SWAPCHAIN_HEIGHT = new Guid(0x6ea976a0, 0x9d60, 0x4bb7, 0xa5, 0xa9, 0x7d, 0xd1, 0x18, 0x7f, 0xc9, 0xbd);
-
-        /// <summary>
-        /// Associates width/height private data into the SwapChain, so that VLC knows at which size to render its video.
-        /// </summary>
-        void UpdateSize()
-        {
-            if (_panel is null || _swapChain is null || _swapChain.IsDisposed)
-                return;
-
-            var width = IntPtr.Zero;
-            var height = IntPtr.Zero;
-
-            try
-            {
-                width = Marshal.AllocHGlobal(sizeof(int));
-                height = Marshal.AllocHGlobal(sizeof(int));
-
-                var w = (int)(_panel.ActualWidth * _panel.CompositionScaleX);
-                var h = (int)(_panel.ActualHeight * _panel.CompositionScaleY);
-
-                Marshal.WriteInt32(width, w);
-                Marshal.WriteInt32(height, h);
-
-                _swapChain.SetPrivateData(SWAPCHAIN_WIDTH, sizeof(int), width);
-                _swapChain.SetPrivateData(SWAPCHAIN_HEIGHT, sizeof(int), height);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(width);
-                Marshal.FreeHGlobal(height);
-            }
-        }
-
-        /// <summary>
-        /// Updates the MatrixTransform of the SwapChain.
-        /// </summary>
-        void UpdateScale()
-        {
-            if (_panel is null) return;
-
-            // TODO: experiment
-            // CompositionScale changes when che SwapChainPanel is inside a ScrollViewer and ZoomLevel changes.
-            // We don't want this to happen, so let's try to use XamlRoot.RasterizationScale instead.
-
-            float scaleX;
-            float scaleY;
-
-            if (XamlRoot != null)
-            {
-                scaleX = (float)XamlRoot.RasterizationScale;
-                scaleY = (float)XamlRoot.RasterizationScale;
-            }
-            else
-            {
-                scaleX = _panel.CompositionScaleX;
-                scaleY = _panel.CompositionScaleY;
-            }
-
-            _swapChain2!.MatrixTransform = new RawMatrix3x2
-            {
-                M11 = 1.0f / scaleX,
-                M22 = 1.0f / scaleY
-            };
-        }
-
-        /// <summary>
-        /// When the media player is attached to the view.
-        /// </summary>
-        void Attach()
-        {
-        }
-
-        /// <summary>
-        /// When the media player is detached from the view.
-        /// </summary>
-        void Detach()
-        {
-        }
-
-
-        /// <summary>
-        /// Identifies the <see cref="MediaPlayer"/> dependency property.
-        /// </summary>
-        public static DependencyProperty MediaPlayerProperty { get; } = DependencyProperty.Register(nameof(MediaPlayer), typeof(MediaPlayer),
-            typeof(VideoViewBase), new PropertyMetadata(null, OnMediaPlayerChanged));
-        /// <summary>
-        /// MediaPlayer object connected to the view
-        /// </summary>
-        public MediaPlayer MediaPlayer
-        {
-            get => (MediaPlayer?)GetValue(MediaPlayerProperty);
-            set => SetValue(MediaPlayerProperty, value);
-        }
-
-        private static void OnMediaPlayerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var videoView = (VideoViewBase)d;
-            videoView.Detach();
-            if (e.NewValue != null)
-            {
-                videoView.Attach();
-            }
-        }
+        public string[] SwapChainOptions => _context.SwapChainOptions;
     }
 
 #if WINUI

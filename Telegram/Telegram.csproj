@@ -613,9 +613,7 @@
     <Compile Include="TypeContainerGenerator.cs" />
     <Compile Include="TypeCrosserGenerator.cs" />
     <Compile Include="Videolan\Platforms\Windows\InitializedEventArgs.cs" />
-    <Compile Include="Videolan\Platforms\Windows\VideoView.cs" />
     <Compile Include="Videolan\Platforms\Windows\VideoViewBase.cs" />
-    <Compile Include="Videolan\Platforms\Windows\VideoViewOfTInitializedEventArgs.cs" />
     <Compile Include="Videolan\Shared\Core\Constants.cs" />
     <Compile Include="Videolan\Shared\Core\Core.cs" />
     <Compile Include="Videolan\Shared\Core\Core.UWP.cs" />
