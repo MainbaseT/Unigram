@@ -2983,7 +2983,11 @@ namespace Telegram.Views
 
         private void Photo_Click(object sender, RoutedEventArgs e)
         {
-            if (!_searchCollapsed)
+            if (MasterDetail.CurrentState == MasterDetailState.Minimal && MasterDetail.NavigationService.CanGoBack)
+            {
+                Root.IsPaneOpen = true;
+            }
+            else if (!_searchCollapsed)
             {
                 Search_LostFocus(null, null);
             }
