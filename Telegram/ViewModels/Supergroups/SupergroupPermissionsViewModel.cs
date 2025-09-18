@@ -46,6 +46,8 @@ namespace Telegram.ViewModels.Supergroups
             CanAddLinkPreviews = chat.Permissions.CanAddLinkPreviews;
             CanSendBasicMessages = chat.Permissions.CanSendBasicMessages;
 
+            UpdateCanSendMediaMessages();
+
             if (ClientService.TryGetSupergroup(chat, out Supergroup supergroup)
                 && ClientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
             {

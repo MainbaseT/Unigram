@@ -138,6 +138,8 @@ namespace Telegram.ViewModels.Supergroups
                     CanAddLinkPreviews = chat.Permissions.CanAddLinkPreviews;
                     CanSendBasicMessages = chat.Permissions.CanSendBasicMessages;
                 }
+
+                UpdateCanSendMediaMessages();
             }
         }
 

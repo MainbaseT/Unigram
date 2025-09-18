@@ -126,6 +126,9 @@ namespace Telegram.ViewModels.Supergroups
                         CustomTitle = string.Empty;
                     }
                 }
+
+                UpdateCanManageMessages();
+                UpdateCanManageStories();
             }
         }
 
