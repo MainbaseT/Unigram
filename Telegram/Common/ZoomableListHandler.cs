@@ -185,6 +185,10 @@ namespace Telegram.Common
                     {
                         _popupPanel.SetAnimation(animation);
                     }
+                    else if (content is Photo photo)
+                    {
+                        _popupPanel.SetPhoto(photo);
+                    }
                 }
             }
         }
@@ -204,6 +208,10 @@ namespace Telegram.Common
             {
                 return resultSticker.Sticker;
             }
+            else if (content is InlineQueryResultPhoto resultPhoto)
+            {
+                return resultPhoto.Photo;
+            }
             else if (content is Sticker or Animation)
             {
                 return content;
@@ -214,7 +222,7 @@ namespace Telegram.Common
 
         private void DoSomething(object item)
         {
-            if (item is null or not (StickerViewModel or Sticker or Animation))
+            if (item is null or not (StickerViewModel or Sticker or Animation or Photo))
             {
                 return;
             }
@@ -264,6 +272,10 @@ namespace Telegram.Common
             else if (item is Animation animation)
             {
                 _popupPanel.SetAnimation(animation);
+            }
+            else if (item is Photo photo)
+            {
+                _popupPanel.SetPhoto(photo);
             }
 
             // TODO: WinUI - Can be safely removed.

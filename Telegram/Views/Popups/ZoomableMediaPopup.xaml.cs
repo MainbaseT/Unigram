@@ -108,5 +108,35 @@ namespace Telegram.Views.Popups
                 Source = new DelayedFileSource(ViewModel.ClientService, animation.AnimationValue)
             };
         }
+
+        public void SetPhoto(Photo photo)
+        {
+            _lastItem = photo;
+
+            Title.Text = string.Empty;
+            Aspect.MaxWidth = 420;
+            Aspect.MaxHeight = 420;
+            Aspect.Constraint = photo;
+
+            Thumbnail.Opacity = 0;
+
+            var big = photo.GetBig();
+            var small = photo.GetSmall();
+
+            var content = new ImageView();
+
+            if (big.Photo.Id != small.Photo.Id)
+            {
+                Texture.SetSource(ViewModel.ClientService, small.Photo, photo.Minithumbnail);
+                content.SetSource(ViewModel.ClientService, big.Photo);
+            }
+            else
+            {
+                Texture.Source = null;
+                content.SetSource(ViewModel.ClientService, big.Photo, photo.Minithumbnail);
+            }
+
+            Container.Child = content;
+        }
     }
 }
