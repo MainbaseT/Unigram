@@ -199,7 +199,7 @@ namespace Telegram.Controls
         public event TypedEventHandler<VideoPlayerBase, VideoPlayerLevelsChangedEventArgs> LevelsChanged;
         protected void OnLevelsChanged(IList<VideoPlayerLevel> levels, VideoPlayerLevel currentLevel)
         {
-            Levels = levels;
+            Levels = levels ?? Array.Empty<VideoPlayerLevel>();
             LevelsChanged?.Invoke(this, new VideoPlayerLevelsChangedEventArgs(levels, currentLevel, IsCurrentLevelAuto));
         }
 

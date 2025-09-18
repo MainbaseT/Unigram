@@ -504,6 +504,11 @@ namespace Telegram.Controls.Gallery
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
+            if (_player == null)
+            {
+                return;
+            }
+
             var current = _player.CurrentLevel;
             var auto = _player.IsCurrentLevelAuto;
 
