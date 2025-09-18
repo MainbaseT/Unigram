@@ -12922,4 +12922,8 @@
     <string name="GroupJoinLinkText2Unknown_one">**{0}** person already joined this group.</string>
     <string name="GroupJoinLinkText2Unknown_other">**{0}** people already joined this group.</string>
 
+    <string name="CallForbiddenInviteLinkButton">Send Invite Link</string>
+    <string name="CallForbiddenInviteLinkText">**{0}** restricts calling them. You can send them an invite link to call instead.</string>
+    <string name="CallForbiddenInviteLinkTitle">Invite via Link</string>
+
 </resources>

@@ -3656,7 +3656,7 @@ namespace Telegram.ViewModels
             Call(true);
         }
 
-        public void Call(bool video)
+        public async void Call(bool video)
         {
             var chat = _chat;
             if (chat == null)
@@ -3664,9 +3664,35 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (chat.Type is ChatTypePrivate or ChatTypeSecret)
+            if (ClientService.TryGetUserFull(chat, out UserFullInfo userFull))
             {
-                _voipService.StartPrivateCall(NavigationService, chat, video);
+                if (userFull.CanBeCalled)
+                {
+                    _voipService.StartPrivateCall(NavigationService, chat, video);
+                }
+                else
+                {
+                    var confirm = await ShowPopupAsync(string.Format(Strings.CallForbiddenInviteLinkText, chat.Title), Strings.CallForbiddenInviteLinkTitle, Strings.CallForbiddenInviteLinkButton, Strings.Cancel);
+                    if (confirm == ContentDialogResult.Primary)
+                    {
+                        var response = await ClientService.SendAsync(new CreateGroupCall(null));
+                        if (response is GroupCallInfo info)
+                        {
+                            response = await ClientService.SendAsync(new GetGroupCall(info.GroupCallId));
+
+                            if (response is GroupCall groupCall)
+                            {
+                                var options = await PickMessageSendOptionsAsync();
+                                if (options == null)
+                                {
+                                    return;
+                                }
+
+                                await SendMessageAsync(null, new InputMessageText(groupCall.InviteLink.AsFormattedText(), null, false), options);
+                            }
+                        }
+                    }
+                }
             }
             else
             {

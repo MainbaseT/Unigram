@@ -6288,9 +6288,8 @@ namespace Telegram.Views
                 && user.Id != ViewModel.ClientService.Options.MyId;
 
             Call.Glyph = Icons.Call;
-            Call.Visibility = /*!secret &&*/
-            fullInfo.CanBeCalled ? Visibility.Visible : Visibility.Collapsed;
-            VideoCall.Visibility = /*!secret &&*/ fullInfo.CanBeCalled && fullInfo.SupportsVideoCalls ? Visibility.Visible : Visibility.Collapsed;
+            Call.Visibility = Visibility.Visible;
+            VideoCall.Visibility = fullInfo.SupportsVideoCalls ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void UpdateUserStatus(Chat chat, User user)

@@ -3395,6 +3395,15 @@ Do you want to revoke verification?</value>
   <data name="CallEmojiKeyTooltip" xml:space="preserve">
     <value>If the emoji on {0}’s screen are the same, this call is 100% secure.</value>
   </data>
+  <data name="CallForbiddenInviteLinkButton" xml:space="preserve">
+    <value>Send Invite Link</value>
+  </data>
+  <data name="CallForbiddenInviteLinkText" xml:space="preserve">
+    <value>**{0}** restricts calling them. You can send them an invite link to call instead.</value>
+  </data>
+  <data name="CallForbiddenInviteLinkTitle" xml:space="preserve">
+    <value>Invite via Link</value>
+  </data>
   <data name="Calling" xml:space="preserve">
     <value>Calling you...</value>
   </data>
