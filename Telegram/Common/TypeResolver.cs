@@ -4,10 +4,10 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Telegram.Collections;
 using Telegram.Services;
 using Telegram.ViewModels.Delegates;
 using Windows.Storage;
@@ -18,7 +18,7 @@ namespace Telegram.Views
     {
         private static readonly TypeResolver _instance = new TypeResolver();
 
-        private readonly ConcurrentDictionary<int, TypeLocator> _containers = new ConcurrentDictionary<int, TypeLocator>();
+        private readonly ReaderWriterDictionary<int, TypeLocator> _containers = new();
         private readonly ILifetimeService _lifetime;
         private readonly IPasscodeService _passcode;
         private readonly ILocaleService _locale;
@@ -127,7 +127,7 @@ namespace Telegram.Views
 
         public IEnumerable<T> ResolveAll<T>()
         {
-            foreach (var container in _containers.Values)
+            foreach (var container in _containers)
             {
                 if (container != null)
                 {
@@ -147,10 +147,9 @@ namespace Telegram.Views
 
         public void Destroy(int id)
         {
-            if (_containers.TryRemove(id, out _))
-            {
-                //container.Dispose();
-            }
+            Logger.Info(id);
+
+            _containers.Remove(id);
         }
 
         public TService Resolve<TService>()

@@ -5,13 +5,14 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
 namespace Telegram.Collections
 {
-    public class ReaderWriterDictionary<TKey, TValue>
+    public class ReaderWriterDictionary<TKey, TValue> : IEnumerable<TValue>
     {
         private readonly ReaderWriterLockSlim _lock = new();
         private readonly Dictionary<TKey, TValue> _dictionary = new();
@@ -58,6 +59,22 @@ namespace Telegram.Collections
             }
         }
 
+        public int Count
+        {
+            get
+            {
+                _lock.EnterReadLock();
+                try
+                {
+                    return _dictionary.Count;
+                }
+                finally
+                {
+                    _lock.ExitReadLock();
+                }
+            }
+        }
+
         public bool TryGetValue(TKey key, out TValue value)
         {
             _lock.EnterReadLock();
@@ -95,6 +112,44 @@ namespace Telegram.Collections
             {
                 _lock.ExitReadLock();
             }
+        }
+
+        public void ForEach(Action<TValue> action)
+        {
+            _lock.EnterReadLock();
+            try
+            {
+                foreach (var value in _dictionary.Values)
+                {
+                    action(value);
+                }
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
+        }
+
+        public IEnumerator<TValue> GetEnumerator()
+        {
+            IList<TValue> snapshot;
+
+            _lock.EnterReadLock();
+            try
+            {
+                snapshot = _dictionary.Values.ToArray();
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
+
+            return snapshot.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
