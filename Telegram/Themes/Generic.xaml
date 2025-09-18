@@ -632,7 +632,7 @@
                                                     TabIndex="1">
                                     <muxc:BreadcrumbBar.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding Title, Mode=OneTime}"
+                                            <TextBlock Text="{Binding Title}"
                                                        FontFamily="{ThemeResource EmojiThemeFontFamily}" />
                                         </DataTemplate>
                                     </muxc:BreadcrumbBar.ItemTemplate>
