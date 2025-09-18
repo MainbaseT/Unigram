@@ -3340,6 +3340,33 @@ public static class RichTextBlock_stub
         }
     }
 }
+public static class ScrollContentPresenter_stub
+{
+    public static void PageDown_stub(this Windows.UI.Xaml.Controls.ScrollContentPresenter sender)
+    {
+        try
+        {
+            sender.PageDown();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void PageUp_stub(this Windows.UI.Xaml.Controls.ScrollContentPresenter sender)
+    {
+        try
+        {
+            sender.PageUp();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class ScrollViewer_stub
 {
     public static bool ChangeView_stub(this Windows.UI.Xaml.Controls.ScrollViewer sender, double? horizontalOffset, double? verticalOffset, float? zoomFactor, bool disableAnimation)
@@ -6120,6 +6147,18 @@ public static class ApiInformation_stub
             throw new RuntimeException(ex);
         }
     }
+    public static bool IsEventPresent_stub(string typeName, string eventName)
+    {
+        try
+        {
+            return Windows.Foundation.Metadata.ApiInformation.IsEventPresent(typeName, eventName);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
     public static bool IsMethodPresent_stub(string typeName, string methodName)
     {
         try
@@ -6149,6 +6188,105 @@ public static class ApiInformation_stub
         try
         {
             return Windows.Foundation.Metadata.ApiInformation.IsTypePresent(typeName);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class AsyncMediaPlayerSwapChain_stub
+{
+    public static void Attach_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender, Windows.UI.Xaml.Controls.SwapChainPanel panel, bool subscribe)
+    {
+        try
+        {
+            sender.Attach(panel, subscribe);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Clear_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.Clear();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static bool Create_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender, bool subscribe)
+    {
+        try
+        {
+            return sender.Create(subscribe);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Destroy_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.Destroy();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Detach_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender, Windows.UI.Xaml.Controls.SwapChainPanel panel)
+    {
+        try
+        {
+            sender.Detach(panel);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Trim_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.Trim();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void UpdateScale_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.UpdateScale();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void UpdateSize_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.UpdateSize();
         }
         catch (Exception ex)
         {
@@ -7403,21 +7541,6 @@ public static class IInvokeProvider_stub
         try
         {
             sender.Invoke();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-}
-public static class IScrollProvider_stub
-{
-    public static void Scroll_stub(this Windows.UI.Xaml.Automation.Provider.IScrollProvider sender, Windows.UI.Xaml.Automation.ScrollAmount horizontalAmount, Windows.UI.Xaml.Automation.ScrollAmount verticalAmount)
-    {
-        try
-        {
-            sender.Scroll(horizontalAmount, verticalAmount);
         }
         catch (Exception ex)
         {
