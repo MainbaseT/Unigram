@@ -103,6 +103,9 @@ namespace Telegram.Views.Supergroups.Popups
             }
             else
             {
+                ChangeInfo.IsEnabled = !chat.Permissions.CanChangeInfo;
+                PinMessages.IsEnabled = !chat.Permissions.CanPinMessages;
+
                 PrimaryButtonText = Strings.Done;
                 Dismiss.Visibility = Visibility.Collapsed;
                 PermissionsFooter.Visibility = Visibility.Collapsed;
