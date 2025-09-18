@@ -109,7 +109,7 @@ namespace Telegram.Common
         {
             if (args.Role == AudioDeviceRole.Default)
             {
-                Write(() => _player.SetAudioOutput(args.Id));
+                WriteSync(() => _player.SetAudioOutput(args.Id));
             }
         }
 
@@ -197,7 +197,7 @@ namespace Telegram.Common
         public bool Mute
         {
             get => Read(() => _player.Mute);
-            set => Write(() => _player.Mute = value);
+            set => WriteSync(() => _player.Mute = value);
         }
 
         public long Length => Read(() => _player.Length);
@@ -205,30 +205,30 @@ namespace Telegram.Common
         public long Time
         {
             get => Read(() => _player.Time);
-            set => Write(() => _player.Time = value);
+            set => WriteSync(() => _player.Time = value);
         }
 
         public void AddTime(long value)
         {
-            Write(() => _player.Time += value);
+            WriteSync(() => _player.Time += value);
         }
 
         public float Scale
         {
             get => Read(() => _player.Scale);
-            set => Write(() => _player.Scale = value);
+            set => WriteSync(() => _player.Scale = value);
         }
 
         public float Rate
         {
             get => Read(() => _player.Rate);
-            set => Write(() => _player.Rate = value);
+            set => WriteSync(() => _player.Rate = value);
         }
 
         public int Volume
         {
             get => Read(() => _player.Volume);
-            set => Write(() => _player.Volume = value);
+            set => WriteSync(() => _player.Volume = value);
         }
 
         public AsyncMediaTrack Track
@@ -478,6 +478,16 @@ namespace Telegram.Common
         private void Write(Action<bool> action)
         {
             Write(new VersionedWorkItem(action, Interlocked.Increment(ref _workVersion)));
+        }
+
+        private void WriteSync(Action value)
+        {
+            lock (_closeLock)
+            {
+                if (_closed) return;
+            }
+
+            value();
         }
 
         private void Write(object workItem)
