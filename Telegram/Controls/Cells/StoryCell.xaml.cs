@@ -99,7 +99,7 @@ namespace Telegram.Controls.Cells
             {
                 if (file.Local.IsDownloadingCompleted)
                 {
-                    _thumbnailController.Bitmap(file.Local.Path, hashCode: HashCode.Combine(story.ChatId, story.StoryId));
+                    _thumbnailController.Bitmap(file.Local.Path, hashCode: HashCode.Combine(story.PosterChatId, story.Id));
                 }
                 else
                 {
@@ -115,7 +115,7 @@ namespace Telegram.Controls.Cells
 
                     if (minithumbnail != null)
                     {
-                        _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(story.ChatId, story.StoryId));
+                        _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(story.PosterChatId, story.Id));
                     }
                     else
                     {
@@ -125,7 +125,7 @@ namespace Telegram.Controls.Cells
             }
             else if (minithumbnail != null)
             {
-                _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(story.ChatId, story.StoryId));
+                _thumbnailController.Blur(minithumbnail.Data, 3, HashCode.Combine(story.PosterChatId, story.Id));
             }
             else
             {

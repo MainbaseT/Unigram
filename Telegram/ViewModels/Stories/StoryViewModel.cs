@@ -22,22 +22,22 @@ namespace Telegram.ViewModels.Stories
         {
             ClientService = clientService;
 
-            ChatId = chatId;
+            PosterChatId = chatId;
             Chat = ClientService.GetChat(chatId);
 
             Date = storyInfo.Date;
-            StoryId = storyInfo.StoryId;
+            Id = storyInfo.StoryId;
         }
 
         public StoryViewModel(IClientService clientService, Story story, bool botPreview = false)
         {
             ClientService = clientService;
 
-            ChatId = story.PosterChatId;
+            PosterChatId = story.PosterChatId;
             Chat = ClientService.GetChat(story.PosterChatId);
 
             Date = story.Date;
-            StoryId = story.Id;
+            Id = story.Id;
 
             IsBotPreview = botPreview;
 
@@ -46,11 +46,11 @@ namespace Telegram.ViewModels.Stories
 
         public int Date { get; set; }
 
-        public long ChatId { get; set; }
+        public long PosterChatId { get; set; }
 
         public Chat Chat { get; private set; }
 
-        public int StoryId { get; set; }
+        public int Id { get; set; }
 
         public bool IsBotPreview { get; set; }
 
@@ -64,7 +64,7 @@ namespace Telegram.ViewModels.Stories
 
             _task = new TaskCompletionSource<bool>();
 
-            var response = await ClientService.SendAsync(new GetStory(ChatId, StoryId, false));
+            var response = await ClientService.SendAsync(new GetStory(PosterChatId, Id, false));
             if (response is Story story)
             {
                 Update(story);

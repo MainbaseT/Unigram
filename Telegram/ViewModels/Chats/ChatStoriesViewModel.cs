@@ -237,7 +237,7 @@ namespace Telegram.ViewModels.Chats
                 var storyIds = new List<int>();
                 if (story != null)
                 {
-                    storyIds.Add(story.StoryId);
+                    storyIds.Add(story.Id);
                 }
 
                 var response = await ClientService.SendAsync(new CreateStoryAlbum(Chat.Id, popup.Text, storyIds));
@@ -278,7 +278,7 @@ namespace Telegram.ViewModels.Chats
                     }
 
                     story.AlbumIds.Add(album.Id);
-                    storyIds.Add(story.StoryId);
+                    storyIds.Add(story.Id);
                 }
 
                 ClientService.Send(new AddStoryAlbumStories(Chat.Id, album.Id, storyIds));
@@ -290,7 +290,7 @@ namespace Telegram.ViewModels.Chats
         {
             if (param.story.AlbumIds.Contains(param.album.Id))
             {
-                ClientService.Send(new RemoveStoryAlbumStories(Chat.Id, param.album.Id, new[] { param.story.StoryId }));
+                ClientService.Send(new RemoveStoryAlbumStories(Chat.Id, param.album.Id, new[] { param.story.Id }));
 
                 param.story.AlbumIds.Remove(param.album.Id);
 
@@ -303,7 +303,7 @@ namespace Telegram.ViewModels.Chats
             }
             else
             {
-                ClientService.Send(new AddStoryAlbumStories(Chat.Id, param.album.Id, new[] { param.story.StoryId }));
+                ClientService.Send(new AddStoryAlbumStories(Chat.Id, param.album.Id, new[] { param.story.Id }));
 
                 param.story.AlbumIds.Add(param.album.Id);
 
@@ -318,7 +318,7 @@ namespace Telegram.ViewModels.Chats
 
         public void ArchiveStory(StoryViewModel story)
         {
-            ClientService.Send(new ToggleStoryIsPostedToChatPage(story.ChatId, story.StoryId, !IsPostedToChatPage));
+            ClientService.Send(new ToggleStoryIsPostedToChatPage(story.PosterChatId, story.Id, !IsPostedToChatPage));
 
             if (IsPostedToChatPage)
             {
@@ -339,7 +339,7 @@ namespace Telegram.ViewModels.Chats
 
             foreach (var story in selection)
             {
-                ClientService.Send(new ToggleStoryIsPostedToChatPage(story.ChatId, story.StoryId, !IsPostedToChatPage));
+                ClientService.Send(new ToggleStoryIsPostedToChatPage(story.PosterChatId, story.Id, !IsPostedToChatPage));
 
                 if (IsPostedToChatPage)
                 {
@@ -358,14 +358,14 @@ namespace Telegram.ViewModels.Chats
 
         public void PinStory(StoryViewModel story)
         {
-            if (_pinnedStoryIds.Contains(story.StoryId))
+            if (_pinnedStoryIds.Contains(story.Id))
             {
-                _pinnedStoryIds.Remove(story.StoryId);
+                _pinnedStoryIds.Remove(story.Id);
                 ShowToast(Locale.Declension(Strings.R.StoriesUnpinned, 1), ToastPopupIcon.Unpin);
 
                 Items.Remove(story);
 
-                var index = Items.BinarySearch(story.Date, (date, item) => _pinnedStoryIds.Contains(item.StoryId) ? 1 : item.Date.CompareTo(date));
+                var index = Items.BinarySearch(story.Date, (date, item) => _pinnedStoryIds.Contains(item.Id) ? 1 : item.Date.CompareTo(date));
                 if (index < 0 && (~index < Items.Count || !HasMoreItems))
                 {
                     Items.Insert(~index, story);
@@ -373,7 +373,7 @@ namespace Telegram.ViewModels.Chats
             }
             else if (_pinnedStoryIds.Count < ClientService.Options.PinnedStoryCountMax)
             {
-                _pinnedStoryIds.Insert(0, story.StoryId);
+                _pinnedStoryIds.Insert(0, story.Id);
                 ShowToast(Locale.Declension(Strings.R.StoriesPinned, 1), ToastPopupIcon.Pin);
 
                 Items.Remove(story);
@@ -396,7 +396,7 @@ namespace Telegram.ViewModels.Chats
             var confirm = await ShowPopupAsync(message, title, Strings.Delete, Strings.Cancel, destructive: true);
             if (confirm == ContentDialogResult.Primary)
             {
-                ClientService.Send(new DeleteStory(story.ChatId, story.StoryId));
+                ClientService.Send(new DeleteStory(story.PosterChatId, story.Id));
                 Items.Remove(story);
 
                 foreach (var album in Albums)
@@ -418,7 +418,7 @@ namespace Telegram.ViewModels.Chats
 
                 foreach (var story in selection)
                 {
-                    ClientService.Send(new DeleteStory(story.ChatId, story.StoryId));
+                    ClientService.Send(new DeleteStory(story.PosterChatId, story.Id));
                     Items.Remove(story);
 
                     foreach (var album in Albums)
@@ -444,8 +444,7 @@ namespace Telegram.ViewModels.Chats
         public void OpenStory(StoryViewModel story, Rect origin, Func<ActiveStoriesViewModel, Rect> closing)
         {
             var activeStories = new ActiveStoriesViewModel(ClientService, Settings, Aggregator, story, Items);
-            var viewModel = new StoryListViewModel(ClientService, Settings, Aggregator, activeStories);
-            viewModel.NavigationService = NavigationService;
+            var viewModel = StoryListViewModel.Create(NavigationService, activeStories);
 
             var window = new StoriesWindow();
             window.Update(viewModel, activeStories, StoryOpenOrigin.Card, origin, closing);
@@ -542,7 +541,7 @@ namespace Telegram.ViewModels.Chats
 
         public bool IsPinned(StoryViewModel story)
         {
-            return _pinnedStoryIds != null && _pinnedStoryIds.Contains(story.StoryId);
+            return _pinnedStoryIds != null && _pinnedStoryIds.Contains(story.Id);
         }
 
         public void SetPinnedItems()
@@ -553,7 +552,7 @@ namespace Telegram.ViewModels.Chats
             {
                 if (IsPinned(item))
                 {
-                    storyIds.Add(item.StoryId);
+                    storyIds.Add(item.Id);
                 }
                 else
                 {
@@ -571,7 +570,7 @@ namespace Telegram.ViewModels.Chats
 
         public void SetPinnedItem(StoryViewModel story)
         {
-            var index = _pinnedStoryIds.IndexOf(story.StoryId);
+            var index = _pinnedStoryIds.IndexOf(story.Id);
             if (index >= 0 && index < Items.Count)
             {
                 Items.Remove(story);
@@ -664,7 +663,7 @@ namespace Telegram.ViewModels.Chats
         {
             if (Id != 0)
             {
-                ClientService.Send(new ReorderStoryAlbumStories(_viewModel.Chat.Id, Id, Items.Select(x => x.StoryId).ToList()));
+                ClientService.Send(new ReorderStoryAlbumStories(_viewModel.Chat.Id, Id, Items.Select(x => x.Id).ToList()));
             }
         }
     }

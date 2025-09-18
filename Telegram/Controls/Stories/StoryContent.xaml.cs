@@ -199,7 +199,7 @@ namespace Telegram.Controls.Stories
             }
 
             var story = activeStories.SelectedItem;
-            if (story != null && story.StoryId != _storyId)
+            if (story != null && story.Id != _storyId)
             {
                 _timer.Stop();
                 _state = StoryPauseSource.None;
@@ -255,9 +255,9 @@ namespace Telegram.Controls.Stories
                 return;
             }
 
-            if (open && (story.StoryId != _storyId || !_open))
+            if (open && (story.Id != _storyId || !_open))
             {
-                if (story.ChatId != _openedChatId || story.StoryId != _openedStoryId)
+                if (story.PosterChatId != _openedChatId || story.Id != _openedStoryId)
                 {
                     _viewModel.ClientService.Send(new CloseStory(_openedChatId, _openedStoryId));
                     _openedChatId = 0;
@@ -272,7 +272,7 @@ namespace Telegram.Controls.Stories
             }
 
             _open = open;
-            _storyId = story.StoryId;
+            _storyId = story.Id;
         }
 
         public void UpdateQuality()
@@ -773,9 +773,9 @@ namespace Telegram.Controls.Stories
             //UnloadVideo();
             CollapseCaption();
 
-            if (_openedChatId == story.ChatId && _openedStoryId == story.StoryId)
+            if (_openedChatId == story.PosterChatId && _openedStoryId == story.Id)
             {
-                _viewModel.ClientService.Send(new CloseStory(story.ChatId, story.StoryId));
+                _viewModel.ClientService.Send(new CloseStory(story.PosterChatId, story.Id));
                 _openedChatId = 0;
                 _openedStoryId = 0;
             }
@@ -1073,10 +1073,10 @@ namespace Telegram.Controls.Stories
                 _timer.Stop();
                 _timer.Start();
 
-                if (_viewModel?.SelectedItem != null && _viewModel.SelectedItem.ChatId != _openedChatId && _viewModel.SelectedItem.StoryId != _openedStoryId)
+                if (_viewModel?.SelectedItem != null && _viewModel.SelectedItem.PosterChatId != _openedChatId && _viewModel.SelectedItem.Id != _openedStoryId)
                 {
-                    _openedChatId = _viewModel.SelectedItem.ChatId;
-                    _openedStoryId = _viewModel.SelectedItem.StoryId;
+                    _openedChatId = _viewModel.SelectedItem.PosterChatId;
+                    _openedStoryId = _viewModel.SelectedItem.Id;
                     _viewModel.ClientService.Send(new OpenStory(_openedChatId, _openedStoryId));
                 }
             }
@@ -1336,10 +1336,10 @@ namespace Telegram.Controls.Stories
                 _loading = false;
                 ElementCompositionPreview.SetElementChildVisual(ActiveRoot, BootStrapper.Current.Compositor.CreateSpriteVisual());
 
-                if (_viewModel?.SelectedItem != null && _viewModel.SelectedItem.ChatId != _openedChatId && _viewModel.SelectedItem.StoryId != _openedStoryId)
+                if (_viewModel?.SelectedItem != null && _viewModel.SelectedItem.PosterChatId != _openedChatId && _viewModel.SelectedItem.Id != _openedStoryId)
                 {
-                    _openedChatId = _viewModel.SelectedItem.ChatId;
-                    _openedStoryId = _viewModel.SelectedItem.StoryId;
+                    _openedChatId = _viewModel.SelectedItem.PosterChatId;
+                    _openedStoryId = _viewModel.SelectedItem.Id;
                     _viewModel.ClientService.Send(new OpenStory(_openedChatId, _openedStoryId));
                 }
             }
@@ -1559,7 +1559,7 @@ namespace Telegram.Controls.Stories
         {
             if (story.ClientService.TryGetUser(story.Chat, out User user) && user.HasActiveUsername(out string username))
             {
-                MessageHelper.CopyLink(story.ClientService, XamlRoot, new InternalLinkTypeStory(username, story.StoryId));
+                MessageHelper.CopyLink(story.ClientService, XamlRoot, new InternalLinkTypeStory(username, story.Id));
             }
         }
 

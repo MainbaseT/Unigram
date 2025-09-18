@@ -605,11 +605,11 @@ namespace Telegram.Controls.Messages
 
             if (_story.ChosenReactionType != null && _story.ChosenReactionType.AreTheSame(reaction.Type))
             {
-                _story.ClientService.Send(new SetStoryReaction(_story.ChatId, _story.StoryId, null, true));
+                _story.ClientService.Send(new SetStoryReaction(_story.PosterChatId, _story.Id, null, true));
             }
             else
             {
-                await _story.ClientService.SendAsync(new SetStoryReaction(_story.ChatId, _story.StoryId, reaction.Type, true));
+                await _story.ClientService.SendAsync(new SetStoryReaction(_story.PosterChatId, _story.Id, reaction.Type, true));
 
                 if (_reserved != null && _reserved.IsLoaded)
                 {

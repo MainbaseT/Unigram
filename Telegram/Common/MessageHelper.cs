@@ -780,16 +780,13 @@ namespace Telegram.Common
             if (response is Chat chat)
             {
                 var response2 = await clientService.SendAsync(new GetStory(chat.Id, storyId, false));
-                if (response2 is Story item)
+                if (response2 is Story story)
                 {
                     var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
                     var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
 
-                    var story = new StoryViewModel(clientService, item);
-
                     var activeStories = new ActiveStoriesViewModel(clientService, settings, aggregator, story);
-                    var viewModel = new StoryListViewModel(clientService, settings, aggregator, activeStories);
-                    viewModel.NavigationService = navigation;
+                    var viewModel = StoryListViewModel.Create(navigation, activeStories);
 
                     var window = new StoriesWindow();
                     window.Update(viewModel, activeStories, StoryOpenOrigin.Card, Rect.Empty, null);

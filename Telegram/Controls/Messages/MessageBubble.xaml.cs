@@ -2891,13 +2891,10 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        public void OpenStory(MessageViewModel message, Story item)
+        public void OpenStory(MessageViewModel message, Story story)
         {
-            var story = new StoryViewModel(message.ClientService, item);
             var activeStories = new ActiveStoriesViewModel(message.ClientService, message.Delegate.Settings, message.Delegate.Aggregator, story);
-
-            var viewModel = new StoryListViewModel(message.ClientService, message.Delegate.Settings, message.Delegate.Aggregator, activeStories);
-            viewModel.NavigationService = message.Delegate.NavigationService;
+            var viewModel = StoryListViewModel.Create(message.Delegate.NavigationService, activeStories);
 
             var origin = GetStoryOrigin(null);
 

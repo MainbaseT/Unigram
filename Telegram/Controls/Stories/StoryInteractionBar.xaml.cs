@@ -39,7 +39,7 @@ namespace Telegram.Controls.Stories
         {
             _viewModel = story;
 
-            if (story.ClientService.TryGetUser(story.ChatId, out User user) && user.Type is UserTypeBot)
+            if (story.ClientService.TryGetUser(story.PosterChatId, out User user) && user.Type is UserTypeBot)
             {
                 Visibility = Visibility.Collapsed;
             }

@@ -4674,16 +4674,13 @@ namespace Telegram.Views
 
                     var origin = new Rect(point.X + 4, point.Y + 4, 112, 112);
 
-                    var item = asyncStory.Story;
-                    item ??= await _viewModel.ClientService.SendAsync(new GetStory(asyncStory.StoryPosterChatId, asyncStory.StoryId, true)) as Story;
+                    var story = asyncStory.Story;
+                    story ??= await _viewModel.ClientService.SendAsync(new GetStory(asyncStory.StoryPosterChatId, asyncStory.StoryId, true)) as Story;
 
-                    if (item != null)
+                    if (story != null)
                     {
-                        var story = new StoryViewModel(message.ClientService, item);
                         var activeStories = new ActiveStoriesViewModel(message.ClientService, message.Delegate.Settings, message.Delegate.Aggregator, story);
-
-                        var viewModel = new StoryListViewModel(message.ClientService, message.Delegate.Settings, message.Delegate.Aggregator, activeStories);
-                        viewModel.NavigationService = _viewModel.NavigationService;
+                        var viewModel = StoryListViewModel.Create(_viewModel.NavigationService, activeStories);
 
                         var window = new StoriesWindow();
                         window.Update(viewModel, activeStories, StoryOpenOrigin.Mention, origin, _ =>
