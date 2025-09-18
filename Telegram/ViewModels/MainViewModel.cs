@@ -239,6 +239,7 @@ namespace Telegram.ViewModels
                 else
                 {
                     RaisePropertyChanged(nameof(SelectedFolder));
+                    RaisePropertyChanged(nameof(SelectedFolderView));
                     RaisePropertyChanged(nameof(IsPrimaryFolderSelected));
                 }
 
@@ -345,13 +346,14 @@ namespace Telegram.ViewModels
         private ChatFolderViewModel _selectedFolder;
         public ChatFolderViewModel SelectedFolder
         {
-            get => _isSettingsSelected || _selectedFolder?.ChatFolderId is Constants.ChatListArchive ? null : _selectedFolder;
+            get => _selectedFolder;
             set
             {
                 if (Set(ref _selectedFolder, value))
                 {
                     Logger.Info();
 
+                    RaisePropertyChanged(nameof(SelectedFolderView));
                     RaisePropertyChanged(nameof(IsPrimaryFolderSelected));
                     Chats.SetChatList(value.ChatList);
                     Stories.SetList(value.ChatList is ChatListArchive
@@ -360,6 +362,8 @@ namespace Telegram.ViewModels
                 }
             }
         }
+
+        public ChatFolderViewModel SelectedFolderView => _isSettingsSelected || _selectedFolder?.ChatFolderId is Constants.ChatListArchive ? null : _selectedFolder;
 
         public bool IsPrimaryFolderSelected => Folders.Count > 0 ? _selectedFolder == Folders[0] : true;
 
@@ -372,6 +376,7 @@ namespace Telegram.ViewModels
                 if (Set(ref _isSettingsSelected, value))
                 {
                     RaisePropertyChanged(nameof(SelectedFolder));
+                    RaisePropertyChanged(nameof(SelectedFolderView));
                 }
             }
         }
