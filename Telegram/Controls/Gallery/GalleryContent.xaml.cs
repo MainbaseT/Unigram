@@ -580,6 +580,8 @@ namespace Telegram.Controls.Gallery
 
                 _stopped = true;
                 Video.Stop();
+                Video = null;
+
                 Button.Visibility = Visibility.Visible;
             }
             else
