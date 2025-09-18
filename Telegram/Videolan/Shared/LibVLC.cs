@@ -309,7 +309,7 @@ namespace LibVLCSharp.Shared
         static string[] PatchOptions(IList<string> options, bool enableDebugLogs = false)
         {
             string[] newOptions;
-            int newCount = Core.UseSpeex ? 2 : 1;
+            int newCount = Core.UseAVCodec ? 2 : 1;
 
             if (enableDebugLogs)
             {
@@ -323,9 +323,9 @@ namespace LibVLCSharp.Shared
 
             newOptions[^1] = "--aout=winstore";
 
-            if (Core.UseSpeex)
+            if (Core.UseAVCodec)
             {
-                newOptions[^2] = "--audio-resampler=speex_resampler";
+                newOptions[^2] = "--demux=avcodec";
             }
 
             if (options.Count > 0)

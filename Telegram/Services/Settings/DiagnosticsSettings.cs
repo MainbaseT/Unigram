@@ -141,11 +141,11 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _disablePackageManager, "DisablePackageManager", value);
         }
 
-        private bool? _useSpeexResampler;
-        public bool UseSpeexResampler
+        private bool? _useAVCodec;
+        public bool UseAVCodec
         {
-            get => _useSpeexResampler ??= GetValueOrDefault("UseSpeexResampler", false);
-            set => AddOrUpdateValue(ref _useSpeexResampler, "UseSpeexResampler", value);
+            get => _useAVCodec ??= GetValueOrDefault("UseAVCodec", ApiInfo.IsPackagedRelease);
+            set => AddOrUpdateValue(ref _useAVCodec, "UseAVCodec", value);
         }
 
         private bool? _forumTabsDebug;

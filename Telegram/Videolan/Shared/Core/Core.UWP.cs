@@ -47,6 +47,6 @@ namespace LibVLCSharp.Shared
             }
         }
 
-        public static bool UseSpeex => SettingsService.Current.Diagnostics.UseSpeexResampler;
+        public static bool UseAVCodec => SettingsService.Current.Diagnostics.UseAVCodec;
     }
 }
