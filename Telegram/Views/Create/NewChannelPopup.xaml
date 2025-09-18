@@ -71,7 +71,7 @@
 
         <TextBox Text="{x:Bind ViewModel.About, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                 MaxLength="{StaticResource ChannelAboutMaxLength}"
+                 MaxLength="{StaticResource ChatAboutMaxLength}"
                  Header="{CustomResource DescriptionPlaceholder}"
                  TextWrapping="Wrap"
                  AcceptsReturn="True" />

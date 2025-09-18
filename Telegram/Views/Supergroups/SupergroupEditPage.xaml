@@ -46,7 +46,7 @@
                         <TextBox x:Name="TitleLabel"
                                  Text="{x:Bind ViewModel.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                                 MaxLength="{StaticResource ChannelTitleMaxLength}"
+                                 MaxLength="{StaticResource ChatTitleMaxLength}"
                                  VerticalAlignment="Center"
                                  Grid.Column="1" />
                     </Grid>
@@ -75,7 +75,7 @@
                     <TextBox x:Name="About"
                              Text="{x:Bind ViewModel.About, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                             MaxLength="{StaticResource ChannelAboutMaxLength}"
+                             MaxLength="{StaticResource ChatAboutMaxLength}"
                              PlaceholderText="{CustomResource DescriptionOptionalPlaceholder}"
                              TextWrapping="Wrap"
                              AcceptsReturn="True"

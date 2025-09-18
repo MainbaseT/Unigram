@@ -44,7 +44,7 @@
                                  Text="{x:Bind ViewModel.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  PlaceholderText="{CustomResource FirstNameSmall}"
                                  FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                                 MaxLength="{StaticResource ChannelTitleMaxLength}"
+                                 MaxLength="{StaticResource UserFirstNameMaxLength}"
                                  VerticalAlignment="Bottom"
                                  Margin="0,0,0,2"
                                  Grid.Column="1" />
@@ -53,7 +53,7 @@
                                  Text="{x:Bind ViewModel.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  PlaceholderText="{CustomResource LastNameSmall}"
                                  FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                                 MaxLength="{StaticResource ChannelTitleMaxLength}"
+                                 MaxLength="{StaticResource UserLastNameMaxLength}"
                                  VerticalAlignment="Top"
                                  Margin="0,2,0,0"
                                  Grid.Column="1"
