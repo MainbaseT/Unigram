@@ -540,7 +540,8 @@ namespace Telegram.ViewModels.Supergroups
                         CanRestrictMembers = !channel && _canRestrictMembers,
                         CanManageVideoChats = !channel && _canManageVideoChats
                     },
-                    CustomTitle = _customTitle ?? string.Empty
+                    CustomTitle = _customTitle ?? string.Empty,
+                    CanBeEdited = true
                 };
             }
 
