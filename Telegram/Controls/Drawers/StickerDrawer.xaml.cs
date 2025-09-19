@@ -63,8 +63,8 @@ namespace Telegram.Controls.Drawers
             _toolbarHandler = new AnimatedListHandler(Toolbar, AnimatedListType.Stickers);
 
             _zoomer = new ZoomableListHandler(List);
-            _zoomer.Opening = UnloadVisibleItems;
-            _zoomer.Closing = ThrottleVisibleItems;
+            _zoomer.Opening = _handler.Suspend;
+            _zoomer.Closing = _handler.Resume;
 
             _typing = new EventDebouncer<TextChangedEventArgs>(Constants.TypingTimeout, handler => SearchField.TextChanged += new TextChangedEventHandler(handler));
             _typing.Invoked += async (s, args) =>
@@ -91,7 +91,7 @@ namespace Telegram.Controls.Drawers
         public void Activate(Chat chat, EmojiSearchType type = EmojiSearchType.Combined)
         {
             _isActive = true;
-            _handler.ThrottleVisibleItems();
+            _handler.Resume();
             _toolbarHandler.ThrottleVisibleItems();
 
             SearchField.SetType(ViewModel.ClientService, type);

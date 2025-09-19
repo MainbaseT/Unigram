@@ -101,8 +101,8 @@ namespace Telegram.Controls.Drawers
             _toolbarHandler = new AnimatedListHandler(Toolbar2, AnimatedListType.Emoji);
 
             _zoomer = new ZoomableListHandler(List);
-            _zoomer.Opening = UnloadVisibleItems;
-            _zoomer.Closing = ThrottleVisibleItems;
+            _zoomer.Opening = _handler.Suspend;
+            _zoomer.Closing = _handler.Resume;
 
             _typeToItemHashSetMapping.Add("EmojiSkinTemplate", new HashSet<SelectorItem>());
             _typeToItemHashSetMapping.Add("EmojiTemplate", new HashSet<SelectorItem>());
@@ -193,7 +193,7 @@ namespace Telegram.Controls.Drawers
         public void Activate(Chat chat, EmojiSearchType type = EmojiSearchType.Default)
         {
             _isActive = true;
-            _handler.ThrottleVisibleItems();
+            _handler.Resume();
             _toolbarHandler.ThrottleVisibleItems();
 
             if (ViewModel.IsPremium)

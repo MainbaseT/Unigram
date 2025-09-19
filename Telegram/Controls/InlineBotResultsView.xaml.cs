@@ -31,8 +31,8 @@ namespace Telegram.Controls
             _handler = new AnimatedListHandler(ScrollingHost, AnimatedListType.Other);
 
             _zoomer = new ZoomableListHandler(ScrollingHost);
-            _zoomer.Opening = _handler.UnloadVisibleItems;
-            _zoomer.Closing = _handler.ThrottleVisibleItems;
+            _zoomer.Opening = _handler.Suspend;
+            _zoomer.Closing = _handler.Resume;
         }
 
         public void UpdateCornerRadius(double radius)

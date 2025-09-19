@@ -107,8 +107,8 @@ namespace Telegram.Views
             _autocompleteHandler = new AnimatedListHandler(ListAutocomplete, AnimatedListType.Stickers);
 
             _autocompleteZoomer = new ZoomableListHandler(ListAutocomplete);
-            _autocompleteZoomer.Opening = _autocompleteHandler.UnloadVisibleItems;
-            _autocompleteZoomer.Closing = _autocompleteHandler.ThrottleVisibleItems;
+            _autocompleteZoomer.Opening = _autocompleteHandler.Suspend;
+            _autocompleteZoomer.Closing = _autocompleteHandler.Resume;
 
             void AddStrategy(ChatHistoryViewItemType type, DataTemplate template)
             {

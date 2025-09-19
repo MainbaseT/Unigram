@@ -227,16 +227,19 @@ namespace Telegram.Common
                 return;
             }
 
-            //if (_pointer != null)
-            //{
-            //    _listView.CapturePointer(_pointer);
-            //    _pointer = null;
-            //}
-
             if (_pointer != null)
             {
-                _listView.CapturePointer(_pointer);
-                //_listView.ReleasePointerCapture(_pointer);
+                // Capture the pointer with the scroll viewer so that mouse wheel is still handled
+                var scrollViewer = _listView.GetScrollViewer();
+                if (scrollViewer != null && _pointer.PointerDeviceType != PointerDeviceType.Touch)
+                {
+                    scrollViewer.CapturePointer(_pointer);
+                }
+                else
+                {
+                    _listView.CapturePointer(_pointer);
+                }
+
                 _pointer = null;
             }
 
@@ -245,18 +248,6 @@ namespace Telegram.Common
                 VisualStateManager.GoToState(_element, "Normal", false);
                 _element = null;
             }
-
-            //if (item is TLBotInlineMediaResult inlineMediaResult)
-            //{
-            //    if (inlineMediaResult.HasDocument)
-            //    {
-            //        item = inlineMediaResult.Document;
-            //    }
-            //    else
-            //    {
-            //        return;
-            //    }
-            //}
 
             if (item is StickerViewModel stickerViewModel)
             {
@@ -305,6 +296,7 @@ namespace Telegram.Common
 
             _popupContent = item;
             _popupHost.XamlRoot = _listView.XamlRoot;
+            _popupHost.IsHitTestVisible = false;
             _popupHost.IsOpen = true;
 
             //_scrollingHost.CancelDirectManipulations();

@@ -67,8 +67,8 @@ namespace Telegram.Controls.Drawers
             _handler = new AnimatedListHandler(List, AnimatedListType.Animations);
 
             _zoomer = new ZoomableListHandler(List);
-            _zoomer.Opening = _handler.UnloadVisibleItems;
-            _zoomer.Closing = _handler.ThrottleVisibleItems;
+            _zoomer.Opening = _handler.Suspend;
+            _zoomer.Closing = _handler.Resume;
 
             _typing = new EventDebouncer<TextChangedEventArgs>(Constants.TypingTimeout, handler => SearchField.TextChanged += new TextChangedEventHandler(handler));
             _typing.Invoked += (s, args) =>

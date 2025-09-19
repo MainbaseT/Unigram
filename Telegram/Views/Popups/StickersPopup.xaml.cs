@@ -47,8 +47,8 @@ namespace Telegram.Views.Popups
             _handler = new AnimatedListHandler(ScrollingHost, AnimatedListType.Stickers);
 
             _zoomer = new ZoomableListHandler(ScrollingHost);
-            _zoomer.Opening = _handler.UnloadVisibleItems;
-            _zoomer.Closing = _handler.ThrottleVisibleItems;
+            _zoomer.Opening = _handler.Suspend;
+            _zoomer.Closing = _handler.Resume;
         }
 
         private void OnClosing(ContentDialog sender, ContentDialogClosingEventArgs args)

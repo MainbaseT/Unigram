@@ -33,8 +33,8 @@ namespace Telegram.Controls.Chats
             _handler = new AnimatedListHandler(ScrollingHost, AnimatedListType.Stickers);
 
             _zoomer = new ZoomableListHandler(ScrollingHost);
-            _zoomer.Opening = _handler.UnloadVisibleItems;
-            _zoomer.Closing = _handler.ThrottleVisibleItems;
+            _zoomer.Opening = _handler.Suspend;
+            _zoomer.Closing = _handler.Resume;
 
             _textBox = textBox;
             ScrollingHost.ItemsSource = itemsSource;
