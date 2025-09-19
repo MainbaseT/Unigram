@@ -358,8 +358,6 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="24" />
-                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -367,7 +365,7 @@
                         CornerRadius="8"
                         Margin="-4,-8"
                         Grid.ColumnSpan="5"
-                        Grid.RowSpan="4" />
+                        Grid.RowSpan="2" />
 
                 <controls:GlyphButton x:Name="Settings"
                                       Click="Menu_ContextRequested"
@@ -375,15 +373,14 @@
                                       Background="#663e3f41"
                                       Foreground="#FFFFFF"
                                       Content="{CustomResource Settings}"
-                                      Style="{StaticResource CallGlyphButtonStyle}"
-                                      Grid.Row="1" />
+                                      Style="{StaticResource CallGlyphButtonStyle}" />
                 <TextBlock x:Name="SettingsInfo"
                            Text="{CustomResource Settings}"
                            Style="{StaticResource CaptionTextBlockStyle}"
                            TextAlignment="Center"
                            VerticalAlignment="Top"
                            Margin="0,4,0,0"
-                           Grid.Row="2" />
+                           Grid.Row="1" />
 
                 <controls:GlyphButton x:Name="Video"
                                       Click="Video_Click"
@@ -391,15 +388,14 @@
                                       Background="#663e3f41"
                                       Foreground="#FFFFFF"
                                       Content="{CustomResource ChatVideo}"
-                                      Style="{StaticResource CallGlyphButtonStyle}"
-                                      Grid.Row="1" />
+                                      Style="{StaticResource CallGlyphButtonStyle}" />
                 <TextBlock x:Name="VideoInfo"
                            Text="{CustomResource ChatVideo}"
                            Style="{StaticResource CaptionTextBlockStyle}"
                            TextAlignment="Center"
                            VerticalAlignment="Top"
                            Margin="0,4,0,0"
-                           Grid.Row="2" />
+                           Grid.Row="1" />
 
                 <controls:GlyphButton x:Name="Screen"
                                       Visibility="Collapsed"
@@ -408,8 +404,7 @@
                                       Background="#663e3f41"
                                       Foreground="#FFFFFF"
                                       Content="{CustomResource VoipChatShare}"
-                                      Style="{StaticResource CallGlyphButtonStyle}"
-                                      Grid.Row="1" />
+                                      Style="{StaticResource CallGlyphButtonStyle}" />
                 <TextBlock x:Name="ScreenInfo"
                            Visibility="Collapsed"
                            Text="{CustomResource VoipChatShare}"
@@ -417,54 +412,55 @@
                            TextAlignment="Center"
                            VerticalAlignment="Top"
                            Margin="0,4,0,0"
-                           Grid.Row="2" />
+                           Grid.Row="1" />
 
                 <Border x:Name="AudioBlob"
-                        Width="300"
-                        Height="300"
-                        Margin="-102,-102,-102,-102"
+                        Width="150"
+                        Height="150"
+                        Margin="-51,-51,-51,-51"
                         VerticalAlignment="Top"
                         IsHitTestVisible="False"
                         Canvas.ZIndex="1"
-                        Grid.Column="1"
-                        Grid.RowSpan="3" />
+                        Grid.Column="1" />
 
-                <controls:GlyphButton x:Name="Audio"
-                                      Click="Audio_Click"
-                                      Glyph="&#xE720;"
-                                      Content="{CustomResource VoipUnmute}"
-                                      VerticalAlignment="Top"
-                                      Width="96"
-                                      Height="96"
-                                      CornerRadius="48"
-                                      Margin="48,0,48,0"
-                                      Canvas.ZIndex="2"
-                                      Grid.Column="1"
-                                      Grid.RowSpan="3"
-                                      Opacity="0" />
-                <controls:AnimatedImage x:Name="Lottie"
-                                        Width="96"
-                                        Height="96"
-                                        FrameSize="96,96"
-                                        DecodeFrameType="Logical"
-                                        VerticalAlignment="Top"
-                                        Margin="48,0,48,0"
-                                        IsHitTestVisible="False"
-                                        LoopCount="1"
-                                        IsCachingEnabled="False"
-                                        AutoPlay="False"
-                                        Grid.Column="1"
-                                        Grid.RowSpan="3"
-                                        Canvas.ZIndex="3" />
+                <Grid x:Name="AudioRoot"
+                      VerticalAlignment="Top"
+                      Margin="12,0,12,0"
+                      Grid.Column="1"
+                      Canvas.ZIndex="2">
+                    <controls:GlyphButton x:Name="Audio"
+                                          Click="Audio_Click"
+                                          Glyph="&#xE720;"
+                                          Content="{CustomResource VoipUnmute}"
+                                          Width="48"
+                                          Height="48"
+                                          CornerRadius="24"
+                                          Opacity="0" />
+                    <controls:AnimatedImage x:Name="Lottie"
+                                            Width="48"
+                                            Height="48"
+                                            FrameSize="48,48"
+                                            DecodeFrameType="Logical"
+                                            IsHitTestVisible="False"
+                                            LoopCount="1"
+                                            IsCachingEnabled="False"
+                                            AutoPlay="False" />
+                    <controls:ProgressRingIndeterminate x:Name="Indeterminate"
+                                                        x:Load="False"
+                                                        Fill="Transparent"
+                                                        StrokeThickness="2"
+                                                        Width="48"
+                                                        Height="48" />
+                </Grid>
 
                 <TextBlock x:Name="AudioInfo"
                            Text="{CustomResource VoipGroupLeave}"
                            Style="{StaticResource CaptionTextBlockStyle}"
                            TextAlignment="Center"
                            VerticalAlignment="Top"
-                           Margin="0,8,0,24"
+                           Margin="0,4,0,12"
                            Grid.Column="1"
-                           Grid.Row="3"
+                           Grid.Row="1"
                            Canvas.ZIndex="3" />
 
                 <controls:GlyphButton x:Name="Leave"
@@ -474,8 +470,7 @@
                                       Foreground="#FFFFFF"
                                       Content="{CustomResource VoipGroupLeave}"
                                       Style="{StaticResource CallGlyphButtonStyle}"
-                                      Grid.Column="4"
-                                      Grid.Row="1" />
+                                      Grid.Column="4" />
                 <TextBlock x:Name="LeaveInfo"
                            Text="{CustomResource VoipGroupLeave}"
                            Style="{StaticResource CaptionTextBlockStyle}"
@@ -483,7 +478,7 @@
                            VerticalAlignment="Top"
                            Margin="0,4,0,0"
                            Grid.Column="4"
-                           Grid.Row="2" />
+                           Grid.Row="1" />
 
             </Grid>
         </StackPanel>

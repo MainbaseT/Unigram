@@ -75,7 +75,7 @@ namespace Telegram.Views.Calls
             InitializeComponent();
             Logger.Info();
 
-            _visual = new CompositionVoiceBlobVisual(AudioBlob, 300, 300, 1.5f);
+            _visual = new CompositionVoiceBlobVisual(AudioBlob, 150, 150, 1.5f);
 
             _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
@@ -231,6 +231,7 @@ namespace Telegram.Views.Calls
         private enum ButtonColors
         {
             None,
+            Connecting,
             Disabled,
             Unmute,
             Mute
@@ -382,14 +383,6 @@ namespace Telegram.Views.Calls
                     column.Width = new GridLength(48 + 12 + 12, GridUnitType.Pixel);
                 }
 
-                _visual.Scale = new Vector3(0.5f);
-                AudioBlob.Margin = new Thickness(-126, -126, -126, -126);
-
-                Audio.Width = Lottie.Width = 48;
-                Audio.Height = Lottie.Height = 48;
-                Audio.Margin = Lottie.Margin = new Thickness(12, 0, 12, 0);
-                Audio.CornerRadius = new CornerRadius(24);
-
                 AudioInfo.Margin = new Thickness(0, 4, 0, 0);
 
                 Grid.SetColumn(Screen, 0);
@@ -399,19 +392,8 @@ namespace Telegram.Views.Calls
                 Grid.SetColumn(VideoInfo, 1);
 
                 Grid.SetColumn(AudioBlob, 2);
-                Grid.SetRow(AudioBlob, 1);
-                Grid.SetRowSpan(AudioBlob, 1);
-
-                Grid.SetColumn(Audio, 2);
-                Grid.SetRow(Audio, 1);
-                Grid.SetRowSpan(Audio, 1);
-
-                Grid.SetColumn(Lottie, 2);
-                Grid.SetRow(Lottie, 1);
-                Grid.SetRowSpan(Lottie, 1);
-
+                Grid.SetColumn(AudioRoot, 2);
                 Grid.SetColumn(AudioInfo, 2);
-                Grid.SetRow(AudioInfo, 2);
 
                 Grid.SetColumn(Settings, 3);
                 Grid.SetColumn(SettingsInfo, 3);
@@ -454,15 +436,7 @@ namespace Telegram.Views.Calls
                     column.Width = new GridLength(1, GridUnitType.Auto);
                 }
 
-                _visual.Scale = new Vector3(1);
-                AudioBlob.Margin = new Thickness(-102, -102, -102, -102);
-
-                Audio.Width = Lottie.Width = 96;
-                Audio.Height = Lottie.Height = 96;
-                Audio.Margin = Lottie.Margin = new Thickness(48, 0, 48, 0);
-                Audio.CornerRadius = new CornerRadius(48);
-
-                AudioInfo.Margin = new Thickness(0, 8, 0, 24);
+                AudioInfo.Margin = new Thickness(0, 4, 0, 12);
 
                 Grid.SetColumn(Screen, 0);
                 Grid.SetColumn(ScreenInfo, 0);
@@ -471,19 +445,8 @@ namespace Telegram.Views.Calls
                 Grid.SetColumn(VideoInfo, 0);
 
                 Grid.SetColumn(AudioBlob, 1);
-                Grid.SetRow(AudioBlob, 0);
-                Grid.SetRowSpan(AudioBlob, 3);
-
-                Grid.SetColumn(Audio, 1);
-                Grid.SetRow(Audio, 0);
-                Grid.SetRowSpan(Audio, 3);
-
-                Grid.SetColumn(Lottie, 1);
-                Grid.SetRow(Lottie, 0);
-                Grid.SetRowSpan(Lottie, 3);
-
+                Grid.SetColumn(AudioRoot, 1);
                 Grid.SetColumn(AudioInfo, 1);
-                Grid.SetRow(AudioInfo, 3);
 
                 Grid.SetColumn(Settings, 0);
                 Grid.SetColumn(SettingsInfo, 0);
@@ -643,7 +606,7 @@ namespace Telegram.Views.Calls
             var root = ElementComposition.GetElementVisual(BottomRoot);
             var list = ElementComposition.GetElementVisual(ScrollingHost);
             var audio1 = ElementComposition.GetElementVisual(AudioBlob);
-            var audio2 = ElementComposition.GetElementVisual(Lottie);
+            var audio2 = ElementComposition.GetElementVisual(AudioRoot);
             var audioInfo = ElementComposition.GetElementVisual(AudioInfo);
             var video = ElementComposition.GetElementVisual(Video);
             var videoInfo = ElementComposition.GetElementVisual(VideoInfo);
@@ -655,9 +618,6 @@ namespace Telegram.Views.Calls
             var leaveInfo = ElementComposition.GetElementVisual(LeaveInfo);
 
             var expanded = next is ParticipantsGridMode.Expanded or ParticipantsGridMode.Docked;
-
-            audio1.CenterPoint = new Vector3(150, 150, 0);
-            audio2.CenterPoint = new Vector3(expanded ? 24 : 48, expanded ? 24 : 48, 0);
 
             screen.CenterPoint = new Vector3(24, 24, 0);
             screenInfo.CenterPoint = new Vector3(ScreenInfo.ActualSize / 2, 0);
@@ -711,34 +671,6 @@ namespace Telegram.Views.Calls
 
             listOffset.InsertKeyFrame(1, Vector3.Zero);
 
-            // Audio scale
-            var audioScale = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
-
-            if (expanded)
-            {
-                audioScale.InsertKeyFrame(0, new Vector3(2, 2, 1));
-            }
-            else
-            {
-                audioScale.InsertKeyFrame(0, new Vector3(0.5f, 0.5f, 0));
-            }
-
-            audioScale.InsertKeyFrame(1, Vector3.One);
-
-            // Audio info offset
-            var audioInfoOffset = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
-
-            if (expanded)
-            {
-                audioInfoOffset.InsertKeyFrame(0, new Vector3(0, 26, 0));
-            }
-            else
-            {
-                audioInfoOffset.InsertKeyFrame(0, new Vector3(0, -26, 0));
-            }
-
-            audioInfoOffset.InsertKeyFrame(1, Vector3.Zero);
-
             // Other offset
             var otherOffset = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
 
@@ -769,10 +701,8 @@ namespace Telegram.Views.Calls
 
             rootOffset.Duration =
                 listOffset.Duration =
-                audioScale.Duration =
                 otherScale.Duration =
-                otherOffset.Duration =
-                audioInfoOffset.Duration = TimeSpan.FromMilliseconds(300);
+                otherOffset.Duration = TimeSpan.FromMilliseconds(300);
             //rootOffset.DelayTime =
             //    audioScale.DelayTime =
             //    leaveOffset.DelayTime =
@@ -790,9 +720,9 @@ namespace Telegram.Views.Calls
 
             root.StartAnimation("Translation", rootOffset);
             list.StartAnimation("Translation", listOffset);
-            audio1.StartAnimation("Scale", audioScale);
-            audio2.StartAnimation("Scale", audioScale);
-            audioInfo.StartAnimation("Translation", audioInfoOffset);
+            //audio1.StartAnimation("Scale", audioScale);
+            //audio2.StartAnimation("Scale", audioScale);
+            //audioInfo.StartAnimation("Translation", audioInfoOffset);
             screen.StartAnimation("Scale", otherScale);
             screenInfo.StartAnimation("Scale", otherScale);
             screen.StartAnimation("Translation", otherOffset);
@@ -1098,45 +1028,46 @@ namespace Telegram.Views.Calls
             UpdateScreen();
         }
 
-        private void UpdateNetworkState(GroupCallParticipant currentUser, bool? connected = null)
+        private void UpdateNetworkState(GroupCallParticipant currentUser, bool connected)
         {
             if (_call.ScheduledStartDate > 0)
             {
                 if (_call.CanBeManaged)
                 {
-                    SetButtonState(ButtonState.Start);
+                    SetButtonState(ButtonState.Start, connected);
                 }
                 else
                 {
-                    SetButtonState(_call.EnabledStartNotification ? ButtonState.SetReminder : ButtonState.CancelReminder);
+                    SetButtonState(_call.EnabledStartNotification ? ButtonState.SetReminder : ButtonState.CancelReminder, connected);
                 }
             }
             //else if (currentUser != null && currentUser.CanBeUnmutedForAllUsers)
             else if (currentUser != null && currentUser.CanUnmuteSelf && (_call.IsMuted || currentUser.IsMutedForAllUsers))
             {
-                SetButtonState(ButtonState.Mute);
+                SetButtonState(ButtonState.Mute, connected);
             }
             //else if (currentUser != null && currentUser.CanBeMutedForAllUsers)
             else if (currentUser != null && (!_call.IsMuted || !currentUser.IsMutedForAllUsers))
             {
-                SetButtonState(ButtonState.Unmute);
+                SetButtonState(ButtonState.Unmute, connected);
             }
             else if (currentUser != null && currentUser.IsHandRaised)
             {
-                SetButtonState(ButtonState.HandRaised);
+                SetButtonState(ButtonState.HandRaised, connected);
             }
             else if (_call.IsJoined)
             {
-                SetButtonState(ButtonState.RaiseHand);
+                SetButtonState(ButtonState.RaiseHand, connected);
             }
         }
 
         private ButtonState _prevState;
         private ButtonColors _prevColors;
+        private bool _prevConnected;
 
-        private void SetButtonState(ButtonState state)
+        private void SetButtonState(ButtonState state, bool connected)
         {
-            if (state == _prevState)
+            if (state == _prevState && connected == _prevConnected)
             {
                 return;
             }
@@ -1230,10 +1161,25 @@ namespace Telegram.Views.Calls
             }
 
             _prevState = state;
+            _prevConnected = connected;
+
+            if (state is not ButtonState.CancelReminder and not ButtonState.SetReminder and not ButtonState.Start && !connected)
+            {
+                colors = ButtonColors.Connecting;
+            }
 
             if (colors == _prevColors)
             {
                 return;
+            }
+
+            if (connected)
+            {
+                UnloadObject(Indeterminate);
+            }
+            else
+            {
+                FindName(nameof(Indeterminate));
             }
 
             switch (colors)
@@ -1252,6 +1198,11 @@ namespace Telegram.Views.Calls
                     _visual.SetColorStops(0xFF59c7f8, 0xFF0078ff);
                     StartAnimating();
                     Settings.Background = new SolidColorBrush(Color.FromArgb(0x66, 0x00, 0x78, 0xff));
+                    break;
+                case ButtonColors.Connecting:
+                    _visual.SetColorStops(0xFF3e3f41, 0xFF3e3f41);
+                    StartAnimating();
+                    Settings.Background = new SolidColorBrush(Color.FromArgb(0x66, 0x3e, 0x3f, 0x41));
                     break;
             }
 
@@ -1294,6 +1245,9 @@ namespace Telegram.Views.Calls
                         break;
                     case ButtonColors.Mute:
                         Video.Background = new SolidColorBrush(Color.FromArgb((byte)(_call.IsVideoEnabled ? 0xFF : 0x66), 0x00, 0x78, 0xff));
+                        break;
+                    case ButtonColors.Connecting:
+                        Video.Background = new SolidColorBrush(Color.FromArgb(0x66, 0x3e, 0x3f, 0x41));
                         break;
                 }
 
