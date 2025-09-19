@@ -6512,7 +6512,11 @@ namespace Telegram.Views
                 {
                     if (ViewModel.Type == DialogType.Thread)
                     {
-                        if (group.JoinToSendMessages)
+                        if (group.JoinByRequest)
+                        {
+                            ShowAction(Strings.ChannelJoinRequest, true);
+                        }
+                        else if (group.JoinToSendMessages)
                         {
                             ShowAction(Strings.JoinGroup, true);
                         }
