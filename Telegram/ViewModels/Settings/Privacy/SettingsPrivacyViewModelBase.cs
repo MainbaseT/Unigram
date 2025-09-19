@@ -55,12 +55,12 @@ namespace Telegram.ViewModels.Settings
                 var confirm = await ShowPopupAsync(Strings.PrivacySettingsChangedAlert, Strings.UnsavedChanges, Strings.ApplyTheme, Strings.PassportDiscard);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    Continue();
+                    ContinueImpl(args);
                 }
                 else if (confirm == ContentDialogResult.Secondary)
                 {
                     _completed = true;
-                    NavigationService.GoBack();
+                    NavigationService.GoBack(args);
                 }
             }
         }
@@ -590,18 +590,22 @@ namespace Telegram.ViewModels.Settings
             RestrictedBadge = GetBadge(_restrictedUsers.UserIds, _restrictedChatMembers.ChatIds, false, _restrictedBots);
         }
 
-        public virtual async void Continue()
+        public void Continue()
         {
-            _completed = true;
+            ContinueImpl(null);
+        }
 
+        protected virtual async void ContinueImpl(NavigatingEventArgs args)
+        {
             var response = await SendAsync();
             if (response is Ok)
             {
-                NavigationService.GoBack();
+                _completed = true;
+                NavigationService.GoBack(args);
             }
             else if (response is Error error)
             {
-
+                ShowToast(error);
             }
         }
 

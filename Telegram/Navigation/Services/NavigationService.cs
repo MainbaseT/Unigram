@@ -39,6 +39,8 @@ namespace Telegram.Navigation.Services
         XamlRoot XamlRoot { get; }
 
         bool Navigate(Type page, object parameter = null, NavigationState state = null, NavigationTransitionInfo infoOverride = null, bool navigationStackEnabled = true);
+        void GoBack(NavigatingEventArgs args);
+        void GoBack(NavigatingCancelEventArgs args);
 
         event EventHandler<NavigatedEventArgs> Navigated;
 
@@ -653,6 +655,46 @@ namespace Telegram.Navigation.Services
             finally
             {
                 IsNavigating = false;
+            }
+        }
+
+        public void GoBack(NavigatingEventArgs args)
+        {
+            if (args == null || args.NavigationMode == NavigationMode.Back)
+            {
+                GoBack();
+            }
+            else if (args.NavigationMode == NavigationMode.Forward)
+            {
+                GoForward();
+            }
+            else if (args.NavigationMode == NavigationMode.New)
+            {
+                Navigate(args.SourcePageType, args.Parameter, infoOverride: args.NavigationTransitionInfo);
+            }
+            else
+            {
+                Logger.Info("Unhandled: " + args.NavigationMode);
+            }
+        }
+
+        public void GoBack(NavigatingCancelEventArgs args)
+        {
+            if (args == null || args.NavigationMode == NavigationMode.Back)
+            {
+                GoBack();
+            }
+            else if (args.NavigationMode == NavigationMode.Forward)
+            {
+                GoForward();
+            }
+            else if (args.NavigationMode == NavigationMode.New)
+            {
+                Navigate(args.SourcePageType, args.Parameter, infoOverride: args.NavigationTransitionInfo);
+            }
+            else
+            {
+                Logger.Info("Unhandled: " + args.NavigationMode);
             }
         }
 

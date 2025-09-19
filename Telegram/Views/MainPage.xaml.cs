@@ -2394,7 +2394,7 @@ namespace Telegram.Views
             ConvertFolder(ViewModel.SelectedFolder);
         }
 
-        private ChatFolderViewModel ConvertFolder(ChatFolderViewModel folder)
+        private ChatFolderViewModel ConvertFolder(ChatFolderViewModel folder, bool updateBackStack = true)
         {
             ShowHideArchive(folder?.ChatList is ChatListMain or null && ViewModel.Chats.Items.ChatList is not ChatListArchive, false);
             ShowHideLeftTabs(ViewModel.Chats.Settings.UseLeftTabsForChats && ViewModel.Folders.Count > 0);
@@ -2402,7 +2402,7 @@ namespace Telegram.Views
 
             UpdatePaneToggleButtonVisibility();
 
-            if (MasterDetail.CurrentState != MasterDetailState.Minimal)
+            if (MasterDetail.CurrentState != MasterDetailState.Minimal && updateBackStack)
             {
                 SetPivotSelectedIndex(INDEX_CHATS);
             }
@@ -2417,7 +2417,7 @@ namespace Telegram.Views
         {
             if (sender is ListViewBase listView && listView.SelectedItem is ChatFolderViewModel folder)
             {
-                UpdateFolder(folder);
+                UpdateFolder(folder, updateBackStack: false);
 
                 SetPivotSelectedIndex(INDEX_CHATS, true);
                 HideTopicList();
@@ -2652,7 +2652,7 @@ namespace Telegram.Views
             }
         }
 
-        private void UpdateFolder(ChatFolderViewModel folder, bool update = true)
+        private void UpdateFolder(ChatFolderViewModel folder, bool update = true, bool updateBackStack = true)
         {
             CarouselDirection direction = CarouselDirection.None;
             if (folder.ChatList is ChatListArchive)
@@ -2684,7 +2684,7 @@ namespace Telegram.Views
 
                 if (update)
                 {
-                    ConvertFolder(folder);
+                    ConvertFolder(folder, updateBackStack);
 
                     Logger.Info("ChangeView");
 

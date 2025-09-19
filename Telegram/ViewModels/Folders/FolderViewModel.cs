@@ -174,12 +174,12 @@ namespace Telegram.ViewModels.Folders
                 var confirm = await ShowPopupAsync(message, title, primary, Strings.PassportDiscard);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    Continue();
+                    ContinueImpl(args);
                 }
                 else if (confirm == ContentDialogResult.Secondary)
                 {
                     _completed = true;
-                    NavigationService.GoBack();
+                    NavigationService.GoBack(args);
                 }
             }
         }
@@ -391,13 +391,22 @@ namespace Telegram.ViewModels.Folders
             return false;
         }
 
-        public async void Continue()
+        public void Continue()
+        {
+            ContinueImpl(null);
+        }
+
+        private async void ContinueImpl(NavigatingEventArgs args)
         {
             var response = await SendAsync();
             if (response is ChatFolderInfo)
             {
                 _completed = true;
-                NavigationService.GoBack();
+                NavigationService.GoBack(args);
+            }
+            else if (response is Error error)
+            {
+                ShowToast(error);
             }
         }
 

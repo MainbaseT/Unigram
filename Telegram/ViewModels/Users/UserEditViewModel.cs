@@ -26,7 +26,7 @@ namespace Telegram.ViewModels.Users
 
         private readonly IProfilePhotoService _profilePhotoService;
 
-        private bool _discardChanges;
+        private bool _confirmed;
 
         public UserEditViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, IProfilePhotoService profilePhotoService)
             : base(clientService, settingsService, aggregator)
@@ -140,7 +140,7 @@ namespace Telegram.ViewModels.Users
 
         public override async void NavigatingFrom(NavigatingEventArgs args)
         {
-            if (_discardChanges || args.NavigationMode != NavigationMode.Back)
+            if (_confirmed || args.NavigationMode != NavigationMode.Back)
             {
                 return;
             }
@@ -156,12 +156,11 @@ namespace Telegram.ViewModels.Users
                         var confirm = await ShowPopupAsync(Strings.BotSettingsChangedAlert, Strings.UnsavedChanges, Strings.ApplyTheme, Strings.Discard);
                         if (confirm == ContentDialogResult.Primary)
                         {
-                            Send();
+                            Continue(args);
                         }
                         else
                         {
-                            _discardChanges = true;
-                            NavigationService.GoBack();
+                            NavigationService.GoBack(args);
                         }
                     }
                 }
@@ -206,8 +205,11 @@ namespace Telegram.ViewModels.Users
         public RelayCommand SendCommand { get; }
         private void Send()
         {
-            _discardChanges = true;
+            Continue(null);
+        }
 
+        private void Continue(NavigatingEventArgs args)
+        {
             if (ClientService.TryGetUser(_userId, out User user) && ClientService.TryGetUserFull(user.Id, out UserFullInfo userFull))
             {
                 if (user.Type is UserTypeBot userTypeBot && userTypeBot.CanBeEdited)
@@ -228,7 +230,8 @@ namespace Telegram.ViewModels.Users
                         userFull.NeedPhoneNumberPrivacyException && SharePhoneNumber));
                 }
 
-                NavigationService.GoBack();
+                _confirmed = true;
+                NavigationService.GoBack(args);
             }
         }
 

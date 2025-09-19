@@ -144,7 +144,7 @@ namespace Telegram.ViewModels.Supergroups
 
             if (changed)
             {
-                ConfirmClose();
+                ConfirmClose(args);
                 args.Cancel = true;
             }
         }
@@ -370,22 +370,26 @@ namespace Telegram.ViewModels.Supergroups
             return level;
         }
 
-        private async void ConfirmClose()
+        private async void ConfirmClose(NavigatingEventArgs args)
         {
             var confirm = await ShowPopupAsync(Strings.ChannelColorUnsavedMessage, Strings.ChannelColorUnsaved, Strings.ChatThemeSaveDialogDiscard, Strings.ChatThemeSaveDialogApply, destructive: true);
             if (confirm == ContentDialogResult.Primary)
             {
                 _confirmed = true;
-                NavigationService.GoBack();
+                NavigationService.GoBack(args);
             }
             else if (confirm == ContentDialogResult.Secondary)
             {
-                _confirmed = true;
-                Commit();
+                Continue(args);
             }
         }
 
-        public async void Commit()
+        public void Commit()
+        {
+            Continue(null);
+        }
+
+        private async void Continue(NavigatingEventArgs args)
         {
             if (Chat is not Chat chat)
             {
@@ -460,7 +464,7 @@ namespace Telegram.ViewModels.Supergroups
             }
 
             _confirmed = true;
-            NavigationService.GoBack();
+            NavigationService.GoBack(args);
         }
     }
 }

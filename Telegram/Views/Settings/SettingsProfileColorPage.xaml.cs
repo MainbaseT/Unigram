@@ -33,6 +33,8 @@ namespace Telegram.Views.Settings
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
+            Logger.Info();
+
             if (_confirmed)
             {
                 return;
@@ -56,25 +58,25 @@ namespace Telegram.Views.Settings
 
                     if (changed)
                     {
-                        ConfirmClose();
+                        ConfirmClose(e);
                         e.Cancel = true;
                     }
                 }
             }
         }
 
-        private async void ConfirmClose()
+        private async void ConfirmClose(NavigatingCancelEventArgs e)
         {
             var confirm = await ViewModel.ShowPopupAsync(Strings.UserColorUnsavedMessage, Strings.UserColorUnsaved, Strings.ChatThemeSaveDialogDiscard, Strings.ChatThemeSaveDialogApply, destructive: true);
             if (confirm == ContentDialogResult.Primary)
             {
                 _confirmed = true;
-                Frame.GoBack();
+                ViewModel.NavigationService.GoBack(e);
             }
             else if (confirm == ContentDialogResult.Secondary)
             {
                 _confirmed = true;
-                PurchaseCommand_Click(null, null);
+                PurchaseCommand_Click(e, null);
             }
         }
 
@@ -104,7 +106,7 @@ namespace Telegram.Views.Settings
                     }
 
                     _confirmed = true;
-                    Frame.GoBack();
+                    ViewModel.NavigationService.GoBack(sender as NavigatingCancelEventArgs);
                 }
                 else
                 {
