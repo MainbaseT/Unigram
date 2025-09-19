@@ -52,6 +52,16 @@ namespace Telegram
             return 0;
         }
 
+        public static bool CanBeCalled(this User user, IClientService clientService)
+        {
+            if (user.Id == clientService.Options.MyId || user.IsSupport || user.Type is UserTypeBot)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public static bool IsPhoto(this MessageDocument document)
         {
             return Constants.PhotoTypes.Contains(System.IO.Path.GetExtension(document.Document.FileName.ToLower()));
