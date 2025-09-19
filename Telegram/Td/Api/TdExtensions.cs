@@ -54,7 +54,7 @@ namespace Telegram
 
         public static bool CanBeCalled(this User user, IClientService clientService)
         {
-            if (user.Id == clientService.Options.MyId || user.IsSupport || user.Type is UserTypeBot)
+            if (user.Id == clientService.Options.MyId || user.IsSupport || user.Type is UserTypeBot or UserTypeDeleted)
             {
                 return false;
             }
