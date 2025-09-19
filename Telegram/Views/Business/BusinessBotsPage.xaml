@@ -39,7 +39,6 @@
                         <TextBox x:Name="UsernameField"
                                  Text="{x:Bind ViewModel.Results.Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  FontFamily="{ThemeResource EmojiThemeFontFamily}"
-                                 MaxLength="{StaticResource ChannelAboutMaxLength}"
                                  PlaceholderText="{CustomResource BusinessBotLink}"
                                  TextWrapping="Wrap"
                                  AcceptsReturn="True"
