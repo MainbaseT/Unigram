@@ -2461,6 +2461,8 @@ namespace Telegram.Views.Calls
             var animate = _prevMode != _mode || _prevCount != Children.Count;
             var pinned = false;
 
+            var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+
             for (int row = 0; row < rows; row++)
             {
                 var rowColumns = columns;
@@ -2484,17 +2486,23 @@ namespace Telegram.Views.Calls
 
                 for (int column = 0; column < rowColumns; column++)
                 {
+                    var cell = Children[index] as GroupCallParticipantGridCell;
+                    if (cell == null)
+                    {
+                        continue;
+                    }
+
                     var size = SafeSize(finalWidth / (_mode == ParticipantsGridMode.Compact ? rowColumns : columns), finalHeight / rows);
                     var point = new Point(x + column * size.Width, row * size.Height);
 
-                    if (Children[index] is GroupCallParticipantGridCell cell && cell.IsSelected)
+                    if (cell.IsSelected)
                     {
                         size = SafeSize(finalWidth, _mode == ParticipantsGridMode.Compact ? finalWidth / 4 * 2 : finalHeight);
                         point = new Point(0, 0);
                         pinned = true;
                     }
 
-                    Children[index].Arrange(new Rect(point, size));
+                    cell.Arrange(new Rect(point, size));
 
                     Rect prev;
                     if (index < _prev.Count)
@@ -2510,9 +2518,9 @@ namespace Telegram.Views.Calls
                     {
                         if (prev.X != point.X || prev.Y != point.Y)
                         {
-                            ElementCompositionPreview.SetIsTranslationEnabled(Children[index], true);
+                            ElementCompositionPreview.SetIsTranslationEnabled(cell, true);
 
-                            var visual = ElementComposition.GetElementVisual(Children[index]);
+                            var visual = ElementComposition.GetElementVisual(cell);
                             var offset = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
                             offset.InsertKeyFrame(0, new Vector3((float)(prev.X - point.X), (float)(prev.Y - point.Y), 0));
                             offset.InsertKeyFrame(1, Vector3.Zero);
@@ -2522,12 +2530,16 @@ namespace Telegram.Views.Calls
 
                         if (prev.Width != size.Width || prev.Height != size.Height)
                         {
-                            var visual = ElementComposition.GetElementVisual(Children[index]);
+                            var visual = ElementComposition.GetElementVisual(cell);
                             var scale = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
                             scale.InsertKeyFrame(0, new Vector3((float)(prev.Width / size.Width), (float)(prev.Height / size.Height), 0));
                             scale.InsertKeyFrame(1, Vector3.One);
                             scale.Duration = TimeSpan.FromMilliseconds(300);
                             visual.StartAnimation("Scale", scale);
+
+                            var factor = BootStrapper.Current.Compositor.CreateExpressionAnimation("Vector3(1 / content.Scale.X, 1 / content.Scale.Y, 1)");
+                            factor.SetReferenceParameter("content", visual);
+                            cell.StartAnimation(factor);
                         }
 
                         // Save previous position only when there's an animation-
@@ -2546,6 +2558,8 @@ namespace Telegram.Views.Calls
                     index++;
                 }
             }
+
+            batch.End();
 
             for (int i = _prev.Count - 1; i >= Children.Count; i--)
             {
