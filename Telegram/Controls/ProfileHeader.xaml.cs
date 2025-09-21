@@ -23,6 +23,8 @@ using Telegram.Streams;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.Views;
+using Telegram.Views.Popups;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -219,6 +221,7 @@ namespace Telegram.Controls
             var root = ElementComposition.GetElementVisual(HeaderRoot);
             var photoRoot = ElementComposition.GetElementVisual(HeaderPhotoRoot);
             var photo = ElementComposition.GetElementVisual(HeaderPhoto);
+            var audio = ElementComposition.GetElementVisual(UserFirstAudioRoot);
 
             ElementCompositionPreview.SetIsTranslationEnabled(Buttons, true);
             ElementCompositionPreview.SetIsTranslationEnabled(HeaderRoot, true);
@@ -255,22 +258,32 @@ namespace Telegram.Controls
             controlsClip.SetReferenceParameter("_", Properties);
 
             //var buttonsExp = "clamp(-scrollViewer.Translation.Y - (target.Size.Y - this.Target.Size.Y - 56), 0, 72)";
-            var buttonsExp = $"clamp(-{translationExp} - (target.Size.Y - this.Target.Size.Y - 56), 0, 72)";
+            var buttonsExp = $"clamp(-{translationExp} - (target.Size.Y - this.Target.Size.Y - 56 - audio.Size.Y), 0, 72)";
             var buttonsTranslation = root.Compositor.CreateExpressionAnimation(buttonsExp);
             buttonsTranslation.SetReferenceParameter("scrollViewer", properties);
             buttonsTranslation.SetReferenceParameter("target", root);
+            buttonsTranslation.SetReferenceParameter("audio", audio);
             buttonsTranslation.SetReferenceParameter("_", Properties);
 
             var buttonsOpacity = root.Compositor.CreateExpressionAnimation($"clamp(1 - {buttonsExp} / this.Target.Size.Y, 0, 1)");
             buttonsOpacity.SetReferenceParameter("scrollViewer", properties);
             buttonsOpacity.SetReferenceParameter("target", root);
+            buttonsOpacity.SetReferenceParameter("audio", audio);
             buttonsOpacity.SetReferenceParameter("_", Properties);
 
+            var audioExp = $"clamp(-{translationExp} - (target.Size.Y - buttons.Size.Y - 72 - this.Target.Size.Y), 0, 72)";
+            var audioOpacity = root.Compositor.CreateExpressionAnimation($"clamp(1 - {audioExp} / this.Target.Size.Y, 0, 1)");
+            audioOpacity.SetReferenceParameter("scrollViewer", properties);
+            audioOpacity.SetReferenceParameter("target", root);
+            audioOpacity.SetReferenceParameter("buttons", buttons);
+            audioOpacity.SetReferenceParameter("_", Properties);
+
             //var titleExp = "clamp(-scrollViewer.Translation.Y - 168 - 8, 0, 86)";
-            var titleExp = $"clamp(-{translationExp} - 182, 0, buttons.Size.Y > 0 ? 86 : 11)";
+            var titleExp = $"clamp(-{translationExp} - 182, 0, (buttons.Size.Y > 0 ? 86 : 11) + audio.Size.Y)";
             var titleTranslation = root.Compositor.CreateExpressionAnimation(titleExp);
             titleTranslation.SetReferenceParameter("scrollViewer", properties);
             titleTranslation.SetReferenceParameter("buttons", buttons);
+            titleTranslation.SetReferenceParameter("audio", audio);
             titleTranslation.SetReferenceParameter("_", Properties);
 
             //var titleScaleExp = "max(diff, 1 - clamp((-scrollViewer.Translation.Y - 184) / 32, 0, 1) * diff)";
@@ -314,6 +327,7 @@ namespace Telegram.Controls
             root.StartAnimation("Translation.Y", rootTranslation);
             buttons.StartAnimation("Translation.Y", buttonsTranslation);
             buttons.StartAnimation("Opacity", buttonsOpacity);
+            audio.StartAnimation("Opacity", audioOpacity);
             title.StartAnimation("Translation.Y", titleTranslation);
             title.StartAnimation("Scale", titleScale);
             subtitle.StartAnimation("Translation.Y", titleTranslation);
@@ -788,6 +802,26 @@ namespace Telegram.Controls
             else
             {
                 Rating.Visibility = Visibility.Collapsed;
+            }
+
+            if (fullInfo.FirstProfileAudio != null)
+            {
+                UserFirstAudioRoot.Visibility = Visibility.Visible;
+
+                if (fullInfo.FirstProfileAudio.Performer.Length > 0 && fullInfo.FirstProfileAudio.Title.Length > 0)
+                {
+                    UserFirstAudioTitle.Text = fullInfo.FirstProfileAudio.Title;
+                    UserFirstAudioSubtitle.Text = "- " + fullInfo.FirstProfileAudio.Performer;
+                }
+                else
+                {
+                    UserFirstAudioTitle.Text = fullInfo.FirstProfileAudio.FileName;
+                    UserFirstAudioSubtitle.Text = string.Empty;
+                }
+            }
+            else
+            {
+                UserFirstAudioRoot.Visibility = Visibility.Collapsed;
             }
 
             var animation = fullInfo.PersonalPhoto != null
@@ -1967,6 +2001,19 @@ namespace Telegram.Controls
         private void Rating_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShowRating();
+        }
+
+        private void UserFirstAudio_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.ClientService.TryGetUser(ViewModel.Chat, out User user)
+                && ViewModel.ClientService.TryGetUserFull(user.Id, out UserFullInfo userFull))
+            {
+                if (userFull.FirstProfileAudio != null)
+                {
+                    TypeResolver.Current.Playback.Play(XamlRoot, new AudioWithOwner(ViewModel.ClientService, user.Id, userFull.FirstProfileAudio));
+                    ViewModel.ShowPopup(new PlaybackPopup(ViewModel.ClientService, ViewModel.NavigationService));
+                }
+            }
         }
     }
 
