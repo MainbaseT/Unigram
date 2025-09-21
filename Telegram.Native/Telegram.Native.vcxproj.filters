@@ -1106,5 +1106,6 @@
     </Midl>
     <Midl Include="AnimationEffects.idl" />
     <Midl Include="AsyncMediaPlayerSwapChain.idl" />
+    <Midl Include="GiftPatterns.idl" />
   </ItemGroup>
 </Project>

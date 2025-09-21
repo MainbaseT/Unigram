@@ -1,0 +1,18 @@
+namespace Telegram.Native
+{
+    struct GiftPattern
+    {
+        Windows.Foundation.Numerics.Vector2 Offset;
+        Windows.Foundation.Numerics.Vector2 Size;
+        Single RotationAngle;
+    };
+
+    [default_interface]
+    runtimeclass GiftPatterns
+    {
+        GiftPatterns(Single width, Single height, Windows.Foundation.Collections.IVector<GiftPattern> patterns);
+
+        Windows.Foundation.Numerics.Vector2 Size{ get; };
+        Windows.Foundation.Collections.IVector<GiftPattern> Patterns{ get; };
+    };
+}

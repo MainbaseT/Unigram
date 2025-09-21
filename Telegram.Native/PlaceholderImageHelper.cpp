@@ -359,18 +359,6 @@ namespace winrt::Telegram::Native::implementation
         return true;
     }
 
-    winrt::Windows::Foundation::IAsyncAction PlaceholderImageHelper::DrawSvgAsync(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi)
-    {
-        winrt::apartment_context ui_thread;
-        co_await winrt::resume_background();
-
-        Windows::Foundation::Size size;
-        DrawSvg(path, foreground, randomAccessStream, dpi, size);
-        randomAccessStream.Seek(0);
-
-        co_await ui_thread;
-    }
-
     winrt::Telegram::Native::SurfaceImage PlaceholderImageHelper::Create(int32_t pixelWidth, int32_t pixelHeight)
     {
         std::lock_guard const guard(m_criticalSection);
@@ -416,15 +404,46 @@ namespace winrt::Telegram::Native::implementation
         return native->EndDraw();
     }
 
-    HRESULT PlaceholderImageHelper::DrawSvg(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi, Windows::Foundation::Size& size)
-    inline bool IsGzipCompressed(const char* data, size_t length)
+    winrt::Windows::Foundation::IAsyncOperation<GiftPatterns> PlaceholderImageHelper::DrawSvgAsync(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi)
+    {
+        winrt::apartment_context ui_thread;
+        co_await winrt::resume_background();
+
+        auto patterns = DrawSvg(path, foreground, randomAccessStream, dpi);
+        randomAccessStream.Seek(0);
+
+        co_await ui_thread;
+        co_return patterns;
+    }
+
+    constexpr float PI = 3.14159265358979323846f;
+
+    inline static GiftPattern ParseGiftPattern(float topLeftX, float topLeftY, float topRightX, float topRightY, float bottomRightX, float bottomRightY, float bottomLeftX, float bottomLeftY)
+    {
+        GiftPattern pattern;
+        pattern.Offset = float2(topLeftX, topLeftY);
+
+        float dx_top = topRightX - topLeftX;
+        float dy_top = topRightY - topLeftY;
+        pattern.RotationAngle = atan2(dy_top, dx_top);
+
+        float dx_left = bottomLeftX - topLeftX;
+        float dy_left = bottomLeftY - topLeftY;
+        float width = sqrt(dx_top * dx_top + dy_top * dy_top);
+        float height = sqrt(dx_left * dx_left + dy_left * dy_left);
+        pattern.Size = float2(width, height);
+
+        return pattern;
+    }
+
+    inline static bool IsGzipCompressed(const char* data, size_t length)
     {
         if (length < 10) return false;
         return (static_cast<unsigned char>(data[0]) == 0x1f &&
             static_cast<unsigned char>(data[1]) == 0x8b);
     }
 
-    inline std::string DecompressFromFile(hstring path)
+    inline static std::string DecompressFromFile(hstring path)
     {
         FILE* file;
         _wfopen_s(&file, path.c_str(), L"rb");
@@ -491,11 +510,14 @@ namespace winrt::Telegram::Native::implementation
         free(buffer);
         return decompressed;
     }
+
+    GiftPatterns PlaceholderImageHelper::DrawSvg(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
 
         auto data = DecompressFromFile(path);
+        auto patterns = winrt::single_threaded_vector<GiftPattern>();
 
         struct NSVGimage* image;
         image = nsvgParse((char*)data.c_str(), "px", 96);
@@ -507,19 +529,19 @@ namespace winrt::Telegram::Native::implementation
 
         auto imageWidth = image->width * dpi;
         auto imageHeight = image->height * dpi;
-        size = Windows::Foundation::Size(imageWidth, imageHeight);
 
         winrt::com_ptr<ID2D1Bitmap1> targetBitmap;
+        winrt::com_ptr<ID2D1SolidColorBrush> blackBrush;
+
         D2D1_BITMAP_PROPERTIES1 properties = { { DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED }, 96, 96, D2D1_BITMAP_OPTIONS_TARGET, 0 };
-        ReturnIfFailed(result, m_d2dContext->CreateBitmap(D2D1_SIZE_U{ (uint32_t)imageWidth, (uint32_t)imageHeight }, nullptr, 0, &properties, targetBitmap.put()));
+        CleanupIfFailed(result, m_d2dContext->CreateBitmap(D2D1_SIZE_U{ (uint32_t)imageWidth, (uint32_t)imageHeight }, nullptr, 0, &properties, targetBitmap.put()));
 
         m_d2dContext->SetTarget(targetBitmap.get());
         m_d2dContext->BeginDraw();
         m_d2dContext->Clear(D2D1::ColorF(0, 0, 0, 0));
         m_d2dContext->SetTransform(D2D1::Matrix3x2F::Scale(1 * dpi, 1 * dpi));
 
-        winrt::com_ptr<ID2D1SolidColorBrush> blackBrush;
-        ReturnIfFailed(result, m_d2dContext->CreateSolidColorBrush(
+        CleanupIfFailed(result, m_d2dContext->CreateSolidColorBrush(
             D2D1::ColorF(foreground.R / 255.0f, foreground.G / 255.0f, foreground.B / 255.0f, foreground.A / 255.0f), blackBrush.put()));
 
         for (auto shape = image->shapes; shape != NULL; shape = shape->next)
@@ -529,13 +551,32 @@ namespace winrt::Telegram::Native::implementation
                 continue;
             }
 
+            if (strcmp(shape->id, "GiftPatterns") == 0)
+            {
+                if (shape->paths && shape->paths->npts == 13)
+                {
+                    auto topLeftX = shape->paths->pts[0] * (1 * dpi);
+                    auto topLeftY = shape->paths->pts[1] * (1 * dpi);
+                    auto topRightX = shape->paths->pts[6] * (1 * dpi);
+                    auto topRightY = shape->paths->pts[7] * (1 * dpi);
+                    auto bottomRightX = shape->paths->pts[12] * (1 * dpi);
+                    auto bottomRightY = shape->paths->pts[13] * (1 * dpi);
+                    auto bottomLeftX = shape->paths->pts[18] * (1 * dpi);
+                    auto bottomLeftY = shape->paths->pts[19] * (1 * dpi);
+
+                    patterns.Append(ParseGiftPattern(topLeftX, topLeftY, topRightX, topRightY, bottomRightX, bottomRightY, bottomLeftX, bottomLeftY));
+                }
+
+                continue;
+            }
+
             blackBrush->SetOpacity(shape->opacity);
 
             winrt::com_ptr<ID2D1PathGeometry1> geometry;
-            ReturnIfFailed(result, m_d2dFactory->CreatePathGeometry(geometry.put()));
+            CleanupIfFailed(result, m_d2dFactory->CreatePathGeometry(geometry.put()));
 
             winrt::com_ptr<ID2D1GeometrySink> sink;
-            ReturnIfFailed(result, geometry->Open(sink.put()));
+            CleanupIfFailed(result, geometry->Open(sink.put()));
 
             for (NSVGpath* path = shape->paths; path != NULL; path = path->next)
             {
@@ -550,7 +591,7 @@ namespace winrt::Telegram::Native::implementation
                 sink->EndFigure(path->closed ? D2D1_FIGURE_END_CLOSED : D2D1_FIGURE_END_OPEN);
             }
 
-            ReturnIfFailed(result, sink->Close());
+            CleanupIfFailed(result, sink->Close());
 
             if (shape->fill.type != NSVG_PAINT_NONE)
             {
@@ -603,7 +644,7 @@ namespace winrt::Telegram::Native::implementation
                 }
 
                 winrt::com_ptr<ID2D1StrokeStyle1> strokeStyle;
-                ReturnIfFailed(result, m_d2dFactory->CreateStrokeStyle(strokeProperties, NULL, 0, strokeStyle.put()));
+                CleanupIfFailed(result, m_d2dFactory->CreateStrokeStyle(strokeProperties, NULL, 0, strokeStyle.put()));
 
                 m_d2dContext->DrawGeometry(geometry.get(), blackBrush.get(), shape->strokeWidth, strokeStyle.get());
             }
@@ -613,11 +654,14 @@ namespace winrt::Telegram::Native::implementation
 
         if ((result = m_d2dContext->EndDraw()) == D2DERR_RECREATE_TARGET)
         {
-            ReturnIfFailed(result, CreateDeviceResources());
-            return DrawSvg(path, foreground, randomAccessStream, dpi, size);
+            CleanupIfFailed(result, CreateDeviceResources());
+            return DrawSvg(path, foreground, randomAccessStream, dpi);
         }
 
-        return SaveImageToStream(targetBitmap.get(), GUID_ContainerFormatPng, randomAccessStream);
+        CleanupIfFailed(result, SaveImageToStream(targetBitmap.get(), GUID_ContainerFormatPng, randomAccessStream));
+
+    Cleanup:
+        return GiftPatterns(imageWidth, imageHeight, patterns);
     }
 
     SoftwareBitmap PlaceholderImageHelper::DrawBlurred(hstring fileName, float blurAmount)
