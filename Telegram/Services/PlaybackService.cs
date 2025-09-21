@@ -39,12 +39,82 @@ namespace Telegram.Services
         public TimeSpan Duration { get; set; }
     }
 
+    public class AudioWithOwner
+    {
+        public AudioWithOwner(IClientService clientService, long userId, Audio audio)
+        {
+            ClientService = clientService;
+            UserId = userId;
+
+            AudioValue = audio.AudioValue;
+            ExternalAlbumCovers = audio.ExternalAlbumCovers;
+            AlbumCoverThumbnail = audio.AlbumCoverThumbnail;
+            AlbumCoverMinithumbnail = audio.AlbumCoverMinithumbnail;
+            MimeType = audio.MimeType;
+            FileName = audio.FileName;
+            Performer = audio.Performer;
+            Title = audio.Title;
+            Duration = audio.Duration;
+        }
+
+        public IClientService ClientService { get; set; }
+
+        public long UserId { get; set; }
+
+        /// <summary>
+        /// File containing the audio.
+        /// </summary>
+        public File AudioValue { get; set; }
+
+        /// <summary>
+        /// Album cover variants to use if the downloaded audio file contains no album cover.
+        /// Provided thumbnail dimensions are approximate.
+        /// </summary>
+        public IList<Thumbnail> ExternalAlbumCovers { get; set; }
+
+        /// <summary>
+        /// The thumbnail of the album cover in JPEG format; as defined by the sender. The
+        /// full size thumbnail is expected to be extracted from the downloaded audio file;
+        /// may be null.
+        /// </summary>
+        public Thumbnail AlbumCoverThumbnail { get; set; }
+
+        /// <summary>
+        /// The minithumbnail of the album cover; may be null.
+        /// </summary>
+        public Minithumbnail AlbumCoverMinithumbnail { get; set; }
+
+        /// <summary>
+        /// The MIME type of the file; as defined by the sender.
+        /// </summary>
+        public string MimeType { get; set; }
+
+        /// <summary>
+        /// Original name of the file; as defined by the sender.
+        /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// Performer of the audio; as defined by the sender.
+        /// </summary>
+        public string Performer { get; set; }
+
+        /// <summary>
+        /// Title of the audio; as defined by the sender.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// Duration of the audio, in seconds; as defined by the sender.
+        /// </summary>
+        public int Duration { get; set; }
+    }
+
     public interface IPlaybackService
     {
         IReadOnlyList<PlaybackItem> Items { get; }
 
-        MessageWithOwner CurrentItem { get; }
-        PlaybackItem CurrentPlayback { get; }
+        PlaybackItem CurrentItem { get; }
 
         double PlaybackSpeed { get; set; }
 
@@ -60,7 +130,12 @@ namespace Telegram.Services
 
         void Clear();
 
+        void MoveTo(PlaybackItem item, int index);
+
         void Play(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topic = null);
+        void Play(XamlRoot xamlRoot, AudioWithOwner audio);
+
+        void Play(PlaybackItem item);
 
         void Attach(SwapChainPanel panel);
         void Detach(SwapChainPanel panel);
@@ -98,8 +173,11 @@ namespace Telegram.Services
         private WM.SystemMediaTransportControls _transport;
 
         private int _sessionId;
+
         private long _chatId;
         private MessageTopic _topic;
+
+        private long _userId;
 
         private List<PlaybackItem> _items;
 
@@ -170,13 +248,12 @@ namespace Telegram.Services
         {
             if (args.Cache == 100)
             {
-                var item = CurrentPlayback;
-                if (item != null)
+                var item = CurrentItem;
+                if (item is PlaybackItemMessage message)
                 {
-                    var message = item.Message;
-                    var linkPreview = message.Content is MessageText text ? text.LinkPreview : null;
+                    var linkPreview = message.Message.Content is MessageText text ? text.LinkPreview : null;
 
-                    if ((message.Content is MessageVideoNote videoNote && !videoNote.IsViewed && !message.IsOutgoing) || (message.Content is MessageVoiceNote voiceNote && !voiceNote.IsListened && !message.IsOutgoing))
+                    if ((message.Message.Content is MessageVideoNote videoNote && !videoNote.IsViewed && !message.Message.IsOutgoing) || (message.Message.Content is MessageVoiceNote voiceNote && !voiceNote.IsListened && !message.Message.IsOutgoing))
                     {
                         message.ClientService.Send(new OpenMessageContent(message.ChatId, message.Id));
                     }
@@ -186,10 +263,10 @@ namespace Telegram.Services
 
         private void OnEndReached(object sender, EventArgs args)
         {
-            var item = CurrentPlayback;
+            var item = CurrentItem;
             if (item != null)
             {
-                if (item.Message.Content is MessageAudio && _isRepeatEnabled == null)
+                if (item is PlaybackItemMessage { Message.Content: MessageAudio } or PlaybackItemProfileAudio && _isRepeatEnabled == null)
                 {
                     Play();
                 }
@@ -278,24 +355,21 @@ namespace Telegram.Services
             transport.DisplayUpdater.Update();
         }
 
-        public IReadOnlyList<PlaybackItem> Items => _items ?? (IReadOnlyList<PlaybackItem>)Array.Empty<PlaybackItem>();
+        public IReadOnlyList<PlaybackItem> Items => _items?.ToList() ?? (IReadOnlyList<PlaybackItem>)Array.Empty<PlaybackItem>();
 
-        private PlaybackItem _currentPlayback;
-        public PlaybackItem CurrentPlayback
+        private PlaybackItem _currentItem;
+        public PlaybackItem CurrentItem
         {
-            get => _currentPlayback;
+            get => _currentItem;
             private set
             {
-                _currentItem = value?.Message;
-                _currentPlayback = value;
+                _currentItem = value;
                 _positionChanged.Position = TimeSpan.Zero;
                 _positionChanged.Duration = TimeSpan.Zero;
                 SourceChanged?.Invoke(this, value);
                 UpdateTransport(value);
             }
         }
-        private MessageWithOwner _currentItem;
-        public MessageWithOwner CurrentItem => _currentItem;
 
         public TimeSpan Position => _positionChanged.Position;
 
@@ -403,7 +477,7 @@ namespace Telegram.Services
 
         public void PlayImpl(AsyncMediaPlayer player)
         {
-            if (CurrentPlayback is PlaybackItem item)
+            if (CurrentItem is PlaybackItem item)
             {
                 _playbackSpeed = item.CanChangePlaybackRate ? _settingsService.Playback.AudioSpeed : 1;
                 player.Rate = (float)_playbackSpeed;
@@ -482,12 +556,16 @@ namespace Telegram.Services
                 return;
             }
 
-            var index = items.IndexOf(CurrentPlayback);
+            var index = items.IndexOf(CurrentItem);
             if (index == -1 || index == (_isReversed ? 0 : items.Count - 1))
             {
-                if (CurrentPlayback?.Message.Content is MessageAudio && _isRepeatEnabled == true)
+                if (CurrentItem is PlaybackItemMessage { Message.Content: MessageAudio } or PlaybackItemProfileAudio && _isRepeatEnabled == true)
                 {
                     SetSource(player, items, _isReversed ? items.Count - 1 : 0);
+                }
+                else if (CurrentItem is not PlaybackItemMessage { Message.Content: MessageVoiceNote or MessageVideoNote })
+                {
+                    StopImpl(player);
                 }
                 else
                 {
@@ -513,12 +591,16 @@ namespace Telegram.Services
                 return;
             }
 
-            var index = items.IndexOf(CurrentPlayback);
+            var index = items.IndexOf(CurrentItem);
             if (index == -1 || index == (_isReversed ? items.Count - 1 : 0))
             {
-                if (CurrentPlayback?.Message.Content is MessageAudio && _isRepeatEnabled == true)
+                if (CurrentItem is PlaybackItemMessage { Message.Content: MessageAudio } or PlaybackItemProfileAudio && _isRepeatEnabled == true)
                 {
                     SetSource(player, items, _isReversed ? 0 : items.Count - 1);
+                }
+                else if (CurrentItem is not PlaybackItemMessage { Message.Content: MessageVoiceNote or MessageVideoNote })
+                {
+                    StopImpl(player);
                 }
                 else
                 {
@@ -546,7 +628,7 @@ namespace Telegram.Services
                 player ??= Create();
 
                 _playbackSpeed = item.CanChangePlaybackRate ? _settingsService.Playback.AudioSpeed : 1;
-                CurrentPlayback = item;
+                CurrentItem = item;
 
                 player.Rate = (float)_playbackSpeed;
                 player.Play(new RemoteFileStream(item.ClientService, item.Document));
@@ -556,6 +638,20 @@ namespace Telegram.Services
             {
                 // All the remote procedure calls must be wrapped in a try-catch block
             }
+        }
+
+        public void Stop()
+        {
+            Run(StopImpl);
+        }
+
+        public void StopImpl(AsyncMediaPlayer player)
+        {
+            PlaybackState = PlaybackState.Paused;
+            player.Stop();
+
+            _positionChanged.Position = TimeSpan.Zero;
+            PositionChanged?.Invoke(this, _positionChanged);
         }
 
         public void Clear()
@@ -568,8 +664,27 @@ namespace Telegram.Services
             PlaybackState = PlaybackState.None;
 
             //Execute.BeginOnUIThread(() => CurrentItem = null);
-            CurrentPlayback = null;
+            CurrentItem = null;
             Dispose(true);
+        }
+
+        public void MoveTo(PlaybackItem item, int index)
+        {
+            if (_items.Contains(item))
+            {
+                _items.Remove(item);
+                _items.Insert(index, item);
+
+                PlaylistChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public void Play(PlaybackItem item)
+        {
+            lock (_mediaPlayerLock)
+            {
+                SetSource(_player, item);
+            }
         }
 
         public async void Play(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topic)
@@ -591,7 +706,7 @@ namespace Telegram.Services
             var previous = _items;
             if (previous != null && _sessionId == message.ClientService.SessionId && _chatId == message.ChatId && _topic.AreTheSame(topic))
             {
-                var already = previous.FirstOrDefault(x => x.Message.Id == message.Id && x.Message.ChatId == message.ChatId);
+                var already = previous.FirstOrDefault(x => message.AreTheSame(x));
                 if (already != null)
                 {
                     SetSource(null, already);
@@ -601,7 +716,7 @@ namespace Telegram.Services
 
             Dispose(false);
 
-            var item = GetPlaybackItem(xamlRoot, message);
+            var item = GetPlaybackItem(xamlRoot, message, topic);
             var items = _items = new List<PlaybackItem>();
 
             _items.Add(item);
@@ -609,6 +724,7 @@ namespace Telegram.Services
             _sessionId = message.ClientService.SessionId;
             _chatId = message.ChatId;
             _topic = topic;
+            _userId = 0;
 
             SetSource(null, item);
 
@@ -627,11 +743,11 @@ namespace Telegram.Services
                 {
                     if (add.Id > message.Id && add.Content is MessageAudio)
                     {
-                        items.Insert(0, GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add)));
+                        items.Insert(0, GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
                     }
                     else if (add.Id < message.Id && (add.Content is MessageVoiceNote || add.Content is MessageVideoNote))
                     {
-                        items.Insert(0, GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add)));
+                        items.Insert(0, GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
                     }
                 }
 
@@ -639,43 +755,98 @@ namespace Telegram.Services
                 {
                     if (add.Id < message.Id && add.Content is MessageAudio)
                     {
-                        items.Add(GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add)));
+                        items.Add(GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
                     }
                     else if (add.Id > message.Id && (add.Content is MessageVoiceNote || add.Content is MessageVideoNote))
                     {
-                        items.Add(GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add)));
+                        items.Add(GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
                     }
                 }
 
-                UpdateTransport(CurrentPlayback);
+                UpdateTransport(CurrentItem);
                 PlaylistChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        private PlaybackItem GetPlaybackItem(XamlRoot xamlRoot, MessageWithOwner message)
+        private PlaybackItem GetPlaybackItem(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topicId)
         {
             GetProperties(message, out File file, out bool speed);
 
-            var item = new PlaybackItem(file)
+            var item = new PlaybackItemMessage(xamlRoot, message, topicId, file)
             {
-                XamlRoot = xamlRoot,
-                Message = message,
                 CanChangePlaybackRate = speed
             };
 
-            if (message.Content is MessageAudio audio)
+            return item;
+        }
+
+        public async void Play(XamlRoot xamlRoot, AudioWithOwner audio)
+        {
+            try
             {
-                if (string.IsNullOrEmpty(audio.Audio.Performer) || string.IsNullOrEmpty(audio.Audio.Title))
+                _transport ??= WM.SystemMediaTransportControls.GetForCurrentView();
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
+
+            if (audio == null)
+            {
+                return;
+            }
+
+            var previous = _items;
+            if (previous != null && _sessionId == audio.ClientService.SessionId && _userId == audio.UserId)
+            {
+                var already = previous.FirstOrDefault(x => audio.AreTheSame(x));
+                if (already != null)
                 {
-                    item.Title = audio.Audio.FileName;
-                    item.Performer = string.Empty;
-                }
-                else
-                {
-                    item.Title = audio.Audio.Title;
-                    item.Performer = audio.Audio.Performer;
+                    if (already != CurrentItem)
+                    {
+                        SetSource(null, already);
+                    }
+
+                    return;
                 }
             }
+
+            Dispose(false);
+
+            var item = GetPlaybackItem(xamlRoot, audio);
+            var items = _items = new List<PlaybackItem>();
+
+            _items.Add(item);
+
+            _sessionId = audio.ClientService.SessionId;
+            _userId = audio.UserId;
+            _chatId = 0;
+            _topic = null;
+
+            SetSource(null, item);
+
+            var response = await audio.ClientService.SendAsync(new GetUserProfileAudios(audio.UserId, 0, 100));
+            if (response is Audios audios)
+            {
+                foreach (var add in audios.AudiosValue)
+                {
+                    if (add.AudioValue.Id != audio.AudioValue.Id)
+                    {
+                        items.Add(GetPlaybackItem(xamlRoot, new AudioWithOwner(audio.ClientService, audio.UserId, add)));
+                    }
+                }
+
+                UpdateTransport(CurrentItem);
+                PlaylistChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private PlaybackItem GetPlaybackItem(XamlRoot xamlRoot, AudioWithOwner audio)
+        {
+            var item = new PlaybackItemProfileAudio(xamlRoot, audio)
+            {
+                CanChangePlaybackRate = audio.Duration >= 10 * 60
+            };
 
             return item;
         }
@@ -787,24 +958,88 @@ namespace Telegram.Services
         }
     }
 
-    public partial class PlaybackItem
+    public abstract class PlaybackItem
     {
-        public IClientService ClientService => Message.ClientService;
+        public IClientService ClientService { get; protected set; }
 
-        public XamlRoot XamlRoot { get; set; }
+        public XamlRoot XamlRoot { get; protected set; }
 
-        public MessageWithOwner Message { get; set; }
+        public File Document { get; protected set; }
 
-        public File Document { get; set; }
-
-        public string Title { get; set; }
-        public string Performer { get; set; }
+        public string Title { get; protected set; }
+        public string Performer { get; protected set; }
 
         public bool CanChangePlaybackRate { get; set; }
+    }
 
-        public PlaybackItem(File document)
+    public partial class PlaybackItemMessage : PlaybackItem
+    {
+        public MessageWithOwner Message { get; }
+
+        public long ChatId { get; }
+
+        public long Id { get; }
+
+        public MessageTopic TopicId { get; }
+
+        public PlaybackItemMessage(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topicId, File document)
         {
+            ClientService = message.ClientService;
+            XamlRoot = xamlRoot;
+            Message = message;
+            TopicId = topicId;
+            ChatId = message.ChatId;
+            Id = message.Id;
             Document = document;
+
+            if (message.Content is MessageAudio audio)
+            {
+                if (string.IsNullOrEmpty(audio.Audio.Performer) || string.IsNullOrEmpty(audio.Audio.Title))
+                {
+                    Title = audio.Audio.FileName;
+                    Performer = string.Empty;
+                }
+                else
+                {
+                    Title = audio.Audio.Title;
+                    Performer = audio.Audio.Performer;
+                }
+            }
+        }
+    }
+
+    public partial class PlaybackItemProfileAudio : PlaybackItem
+    {
+        public AudioWithOwner Audio { get; }
+
+        public long UserId { get; }
+
+        public int Id { get; }
+
+        public PlaybackItemProfileAudio(XamlRoot xamlRoot, AudioWithOwner audio)
+        {
+            ClientService = audio.ClientService;
+            XamlRoot = xamlRoot;
+            Audio = audio;
+            UserId = audio.UserId;
+            Id = audio.AudioValue.Id;
+            Document = audio.AudioValue;
+
+            if (string.IsNullOrEmpty(audio.Performer) || string.IsNullOrEmpty(audio.Title))
+            {
+                Title = audio.FileName;
+                Performer = string.Empty;
+            }
+            else
+            {
+                Title = audio.Title;
+                Performer = audio.Performer;
+            }
+        }
+
+        public InputMessageContent ToInputMessage()
+        {
+            return new InputMessageAudio(new InputFileId(Audio.AudioValue.Id), Audio.AlbumCoverThumbnail.ToInput(), Audio.Duration, Audio.Title, Audio.Performer, null);
         }
     }
 }

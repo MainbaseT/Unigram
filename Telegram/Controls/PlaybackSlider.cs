@@ -24,6 +24,7 @@ namespace Telegram.Controls
     public partial class PlaybackSlider : Control
     {
         private UIElement ProgressBarIndicator;
+        private UIElement ProgressBarThumb;
 
         public PlaybackSlider()
         {
@@ -33,6 +34,7 @@ namespace Telegram.Controls
         protected override void OnApplyTemplate()
         {
             ProgressBarIndicator = GetTemplateChild(nameof(ProgressBarIndicator)) as UIElement;
+            ProgressBarThumb = GetTemplateChild(nameof(ProgressBarThumb)) as UIElement;
 
             UpdateValue(_position, _duration, _state);
 
@@ -115,6 +117,16 @@ namespace Telegram.Controls
             progressAnimation.SetReferenceParameter("visual", visual);
 
             clip.StartAnimation("RightInset", progressAnimation);
+
+            if (ProgressBarThumb != null)
+            {
+                var thumbAnimation = compositor.CreateExpressionAnimation("_.Progress * visual.Size.X");
+                thumbAnimation.SetReferenceParameter("_", _props);
+                thumbAnimation.SetReferenceParameter("visual", visual);
+
+                var thumb = ElementComposition.GetElementVisual(ProgressBarThumb);
+                thumb.StartAnimation("Offset.X", thumbAnimation);
+            }
         }
 
         protected override void OnPointerEntered(PointerRoutedEventArgs e)

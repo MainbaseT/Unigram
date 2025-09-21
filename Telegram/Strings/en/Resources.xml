@@ -12932,4 +12932,19 @@
     <string name="SelectChat">Select Chat</string>
 
     <string name="ProfileTabSetAsMain">Set as Main Tab</string>
+    <string name="ProfilePlaylistRemoveFromProfile">Remove from Profile</string>
+    <string name="ProfilePlaylistTitle">{0}\'s Playlist</string>
+    <string name="ProfilePlaylistTitleMine">Your Playlist</string>
+    <string name="AudioAddToProfile">Add to Profile</string>
+    <string name="AudioAddedToProfileRemove">This audio is visible on your Profile. **Remove &gt;**</string>
+
+    <string name="AudioSaveTo">Save to...</string>
+    <string name="AudioSaveToInfo">Choose where you want this audio to be saved.</string>
+    <string name="AudioSaveToFiles">Files</string>
+    <string name="AudioSaveToMyProfile">Profile</string>
+    <string name="AudioSaveToMyProfileSaved">Audio added to your Profile.</string>
+    <string name="AudioSaveToMyProfileUnsaved">Audio removed from your Profile.</string>
+    <string name="AudioSaveToSavedMessages">Saved Messages</string>
+    <string name="AudioSaveToSavedMessagesSaved">Audio sent to Saved Messages.</string>
+
 </resources>

@@ -197,8 +197,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var message = TypeResolver.Current.Playback.CurrentItem;
-            if (message == null || message.ClientService != ClientService)
+            if (TypeResolver.Current.Playback.CurrentItem is not PlaybackItemMessage message || message.ClientService != ClientService)
             {
                 return;
             }

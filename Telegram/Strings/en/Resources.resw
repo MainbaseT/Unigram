@@ -1571,8 +1571,38 @@ Please take a look at the &lt;a href=&quot;https://telegram.org/faq#general-ques
   <data name="AttachVoiceExpired" xml:space="preserve">
     <value>Expired voice message</value>
   </data>
+  <data name="AudioAddedToProfileRemove" xml:space="preserve">
+    <value>This audio is visible on your Profile. **Remove &gt;**</value>
+  </data>
+  <data name="AudioAddToProfile" xml:space="preserve">
+    <value>Add to Profile</value>
+  </data>
   <data name="AudioAutodownload" xml:space="preserve">
     <value>Voice messages</value>
+  </data>
+  <data name="AudioSaveTo" xml:space="preserve">
+    <value>Save to...</value>
+  </data>
+  <data name="AudioSaveToFiles" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="AudioSaveToInfo" xml:space="preserve">
+    <value>Choose where you want this audio to be saved.</value>
+  </data>
+  <data name="AudioSaveToMyProfile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="AudioSaveToMyProfileSaved" xml:space="preserve">
+    <value>Audio added to your Profile.</value>
+  </data>
+  <data name="AudioSaveToMyProfileUnsaved" xml:space="preserve">
+    <value>Audio removed from your Profile.</value>
+  </data>
+  <data name="AudioSaveToSavedMessages" xml:space="preserve">
+    <value>Saved Messages</value>
+  </data>
+  <data name="AudioSaveToSavedMessagesSaved" xml:space="preserve">
+    <value>Audio sent to Saved Messages.</value>
   </data>
   <data name="AudioUnknownArtist" xml:space="preserve">
     <value>Unknown artist</value>
@@ -10904,6 +10934,15 @@ seamlessly and efficiently.</value>
   </data>
   <data name="ProfileMyStories" xml:space="preserve">
     <value>My Stories</value>
+  </data>
+  <data name="ProfilePlaylistRemoveFromProfile" xml:space="preserve">
+    <value>Remove from Profile</value>
+  </data>
+  <data name="ProfilePlaylistTitle" xml:space="preserve">
+    <value>{0}&apos;s Playlist</value>
+  </data>
+  <data name="ProfilePlaylistTitleMine" xml:space="preserve">
+    <value>Your Playlist</value>
   </data>
   <data name="ProfileStories" xml:space="preserve">
     <value>Posts</value>

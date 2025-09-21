@@ -269,6 +269,9 @@
     <Compile Include="Controls\Cells\Revenue\StarTransactionCell.xaml.cs">
       <DependentUpon>StarTransactionCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Cells\PlaybackItemCell.xaml.cs">
+      <DependentUpon>PlaybackItemCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Cells\StarAmountCell.xaml.cs">
       <DependentUpon>StarAmountCell.xaml</DependentUpon>
     </Compile>
@@ -1301,6 +1304,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\PlaybackPopup.xaml.cs">
+      <DependentUpon>PlaybackPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\ChooseGiftsPopup.xaml.cs">
       <DependentUpon>ChooseGiftsPopup.xaml</DependentUpon>
     </Compile>
@@ -2585,6 +2591,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\Cells\PlaybackItemCell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\Cells\StarAmountCell.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -3330,6 +3340,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\BackgroundPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\PlaybackPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

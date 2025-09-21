@@ -21,6 +21,7 @@ using Telegram.Services;
 using Telegram.Services.Calls;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.ViewModels.Settings;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 
@@ -1088,6 +1089,48 @@ namespace Telegram
             }
 
             return x.Id == y.Id && x.ChatId == y.ChatId;
+        }
+
+        public static bool AreTheSame(this MessageWithOwner x, PlaybackItem y)
+        {
+            if (x == null || y is not PlaybackItemMessage yMessage)
+            {
+                return false;
+            }
+
+            return x.Id == yMessage.Id && x.ChatId == yMessage.ChatId;
+        }
+
+        public static bool AreTheSame(this AudioWithOwner x, PlaybackItem y)
+        {
+            if (x == null || y is not PlaybackItemProfileAudio yProfileAudio)
+            {
+                return false;
+            }
+
+            return x.AudioValue.Id == yProfileAudio.Id && x.UserId == yProfileAudio.UserId;
+        }
+
+        public static bool AreTheSame(this PlaybackItem x, PlaybackItem y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+
+            if (x is PlaybackItemMessage xMessage && y is PlaybackItemMessage yMessage)
+            {
+                return xMessage.ChatId == yMessage.ChatId
+                    && xMessage.Id == yMessage.Id
+                    && xMessage.TopicId.AreTheSame(yMessage.TopicId);
+            }
+            else if (x is PlaybackItemProfileAudio xProfileAudio && y is PlaybackItemProfileAudio yProfileAudio)
+            {
+                return xProfileAudio.UserId == yProfileAudio.UserId
+                    && xProfileAudio.Id == yProfileAudio.Id;
+            }
+
+            return false;
         }
 
         public static bool AreTheSame(this SuggestedPostPrice x, SuggestedPostPrice y)

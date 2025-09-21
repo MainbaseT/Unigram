@@ -2671,9 +2671,59 @@ namespace Telegram
         public static string AttachVoiceExpired => Resource.GetString("AttachVoiceExpired");
         
         /// <summary>
+        /// Localized resource similar to "This audio is visible on your Profile. **Remove >**"
+        /// </summary>
+        public static string AudioAddedToProfileRemove => Resource.GetString("AudioAddedToProfileRemove");
+        
+        /// <summary>
+        /// Localized resource similar to "Add to Profile"
+        /// </summary>
+        public static string AudioAddToProfile => Resource.GetString("AudioAddToProfile");
+        
+        /// <summary>
         /// Localized resource similar to "Voice messages"
         /// </summary>
         public static string AudioAutodownload => Resource.GetString("AudioAutodownload");
+        
+        /// <summary>
+        /// Localized resource similar to "Save to..."
+        /// </summary>
+        public static string AudioSaveTo => Resource.GetString("AudioSaveTo");
+        
+        /// <summary>
+        /// Localized resource similar to "Files"
+        /// </summary>
+        public static string AudioSaveToFiles => Resource.GetString("AudioSaveToFiles");
+        
+        /// <summary>
+        /// Localized resource similar to "Choose where you want this audio to be saved."
+        /// </summary>
+        public static string AudioSaveToInfo => Resource.GetString("AudioSaveToInfo");
+        
+        /// <summary>
+        /// Localized resource similar to "Profile"
+        /// </summary>
+        public static string AudioSaveToMyProfile => Resource.GetString("AudioSaveToMyProfile");
+        
+        /// <summary>
+        /// Localized resource similar to "Audio added to your Profile."
+        /// </summary>
+        public static string AudioSaveToMyProfileSaved => Resource.GetString("AudioSaveToMyProfileSaved");
+        
+        /// <summary>
+        /// Localized resource similar to "Audio removed from your Profile."
+        /// </summary>
+        public static string AudioSaveToMyProfileUnsaved => Resource.GetString("AudioSaveToMyProfileUnsaved");
+        
+        /// <summary>
+        /// Localized resource similar to "Saved Messages"
+        /// </summary>
+        public static string AudioSaveToSavedMessages => Resource.GetString("AudioSaveToSavedMessages");
+        
+        /// <summary>
+        /// Localized resource similar to "Audio sent to Saved Messages."
+        /// </summary>
+        public static string AudioSaveToSavedMessagesSaved => Resource.GetString("AudioSaveToSavedMessagesSaved");
         
         /// <summary>
         /// Localized resource similar to "Unknown artist"
@@ -16243,6 +16293,21 @@ namespace Telegram
         /// Localized resource similar to "My Stories"
         /// </summary>
         public static string ProfileMyStories => Resource.GetString("ProfileMyStories");
+        
+        /// <summary>
+        /// Localized resource similar to "Remove from Profile"
+        /// </summary>
+        public static string ProfilePlaylistRemoveFromProfile => Resource.GetString("ProfilePlaylistRemoveFromProfile");
+        
+        /// <summary>
+        /// Localized resource similar to "{0}'s Playlist"
+        /// </summary>
+        public static string ProfilePlaylistTitle => Resource.GetString("ProfilePlaylistTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Your Playlist"
+        /// </summary>
+        public static string ProfilePlaylistTitleMine => Resource.GetString("ProfilePlaylistTitleMine");
         
         /// <summary>
         /// Localized resource similar to "Posts"
