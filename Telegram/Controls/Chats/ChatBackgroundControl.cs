@@ -111,16 +111,32 @@ namespace Telegram.Controls.Chats
             }
         }
 
+        private ThemeSettings _lightSettings;
+        private ThemeSettings _darkSettings;
         private ChatBackground _chatBackground;
-        private ChatTheme _chatTheme;
         private bool _localFields;
 
         public void UpdateChat(IClientService clientService, ChatBackground background, ChatTheme theme)
         {
             _clientService = clientService;
 
+            if (clientService.TryGetEmojiChatTheme(theme, out EmojiChatTheme emoji))
+            {
+                _lightSettings = emoji.LightSettings;
+                _darkSettings = emoji.DarkSettings;
+            }
+            else if (theme is ChatThemeGift gift)
+            {
+                _lightSettings = gift.GiftTheme.LightSettings;
+                _darkSettings = gift.GiftTheme.DarkSettings;
+            }
+            else
+            {
+                _lightSettings = null;
+                _darkSettings = null;
+            }
+
             _chatBackground = background;
-            _chatTheme = theme;
             _localFields = background != null || theme != null;
 
             Update(_oldBackground, IsDarkTheme);
@@ -129,7 +145,7 @@ namespace Telegram.Controls.Chats
         private void SyncBackgroundWithChatTheme(ref Background background, bool forDarkTheme, out int dimming)
         {
             var chatBackground = _localFields ? _chatBackground : Theme.Current.ChatBackground;
-            var chatTheme = _localFields ? _chatTheme : Theme.Current.ChatTheme;
+            var (lightSettings, darkSettings) = _localFields ? (_lightSettings, _darkSettings) : (Theme.Current.LightSettings, Theme.Current.DarkSettings);
 
             // I'm not a big fan of this, but this is the easiest way to keep background in sync
             if (chatBackground != null)
@@ -139,12 +155,12 @@ namespace Telegram.Controls.Chats
                     ? chatBackground.DarkThemeDimming
                     : 0;
             }
-            else if (chatTheme != null)
+            else if (lightSettings != null && darkSettings != null)
             {
                 dimming = 0;
                 background = forDarkTheme
-                    ? chatTheme?.DarkSettings?.Background
-                    : chatTheme?.LightSettings?.Background;
+                    ? darkSettings.Background
+                    : lightSettings.Background;
             }
             else
             {

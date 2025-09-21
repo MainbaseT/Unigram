@@ -130,7 +130,7 @@ namespace Telegram.ViewModels.Settings
             SetBackground(chatTheme.LightSettings?.Background, false);
             SetBackground(chatTheme.DarkSettings?.Background, true);
 
-            Settings.Appearance.ChatTheme = chatTheme;
+            Settings.Appearance.ChatTheme = chatTheme.ToEmoji();
             Settings.Appearance.UpdateNightMode(updateBackground: false);
 
             _selectedChatTheme = chatTheme;
@@ -480,7 +480,7 @@ namespace Telegram.ViewModels.Settings
 
         public bool IsChannel { get; }
 
-        public ChatThemeViewModel(IClientService clientService, ChatTheme chatTheme, bool isChannel)
+        public ChatThemeViewModel(IClientService clientService, EmojiChatTheme chatTheme, bool isChannel)
         {
             ClientService = clientService;
             DarkSettings = Copy(chatTheme.DarkSettings);
@@ -496,7 +496,7 @@ namespace Telegram.ViewModels.Settings
                 return null;
             }
 
-            return new ThemeSettings(x.AccentColor, x.Background, x.OutgoingMessageFill, x.AnimateOutgoingMessageFill, x.OutgoingMessageAccentColor);
+            return new ThemeSettings(x.BaseTheme, x.AccentColor, x.Background, x.OutgoingMessageFill, x.AnimateOutgoingMessageFill, x.OutgoingMessageAccentColor);
         }
 
         public ChatThemeViewModel(IClientService clientService, string name, ThemeSettings lightSettings, ThemeSettings darkSettings, bool isChannel)
@@ -508,14 +508,19 @@ namespace Telegram.ViewModels.Settings
             IsChannel = isChannel;
         }
 
-        public static implicit operator ChatTheme(ChatThemeViewModel chatTheme)
+        public EmojiChatTheme ToEmoji()
         {
-            if (chatTheme == null)
-            {
-                return null;
-            }
+            return new EmojiChatTheme(Name, LightSettings, DarkSettings);
+        }
 
-            return new ChatTheme(chatTheme.Name, chatTheme.LightSettings, chatTheme.DarkSettings);
+        public ChatTheme ToTheme()
+        {
+            return new ChatThemeEmoji(Name);
+        }
+
+        public InputChatTheme ToInput()
+        {
+            return new InputChatThemeEmoji(Name);
         }
     }
 }

@@ -5074,7 +5074,7 @@ namespace Telegram.Views
                 chat = savedMessagesChat;
             }
 
-            UpdateChatTheme(chat, ViewModel.ClientService.GetChatTheme(chat.ThemeName));
+            UpdateChatTheme(chat, chat.Theme);
         }
 
         public void UpdateChatBackground(Chat chat)
@@ -5095,15 +5095,30 @@ namespace Telegram.Views
 
         private void UpdateChatTheme(Chat chat, ChatTheme theme)
         {
-            if (Theme.Current.Update(ActualTheme, theme, chat.Background))
+            ThemeSettings lightSettings = null;
+            ThemeSettings darkSettings = null;
+
+            if (ViewModel.ClientService.TryGetEmojiChatTheme(theme, out EmojiChatTheme emoji))
+            {
+                lightSettings = emoji.LightSettings;
+                darkSettings = emoji.DarkSettings;
+            }
+            else if (theme is ChatThemeGift gift)
+            {
+                lightSettings = gift.GiftTheme.LightSettings;
+                darkSettings = gift.GiftTheme.DarkSettings;
+            }
+
+            if (Theme.Current.Update(ActualTheme, lightSettings, darkSettings, chat.Background))
             {
                 var current = chat.Background?.Background;
-                if (current?.Type is BackgroundTypeChatTheme typeChatTheme)
+                if (current?.Type is BackgroundTypeChatTheme typeChatTheme && ViewModel.ClientService.TryGetEmojiChatTheme(typeChatTheme.ThemeName, out emoji))
                 {
-                    theme ??= ViewModel.ClientService.GetChatTheme(typeChatTheme.ThemeName);
+                    lightSettings = emoji.LightSettings;
+                    darkSettings = emoji.DarkSettings;
                 }
 
-                current ??= ActualTheme == ElementTheme.Light ? theme?.LightSettings.Background : theme?.DarkSettings.Background;
+                current ??= ActualTheme == ElementTheme.Light ? lightSettings?.Background : darkSettings?.Background;
                 current ??= ViewModel.ClientService.GetDefaultBackground(ActualTheme == ElementTheme.Dark);
 
                 _backgroundControl ??= FindBackgroundControl();

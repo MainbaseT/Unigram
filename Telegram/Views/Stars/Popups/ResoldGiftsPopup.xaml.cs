@@ -618,7 +618,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 Hide(ContentDialogResult.Primary);
 
-                var receivedGift = new ReceivedGift(gift.ReceivedGiftId, null, null, false, false, false, false, false, false, 0, new SentGiftUpgraded(gift.Gift), Array.Empty<int>(), 0, 0, 0, 0, 0, 0, string.Empty);
+                var receivedGift = new ReceivedGift(gift.ReceivedGiftId, null, null, false, false, false, false, false, false, 0, new SentGiftUpgraded(gift.Gift), Array.Empty<int>(), 0, 0, false, 0, 0, 0, 0, string.Empty);
 
                 var confirm = await _navigationService.ShowPopupAsync(new ReceivedGiftPopup(_clientService, _navigationService, receivedGift, gift.Gift.OwnerId, _receiverId));
                 if (confirm == ContentDialogResult.Primary && _receiverId == null)

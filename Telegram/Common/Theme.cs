@@ -178,7 +178,8 @@ namespace Telegram.Common
 
         public static Color Accent { get; private set; } = Colors.Red;
 
-        public ChatTheme ChatTheme => _lastTheme;
+        public ThemeSettings LightSettings => _lastLightSettings;
+        public ThemeSettings DarkSettings => _lastDarkSettings;
 
         public ChatBackground ChatBackground => _lastChatBackground;
 
@@ -197,21 +198,24 @@ namespace Telegram.Common
         private int? _lastAccent;
         private long? _lastBackground;
 
-        private ChatTheme _lastTheme;
+        private ThemeSettings _lastLightSettings;
+        private ThemeSettings _lastDarkSettings;
+
         private ChatBackground _lastChatBackground;
 
-        public bool Update(ElementTheme elementTheme, ChatTheme theme, ChatBackground background)
+        public bool Update(ElementTheme elementTheme, ThemeSettings lightSettings, ThemeSettings darkSettings, ChatBackground background)
         {
             var updated = false;
             var requested = elementTheme == ElementTheme.Dark ? TelegramTheme.Dark : TelegramTheme.Light;
             var nextBackground = background?.Background;
 
-            var settings = requested == TelegramTheme.Light ? theme?.LightSettings : theme?.DarkSettings;
+            var settings = requested == TelegramTheme.Light ? lightSettings : darkSettings;
             if (settings != null)
             {
                 if (_lastAccent != settings.AccentColor)
                 {
-                    _lastTheme = theme;
+                    _lastLightSettings = lightSettings;
+                    _lastDarkSettings = darkSettings;
 
                     var tint = SettingsService.Current.Appearance[requested].Type;
                     if (tint == TelegramThemeType.Classic || (tint == TelegramThemeType.Custom && requested == TelegramTheme.Light))
@@ -246,7 +250,8 @@ namespace Telegram.Common
             {
                 if (_lastAccent != null)
                 {
-                    _lastTheme = null;
+                    _lastLightSettings = null;
+                    _lastDarkSettings = null;
 
                     var options = SettingsService.Current.Appearance;
                     if (options[requested].Type == TelegramThemeType.Custom && System.IO.File.Exists(options[requested].Custom))
@@ -295,7 +300,7 @@ namespace Telegram.Common
 
             if (settings.ChatTheme != null)
             {
-                Update(requested, settings.ChatTheme);
+                Update(requested, settings.ChatTheme.LightSettings, settings.ChatTheme.DarkSettings);
             }
             else if (settings[requested].Type == TelegramThemeType.Custom && System.IO.File.Exists(settings[requested].Custom))
             {
@@ -310,15 +315,15 @@ namespace Telegram.Common
                 Update(requested);
             }
 
-            if (ChatTheme != null)
+            if (LightSettings != null && DarkSettings != null)
             {
-                Update(theme == ApplicationTheme.Light ? ElementTheme.Light : ElementTheme.Dark, ChatTheme, ChatBackground);
+                Update(theme == ApplicationTheme.Light ? ElementTheme.Light : ElementTheme.Dark, LightSettings, DarkSettings, ChatBackground);
             }
         }
 
-        private void Update(TelegramTheme requested, ChatTheme theme)
+        private void Update(TelegramTheme requested, ThemeSettings lightSettings, ThemeSettings darkSettings)
         {
-            var settings = requested == TelegramTheme.Light ? theme?.LightSettings : theme?.DarkSettings;
+            var settings = requested == TelegramTheme.Light ? lightSettings : darkSettings;
 
             var tint = SettingsService.Current.Appearance[requested].Type;
             if (tint == TelegramThemeType.Classic || (tint == TelegramThemeType.Custom && requested == TelegramTheme.Light))

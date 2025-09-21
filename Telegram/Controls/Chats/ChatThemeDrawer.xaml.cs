@@ -60,7 +60,7 @@ namespace Telegram.Controls.Chats
 
             var items = new[] { defaultTheme }.Union(themes).ToList();
 
-            _selectedTheme = string.IsNullOrEmpty(chat.ThemeName) ? items[0] : items.FirstOrDefault(x => x.Name == chat.ThemeName);
+            _selectedTheme = chat.Theme is ChatThemeEmoji emoji ? items.FirstOrDefault(x => x.Name == emoji.Name) : items[0];
             _background = chat.Background;
 
             ScrollingHost.ItemsSource = items;
@@ -108,7 +108,7 @@ namespace Telegram.Controls.Chats
         {
             if (ScrollingHost.SelectedItem is ChatThemeViewModel theme)
             {
-                ThemeChanged?.Invoke(this, new ChatThemeChangedEventArgs(theme.LightSettings != null ? theme : null));
+                ThemeChanged?.Invoke(this, new ChatThemeChangedEventArgs(theme.LightSettings != null ? theme.ToTheme() : null));
 
                 if (theme == _selectedTheme)
                 {
@@ -157,7 +157,7 @@ namespace Telegram.Controls.Chats
         {
             if (ScrollingHost.SelectedItem is ChatThemeViewModel theme)
             {
-                _viewModel.ClientService.Send(new SetChatTheme(_viewModel.Chat.Id, theme.LightSettings == null ? string.Empty : theme.Name));
+                _viewModel.ClientService.Send(new SetChatTheme(_viewModel.Chat.Id, theme.LightSettings == null ? null : theme.ToInput()));
                 ThemeSelected?.Invoke(this, new ChatThemeSelectedEventArgs(true));
             }
         }

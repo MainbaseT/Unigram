@@ -19,7 +19,7 @@ namespace Telegram.Td.Api
             VideoChat = chat.VideoChat;
             BusinessBotManageBar = chat.BusinessBotManageBar;
             ActionBar = chat.ActionBar;
-            ThemeName = chat.ThemeName;
+            Theme = chat.Theme;
             Background = chat.Background;
             EmojiStatus = chat.EmojiStatus;
             MessageAutoDeleteTime = chat.MessageAutoDeleteTime;
@@ -97,8 +97,8 @@ namespace Telegram.Td.Api
 
         //
         // Summary:
-        //     If non-empty, name of a theme, set for the chat.
-        public string ThemeName { get; set; }
+        //     Theme set for the chat; may be null if none.
+        public ChatTheme Theme { get; set; }
 
         //
         // Summary:

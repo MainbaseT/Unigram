@@ -228,6 +228,16 @@ namespace Telegram
             return null;
         }
 
+        public static InputChatTheme ToInput(this ChatTheme theme)
+        {
+            return theme switch
+            {
+                ChatThemeEmoji emoji => new InputChatThemeEmoji(emoji.Name),
+                ChatThemeGift gift => new InputChatThemeGift(gift.GiftTheme.Gift.Name),
+                _ => null
+            };
+        }
+
         public static int TotalReactions(this MessageInteractionInfo info)
         {
             if (info?.Reactions != null)
@@ -236,6 +246,25 @@ namespace Telegram
             }
 
             return 0;
+        }
+
+        public static bool AreTheSame(this ChatTheme x, ChatTheme y)
+        {
+            if (x == null || y == null)
+            {
+                return x == null && y == null;
+            }
+
+            if (x is ChatThemeEmoji xEmoji && y is ChatThemeEmoji yEmoji)
+            {
+                return xEmoji.Name == yEmoji.Name;
+            }
+            else if (x is ChatThemeGift xGift && y is ChatThemeGift yGift)
+            {
+                return xGift.GiftTheme.Gift.Id == yGift.GiftTheme.Gift.Id;
+            }
+
+            return false;
         }
 
         public static bool AreTheSame(this FormattedText x, FormattedText y)

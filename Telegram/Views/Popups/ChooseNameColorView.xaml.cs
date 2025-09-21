@@ -13,6 +13,7 @@ using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Drawers;
+using Telegram.ViewModels.Settings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -83,7 +84,7 @@ namespace Telegram.Views.Popups
                 NameColor.Footer = Strings.ChannelReplyInfo;
                 PrimaryButtonText = Strings.ChannelColorApply;
 
-                BackgroundControl.UpdateChat(clientService, chat.Background, clientService.GetChatTheme(chat.ThemeName));
+                BackgroundControl.UpdateChat(clientService, chat.Background, chat.Theme);
             }
 
             var accent = colors.FirstOrDefault(x => x.Id == accentColorId);
@@ -259,23 +260,23 @@ namespace Telegram.Views.Popups
 
         #region ChatTheme
 
-        public ChatTheme ChatTheme
+        public ChatThemeViewModel ChatTheme
         {
-            get { return (ChatTheme)GetValue(ChatThemeProperty); }
+            get { return (ChatThemeViewModel)GetValue(ChatThemeProperty); }
             set { SetValue(ChatThemeProperty, value); }
         }
 
         public static readonly DependencyProperty ChatThemeProperty =
-            DependencyProperty.Register("ChatTheme", typeof(ChatTheme), typeof(ChooseNameColorView), new PropertyMetadata(null, OnChatThemeChanged));
+            DependencyProperty.Register("ChatTheme", typeof(ChatThemeViewModel), typeof(ChooseNameColorView), new PropertyMetadata(null, OnChatThemeChanged));
 
         private static void OnChatThemeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((ChooseNameColorView)d).OnChatThemeChanged(e.NewValue as ChatTheme, e.OldValue as ChatTheme);
+            ((ChooseNameColorView)d).OnChatThemeChanged(e.NewValue as ChatThemeViewModel, e.OldValue as ChatThemeViewModel);
         }
 
-        private void OnChatThemeChanged(ChatTheme newValue, ChatTheme oldValue)
+        private void OnChatThemeChanged(ChatThemeViewModel newValue, ChatThemeViewModel oldValue)
         {
-            BackgroundControl.UpdateChat(_clientService, null, newValue);
+            BackgroundControl.UpdateChat(_clientService, null, newValue.ToTheme());
         }
 
         #endregion

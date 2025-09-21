@@ -246,13 +246,12 @@ namespace Telegram.Controls.Chats
             }
             else if (background.Type is BackgroundTypeChatTheme typeChatTheme)
             {
-                var chatTheme = clientService.GetChatTheme(typeChatTheme.ThemeName);
-                if (chatTheme != null)
+                if (clientService.TryGetEmojiChatTheme(typeChatTheme.ThemeName, out EmojiChatTheme emoji))
                 {
                     // TODO: support light/dark changed
                     background = ActualTheme == ElementTheme.Light
-                        ? chatTheme.LightSettings?.Background
-                        : chatTheme.DarkSettings?.Background;
+                        ? emoji.LightSettings.Background
+                        : emoji.DarkSettings.Background;
 
                     UpdateSource(clientService, background, thumbnail);
                     return;

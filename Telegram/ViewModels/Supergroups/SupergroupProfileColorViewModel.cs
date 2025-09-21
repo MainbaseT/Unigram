@@ -63,10 +63,10 @@ namespace Telegram.ViewModels.Supergroups
             }
 
             var themeName = chat.Background?.Background.Type is BackgroundTypeChatTheme typeChatTheme
-                ? typeChatTheme.ThemeName
-                : chat.ThemeName;
+                ? new ChatThemeEmoji(typeChatTheme.ThemeName)
+                : chat.Theme;
 
-            SelectedChatTheme = string.IsNullOrEmpty(themeName) ? ChatThemes[0] : ChatThemes.FirstOrDefault(x => x.Name == themeName);
+            SelectedChatTheme = themeName is ChatThemeEmoji emoji ? ChatThemes.FirstOrDefault(x => x.Name == emoji.Name) :ChatThemes[0];
 
             SelectedAccentColor = ClientService.GetAccentColor(chat.AccentColorId);
             SelectedCustomEmojiId = chat.BackgroundCustomEmojiId;
@@ -130,14 +130,14 @@ namespace Telegram.ViewModels.Supergroups
             }
 
             var prevChatTheme = chat.Background?.Background.Type is BackgroundTypeChatTheme typeChatTheme
-                ? typeChatTheme.ThemeName
-                : chat.ThemeName;
+                ? new ChatThemeEmoji(typeChatTheme.ThemeName)
+                : chat.Theme;
 
             var nextChatTheme = SelectedChatTheme?.LightSettings != null
-                ? SelectedChatTheme.Name
-                : string.Empty;
+                ? SelectedChatTheme.ToTheme()
+                : null;
 
-            if (prevChatTheme != nextChatTheme)
+            if (!prevChatTheme.AreTheSame(nextChatTheme))
             {
                 changed = true;
             }
@@ -354,14 +354,14 @@ namespace Telegram.ViewModels.Supergroups
             }
 
             var prevChatTheme = chat.Background?.Background.Type is BackgroundTypeChatTheme typeChatTheme
-                ? typeChatTheme.ThemeName
-                : chat.ThemeName;
+                ? new ChatThemeEmoji(typeChatTheme.ThemeName)
+                : chat.Theme;
 
             var nextChatTheme = SelectedChatTheme?.LightSettings != null
-                ? SelectedChatTheme.Name
-                : string.Empty;
+                ? SelectedChatTheme.ToTheme()
+                : null;
 
-            if (nextChatTheme.Length > 0 && prevChatTheme != nextChatTheme && MinChatThemeBackgroundBoostLevel > level)
+            if (nextChatTheme != null && !prevChatTheme.AreTheSame(nextChatTheme) && MinChatThemeBackgroundBoostLevel > level)
             {
                 feature = ChatBoostFeature.ChatTheme;
                 level = MinChatThemeBackgroundBoostLevel;
@@ -445,17 +445,17 @@ namespace Telegram.ViewModels.Supergroups
             }
 
             var prevChatTheme = chat.Background?.Background.Type is BackgroundTypeChatTheme typeChatTheme
-                ? typeChatTheme.ThemeName
-                : chat.ThemeName;
+                ? new ChatThemeEmoji(typeChatTheme.ThemeName)
+                : chat.Theme;
 
             var nextChatTheme = SelectedChatTheme?.LightSettings != null
-                ? SelectedChatTheme.Name
-                : string.Empty;
+                ? SelectedChatTheme.ToTheme()
+                : null;
 
-            if (prevChatTheme != nextChatTheme)
+            if (!prevChatTheme.AreTheSame(nextChatTheme))
             {
                 changed = true;
-                ClientService.Send(new SetChatTheme(chat.Id, nextChatTheme));
+                ClientService.Send(new SetChatTheme(chat.Id, nextChatTheme.ToInput()));
             }
 
             if (changed)

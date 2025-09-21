@@ -251,8 +251,9 @@ namespace Telegram.Services
 
         UpdateStoryStealthMode StealthMode { get; }
 
-        ChatTheme GetChatTheme(string themeName);
-        IList<ChatTheme> ChatThemes { get; }
+        bool TryGetEmojiChatTheme(ChatTheme theme, out EmojiChatTheme emoji);
+        bool TryGetEmojiChatTheme(string themeName, out EmojiChatTheme emoji);
+        IList<EmojiChatTheme> ChatThemes { get; }
 
         bool IsDiceEmoji(string text, out string dice);
 
@@ -351,7 +352,7 @@ namespace Telegram.Services
 
         private UpdateAnimationSearchParameters _animationSearchParameters;
 
-        private UpdateChatThemes _chatThemes;
+        private UpdateEmojiChatThemes _chatThemes;
 
         private UpdateStoryStealthMode _storyStealthMode = new();
 
@@ -2633,17 +2634,25 @@ namespace Telegram.Services
             return false;
         }
 
-        public ChatTheme GetChatTheme(string themeName)
+        public bool TryGetEmojiChatTheme(ChatTheme theme, out EmojiChatTheme value)
         {
-            if (string.IsNullOrEmpty(themeName))
+            if (theme is ChatThemeEmoji emoji)
             {
-                return null;
+                value = ChatThemes.FirstOrDefault(x => string.Equals(x.Name, emoji.Name));
+                return value != null;
             }
 
-            return ChatThemes.FirstOrDefault(x => string.Equals(x.Name, themeName));
+            value = null;
+            return false;
         }
 
-        public IList<ChatTheme> ChatThemes => _chatThemes?.ChatThemes ?? Array.Empty<ChatTheme>();
+        public bool TryGetEmojiChatTheme(string themeName, out EmojiChatTheme value)
+        {
+            value = ChatThemes.FirstOrDefault(x => string.Equals(x.Name, themeName));
+            return value != null;
+        }
+
+        public IList<EmojiChatTheme> ChatThemes => _chatThemes?.ChatThemes ?? Array.Empty<EmojiChatTheme>();
 
         public bool IsDiceEmoji(string text, out string dice)
         {
@@ -3244,13 +3253,13 @@ namespace Telegram.Services
                     {
                         if (_chats.TryGetValue(updateChatTheme.ChatId, out Chat value))
                         {
-                            value.ThemeName = updateChatTheme.ThemeName;
+                            value.Theme = updateChatTheme.Theme;
                         }
 
                         break;
                     }
 
-                case UpdateChatThemes updateChatThemes:
+                case UpdateEmojiChatThemes updateChatThemes:
                     _chatThemes = updateChatThemes;
                     break;
                 case UpdateChatTitle updateChatTitle:

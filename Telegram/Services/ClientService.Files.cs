@@ -447,6 +447,12 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
+                case global::Telegram.Td.Api.Audios audios:
+                    foreach (var item in audios.AudiosValue)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
                 case global::Telegram.Td.Api.AvailableGift availableGift:
                     if (availableGift.Gift != null)
                     {
@@ -558,6 +564,10 @@ namespace Telegram.Services
                     {
                         ProcessFiles(chat.Photo);
                     }
+                    if (chat.Theme != null)
+                    {
+                        ProcessFiles(chat.Theme);
+                    }
                     break;
                 case global::Telegram.Td.Api.ChatBackground chatBackground:
                     if (chatBackground.Background != null)
@@ -667,14 +677,10 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
-                case global::Telegram.Td.Api.ChatTheme chatTheme:
-                    if (chatTheme.DarkSettings != null)
+                case global::Telegram.Td.Api.ChatThemeGift chatThemeGift:
+                    if (chatThemeGift.GiftTheme != null)
                     {
-                        ProcessFiles(chatTheme.DarkSettings);
-                    }
-                    if (chatTheme.LightSettings != null)
-                    {
-                        ProcessFiles(chatTheme.LightSettings);
+                        ProcessFiles(chatThemeGift.GiftTheme);
                     }
                     break;
                 case global::Telegram.Td.Api.DatedFile datedFile:
@@ -737,6 +743,16 @@ namespace Telegram.Services
                     if (emojiCategory.Icon != null)
                     {
                         ProcessFiles(emojiCategory.Icon);
+                    }
+                    break;
+                case global::Telegram.Td.Api.EmojiChatTheme emojiChatTheme:
+                    if (emojiChatTheme.DarkSettings != null)
+                    {
+                        ProcessFiles(emojiChatTheme.DarkSettings);
+                    }
+                    if (emojiChatTheme.LightSettings != null)
+                    {
+                        ProcessFiles(emojiChatTheme.LightSettings);
                     }
                     break;
                 case global::Telegram.Td.Api.EmojiReaction emojiReaction:
@@ -859,6 +875,26 @@ namespace Telegram.Services
                     if (gift.Sticker != null)
                     {
                         ProcessFiles(gift.Sticker);
+                    }
+                    break;
+                case global::Telegram.Td.Api.GiftChatTheme giftChatTheme:
+                    if (giftChatTheme.DarkSettings != null)
+                    {
+                        ProcessFiles(giftChatTheme.DarkSettings);
+                    }
+                    if (giftChatTheme.Gift != null)
+                    {
+                        ProcessFiles(giftChatTheme.Gift);
+                    }
+                    if (giftChatTheme.LightSettings != null)
+                    {
+                        ProcessFiles(giftChatTheme.LightSettings);
+                    }
+                    break;
+                case global::Telegram.Td.Api.GiftChatThemes giftChatThemes:
+                    foreach (var item in giftChatThemes.Themes)
+                    {
+                        ProcessFiles(item);
                     }
                     break;
                 case global::Telegram.Td.Api.GiftCollection giftCollection:
@@ -1247,6 +1283,12 @@ namespace Telegram.Services
                     if (messageChatSetBackground.Background != null)
                     {
                         ProcessFiles(messageChatSetBackground.Background);
+                    }
+                    break;
+                case global::Telegram.Td.Api.MessageChatSetTheme messageChatSetTheme:
+                    if (messageChatSetTheme.Theme != null)
+                    {
+                        ProcessFiles(messageChatSetTheme.Theme);
                     }
                     break;
                 case global::Telegram.Td.Api.MessageChatShared messageChatShared:
@@ -2535,10 +2577,10 @@ namespace Telegram.Services
                         ProcessFiles(updateChatPhoto.Photo);
                     }
                     break;
-                case global::Telegram.Td.Api.UpdateChatThemes updateChatThemes:
-                    foreach (var item in updateChatThemes.ChatThemes)
+                case global::Telegram.Td.Api.UpdateChatTheme updateChatTheme:
+                    if (updateChatTheme.Theme != null)
                     {
-                        ProcessFiles(item);
+                        ProcessFiles(updateChatTheme.Theme);
                     }
                     break;
                 case global::Telegram.Td.Api.UpdateDefaultBackground updateDefaultBackground:
@@ -2551,6 +2593,12 @@ namespace Telegram.Services
                     if (updateDirectMessagesChatTopic.Topic != null)
                     {
                         ProcessFiles(updateDirectMessagesChatTopic.Topic);
+                    }
+                    break;
+                case global::Telegram.Td.Api.UpdateEmojiChatThemes updateEmojiChatThemes:
+                    foreach (var item in updateEmojiChatThemes.ChatThemes)
+                    {
+                        ProcessFiles(item);
                     }
                     break;
                 case global::Telegram.Td.Api.UpdateFile updateFile:
@@ -2751,6 +2799,10 @@ namespace Telegram.Services
                     if (userFullInfo.BusinessInfo != null)
                     {
                         ProcessFiles(userFullInfo.BusinessInfo);
+                    }
+                    if (userFullInfo.FirstProfileAudio != null)
+                    {
+                        ProcessFiles(userFullInfo.FirstProfileAudio);
                     }
                     if (userFullInfo.PersonalPhoto != null)
                     {

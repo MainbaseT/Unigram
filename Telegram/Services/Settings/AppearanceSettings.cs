@@ -520,15 +520,14 @@ namespace Telegram.Services.Settings
 
         private bool _chatThemeLoaded;
 
-        private ChatTheme _chatTheme;
-        public ChatTheme ChatTheme
+        private EmojiChatTheme _chatTheme;
+        public EmojiChatTheme ChatTheme
         {
             get => _chatTheme ??= LoadChatTheme();
             set => SaveChatTheme(value);
         }
 
-
-        private void SaveChatTheme(ChatTheme theme)
+        private void SaveChatTheme(EmojiChatTheme theme)
         {
             if (theme?.Name == "\U0001F3E0")
             {
@@ -562,7 +561,7 @@ namespace Telegram.Services.Settings
             AddOrUpdateValue(container, "AccentColor", settings.AccentColor);
         }
 
-        private ChatTheme LoadChatTheme()
+        private EmojiChatTheme LoadChatTheme()
         {
             if (_chatThemeLoaded)
             {
@@ -577,7 +576,7 @@ namespace Telegram.Services.Settings
                 var light = _container.CreateContainer("ChatThemeLight", ApplicationDataCreateDisposition.Always);
                 var dark = _container.CreateContainer("ChatThemeDark", ApplicationDataCreateDisposition.Always);
 
-                return new ChatTheme
+                return new EmojiChatTheme
                 {
                     Name = name,
                     LightSettings = LoadChatThemeSettings(light),
