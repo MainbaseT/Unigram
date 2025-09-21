@@ -156,7 +156,7 @@ typedef struct NSVGshape
 	char strokeLineCap;			// Stroke cap type.
 	float miterLimit;			// Miter limit
 	char fillRule;				// Fill rule, see NSVGfillRule.
-    unsigned char paintOrder;	// Encoded paint order (3×2-bit fields) see NSVGpaintOrder
+	unsigned char paintOrder;	// Encoded paint order (3×2-bit fields) see NSVGpaintOrder
 	unsigned char flags;		// Logical or of NSVG_FLAGS_* flags
 	float bounds[4];			// Tight bounding box of the shape [minx,miny,maxx,maxy].
 	char fillGradient[64];		// Optional 'id' of fill gradient
@@ -172,6 +172,13 @@ typedef struct NSVGimage
 	float height;				// Height of the image.
 	NSVGshape* shapes;			// Linked list of shapes in the image.
 } NSVGimage;
+
+typedef struct NSVGstyles
+{
+	char* name;
+	char* description;
+	struct NSVGstyles* next;
+} NSVGstyles;
 
 // Parses SVG file from a file, returns SVG image as paths.
 NSVGimage* nsvgParseFromFile(const char* filename, const char* units, float dpi);
@@ -444,7 +451,7 @@ typedef struct NSVGattrib
 	char hasFill;
 	char hasStroke;
 	char visible;
-    unsigned char paintOrder;
+	unsigned char paintOrder;
 } NSVGattrib;
 
 typedef struct NSVGparser
@@ -456,6 +463,7 @@ typedef struct NSVGparser
 	int cpts;
 	NSVGpath* plist;
 	NSVGimage* image;
+	NSVGstyles* styles;
 	NSVGgradientData* gradients;
 	NSVGshape* shapesTail;
 	float viewMinx, viewMiny, viewWidth, viewHeight;
@@ -463,6 +471,7 @@ typedef struct NSVGparser
 	float dpi;
 	char pathFlag;
 	char defsFlag;
+	char styleFlag;
 } NSVGparser;
 
 static void nsvg__xformIdentity(float* t)
@@ -623,7 +632,7 @@ static void nsvg__curveBounds(float* bounds, float* curve)
 }
 
 static unsigned char nsvg__encodePaintOrder(enum NSVGpaintOrder a, enum NSVGpaintOrder b, enum NSVGpaintOrder c) {
-    return (a & 0x03) | ((b & 0x03) << 2) | ((c & 0x03) << 4);
+	return (a & 0x03) | ((b & 0x03) << 2) | ((c & 0x03) << 4);
 }
 
 static NSVGparser* nsvg__createParser(void)
@@ -653,7 +662,7 @@ static NSVGparser* nsvg__createParser(void)
 	p->attr[0].fillRule = NSVG_FILLRULE_NONZERO;
 	p->attr[0].hasFill = 1;
 	p->attr[0].visible = 1;
-    p->attr[0].paintOrder = nsvg__encodePaintOrder(NSVG_PAINT_FILL, NSVG_PAINT_STROKE, NSVG_PAINT_MARKERS);
+	p->attr[0].paintOrder = nsvg__encodePaintOrder(NSVG_PAINT_FILL, NSVG_PAINT_STROKE, NSVG_PAINT_MARKERS);
 
 	return p;
 
@@ -682,6 +691,20 @@ static void nsvg__deletePaint(NSVGpaint* paint)
 		free(paint->gradient);
 }
 
+static void nsvg__deleteStyles(NSVGstyles* style)
+{
+	while (style)
+	{
+		NSVGstyles* next = style->next;
+		if (style->name != NULL)
+			free(style->name);
+		if (style->description != NULL)
+			free(style->description);
+		free(style);
+		style = next;
+	}
+}
+
 static void nsvg__deleteGradientData(NSVGgradientData* grad)
 {
 	NSVGgradientData* next;
@@ -696,6 +719,7 @@ static void nsvg__deleteGradientData(NSVGgradientData* grad)
 static void nsvg__deleteParser(NSVGparser* p)
 {
 	if (p != NULL) {
+		nsvg__deleteStyles(p->styles);
 		nsvg__deletePaths(p->plist);
 		nsvg__deleteGradientData(p->gradients);
 		nsvgDelete(p->image);
@@ -985,7 +1009,7 @@ static void nsvg__addShape(NSVGparser* p)
 	shape->miterLimit = attr->miterLimit;
 	shape->fillRule = attr->fillRule;
 	shape->opacity = attr->opacity;
-    shape->paintOrder = attr->paintOrder;
+	shape->paintOrder = attr->paintOrder;
 
 	shape->paths = p->plist;
 	p->plist = NULL;
@@ -1877,6 +1901,19 @@ static int nsvg__parseAttr(NSVGparser* p, const char* name, const char* value)
 	} else if (strcmp(name, "id") == 0) {
 		strncpy(attr->id, value, 63);
 		attr->id[63] = '\0';
+	}
+	else if (strcmp(name, "class") == 0) {
+		NSVGstyles* style = p->styles;
+		while (style)
+		{
+			if (strcmp(style->name + 1, value) == 0) {
+				break;
+			}
+			style = style->next;
+		}
+		if (style) {
+			nsvg__parseStyle(p, style->description);
+		}
 	} else {
 		return 0;
 	}
@@ -2839,6 +2876,8 @@ static void nsvg__startElement(void* ud, const char* el, const char** attr)
 		nsvg__parseGradientStop(p, attr);
 	} else if (strcmp(el, "defs") == 0) {
 		p->defsFlag = 1;
+	} else if (strcmp(el, "style") == 0) {
+		p->styleFlag = 1;
 	} else if (strcmp(el, "svg") == 0) {
 		nsvg__parseSVG(p, attr);
 	}
@@ -2854,14 +2893,62 @@ static void nsvg__endElement(void* ud, const char* el)
 		p->pathFlag = 0;
 	} else if (strcmp(el, "defs") == 0) {
 		p->defsFlag = 0;
+	} else if (strcmp(el, "style") == 0) {
+		p->styleFlag = 0;
 	}
+}
+
+static char* nsvg__strndup(const char* s, size_t n)
+{
+	char* result;
+	size_t len = strlen(s);
+
+	if (n < len)
+		len = n;
+
+	result = (char*)malloc(len + 1);
+	if (!result)
+		return 0;
+
+	result[len] = '\0';
+	return (char*)memcpy(result, s, len);
 }
 
 static void nsvg__content(void* ud, const char* s)
 {
-	NSVG_NOTUSED(ud);
-	NSVG_NOTUSED(s);
-	// empty
+	NSVGparser* p = (NSVGparser*)ud;
+	if (p->styleFlag)
+	{
+		int state = 0;
+		const char* start = nullptr;
+		while (*s)
+		{
+			char c = *s;
+			if (nsvg__isspace(c) || c == '{')
+			{
+				if (state == 1 && start != nullptr)
+				{
+					NSVGstyles* next = p->styles;
+					p->styles = (NSVGstyles*)malloc(sizeof(NSVGstyles));
+					p->styles->next = next;
+					p->styles->name = nsvg__strndup(start, (size_t)(s - start));
+					start = s + 1;
+					state = 2;
+				}
+			}
+			else if (state == 2 && c == '}' && start != nullptr)
+			{
+				p->styles->description = nsvg__strndup(start, (size_t)(s - start));
+				state = 0;
+			}
+			else if (state == 0)
+			{
+				start = s;
+				state = 1;
+			}
+			s++;
+		}
+	}
 }
 
 static void nsvg__imageBounds(NSVGparser* p, float* bounds)
@@ -3083,32 +3170,32 @@ error:
 
 NSVGpath* nsvgDuplicatePath(NSVGpath* p)
 {
-    NSVGpath* res = NULL;
+	NSVGpath* res = NULL;
 
-    if (p == NULL)
-        return NULL;
+	if (p == NULL)
+		return NULL;
 
-    res = (NSVGpath*)malloc(sizeof(NSVGpath));
-    if (res == NULL) goto error;
-    memset(res, 0, sizeof(NSVGpath));
+	res = (NSVGpath*)malloc(sizeof(NSVGpath));
+	if (res == NULL) goto error;
+	memset(res, 0, sizeof(NSVGpath));
 
-    res->pts = (float*)malloc(p->npts*2*sizeof(float));
-    if (res->pts == NULL) goto error;
-    memcpy(res->pts, p->pts, p->npts * sizeof(float) * 2);
-    res->npts = p->npts;
+	res->pts = (float*)malloc(p->npts*2*sizeof(float));
+	if (res->pts == NULL) goto error;
+	memcpy(res->pts, p->pts, p->npts * sizeof(float) * 2);
+	res->npts = p->npts;
 
-    memcpy(res->bounds, p->bounds, sizeof(p->bounds));
+	memcpy(res->bounds, p->bounds, sizeof(p->bounds));
 
-    res->closed = p->closed;
+	res->closed = p->closed;
 
-    return res;
+	return res;
 
 error:
-    if (res != NULL) {
-        free(res->pts);
-        free(res);
-    }
-    return NULL;
+	if (res != NULL) {
+		free(res->pts);
+		free(res);
+	}
+	return NULL;
 }
 
 void nsvgDelete(NSVGimage* image)

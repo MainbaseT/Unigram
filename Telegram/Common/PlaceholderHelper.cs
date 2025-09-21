@@ -6,9 +6,7 @@
 //
 using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Telegram.Native;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -136,9 +134,7 @@ namespace Telegram.Common
 
                     using (var stream = await item.OpenAsync(FileAccessMode.ReadWrite))
                     {
-                        var text = await ProcessSvgXmlAsync(file.Local.Path);
-                        await Background.DrawSvgAsync(text, Colors.White, stream, rasterizationScale);
-
+                        await Background.DrawSvgAsync(file.Local.Path, Colors.White, stream, rasterizationScale);
                         bitmap = LoadedImageSurface.StartLoadFromStream(stream, new Size(360, 740));
                     }
                 }
@@ -175,77 +171,6 @@ namespace Telegram.Common
             }
 
             return bitmap;
-        }
-
-        private static async Task<string> ProcessSvgXmlAsync(string filePath)
-        {
-            var styles = new Dictionary<string, string>();
-            var text = string.Empty;
-
-            using (var source = System.IO.File.OpenRead(filePath))
-            using (var decompress = new GZipStream(source, CompressionMode.Decompress))
-            using (var reader = new System.IO.StreamReader(decompress))
-            {
-                text = await reader.ReadToEndAsync();
-            }
-
-            var document = XDocument.Parse(text);
-            var svg = XNamespace.Get("http://www.w3.org/2000/svg");
-
-            foreach (var styleNode in document.Root.Descendants(svg + "style"))
-            {
-                var currentStyleString = styleNode.Value;
-                int currentClassNameStartIndex = -1;
-                int currentClassContentsStartIndex = -1;
-
-                string currentClassName = null;
-
-                for (int i = 0; i < currentStyleString.Length; i++)
-                {
-                    var c = currentStyleString[i];
-                    if (currentClassNameStartIndex != -1)
-                    {
-                        if (!char.IsLetterOrDigit(c))
-                        {
-                            currentClassName = currentStyleString.Substring(currentClassNameStartIndex, i - currentClassNameStartIndex);
-                            currentClassNameStartIndex = -1;
-                        }
-                    }
-                    else if (currentClassContentsStartIndex != -1)
-                    {
-                        if (c == '}')
-                        {
-                            var classContents = currentStyleString.Substring(currentClassContentsStartIndex, i - currentClassContentsStartIndex);
-                            if (currentClassName != null && classContents != null)
-                            {
-                                styles[currentClassName] = classContents;
-                                currentClassName = null;
-                            }
-                            currentClassContentsStartIndex = -1;
-                        }
-                    }
-
-                    if (currentClassNameStartIndex == -1 && currentClassContentsStartIndex == -1)
-                    {
-                        if (c == '.')
-                        {
-                            currentClassNameStartIndex = i + 1;
-                        }
-                        else if (c == '{')
-                        {
-                            currentClassContentsStartIndex = i + 1;
-                        }
-                    }
-                }
-
-            }
-
-            foreach (var styleName in styles)
-            {
-                text = text.Replace($"class=\"{styleName.Key}\"", $"style=\"{styleName.Value}\"");
-            }
-
-            return text;
         }
 
         public static async void GetBlurred(SoftwareBitmapSource source, string path, float amount = 3)
