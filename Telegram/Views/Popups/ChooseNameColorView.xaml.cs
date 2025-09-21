@@ -276,7 +276,7 @@ namespace Telegram.Views.Popups
 
         private void OnChatThemeChanged(ChatThemeViewModel newValue, ChatThemeViewModel oldValue)
         {
-            BackgroundControl.UpdateChat(_clientService, null, newValue.ToTheme());
+            BackgroundControl.UpdateChat(_clientService, null, newValue.Type);
         }
 
         #endregion

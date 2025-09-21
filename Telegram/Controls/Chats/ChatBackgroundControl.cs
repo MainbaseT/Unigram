@@ -26,6 +26,7 @@ namespace Telegram.Controls.Chats
         private IClientService _clientService;
         private IEventAggregator _aggregator;
 
+        private ChatTheme _oldTheme;
         private Background _oldBackground = new Background();
         private bool? _oldDark;
         private int? _oldDimming;
@@ -58,7 +59,7 @@ namespace Telegram.Controls.Chats
 
             if (_oldDark != null && _oldDimming != null)
             {
-                UpdateBackground(_oldBackground, _oldDark.Value, _oldDimming.Value);
+                UpdateBackground(_oldTheme, _oldBackground, _oldDark.Value, _oldDimming.Value);
             }
 
             base.OnApplyTemplate();
@@ -84,8 +85,8 @@ namespace Telegram.Controls.Chats
                 {
                     var background = update.Background;
 
-                    SyncBackgroundWithChatTheme(ref background, update.ForDarkTheme, out int dimming);
-                    UpdateBackground(background, update.ForDarkTheme, dimming);
+                    SyncBackgroundWithChatTheme(ref background, update.ForDarkTheme, out ChatTheme theme, out int dimming);
+                    UpdateBackground(theme, background, update.ForDarkTheme, dimming);
                 }
             });
         }
@@ -98,22 +99,23 @@ namespace Telegram.Controls.Chats
 
             var background = clientService.GetDefaultBackground(IsDarkTheme);
 
-            SyncBackgroundWithChatTheme(ref background, IsDarkTheme, out int dimming);
-            UpdateBackground(background, IsDarkTheme, dimming);
+            SyncBackgroundWithChatTheme(ref background, IsDarkTheme, out ChatTheme theme, out int dimming);
+            UpdateBackground(theme, background, IsDarkTheme, dimming);
         }
 
         public void Update(Background background, bool forDarkTheme)
         {
             if (forDarkTheme == IsDarkTheme)
             {
-                SyncBackgroundWithChatTheme(ref background, forDarkTheme, out int dimming);
-                UpdateBackground(background, forDarkTheme, dimming);
+                SyncBackgroundWithChatTheme(ref background, forDarkTheme, out ChatTheme theme, out int dimming);
+                UpdateBackground(theme,background, forDarkTheme, dimming);
             }
         }
 
         private ThemeSettings _lightSettings;
         private ThemeSettings _darkSettings;
         private ChatBackground _chatBackground;
+        private ChatTheme _chatTheme;
         private bool _localFields;
 
         public void UpdateChat(IClientService clientService, ChatBackground background, ChatTheme theme)
@@ -137,19 +139,22 @@ namespace Telegram.Controls.Chats
             }
 
             _chatBackground = background;
+            _chatTheme = theme;
             _localFields = background != null || theme != null;
 
             Update(_oldBackground, IsDarkTheme);
         }
 
-        private void SyncBackgroundWithChatTheme(ref Background background, bool forDarkTheme, out int dimming)
+        private void SyncBackgroundWithChatTheme(ref Background background, bool forDarkTheme, out ChatTheme theme, out int dimming)
         {
             var chatBackground = _localFields ? _chatBackground : Theme.Current.ChatBackground;
             var (lightSettings, darkSettings) = _localFields ? (_lightSettings, _darkSettings) : (Theme.Current.LightSettings, Theme.Current.DarkSettings);
+            var chatTheme = _localFields ? _chatTheme : Theme.Current.ChatTheme;
 
             // I'm not a big fan of this, but this is the easiest way to keep background in sync
             if (chatBackground != null)
             {
+                theme = null;
                 background = chatBackground.Background;
                 dimming = forDarkTheme
                     ? chatBackground.DarkThemeDimming
@@ -157,6 +162,7 @@ namespace Telegram.Controls.Chats
             }
             else if (lightSettings != null && darkSettings != null)
             {
+                theme = chatTheme;
                 dimming = 0;
                 background = forDarkTheme
                     ? darkSettings.Background
@@ -164,6 +170,7 @@ namespace Telegram.Controls.Chats
             }
             else
             {
+                theme = null;
                 dimming = 0;
             }
         }
@@ -180,10 +187,11 @@ namespace Telegram.Controls.Chats
             }
         }
 
-        private void UpdateBackground(Background background, bool dark, int dimming)
+        private void UpdateBackground(ChatTheme theme, Background background, bool dark, int dimming)
         {
             if (!_templateApplied)
             {
+                _oldTheme = theme;
                 _oldBackground = background;
                 _oldDark = dark;
                 _oldDimming = dimming;
@@ -198,17 +206,18 @@ namespace Telegram.Controls.Chats
                     new BackgroundTypePattern(new BackgroundFillFreeformGradient(freeform), dark ? 100 : 50, dark, false));
             }
 
-            if (_initialized && _oldDark == dark && _oldDimming == dimming && BackgroundEquals(_oldBackground, background))
+            if (_initialized && _oldDark == dark && _oldDimming == dimming && _oldBackground.AreTheSame(background))
             {
                 return;
             }
 
+            _oldTheme = theme;
             _oldBackground = background;
             _oldDark = dark;
             _oldDimming = dimming;
             _initialized = true;
 
-            Presenter.UpdateSource(_clientService, background, false);
+            Presenter.UpdateSource(_clientService, background, false, theme);
 
             if (dark && dimming != 0)
             {
@@ -220,62 +229,6 @@ namespace Telegram.Controls.Chats
                 Presenter.Opacity = 1;
                 Background = null;
             }
-        }
-
-        public static bool BackgroundEquals(Background prev, Background next, bool fast = false)
-        {
-            if (prev == null || next == null)
-            {
-                return prev == next;
-            }
-
-            if (fast && prev.Id != next.Id)
-            {
-                return false;
-            }
-
-            if (prev.Type is BackgroundTypeFill prevFill && next.Type is BackgroundTypeFill nextFill)
-            {
-                return FillEquals(prevFill.Fill, nextFill.Fill);
-            }
-            else if (prev.Type is BackgroundTypePattern prevPattern && next.Type is BackgroundTypePattern nextPattern)
-            {
-                return prevPattern.IsInverted == nextPattern.IsInverted
-                    && prevPattern.Intensity == nextPattern.Intensity
-                    && prev.Document?.DocumentValue.Id == next.Document?.DocumentValue.Id
-                    && FillEquals(prevPattern.Fill, nextPattern.Fill);
-            }
-            else if (prev.Type is BackgroundTypeWallpaper prevWallpaper && next.Type is BackgroundTypeWallpaper nextWallpaper)
-            {
-                return prevWallpaper.IsBlurred == nextWallpaper.IsBlurred
-                    && prev.Document?.DocumentValue.Id == next.Document?.DocumentValue.Id;
-            }
-            else if (prev.Type is BackgroundTypeChatTheme prevChatTheme && next.Type is BackgroundTypeChatTheme nextChatTheme)
-            {
-                return string.Equals(prevChatTheme.ThemeName, nextChatTheme.ThemeName);
-            }
-
-            return Equals(prev, next);
-        }
-
-        public static bool FillEquals(BackgroundFill prev, BackgroundFill next)
-        {
-            if (prev is BackgroundFillSolid prevSolid && next is BackgroundFillSolid nextSolid)
-            {
-                return prevSolid.Color == nextSolid.Color;
-            }
-            else if (prev is BackgroundFillGradient prevGradient && next is BackgroundFillGradient nextGradient)
-            {
-                return prevGradient.TopColor == nextGradient.TopColor
-                    && prevGradient.BottomColor == nextGradient.BottomColor
-                    && prevGradient.RotationAngle == nextGradient.RotationAngle;
-            }
-            else if (prev is BackgroundFillFreeformGradient prevFreeform && next is BackgroundFillFreeformGradient nextFreeform)
-            {
-                return prevFreeform.Colors.SequenceEqual(nextFreeform.Colors);
-            }
-
-            return false;
         }
     }
 

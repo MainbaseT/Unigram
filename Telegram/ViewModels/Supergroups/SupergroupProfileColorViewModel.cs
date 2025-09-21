@@ -66,7 +66,7 @@ namespace Telegram.ViewModels.Supergroups
                 ? new ChatThemeEmoji(typeChatTheme.ThemeName)
                 : chat.Theme;
 
-            SelectedChatTheme = themeName is ChatThemeEmoji emoji ? ChatThemes.FirstOrDefault(x => x.Name == emoji.Name) :ChatThemes[0];
+            SelectedChatTheme = ChatThemes.FirstOrDefault(x => x.AreTheSame(themeName)) ?? ChatThemes[0];
 
             SelectedAccentColor = ClientService.GetAccentColor(chat.AccentColorId);
             SelectedCustomEmojiId = chat.BackgroundCustomEmojiId;
@@ -134,7 +134,7 @@ namespace Telegram.ViewModels.Supergroups
                 : chat.Theme;
 
             var nextChatTheme = SelectedChatTheme?.LightSettings != null
-                ? SelectedChatTheme.ToTheme()
+                ? SelectedChatTheme.Type
                 : null;
 
             if (!prevChatTheme.AreTheSame(nextChatTheme))
@@ -358,7 +358,7 @@ namespace Telegram.ViewModels.Supergroups
                 : chat.Theme;
 
             var nextChatTheme = SelectedChatTheme?.LightSettings != null
-                ? SelectedChatTheme.ToTheme()
+                ? SelectedChatTheme.Type
                 : null;
 
             if (nextChatTheme != null && !prevChatTheme.AreTheSame(nextChatTheme) && MinChatThemeBackgroundBoostLevel > level)
@@ -449,7 +449,7 @@ namespace Telegram.ViewModels.Supergroups
                 : chat.Theme;
 
             var nextChatTheme = SelectedChatTheme?.LightSettings != null
-                ? SelectedChatTheme.ToTheme()
+                ? SelectedChatTheme.Type
                 : null;
 
             if (!prevChatTheme.AreTheSame(nextChatTheme))

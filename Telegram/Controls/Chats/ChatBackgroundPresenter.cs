@@ -9,8 +9,10 @@ using System;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -27,8 +29,14 @@ namespace Telegram.Controls.Chats
         private readonly ChatBackgroundFreeform _freeform = new();
         private readonly DispatcherTimer _freeformTimer;
 
-        private LoadedImageSurface _pattern;
-        private string _patternPath;
+        private IClientService _clientService;
+
+        private LoadedImageSurface _surface;
+        private string _surfacePath;
+        private GiftPatterns _pattern;
+        private Sticker _symbol;
+        private Sticker _model;
+        private UpgradedGift _gift;
         private string _wallpaperPath;
 
         private Background _background;
@@ -39,6 +47,8 @@ namespace Telegram.Controls.Chats
         private int _backgroundId;
         private BackgroundFill _backgroundFill;
 
+        private ChatTheme _theme;
+
         private bool _thumbnail;
         private long _fileToken;
 
@@ -46,6 +56,8 @@ namespace Telegram.Controls.Chats
 
         private Border Canvas;
         private Border Negative;
+        private AnimatedImage Symbol;
+        private AnimatedImage Model;
 
         public ChatBackgroundPresenter()
         {
@@ -62,9 +74,14 @@ namespace Telegram.Controls.Chats
         {
             Canvas = GetTemplateChild(nameof(Canvas)) as Border;
             Negative = GetTemplateChild(nameof(Negative)) as Border;
+            Symbol = GetTemplateChild(nameof(Symbol)) as AnimatedImage;
+            Model = GetTemplateChild(nameof(Model)) as AnimatedImage;
 
             Canvas.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
             Negative.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
+
+            Symbol.Source = DelayedFileSource.FromSticker(_clientService, _symbol);
+            Model.Source = DelayedFileSource.FromSticker(_clientService, _model);
 
             RegisterPropertyChangedCallback(BorderThicknessProperty, OnBorderThicknessChanged);
         }
@@ -92,7 +109,7 @@ namespace Telegram.Controls.Chats
             var value = sender.RasterizationScale;
             if (value != _rasterizationScale && _vector && _background?.Type is BackgroundTypePattern pattern && _background?.Document?.DocumentValue != null)
             {
-                UpdatePattern(pattern, _background.Document.DocumentValue, value);
+                UpdatePattern(pattern, _background.Document.DocumentValue, value, _gift?.Symbol.Sticker, _gift?.Model.Sticker);
             }
             else
             {
@@ -132,13 +149,15 @@ namespace Telegram.Controls.Chats
         private Vector2[][] _easing;
         private int _index;
 
-        public void UpdateSource(IClientService clientService, Background background, bool thumbnail)
+        public void UpdateSource(IClientService clientService, Background background, bool thumbnail, ChatTheme theme = null)
         {
             UpdateManager.Unsubscribe(this, ref _fileToken);
 
             var clear = _background == null;
 
+            _clientService = clientService;
             _background = background;
+            _theme = theme;
 
             if (background.Type is BackgroundTypeFill typeFill)
             {
@@ -146,9 +165,12 @@ namespace Telegram.Controls.Chats
                 _intensity = 255;
                 _backgroundFill = typeFill.Fill;
 
-                _pattern = null;
-                _patternPath = null;
+                _surface = null;
+                _surfacePath = null;
                 _wallpaperPath = null;
+
+                _pattern = null;
+                _gift = null;
 
                 _backgroundId = 0;
                 _thumbnail = false;
@@ -193,7 +215,14 @@ namespace Telegram.Controls.Chats
                 _thumbnail = thumbnail;
                 _vector = thumbnail is false && background.Document.MimeType == "application/x-tgwallpattern";
 
-                UpdatePattern(typePattern, file, WindowContext.Current.RasterizationScale);
+                if (theme is ChatThemeGift gift)
+                {
+                    UpdatePattern(typePattern, file, WindowContext.Current.RasterizationScale, gift.GiftTheme.Gift.Symbol.Sticker, gift.GiftTheme.Gift.Model.Sticker);
+                }
+                else
+                {
+                    UpdatePattern(typePattern, file, WindowContext.Current.RasterizationScale, null, null);
+                }
 
                 if (clientService != null && !file.Local.IsDownloadingCompleted)
                 {
@@ -211,8 +240,11 @@ namespace Telegram.Controls.Chats
                 _intensity = 255;
                 _backgroundFill = null;
 
+                _surface = null;
+                _surfacePath = null;
+
                 _pattern = null;
-                _patternPath = null;
+                _gift = null;
 
                 UpdateBlurred(typeWallpaper.IsBlurred);
 
@@ -253,7 +285,7 @@ namespace Telegram.Controls.Chats
                         ? emoji.LightSettings.Background
                         : emoji.DarkSettings.Background;
 
-                    UpdateSource(clientService, background, thumbnail);
+                    UpdateSource(clientService, background, thumbnail, null);
                     return;
                 }
             }
@@ -285,9 +317,9 @@ namespace Telegram.Controls.Chats
             }
         }
 
-        private async void UpdatePattern(BackgroundTypePattern pattern, File file, double scale)
+        private async void UpdatePattern(BackgroundTypePattern pattern, File file, double scale, Sticker symbol, Sticker model)
         {
-            if (_pattern != null && _patternPath == file.Local.Path && _rasterizationScale == scale)
+            if (_surface != null && _surfacePath == file.Local.Path && _rasterizationScale == scale && _symbol?.Id == symbol?.Id && _model?.Id == model?.Id)
             {
                 UpdatePattern(pattern, true);
                 return;
@@ -301,16 +333,23 @@ namespace Telegram.Controls.Chats
                     ? new SolidColorBrush(Colors.Black)
                     : null;
 
-                _patternPath = file.Local.Path;
+                _surfacePath = file.Local.Path;
                 _rasterizationScale = scale;
 
                 if (_vector)
                 {
-                    _pattern = await PlaceholderHelper.LoadPatternBitmapAsync(file, scale);
+                    var result = await PlaceholderHelper.LoadPatternBitmapAsync(file, scale);
+                    _surface = result.Surface;
+                    _pattern = result.Patterns;
+                    _symbol = symbol;
+                    _model = model;
                 }
                 else
                 {
-                    _pattern = await PlaceholderHelper.LoadBitmapAsync(file);
+                    _surface = await PlaceholderHelper.LoadBitmapAsync(file);
+                    _pattern = null;
+                    _symbol = null;
+                    _model = null;
                 }
 
                 void handler(LoadedImageSurface s, LoadedImageSourceLoadCompletedEventArgs args)
@@ -333,9 +372,9 @@ namespace Telegram.Controls.Chats
                     return;
                 }
 
-                if (_pattern != null)
+                if (_surface != null)
                 {
-                    _pattern.LoadCompleted += handler;
+                    _surface.LoadCompleted += handler;
                 }
             }
         }
@@ -375,19 +414,31 @@ namespace Telegram.Controls.Chats
 
         private void UpdateTiledBrush(bool show)
         {
+            if (Symbol != null)
+            {
+                Symbol.Source = DelayedFileSource.FromSticker(_clientService, _symbol);
+                Model.Source = DelayedFileSource.FromSticker(_clientService, _model);
+            }
+
             if (Foreground is TiledBrush tiledBrush)
             {
-                tiledBrush.ImageSource = _pattern;
+                tiledBrush.ImageSource = _surface;
+                tiledBrush.Patterns = _pattern;
+                tiledBrush.Symbol = Symbol;
+                tiledBrush.Model = UpdateModel();
                 tiledBrush.Intensity = _intensity;
                 tiledBrush.IsNegative = _negative;
 
                 tiledBrush.Update();
             }
-            else if (_pattern != null)
+            else if (_surface != null)
             {
                 Foreground = new TiledBrush
                 {
-                    ImageSource = _pattern,
+                    ImageSource = _surface,
+                    Patterns = _pattern,
+                    Symbol = Symbol,
+                    Model = UpdateModel(),
                     Intensity = _intensity,
                     IsNegative = _negative,
                 };
@@ -421,6 +472,75 @@ namespace Telegram.Controls.Chats
             animation.InsertKeyFrame(hide ? 0 : 1, 1);
             animation.InsertKeyFrame(hide ? 1 : 0, 0);
             target.StartAnimation("Opacity", animation);
+        }
+
+        private ContainerVisual _modelVisual;
+
+        private int UpdateModel()
+        {
+            if (_model == null)
+            {
+                _modelVisual?.Children.RemoveAll();
+                return -1;
+            }
+
+            if (_modelVisual == null)
+            {
+                _modelVisual = BootStrapper.Current.Compositor.CreateContainerVisual();
+                _modelVisual.RelativeSizeAdjustment = Vector2.One;
+
+                ElementCompositionPreview.SetElementChildVisual(this, _modelVisual);
+            }
+            else
+            {
+                _modelVisual.Children.RemoveAll();
+            }
+
+            var index = new Random().Next(0, _pattern.Patterns.Count);
+            var pattern = _pattern.Patterns[index];
+
+            var width = (int)Math.Ceiling(ActualWidth / _surface.DecodedSize.Width);
+            var height = (int)Math.Ceiling(ActualHeight / _surface.DecodedSize.Height);
+
+            var position = new Random().Next(0, height * width + width);
+
+            var logical = _surface.DecodedSize.ToVector2();
+            var physical = _surface.DecodedPhysicalSize.ToVector2();
+            var factor = logical / physical;
+
+            var compositor = BootStrapper.Current.Compositor;
+            var visual = ElementComposition.GetElementVisual(Model);
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var i = y * width + x;
+                    if (i != position)
+                    {
+                        continue;
+                    }
+
+                    var offset = new Vector2(logical.X * x, logical.Y * y);
+
+                    var sprite = _modelVisual.Compositor.CreateRedirectVisual(visual);
+                    //var sprite = visual.Compositor.CreateRedirectVisual(giftVisual);
+                    sprite.Size = pattern.Size * factor;
+                    sprite.Offset = new Vector3(offset + pattern.Offset * factor, 0);
+                    sprite.RotationAngle = pattern.RotationAngle;
+                    //sprite.Brush = surfaceBrush;
+
+                    Model.Width = sprite.Size.X;
+                    Model.Height = sprite.Size.Y;
+                    Model.FrameSize = sprite.Size.ToSize();
+                    Model.LoopCount = 1;
+                    Model.Play();
+
+                    _modelVisual.Children.InsertAtTop(sprite);
+                }
+            }
+
+            return index;
         }
 
         private SpriteVisual _blurVisual;
@@ -464,7 +584,7 @@ namespace Telegram.Controls.Chats
         {
             if (file.Id == _backgroundId)
             {
-                this.BeginOnUIThread(() => UpdateSource(null, _background, _thumbnail));
+                this.BeginOnUIThread(() => UpdateSource(null, _background, _thumbnail, _theme));
             }
         }
 

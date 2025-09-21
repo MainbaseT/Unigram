@@ -478,6 +478,8 @@ namespace Telegram.ViewModels.Settings
 
         public string Name { get; }
 
+        public ChatTheme Type { get; }
+
         public bool IsChannel { get; }
 
         public ChatThemeViewModel(IClientService clientService, EmojiChatTheme chatTheme, bool isChannel)
@@ -486,7 +488,17 @@ namespace Telegram.ViewModels.Settings
             DarkSettings = Copy(chatTheme.DarkSettings);
             LightSettings = Copy(chatTheme.LightSettings);
             Name = chatTheme.Name;
-            IsChannel = IsChannel;
+            Type = new ChatThemeEmoji(chatTheme.Name);
+            IsChannel = isChannel;
+        }
+
+        public ChatThemeViewModel(IClientService clientService, GiftChatTheme chatTheme)
+        {
+            ClientService = clientService;
+            DarkSettings = Copy(chatTheme.DarkSettings);
+            LightSettings = Copy(chatTheme.LightSettings);
+            Name = chatTheme.Gift.Name;
+            Type = new ChatThemeGift(chatTheme);
         }
 
         private ThemeSettings Copy(ThemeSettings x)
@@ -511,16 +523,6 @@ namespace Telegram.ViewModels.Settings
         public EmojiChatTheme ToEmoji()
         {
             return new EmojiChatTheme(Name, LightSettings, DarkSettings);
-        }
-
-        public ChatTheme ToTheme()
-        {
-            return new ChatThemeEmoji(Name);
-        }
-
-        public InputChatTheme ToInput()
-        {
-            return new InputChatThemeEmoji(Name);
         }
     }
 }

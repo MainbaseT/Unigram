@@ -1496,25 +1496,29 @@ namespace Telegram.Controls.Messages
         {
             if (message.IsOutgoing)
             {
-                if (string.IsNullOrEmpty(chatSetTheme.ThemeName))
+                if (chatSetTheme.Theme is ChatThemeEmoji emoji)
                 {
-                    return Strings.ChatThemeDisabledYou.AsFormattedText();
+                    return string.Format(Strings.ChatThemeChangedYou, emoji.Name).AsFormattedText();
                 }
-                else
+                else if (chatSetTheme.Theme is ChatThemeGift gift)
                 {
-                    return string.Format(Strings.ChatThemeChangedYou, chatSetTheme.ThemeName).AsFormattedText();
+                    return string.Format(Strings.ChatThemeChangedYou, gift.GiftTheme.Gift.ToName()).AsFormattedText();
                 }
+
+                return Strings.ChatThemeDisabledYou.AsFormattedText();
             }
             else
             {
-                if (string.IsNullOrEmpty(chatSetTheme.ThemeName))
+                if (chatSetTheme.Theme is ChatThemeEmoji emoji)
                 {
-                    return ReplaceWithLink(string.Format(Strings.ChatThemeDisabled, "un1"), message.GetSender());
+                    return ReplaceWithLink(string.Format(Strings.ChatThemeChangedTo, "un1", emoji.Name), message.GetSender());
                 }
-                else
+                else if (chatSetTheme.Theme is ChatThemeGift gift)
                 {
-                    return ReplaceWithLink(string.Format(Strings.ChatThemeChangedTo, "un1", chatSetTheme.ThemeName), message.GetSender());
+                    return ReplaceWithLink(string.Format(Strings.ChatThemeChangedTo, "un1", gift.GiftTheme.Gift.ToName()), message.GetSender());
                 }
+
+                return ReplaceWithLink(string.Format(Strings.ChatThemeDisabled, "un1"), message.GetSender());
             }
         }
 

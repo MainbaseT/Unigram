@@ -7374,6 +7374,15 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="GiftTelegramPremiumTitle" xml:space="preserve">
     <value>Gift Telegram Premium</value>
   </data>
+  <data name="GiftThemesSetIn" xml:space="preserve">
+    <value>Set as Theme in...</value>
+  </data>
+  <data name="GiftThemesSetInReuseConfirm" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="GiftThemesSetInReuseInfo" xml:space="preserve">
+    <value>This gift is already your theme in the chat with **{0}**. Remove it there and use it here instead?</value>
+  </data>
   <data name="GiftValue2" xml:space="preserve">
     <value>Value</value>
   </data>
@@ -11878,6 +11887,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="SelectAll" xml:space="preserve">
     <value>Select All</value>
+  </data>
+  <data name="SelectChat" xml:space="preserve">
+    <value>Select Chat</value>
   </data>
   <data name="SelectContact" xml:space="preserve">
     <value>Select Contact</value>

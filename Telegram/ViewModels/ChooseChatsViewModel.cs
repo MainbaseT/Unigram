@@ -229,6 +229,28 @@ namespace Telegram.ViewModels
 
                 Title = Strings.AddToGroupOrChannel;
             }
+            else if (parameter is ChooseChatsConfigurationSetTheme configurationSetTheme)
+            {
+                SelectionMode = ListViewSelectionMode.None;
+                Options = new ChooseChatsOptions()
+                {
+                    AllowChannelChats = false,
+                    AllowGroupChats = false,
+                    AllowBotChats = false,
+                    AllowUserChats = true,
+                    AllowSecretChats = false,
+                    AllowSelf = false,
+                    CanPostMessages = false,
+                    CanInviteUsers = false,
+                    CanShareContact = false,
+                    Mode = ChooseChatsMode.Chats,
+                    ShowMessages = false
+                };
+                IsCommentEnabled = false;
+                IsChatSelection = false;
+
+                Title = Strings.SelectChat;
+            }
             else if (parameter is ChooseChatsConfigurationRequestUsers configurationRequestUsers)
             {
                 SelectionMode = configurationRequestUsers.MaxQuantity != 1
@@ -920,6 +942,11 @@ namespace Telegram.ViewModels
                 {
                     NavigationService.ShowPopup(new SupergroupEditAdministratorPopup(), new SupergroupEditMemberArgs(chats[0].Id, member.MemberId, botAddToChannel.AdministratorRights));
                 }
+            }
+            else if (_configuration is ChooseChatsConfigurationSetTheme setTheme)
+            {
+                ClientService.Send(new SetChatTheme(chats[0].Id, new InputChatThemeGift(setTheme.Gift.Name)));
+                NavigationService.NavigateToChat(chats[0]);
             }
             else if (_configuration is ChooseChatsConfigurationInviteToChat inviteToChat && ClientService.TryGetChat(inviteToChat.ChatId, out Chat chat))
             {

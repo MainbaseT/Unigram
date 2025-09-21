@@ -12926,4 +12926,9 @@
     <string name="CallForbiddenInviteLinkText">**{0}** restricts calling them. You can send them an invite link to call instead.</string>
     <string name="CallForbiddenInviteLinkTitle">Invite via Link</string>
 
+    <string name="GiftThemesSetInReuseConfirm">Yes</string>
+    <string name="GiftThemesSetInReuseInfo">This gift is already your theme in the chat with **{0}**. Remove it there and use it here instead?</string>
+    <string name="GiftThemesSetIn">Set as Theme in...</string>
+    <string name="SelectChat">Select Chat</string>
+
 </resources>

@@ -267,6 +267,95 @@ namespace Telegram
             return false;
         }
 
+        public static bool AreTheSame(this ChatTheme x, ChatThemeViewModel y)
+        {
+            if (x == null || y == null)
+            {
+                return x == null && y == null;
+            }
+
+            if (x is ChatThemeEmoji xEmoji && y.Type is ChatThemeEmoji yEmoji)
+            {
+                return xEmoji.Name == yEmoji.Name;
+            }
+            else if (x is ChatThemeGift xGift && y.Type is ChatThemeGift yGift)
+            {
+                return xGift.GiftTheme.Gift.Id == yGift.GiftTheme.Gift.Id;
+            }
+
+            return false;
+        }
+
+        public static bool AreTheSame(this ChatThemeViewModel x, ChatTheme y)
+        {
+            if (x == null || y == null)
+            {
+                return x == null && y == null;
+            }
+
+            if (x.Type is ChatThemeEmoji xEmoji && y is ChatThemeEmoji yEmoji)
+            {
+                return xEmoji.Name == yEmoji.Name;
+            }
+            else if (x.Type is ChatThemeGift xGift && y is ChatThemeGift yGift)
+            {
+                return xGift.GiftTheme.Gift.Id == yGift.GiftTheme.Gift.Id;
+            }
+
+            return false;
+        }
+
+        public static bool AreTheSame(this Background prev, Background next)
+        {
+            if (prev == null || next == null)
+            {
+                return prev == next;
+            }
+
+            if (prev.Type is BackgroundTypeFill prevFill && next.Type is BackgroundTypeFill nextFill)
+            {
+                return AreTheSame(prevFill.Fill, nextFill.Fill);
+            }
+            else if (prev.Type is BackgroundTypePattern prevPattern && next.Type is BackgroundTypePattern nextPattern)
+            {
+                return prevPattern.IsInverted == nextPattern.IsInverted
+                    && prevPattern.Intensity == nextPattern.Intensity
+                    && prev.Document?.DocumentValue.Id == next.Document?.DocumentValue.Id
+                    && AreTheSame(prevPattern.Fill, nextPattern.Fill);
+            }
+            else if (prev.Type is BackgroundTypeWallpaper prevWallpaper && next.Type is BackgroundTypeWallpaper nextWallpaper)
+            {
+                return prevWallpaper.IsBlurred == nextWallpaper.IsBlurred
+                    && prev.Document?.DocumentValue.Id == next.Document?.DocumentValue.Id;
+            }
+            else if (prev.Type is BackgroundTypeChatTheme prevChatTheme && next.Type is BackgroundTypeChatTheme nextChatTheme)
+            {
+                return string.Equals(prevChatTheme.ThemeName, nextChatTheme.ThemeName);
+            }
+
+            return Equals(prev, next);
+        }
+
+        public static bool AreTheSame(this BackgroundFill prev, BackgroundFill next)
+        {
+            if (prev is BackgroundFillSolid prevSolid && next is BackgroundFillSolid nextSolid)
+            {
+                return prevSolid.Color == nextSolid.Color;
+            }
+            else if (prev is BackgroundFillGradient prevGradient && next is BackgroundFillGradient nextGradient)
+            {
+                return prevGradient.TopColor == nextGradient.TopColor
+                    && prevGradient.BottomColor == nextGradient.BottomColor
+                    && prevGradient.RotationAngle == nextGradient.RotationAngle;
+            }
+            else if (prev is BackgroundFillFreeformGradient prevFreeform && next is BackgroundFillFreeformGradient nextFreeform)
+            {
+                return prevFreeform.Colors.SequenceEqual(nextFreeform.Colors);
+            }
+
+            return false;
+        }
+
         public static bool AreTheSame(this FormattedText x, FormattedText y)
         {
             if (x == null || y == null)

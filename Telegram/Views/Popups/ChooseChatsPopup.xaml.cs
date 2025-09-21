@@ -823,6 +823,26 @@ namespace Telegram.Views.Popups
         public override int NumberOfSentMessages => Messages.Count;
     }
 
+    public partial class ChooseChatsConfigurationSetTheme : ChooseChatsConfiguration
+    {
+        public ChooseChatsConfigurationSetTheme(UpgradedGift gift)
+        {
+            Gift = gift;
+        }
+
+        public UpgradedGift Gift { get; }
+
+        public override Task<ContentDialogResult> ConfirmSelectionAsync(ChooseChatsViewModel viewModel, IList<Chat> chats)
+        {
+            if (Gift.UsedThemeChatId != chats[0].Id && viewModel.ClientService.TryGetChat(Gift.UsedThemeChatId, out Chat usedChat))
+            {
+                return viewModel.ShowPopupAsync(string.Format(Strings.GiftThemesSetInReuseInfo, usedChat.Title), Strings.AppName, Strings.GiftThemesSetInReuseConfirm, Strings.Cancel);
+            }
+
+            return Task.FromResult(ContentDialogResult.Primary);
+        }
+    }
+
     public partial class ChooseChatsConfigurationPostLink : ChooseChatsConfiguration
     {
         public ChooseChatsConfigurationPostLink(HttpUrl url)

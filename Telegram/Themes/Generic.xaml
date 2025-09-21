@@ -2074,6 +2074,20 @@
                         <Border x:Name="Negative"
                                 Background="{TemplateBinding NegativeBrush}"
                                 CornerRadius="{TemplateBinding CornerRadius}" />
+                        <local:AnimatedImage x:Name="Symbol"
+                                             HorizontalAlignment="Left"
+                                             VerticalAlignment="Top"
+                                             DecodeFrameType="Logical"
+                                             AutoPlay="False"
+                                             IsViewportAware="False"
+                                             Opacity="0"/>
+                        <local:AnimatedImage x:Name="Model"
+                                             HorizontalAlignment="Left"
+                                             VerticalAlignment="Top"
+                                             DecodeFrameType="Logical"
+                                             AutoPlay="False"
+                                             LoopCount="1"
+                                             IsViewportAware="False" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -2528,10 +2542,10 @@
                                                Foreground="#FFFFFF"
                                                VerticalAlignment="Center" />
                                     <local:AnimatedTextBlock x:Name="ValueText"
-                                                                Visibility="{TemplateBinding ValueVisibility}"
-                                                                Foreground="#FFFFFF"
-                                                                Margin="4,6,0,6"
-                                                                Grid.Column="1">
+                                                             Visibility="{TemplateBinding ValueVisibility}"
+                                                             Foreground="#FFFFFF"
+                                                             Margin="4,6,0,6"
+                                                             Grid.Column="1">
                                         <local:AnimatedTextBlock.TextStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="FontSize"

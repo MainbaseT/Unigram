@@ -12,6 +12,7 @@ using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -111,66 +112,23 @@ namespace Telegram.Common
 
         private static readonly DisposableMutex _patternSurfaceLock = new();
 
-        public static async Task<LoadedImageSurface> LoadPatternBitmapAsync(File file, double rasterizationScale)
+        public static async Task<(LoadedImageSurface Surface, GiftPatterns Patterns)> LoadPatternBitmapAsync(File file, double rasterizationScale)
         {
             using var locked = await _patternSurfaceLock.WaitAsync();
 
             var bitmap = default(LoadedImageSurface);
+            var patterns = default(GiftPatterns);
             var scale = (int)(rasterizationScale * 100);
 
             rasterizationScale = 0.25 * rasterizationScale;
 
-            var cache = $"{file.Remote.UniqueId}.scale-{scale}.png";
-            var relative = System.IO.Path.Combine("Wallpapers", cache);
-
-            var delete = false;
-
-            var item = await ApplicationData.Current.LocalFolder.TryGetItemAsync(relative) as StorageFile;
-            if (item == null)
+            using (var stream = new InMemoryRandomAccessStream())
             {
-                try
-                {
-                    item = await ApplicationData.Current.LocalFolder.CreateFileAsync(relative, CreationCollisionOption.ReplaceExisting);
-
-                    using (var stream = await item.OpenAsync(FileAccessMode.ReadWrite))
-                    {
-                        await Background.DrawSvgAsync(file.Local.Path, Colors.White, stream, rasterizationScale);
-                        bitmap = LoadedImageSurface.StartLoadFromStream(stream, new Size(360, 740));
-                    }
-                }
-                catch
-                {
-                    delete = true;
-                }
-            }
-            else
-            {
-                try
-                {
-                    using (var stream = await item.OpenReadAsync())
-                    {
-                        bitmap = LoadedImageSurface.StartLoadFromStream(stream, new Size(360, 740));
-                    }
-                }
-                catch
-                {
-                    delete = true;
-                }
+                patterns = await Background.DrawSvgAsync(file.Local.Path, Colors.White, stream, rasterizationScale);
+                bitmap = LoadedImageSurface.StartLoadFromStream(stream, new Size(360, 740));
             }
 
-            if (item != null && delete)
-            {
-                try
-                {
-                    await item.DeleteAsync();
-                }
-                catch
-                {
-                    // Shit happens
-                }
-            }
-
-            return bitmap;
+            return (bitmap, patterns);
         }
 
         public static async void GetBlurred(SoftwareBitmapSource source, string path, float amount = 3)

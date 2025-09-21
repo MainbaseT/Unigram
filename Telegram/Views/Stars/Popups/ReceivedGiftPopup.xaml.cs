@@ -580,7 +580,7 @@ namespace Telegram.Views.Stars.Popups
 
             //await Task.Delay(2000);
 
-            var starCount = _gift.PrepaidUpgradeStarCount > 0 ? 0 : regular.Gift.UpgradeStarCount;
+            var starCount = _gift.PrepaidUpgradeStarCount > 0 || _gift.IsUpgradeSeparate ? 0 : regular.Gift.UpgradeStarCount;
 
             Function function;
             if (IsOwned(_clientService, _receiverId))
@@ -861,9 +861,17 @@ namespace Telegram.Views.Stars.Popups
             flyout.CreateFlyoutItem(CopyLink, Strings.CopyLink, Icons.Link);
             flyout.CreateFlyoutItem(Share, Strings.ShareFile, Icons.Share);
 
-            if (_gift.Gift is SentGiftUpgraded upgraded && upgraded.Gift.ResaleParameters != null && upgraded.Gift.OwnerId.AreTheSame(_clientService.MyId))
+            if (_gift.Gift is SentGiftUpgraded upgraded && upgraded.Gift.OwnerId.AreTheSame(_clientService.MyId))
             {
-                flyout.CreateFlyoutItem(ChangePrice, Strings.Gift2ChangePrice, Icons.Tag);
+                if (upgraded.Gift.ResaleParameters != null)
+                {
+                    flyout.CreateFlyoutItem(ChangePrice, Strings.Gift2ChangePrice, Icons.Tag);
+                }
+
+                if (upgraded.Gift.IsThemeAvailable)
+                {
+                    flyout.CreateFlyoutItem(SetTheme, Strings.GiftThemesSetIn, Icons.PaintBrush);
+                }
             }
 
             if (_gift.CanBeTransferred)
@@ -872,6 +880,15 @@ namespace Telegram.Views.Stars.Popups
             }
 
             flyout.ShowAt(sender as UIElement, FlyoutPlacementMode.BottomEdgeAlignedRight);
+        }
+
+        private void SetTheme()
+        {
+            if (_gift.Gift is SentGiftUpgraded upgraded)
+            {
+                Hide();
+                _navigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationSetTheme(upgraded.Gift));
+            }
         }
 
         private void CopyLink()
