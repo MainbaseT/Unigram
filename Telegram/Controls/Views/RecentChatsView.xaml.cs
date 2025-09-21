@@ -123,6 +123,11 @@ namespace Telegram.Controls.Views
         private void MoveTop()
         {
             var width = (int)(ScrollingHost.ActualWidth / (80 + 2 + 2));
+            if (width == 0)
+            {
+                return;
+            }
+
             var height = (ScrollingHost.Items.Count + width - 1) / width;
 
             int y = ScrollingHost.SelectedIndex / width;
@@ -157,6 +162,11 @@ namespace Telegram.Controls.Views
         private void MoveDown()
         {
             var width = (int)(ScrollingHost.ActualWidth / (80 + 2 + 2));
+            if (width == 0)
+            {
+                return;
+            }
+
             var height = (ScrollingHost.Items.Count + width - 1) / width;
 
             int y = ScrollingHost.SelectedIndex / width;
