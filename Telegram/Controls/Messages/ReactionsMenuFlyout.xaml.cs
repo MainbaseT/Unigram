@@ -92,6 +92,11 @@ namespace Telegram.Controls.Messages
         {
             var first = flyout.Items[0];
             var presenter = first.GetParent<MenuFlyoutPresenter>();
+            if (presenter == null)
+            {
+                return;
+            }
+
             flyout.Closed += Flyout_Closed;
 
             presenter.PreviewKeyDown += Presenter_PreviewKeyDown;
