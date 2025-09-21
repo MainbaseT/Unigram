@@ -10929,6 +10929,9 @@ seamlessly and efficiently.</value>
   <data name="ProfileStoriesCount_other" xml:space="preserve">
     <value>{0} stories</value>
   </data>
+  <data name="ProfileTabSetAsMain" xml:space="preserve">
+    <value>Set as Main Tab</value>
+  </data>
   <data name="PromoteUrl" xml:space="preserve">
     <value>https://ads.telegram.org</value>
   </data>

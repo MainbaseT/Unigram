@@ -16265,6 +16265,11 @@ namespace Telegram
         public static string ProfileStoriesArchiveHint => Resource.GetString("ProfileStoriesArchiveHint");
         
         /// <summary>
+        /// Localized resource similar to "Set as Main Tab"
+        /// </summary>
+        public static string ProfileTabSetAsMain => Resource.GetString("ProfileTabSetAsMain");
+        
+        /// <summary>
         /// Localized resource similar to "https://ads.telegram.org"
         /// </summary>
         public static string PromoteUrl => Resource.GetString("PromoteUrl");

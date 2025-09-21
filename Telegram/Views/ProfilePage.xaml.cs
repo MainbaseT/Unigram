@@ -148,7 +148,7 @@ namespace Telegram.Views
 
             if (ViewModel.SelectedItem is ProfileTabItem tab)
             {
-                MediaFrame.Navigate(tab.Type, tab.Parameter, new SuppressNavigationTransitionInfo());
+                MediaFrame.Navigate(tab.PageType, tab.Parameter, new SuppressNavigationTransitionInfo());
             }
 
             InitializeScrolling();
@@ -223,7 +223,7 @@ namespace Telegram.Views
         {
             if (e.PropertyName.Equals("SharedCount") && ViewModel.SelectedItem is ProfileTabItem tab)
             {
-                MediaFrame.Navigate(tab.Type, null, new SuppressNavigationTransitionInfo());
+                MediaFrame.Navigate(tab.PageType, null, new SuppressNavigationTransitionInfo());
             }
         }
 
@@ -314,7 +314,7 @@ namespace Telegram.Views
             ProfileHeader.UpdateChatGifts(chat);
 
             // TODO: this should be optimized, not the best approach at all
-            var item = ViewModel?.Items.FirstOrDefault(x => x.Type == typeof(ProfileGiftsTabPage));
+            var item = ViewModel?.Items.FirstOrDefault(x => x.PageType == typeof(ProfileGiftsTabPage));
             if (item != null)
             {
                 var container = Navigation.ContainerFromItem(item) as SelectorItem;
@@ -324,33 +324,38 @@ namespace Telegram.Views
                 {
                     return;
                 }
-                else if (grid.Children.Count == 4)
-                {
-                    return;
-                }
 
-                for (int i = 0; i < Math.Min(3, ViewModel.GiftsTab.Items.Count); i++)
-                {
-                    var gift = ViewModel.GiftsTab.Items[i] as ReceivedGift;
-                    var animated = new AnimatedImage
-                    {
-                        Source = DelayedFileSource.FromSticker(ViewModel.ClientService, gift.GetSticker()),
-                        Width = 20,
-                        Height = 20,
-                        FrameSize = new Windows.Foundation.Size(20, 20),
-                        DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
-                        IsViewportAware = true,
-                        LoopCount = 3,
-                        Margin = new Thickness(4, 0, 0, 0),
-                    };
-
-                    Grid.SetColumn(animated, grid.Children.Count);
-                    grid.Children.Add(animated);
-                }
+                UpdateChatGifts(chat, grid);
 
                 container.Content = grid;
                 container.ContentTemplate = null;
+            }
+        }
 
+        private void UpdateChatGifts(Chat chat, Grid grid)
+        {
+            if (grid.Children.Count == 4)
+            {
+                return;
+            }
+
+            for (int i = 0; i < Math.Min(3, ViewModel.GiftsTab.Items.Count); i++)
+            {
+                var gift = ViewModel.GiftsTab.Items[i] as ReceivedGift;
+                var animated = new AnimatedImage
+                {
+                    Source = DelayedFileSource.FromSticker(ViewModel.ClientService, gift.GetSticker()),
+                    Width = 20,
+                    Height = 20,
+                    FrameSize = new Windows.Foundation.Size(20, 20),
+                    DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
+                    IsViewportAware = true,
+                    LoopCount = 3,
+                    Margin = new Thickness(4, 0, 0, 0),
+                };
+
+                Grid.SetColumn(animated, grid.Children.Count);
+                grid.Children.Add(animated);
             }
         }
 
@@ -1015,9 +1020,9 @@ namespace Telegram.Views
 
         private void Navigation_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Navigation.SelectedItem is ProfileTabItem page && (page.Parameter != null || page.Type != MediaFrame.Content?.GetType()))
+            if (Navigation.SelectedItem is ProfileTabItem page && (page.Parameter != null || page.PageType != MediaFrame.Content?.GetType()))
             {
-                Logger.Info(page.Type);
+                Logger.Info(page.PageType);
 
                 NavigationTransitionInfo transition = _prevSelectedIndex == -1
                     ? new SuppressNavigationTransitionInfo()
@@ -1032,7 +1037,7 @@ namespace Telegram.Views
                 RootGrid.Unsnap();
 
                 _prevSelectedIndex = Navigation.SelectedIndex;
-                MediaFrame.Navigate(page.Type, page.Parameter, transition);
+                MediaFrame.Navigate(page.PageType, page.Parameter, transition);
             }
         }
 
@@ -1309,7 +1314,7 @@ namespace Telegram.Views
 
         private void Navigation_PrepareContainerForItem(SelectorItem sender, object args)
         {
-            if (args is ProfileTabItem item && item.Type == typeof(ProfileGiftsTabPage))
+            if (args is ProfileTabItem item && item.PageType == typeof(ProfileGiftsTabPage))
             {
                 var textBlock = new TextBlock
                 {
@@ -1323,8 +1328,24 @@ namespace Telegram.Views
                 grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
                 grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
                 grid.Children.Add(textBlock);
+
+                UpdateChatGifts(ViewModel.Chat, grid);
+
                 sender.Content = grid;
                 sender.ContentTemplate = null;
+            }
+        }
+
+        private void Navigation_ItemContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            var tabItem = Navigation.ItemFromContainer(sender) as ProfileTabItem;
+            if (tabItem.CanSetAsMain && (ViewModel.MyProfile || (ViewModel.Chat.Type is ChatTypeSupergroup{ IsChannel: true } && ViewModel.Chat.CanChangeInfo(ViewModel.ClientService))))
+            {
+                var flyout = new MenuFlyout();
+
+                // TODO: icon is missing
+                flyout.CreateFlyoutItem(ViewModel.SetMainTab, tabItem.Type, Strings.ProfileTabSetAsMain);
+                flyout.ShowAt(sender, args);
             }
         }
     }

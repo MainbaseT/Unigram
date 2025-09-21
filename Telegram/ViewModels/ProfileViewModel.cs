@@ -79,6 +79,8 @@ namespace Telegram.ViewModels
             set => Set(ref _members, value);
         }
 
+        private ProfileTab _mainTab;
+
         public long LinkedChatId { get; private set; }
 
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
@@ -204,9 +206,12 @@ namespace Telegram.ViewModels
 
         protected override async Task UpdateTabsAsync(Chat chat)
         {
+            var tabs = new List<ProfileTabItem>();
+            var mainTab = default(ProfileTab);
+
             if (_savedMessagesTopic != null)
             {
-                await UpdateSharedCountAsync(chat);
+                await UpdateSharedCountAsync(chat, null);
             }
             else if (chat.Type is ChatTypePrivate or ChatTypeSecret)
             {
@@ -215,53 +220,47 @@ namespace Telegram.ViewModels
 
                 // This should really rarely happen
                 cached ??= await ClientService.SendAsync(new GetUserFullInfo(user.Id)) as UserFullInfo;
+                mainTab = cached?.MainProfileTab;
 
                 if (MyProfile && user.Id == ClientService.Options.MyId)
                 {
-                    AddTab(new ProfileTabItem(Strings.ProfileStories, typeof(ProfileStoriesTabPage), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
+                    tabs.Add(new ProfileTabItem(new ProfileTabPosts(), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
 
                     if (cached != null && cached.GiftCount > 0)
                     {
-                        AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage), null, cached.GiftCount, Strings.R.ProfileGiftsCount));
-
-                        if (Items.Count > 1)
-                        {
-                            _giftsTabViewModel.Preload();
-                        }
+                        tabs.Add(new ProfileTabItem(new ProfileTabGifts(), null, cached.GiftCount, Strings.R.ProfileGiftsCount));
                     }
 
-                    AddTab(new ProfileTabItem(Strings.ArchivedStories, typeof(ProfileStoriesTabPage), ChatStoriesType.Archive, ArchivedStoriesTab.Items, Strings.R.ProfileStoriesArchiveCount));
+                    tabs.Add(new ProfileTabItem(new ProfileTabArchivedPosts(), ChatStoriesType.Archive, ArchivedStoriesTab.Items, Strings.R.ProfileStoriesArchiveCount));
                 }
                 else
                 {
                     if (user.Id == ClientService.Options.MyId)
                     {
-                        AddTab(new ProfileTabItem(Strings.SavedDialogsTab, typeof(ProfileSavedChatsTabPage), null, SavedChatsTab.Items, Strings.R.Chats));
-                    }
-                    else if (cached != null && cached.HasPostedToProfileStories)
-                    {
-                        AddTab(new ProfileTabItem(Strings.ProfileStories, typeof(ProfileStoriesTabPage), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
+                        tabs.Add(new ProfileTabItem(new ProfileTabSavedChats(), null, SavedChatsTab.Items, Strings.R.Chats));
                     }
                     else if (cached?.BotInfo != null && cached.BotInfo.HasMediaPreviews)
                     {
-                        AddTab(new ProfileTabItem(Strings.ProfileBotPreviewTab, typeof(ProfileStoriesTabPage), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
+                        tabs.Add(new ProfileTabItem(new ProfileTabPreviews(), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
                     }
-
-                    if (user.Id != ClientService.Options.MyId && cached != null && cached.GiftCount > 0)
+                    else
                     {
-                        AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage), null, cached.GiftCount, Strings.R.ProfileGiftsCount));
-
-                        if (Items.Count > 1)
+                        if (cached != null && cached.HasPostedToProfileStories)
                         {
-                            _giftsTabViewModel.Preload();
+                            tabs.Add(new ProfileTabItem(new ProfileTabPosts(), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
+                        }
+
+                        if (user.Id != ClientService.Options.MyId && cached != null && cached.GiftCount > 0)
+                        {
+                            tabs.Add(new ProfileTabItem(new ProfileTabGifts(), null, cached.GiftCount, Strings.R.ProfileGiftsCount));
                         }
                     }
 
-                    await UpdateSharedCountAsync(chat);
+                    await UpdateSharedCountAsync(chat, tabs);
 
                     if (cached != null && cached.GroupInCommonCount > 0)
                     {
-                        AddTab(new ProfileTabItem(Strings.SharedGroupsTab2, typeof(ProfileGroupsTabPage), null, cached.GroupInCommonCount, Strings.R.CommonGroups));
+                        tabs.Add(new ProfileTabItem(new ProfileTabGroups(), null, cached.GroupInCommonCount, Strings.R.CommonGroups));
                     }
 
                     if (user.Type is UserTypeBot)
@@ -270,7 +269,7 @@ namespace Telegram.ViewModels
 
                         if (_botsTabViewModel.Items.Count > 0)
                         {
-                            AddTab(new ProfileTabItem(Strings.SimilarBotsTab, typeof(ProfileBotsTabPage), null, _botsTabViewModel.TotalCount, Strings.R.Bots));
+                            tabs.Add(new ProfileTabItem(new ProfileTabSimilarBots(), null, _botsTabViewModel.TotalCount, Strings.R.Bots));
                         }
                     }
                 }
@@ -282,46 +281,86 @@ namespace Telegram.ViewModels
 
                 // This should really rarely happen
                 cached ??= await ClientService.SendAsync(new GetSupergroupFullInfo(supergroup.Id)) as SupergroupFullInfo;
+                mainTab = cached?.MainProfileTab;
 
                 if (ForumTopic == null && cached?.HasPinnedStories is true)
                 {
-                    AddTab(new ProfileTabItem(Strings.ProfileStories, typeof(ProfileStoriesTabPage), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
+                    tabs.Add(new ProfileTabItem(new ProfileTabPosts(), ChatStoriesType.Pinned, PinnedStoriesTab.Items, Strings.R.ProfileStoriesCount));
                 }
 
                 if (ForumTopic == null && cached?.GiftCount > 0)
                 {
-                    AddTab(new ProfileTabItem(Strings.ProfileGifts, typeof(ProfileGiftsTabPage), null, cached.GiftCount, Strings.R.ProfileGiftsCount));
-
-                    if (Items.Count > 1)
-                    {
-                        _giftsTabViewModel.Preload();
-                    }
+                    tabs.Add(new ProfileTabItem(new ProfileTabGifts(), null, cached.GiftCount, Strings.R.ProfileGiftsCount));
                 }
 
                 if (typeSupergroup.IsChannel)
                 {
-                    await UpdateSharedCountAsync(chat);
+                    await UpdateSharedCountAsync(chat, tabs);
                     await _channelsTabViewModel.LoadMoreItemsAsync(0);
 
                     if (_channelsTabViewModel.Items.Count > 0)
                     {
-                        AddTab(new ProfileTabItem(Strings.SimilarChannelsTab, typeof(ProfileChannelsTabPage), null, _channelsTabViewModel.TotalCount, Strings.R.Channels));
+                        tabs.Add(new ProfileTabItem(new ProfileTabSimilarChannels(), null, _channelsTabViewModel.TotalCount, Strings.R.Channels));
                     }
                 }
                 else
                 {
                     if (ForumTopic == null)
                     {
-                        AddTab(new ProfileTabItem(Strings.ChannelMembers, typeof(ProfileMembersTabPage), null, ClientService.GetMembersCount(chat), Strings.R.Members));
+                        tabs.Add(new ProfileTabItem(new ProfileTabMembers(), null, ClientService.GetMembersCount(chat), Strings.R.Members));
                     }
 
-                    await UpdateSharedCountAsync(chat);
+                    await UpdateSharedCountAsync(chat, tabs);
                 }
             }
             else if (chat.Type is ChatTypeBasicGroup)
             {
-                AddTab(new ProfileTabItem(Strings.ChannelMembers, typeof(ProfileMembersTabPage), null, ClientService.GetMembersCount(chat), Strings.R.Members));
-                await UpdateSharedCountAsync(chat);
+                tabs.Add(new ProfileTabItem(new ProfileTabMembers(), null, ClientService.GetMembersCount(chat), Strings.R.Members));
+                await UpdateSharedCountAsync(chat, tabs);
+            }
+
+            ProfileTabItem already = null;
+            if (mainTab != null)
+            {
+                already = tabs.FirstOrDefault(x => x.Type.GetType() == mainTab.GetType());
+                
+                if (already != null)
+                {
+                    tabs.Remove(already);
+                    tabs.Insert(0, already);
+                }
+            }
+
+            Items.ReplaceWith(tabs);
+            SelectedItem = already ?? tabs.FirstOrDefault();
+                
+            _mainTab = mainTab;
+
+            if (already?.Type is not ProfileTabGifts)
+            {
+                _giftsTabViewModel.Preload();
+            }
+        }
+
+        private void UpdateMainTab(ProfileTab mainTab)
+        {
+            if (mainTab == null || (_mainTab == null && Items.Empty()))
+            {
+                return;
+            }
+
+            if (_mainTab == null || mainTab.GetType() != _mainTab.GetType())
+            {
+                var already = Items.FirstOrDefault(x => x.Type.GetType() == mainTab.GetType());
+                if (already != null)
+                {
+                    Items.Remove(already);
+                    Items.Insert(0, already);
+                }
+
+                SelectedItem ??= already;
+
+                _mainTab = mainTab;
             }
         }
 
@@ -373,6 +412,7 @@ namespace Telegram.ViewModels
                 BeginOnUIThread(() =>
                 {
                     LinkedChatId = update.UserFullInfo.PersonalChatId;
+                    UpdateMainTab(update.UserFullInfo.MainProfileTab);
                     Delegate?.UpdateUser(chat, user, update.UserFullInfo, false, false);
 
                     if (update.UserFullInfo.BotInfo?.CanGetRevenueStatistics is true)
@@ -461,6 +501,7 @@ namespace Telegram.ViewModels
                 BeginOnUIThread(() =>
                 {
                     LinkedChatId = update.SupergroupFullInfo.LinkedChatId;
+                    UpdateMainTab(update.SupergroupFullInfo.MainProfileTab);
                     MembersTab.UpdateMembers();
                     Delegate?.UpdateSupergroup(chat, supergroup, update.SupergroupFullInfo);
 
@@ -1525,6 +1566,18 @@ namespace Telegram.ViewModels
             if (response is Error)
             {
                 _members.Insert(index, member);
+            }
+        }
+
+        public void SetMainTab(ProfileTab tab)
+        {
+            if (MyProfile)
+            {
+                ClientService.Send(new SetMainProfileTab(tab));
+            }
+            else if (Chat.Type is ChatTypeSupergroup supergroup)
+            {
+                ClientService.Send(new SetSupergroupMainProfileTab(supergroup.SupergroupId, tab));
             }
         }
 
