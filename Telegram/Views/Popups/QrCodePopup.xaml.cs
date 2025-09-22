@@ -147,7 +147,7 @@ namespace Telegram.Views.Popups
 
             var items = new[] { defaultTheme }.Union(themes).ToList();
 
-            _selectedTheme = themes.FirstOrDefault(x => x.Name == settingsService.Appearance.ChatTheme?.Name) ?? defaultTheme;
+            _selectedTheme = themes.FirstOrDefault(x => x.AreTheSame(settingsService.Appearance.ChatTheme)) ?? defaultTheme;
 
             ScrollingHost.ItemsSource = items;
             ScrollingHost.SelectedItem = _selectedTheme;
@@ -247,8 +247,11 @@ namespace Telegram.Views.Popups
 
                 Preview.UpdateSource(_clientService, settings.Background, false);
 
-                Code.Background = backgrounds[theme.Name].ToBrush();
-                Username.Foreground = backgrounds[theme.Name].ToBrush();
+                if (theme.Type is ChatThemeEmoji emoji)
+                {
+                    Code.Background = backgrounds[emoji.Name].ToBrush();
+                    Username.Foreground = backgrounds[emoji.Name].ToBrush();
+                }
             }
         }
 

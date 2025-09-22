@@ -306,6 +306,21 @@ namespace Telegram
             return false;
         }
 
+        public static bool AreTheSame(this ChatThemeViewModel x, EmojiChatTheme y)
+        {
+            if (x == null || y == null)
+            {
+                return x == null && y == null;
+            }
+
+            if (x.Type is ChatThemeEmoji xEmoji)
+            {
+                return xEmoji.Name == y.Name;
+            }
+
+            return false;
+        }
+
         public static bool AreTheSame(this Background prev, Background next)
         {
             if (prev == null || next == null)
