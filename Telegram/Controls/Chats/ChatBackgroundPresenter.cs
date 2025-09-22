@@ -6,6 +6,7 @@
 //
 using Microsoft.Graphics.Canvas.Effects;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
@@ -31,9 +32,8 @@ namespace Telegram.Controls.Chats
 
         private IClientService _clientService;
 
-        private LoadedImageSurface _surface;
-        private string _surfacePath;
         private GiftPatterns _pattern;
+        private string _patternPath;
         private Sticker _symbol;
         private Sticker _model;
         private UpgradedGift _gift;
@@ -165,11 +165,10 @@ namespace Telegram.Controls.Chats
                 _intensity = 255;
                 _backgroundFill = typeFill.Fill;
 
-                _surface = null;
-                _surfacePath = null;
+                _pattern = null;
+                _patternPath = null;
                 _wallpaperPath = null;
 
-                _pattern = null;
                 _gift = null;
 
                 _backgroundId = 0;
@@ -240,10 +239,9 @@ namespace Telegram.Controls.Chats
                 _intensity = 255;
                 _backgroundFill = null;
 
-                _surface = null;
-                _surfacePath = null;
-
                 _pattern = null;
+                _patternPath = null;
+
                 _gift = null;
 
                 UpdateBlurred(typeWallpaper.IsBlurred);
@@ -319,7 +317,7 @@ namespace Telegram.Controls.Chats
 
         private async void UpdatePattern(BackgroundTypePattern pattern, File file, double scale, Sticker symbol, Sticker model)
         {
-            if (_surface != null && _surfacePath == file.Local.Path && _rasterizationScale == scale && _symbol?.Id == symbol?.Id && _model?.Id == model?.Id)
+            if (_pattern != null && _patternPath == file.Local.Path && _rasterizationScale == scale && _symbol?.Id == symbol?.Id && _model?.Id == model?.Id)
             {
                 UpdatePattern(pattern, true);
                 return;
@@ -333,21 +331,18 @@ namespace Telegram.Controls.Chats
                     ? new SolidColorBrush(Colors.Black)
                     : null;
 
-                _surfacePath = file.Local.Path;
+                _patternPath = file.Local.Path;
                 _rasterizationScale = scale;
 
                 if (_vector)
                 {
-                    var result = await PlaceholderHelper.LoadPatternBitmapAsync(file, scale);
-                    _surface = result.Surface;
-                    _pattern = result.Patterns;
+                    _pattern = await PlaceholderHelper.LoadPatternBitmapAsync(file, scale);
                     _symbol = symbol;
                     _model = model;
                 }
                 else
                 {
-                    _surface = await PlaceholderHelper.LoadBitmapAsync(file);
-                    _pattern = null;
+                    _pattern = await PlaceholderHelper.LoadBitmapAsync(file);
                     _symbol = null;
                     _model = null;
                 }
@@ -367,14 +362,21 @@ namespace Telegram.Controls.Chats
                     //}
                 }
 
-                if (_backgroundId != file.Id)
+                if (_backgroundId != file.Id || IsDisconnected)
                 {
                     return;
                 }
 
-                if (_surface != null)
+                if (_pattern != null)
                 {
-                    _surface.LoadCompleted += handler;
+                    if (_pattern.Surface is LoadedImageSurface surface)
+                    {
+                        surface.LoadCompleted += handler;
+                    }
+                    else
+                    {
+                        UpdateTiledBrush(true);
+                    }
                 }
             }
         }
@@ -420,28 +422,29 @@ namespace Telegram.Controls.Chats
                 Model.Source = DelayedFileSource.FromSticker(_clientService, _model);
             }
 
-            if (Foreground is TiledBrush tiledBrush)
+            if (show)
             {
-                tiledBrush.ImageSource = _surface;
-                tiledBrush.Patterns = _pattern;
-                tiledBrush.Symbol = Symbol;
-                tiledBrush.Model = UpdateModel();
-                tiledBrush.Intensity = _intensity;
-                tiledBrush.IsNegative = _negative;
-
-                tiledBrush.Update();
-            }
-            else if (_surface != null)
-            {
-                Foreground = new TiledBrush
+                if (Foreground is TiledBrush tiledBrush)
                 {
-                    ImageSource = _surface,
-                    Patterns = _pattern,
-                    Symbol = Symbol,
-                    Model = UpdateModel(),
-                    Intensity = _intensity,
-                    IsNegative = _negative,
-                };
+                    tiledBrush.Patterns = _pattern;
+                    tiledBrush.Symbol = Symbol;
+                    tiledBrush.Model = UpdateModel();
+                    tiledBrush.Intensity = _intensity;
+                    tiledBrush.IsNegative = _negative;
+
+                    tiledBrush.Update();
+                }
+                else if (_pattern != null)
+                {
+                    Foreground = new TiledBrush
+                    {
+                        Patterns = _pattern,
+                        Symbol = Symbol,
+                        Model = UpdateModel(),
+                        Intensity = _intensity,
+                        IsNegative = _negative,
+                    };
+                }
             }
 
             if (_collapsed != show || Canvas == null)
@@ -476,12 +479,12 @@ namespace Telegram.Controls.Chats
 
         private ContainerVisual _modelVisual;
 
-        private int UpdateModel()
+        private GiftPattern UpdateModel()
         {
             if (_model == null)
             {
                 _modelVisual?.Children.RemoveAll();
-                return -1;
+                return default;
             }
 
             if (_modelVisual == null)
@@ -496,51 +499,69 @@ namespace Telegram.Controls.Chats
                 _modelVisual.Children.RemoveAll();
             }
 
-            var index = new Random().Next(0, _pattern.Patterns.Count);
-            var pattern = _pattern.Patterns[index];
+            var width = (int)Math.Ceiling(ActualWidth / _pattern.RenderSize.X);
+            var height = (int)Math.Ceiling(ActualHeight / _pattern.RenderSize.Y);
 
-            var width = (int)Math.Ceiling(ActualWidth / _surface.DecodedSize.Width);
-            var height = (int)Math.Ceiling(ActualHeight / _surface.DecodedSize.Height);
-
-            var position = new Random().Next(0, height * width + width);
-
-            var logical = _surface.DecodedSize.ToVector2();
-            var physical = _surface.DecodedPhysicalSize.ToVector2();
+            var logical = _pattern.RenderSize;
+            var physical = _pattern.RenderPhysicalSize;
             var factor = logical / physical;
+
+            var topBound = 48 * 3;
+            var bottomBound = ActualSize.Y - 48 * 2;
+            var rightBound = ActualSize.X;
+
+            var available = new List<GiftPattern>(_pattern.Patterns.Count * (height * width + width));
+
+            for (int y = 0; y < height; y++)
+            {
+                var offsetY = logical.Y * y;
+
+                for (int x = 0; x < width; x++)
+                {
+                    var offsetX = logical.X * x;
+
+                    for (int i = 0; i < _pattern.Patterns.Count; i++)
+                    {
+                        var temp = _pattern.Patterns[i];
+
+                        var size = temp.Size * factor;
+                        var offset = new Vector2(offsetX + temp.Offset.X * factor.X, offsetY + temp.Offset.Y * factor.Y);
+
+                        if (offset.Y < topBound || offset.Y + size.Y > bottomBound || offset.X + size.X > rightBound)
+                        {
+                            continue;
+                        }
+
+                        available.Add(new GiftPattern
+                        {
+                            Size = size,
+                            Offset = offset,
+                            RotationAngle = temp.RotationAngle
+                        });
+                    }
+                }
+            }
+
+            var index = new Random().Next(0, available.Count);
+            var pattern = available[index];
 
             var compositor = BootStrapper.Current.Compositor;
             var visual = ElementComposition.GetElementVisual(Model);
 
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    var i = y * width + x;
-                    if (i != position)
-                    {
-                        continue;
-                    }
+            var sprite = compositor.CreateRedirectVisual(visual);
+            sprite.Size = pattern.Size;
+            sprite.Offset = new Vector3(pattern.Offset, 0);
+            sprite.RotationAngle = pattern.RotationAngle;
 
-                    var offset = new Vector2(logical.X * x, logical.Y * y);
+            Model.Width = sprite.Size.X;
+            Model.Height = sprite.Size.Y;
+            Model.FrameSize = sprite.Size.ToSize();
+            Model.LoopCount = 1;
+            Model.Play();
 
-                    var sprite = _modelVisual.Compositor.CreateRedirectVisual(visual);
-                    //var sprite = visual.Compositor.CreateRedirectVisual(giftVisual);
-                    sprite.Size = pattern.Size * factor;
-                    sprite.Offset = new Vector3(offset + pattern.Offset * factor, 0);
-                    sprite.RotationAngle = pattern.RotationAngle;
-                    //sprite.Brush = surfaceBrush;
+            _modelVisual.Children.InsertAtTop(sprite);
 
-                    Model.Width = sprite.Size.X;
-                    Model.Height = sprite.Size.Y;
-                    Model.FrameSize = sprite.Size.ToSize();
-                    Model.LoopCount = 1;
-                    Model.Play();
-
-                    _modelVisual.Children.InsertAtTop(sprite);
-                }
-            }
-
-            return index;
+            return pattern;
         }
 
         private SpriteVisual _blurVisual;

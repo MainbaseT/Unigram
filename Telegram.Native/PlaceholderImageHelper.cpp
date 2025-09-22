@@ -27,7 +27,15 @@
 
 using namespace D2D1;
 using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Windows::Graphics::DirectX;
 using namespace winrt::Windows::UI::Xaml::Media::Imaging;
+
+namespace abi
+{
+    using namespace ABI::Windows::Foundation;
+    using namespace ABI::Windows::Graphics::DirectX;
+    using namespace ABI::Windows::UI::Composition;
+}
 
 namespace winrt::Telegram::Native::implementation
 {
@@ -404,13 +412,12 @@ namespace winrt::Telegram::Native::implementation
         return native->EndDraw();
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<GiftPatterns> PlaceholderImageHelper::DrawSvgAsync(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi)
+    winrt::Windows::Foundation::IAsyncOperation<GiftPatterns> PlaceholderImageHelper::DrawSvgAsync(Compositor compositor, hstring path, Color foreground, double dpi)
     {
         winrt::apartment_context ui_thread;
         co_await winrt::resume_background();
 
-        auto patterns = DrawSvg(path, foreground, randomAccessStream, dpi);
-        randomAccessStream.Seek(0);
+        auto patterns = DrawSvg(compositor, path, foreground, dpi);
 
         co_await ui_thread;
         co_return patterns;
@@ -511,10 +518,13 @@ namespace winrt::Telegram::Native::implementation
         return decompressed;
     }
 
-    GiftPatterns PlaceholderImageHelper::DrawSvg(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi)
+    GiftPatterns PlaceholderImageHelper::DrawSvg(Compositor compositor, hstring path, Color foreground, double rasterizationScale)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
+
+        auto scale = (int)(rasterizationScale * 100);
+        auto dpi = 0.25 * rasterizationScale;
 
         auto data = DecompressFromFile(path);
         auto patterns = winrt::single_threaded_vector<GiftPattern>();
@@ -527,21 +537,36 @@ namespace winrt::Telegram::Native::implementation
                 nsvgDelete(p);
             });
 
-        auto imageWidth = image->width * dpi;
-        auto imageHeight = image->height * dpi;
+        auto imageWidth = image->width;
+        auto imageHeight = image->height;
 
-        winrt::com_ptr<ID2D1Bitmap1> targetBitmap;
         winrt::com_ptr<ID2D1SolidColorBrush> blackBrush;
 
-        D2D1_BITMAP_PROPERTIES1 properties = { { DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED }, 96, 96, D2D1_BITMAP_OPTIONS_TARGET, 0 };
-        CleanupIfFailed(result, m_d2dContext->CreateBitmap(D2D1_SIZE_U{ (uint32_t)imageWidth, (uint32_t)imageHeight }, nullptr, 0, &properties, targetBitmap.put()));
+        winrt::com_ptr<abi::ICompositionGraphicsDevice> deviceInterop;
+        CompositionGraphicsDevice device{ nullptr };
+        CompositionDrawingSurface surface{ nullptr };
+        winrt::com_ptr<abi::ICompositionDrawingSurfaceInterop> surfaceInterop;
+        winrt::Windows::Foundation::Size imageSize(imageWidth * dpi, imageHeight * dpi);
 
-        m_d2dContext->SetTarget(targetBitmap.get());
-        m_d2dContext->BeginDraw();
-        m_d2dContext->Clear(D2D1::ColorF(0, 0, 0, 0));
-        m_d2dContext->SetTransform(D2D1::Matrix3x2F::Scale(1 * dpi, 1 * dpi));
+        winrt::com_ptr<ID2D1DeviceContext> d2dContext;
+        POINT offset;
 
-        CleanupIfFailed(result, m_d2dContext->CreateSolidColorBrush(
+        auto compositorInterop = compositor.as<abi::ICompositorInterop>();
+        CleanupIfFailed(result, compositorInterop->CreateGraphicsDevice(m_d2dDevice.get(), deviceInterop.put()));
+
+        device = deviceInterop.as<CompositionGraphicsDevice>();
+        surface = device.CreateDrawingSurface(imageSize, DirectXPixelFormat::B8G8R8A8UIntNormalized, DirectXAlphaMode::Premultiplied);
+        surfaceInterop = surface.as<abi::ICompositionDrawingSurfaceInterop>();
+
+        // TODO: BeginDraw can return DXGI_ERROR_DEVICE_REMOVED, but it shouldn't be possible
+        // Because we always create a new composition graphics device (not great ndr, but we must use background instance not to block messages measure)
+        // And we handle device loss right before this method is invoked.
+        CleanupIfFailed(result, surfaceInterop->BeginDraw(nullptr, __uuidof(ID2D1DeviceContext), d2dContext.put_void(), &offset));
+
+        d2dContext->Clear(D2D1::ColorF(0, 0, 0, 0));
+        d2dContext->SetTransform(D2D1::Matrix3x2F::Scale(1 * dpi, 1 * dpi));
+
+        CleanupIfFailed(result, d2dContext->CreateSolidColorBrush(
             D2D1::ColorF(foreground.R / 255.0f, foreground.G / 255.0f, foreground.B / 255.0f, foreground.A / 255.0f), blackBrush.put()));
 
         for (auto shape = image->shapes; shape != NULL; shape = shape->next)
@@ -605,7 +630,7 @@ namespace winrt::Telegram::Native::implementation
                     break;
                 }
 
-                m_d2dContext->FillGeometry(geometry.get(), blackBrush.get());
+                d2dContext->FillGeometry(geometry.get(), blackBrush.get());
             }
 
             if (shape->stroke.type != NSVG_PAINT_NONE)
@@ -646,22 +671,16 @@ namespace winrt::Telegram::Native::implementation
                 winrt::com_ptr<ID2D1StrokeStyle1> strokeStyle;
                 CleanupIfFailed(result, m_d2dFactory->CreateStrokeStyle(strokeProperties, NULL, 0, strokeStyle.put()));
 
-                m_d2dContext->DrawGeometry(geometry.get(), blackBrush.get(), shape->strokeWidth, strokeStyle.get());
+                d2dContext->DrawGeometry(geometry.get(), blackBrush.get(), shape->strokeWidth, strokeStyle.get());
             }
         }
 
-        m_d2dContext->SetTransform(D2D1::Matrix3x2F::Identity());
+        d2dContext->SetTransform(D2D1::Matrix3x2F::Identity());
 
-        if ((result = m_d2dContext->EndDraw()) == D2DERR_RECREATE_TARGET)
-        {
-            CleanupIfFailed(result, CreateDeviceResources());
-            return DrawSvg(path, foreground, randomAccessStream, dpi);
-        }
-
-        CleanupIfFailed(result, SaveImageToStream(targetBitmap.get(), GUID_ContainerFormatPng, randomAccessStream));
+        result = surfaceInterop->EndDraw();
 
     Cleanup:
-        return GiftPatterns(imageWidth, imageHeight, patterns);
+        return GiftPatterns(surface, imageWidth, imageHeight, rasterizationScale, patterns);
     }
 
     SoftwareBitmap PlaceholderImageHelper::DrawBlurred(hstring fileName, float blurAmount)

@@ -2080,14 +2080,15 @@
                                              DecodeFrameType="Logical"
                                              AutoPlay="False"
                                              IsViewportAware="False"
-                                             Opacity="0"/>
+                                             Opacity="0" />
                         <local:AnimatedImage x:Name="Model"
                                              HorizontalAlignment="Left"
                                              VerticalAlignment="Top"
                                              DecodeFrameType="Logical"
                                              AutoPlay="False"
                                              LoopCount="1"
-                                             IsViewportAware="False" />
+                                             IsViewportAware="False"
+                                             Opacity="0" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

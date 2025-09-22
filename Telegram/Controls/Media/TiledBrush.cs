@@ -19,13 +19,11 @@ namespace Telegram.Controls.Media
 {
     public partial class TiledBrush : XamlCompositionBrushBase
     {
-        public LoadedImageSurface ImageSource { get; set; }
-
         public GiftPatterns Patterns { get; set; }
 
         public AnimatedImage Symbol { get; set; }
 
-        public int Model { get; set; }
+        public GiftPattern Model { get; set; }
 
         public bool IsNegative { get; set; }
 
@@ -46,9 +44,9 @@ namespace Telegram.Controls.Media
 
         private CompositionSurfaceBrush CreateSurfaceBrush()
         {
-            var surface = ImageSource;
-            var logical = surface.DecodedSize.ToVector2();
-            var physical = surface.DecodedPhysicalSize.ToVector2();
+            var surface = Patterns.Surface;
+            var logical = Patterns.RenderSize;
+            var physical = Patterns.RenderPhysicalSize;
 
             var surfaceBrush = BootStrapper.Current.Compositor.CreateSurfaceBrush(surface);
             surfaceBrush.Stretch = CompositionStretch.None;
@@ -57,14 +55,13 @@ namespace Telegram.Controls.Media
             surfaceBrush.HorizontalAlignmentRatio = 0;
             surfaceBrush.VerticalAlignmentRatio = 0;
 
-            var background = Patterns;
-            if (background != null)
+            if (Patterns.Patterns.Count > 0)
             {
                 var compositor = BootStrapper.Current.Compositor;
                 var factor = logical / physical;
 
                 var visual = BootStrapper.Current.Compositor.CreateSpriteVisual();
-                visual.Size = background.Size * factor;
+                visual.Size = logical;
                 visual.Brush = surfaceBrush;
 
                 var symbolSurfaceBrush = compositor.CreateSurfaceBrush();
@@ -83,14 +80,9 @@ namespace Telegram.Controls.Media
 
                 var maxWidth = 0f;
 
-                for (int i = 0; i < background.Patterns.Count; i++)
+                for (int i = 0; i < Patterns.Patterns.Count; i++)
                 {
-                    if (i == Model)
-                    {
-                        //continue;
-                    }
-
-                    var pattern = background.Patterns[i];
+                    var pattern = Patterns.Patterns[i];
                     var sprite = visual.Compositor.CreateSpriteVisual();
                     sprite.Size = pattern.Size * factor;
                     sprite.Offset = new Vector3(pattern.Offset * factor, 0);
@@ -112,7 +104,7 @@ namespace Telegram.Controls.Media
 
                 visualSurface.SourceVisual = visual;
                 visualSurface.SourceOffset = new Vector2(0, 0);
-                visualSurface.SourceSize = background.Size * factor;
+                visualSurface.SourceSize = logical;
                 visualSurfaceBrush.HorizontalAlignmentRatio = 0;
                 visualSurfaceBrush.VerticalAlignmentRatio = 0;
                 visualSurfaceBrush.Surface = visualSurface;
@@ -131,7 +123,7 @@ namespace Telegram.Controls.Media
             _connected = true;
             _negative = IsNegative;
 
-            if (_recreate || (CompositionBrush == null && ImageSource != null))
+            if (_recreate || (CompositionBrush == null && Patterns != null))
             {
                 _recreate = false;
 
@@ -188,9 +180,63 @@ namespace Telegram.Controls.Media
                     //effect = borderEffect;
                 }
 
+                CompositionSurfaceBrush extra = null;
+
+                if (Patterns.Patterns.Count > 0)
+                {
+                    var cos = MathF.Abs(MathF.Cos(Model.RotationAngle));
+                    var sin = MathF.Abs(MathF.Sin(Model.RotationAngle));
+
+                    var boundingWidth = Model.Size.X * cos + Model.Size.Y * sin;
+                    var boundingHeight = Model.Size.X * sin + Model.Size.Y * cos;
+
+                    var visual = BootStrapper.Current.Compositor.CreateContainerVisual();
+                    visual.Size = new Vector2(Model.Offset.X + boundingWidth, Model.Offset.Y + boundingHeight);
+
+                    var sprite = BootStrapper.Current.Compositor.CreateSpriteVisual();
+                    sprite.Brush = BootStrapper.Current.Compositor.CreateColorBrush(Colors.Black);
+                    sprite.Size = Model.Size;
+                    //sprite.Offset = new Vector3(Model.Offset, 0);
+                    //sprite.RotationAngle = Model.RotationAngle;
+
+                    visual.Children.InsertAtTop(sprite);
+
+                    var visualSurfaceBrush = BootStrapper.Current.Compositor.CreateSurfaceBrush();
+                    var visualSurface = BootStrapper.Current.Compositor.CreateVisualSurface();
+
+                    visualSurface.SourceVisual = sprite;
+                    visualSurface.SourceOffset = new Vector2(0, 0);
+                    visualSurface.SourceSize = sprite.Size;
+                    visualSurfaceBrush.Offset = Model.Offset;
+                    visualSurfaceBrush.RotationAngle = Model.RotationAngle;
+                    visualSurfaceBrush.HorizontalAlignmentRatio = 0;
+                    visualSurfaceBrush.VerticalAlignmentRatio = 0;
+                    visualSurfaceBrush.Surface = visualSurface;
+                    visualSurfaceBrush.Stretch = CompositionStretch.None;
+                    visualSurfaceBrush.BitmapInterpolationMode = CompositionBitmapInterpolationMode.NearestNeighbor;
+                    visualSurfaceBrush.SnapToPixels = true;
+
+                    var composite = new CompositeEffect
+                    {
+                        Mode = IsNegative
+                         ? Microsoft.Graphics.Canvas.CanvasComposite.SourceOver
+                         : Microsoft.Graphics.Canvas.CanvasComposite.DestinationOut,
+                    };
+                    composite.Sources.Add(effect);
+                    composite.Sources.Add(new CompositionEffectSourceParameter("Cutout"));
+
+                    effect = composite;
+                    extra = visualSurfaceBrush;
+                }
+
                 var borderEffectFactory = BootStrapper.Current.Compositor.CreateEffectFactory(effect, new[] { "Tint.Color" });
                 var borderEffectBrush = borderEffectFactory.CreateBrush();
                 borderEffectBrush.SetSourceParameter("Source", surfaceBrush);
+
+                if (extra != null)
+                {
+                    borderEffectBrush.SetSourceParameter("Cutout", extra);
+                }
 
                 if (blend != null)
                 {
@@ -213,7 +259,7 @@ namespace Telegram.Controls.Media
                 CompositionBrush = null;
             }
 
-            if (ImageSource != null)
+            if (Patterns != null)
             {
                 //ImageSource.Dispose();
                 //ImageSource = null;
@@ -227,7 +273,7 @@ namespace Telegram.Controls.Media
 
         public void Update()
         {
-            if (_connected && CompositionBrush != null && ImageSource != null)
+            if (_connected && CompositionBrush != null && Patterns != null)
             {
                 if (_negative != IsNegative)
                 {

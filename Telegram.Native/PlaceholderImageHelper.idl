@@ -32,8 +32,8 @@ namespace Telegram.Native
 
         void Encode(Windows.Storage.Streams.IBuffer source, Windows.Storage.Streams.IRandomAccessStream destination, Int32 width, Int32 height, Int32 rotation);
 
-        Windows.Foundation.IAsyncOperation<GiftPatterns> DrawSvgAsync(String path, Windows.UI.Color foreground, Windows.Storage.Streams.IRandomAccessStream randomAccessStream, Double dpi);
-        GiftPatterns DrawSvg(String path, Windows.UI.Color foreground, Windows.Storage.Streams.IRandomAccessStream randomAccessStream, Double dpi);
+        Windows.Foundation.IAsyncOperation<GiftPatterns> DrawSvgAsync(Windows.UI.Composition.Compositor compositor, String path, Windows.UI.Color foreground, Double dpi);
+        GiftPatterns DrawSvg(Windows.UI.Composition.Compositor compositor, String path, Windows.UI.Color foreground, Double dpi);
 
         [default_overload]
         Windows.Graphics.Imaging.SoftwareBitmap DrawBlurred(String fileName, Single blurAmount);

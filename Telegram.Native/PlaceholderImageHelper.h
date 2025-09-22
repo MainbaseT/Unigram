@@ -120,8 +120,8 @@ namespace winrt::Telegram::Native::implementation
 
         HRESULT Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height, int32_t rotation);
 
-        winrt::Windows::Foundation::IAsyncOperation<GiftPatterns> DrawSvgAsync(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi);
-        GiftPatterns DrawSvg(hstring path, Color foreground, IRandomAccessStream randomAccessStream, double dpi);
+        winrt::Windows::Foundation::IAsyncOperation<GiftPatterns> DrawSvgAsync(Compositor compositor, hstring path, Color foreground, double rasterizationScale);
+        GiftPatterns DrawSvg(Compositor compositor, hstring path, Color foreground, double rasterizationScale);
 
         SoftwareBitmap DrawBlurred(hstring fileName, float blurAmount);
         SoftwareBitmap DrawBlurred(IVector<uint8_t> bytes, float blurAmount);

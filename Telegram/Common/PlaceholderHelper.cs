@@ -8,11 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Native;
+using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Windows.Foundation;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -94,14 +93,15 @@ namespace Telegram.Common
             return null;
         }
 
-        public static async Task<LoadedImageSurface> LoadBitmapAsync(File file)
+        public static async Task<GiftPatterns> LoadBitmapAsync(File file)
         {
             try
             {
                 var item = await StorageFile.GetFileFromPathAsync(file.Local.Path);
                 using (var stream = await item.OpenReadAsync())
                 {
-                    return LoadedImageSurface.StartLoadFromStream(stream);
+                    var surface = LoadedImageSurface.StartLoadFromStream(stream);
+                    return new GiftPatterns(surface);
                 }
             }
             catch
@@ -112,23 +112,10 @@ namespace Telegram.Common
 
         private static readonly DisposableMutex _patternSurfaceLock = new();
 
-        public static async Task<(LoadedImageSurface Surface, GiftPatterns Patterns)> LoadPatternBitmapAsync(File file, double rasterizationScale)
+        public static async Task<GiftPatterns> LoadPatternBitmapAsync(File file, double rasterizationScale)
         {
             using var locked = await _patternSurfaceLock.WaitAsync();
-
-            var bitmap = default(LoadedImageSurface);
-            var patterns = default(GiftPatterns);
-            var scale = (int)(rasterizationScale * 100);
-
-            rasterizationScale = 0.25 * rasterizationScale;
-
-            using (var stream = new InMemoryRandomAccessStream())
-            {
-                patterns = await Background.DrawSvgAsync(file.Local.Path, Colors.White, stream, rasterizationScale);
-                bitmap = LoadedImageSurface.StartLoadFromStream(stream, new Size(360, 740));
-            }
-
-            return (bitmap, patterns);
+            return await Background.DrawSvgAsync(BootStrapper.Current.Compositor, file.Local.Path, Colors.White, rasterizationScale);
         }
 
         public static async void GetBlurred(SoftwareBitmapSource source, string path, float amount = 3)
