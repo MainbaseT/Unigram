@@ -5525,6 +5525,14 @@ namespace Telegram.Views
             }
             else if (chat.Permissions.CanSendBasicMessages is false && supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator)
             {
+                if (ViewModel.ClientService.TryGetSupergroupFull(supergroup.Id, out SupergroupFullInfo fullInfo))
+                {
+                    if (fullInfo.UnrestrictBoostCount != 0 && fullInfo.MyBoostCount >= fullInfo.UnrestrictBoostCount)
+                    {
+                        return Strings.TypeMessage;
+                    }
+                }
+
                 readOnly = true;
                 return Strings.PlainTextRestrictedHint;
             }
