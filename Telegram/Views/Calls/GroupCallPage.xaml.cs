@@ -1857,38 +1857,6 @@ namespace Telegram.Views.Calls
 
             var call = _call;
 
-            var slider = new MenuFlyoutSlider
-            {
-                Icon = MenuFlyoutHelper.CreateIcon(Icons.Speaker3),
-                TextValueConverter = new TextValueProvider(newValue => string.Format("{0:P0}", newValue / 100)),
-                IconValueConverter = new IconValueProvider(newValue => newValue switch
-                {
-                    double n when n > 66 => Icons.Speaker3,
-                    double n when n > 33 => Icons.Speaker2,
-                    double n when n > 0 => Icons.Speaker1,
-                    _ => Icons.SpeakerOff
-                }),
-                FontWeight = FontWeights.SemiBold,
-                Value = participant.VolumeLevel / 100d,
-                Minimum = 0,
-                Maximum = 200
-            };
-
-            var debounder = new EventDebouncer<RangeBaseValueChangedEventArgs>(Constants.HoldingThrottle, handler => slider.ValueChanged += new RangeBaseValueChangedEventHandler(handler), handler => slider.ValueChanged -= new RangeBaseValueChangedEventHandler(handler));
-            debounder.Invoked += (s, args) =>
-            {
-                if (args.NewValue > 0)
-                {
-                    _call.ClientService.Send(new SetGroupCallParticipantVolumeLevel(call.Id, participant.ParticipantId, (int)(args.NewValue * 100)));
-                }
-                else
-                {
-                    _call.ClientService.Send(new ToggleGroupCallParticipantIsMuted(call.Id, participant.ParticipantId, true));
-                }
-            };
-
-            flyout.Items.Add(slider);
-
             if (participant.IsCurrentUser)
             {
                 if (participant.IsHandRaised)
@@ -1910,6 +1878,38 @@ namespace Telegram.Views.Calls
             }
             else
             {
+                var slider = new MenuFlyoutSlider
+                {
+                    Icon = MenuFlyoutHelper.CreateIcon(Icons.Speaker3),
+                    TextValueConverter = new TextValueProvider(newValue => string.Format("{0:P0}", newValue / 100)),
+                    IconValueConverter = new IconValueProvider(newValue => newValue switch
+                    {
+                        double n when n > 66 => Icons.Speaker3,
+                        double n when n > 33 => Icons.Speaker2,
+                        double n when n > 0 => Icons.Speaker1,
+                        _ => Icons.SpeakerOff
+                    }),
+                    FontWeight = FontWeights.SemiBold,
+                    Value = participant.VolumeLevel / 100d,
+                    Minimum = 0,
+                    Maximum = 200
+                };
+
+                var debounder = new EventDebouncer<RangeBaseValueChangedEventArgs>(Constants.HoldingThrottle, handler => slider.ValueChanged += new RangeBaseValueChangedEventHandler(handler), handler => slider.ValueChanged -= new RangeBaseValueChangedEventHandler(handler));
+                debounder.Invoked += (s, args) =>
+                {
+                    if (args.NewValue > 0)
+                    {
+                        _call.ClientService.Send(new SetGroupCallParticipantVolumeLevel(call.Id, participant.ParticipantId, (int)(args.NewValue * 100)));
+                    }
+                    else
+                    {
+                        _call.ClientService.Send(new ToggleGroupCallParticipantIsMuted(call.Id, participant.ParticipantId, true));
+                    }
+                };
+
+                flyout.Items.Add(slider);
+
                 if (participant.HasVideoInfo())
                 {
                     //if (participant.ParticipantId.IsEqual(_pinnedParticipant?.ParticipantId))
