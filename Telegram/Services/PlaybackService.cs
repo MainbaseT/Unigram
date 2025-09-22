@@ -179,6 +179,8 @@ namespace Telegram.Services
 
         private long _userId;
 
+        private long _httpServerToken;
+
         private List<PlaybackItem> _items;
 
         public event TypedEventHandler<IPlaybackService, object> MediaFailed;
@@ -631,7 +633,7 @@ namespace Telegram.Services
                 CurrentItem = item;
 
                 player.Rate = (float)_playbackSpeed;
-                player.Play(new RemoteFileStream(item.ClientService, item.Document));
+                player.Play(MediaHttpServer.Start(item, ref _httpServerToken));
                 PlaybackState = PlaybackState.Playing;
             }
             catch
@@ -666,6 +668,8 @@ namespace Telegram.Services
             //Execute.BeginOnUIThread(() => CurrentItem = null);
             CurrentItem = null;
             Dispose(true);
+
+            MediaHttpServer.Stop(ref _httpServerToken);
         }
 
         public void MoveTo(PlaybackItem item, int index)
@@ -716,7 +720,7 @@ namespace Telegram.Services
 
             Dispose(false);
 
-            var item = GetPlaybackItem(xamlRoot, message, topic);
+            var item = new PlaybackItemMessage(xamlRoot, message, topic);
             var items = _items = new List<PlaybackItem>();
 
             _items.Add(item);
@@ -743,11 +747,11 @@ namespace Telegram.Services
                 {
                     if (add.Id > message.Id && add.Content is MessageAudio)
                     {
-                        items.Insert(0, GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
+                        items.Insert(0, new PlaybackItemMessage(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
                     }
                     else if (add.Id < message.Id && (add.Content is MessageVoiceNote || add.Content is MessageVideoNote))
                     {
-                        items.Insert(0, GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
+                        items.Insert(0, new PlaybackItemMessage(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
                     }
                 }
 
@@ -755,29 +759,17 @@ namespace Telegram.Services
                 {
                     if (add.Id < message.Id && add.Content is MessageAudio)
                     {
-                        items.Add(GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
+                        items.Add(new PlaybackItemMessage(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
                     }
                     else if (add.Id > message.Id && (add.Content is MessageVoiceNote || add.Content is MessageVideoNote))
                     {
-                        items.Add(GetPlaybackItem(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
+                        items.Add(new PlaybackItemMessage(xamlRoot, new MessageWithOwner(message.ClientService, add), topic));
                     }
                 }
 
                 UpdateTransport(CurrentItem);
                 PlaylistChanged?.Invoke(this, EventArgs.Empty);
             }
-        }
-
-        private PlaybackItem GetPlaybackItem(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topicId)
-        {
-            GetProperties(message, out File file, out bool speed);
-
-            var item = new PlaybackItemMessage(xamlRoot, message, topicId, file)
-            {
-                CanChangePlaybackRate = speed
-            };
-
-            return item;
         }
 
         public async void Play(XamlRoot xamlRoot, AudioWithOwner audio)
@@ -813,7 +805,7 @@ namespace Telegram.Services
 
             Dispose(false);
 
-            var item = GetPlaybackItem(xamlRoot, audio);
+            var item = new PlaybackItemProfileAudio(xamlRoot, audio);
             var items = _items = new List<PlaybackItem>();
 
             _items.Add(item);
@@ -832,62 +824,12 @@ namespace Telegram.Services
                 {
                     if (add.AudioValue.Id != audio.AudioValue.Id)
                     {
-                        items.Add(GetPlaybackItem(xamlRoot, new AudioWithOwner(audio.ClientService, audio.UserId, add)));
+                        items.Add(new PlaybackItemProfileAudio(xamlRoot, new AudioWithOwner(audio.ClientService, audio.UserId, add)));
                     }
                 }
 
                 UpdateTransport(CurrentItem);
                 PlaylistChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        private PlaybackItem GetPlaybackItem(XamlRoot xamlRoot, AudioWithOwner audio)
-        {
-            var item = new PlaybackItemProfileAudio(xamlRoot, audio)
-            {
-                CanChangePlaybackRate = audio.Duration >= 10 * 60
-            };
-
-            return item;
-        }
-
-        private void GetProperties(MessageWithOwner message, out File file, out bool speed)
-        {
-            file = null;
-            speed = false;
-
-            if (message.Content is MessageAudio audio)
-            {
-                file = audio.Audio.AudioValue;
-                speed = audio.Audio.Duration >= 10 * 60;
-            }
-            else if (message.Content is MessageVoiceNote voiceNote)
-            {
-                file = voiceNote.VoiceNote.Voice;
-                speed = true;
-            }
-            else if (message.Content is MessageVideoNote videoNote)
-            {
-                file = videoNote.VideoNote.Video;
-                speed = true;
-            }
-            else if (message.Content is MessageText text && text.LinkPreview != null)
-            {
-                if (text.LinkPreview.Type is LinkPreviewTypeAudio previewAudio)
-                {
-                    file = previewAudio.Audio.AudioValue;
-                    speed = previewAudio.Audio.Duration >= 10 * 60;
-                }
-                else if (text.LinkPreview.Type is LinkPreviewTypeVoiceNote previewVoiceNote)
-                {
-                    file = previewVoiceNote.VoiceNote.Voice;
-                    speed = true;
-                }
-                else if (text.LinkPreview.Type is LinkPreviewTypeVideoNote previewVideoNote)
-                {
-                    file = previewVideoNote.VideoNote.Video;
-                    speed = true;
-                }
             }
         }
 
@@ -969,7 +911,9 @@ namespace Telegram.Services
         public string Title { get; protected set; }
         public string Performer { get; protected set; }
 
-        public bool CanChangePlaybackRate { get; set; }
+        public int Duration { get; protected set; }
+
+        public bool CanChangePlaybackRate { get; protected set; }
     }
 
     public partial class PlaybackItemMessage : PlaybackItem
@@ -982,7 +926,7 @@ namespace Telegram.Services
 
         public MessageTopic TopicId { get; }
 
-        public PlaybackItemMessage(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topicId, File document)
+        public PlaybackItemMessage(XamlRoot xamlRoot, MessageWithOwner message, MessageTopic topicId)
         {
             ClientService = message.ClientService;
             XamlRoot = xamlRoot;
@@ -990,10 +934,13 @@ namespace Telegram.Services
             TopicId = topicId;
             ChatId = message.ChatId;
             Id = message.Id;
-            Document = document;
 
             if (message.Content is MessageAudio audio)
             {
+                Document = audio.Audio.AudioValue;
+                Duration = audio.Audio.Duration;
+                CanChangePlaybackRate = audio.Audio.Duration >= 10 * 60;
+
                 if (string.IsNullOrEmpty(audio.Audio.Performer) || string.IsNullOrEmpty(audio.Audio.Title))
                 {
                     Title = audio.Audio.FileName;
@@ -1003,6 +950,50 @@ namespace Telegram.Services
                 {
                     Title = audio.Audio.Title;
                     Performer = audio.Audio.Performer;
+                }
+            }
+            else if (message.Content is MessageVoiceNote voiceNote)
+            {
+                Document = voiceNote.VoiceNote.Voice;
+                Duration = voiceNote.VoiceNote.Duration;
+                CanChangePlaybackRate = true;
+            }
+            else if (message.Content is MessageVideoNote videoNote)
+            {
+                Document = videoNote.VideoNote.Video;
+                Duration = videoNote.VideoNote.Duration;
+                CanChangePlaybackRate = true;
+            }
+            else if (message.Content is MessageText text && text.LinkPreview != null)
+            {
+                if (text.LinkPreview.Type is LinkPreviewTypeAudio previewAudio)
+                {
+                    Document = previewAudio.Audio.AudioValue;
+                    Duration = previewAudio.Audio.Duration;
+                    CanChangePlaybackRate = previewAudio.Audio.Duration >= 10 * 60;
+
+                    if (string.IsNullOrEmpty(previewAudio.Audio.Performer) || string.IsNullOrEmpty(previewAudio.Audio.Title))
+                    {
+                        Title = previewAudio.Audio.FileName;
+                        Performer = string.Empty;
+                    }
+                    else
+                    {
+                        Title = previewAudio.Audio.Title;
+                        Performer = previewAudio.Audio.Performer;
+                    }
+                }
+                else if (text.LinkPreview.Type is LinkPreviewTypeVoiceNote previewVoiceNote)
+                {
+                    Document = previewVoiceNote.VoiceNote.Voice;
+                    Duration = previewVoiceNote.VoiceNote.Duration;
+                    CanChangePlaybackRate = true;
+                }
+                else if (text.LinkPreview.Type is LinkPreviewTypeVideoNote previewVideoNote)
+                {
+                    Document = previewVideoNote.VideoNote.Video;
+                    Duration = previewVideoNote.VideoNote.Duration;
+                    CanChangePlaybackRate = true;
                 }
             }
         }
@@ -1024,6 +1015,8 @@ namespace Telegram.Services
             UserId = audio.UserId;
             Id = audio.AudioValue.Id;
             Document = audio.AudioValue;
+            Duration = audio.Duration;
+            CanChangePlaybackRate = audio.Duration >= 10 * 60;
 
             if (string.IsNullOrEmpty(audio.Performer) || string.IsNullOrEmpty(audio.Title))
             {

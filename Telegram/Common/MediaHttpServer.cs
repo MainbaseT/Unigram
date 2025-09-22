@@ -34,18 +34,25 @@ namespace Telegram.Common
 
         public static int Port => _current?._server.Port ?? 0;
 
+        public static Uri Start(PlaybackItem item, ref long token)
+        {
+            Start(item.ClientService.SessionId, item.Document.Id, ref token);
+
+            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}?duration={3}", Port, item.ClientService.SessionId, item.Document.Id, item.Duration));
+        }
+
         public static Uri Start(GalleryMedia video, ref long token)
         {
             Start(video.ClientService.SessionId, video.File.Id, ref token);
 
-            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}", Port, video.ClientService.SessionId, video.File.Id, video.Duration));
+            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}?duration={3}", Port, video.ClientService.SessionId, video.File.Id, video.Duration));
         }
 
         public static Uri Start(VideoPresentation presentation, ref long token)
         {
             Start(presentation.SessionId, presentation.FileId, ref token);
 
-            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}.mp4?duration={3}&priority=24", Port, presentation.SessionId, presentation.FileId, presentation.Duration));
+            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}?duration={3}&priority=24", Port, presentation.SessionId, presentation.FileId, presentation.Duration));
         }
 
         public static void Start(int sessionId, int fileId, ref long token)
@@ -108,7 +115,6 @@ namespace Telegram.Common
         {
             var session = System.IO.Path.GetDirectoryName(request.Path);
             var fileName = System.IO.Path.GetFileNameWithoutExtension(request.Path);
-            var extension = System.IO.Path.GetExtension(request.Path);
 
             if (!int.TryParse(session, out int sessionId) || !int.TryParse(fileName, out int fileId))
             {
