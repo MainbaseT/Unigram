@@ -154,7 +154,8 @@ namespace Telegram.ViewModels
                 message = album.Messages.FirstOrDefault();
             }
 
-            if (inAnotherChat || await ShouldReplyInAnotherChatAsync(message))
+            var should = await ShouldReplyInAnotherChatAsync(message);
+            if (should == ShouldReplyInAnotherChatResult.True || inAnotherChat)
             {
                 var header = ComposerHeader;
                 var text = GetFormattedText(true, false);
@@ -172,7 +173,7 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, null, 0)
+                    ReplyTo = new MessageComposerReplyTo(message, null, 0, should != ShouldReplyInAnotherChatResult.NotAvailable)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -204,7 +205,8 @@ namespace Telegram.ViewModels
                 message = album.Messages.FirstOrDefault();
             }
 
-            if (inAnotherChat || await ShouldReplyInAnotherChatAsync(message))
+            var should = await ShouldReplyInAnotherChatAsync(message);
+            if (should == ShouldReplyInAnotherChatResult.True || inAnotherChat)
             {
                 var header = ComposerHeader;
                 var text = GetFormattedText(true, false);
@@ -222,7 +224,7 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, quote.ToInput(), 0)
+                    ReplyTo = new MessageComposerReplyTo(message, quote.ToInput(), 0, should != ShouldReplyInAnotherChatResult.NotAvailable)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -254,7 +256,8 @@ namespace Telegram.ViewModels
                 message = album.Messages.FirstOrDefault();
             }
 
-            if (inAnotherChat || await ShouldReplyInAnotherChatAsync(message))
+            var should = await ShouldReplyInAnotherChatAsync(message);
+            if (should == ShouldReplyInAnotherChatResult.True || inAnotherChat)
             {
                 var header = ComposerHeader;
                 var text = GetFormattedText(true, false);
@@ -272,19 +275,26 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, null, checklistTask.Task.Id)
+                    ReplyTo = new MessageComposerReplyTo(message, null, checklistTask.Task.Id, should != ShouldReplyInAnotherChatResult.NotAvailable)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
             }
         }
 
-        private async Task<bool> ShouldReplyInAnotherChatAsync(MessageViewModel message)
+        enum ShouldReplyInAnotherChatResult
+        {
+            True,
+            False,
+            NotAvailable
+        }
+
+        private async Task<ShouldReplyInAnotherChatResult> ShouldReplyInAnotherChatAsync(MessageViewModel message)
         {
             var properties = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id)) as MessageProperties;
             if (properties == null || properties.CanBeRepliedInAnotherChat is false)
             {
-                return false;
+                return ShouldReplyInAnotherChatResult.NotAvailable;
             }
 
             var chat = message.Chat;
@@ -292,11 +302,13 @@ namespace Telegram.ViewModels
             {
                 if (supergroup.IsChannel)
                 {
-                    return supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator;
+                    return supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator
+                        ? ShouldReplyInAnotherChatResult.True
+                        : ShouldReplyInAnotherChatResult.False;
                 }
             }
 
-            return false;
+            return ShouldReplyInAnotherChatResult.False;
         }
 
         #endregion

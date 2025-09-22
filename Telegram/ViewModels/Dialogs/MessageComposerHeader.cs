@@ -9,7 +9,7 @@ using Telegram.Td.Api;
 
 namespace Telegram.ViewModels
 {
-    public record MessageComposerReplyTo(MessageViewModel Message, InputTextQuote Quote, int ChecklistTaskId)
+    public record MessageComposerReplyTo(MessageViewModel Message, InputTextQuote Quote, int ChecklistTaskId, bool CanBeRepliedInAnotherChat)
     {
         public InputMessageReplyTo ToInput(DialogViewModel viewModel)
         {

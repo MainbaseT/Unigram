@@ -2674,9 +2674,10 @@ namespace Telegram.ViewModels
                 state.Remove("reply_to_quote");
                 state.Remove("reply_to_task_id");
 
+                // We arrive here from "Reply in another chat", so we assume the message can be replied in another chat
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, quote, taskId)
+                    ReplyTo = new MessageComposerReplyTo(message, quote, taskId, true)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -2774,9 +2775,11 @@ namespace Telegram.ViewModels
                     var response = await ClientService.SendAsync(new GetMessage(chat.Id, replyToMessage.MessageId));
                     if (response is Message message)
                     {
+                        var properties = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id)) as MessageProperties;
+
                         ComposerHeader = new MessageComposerHeader(ClientService)
                         {
-                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToMessage.Quote, replyToMessage.ChecklistTaskId)
+                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToMessage.Quote, replyToMessage.ChecklistTaskId, properties?.CanBeRepliedInAnotherChat ?? false)
                         };
 
                         goto UpdateText;
@@ -2787,9 +2790,11 @@ namespace Telegram.ViewModels
                     var response = await ClientService.SendAsync(new GetMessage(replyToExternalMessage.ChatId, replyToExternalMessage.MessageId));
                     if (response is Message message)
                     {
+                        var properties = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id)) as MessageProperties;
+
                         ComposerHeader = new MessageComposerHeader(ClientService)
                         {
-                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToExternalMessage.Quote, replyToExternalMessage.ChecklistTaskId)
+                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToExternalMessage.Quote, replyToExternalMessage.ChecklistTaskId, properties?.CanBeRepliedInAnotherChat ?? false)
                         };
 
                         goto UpdateText;

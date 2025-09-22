@@ -2513,7 +2513,7 @@ namespace Telegram.Views
             var flyout = new MenuFlyout();
 
             var header = ViewModel.ComposerHeader;
-            if (header?.ReplyTo != null && !ViewModel.IsDirectMessagesGroup)
+            if (header?.ReplyTo != null && header.ReplyTo.CanBeRepliedInAnotherChat && !ViewModel.IsDirectMessagesGroup)
             {
                 if (header.ReplyTo.Quote != null)
                 {
