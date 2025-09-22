@@ -674,13 +674,20 @@ namespace Telegram.ViewModels
 
         public override FormattedText GetFormattedText(bool clear = false, bool parseMarkdown = true)
         {
-            var field = TextField;
-            if (field == null)
+            try
             {
-                return new FormattedText(string.Empty, Array.Empty<TextEntity>());
-            }
+                var field = TextField;
+                if (field == null)
+                {
+                    return string.Empty.AsFormattedText();
+                }
 
-            return field.GetFormattedText(clear, parseMarkdown);
+                return field.GetFormattedText(clear, parseMarkdown);
+            }
+            catch
+            {
+                return string.Empty.AsFormattedText();
+            }
         }
 
         public bool IsEndReached()
