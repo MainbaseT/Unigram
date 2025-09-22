@@ -362,7 +362,7 @@
     <Compile Include="AI\RecognizedTextSelection.cs" />
     <Compile Include="AI\RecognizedTextSelectionManager.cs" />
     <Compile Include="Common\ThumbnailController.cs" />
-    <Compile Include="Controls\ProfileRatingSlider.cs" />
+    <Compile Include="Controls\PremiumProgressBar.cs" />
     <Compile Include="Controls\ProgressRingIndeterminate.cs" />
     <Compile Include="Controls\Views\SearchPostsTabPage.xaml.cs">
       <DependentUpon>SearchPostsTabPage.xaml</DependentUpon>
@@ -572,7 +572,6 @@
       <DependentUpon>ReactionsMenuFlyout.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\OverlayWindow.cs" />
-    <Compile Include="Controls\PremiumProgressBar.cs" />
     <Compile Include="Controls\Stories\StoriesWindow.xaml.cs">
       <DependentUpon>StoriesWindow.xaml</DependentUpon>
     </Compile>

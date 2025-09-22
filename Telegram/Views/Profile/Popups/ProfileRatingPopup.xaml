@@ -22,22 +22,20 @@
                 <Grid>
                     <Grid Background="{ThemeResource ControlFillColorDefaultBrush}"
                           CornerRadius="4"
-                          Control.IsTemplateFocusTarget="True"
                           Margin="12,0,12,0"
-                          VerticalAlignment="Bottom"
-                          Grid.Row="1">
+                          VerticalAlignment="Bottom">
                         <TextBlock TextAlignment="Left"
                                    FontWeight="SemiBold"
                                    Margin="8,4,8,5" />
                     </Grid>
 
-                    <controls:ProfileRatingSlider x:Name="RatingSlider"
-                                                  Glyph="&#xEAB3;"
-                                                  Margin="12,0" />
-                    <controls:ProfileRatingSlider x:Name="PendingSlider"
-                                                  IsTabStop="False"
-                                                  Glyph="&#xEAB3;"
-                                                  Margin="12,0" />
+                    <controls:PremiumProgressBar x:Name="RatingSlider"
+                                                 Glyph="&#xEAB3;"
+                                                 Margin="12,0" />
+                    <controls:PremiumProgressBar x:Name="PendingSlider"
+                                                 IsTabStop="False"
+                                                 Glyph="&#xEAB3;"
+                                                 Margin="12,0" />
                 </Grid>
 
                 <Grid>
