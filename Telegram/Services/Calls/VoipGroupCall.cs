@@ -1141,10 +1141,12 @@ namespace Telegram.Services.Calls
             if (participant.IsMutedForCurrentUser)
             {
                 manager.SetVolume(participant.AudioSourceId, 0);
+                manager.SetVolume(participant.ScreenSharingAudioSourceId, 0);
             }
             else
             {
                 manager.SetVolume(participant.AudioSourceId, participant.VolumeLevel / 10000d);
+                manager.SetVolume(participant.ScreenSharingAudioSourceId, participant.VolumeLevel / 10000d);
             }
         }
 
