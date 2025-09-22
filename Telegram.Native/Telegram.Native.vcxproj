@@ -342,8 +342,8 @@
       <DependentUpon>FileStreamFromApp.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="GiftPatterns.h">
-      <DependentUpon>GiftPatterns.idl</DependentUpon>
+    <ClInclude Include="ChatBackgroundPattern.h">
+      <DependentUpon>ChatBackgroundPattern.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="Helpers\BlurHelper.h" />
@@ -995,8 +995,8 @@
       <DependentUpon>FileStreamFromApp.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="GiftPatterns.cpp">
-      <DependentUpon>GiftPatterns.idl</DependentUpon>
+    <ClCompile Include="ChatBackgroundPattern.cpp">
+      <DependentUpon>ChatBackgroundPattern.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="Highlight\SyntaxToken.cpp" />
@@ -1137,7 +1137,7 @@
     <Midl Include="FileStreamFromApp.idl">
       <SubType>Designer</SubType>
     </Midl>
-    <Midl Include="GiftPatterns.idl">
+    <Midl Include="ChatBackgroundPattern.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Highlight\SyntaxToken.idl" />

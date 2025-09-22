@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "GiftPatterns.g.h"
+#include "ChatBackgroundPattern.g.h"
 
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.Numerics.h>
@@ -29,24 +29,24 @@ namespace winrt::Telegram::Native::implementation
         return float2(width * dpi, height * dpi);
     }
 
-    struct GiftPatterns : GiftPatternsT<GiftPatterns>
+    struct ChatBackgroundPattern : ChatBackgroundPatternT<ChatBackgroundPattern>
     {
-        GiftPatterns(ICompositionSurface surface)
+        ChatBackgroundPattern(ICompositionSurface surface)
             : m_surface(surface)
             , m_renderSize(0, 0)
             , m_renderPhysicalSize(0, 0)
             , m_naturalSize(0, 0)
-            , m_patterns(winrt::single_threaded_vector<GiftPattern>())
+            , m_symbols(winrt::single_threaded_vector<ChatBackgroundSymbol>())
         {
 
         }
 
-        GiftPatterns(ICompositionSurface surface, float width, float height, float rasterizationScale, IVector<GiftPattern> patterns)
+        ChatBackgroundPattern(ICompositionSurface surface, float width, float height, float rasterizationScale, IVector<ChatBackgroundSymbol> patterns)
             : m_surface(surface)
             , m_renderSize(ComputeRenderSize(width, height, rasterizationScale))
             , m_renderPhysicalSize(ComputeRenderPhysicalSize(width, height, rasterizationScale))
             , m_naturalSize(width, height)
-            , m_patterns(patterns)
+            , m_symbols(patterns)
         {
 
         }
@@ -55,20 +55,20 @@ namespace winrt::Telegram::Native::implementation
         float2 RenderSize();
         float2 RenderPhysicalSize();
         float2 NaturalSize();
-        IVector<GiftPattern> Patterns();
+        IVector<ChatBackgroundSymbol> Symbols();
 
     private:
         ICompositionSurface m_surface;
         float2 m_renderSize;
         float2 m_renderPhysicalSize;
         float2 m_naturalSize;
-        IVector<GiftPattern> m_patterns;
+        IVector<ChatBackgroundSymbol> m_symbols;
     };
 }
 
 namespace winrt::Telegram::Native::factory_implementation
 {
-    struct GiftPatterns : GiftPatternsT<GiftPatterns, implementation::GiftPatterns>
+    struct ChatBackgroundPattern : ChatBackgroundPatternT<ChatBackgroundPattern, implementation::ChatBackgroundPattern>
     {
     };
 }

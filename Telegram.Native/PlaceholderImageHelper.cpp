@@ -412,7 +412,7 @@ namespace winrt::Telegram::Native::implementation
         return native->EndDraw();
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<GiftPatterns> PlaceholderImageHelper::DrawSvgAsync(Compositor compositor, hstring path, Color foreground, double dpi)
+    winrt::Windows::Foundation::IAsyncOperation<ChatBackgroundPattern> PlaceholderImageHelper::DrawSvgAsync(Compositor compositor, hstring path, Color foreground, double dpi)
     {
         winrt::apartment_context ui_thread;
         co_await winrt::resume_background();
@@ -425,9 +425,9 @@ namespace winrt::Telegram::Native::implementation
 
     constexpr float PI = 3.14159265358979323846f;
 
-    inline static GiftPattern ParseGiftPattern(float topLeftX, float topLeftY, float topRightX, float topRightY, float bottomRightX, float bottomRightY, float bottomLeftX, float bottomLeftY)
+    inline static ChatBackgroundSymbol ParseGiftPattern(float topLeftX, float topLeftY, float topRightX, float topRightY, float bottomRightX, float bottomRightY, float bottomLeftX, float bottomLeftY)
     {
-        GiftPattern pattern;
+        ChatBackgroundSymbol pattern;
         pattern.Offset = float2(topLeftX, topLeftY);
 
         float dx_top = topRightX - topLeftX;
@@ -518,7 +518,7 @@ namespace winrt::Telegram::Native::implementation
         return decompressed;
     }
 
-    GiftPatterns PlaceholderImageHelper::DrawSvg(Compositor compositor, hstring path, Color foreground, double rasterizationScale)
+    ChatBackgroundPattern PlaceholderImageHelper::DrawSvg(Compositor compositor, hstring path, Color foreground, double rasterizationScale)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
@@ -527,7 +527,7 @@ namespace winrt::Telegram::Native::implementation
         auto dpi = 0.25 * rasterizationScale;
 
         auto data = DecompressFromFile(path);
-        auto patterns = winrt::single_threaded_vector<GiftPattern>();
+        auto patterns = winrt::single_threaded_vector<ChatBackgroundSymbol>();
 
         struct NSVGimage* image;
         image = nsvgParse((char*)data.c_str(), "px", 96);
@@ -680,7 +680,7 @@ namespace winrt::Telegram::Native::implementation
         result = surfaceInterop->EndDraw();
 
     Cleanup:
-        return GiftPatterns(surface, imageWidth, imageHeight, rasterizationScale, patterns);
+        return ChatBackgroundPattern(surface, imageWidth, imageHeight, rasterizationScale, patterns);
     }
 
     SoftwareBitmap PlaceholderImageHelper::DrawBlurred(hstring fileName, float blurAmount)

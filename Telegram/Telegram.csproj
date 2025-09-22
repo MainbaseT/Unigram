@@ -932,7 +932,7 @@
     <Compile Include="Controls\LoopingPicker.cs" />
     <Compile Include="Controls\MasterDetailPanel.cs" />
     <Compile Include="Controls\Media\SolidGaussianBrush.cs" />
-    <Compile Include="Controls\Media\TiledBrush.cs" />
+    <Compile Include="Controls\Media\ChatBackgroundBrush.cs" />
     <Compile Include="Controls\MenuButton.cs" />
     <Compile Include="Controls\MenuFlyoutLabel.cs" />
     <Compile Include="Controls\MenuFlyoutProfile.cs" />

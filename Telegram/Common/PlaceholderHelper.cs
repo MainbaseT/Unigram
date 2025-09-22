@@ -93,7 +93,7 @@ namespace Telegram.Common
             return null;
         }
 
-        public static async Task<GiftPatterns> LoadBitmapAsync(File file)
+        public static async Task<ChatBackgroundPattern> LoadBitmapAsync(File file)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace Telegram.Common
                 using (var stream = await item.OpenReadAsync())
                 {
                     var surface = LoadedImageSurface.StartLoadFromStream(stream);
-                    return new GiftPatterns(surface);
+                    return new ChatBackgroundPattern(surface);
                 }
             }
             catch
@@ -112,7 +112,7 @@ namespace Telegram.Common
 
         private static readonly DisposableMutex _patternSurfaceLock = new();
 
-        public static async Task<GiftPatterns> LoadPatternBitmapAsync(File file, double rasterizationScale)
+        public static async Task<ChatBackgroundPattern> LoadPatternBitmapAsync(File file, double rasterizationScale)
         {
             using var locked = await _patternSurfaceLock.WaitAsync();
             return await Background.DrawSvgAsync(BootStrapper.Current.Compositor, file.Local.Path, Colors.White, rasterizationScale);

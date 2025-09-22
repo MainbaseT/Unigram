@@ -32,7 +32,7 @@ namespace Telegram.Controls.Chats
 
         private IClientService _clientService;
 
-        private GiftPatterns _pattern;
+        private ChatBackgroundPattern _pattern;
         private string _patternPath;
         private Sticker _symbol;
         private Sticker _model;
@@ -424,7 +424,7 @@ namespace Telegram.Controls.Chats
 
             if (show)
             {
-                if (Foreground is TiledBrush tiledBrush)
+                if (Foreground is ChatBackgroundBrush tiledBrush)
                 {
                     tiledBrush.Patterns = _pattern;
                     tiledBrush.Symbol = Symbol;
@@ -436,7 +436,7 @@ namespace Telegram.Controls.Chats
                 }
                 else if (_pattern != null)
                 {
-                    Foreground = new TiledBrush
+                    Foreground = new ChatBackgroundBrush
                     {
                         Patterns = _pattern,
                         Symbol = Symbol,
@@ -479,7 +479,7 @@ namespace Telegram.Controls.Chats
 
         private ContainerVisual _modelVisual;
 
-        private GiftPattern UpdateModel()
+        private ChatBackgroundSymbol UpdateModel()
         {
             if (_model == null)
             {
@@ -510,7 +510,7 @@ namespace Telegram.Controls.Chats
             var bottomBound = ActualSize.Y - 48 * 2;
             var rightBound = ActualSize.X;
 
-            var available = new List<GiftPattern>(_pattern.Patterns.Count * (height * width + width));
+            var available = new List<ChatBackgroundSymbol>(_pattern.Symbols.Count * (height * width + width));
 
             for (int y = 0; y < height; y++)
             {
@@ -520,9 +520,9 @@ namespace Telegram.Controls.Chats
                 {
                     var offsetX = logical.X * x;
 
-                    for (int i = 0; i < _pattern.Patterns.Count; i++)
+                    for (int i = 0; i < _pattern.Symbols.Count; i++)
                     {
-                        var temp = _pattern.Patterns[i];
+                        var temp = _pattern.Symbols[i];
 
                         var size = temp.Size * factor;
                         var offset = new Vector2(offsetX + temp.Offset.X * factor.X, offsetY + temp.Offset.Y * factor.Y);
@@ -532,7 +532,7 @@ namespace Telegram.Controls.Chats
                             continue;
                         }
 
-                        available.Add(new GiftPattern
+                        available.Add(new ChatBackgroundSymbol
                         {
                             Size = size,
                             Offset = offset,

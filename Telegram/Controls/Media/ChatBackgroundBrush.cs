@@ -17,13 +17,13 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Media
 {
-    public partial class TiledBrush : XamlCompositionBrushBase
+    public partial class ChatBackgroundBrush : XamlCompositionBrushBase
     {
-        public GiftPatterns Patterns { get; set; }
+        public ChatBackgroundPattern Patterns { get; set; }
 
         public AnimatedImage Symbol { get; set; }
 
-        public GiftPattern Model { get; set; }
+        public ChatBackgroundSymbol Model { get; set; }
 
         public bool IsNegative { get; set; }
 
@@ -55,7 +55,7 @@ namespace Telegram.Controls.Media
             surfaceBrush.HorizontalAlignmentRatio = 0;
             surfaceBrush.VerticalAlignmentRatio = 0;
 
-            if (Patterns.Patterns.Count > 0)
+            if (Patterns.Symbols.Count > 0)
             {
                 var compositor = BootStrapper.Current.Compositor;
                 var factor = logical / physical;
@@ -80,9 +80,9 @@ namespace Telegram.Controls.Media
 
                 var maxWidth = 0f;
 
-                for (int i = 0; i < Patterns.Patterns.Count; i++)
+                for (int i = 0; i < Patterns.Symbols.Count; i++)
                 {
-                    var pattern = Patterns.Patterns[i];
+                    var pattern = Patterns.Symbols[i];
                     var sprite = visual.Compositor.CreateSpriteVisual();
                     sprite.Size = pattern.Size * factor;
                     sprite.Offset = new Vector3(pattern.Offset * factor, 0);
@@ -182,7 +182,7 @@ namespace Telegram.Controls.Media
 
                 CompositionSurfaceBrush extra = null;
 
-                if (Patterns.Patterns.Count > 0)
+                if (Patterns.Symbols.Count > 0)
                 {
                     var cos = MathF.Abs(MathF.Cos(Model.RotationAngle));
                     var sin = MathF.Abs(MathF.Sin(Model.RotationAngle));
