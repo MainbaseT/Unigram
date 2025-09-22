@@ -2958,27 +2958,27 @@ namespace Telegram.ViewModels
 
         public void ClearReply()
         {
-            var container = _composerHeader;
-            if (container == null)
+            var header = _composerHeader;
+            if (header == null)
             {
                 return;
             }
 
-            if (container.LinkPreview != null)
+            if (header.LinkPreview != null)
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    Editing = container.Editing,
-                    ReplyTo = container.ReplyTo,
-                    SuggestedPostInfo = container.SuggestedPostInfo,
-                    LinkPreviewUrl = container.LinkPreviewUrl,
+                    Editing = header.Editing,
+                    ReplyTo = header.ReplyTo,
+                    SuggestedPostInfo = header.SuggestedPostInfo,
+                    LinkPreviewUrl = header.LinkPreviewUrl,
                     LinkPreview = null,
                     LinkPreviewDisabled = true
                 };
             }
             else
             {
-                if (container.Editing != null)
+                if (header.Editing != null)
                 {
                     var chat = _chat;
                     if (chat != null)
@@ -2993,6 +2993,11 @@ namespace Telegram.ViewModels
                 }
                 else
                 {
+                    if (header.ReplyTo?.Message.ReplyMarkup is ReplyMarkupForceReply)
+                    {
+                        ClientService.Send(new DeleteChatReplyMarkup(header.ReplyTo.Message.ChatId, header.ReplyTo.Message.Id));
+                    }
+
                     ComposerHeader = null;
                 }
             }
