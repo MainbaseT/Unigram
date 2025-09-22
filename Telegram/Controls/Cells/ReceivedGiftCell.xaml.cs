@@ -264,7 +264,9 @@ namespace Telegram.Controls.Cells
                         PremiumRoot.Visibility = Visibility.Visible;
 
                         RibbonRoot.Visibility = Visibility.Visible;
-                        Ribbon.Text = Strings.Gift2LimitedPremium;
+                        Ribbon.Text = gift.Gift.UserLimits != null
+                            ? Locale.Declension(Strings.R.Gift2AvailabilityLeft, gift.Gift.UserLimits.RemainingCount)
+                            : Strings.Gift2LimitedPremium;
 
                         RibbonTop.Color = _ribbonPremiumTop;
                         RibbonBottom.Color = _ribbonPremiumBottom;
