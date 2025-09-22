@@ -60,6 +60,7 @@ namespace Telegram.Controls.Messages
         private readonly FrameworkElement _reserved;
 
         private readonly bool _allowCustomEmoji = true;
+        private readonly bool _areTags;
 
         private readonly Popup _popup;
 
@@ -81,6 +82,7 @@ namespace Telegram.Controls.Messages
             _message = message;
             _bubble = bubble;
             _allowCustomEmoji = reactions.AllowCustomEmoji;
+            _areTags = reactions.AreTags;
 
             _popup = new Popup();
             _popup.Closed += OnClosed;
@@ -628,7 +630,15 @@ namespace Telegram.Controls.Messages
 
             if (reaction.NeedsPremium && !message.ClientService.IsPremium)
             {
-                ToastPopup.ShowFeaturePromo(message.Delegate.NavigationService, new PremiumFeatureUniqueReactions());
+                if (_areTags)
+                {
+                    WindowContext.GetNavigationService(this).ShowPromo(new PremiumFeatureSavedMessagesTags());
+                }
+                else
+                {
+                    ToastPopup.ShowFeaturePromo(WindowContext.GetNavigationService(this), new PremiumFeatureUniqueReactions());
+                }
+
                 return;
             }
 

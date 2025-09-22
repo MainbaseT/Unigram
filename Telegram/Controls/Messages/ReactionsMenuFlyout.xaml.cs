@@ -330,7 +330,7 @@ namespace Telegram.Controls.Messages
                 button.Margin = new Thickness(2, 0, 2, 0);
                 button.Content = visible;
                 button.Style = BootStrapper.Current.Resources["EmptyHyperlinkButtonStyle"] as Style;
-                button.Tag = item.Item1.Type;
+                button.Tag = item.Item1;
                 button.Click += Reaction_Click;
 
                 if (item.Item1.Type is ReactionTypeEmoji emoji)
@@ -720,7 +720,7 @@ namespace Telegram.Controls.Messages
 
             if (sender is HyperlinkButton button)
             {
-                if (button.Tag is ReactionType reaction)
+                if (button.Tag is AvailableReaction reaction)
                 {
                     if (_story != null)
                     {
@@ -740,15 +740,21 @@ namespace Telegram.Controls.Messages
 
         public event EventHandler<MessageEffect> Selected;
 
-        private async void StoryToggleReaction(ReactionType reaction)
+        private async void StoryToggleReaction(AvailableReaction reaction)
         {
-            if (_story.ChosenReactionType != null && _story.ChosenReactionType.AreTheSame(reaction))
+            if (reaction.NeedsPremium && !_story.ClientService.IsPremium)
+            {
+                ToastPopup.ShowFeaturePromo(WindowContext.GetNavigationService(this), new PremiumFeatureUniqueReactions());
+                return;
+            }
+
+            if (_story.ChosenReactionType != null && _story.ChosenReactionType.AreTheSame(reaction.Type))
             {
                 _story.ClientService.Send(new SetStoryReaction(_story.PosterChatId, _story.Id, null, true));
             }
             else
             {
-                await _story.ClientService.SendAsync(new SetStoryReaction(_story.PosterChatId, _story.Id, reaction, true));
+                await _story.ClientService.SendAsync(new SetStoryReaction(_story.PosterChatId, _story.Id, reaction.Type, true));
 
                 if (_reserved != null && _reserved.IsLoaded)
                 {
@@ -757,7 +763,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private async void MessageToggleReaction(ReactionType reaction)
+        private async void MessageToggleReaction(AvailableReaction reaction)
         {
             var message = _message;
             if (message.Content is MessageAlbum album)
@@ -765,14 +771,28 @@ namespace Telegram.Controls.Messages
                 message = album.Messages[0];
             }
 
-            if (reaction is not ReactionTypePaid && message.InteractionInfo?.Reactions != null && message.InteractionInfo.Reactions.IsChosen(reaction))
+            if (reaction.NeedsPremium && !message.ClientService.IsPremium)
             {
-                message.ClientService.Send(new RemoveMessageReaction(message.ChatId, message.Id, reaction));
+                if (_reactions != null && _reactions.AreTags)
+                {
+                    WindowContext.GetNavigationService(this).ShowPromo(new PremiumFeatureSavedMessagesTags());
+                }
+                else
+                {
+                    ToastPopup.ShowFeaturePromo(WindowContext.GetNavigationService(this), new PremiumFeatureUniqueReactions());
+                }
+
+                return;
+            }
+
+            if (reaction.Type is not ReactionTypePaid && message.InteractionInfo?.Reactions != null && message.InteractionInfo.Reactions.IsChosen(reaction.Type))
+            {
+                message.ClientService.Send(new RemoveMessageReaction(message.ChatId, message.Id, reaction.Type));
             }
             else
             {
                 Object added;
-                if (reaction is ReactionTypePaid)
+                if (reaction.Type is ReactionTypePaid)
                 {
                     var popup = new ReactPopup(message.ClientService, message);
 
@@ -787,12 +807,12 @@ namespace Telegram.Controls.Messages
                 }
                 else
                 {
-                    added = await message.ClientService.SendAsync(new AddMessageReaction(message.ChatId, message.Id, reaction, false, true));
+                    added = await message.ClientService.SendAsync(new AddMessageReaction(message.ChatId, message.Id, reaction.Type, false, true));
                 }
 
                 if (added is Ok && _bubble != null && _bubble.IsLoaded)
                 {
-                    var unread = new UnreadReaction(reaction, null, false);
+                    var unread = new UnreadReaction(reaction.Type, null, false);
 
                     _message.UnreadReactions.Add(unread);
                     _bubble.UpdateMessageReactions(_message, true);
