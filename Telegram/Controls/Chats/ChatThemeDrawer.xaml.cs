@@ -69,14 +69,18 @@ namespace Telegram.Controls.Chats
                 new ChatThemeViewModel(viewModel.ClientService, "\u274C", null, null, false)
             };
 
+            if (_selectedTheme is ChatThemeGift selectedGift && !selectedGift.GiftTheme.Gift.OwnerId.IsUser(viewModel.ClientService.Options.MyId))
+            {
+                _items.Insert(_nextInsert++, new ChatThemeViewModel(viewModel.ClientService, selectedGift.GiftTheme));
+            }
+
             _items.AddRange(viewModel.ClientService.ChatThemes.Select(x => new ChatThemeViewModel(viewModel.ClientService, x, false)));
             _ = _items.LoadMoreItemsAsync(0);
 
             ScrollingHost.ItemsSource = _items;
             ScrollingHost.SelectedItem = _selectedTheme switch
             {
-                ChatThemeEmoji emoji => _items.FirstOrDefault(x => x.AreTheSame(emoji)),
-                ChatThemeGift => null,
+                ChatThemeEmoji or ChatThemeGift => _items.FirstOrDefault(x => x.AreTheSame(_selectedTheme)),
                 _ => _items[0]
             };
 
