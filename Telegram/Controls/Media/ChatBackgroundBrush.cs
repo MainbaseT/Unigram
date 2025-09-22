@@ -19,7 +19,7 @@ namespace Telegram.Controls.Media
 {
     public partial class ChatBackgroundBrush : XamlCompositionBrushBase
     {
-        public ChatBackgroundPattern Patterns { get; set; }
+        public ChatBackgroundPattern Pattern { get; set; }
 
         public AnimatedImage Symbol { get; set; }
 
@@ -44,9 +44,9 @@ namespace Telegram.Controls.Media
 
         private CompositionSurfaceBrush CreateSurfaceBrush()
         {
-            var surface = Patterns.Surface;
-            var logical = Patterns.RenderSize;
-            var physical = Patterns.RenderPhysicalSize;
+            var surface = Pattern.Surface;
+            var logical = Pattern.RenderSize;
+            var physical = Pattern.RenderPhysicalSize;
 
             var surfaceBrush = BootStrapper.Current.Compositor.CreateSurfaceBrush(surface);
             surfaceBrush.Stretch = CompositionStretch.None;
@@ -55,7 +55,7 @@ namespace Telegram.Controls.Media
             surfaceBrush.HorizontalAlignmentRatio = 0;
             surfaceBrush.VerticalAlignmentRatio = 0;
 
-            if (Patterns.Symbols.Count > 0)
+            if (Pattern.Symbols.Count > 0)
             {
                 var compositor = BootStrapper.Current.Compositor;
                 var factor = logical / physical;
@@ -80,9 +80,9 @@ namespace Telegram.Controls.Media
 
                 var maxWidth = 0f;
 
-                for (int i = 0; i < Patterns.Symbols.Count; i++)
+                for (int i = 0; i < Pattern.Symbols.Count; i++)
                 {
-                    var pattern = Patterns.Symbols[i];
+                    var pattern = Pattern.Symbols[i];
                     var sprite = visual.Compositor.CreateSpriteVisual();
                     sprite.Size = pattern.Size * factor;
                     sprite.Offset = new Vector3(pattern.Offset * factor, 0);
@@ -123,7 +123,7 @@ namespace Telegram.Controls.Media
             _connected = true;
             _negative = IsNegative;
 
-            if (_recreate || (CompositionBrush == null && Patterns != null))
+            if (_recreate || (CompositionBrush == null && Pattern != null))
             {
                 _recreate = false;
 
@@ -182,7 +182,7 @@ namespace Telegram.Controls.Media
 
                 CompositionSurfaceBrush extra = null;
 
-                if (Patterns.Symbols.Count > 0)
+                if (Pattern.Symbols.Count > 0)
                 {
                     var cos = MathF.Abs(MathF.Cos(Model.RotationAngle));
                     var sin = MathF.Abs(MathF.Sin(Model.RotationAngle));
@@ -259,7 +259,7 @@ namespace Telegram.Controls.Media
                 CompositionBrush = null;
             }
 
-            if (Patterns != null)
+            if (Pattern != null)
             {
                 //ImageSource.Dispose();
                 //ImageSource = null;
@@ -273,7 +273,7 @@ namespace Telegram.Controls.Media
 
         public void Update()
         {
-            if (_connected && CompositionBrush != null && Patterns != null)
+            if (_connected && CompositionBrush != null && Pattern != null)
             {
                 if (_negative != IsNegative)
                 {

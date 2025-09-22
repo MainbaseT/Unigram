@@ -426,7 +426,7 @@ namespace Telegram.Controls.Chats
             {
                 if (Foreground is ChatBackgroundBrush tiledBrush)
                 {
-                    tiledBrush.Patterns = _pattern;
+                    tiledBrush.Pattern = _pattern;
                     tiledBrush.Symbol = Symbol;
                     tiledBrush.Model = UpdateModel();
                     tiledBrush.Intensity = _intensity;
@@ -438,7 +438,7 @@ namespace Telegram.Controls.Chats
                 {
                     Foreground = new ChatBackgroundBrush
                     {
-                        Patterns = _pattern,
+                        Pattern = _pattern,
                         Symbol = Symbol,
                         Model = UpdateModel(),
                         Intensity = _intensity,
