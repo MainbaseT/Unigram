@@ -367,7 +367,7 @@ namespace Telegram.Services
             {
                 _currentItem = value;
                 _positionChanged.Position = TimeSpan.Zero;
-                _positionChanged.Duration = TimeSpan.Zero;
+                _positionChanged.Duration = TimeSpan.FromSeconds(value?.Duration ?? 0);
                 SourceChanged?.Invoke(this, value);
                 UpdateTransport(value);
             }
