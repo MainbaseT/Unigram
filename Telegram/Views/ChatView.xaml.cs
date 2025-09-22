@@ -2216,6 +2216,7 @@ namespace Telegram.Views
             var secret = chat.Type is ChatTypeSecret;
             var basicGroup = chat.Type is ChatTypeBasicGroup basicGroupType ? ViewModel.ClientService.GetBasicGroup(basicGroupType.BasicGroupId) : null;
             var supergroup = chat.Type is ChatTypeSupergroup supergroupType ? ViewModel.ClientService.GetSupergroup(supergroupType.SupergroupId) : null;
+            var supergroupFull = supergroup != null ? ViewModel.ClientService.GetSupergroupFull(supergroup.Id) : null;
 
             if (user != null && user.Id == ViewModel.ClientService.Options.MyId && ViewModel.SavedMessagesTopicId == 0)
             {
@@ -2223,6 +2224,11 @@ namespace Telegram.Views
             }
 
             flyout.CreateFlyoutItem(Search, Strings.Search, Icons.Search, VirtualKey.F);
+
+            if (supergroup != null && !supergroup.IsBroadcastGroup && !supergroup.IsDirectMessagesGroup && ((ViewModel.IsPremium || (supergroupFull?.MyBoostCount > 0) || supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator)))
+            {
+                flyout.CreateFlyoutItem(ViewModel.Boost, supergroup.IsChannel ? Strings.BoostingBoostChannelMenu : Strings.BoostingBoostGroupMenu, Icons.Boosts);
+            }
 
             if (ViewModel.SavedMessagesTopic != null || ViewModel.DirectMessagesChatTopic != null)
             {

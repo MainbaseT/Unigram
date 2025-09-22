@@ -12947,4 +12947,7 @@
     <string name="AudioSaveToSavedMessages">Saved Messages</string>
     <string name="AudioSaveToSavedMessagesSaved">Audio sent to Saved Messages.</string>
 
+    <string name="BoostingBoostGroupMenu">Boost Group</string>
+    <string name="BoostingBoostChannelMenu">Boost Channel</string>
+
 </resources>

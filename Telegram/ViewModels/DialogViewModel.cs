@@ -3438,6 +3438,29 @@ namespace Telegram.ViewModels
 
         #endregion
 
+        public void Boost()
+        {
+            Boost(0);
+        }
+
+        public async void Boost(int requiredLevel)
+        {
+            var chat = _chat;
+            if (chat == null)
+            {
+                return;
+            }
+
+            var response1 = await ClientService.SendAsync(new GetChatBoostFeatures(chat.Type is ChatTypeSupergroup { IsChannel: true }));
+            var response2 = await ClientService.SendAsync(new GetAvailableChatBoostSlots());
+            var response3 = await ClientService.SendAsync(new GetChatBoostStatus(chat.Id));
+
+            if (response1 is ChatBoostFeatures features && response2 is ChatBoostSlots slots && response3 is ChatBoostStatus status)
+            {
+                ShowPopup(new ChatBoostFeaturesPopup(ClientService, NavigationService, chat, status, slots, features, ChatBoostFeature.None, requiredLevel));
+            }
+        }
+
         #region Delete and Exit
 
         public async void DeleteChat()
@@ -4459,14 +4482,7 @@ namespace Telegram.ViewModels
                     {
                         if (fullInfo.MyBoostCount < fullInfo.UnrestrictBoostCount)
                         {
-                            var response1 = await ClientService.SendAsync(new GetChatBoostFeatures(chat.Type is ChatTypeSupergroup { IsChannel: true }));
-                            var response2 = await ClientService.SendAsync(new GetAvailableChatBoostSlots());
-                            var response3 = await ClientService.SendAsync(new GetChatBoostStatus(chat.Id));
-
-                            if (response1 is ChatBoostFeatures features && response2 is ChatBoostSlots slots && response3 is ChatBoostStatus status)
-                            {
-                                ShowPopup(new ChatBoostFeaturesPopup(ClientService, NavigationService, chat, status, slots, features, ChatBoostFeature.None, fullInfo.UnrestrictBoostCount));
-                            }
+                            Boost(fullInfo.UnrestrictBoostCount);
                         }
                     }
                 }

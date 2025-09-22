@@ -2038,6 +2038,12 @@ from this chat</value>
   <data name="BoostingAvailableIn" xml:space="preserve">
     <value>available in {0}</value>
   </data>
+  <data name="BoostingBoostChannelMenu" xml:space="preserve">
+    <value>Boost Channel</value>
+  </data>
+  <data name="BoostingBoostGroupMenu" xml:space="preserve">
+    <value>Boost Group</value>
+  </data>
   <data name="BoostingBoostsChannelByUserServiceMsg" xml:space="preserve">
     <value>{0} boosted the channel</value>
   </data>
