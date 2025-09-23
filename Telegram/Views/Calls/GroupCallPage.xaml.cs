@@ -376,7 +376,6 @@ namespace Telegram.Views.Calls
                 BottomShadow.Visibility = Visibility.Collapsed;
                 BottomRoot.Padding = new Thickness(4, 8, 4, 8);
                 BottomBackground.Background = new AcrylicBrush { TintColor = Colors.Black, TintOpacity = 0, FallbackColor = Color.FromArgb(0xDD, 0, 0, 0) /*TintLuminosityOpacity = 0.5*/ }; //new SolidColorBrush(Color.FromArgb(0x99, 0x33, 0x33, 0x33));
-                BottomRoot.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Auto);
 
                 foreach (var column in BottomRoot.ColumnDefinitions)
                 {
@@ -429,7 +428,6 @@ namespace Telegram.Views.Calls
                 BottomPanel.Padding = new Thickness(0);
                 BottomRoot.Padding = new Thickness(0);
                 BottomBackground.Background = null;
-                BottomRoot.RowDefinitions[0].Height = new GridLength(24, GridUnitType.Pixel);
 
                 foreach (var column in BottomRoot.ColumnDefinitions)
                 {

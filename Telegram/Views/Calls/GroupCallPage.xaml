@@ -448,7 +448,7 @@
                     <controls:ProgressRingIndeterminate x:Name="Indeterminate"
                                                         x:Load="False"
                                                         Fill="Transparent"
-                                                        StrokeThickness="2"
+                                                        StrokeThickness="4"
                                                         Width="48"
                                                         Height="48" />
                 </Grid>
