@@ -173,8 +173,6 @@ namespace Telegram.Controls
                     //ShuffleButton.Visibility = Visibility.Collapsed;
 
                     UpdateSpeed(int.MaxValue);
-
-                    ViewButton.Padding = new Thickness(48, 0, 40 * 2 + 48 + 12, 0);
                 }
                 else if (message.Message.Content is MessageAudio || linkPreview?.Type is LinkPreviewTypeAudio)
                 {
@@ -201,8 +199,6 @@ namespace Telegram.Controls
 
                     UpdateSpeed(audio.Duration);
                     UpdateRepeat();
-
-                    ViewButton.Padding = new Thickness(40 * 3 + 8, 0, 40 * 4 + 8, 0);
                 }
             }
             else if (item is PlaybackItemProfileAudio audio)
@@ -224,8 +220,6 @@ namespace Telegram.Controls
 
                 UpdateSpeed(audio.Audio.Duration);
                 UpdateRepeat();
-
-                ViewButton.Padding = new Thickness(40 * 3 + 8, 0, 40 * 4 + 8, 0);
             }
         }
 
@@ -454,6 +448,11 @@ namespace Telegram.Controls
         private void Slider_PositionChanged(object sender, PlaybackSliderPositionChanged e)
         {
             TypeResolver.Current.Playback?.Seek(e.NewPosition);
+        }
+
+        private void Buttons_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ViewButton.Padding = new Thickness(LeftButtons.ActualWidth + 4, 0, RightButtons.ActualWidth + 4, 0);
         }
     }
 }
