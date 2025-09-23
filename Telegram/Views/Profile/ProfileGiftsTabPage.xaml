@@ -141,7 +141,7 @@
                         <controls:TopNavView.Footer>
                             <Button Click="AddCollection_Click"
                                     AutomationProperties.Name="{CustomResource GiftsCollectionAddCollection}"
-                                    Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                                    Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                                     Visibility="{x:Bind ViewModel.IsOwned}"
                                     Style="{StaticResource ListEmptyButtonStyle}"
                                     VerticalAlignment="Center"

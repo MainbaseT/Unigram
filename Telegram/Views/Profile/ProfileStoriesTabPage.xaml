@@ -146,7 +146,7 @@
                         <controls:TopNavView.Footer>
                             <Button Click="AddAlbum_Click"
                                     AutomationProperties.Name="{CustomResource StoriesAlbumAddAlbum}"
-                                    Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                                    Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                                     Visibility="{x:Bind ViewModel.CanEditStories}"
                                     Style="{StaticResource ListEmptyButtonStyle}"
                                     VerticalAlignment="Center"

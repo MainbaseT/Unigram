@@ -106,7 +106,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="TitleText"
                        Style="{StaticResource CaptionTextBlockStyle}"
-                       Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                       Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                        FontWeight="SemiBold"
                        Margin="8,0,0,0"
                        VerticalAlignment="Bottom" />
@@ -127,7 +127,7 @@
 
         <TextBlock x:Name="MessageText"
                    Style="{StaticResource CaptionTextBlockStyle}"
-                   Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                   Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                    Margin="8,0,0,8"
                    Grid.Column="1"
                    Grid.Row="1" />

@@ -1407,7 +1407,7 @@
                                 <Setter Property="Background"
                                         Value="Transparent" />
                                 <Setter Property="Foreground"
-                                        Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                                        Value="{ThemeResource TextFillColorPrimaryBrush}" />
                                 <Setter Property="TabNavigation"
                                         Value="Local" />
                                 <Setter Property="IsHoldingEnabled"

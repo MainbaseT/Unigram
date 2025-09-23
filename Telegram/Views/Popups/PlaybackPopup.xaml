@@ -87,11 +87,11 @@
             <Setter Property="Background"
                     Value="Transparent" />
             <Setter Property="UncheckedForeground"
-                    Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                    Value="{ThemeResource TextFillColorPrimaryBrush}" />
             <Setter Property="CheckedForeground"
                     Value="{ThemeResource SystemControlHighlightBaseMediumHighBrush}" />
             <Setter Property="BorderBrush"
-                    Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                    Value="{ThemeResource TextFillColorPrimaryBrush}" />
             <Setter Property="BorderThickness"
                     Value="0" />
             <Setter Property="Padding"

@@ -2113,7 +2113,7 @@
 
     <Style TargetType="local:QrCode">
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:QrCode" />
@@ -4528,9 +4528,9 @@
         <Setter Property="BorderBrush"
                 Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="PlaceholderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="VerticalAlignment"
                 Value="Top" />
         <Setter Property="HorizontalAlignment"
@@ -4711,9 +4711,9 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -5452,7 +5452,7 @@
         <Setter Property="Foreground"
                 Value="{ThemeResource TelegramBackgroundAccentBrush}" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="HorizontalAlignment"
@@ -5611,9 +5611,9 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -5694,11 +5694,11 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="UncheckedForeground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="CheckedForeground"
                 Value="{ThemeResource SystemControlHighlightBaseMediumHighBrush}" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -5863,7 +5863,7 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -6004,7 +6004,7 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -6107,9 +6107,9 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -6207,9 +6207,9 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -6315,9 +6315,9 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -6431,9 +6431,9 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Padding"
@@ -6704,7 +6704,7 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="TabNavigation"
                 Value="Local" />
         <Setter Property="IsHoldingEnabled"
@@ -7244,7 +7244,7 @@
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="Foreground"
-                Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="TabNavigation"
                 Value="Local" />
         <Setter Property="IsHoldingEnabled"
