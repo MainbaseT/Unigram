@@ -65,6 +65,9 @@ namespace Telegram.Views
     public interface IChatPage : INavigablePage, ISearchablePage, IActivablePage
     {
         DialogViewModel ViewModel { get; }
+
+        void StartBannerAnimation(ScalarKeyFrameAnimation translate);
+        void CompleteBannerAnimation();
     }
 
     public sealed partial class ChatView : UserControlEx, INavigablePage, ISearchablePage, IDialogDelegate, IAutomationNameProvider
@@ -290,6 +293,27 @@ namespace Telegram.Views
             }
 
             return result;
+        }
+
+        public void StartBannerAnimation(ScalarKeyFrameAnimation translate)
+        {
+            var header = ElementComposition.GetElementVisual(Header);
+            var clipper = ElementComposition.GetElementVisual(ClipperOuter);
+
+            ElementCompositionPreview.SetIsTranslationEnabled(Header, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(ClipperOuter, true);
+
+            header.StartAnimation("Translation.Y", translate);
+            clipper.StartAnimation("Translation.Y", translate);
+        }
+
+        public void CompleteBannerAnimation()
+        {
+            var header = ElementComposition.GetElementVisual(Header);
+            var clipper = ElementComposition.GetElementVisual(ClipperOuter);
+
+            header.Properties.InsertVector3("Translation", Vector3.Zero);
+            clipper.Properties.InsertVector3("Translation", Vector3.Zero);
         }
 
         private void InitializeStickers()

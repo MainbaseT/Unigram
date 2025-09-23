@@ -62,7 +62,7 @@ namespace Telegram.Controls
             set
             {
                 _hidden = value;
-                Visibility = value || _collapsed
+                Visibility = value
                     ? Visibility.Collapsed
                     : Visibility.Visible;
             }
@@ -119,16 +119,19 @@ namespace Telegram.Controls
                 _chatId = 0;
                 _messageId = 0;
 
-                TitleLabel1.Text = TitleLabel2.Text = string.Empty;
-                SubtitleLabel1.Text = SubtitleLabel2.Text = string.Empty;
-
                 _collapsed = true;
-                Visibility = Visibility.Collapsed;
+                //Visibility = Visibility.Collapsed;
 
                 return;
             }
             else
             {
+                if (_collapsed)
+                {
+                    TitleLabel1.Text = TitleLabel2.Text = string.Empty;
+                    SubtitleLabel1.Text = SubtitleLabel2.Text = string.Empty;
+                }
+
                 _collapsed = false;
                 Visibility = _hidden
                     ? Visibility.Collapsed

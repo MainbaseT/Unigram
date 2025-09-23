@@ -660,18 +660,27 @@ namespace Telegram.Views
                     FindName(nameof(CallBanner));
 
                     CallBanner.Update(call);
+
+                    _activeCallVisible = true;
+                    MasterDetail.ShowHideBanner(_activeCallVisible || _playbackVisible);
                 }
                 else
                 {
                     UpdatePlaybackHidden(false);
 
-                    if (CallBanner != null)
-                    {
-                        CallBanner.Update(null);
-                        UnloadObject(CallBanner);
-                    }
+                    _activeCallVisible = false;
+                    MasterDetail.ShowHideBanner(_activeCallVisible || _playbackVisible);
                 }
             });
+        }
+
+        private void OnBannerCollapsed(object sender, EventArgs e)
+        {
+            if (CallBanner != null && !_activeCallVisible)
+            {
+                CallBanner.Update(null);
+                UnloadObject(CallBanner);
+            }
         }
 
         public void Handle(UpdateChatFoldersLayout update)
@@ -1106,7 +1115,8 @@ namespace Telegram.Views
             this.BeginOnUIThread(() => ShowHideBanner(sender));
         }
 
-        private bool _bannerCollapsed;
+        private bool _playbackVisible;
+        private bool _activeCallVisible;
 
         private void ShowHideBanner(IPlaybackService sender)
         {
@@ -1115,6 +1125,9 @@ namespace Telegram.Views
                 FindName(nameof(Playback));
                 Playback.Update(ViewModel.ClientService, ViewModel.NavigationService);
             }
+
+            _playbackVisible = sender.CurrentItem != null;
+            MasterDetail.ShowHideBanner(_playbackVisible || _activeCallVisible);
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)

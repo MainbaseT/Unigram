@@ -621,74 +621,69 @@
                                                          BorderThickness="1,1,0,0"
                                                          Grid.RowSpan="3" />
 
-                            <Grid MaxWidth="1000"
-                                  Margin="24,0"
-                                  Canvas.ZIndex="1"
-                                  Grid.Row="1">
-                                <muxc:BreadcrumbBar x:Name="DetailHeaderPresenter"
-                                                    Visibility="Collapsed"
-                                                    Margin="28,20,-24,0"
+                            <Grid x:Name="DetailRoot"
+                                  Grid.Row="1"
+                                  Grid.RowSpan="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="64" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid MaxWidth="1000"
+                                      Margin="24,0"
+                                      Canvas.ZIndex="1"
+                                      Grid.Row="1">
+                                    <muxc:BreadcrumbBar x:Name="DetailHeaderPresenter"
+                                                        Visibility="Collapsed"
+                                                        Margin="28,20,-24,0"
+                                                        VerticalAlignment="Top"
+                                                        TabIndex="1">
+                                        <muxc:BreadcrumbBar.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Title}"
+                                                           FontFamily="{ThemeResource EmojiThemeFontFamily}" />
+                                            </DataTemplate>
+                                        </muxc:BreadcrumbBar.ItemTemplate>
+                                    </muxc:BreadcrumbBar>
+
+                                    <local:BackButton x:Name="BackButton"
+                                                      Margin="-20,18,0,0"
+                                                      CornerRadius="20"
+                                                      Glyph="&#xe93e;"
+                                                      Width="48"
+                                                      Height="48" />
+
+                                    <ContentControl x:Name="DetailAction"
+                                                    Content="{TemplateBinding DetailFooter}"
+                                                    IsTabStop="False"
+                                                    TabIndex="2"
+                                                    VerticalContentAlignment="Stretch"
+                                                    HorizontalAlignment="Right"
                                                     VerticalAlignment="Top"
-                                                    TabIndex="1">
-                                    <muxc:BreadcrumbBar.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Title}"
-                                                       FontFamily="{ThemeResource EmojiThemeFontFamily}" />
-                                        </DataTemplate>
-                                    </muxc:BreadcrumbBar.ItemTemplate>
-                                </muxc:BreadcrumbBar>
+                                                    Height="48"
+                                                    Margin="0,16,0,0"
+                                                    Canvas.ZIndex="1" />
+                                </Grid>
 
-                                <local:BackButton x:Name="BackButton"
-                                                  Margin="-20,18,0,0"
-                                                  CornerRadius="20"
-                                                  Glyph="&#xe93e;"
-                                                  Width="48"
-                                                  Height="48" />
+                                <Grid x:Name="DetailPresenter"
+                                      Background="Transparent"
+                                      Grid.RowSpan="2"
+                                      Grid.Row="1" />
 
-                                <ContentControl x:Name="DetailAction"
-                                                Content="{TemplateBinding DetailFooter}"
-                                                IsTabStop="False"
-                                                TabIndex="2"
-                                                VerticalContentAlignment="Stretch"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Top"
-                                                Height="48"
-                                                Margin="0,16,0,0"
-                                                Canvas.ZIndex="1" />
+                                <Border x:Name="DetailHeaderBackground"
+                                        Visibility="Collapsed"
+                                        Height="48"
+                                        Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
+                                        BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        BackgroundSizing="InnerBorderEdge"
+                                        VerticalAlignment="Top"
+                                        Grid.Row="1" />
+
+                                <local:PlaybackOverlay Visibility="Collapsed"
+                                                       Grid.Row="1"
+                                                       Grid.RowSpan="2" />
                             </Grid>
-
-                            <Grid x:Name="DetailPresenter"
-                                  Background="Transparent"
-                                  Grid.RowSpan="2"
-                                  Grid.Row="1" />
-
-                            <Grid IsHitTestVisible="False"
-                                  Width="72"
-                                  Height="72"
-                                  HorizontalAlignment="Left"
-                                  VerticalAlignment="Center"
-                                  Background="Transparent"
-                                  Visibility="Collapsed"
-                                  Grid.RowSpan="2"
-                                  Grid.Row="1">
-                                <Border x:Name="GoBackIcon"
-                                        Width="72"
-                                        Height="72"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        Background="Transparent" />
-                                <Border x:Name="GoBackGlyph"
-                                        Background="Transparent"
-                                        CornerRadius="21"
-                                        Width="42"
-                                        Height="42"
-                                        Margin="12,0,0,0"
-                                        HorizontalAlignment="Left">
-                                    <SymbolIcon Symbol="Back"
-                                                Foreground="White" />
-                                </Border>
-                            </Grid>
-
                             <ContentControl x:Name="BannerPresenter"
                                             Content="{TemplateBinding Banner}"
                                             IsTabStop="False"
@@ -698,26 +693,12 @@
                                             VerticalAlignment="Top"
                                             Canvas.ZIndex="1" />
 
-                            <Border x:Name="DetailHeaderBackground"
-                                    Visibility="Collapsed"
-                                    Height="48"
-                                    Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
-                                    BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
-                                    BorderThickness="0,0,0,1"
-                                    BackgroundSizing="InnerBorderEdge"
-                                    VerticalAlignment="Top"
-                                    Grid.Row="1" />
-
                             <Border x:Name="BorderPart"
                                     BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
                                     BorderThickness="{ThemeResource NavigationViewContentGridBorderThickness}"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Grid.RowSpan="3"
                                     Canvas.ZIndex="2" />
-
-                            <local:PlaybackOverlay Visibility="Collapsed"
-                                                   Grid.Row="1"
-                                                   Grid.RowSpan="2" />
                         </Grid>
 
                         <ContentControl x:Name="MasterFrame"

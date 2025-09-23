@@ -377,6 +377,7 @@
         <controls:MasterDetailView x:Name="MasterDetail"
                                    ViewStateChanged="OnStateChanged"
                                    MasterVisibilityChanged="OnMasterVisibilityChanged"
+                                   BannerCollapsed="OnBannerCollapsed"
                                    Grid.Column="1"
                                    Grid.Row="1">
             <controls:MasterDetailView.Banner>
