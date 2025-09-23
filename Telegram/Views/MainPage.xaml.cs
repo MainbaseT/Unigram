@@ -3012,6 +3012,16 @@ namespace Telegram.Views
 
         private void ChatsList_GettingFocus(UIElement sender, GettingFocusEventArgs args)
         {
+            if (!AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged))
+            {
+                if (Photo == sender)
+                {
+                    Photo.UseSystemFocusVisuals = args.Direction != FocusNavigationDirection.None;
+                }
+
+                return;
+            }
+
             try
             {
                 // ListViewBase ignores GettingFocus events with Direction equals to None
@@ -3021,6 +3031,8 @@ namespace Telegram.Views
                 {
                     if (!_topicListCollapsed && ViewModel?.Topics.LastSelectedItem is MessageTopicForum forum && TopicListPresenter.TryGetContainer(forum.ForumTopicId, out SelectorItem container))
                     {
+                        Logger.Info("Set topic item as focused element");
+
                         if (args.TrySetNewFocusedElement(container))
                         {
                             args.Handled = true;
@@ -3028,6 +3040,8 @@ namespace Telegram.Views
                     }
                     else if (ChatsList.TryGetContainer(ViewModel?.Chats.LastSelectedItem ?? 0, out container))
                     {
+                        Logger.Info("Set chat item as focused element");
+
                         if (args.TrySetNewFocusedElement(container))
                         {
                             args.Handled = true;
@@ -3035,6 +3049,8 @@ namespace Telegram.Views
                     }
                     else if (sender != ChatsList)
                     {
+                        Logger.Info("Set chat list as focused element");
+
                         if (args.TrySetNewFocusedElement(ChatsList))
                         {
                             args.Handled = true;
