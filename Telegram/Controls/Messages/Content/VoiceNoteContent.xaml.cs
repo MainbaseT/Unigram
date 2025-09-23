@@ -378,6 +378,7 @@ namespace Telegram.Controls.Messages.Content
                 TypeResolver.Current.Playback.PositionChanged += OnPositionChanged;
 
                 Button.Progress = 1;
+                Progress.IsEnabled = true;
             }
             else
             {
@@ -419,6 +420,8 @@ namespace Telegram.Controls.Messages.Content
 
                     Button.Progress = 1;
                 }
+
+                Progress.IsEnabled = false;
             }
         }
 
