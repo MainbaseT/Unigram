@@ -517,6 +517,7 @@ namespace Telegram.ViewModels.Settings
             ClientService = clientService;
             DarkSettings = darkSettings;
             LightSettings = lightSettings;
+            Type = new ChatThemeEmoji(name);
             IsChannel = isChannel;
         }
 
