@@ -875,10 +875,14 @@ namespace Telegram.Controls
             }
             else
             {
-                if (user.Type is not UserTypeBot)
+                if (user.CanBeCalled(ViewModel.ClientService))
                 {
                     Call.Visibility = Visibility.Visible;
                     Call.Content = Strings.Call;
+                }
+                else
+                {
+                    Call.Visibility = Visibility.Collapsed;
                 }
                 VideoCall.Visibility = fullInfo.CanBeCalled && fullInfo.SupportsVideoCalls ? Visibility.Visible : Visibility.Collapsed;
                 Search.Visibility = fullInfo.CanBeCalled && fullInfo.SupportsVideoCalls ? Visibility.Collapsed : Visibility.Visible;
