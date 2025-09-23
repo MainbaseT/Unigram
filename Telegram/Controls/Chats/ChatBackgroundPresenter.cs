@@ -36,7 +36,6 @@ namespace Telegram.Controls.Chats
         private string _patternPath;
         private Sticker _symbol;
         private Sticker _model;
-        private UpgradedGift _gift;
         private string _wallpaperPath;
 
         private Background _background;
@@ -109,7 +108,7 @@ namespace Telegram.Controls.Chats
             var value = sender.RasterizationScale;
             if (value != _rasterizationScale && _vector && _background?.Type is BackgroundTypePattern pattern && _background?.Document?.DocumentValue != null)
             {
-                UpdatePattern(pattern, _background.Document.DocumentValue, value, _gift?.Symbol.Sticker, _gift?.Model.Sticker);
+                UpdatePattern(pattern, _background.Document.DocumentValue, value, _symbol, _model);
             }
             else
             {
@@ -169,7 +168,9 @@ namespace Telegram.Controls.Chats
                 _patternPath = null;
                 _wallpaperPath = null;
 
-                _gift = null;
+                _model = null;
+                _symbol = null;
+                UpdateModel();
 
                 _backgroundId = 0;
                 _thumbnail = false;
@@ -242,7 +243,9 @@ namespace Telegram.Controls.Chats
                 _pattern = null;
                 _patternPath = null;
 
-                _gift = null;
+                _model = null;
+                _symbol = null;
+                UpdateModel();
 
                 UpdateBlurred(typeWallpaper.IsBlurred);
 
@@ -481,7 +484,7 @@ namespace Telegram.Controls.Chats
 
         private ChatBackgroundSymbol UpdateModel()
         {
-            if (_model == null)
+            if (_pattern == null || _model == null)
             {
                 _modelVisual?.Children.RemoveAll();
                 return default;
