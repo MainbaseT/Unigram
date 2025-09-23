@@ -2065,27 +2065,45 @@ namespace Telegram.ViewModels
             }
             else if (message.Content is MessagePinMessage pinMessage && pinMessage.MessageId != 0)
             {
-                await LoadMessageSliceAsync(message.Id, pinMessage.MessageId);
+                if (message.ReplyToState != MessageReplyToState.Deleted)
+                {
+                    await LoadMessageSliceAsync(message.Id, pinMessage.MessageId);
+                }
             }
             else if (message.Content is MessageGameScore gameScore && gameScore.GameMessageId != 0)
             {
-                await LoadMessageSliceAsync(message.Id, gameScore.GameMessageId);
+                if (message.ReplyToState != MessageReplyToState.Deleted)
+                {
+                    await LoadMessageSliceAsync(message.Id, gameScore.GameMessageId);
+                }
             }
             else if (message.Content is MessageChecklistTasksAdded checklistTasksAdded && checklistTasksAdded.ChecklistMessageId != 0)
             {
-                await LoadMessageSliceAsync(message.Id, checklistTasksAdded.ChecklistMessageId, checklistTaskId: checklistTasksAdded.Tasks[0].Id);
+                if (message.ReplyToState != MessageReplyToState.Deleted)
+                {
+                    await LoadMessageSliceAsync(message.Id, checklistTasksAdded.ChecklistMessageId, checklistTaskId: checklistTasksAdded.Tasks[0].Id);
+                }
             }
             else if (message.Content is MessageChecklistTasksDone checklistTasksDone && checklistTasksDone.ChecklistMessageId != 0)
             {
-                await LoadMessageSliceAsync(message.Id, checklistTasksDone.ChecklistMessageId, checklistTaskId: checklistTasksDone.MarkedAsDoneTaskIds.Count > 0 ? checklistTasksDone.MarkedAsDoneTaskIds[0] : checklistTasksDone.MarkedAsNotDoneTaskIds[0]);
+                if (message.ReplyToState != MessageReplyToState.Deleted)
+                {
+                    await LoadMessageSliceAsync(message.Id, checklistTasksDone.ChecklistMessageId, checklistTaskId: checklistTasksDone.MarkedAsDoneTaskIds.Count > 0 ? checklistTasksDone.MarkedAsDoneTaskIds[0] : checklistTasksDone.MarkedAsNotDoneTaskIds[0]);
+                }
             }
             else if (message.Content is MessageSuggestedPostPaid suggestedPostPaid && suggestedPostPaid.SuggestedPostMessageId != 0)
             {
-                await LoadMessageSliceAsync(message.Id, suggestedPostPaid.SuggestedPostMessageId);
+                if (message.ReplyToState != MessageReplyToState.Deleted)
+                {
+                    await LoadMessageSliceAsync(message.Id, suggestedPostPaid.SuggestedPostMessageId);
+                }
             }
             else if (message.Content is MessageSuggestedPostRefunded suggestedPostRefunded && suggestedPostRefunded.SuggestedPostMessageId != 0)
             {
-                await LoadMessageSliceAsync(message.Id, suggestedPostRefunded.SuggestedPostMessageId);
+                if (message.ReplyToState != MessageReplyToState.Deleted)
+                {
+                    await LoadMessageSliceAsync(message.Id, suggestedPostRefunded.SuggestedPostMessageId);
+                }
             }
             else if (message.Content is MessageChatEvent chatEvent)
             {
