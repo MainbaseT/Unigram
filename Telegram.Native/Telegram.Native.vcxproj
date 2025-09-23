@@ -327,9 +327,6 @@
     </ClInclude>
     <ClInclude Include="Composition\dcomp.local.h" />
     <ClInclude Include="Composition\dcompex.h" />
-    <ClInclude Include="Composition\DirectRectangleClip.h">
-      <DependentUpon>Composition\DirectRectangleClip.idl</DependentUpon>
-    </ClInclude>
     <ClInclude Include="Composition\DirectRectangleClip2.h" />
     <ClInclude Include="Composition\DwmThumbnail.h" />
     <ClInclude Include="Composition\WindowVisual.h" />
@@ -1056,9 +1053,6 @@
     <ClCompile Include="Composition\CompositionDevice.cpp">
       <DependentUpon>Composition\CompositionDevice.idl</DependentUpon>
     </ClCompile>
-    <ClCompile Include="Composition\DirectRectangleClip.cpp">
-      <DependentUpon>Composition\DirectRectangleClip.idl</DependentUpon>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Generated Files\module.g.cpp" />
     <ClCompile Include="Helpers\LibraryHelper.cpp" />
@@ -1128,7 +1122,6 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Composition\CompositionDevice.idl" />
-    <Midl Include="Composition\DirectRectangleClip.idl" />
     <Midl Include="Composition\DirectRectangleClip2.idl" />
     <Midl Include="Composition\WindowVisual.idl" />
     <Midl Include="FatalError.idl">
