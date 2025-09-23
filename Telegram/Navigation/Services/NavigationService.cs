@@ -235,8 +235,14 @@ namespace Telegram.Navigation.Services
 
             if (frame != null)
             {
+                Application.Current.Resuming += OnResuming;
                 Application.Current.Suspending += OnSuspending;
             }
+        }
+
+        private void OnResuming(object sender, object e)
+        {
+            Resume();
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
@@ -342,6 +348,28 @@ namespace Telegram.Navigation.Services
             catch (Exception ex)
             {
                 Logger.Exception(ex);
+            }
+        }
+
+        public async void Resume()
+        {
+            var page = FrameFacade.Content as Page;
+            if (page != null)
+            {
+                if (page is IActivablePage cleanup)
+                {
+                    cleanup.Activate(this);
+                }
+
+                // call navagable override (navigating)
+                var dataContext = ViewModelForPage(page);
+                if (dataContext != null)
+                {
+                    dataContext.NavigationService = this;
+                    dataContext.Dispatcher = Dispatcher;
+                    var pageState = FrameFacade.PageStateSettingsService(page.GetType(), parameter: CurrentPageParam).Values;
+                    await dataContext.NavigatedToAsync(CurrentPageParam, NavigationMode.New, pageState);
+                }
             }
         }
 
