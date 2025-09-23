@@ -1413,74 +1413,11 @@ public static class CanvasComposition_stub
 }
 public static class CompositionDevice_stub
 {
-    public static Telegram.Native.Composition.DirectRectangleClip CreateRectangleClip_stub(Windows.UI.Xaml.UIElement element)
-    {
-        try
-        {
-            return Telegram.Native.Composition.CompositionDevice.CreateRectangleClip(element);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static Telegram.Native.Composition.DirectRectangleClip2 CreateRectangleClip2_stub(Windows.UI.Xaml.UIElement element)
     {
         try
         {
             return Telegram.Native.Composition.CompositionDevice.CreateRectangleClip2(element);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-}
-public static class DirectRectangleClip_stub
-{
-    public static void AnimateBottomLeft_stub(this Telegram.Native.Composition.DirectRectangleClip sender, Windows.UI.Composition.Compositor compositor, float from, float to, double duration)
-    {
-        try
-        {
-            sender.AnimateBottomLeft(compositor, from, to, duration);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void AnimateBottomRight_stub(this Telegram.Native.Composition.DirectRectangleClip sender, Windows.UI.Composition.Compositor compositor, float from, float to, double duration)
-    {
-        try
-        {
-            sender.AnimateBottomRight(compositor, from, to, duration);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void Set_stub(this Telegram.Native.Composition.DirectRectangleClip sender, float topLeft, float topRight, float bottomRight, float bottomLeft)
-    {
-        try
-        {
-            sender.Set(topLeft, topRight, bottomRight, bottomLeft);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void SetInset_stub(this Telegram.Native.Composition.DirectRectangleClip sender, float left, float top, float right, float bottom)
-    {
-        try
-        {
-            sender.SetInset(left, top, right, bottom);
         }
         catch (Exception ex)
         {
@@ -2301,6 +2238,18 @@ public static class Compositor_stub
             throw new RuntimeException(ex);
         }
     }
+    public static Windows.UI.Composition.RedirectVisual CreateRedirectVisual_stub(this Windows.UI.Composition.Compositor sender, Windows.UI.Composition.Visual source)
+    {
+        try
+        {
+            return sender.CreateRedirectVisual(source);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
     public static Windows.UI.Composition.CompositionRoundedRectangleGeometry CreateRoundedRectangleGeometry_stub(this Windows.UI.Composition.Compositor sender)
     {
         try
@@ -2342,18 +2291,6 @@ public static class Compositor_stub
         try
         {
             return sender.CreateShapeVisual();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static Windows.UI.Composition.SpringScalarNaturalMotionAnimation CreateSpringScalarAnimation_stub(this Windows.UI.Composition.Compositor sender)
-    {
-        try
-        {
-            return sender.CreateSpringScalarAnimation();
         }
         catch (Exception ex)
         {
@@ -5963,18 +5900,6 @@ public static class LoadedImageSurface_stub
         try
         {
             return Windows.UI.Xaml.Media.LoadedImageSurface.StartLoadFromStream(stream);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static Windows.UI.Xaml.Media.LoadedImageSurface StartLoadFromStream_stub(Windows.Storage.Streams.IRandomAccessStream stream, Windows.Foundation.Size desiredMaxSize)
-    {
-        try
-        {
-            return Windows.UI.Xaml.Media.LoadedImageSurface.StartLoadFromStream(stream, desiredMaxSize);
         }
         catch (Exception ex)
         {
