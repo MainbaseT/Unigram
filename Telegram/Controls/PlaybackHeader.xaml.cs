@@ -166,9 +166,6 @@ namespace Telegram.Controls
 
                     UpdateText(message.ChatId, message.Id, title, date);
 
-                    PreviousButton.Visibility = Visibility.Collapsed;
-                    NextButton.Visibility = Visibility.Collapsed;
-
                     RepeatButton.Visibility = Visibility.Collapsed;
                     //ShuffleButton.Visibility = Visibility.Collapsed;
 
@@ -191,9 +188,6 @@ namespace Telegram.Controls
                         UpdateText(message.ChatId, message.Id, audio.FileName, string.Empty);
                     }
 
-                    PreviousButton.Visibility = Visibility.Visible;
-                    NextButton.Visibility = Visibility.Visible;
-
                     RepeatButton.Visibility = Visibility.Visible;
                     //ShuffleButton.Visibility = Visibility.Visible;
 
@@ -211,9 +205,6 @@ namespace Telegram.Controls
                 {
                     UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Audio.FileName, string.Empty);
                 }
-
-                PreviousButton.Visibility = Visibility.Visible;
-                NextButton.Visibility = Visibility.Visible;
 
                 RepeatButton.Visibility = Visibility.Visible;
                 //ShuffleButton.Visibility = Visibility.Visible;
