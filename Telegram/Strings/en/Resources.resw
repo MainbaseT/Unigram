@@ -15234,6 +15234,12 @@ Participants will see that the chat is being recorded.</value>
   <data name="VoipOngoingChatAlertTitle" xml:space="preserve">
     <value>Another video chat in progress</value>
   </data>
+  <data name="VoipOngoingConferenceChatAlert" xml:space="preserve">
+    <value>Leave group call with **{0}** and start a new one with **{1}**?</value>
+  </data>
+  <data name="VoipOngoingConferenceChatAlert2" xml:space="preserve">
+    <value>Leave group call with **{0}** and call **{1}**?</value>
+  </data>
   <data name="VoipPeerOutdated" xml:space="preserve">
     <value>**{0}**&apos;s app does not support calls. They need to update their app before you can call them.</value>
   </data>

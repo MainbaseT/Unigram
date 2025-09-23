@@ -12950,4 +12950,7 @@
     <string name="BoostingBoostGroupMenu">Boost Group</string>
     <string name="BoostingBoostChannelMenu">Boost Channel</string>
 
+    <string name="VoipOngoingConferenceChatAlert">Leave group call with **{0}** and start a new one with **{1}**?</string>
+    <string name="VoipOngoingConferenceChatAlert2">Leave group call with **{0}** and call **{1}**?</string>
+
 </resources>
