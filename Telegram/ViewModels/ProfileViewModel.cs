@@ -211,7 +211,7 @@ namespace Telegram.ViewModels
 
             if (_savedMessagesTopic != null)
             {
-                await UpdateSharedCountAsync(chat, null);
+                await UpdateSharedCountAsync(chat, tabs);
             }
             else if (chat.Type is ChatTypePrivate or ChatTypeSecret)
             {
