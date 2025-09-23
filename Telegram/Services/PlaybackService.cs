@@ -172,7 +172,10 @@ namespace Telegram.Services
 
         private WM.SystemMediaTransportControls _transport;
 
+        private PlaybackPreviousState _previous;
+
         private int _sessionId;
+        private PlaybackPlaylistType _type;
 
         private long _chatId;
         private MessageTopic _topic;
@@ -663,13 +666,40 @@ namespace Telegram.Services
 
         public void ClearImpl(AsyncMediaPlayer player)
         {
-            PlaybackState = PlaybackState.None;
+            if (_previous != null)
+            {
+                _items = _previous.Items;
+                _playbackSpeed = _previous.CurrentItem.CanChangePlaybackRate ? _settingsService.Playback.AudioSpeed : 1;
+                CurrentItem = _previous.CurrentItem;
 
-            //Execute.BeginOnUIThread(() => CurrentItem = null);
-            CurrentItem = null;
-            Dispose(true);
+                player.Rate = (float)_playbackSpeed;
+                player.Play(MediaHttpServer.Start(_previous.CurrentItem, ref _httpServerToken));
+                player.Time = _previous.Time;
 
-            MediaHttpServer.Stop(ref _httpServerToken);
+                _positionChanged.Position = TimeSpan.FromMilliseconds(_previous.Time);
+                PositionChanged?.Invoke(this, _positionChanged);
+
+                if (_previous.State != PlaybackState.Playing)
+                {
+                    player.Pause();
+                    PlaybackState = PlaybackState.Paused;
+                }
+                else
+                {
+                    PlaybackState = PlaybackState.Playing;
+                }
+
+                _previous = null;
+            }
+            else
+            {
+                PlaybackState = PlaybackState.None;
+
+                CurrentItem = null;
+                Dispose(PlaybackPlaylistType.None);
+
+                MediaHttpServer.Stop(ref _httpServerToken);
+            }
         }
 
         public void MoveTo(PlaybackItem item, int index)
@@ -718,7 +748,9 @@ namespace Telegram.Services
                 }
             }
 
-            Dispose(false);
+            Dispose(message.Content is MessageAudio
+                ? PlaybackPlaylistType.Audio
+                : PlaybackPlaylistType.Voice);
 
             var item = new PlaybackItemMessage(xamlRoot, message, topic);
             var items = _items = new List<PlaybackItem>();
@@ -803,7 +835,7 @@ namespace Telegram.Services
                 }
             }
 
-            Dispose(false);
+            Dispose(PlaybackPlaylistType.ProfileAudio);
 
             var item = new PlaybackItemProfileAudio(xamlRoot, audio);
             var items = _items = new List<PlaybackItem>();
@@ -833,15 +865,16 @@ namespace Telegram.Services
             }
         }
 
-        private void Dispose(bool full)
+        private void Dispose(PlaybackPlaylistType type)
         {
             if (_player != null)
             {
                 //_mediaPlayer.CommandManager.IsEnabled = false;
 
-                if (full)
+                if (type == PlaybackPlaylistType.None)
                 {
                     _transport.ButtonPressed -= Transport_ButtonPressed;
+                    _previous = null;
 
                     //_mediaPlayer.SystemMediaTransportControls.ButtonPressed -= Transport_ButtonPressed;
                     //_mediaPlayer.PlaybackSession.PlaybackStateChanged -= OnPlaybackStateChanged;
@@ -860,11 +893,44 @@ namespace Telegram.Services
                 }
                 else
                 {
+                    if (type is PlaybackPlaylistType.Voice && _type is PlaybackPlaylistType.Audio or PlaybackPlaylistType.ProfileAudio && CurrentItem != null)
+                    {
+                        _previous ??= new PlaybackPreviousState(this, _player);
+                    }
+
                     _player.Stop();
                 }
             }
 
             _items = null;
+            _type = type;
+        }
+
+        enum PlaybackPlaylistType
+        {
+            None,
+            Audio,
+            Voice,
+            ProfileAudio
+        };
+
+        class PlaybackPreviousState
+        {
+            public List<PlaybackItem> Items { get; }
+
+            public PlaybackItem CurrentItem { get; }
+
+            public long Time { get; }
+
+            public PlaybackState State { get; }
+
+            public PlaybackPreviousState(PlaybackService service, AsyncMediaPlayer player)
+            {
+                Items = service._items.ToList();
+                CurrentItem = service.CurrentItem;
+                Time = player.Time;
+                State = service.PlaybackState;
+            }
         }
 
         private AsyncMediaPlayer Create()
