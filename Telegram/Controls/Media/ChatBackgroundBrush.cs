@@ -42,7 +42,7 @@ namespace Telegram.Controls.Media
             }
         }
 
-        private CompositionSurfaceBrush CreateSurfaceBrush()
+        private CompositionSurfaceBrush CreateSurfaceBrush(out CompositionSurfaceBrush modelBrush)
         {
             var surface = Pattern.Surface;
             var logical = Pattern.RenderSize;
@@ -112,10 +112,47 @@ namespace Telegram.Controls.Media
                 visualSurfaceBrush.BitmapInterpolationMode = CompositionBitmapInterpolationMode.NearestNeighbor;
                 visualSurfaceBrush.SnapToPixels = true;
 
+                modelBrush = CreateModelBrush();
                 return visualSurfaceBrush;
             }
 
+            modelBrush = null;
             return surfaceBrush;
+        }
+
+        private CompositionSurfaceBrush CreateModelBrush()
+        {
+            var cos = MathF.Abs(MathF.Cos(Model.RotationAngle));
+            var sin = MathF.Abs(MathF.Sin(Model.RotationAngle));
+
+            var boundingWidth = Model.Size.X * cos + Model.Size.Y * sin;
+            var boundingHeight = Model.Size.X * sin + Model.Size.Y * cos;
+
+            var visual = BootStrapper.Current.Compositor.CreateContainerVisual();
+            visual.Size = new Vector2(Model.Offset.X + boundingWidth, Model.Offset.Y + boundingHeight);
+
+            var sprite = BootStrapper.Current.Compositor.CreateSpriteVisual();
+            sprite.Brush = BootStrapper.Current.Compositor.CreateColorBrush(Colors.Black);
+            sprite.Size = Model.Size;
+
+            visual.Children.InsertAtTop(sprite);
+
+            var visualSurfaceBrush = BootStrapper.Current.Compositor.CreateSurfaceBrush();
+            var visualSurface = BootStrapper.Current.Compositor.CreateVisualSurface();
+
+            visualSurface.SourceVisual = sprite;
+            visualSurface.SourceOffset = new Vector2(0, 0);
+            visualSurface.SourceSize = sprite.Size;
+            visualSurfaceBrush.Offset = Model.Offset;
+            visualSurfaceBrush.RotationAngle = Model.RotationAngle;
+            visualSurfaceBrush.HorizontalAlignmentRatio = 0;
+            visualSurfaceBrush.VerticalAlignmentRatio = 0;
+            visualSurfaceBrush.Surface = visualSurface;
+            visualSurfaceBrush.Stretch = CompositionStretch.None;
+            visualSurfaceBrush.BitmapInterpolationMode = CompositionBitmapInterpolationMode.NearestNeighbor;
+            visualSurfaceBrush.SnapToPixels = true;
+
+            return visualSurfaceBrush;
         }
 
         private void CreateResources()
@@ -127,124 +164,97 @@ namespace Telegram.Controls.Media
             {
                 _recreate = false;
 
-                var surfaceBrush = CreateSurfaceBrush();
-                var borderEffect = new BorderEffect()
+                try
                 {
-                    Source = new CompositionEffectSourceParameter("Source"),
-                    ExtendX = Microsoft.Graphics.Canvas.CanvasEdgeBehavior.Wrap,
-                    ExtendY = Microsoft.Graphics.Canvas.CanvasEdgeBehavior.Wrap
-                };
-
-                IGraphicsEffect effect;
-                IGraphicsEffect blend;
-                if (IsNegative)
-                {
-                    var tintEffect = _tintEffect = new TintEffect
+                    var surfaceBrush = CreateSurfaceBrush(out CompositionSurfaceBrush modelBrush);
+                    var borderEffect = new BorderEffect()
                     {
-                        Name = "Tint",
-                        Source = borderEffect,
-                        Color = Color.FromArgb(Intensity, 0, 0, 0)
+                        Source = new CompositionEffectSourceParameter("Source"),
+                        ExtendX = Microsoft.Graphics.Canvas.CanvasEdgeBehavior.Wrap,
+                        ExtendY = Microsoft.Graphics.Canvas.CanvasEdgeBehavior.Wrap
                     };
 
-                    blend = null;
-
-                    effect = new ColorMatrixEffect
+                    IGraphicsEffect effect;
+                    IGraphicsEffect blend;
+                    if (IsNegative)
                     {
-                        Source = tintEffect,
-                        ColorMatrix = new Matrix5x4
+                        var tintEffect = _tintEffect = new TintEffect
                         {
-                            M11 = 1,
-                            M22 = 1,
-                            M33 = 1,
-                            M44 = -1,
-                            M54 = 1
-                        }
-                    };
-                }
-                else
-                {
-                    var tintEffect = _tintEffect = new TintEffect
+                            Name = "Tint",
+                            Source = borderEffect,
+                            Color = Color.FromArgb(Intensity, 0, 0, 0)
+                        };
+
+                        blend = null;
+
+                        effect = new ColorMatrixEffect
+                        {
+                            Source = tintEffect,
+                            ColorMatrix = new Matrix5x4
+                            {
+                                M11 = 1,
+                                M22 = 1,
+                                M33 = 1,
+                                M44 = -1,
+                                M54 = 1
+                            }
+                        };
+                    }
+                    else
                     {
-                        Name = "Tint",
-                        Source = borderEffect,
-                        Color = Color.FromArgb(Intensity, 0, 0, 0)
-                    };
+                        var tintEffect = _tintEffect = new TintEffect
+                        {
+                            Name = "Tint",
+                            Source = borderEffect,
+                            Color = Color.FromArgb(Intensity, 0, 0, 0)
+                        };
 
-                    effect = blend = new BlendEffect
+                        effect = blend = new BlendEffect
+                        {
+                            Background = tintEffect,
+                            Foreground = new CompositionEffectSourceParameter("Backdrop"),
+                            Mode = BlendEffectMode.Overlay
+                        };
+
+                        //effect = borderEffect;
+                    }
+
+                    if (modelBrush != null)
                     {
-                        Background = tintEffect,
-                        Foreground = new CompositionEffectSourceParameter("Backdrop"),
-                        Mode = BlendEffectMode.Overlay
-                    };
+                        var composite = new CompositeEffect
+                        {
+                            Mode = IsNegative
+                             ? Microsoft.Graphics.Canvas.CanvasComposite.SourceOver
+                             : Microsoft.Graphics.Canvas.CanvasComposite.DestinationOut,
+                        };
+                        composite.Sources.Add(effect);
+                        composite.Sources.Add(new CompositionEffectSourceParameter("Model"));
 
-                    //effect = borderEffect;
-                }
+                        effect = composite;
+                    }
 
-                CompositionSurfaceBrush extra = null;
+                    var borderEffectFactory = BootStrapper.Current.Compositor.CreateEffectFactory(effect, new[] { "Tint.Color" });
+                    var borderEffectBrush = borderEffectFactory.CreateBrush();
+                    borderEffectBrush.SetSourceParameter("Source", surfaceBrush);
 
-                if (Pattern.Symbols.Count > 0)
-                {
-                    var cos = MathF.Abs(MathF.Cos(Model.RotationAngle));
-                    var sin = MathF.Abs(MathF.Sin(Model.RotationAngle));
-
-                    var boundingWidth = Model.Size.X * cos + Model.Size.Y * sin;
-                    var boundingHeight = Model.Size.X * sin + Model.Size.Y * cos;
-
-                    var visual = BootStrapper.Current.Compositor.CreateContainerVisual();
-                    visual.Size = new Vector2(Model.Offset.X + boundingWidth, Model.Offset.Y + boundingHeight);
-
-                    var sprite = BootStrapper.Current.Compositor.CreateSpriteVisual();
-                    sprite.Brush = BootStrapper.Current.Compositor.CreateColorBrush(Colors.Black);
-                    sprite.Size = Model.Size;
-                    //sprite.Offset = new Vector3(Model.Offset, 0);
-                    //sprite.RotationAngle = Model.RotationAngle;
-
-                    visual.Children.InsertAtTop(sprite);
-
-                    var visualSurfaceBrush = BootStrapper.Current.Compositor.CreateSurfaceBrush();
-                    var visualSurface = BootStrapper.Current.Compositor.CreateVisualSurface();
-
-                    visualSurface.SourceVisual = sprite;
-                    visualSurface.SourceOffset = new Vector2(0, 0);
-                    visualSurface.SourceSize = sprite.Size;
-                    visualSurfaceBrush.Offset = Model.Offset;
-                    visualSurfaceBrush.RotationAngle = Model.RotationAngle;
-                    visualSurfaceBrush.HorizontalAlignmentRatio = 0;
-                    visualSurfaceBrush.VerticalAlignmentRatio = 0;
-                    visualSurfaceBrush.Surface = visualSurface;
-                    visualSurfaceBrush.Stretch = CompositionStretch.None;
-                    visualSurfaceBrush.BitmapInterpolationMode = CompositionBitmapInterpolationMode.NearestNeighbor;
-                    visualSurfaceBrush.SnapToPixels = true;
-
-                    var composite = new CompositeEffect
+                    if (modelBrush != null)
                     {
-                        Mode = IsNegative
-                         ? Microsoft.Graphics.Canvas.CanvasComposite.SourceOver
-                         : Microsoft.Graphics.Canvas.CanvasComposite.DestinationOut,
-                    };
-                    composite.Sources.Add(effect);
-                    composite.Sources.Add(new CompositionEffectSourceParameter("Cutout"));
+                        borderEffectBrush.SetSourceParameter("Model", modelBrush);
+                    }
 
-                    effect = composite;
-                    extra = visualSurfaceBrush;
+                    if (blend != null)
+                    {
+                        var backdrop = BootStrapper.Current.Compositor.CreateBackdropBrush();
+                        borderEffectBrush.SetSourceParameter("Backdrop", backdrop);
+                    }
+
+                    CompositionBrush = borderEffectBrush;
                 }
-
-                var borderEffectFactory = BootStrapper.Current.Compositor.CreateEffectFactory(effect, new[] { "Tint.Color" });
-                var borderEffectBrush = borderEffectFactory.CreateBrush();
-                borderEffectBrush.SetSourceParameter("Source", surfaceBrush);
-
-                if (extra != null)
+                catch
                 {
-                    borderEffectBrush.SetSourceParameter("Cutout", extra);
+                    _recreate = true;
+                    CompositionBrush = null;
                 }
-
-                if (blend != null)
-                {
-                    var backdrop = BootStrapper.Current.Compositor.CreateBackdropBrush();
-                    borderEffectBrush.SetSourceParameter("Backdrop", backdrop);
-                }
-
-                CompositionBrush = borderEffectBrush;
             }
         }
 
@@ -273,9 +283,9 @@ namespace Telegram.Controls.Media
 
         public void Update()
         {
-            if (_connected && CompositionBrush != null && Pattern != null)
+            if (_connected && (_recreate || CompositionBrush != null) && Pattern != null)
             {
-                if (_negative != IsNegative)
+                if (_recreate || _negative != IsNegative)
                 {
                     _recreate = true;
                     OnConnected();
@@ -286,7 +296,12 @@ namespace Telegram.Controls.Media
                 {
                     if (CompositionBrush is CompositionEffectBrush effectBrush)
                     {
-                        effectBrush.SetSourceParameter("Source", CreateSurfaceBrush());
+                        effectBrush.SetSourceParameter("Source", CreateSurfaceBrush(out CompositionSurfaceBrush modelBrush));
+                        
+                        if (modelBrush != null)
+                        {
+                            effectBrush.SetSourceParameter("Model", modelBrush);
+                        }
 
                         if (_tintEffect != null)
                         {
