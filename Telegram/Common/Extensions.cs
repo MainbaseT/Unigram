@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using LinqToVisualTree;
+using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -165,6 +166,18 @@ namespace Telegram.Common
         public static FormattedText AsFormattedText(this string str)
         {
             return new FormattedText(str, Array.Empty<TextEntity>());
+        }
+
+        public static bool TryGetValue(this CoreWebView2HttpRequestHeaders headers, string key, out string value)
+        {
+            if (headers.Contains(key))
+            {
+                value = headers.GetHeader(key);
+                return true;
+            }
+
+            value = null;
+            return false;
         }
 
         public static IEnumerable<IList<T>> ToChunks<T>(this List<T> enumerable, int chunkSize)

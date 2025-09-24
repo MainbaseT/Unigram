@@ -339,39 +339,57 @@ namespace Telegram.Controls
 
                 long offset = 0;
                 long limit = 0;
+                long buffer = 0;
 
-                if (args.Request.Headers.Contains("Range"))
+                if (args.Request.Headers.TryGetValue("Range", out string range) && RangeHeaderValue.TryParse(range, out var ranges))
                 {
-                    var range = args.Request.Headers.GetHeader("Range");
-                    if (range != null && RangeHeaderValue.TryParse(range, out var ranges))
+                    var uri = new Uri(args.Request.Uri);
+                    var query = uri.Query.ParseQueryString();
+
+                    if (query.TryGetValue("duration", out string durationValue) && int.TryParse(durationValue, out int duration) && duration > 0)
                     {
-                        foreach (var part in ranges.Ranges)
+                        buffer = Math.Min((long)(((double)file.Size / duration) * 15), 4 * 1024 * 1024);
+                    }
+                    else
+                    {
+                        buffer = 1 * 1024 * 1024;
+                    }
+
+                    foreach (var part in ranges.Ranges)
+                    {
+                        offset = part.From ?? 0;
+
+                        if (part.To.HasValue)
                         {
-                            offset = part.From ?? 0;
-
-                            if (part.To.HasValue)
-                            {
-                                limit = part.To.Value - offset + 1;
-                            }
-                            else
-                            {
-                                limit = Math.Min(file.Size - offset, 4 * 1024 * 1024);
-                            }
-
-                            break;
+                            limit = part.To.Value - offset + 1;
+                            buffer = part.To.Value - offset + 1;
                         }
+                        else if ((double)offset / file.Size >= 0.95)
+                        {
+                            // Likely metadata, let's read the remaning all together
+                            limit = 0;
+                            buffer = 0;
+                        }
+                        else
+                        {
+                            limit = Math.Min(file.Size - offset, 64 * 1024);
+                            buffer = Math.Min(file.Size - offset, buffer);
+                        }
+
+                        break;
                     }
                 }
 
                 if (limit == 0)
                 {
                     limit = file.Size - offset;
+                    buffer = file.Size - offset;
                 }
 
                 //Logger.Info(resource + ", offset: " + offset + ", count:" + limit);
 
                 remote.SeekCallback(offset);
-                var bytesRead = await remote.ReadCallbackAsync(limit, 0);
+                var bytesRead = await remote.ReadCallbackAsync(limit, buffer);
                 remote.Close(false);
 
                 if (bytesRead > 0)
@@ -404,8 +422,8 @@ namespace Telegram.Controls
                             {
                                 stream.Seek((ulong)offset);
 
-                                var buffer = new Windows.Storage.Streams.Buffer((uint)limit);
-                                var readBuffer = await stream.ReadAsync(buffer, (uint)limit, InputStreamOptions.None);
+                                var data = new Windows.Storage.Streams.Buffer((uint)limit);
+                                var readBuffer = await stream.ReadAsync(data, (uint)limit, InputStreamOptions.None);
 
                                 await destination.WriteAsync(readBuffer);
 
