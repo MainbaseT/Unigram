@@ -270,8 +270,11 @@ namespace winrt::Telegram::Native::implementation
     void AsyncMediaPlayerSwapChain::Detach(SwapChainPanel const& panel)
     {
         std::lock_guard<std::mutex> lock(m_panelLock);
-        OnDetach(panel, m_compositionScaleChangedToken, m_sizeChangedToken);
-        m_panel = nullptr;
+        if (m_panel == panel)
+        {
+            OnDetach(panel, m_compositionScaleChangedToken, m_sizeChangedToken);
+            m_panel = nullptr;
+        }
     }
 
     void AsyncMediaPlayerSwapChain::OnDetach(SwapChainPanel const& oldPanel, winrt::event_token& scaleToken, winrt::event_token& sizeToken)
