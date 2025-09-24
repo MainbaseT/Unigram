@@ -541,7 +541,8 @@ namespace winrt::Telegram::Native::implementation
         }
 
         auto scale = (int)(rasterizationScale * 100);
-        auto dpi = 0.25 * rasterizationScale;
+        float rasterScale = (float)rasterizationScale;
+        float dpi = 0.25f * rasterScale;
 
         auto data = DecompressFromFile(path);
         auto patterns = winrt::single_threaded_vector<ChatBackgroundSymbol>();
@@ -646,6 +647,16 @@ namespace winrt::Telegram::Native::implementation
                     break;
                 }
 
+                winrt::com_ptr<ID2D1PathGeometry1> widenGeometry;
+                CleanupIfFailed(result, m_d2dFactory->CreatePathGeometry(widenGeometry.put()));
+
+                winrt::com_ptr<ID2D1GeometrySink> widenSink;
+                CleanupIfFailed(result, widenGeometry->Open(widenSink.put()));
+
+                geometry->Widen(0.25f * rasterizationScale / dpi, NULL, NULL, widenSink.get());
+                widenSink->Close();
+
+                d2dContext->FillGeometry(widenGeometry.get(), blackBrush.get());
                 d2dContext->FillGeometry(geometry.get(), blackBrush.get());
             }
 
@@ -687,7 +698,9 @@ namespace winrt::Telegram::Native::implementation
                 winrt::com_ptr<ID2D1StrokeStyle1> strokeStyle;
                 CleanupIfFailed(result, m_d2dFactory->CreateStrokeStyle(strokeProperties, NULL, 0, strokeStyle.put()));
 
-                d2dContext->DrawGeometry(geometry.get(), blackBrush.get(), shape->strokeWidth, strokeStyle.get());
+                auto strokeWidth = std::max(1 * rasterScale / dpi, shape->strokeWidth);
+
+                d2dContext->DrawGeometry(geometry.get(), blackBrush.get(), strokeWidth, strokeStyle.get());
             }
         }
 
