@@ -447,6 +447,7 @@
                 Click="AddToProfile_Click"
                 SizeChanged="Visual_SizeChanged"
                 Visibility="Collapsed"
+                AutomationProperties.Name="{CustomResource AudioAddToProfile}"
                 Style="{StaticResource AccentButtonStyle}"
                 HorizontalAlignment="Stretch"
                 Margin="24,0"
