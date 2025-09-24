@@ -146,6 +146,7 @@ namespace Telegram.Common
 
             long offset = 0;
             long limit = 0;
+            long buffer = 0;
 
             if (request.Headers.TryGetValue("Range", out var range) && RangeHeaderValue.TryParse(range, out var ranges))
             {
@@ -166,15 +167,18 @@ namespace Telegram.Common
                     if (part.To.HasValue)
                     {
                         limit = part.To.Value - offset + 1;
+                        buffer = part.To.Value - offset + 1;
                     }
                     else if ((double)offset / file.Size >= 0.95)
                     {
                         // Likely metadata, let's read the remaning all together
                         limit = 0;
+                        buffer = 0;
                     }
                     else
                     {
-                        limit = Math.Min(file.Size - offset, chunk);
+                        limit = Math.Min(file.Size - offset, 64 * 1024);
+                        buffer = Math.Min(file.Size - offset, chunk);
                     }
 
                     break;
@@ -190,7 +194,7 @@ namespace Telegram.Common
 
             var remote = new RemoteFileSource(clientService, file, priority, true);
             remote.SeekCallback(offset);
-            remote.ReadCallback(limit, out long bytesRead);
+            remote.ReadCallback(limit, buffer, out long bytesRead);
             remote.Close(false);
 
             if (bytesRead > 0)
@@ -207,9 +211,9 @@ namespace Telegram.Common
                     {
                         stream.Seek(offset, System.IO.SeekOrigin.Begin);
 
-                        byte[] buffer = new byte[(int)limit];
-                        stream.Read(buffer, 0, buffer.Length);
-                        response.Content = buffer;
+                        byte[] data = new byte[(int)limit];
+                        stream.Read(data, 0, data.Length);
+                        response.Content = data;
                     }
 
                     return response;

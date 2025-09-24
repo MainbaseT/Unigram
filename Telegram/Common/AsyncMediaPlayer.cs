@@ -155,7 +155,10 @@ namespace Telegram.Common
         {
             if (play)
             {
-                var media = new Media(_library, input, ":network-caching=10000");
+                // #define CLOCK_FREQ         INT64_C(1000000)
+                // #define DEFAULT_PTS_DELAY (3*CLOCK_FREQ/10)
+                // INT64_C(1000) * var_InheritInteger(access, "network-caching")
+                var media = new Media(_library, input, ":network-caching=300");
 
                 _player.Play(media);
 

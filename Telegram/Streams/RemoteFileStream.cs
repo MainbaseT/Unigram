@@ -50,7 +50,7 @@ namespace Telegram.Streams
         {
             try
             {
-                _source.ReadCallback((int)len, out long bytesRead);
+                _source.ReadCallback((int)len, 0, out long bytesRead);
 
                 if (_disposed || _source.Offset == _source.FileSize)
                 {

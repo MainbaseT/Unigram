@@ -371,7 +371,7 @@ namespace Telegram.Controls
                 //Logger.Info(resource + ", offset: " + offset + ", count:" + limit);
 
                 remote.SeekCallback(offset);
-                var bytesRead = await remote.ReadCallbackAsync(limit);
+                var bytesRead = await remote.ReadCallbackAsync(limit, 0);
                 remote.Close(false);
 
                 if (bytesRead > 0)

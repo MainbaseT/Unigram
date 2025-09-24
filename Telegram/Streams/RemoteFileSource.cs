@@ -62,9 +62,9 @@ namespace Telegram.Streams
             }
         }
 
-        public override void ReadCallback(long count, out long bytesRead)
+        public override void ReadCallback(long count, long buffer, out long bytesRead)
         {
-            if (MustWait(count))
+            if (MustWait(count, buffer))
             {
                 _event.WaitOne();
 
@@ -82,9 +82,9 @@ namespace Telegram.Streams
             }
         }
 
-        public async Task<long> ReadCallbackAsync(long count)
+        public async Task<long> ReadCallbackAsync(long count, long buffer)
         {
-            if (MustWait(count))
+            if (MustWait(count, buffer))
             {
                 await _event.WaitOneAsync();
 
@@ -127,7 +127,7 @@ namespace Telegram.Streams
             return 0;
         }
 
-        protected bool MustWait(long count)
+        protected bool MustWait(long count, long buffer)
         {
             lock (_stateLock)
             {
@@ -153,7 +153,7 @@ namespace Telegram.Streams
                 _event.Reset();
                 _count = count;
 
-                _clientService.DownloadFile(_file.Id, _priority, _offset, _limit ? count : 0, false);
+                _clientService.DownloadFile(_file.Id, _priority, _offset, _limit ? Math.Max(count, buffer) : 0, false);
 
                 Logger.Debug($"Not enough data available for {_file.Id}, offset: {_offset}, count: {count}, size: {_file.Size}");
                 return true;
