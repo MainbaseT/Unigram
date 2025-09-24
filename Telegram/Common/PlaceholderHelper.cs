@@ -115,7 +115,7 @@ namespace Telegram.Common
         public static async Task<ChatBackgroundPattern> LoadPatternBitmapAsync(File file, double rasterizationScale)
         {
             using var locked = await _patternSurfaceLock.WaitAsync();
-            return await Background.DrawSvgAsync(BootStrapper.Current.Compositor, file.Local.Path, Colors.White, rasterizationScale);
+            return await Background.DrawSvgAsync(BootStrapper.Current.Compositor, file.Local.Path, rasterizationScale);
         }
 
         public static async void GetBlurred(SoftwareBitmapSource source, string path, float amount = 3)

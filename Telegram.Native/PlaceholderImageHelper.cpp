@@ -412,15 +412,23 @@ namespace winrt::Telegram::Native::implementation
         return native->EndDraw();
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<ChatBackgroundPattern> PlaceholderImageHelper::DrawSvgAsync(Compositor compositor, hstring path, Color foreground, double dpi)
+    winrt::Windows::Foundation::IAsyncOperation<ChatBackgroundPattern> PlaceholderImageHelper::DrawSvgAsync(Compositor compositor, hstring path, double rasterizationScale)
     {
         winrt::apartment_context ui_thread;
         co_await winrt::resume_background();
 
-        auto patterns = DrawSvg(compositor, path, foreground, dpi);
+        ChatBackgroundPattern pattern{ nullptr };
+        try
+        {
+            pattern = DrawSvg(compositor, path, rasterizationScale);
+        }
+        catch (...)
+        {
+            pattern = nullptr;
+        }
 
         co_await ui_thread;
-        co_return patterns;
+        co_return pattern;
     }
 
     constexpr float PI = 3.14159265358979323846f;
@@ -518,10 +526,19 @@ namespace winrt::Telegram::Native::implementation
         return decompressed;
     }
 
-    ChatBackgroundPattern PlaceholderImageHelper::DrawSvg(Compositor compositor, hstring path, Color foreground, double rasterizationScale)
+    ChatBackgroundPattern PlaceholderImageHelper::DrawSvg(Compositor compositor, hstring path, double rasterizationScale)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
+
+        if (rasterizationScale < 1)
+        {
+            rasterizationScale = 1;
+        }
+        else if (rasterizationScale > 4)
+        {
+            rasterizationScale = 4;
+        }
 
         auto scale = (int)(rasterizationScale * 100);
         auto dpi = 0.25 * rasterizationScale;
@@ -566,8 +583,7 @@ namespace winrt::Telegram::Native::implementation
         d2dContext->Clear(D2D1::ColorF(0, 0, 0, 0));
         d2dContext->SetTransform(D2D1::Matrix3x2F::Scale(1 * dpi, 1 * dpi));
 
-        CleanupIfFailed(result, d2dContext->CreateSolidColorBrush(
-            D2D1::ColorF(foreground.R / 255.0f, foreground.G / 255.0f, foreground.B / 255.0f, foreground.A / 255.0f), blackBrush.put()));
+        CleanupIfFailed(result, d2dContext->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 1), blackBrush.put()));
 
         for (auto shape = image->shapes; shape != NULL; shape = shape->next)
         {
@@ -677,10 +693,12 @@ namespace winrt::Telegram::Native::implementation
 
         d2dContext->SetTransform(D2D1::Matrix3x2F::Identity());
 
-        result = surfaceInterop->EndDraw();
+        CleanupIfFailed(result, surfaceInterop->EndDraw());
+
+        return ChatBackgroundPattern(surface, imageWidth, imageHeight, rasterizationScale, patterns);
 
     Cleanup:
-        return ChatBackgroundPattern(surface, imageWidth, imageHeight, rasterizationScale, patterns);
+        return nullptr;
     }
 
     SoftwareBitmap PlaceholderImageHelper::DrawBlurred(hstring fileName, float blurAmount)

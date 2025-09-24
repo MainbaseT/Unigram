@@ -120,8 +120,8 @@ namespace winrt::Telegram::Native::implementation
 
         HRESULT Encode(IBuffer source, IRandomAccessStream destination, int32_t width, int32_t height, int32_t rotation);
 
-        winrt::Windows::Foundation::IAsyncOperation<ChatBackgroundPattern> DrawSvgAsync(Compositor compositor, hstring path, Color foreground, double rasterizationScale);
-        ChatBackgroundPattern DrawSvg(Compositor compositor, hstring path, Color foreground, double rasterizationScale);
+        winrt::Windows::Foundation::IAsyncOperation<ChatBackgroundPattern> DrawSvgAsync(Compositor compositor, hstring path, double rasterizationScale);
+        ChatBackgroundPattern DrawSvg(Compositor compositor, hstring path, double rasterizationScale);
 
         SoftwareBitmap DrawBlurred(hstring fileName, float blurAmount);
         SoftwareBitmap DrawBlurred(IVector<uint8_t> bytes, float blurAmount);
