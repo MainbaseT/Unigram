@@ -291,20 +291,12 @@ namespace Telegram.Controls
             OnIsPlayingChanged(false);
         }
 
-        private bool _volumeWorkaround = true;
-
         private void OnVolumeChanged(AsyncMediaPlayer sender, MediaPlayerVolumeChangedEventArgs args)
         {
-            if (_volumeWorkaround)
-            {
-                _volumeWorkaround = false;
-                OnReady(true);
-            }
-            else
-            {
-                OnVolumeChanged(args.Volume / 100d);
-            }
+            OnVolumeChanged(args.Volume / 100d);
         }
+
+        private bool _volumeWorkaround = true;
 
         private void OnEESelected(AsyncMediaPlayer sender, MediaPlayerESSelectedEventArgs args)
         {
@@ -314,6 +306,14 @@ namespace Telegram.Controls
                 if (track != null)
                 {
                     OnTrackChanged(track.Width, track.Height);
+                }
+            }
+            else if (args.Type == TrackType.Audio && args.Id != -1)
+            {
+                if (_volumeWorkaround)
+                {
+                    _volumeWorkaround = false;
+                    OnReady(true);
                 }
             }
         }
