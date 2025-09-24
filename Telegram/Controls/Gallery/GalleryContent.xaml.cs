@@ -729,10 +729,17 @@ namespace Telegram.Controls.Gallery
                 return null;
             }
 
-            using (var stream = await storage.OpenReadAsync())
+            try
             {
-                var decoder = await BitmapDecoder.CreateAsync(stream);
-                return await decoder.GetSoftwareBitmapAsync();
+                using (var stream = await storage.OpenReadAsync())
+                {
+                    var decoder = await BitmapDecoder.CreateAsync(stream);
+                    return await decoder.GetSoftwareBitmapAsync();
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
     }
