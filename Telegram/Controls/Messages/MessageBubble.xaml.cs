@@ -527,8 +527,7 @@ namespace Telegram.Controls.Messages
             var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
             var isLast = message.Delegate.IsSavedMessagesTab ? message.IsFirst : message.IsLast;
 
-            var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
-            if (outgoing)
+            if (message.IsVisuallyOutgoing)
             {
                 if (isFirst && isLast)
                 {
@@ -642,7 +641,7 @@ namespace Telegram.Controls.Messages
                     }
                     else
                     {
-                        if (outgoing)
+                        if (message.IsVisuallyOutgoing)
                         {
                             Margin = new Thickness(50, top, 12, 0);
                         }
@@ -822,8 +821,6 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            // TODO: this probably needs to go in MessageViewModel
-            var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
             var content = message.GeneratedContent ?? message.Content;
             var light = content is MessageSticker
                 or MessageDice
@@ -834,7 +831,7 @@ namespace Telegram.Controls.Messages
             var info = message.InteractionInfo?.ReplyInfo;
             if (info != null && light && message.IsChannelPost && message.InteractionInfo.ReplyInfo != null)
             {
-                FindAction(outgoing);
+                FindAction(message.IsVisuallyOutgoing);
 
                 ActionButton.Glyph = Icons.ChatEmptyFilled16;
                 Action.Visibility = Visibility.Visible;
@@ -847,7 +844,7 @@ namespace Telegram.Controls.Messages
             {
                 if (light || message.Delegate?.IsForum is true)
                 {
-                    FindAction(outgoing);
+                    FindAction(message.IsVisuallyOutgoing);
 
                     ActionButton.Glyph = light ? Icons.ChatEmptyFilled16 : Icons.ArrowRightFilled16;
                     Action.Visibility = Visibility.Visible;
@@ -867,7 +864,7 @@ namespace Telegram.Controls.Messages
                 }
                 else
                 {
-                    FindAction(outgoing);
+                    FindAction(message.IsVisuallyOutgoing);
 
                     ActionButton.Glyph = Icons.ArrowRightFilled16;
                     Action.Visibility = Visibility.Visible;
@@ -877,7 +874,7 @@ namespace Telegram.Controls.Messages
             }
             else if (message.CanBeShared)
             {
-                FindAction(outgoing);
+                FindAction(message.IsVisuallyOutgoing);
 
                 ActionButton.Glyph = Icons.ShareFilled;
                 Action.Visibility = Visibility.Visible;
@@ -982,7 +979,7 @@ namespace Telegram.Controls.Messages
             }
 
             // TODO: this probably needs to go in MessageViewModel
-            var outgoing = (message.IsOutgoing && !message.IsChannelPost && message.SenderId is MessageSenderUser) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
+            //var outgoing = (message.IsOutgoing && !message.IsChannelPost && message.SenderId is MessageSenderUser) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
             var content = message.GeneratedContent ?? message.Content;
             var light = content is MessageSticker
                 or MessageDice
@@ -996,7 +993,7 @@ namespace Telegram.Controls.Messages
 
             var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
 
-            if (!light && isFirst && (message.IsSaved || message.IsVerificationCode) && !outgoing)
+            if (!light && isFirst && (message.IsSaved || message.IsVerificationCode) && !message.IsVisuallyOutgoing)
             {
                 var title = string.Empty;
                 var foreground = default(SolidColorBrush);
@@ -1041,7 +1038,7 @@ namespace Telegram.Controls.Messages
                 HeaderLinkRun.Text = title;
                 Identity.ClearStatus();
             }
-            else if (!light && isFirst && !outgoing && (message.HasSenderPhoto || (!message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage)) && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+            else if (!light && isFirst && !message.IsVisuallyOutgoing && (message.HasSenderPhoto || (!message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage)) && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
             {
                 if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
                 {
@@ -1182,7 +1179,7 @@ namespace Telegram.Controls.Messages
             {
                 var title = message.Delegate?.GetAdminTitle(message);
 
-                if (message.SenderBoostCount > 0 && !outgoing)
+                if (message.SenderBoostCount > 0 && !message.IsVisuallyOutgoing)
                 {
                     if (title.Length > 0)
                     {
@@ -1199,7 +1196,7 @@ namespace Telegram.Controls.Messages
                     }
                 }
 
-                if (shown && !outgoing && !string.IsNullOrEmpty(title))
+                if (shown && !message.IsVisuallyOutgoing && !string.IsNullOrEmpty(title))
                 {
                     LoadObject(ref AdminLabel, nameof(AdminLabel));
                     AdminLabel.Text = title;
@@ -1561,6 +1558,7 @@ namespace Telegram.Controls.Messages
                 if (message.InteractionInfo?.Reactions?.Reactions.Count > 0)
                 {
                     LoadObject(ref MediaReactions, nameof(MediaReactions));
+                    MediaReactions.HorizontalContentAlignment = message.IsVisuallyOutgoing ? HorizontalAlignment.Right : HorizontalAlignment.Left;
                     MediaReactions.UpdateMessageReactions(message, animate);
                 }
                 else
@@ -1623,9 +1621,6 @@ namespace Telegram.Controls.Messages
 
             Panel.ForceNewLine = message?.GeneratedContent is MessageBigEmoji;
 
-            // TODO: this probably needs to go in MessageViewModel
-            var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
-
             var aboveMedia = message.ShowCaptionAboveMedia();
             var factCheck = message.FactCheck == null ? 0 : 1;
 
@@ -1660,7 +1655,7 @@ namespace Telegram.Controls.Messages
 
                 var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
 
-                if (isFirst && !outgoing && !message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+                if (isFirst && !message.IsVisuallyOutgoing && !message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
                 {
                     top = 4;
                 }
@@ -1703,7 +1698,7 @@ namespace Telegram.Controls.Messages
                 ContentPanel.Padding = new Thickness(0);
                 Media.Margin = new Thickness(0);
 
-                if (outgoing)
+                if (message.IsVisuallyOutgoing)
                 {
                     FooterToLightMedia(true);
                     Grid.SetRow(Footer, 3);
@@ -2427,15 +2422,12 @@ namespace Telegram.Controls.Messages
             var prev = e.PreviousSize.ToVector2();
             var next = e.NewSize.ToVector2();
 
-            // TODO: this probably needs to go in MessageViewModel
-            var outgoing = (message.IsOutgoing && !message.IsChannelPost) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
-
             var anim = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
             anim.InsertKeyFrame(0, new Vector3(prev / next, 1));
             anim.InsertKeyFrame(1, Vector3.One);
 
             var panel = ElementComposition.GetElementVisual(ContentPanel);
-            panel.CenterPoint = new Vector3(outgoing ? next.X : 0, 0, 0);
+            panel.CenterPoint = new Vector3(message.IsVisuallyOutgoing ? next.X : 0, 0, 0);
             panel.StartAnimation("Scale", anim);
 
             var factor = BootStrapper.Current.Compositor.CreateExpressionAnimation("Vector3(1 / content.Scale.X, 1 / content.Scale.Y, 1)");

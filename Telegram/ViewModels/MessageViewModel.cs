@@ -144,6 +144,8 @@ namespace Telegram.ViewModels
 
         public override bool CanBeAddedToDownloads => CanBeSaved && !Chat.HasProtectedContent && Content is MessageAudio or MessageDocument or MessageVideo;
 
+        public bool IsVisuallyOutgoing => (IsOutgoing && !IsChannelPost) || (IsSaved && ForwardInfo?.Source is { IsOutgoing: true });
+
         public void Replace(Message message)
         {
             Content = message.Content;
