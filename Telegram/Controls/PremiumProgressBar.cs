@@ -14,6 +14,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
 
@@ -245,27 +246,27 @@ namespace Telegram.Controls
 
             if (_transition == TransitionState.Entrance)
             {
-                shouldClampLeft = width < center - 20 && toWidth < center - 20;
-                shouldClampRight = width > ValueRoot.ActualSize.X - center + 20 && toWidth > ValueRoot.ActualSize.X - center + 20;
+                shouldClampLeft = width < center - 12 && toWidth < center - 12;
+                shouldClampRight = width > ValueRoot.ActualSize.X - center + 12 && toWidth > ValueRoot.ActualSize.X - center + 20;
             }
             else if (_transition == TransitionState.None)
             {
-                shouldClampLeft = width < center - 20 || Value == Minimum;
-                shouldClampRight = width > ValueRoot.ActualSize.X - center + 20 || Value == Maximum;
+                shouldClampLeft = width < center - 12 || Value == Minimum;
+                shouldClampRight = width > ValueRoot.ActualSize.X - center + 12 || Value == Maximum;
             }
 
             if (shouldClampLeft)
             {
-                radiusLeft = width - center + 20;
+                radiusLeft = width - center + 12;
 
-                _thumb.Offset = new Vector3(-width - 20, 0, 0);
+                _thumb.Offset = new Vector3(-width - 12, 0, 0);
                 _arrow.Properties.InsertVector3("Translation", new Vector3(radiusLeft, 0, 0));
             }
             else if (shouldClampRight)
             {
-                radiusRight = ValueRoot.ActualSize.X - width - Thumb.ActualSize.X + center + 20;
+                radiusRight = ValueRoot.ActualSize.X - width - Thumb.ActualSize.X + center + 12;
 
-                _thumb.Offset = new Vector3((ValueRoot.ActualSize.X - width - Thumb.ActualSize.X + 20), 0, 0);
+                _thumb.Offset = new Vector3((ValueRoot.ActualSize.X - width - Thumb.ActualSize.X + 12), 0, 0);
                 _arrow.Properties.InsertVector3("Translation", new Vector3(-radiusRight, 0, 0));
             }
             else
@@ -278,7 +279,7 @@ namespace Telegram.Controls
             {
                 diff = center + diff - Arrow.ActualSize.X / 2;
                 diff = Math.Min(diff + 2, 20);
-                diff = Math.Max(diff, 6);
+                diff = Math.Max(diff, 8);
                 return new Vector2(diff, 20);
             }
 
@@ -286,6 +287,103 @@ namespace Telegram.Controls
 
             _thumbClip.BottomLeft = CalculateRadius(radiusLeft);
             _thumbClip.BottomRight = CalculateRadius(radiusRight);
+
+            float CalculateRadius2(float diff)
+            {
+                diff = center + diff - Arrow.ActualSize.X / 2;
+                diff = Math.Min(diff + 2, 20);
+                diff = Math.Max(diff, 2);
+                return diff;
+            }
+
+            if ((center + radiusLeft - Arrow.ActualSize.X / 2) <= 6)
+            {
+                _arrowCentered = false;
+                CreatePathGeometry(CalculateRadius2(radiusLeft), 0);
+            }
+            else if ((center + radiusRight - Arrow.ActualSize.X / 2) <= 6)
+            {
+                _arrowCentered = false;
+                CreatePathGeometry(0, CalculateRadius2(radiusRight));
+            }
+            else if (!_arrowCentered)
+            {
+                _arrowCentered = true;
+                CreatePathGeometry(0, 0);
+            }
+        }
+
+        private bool _arrowCentered = true;
+
+        public void CreatePathGeometry(double radiusLeft, double radiusRight)
+        {
+            if (Arrow.Data is not PathGeometry pathGeometry)
+            {
+                return;
+            }
+
+            var pathFigure = new PathFigure();
+            pathFigure.IsClosed = true;
+
+            if (radiusLeft != 0)
+            {
+                pathFigure.StartPoint = new Point(6 - radiusLeft, -1);
+            }
+            else
+            {
+                pathFigure.StartPoint = new Point(0, 0);
+                pathFigure.Segments.Add(new LineSegment { Point = new Point(0, 2) });
+
+                pathFigure.Segments.Add(new BezierSegment
+                {
+                    Point1 = new Point(0.923074, 2),
+                    Point2 = new Point(1.80816, 2.36679),
+                    Point3 = new Point(2.46094, 3.01953)
+                });
+            }
+
+            pathFigure.Segments.Add(new LineSegment { Point = new Point(6.76172, 7.32031) });
+
+            pathFigure.Segments.Add(new BezierSegment
+            {
+                Point1 = new Point(7.23956, 7.79815),
+                Point2 = new Point(8, 8),
+                Point3 = new Point(8.5, 7.99512)
+            });
+
+            pathFigure.Segments.Add(new BezierSegment
+            {
+                Point1 = new Point(9, 8),
+                Point2 = new Point(9.76044, 7.79815),
+                Point3 = new Point(10.2383, 7.32031)
+            });
+
+            if (radiusRight != 0)
+            {
+                pathFigure.Segments.Add(new LineSegment { Point = new Point(17 - (6 - radiusRight), -1) });
+            }
+            else
+            {
+                pathFigure.Segments.Add(new LineSegment { Point = new Point(14.5391, 3.01953) });
+
+                pathFigure.Segments.Add(new BezierSegment
+                {
+                    Point1 = new Point(15.1918, 2.36679),
+                    Point2 = new Point(16.0769, 2),
+                    Point3 = new Point(17, 2)
+                });
+
+                pathFigure.Segments.Add(new LineSegment { Point = new Point(17, 0) });
+                pathFigure.Segments.Add(new LineSegment { Point = new Point(17, 0) });
+            }
+
+            var measure = new PathFigure();
+            measure.StartPoint = new Point(0, 0);
+            measure.Segments.Add(new LineSegment { Point = new Point(17, 8) });
+
+            pathGeometry.Figures.Clear();
+            pathGeometry.Figures.Add(pathFigure);
+            pathGeometry.Figures.Add(measure);
         }
 
         #region MinimumText

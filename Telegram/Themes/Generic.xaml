@@ -2255,16 +2255,39 @@
                                 </local:AnimatedTextBlock>
 
                                 <Path x:Name="Arrow"
-                                      Data="M0 0V2C0.923101 2 1.80835 2.36668 2.46113 3.01945L6.76205 7.32038C7.66822 8.22654 9.13736 8.22654 10.0435 7.32038L14.3444 3.01945C14.9972 2.36668 15.8825 2 16.8056 2H16.81V0H0Z"
                                       Fill="#EEAC0D"
-                                      Stretch="Uniform"
-                                      Height="8"
+                                      Stretch="None"
                                       HorizontalAlignment="Center"
-                                      VerticalAlignment="Top"
-                                      Margin="0,-2,0,0"
+                                      VerticalAlignment="Bottom"
+                                      Margin="0,0,0,-6"
                                       Canvas.ZIndex="-2"
                                       Grid.ColumnSpan="2"
-                                      Grid.Row="1" />
+                                      Grid.Row="0">
+                                    <Path.Data>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="0,0"
+                                                        IsClosed="True">
+                                                <LineSegment Point="0,2" />
+                                                <BezierSegment Point1="0.923074,2"
+                                                               Point2="1.80816,2.36679"
+                                                               Point3="2.46094,3.01953" />
+                                                <LineSegment Point="6.76172,7.32031" />
+                                                <BezierSegment Point1="7.23956,7.79815"
+                                                               Point2="8,8"
+                                                               Point3="8.5,7.99512" />
+                                                <BezierSegment Point1="9,8"
+                                                               Point2="9.76044,7.79815"
+                                                               Point3="10.2383,7.32031" />
+                                                <LineSegment Point="14.5391,3.01953" />
+                                                <BezierSegment Point1="15.1918,2.36679"
+                                                               Point2="16.0769,2"
+                                                               Point3="17,2" />
+                                                <LineSegment Point="17,0" />
+                                                <LineSegment Point="0,0" />
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Path.Data>
+                                </Path>
                             </Grid>
                         </Canvas>
 
@@ -2431,15 +2454,38 @@
 
                                 <Path x:Name="Arrow"
                                       Opacity="1"
-                                      Data="M0 0V2C0.923101 2 1.80835 2.36668 2.46113 3.01945L6.76205 7.32038C7.66822 8.22654 9.13736 8.22654 10.0435 7.32038L14.3444 3.01945C14.9972 2.36668 15.8825 2 16.8056 2H16.81V0H0Z"
                                       Fill="{TemplateBinding Background}"
-                                      Stretch="Uniform"
-                                      Height="8"
+                                      Stretch="None"
                                       HorizontalAlignment="Center"
-                                      VerticalAlignment="Top"
-                                      Margin="0,-2,0,0"
+                                      VerticalAlignment="Bottom"
+                                      Margin="0,0,0,-6"
                                       Canvas.ZIndex="-2"
-                                      Grid.Row="1" />
+                                      Grid.Row="0">
+                                    <Path.Data>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="0,0"
+                                                        IsClosed="True">
+                                                <LineSegment Point="0,2" />
+                                                <BezierSegment Point1="0.923074,2"
+                                                               Point2="1.80816,2.36679"
+                                                               Point3="2.46094,3.01953" />
+                                                <LineSegment Point="6.76172,7.32031" />
+                                                <BezierSegment Point1="7.23956,7.79815"
+                                                               Point2="8,8"
+                                                               Point3="8.5,7.99512" />
+                                                <BezierSegment Point1="9,8"
+                                                               Point2="9.76044,7.79815"
+                                                               Point3="10.2383,7.32031" />
+                                                <LineSegment Point="14.5391,3.01953" />
+                                                <BezierSegment Point1="15.1918,2.36679"
+                                                               Point2="16.0769,2"
+                                                               Point3="17,2" />
+                                                <LineSegment Point="17,0" />
+                                                <LineSegment Point="0,0" />
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Path.Data>
+                                </Path>
                             </Grid>
                         </Canvas>
 
