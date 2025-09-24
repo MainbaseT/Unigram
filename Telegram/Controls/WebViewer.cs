@@ -242,7 +242,7 @@ namespace Telegram.Controls
         {
             _closed = true;
 
-            _presenter.Close();
+            _presenter?.Close();
             _presenter = null;
 
             Content = null;
