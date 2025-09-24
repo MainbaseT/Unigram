@@ -6,9 +6,7 @@
 //
 using Rg.DiffUtils;
 using System;
-using System.Collections.ObjectModel;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
@@ -19,14 +17,12 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
 using Windows.UI.Composition;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 
@@ -65,45 +61,6 @@ namespace Telegram.Views.Popups
             ScrollingHost.ItemsSource = _items;
 
             UpdateGlyph();
-        }
-
-        public class ProfileAudioCollection : ObservableCollection<PlaybackItem>, ISupportIncrementalLoading
-        {
-            private readonly XamlRoot _xamlRoot;
-            private readonly IClientService _clientService;
-            private readonly long _userId;
-
-            public ProfileAudioCollection(XamlRoot xamlRoot, IClientService clientService, long userId)
-            {
-                _xamlRoot = xamlRoot;
-                _clientService = clientService;
-                _userId = userId;
-            }
-
-            public IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
-            {
-                return AsyncInfo.Run(async token =>
-                {
-                    var totalCount = 0u;
-
-                    var response = await _clientService.SendAsync(new GetUserProfileAudios(_userId, Count, 100));
-                    if (response is Audios audios)
-                    {
-                        foreach (var audio in audios.AudiosValue)
-                        {
-                            Add(new PlaybackItemProfileAudio(_xamlRoot, new AudioWithOwner(_clientService, _userId, audio)));
-                            totalCount++;
-                        }
-                    }
-
-                    return new LoadMoreItemsResult
-                    {
-                        Count = totalCount
-                    };
-                });
-            }
-
-            public bool HasMoreItems => throw new NotImplementedException();
         }
 
         public bool CompareItems(PlaybackItem oldItem, PlaybackItem newItem)
