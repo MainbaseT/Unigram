@@ -264,7 +264,7 @@ namespace winrt::Telegram::Native::Calls::implementation
 
     void VoipGroupManager::SetVolume(int32_t ssrc, double volume)
     {
-        if (m_impl)
+        if (m_impl && ssrc)
         {
             m_impl->setVolume(ssrc, volume);
         }
