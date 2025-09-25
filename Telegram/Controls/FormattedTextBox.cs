@@ -592,6 +592,19 @@ namespace Telegram.Controls
             popup.Text = text;
             popup.Link = range.Link.Trim('"');
 
+            if (string.IsNullOrEmpty(popup.Text))
+            {
+                var clipboard = Clipboard.GetContent();
+                if (clipboard.Contains(StandardDataFormats.Text))
+                {
+                    var link = await clipboard.GetTextAsync();
+                    if (link.IsValidUrl())
+                    {
+                        popup.Link = link;
+                    }
+                }
+            }
+
             if (CreateLinkTarget != null)
             {
                 popup.Target = CreateLinkTarget;
