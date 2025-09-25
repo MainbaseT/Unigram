@@ -2200,6 +2200,18 @@ namespace Telegram
             }
         }
 
+        public static string GetTitle(this AudioWithOwner audio)
+        {
+            if (string.IsNullOrEmpty(audio.Performer) || string.IsNullOrEmpty(audio.Title))
+            {
+                return audio.FileName;
+            }
+            else
+            {
+                return $"{audio.Performer} - {audio.Title}";
+            }
+        }
+
         public static ChatPosition GetPosition(this Chat chat, ChatList chatList)
         {
             if (chat == null)

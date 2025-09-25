@@ -429,6 +429,10 @@ namespace Telegram.Views.Popups
                 {
                     AutomationProperties.SetName(args.ItemContainer, Automation.GetSummary(message.Message, true, false));
                 }
+                else if (item is PlaybackItemProfileAudio audio)
+                {
+                    AutomationProperties.SetName(args.ItemContainer, Automation.GetSummary(audio.Audio, true));
+                }
 
                 cell.UpdateItem(item);
                 args.Handled = true;
