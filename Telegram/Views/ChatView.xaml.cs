@@ -2298,18 +2298,11 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(ViewModel.CreateTopic, Strings.CreateTopic, Icons.Compose);
                 }
             }
-            if (user != null && user.Type is not UserTypeDeleted && user.Id != ViewModel.ClientService.Options.MyId)
+            if (user != null && user.Type is not UserTypeDeleted and not UserTypeBot && user.Id != ViewModel.ClientService.Options.MyId)
             {
                 if (!user.IsContact && !user.IsSupport)
                 {
-                    if (!string.IsNullOrEmpty(user.PhoneNumber))
-                    {
-                        flyout.CreateFlyoutItem(ViewModel.AddToContacts, Strings.AddToContacts, Icons.PersonAdd);
-                    }
-                    else
-                    {
-                        flyout.CreateFlyoutItem(ViewModel.ShareMyContact, Strings.ShareMyContactInfo, Icons.Share);
-                    }
+                    flyout.CreateFlyoutItem(ViewModel.AddToContacts, Strings.AddToContacts, Icons.PersonAdd);
                 }
             }
             if (ViewModel.IsSelectionEnabled is false)
