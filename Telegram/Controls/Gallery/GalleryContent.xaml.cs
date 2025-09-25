@@ -688,6 +688,22 @@ namespace Telegram.Controls.Gallery
                 return;
             }
 
+            if (bitmap.PixelWidth < 50 || bitmap.PixelHeight < 50)
+            {
+                ToastPopup.Show(XamlRoot, Strings.ScanTextTooSmall, ToastPopupIcon.Error);
+
+                IsTextSelectionEnabled = false;
+                return;
+            }
+
+            if (bitmap.PixelWidth > 10000 || bitmap.PixelHeight > 10000)
+            {
+                ToastPopup.Show(XamlRoot, Strings.ScanTextTooLarge, ToastPopupIcon.Error);
+
+                IsTextSelectionEnabled = false;
+                return;
+            }
+
             if (fileId != _itemId || !IsLoaded)
             {
                 IsTextSelectionEnabled = false;

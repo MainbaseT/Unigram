@@ -11807,6 +11807,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="ScanTextNoTextDetected" xml:space="preserve">
     <value>There was no text detected</value>
   </data>
+  <data name="ScanTextTooLarge" xml:space="preserve">
+    <value>This image is too large to scan for text</value>
+  </data>
+  <data name="ScanTextTooSmall" xml:space="preserve">
+    <value>This image is too small to scan for text</value>
+  </data>
   <data name="Schedule" xml:space="preserve">
     <value>Schedule</value>
   </data>
