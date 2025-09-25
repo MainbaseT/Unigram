@@ -502,6 +502,8 @@ namespace Telegram.Controls.Chats
                 _modelVisual.Children.RemoveAll();
             }
 
+            _modelVisual.Opacity = _intensity / 255f;
+
             var width = (int)Math.Ceiling(ActualWidth / _pattern.RenderSize.X);
             var height = (int)Math.Ceiling(ActualHeight / _pattern.RenderSize.Y);
 
