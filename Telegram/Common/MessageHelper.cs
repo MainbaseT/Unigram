@@ -856,10 +856,12 @@ namespace Telegram.Common
                         _ => 0
                     };
 
+                    var sourceChat = clientService.GetChat(chatId);
+
                     var responsa = await clientService.SendAsync(new GetWebAppLinkUrl(chatId, botUser.Id, webAppShortName, startParameter, foundWebApp.RequestWriteAccess && popup.IsChecked is true, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, mode)));
                     if (responsa is HttpUrl url)
                     {
-                        navigation.NavigateToWebApp(botUser, url.Url, openMode: mode, sourceLink: new InternalLinkTypeWebApp(botUsername, webAppShortName, startParameter, mode));
+                        navigation.NavigateToWebApp(botUser, url.Url, openMode: mode, sourceChat: sourceChat, sourceLink: new InternalLinkTypeWebApp(botUsername, webAppShortName, startParameter, mode));
                     }
                 }
                 else

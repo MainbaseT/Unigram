@@ -403,8 +403,11 @@ namespace Telegram.ViewModels
                     return;
                 }
 
-                SetText(string.Format("@{0} {1}", username, update.Query), focus: true);
-                ResolveInlineBot(username, update.Query);
+                BeginOnUIThread(() =>
+                {
+                    SetText(string.Format("@{0} {1}", username, update.Query), focus: true);
+                    ResolveInlineBot(username, update.Query);
+                });
             }
         }
 

@@ -1881,11 +1881,6 @@ namespace Telegram.Views
         private async void SwitchInlineQueryMessage(JsonObject eventData)
         {
             var query = eventData.GetNamedString("query", string.Empty);
-            if (string.IsNullOrEmpty(query))
-            {
-                return;
-            }
-
             var types = eventData.GetNamedArray("chat_types", null);
             var values = new HashSet<string>();
 
