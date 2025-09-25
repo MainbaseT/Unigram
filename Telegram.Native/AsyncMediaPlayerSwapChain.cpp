@@ -176,6 +176,11 @@ namespace winrt::Telegram::Native::implementation
             {
                 OnAttach(nullptr, m_panel, subscribe);
             }
+            else
+            {
+                // It's important that private data for the device is set before the swap chain is passed to LibVLC
+                UpdateSize();
+            }
 
             return true;
         }
