@@ -2645,10 +2645,10 @@ namespace Telegram.Controls.Messages
                             current.Add(rect);
                             last = rect;
 
-                            minX = Math.Min(minX, point.X + rect.Left);
-                            minY = Math.Min(minY, point.Y + rect.Top);
-                            maxX = Math.Max(maxX, point.X + rect.Right);
-                            maxY = Math.Max(maxY, point.Y + rect.Bottom);
+                            minX = Math.Min(minX, rect.Left);
+                            minY = Math.Min(minY, rect.Top);
+                            maxX = Math.Max(maxX, rect.Right);
+                            maxY = Math.Max(maxY, rect.Bottom);
                         }
                     }
 
