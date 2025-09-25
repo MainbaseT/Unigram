@@ -427,7 +427,7 @@ namespace Telegram.Controls.Chats
 
                 if (highlightArea.Height < ActualHeight - occludedHeight)
                 {
-                    position.Y -= (ActualHeight - highlightArea.Height - highlightArea.Y) / 2d + occludedHeight / 2;
+                    position.Y -= (ActualHeight / 2 - (highlightArea.Bottom - highlightArea.Height / 2)) + occludedHeight / 2;
 
                     if (Delegate.HasMessagesPadding)
                     {
