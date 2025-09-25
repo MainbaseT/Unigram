@@ -145,8 +145,13 @@ namespace Telegram.Controls.Messages.Content
         {
             if (result != null && Recognize.IsChecked is true)
             {
-                RecognizedText ??= GetTemplateChild(nameof(RecognizedText)) as RichTextBlock;
-                RecognizedSpan ??= GetTemplateChild(nameof(RecognizedSpan)) as Run;
+                if (RecognizedText == null)
+                {
+                    RecognizedText = GetTemplateChild(nameof(RecognizedText)) as RichTextBlock;
+                    RecognizedSpan = GetTemplateChild(nameof(RecognizedSpan)) as Run;
+
+                    RecognizedText.ContextMenuOpening += RecognizedText_ContextMenuOpening;
+                }
 
                 if (result is SpeechRecognitionResultError)
                 {
@@ -174,6 +179,11 @@ namespace Telegram.Controls.Messages.Content
                 RecognizedText.Visibility = Visibility.Collapsed;
                 UnloadPending();
             }
+        }
+
+        private void RecognizedText_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            e.Handled = true;
         }
 
         private CompositionPropertySet _props;

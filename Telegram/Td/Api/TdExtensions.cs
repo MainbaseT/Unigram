@@ -19,6 +19,7 @@ using Telegram.Converters;
 using Telegram.Native;
 using Telegram.Services;
 using Telegram.Services.Calls;
+using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Settings;
@@ -1800,6 +1801,45 @@ namespace Telegram
             }
 
             return null;
+        }
+
+        public static FormattedText GetTranslatableText(this MessageWithOwner message)
+        {
+            return message.Content.GetTranslatableText();
+        }
+
+        public static FormattedText GetTranslatableText(this Message message)
+        {
+            return message.Content.GetTranslatableText();
+        }
+
+        public static FormattedText GetTranslatableText(this MessageContent content)
+        {
+            var caption = content.GetCaption();
+            if (content is MessageVoiceNote { VoiceNote.SpeechRecognitionResult: SpeechRecognitionResultText speechVoiceText })
+            {
+                if (caption?.Text.Length > 0 && speechVoiceText.Text.Length > 0)
+                {
+                    return ClientEx.Format("{0}\n{1}", speechVoiceText.Text, caption.Text);
+                }
+                else if (speechVoiceText.Text.Length > 0)
+                {
+                    return speechVoiceText.Text.AsFormattedText();
+                }
+            }
+            else if (content is MessageVideoNote { VideoNote.SpeechRecognitionResult: SpeechRecognitionResultText speechVideoText })
+            {
+                if (caption?.Text.Length > 0 && speechVideoText.Text.Length > 0)
+                {
+                    return ClientEx.Format("{0}\n{1}", speechVideoText.Text, caption.Text);
+                }
+                else if (speechVideoText.Text.Length > 0)
+                {
+                    return speechVideoText.Text.AsFormattedText();
+                }
+            }
+
+            return caption;
         }
 
         public static FormattedText GetCaption(this MessageWithOwner message)

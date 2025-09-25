@@ -4054,20 +4054,10 @@ namespace Telegram.Views
 
         private bool MessageTranslate_Loaded(MessageViewModel message)
         {
-            var caption = message.GetCaption();
+            var caption = message.GetTranslatableText();
             if (caption != null)
             {
                 return ViewModel.TranslateService.CanTranslateText(caption.Text);
-            }
-            else if (message.Content is MessageVoiceNote voiceNote
-                && voiceNote.VoiceNote.SpeechRecognitionResult is SpeechRecognitionResultText speechVoiceText)
-            {
-                return ViewModel.TranslateService.CanTranslateText(speechVoiceText.Text);
-            }
-            else if (message.Content is MessageVideoNote videoNote
-                && videoNote.VideoNote.SpeechRecognitionResult is SpeechRecognitionResultText speechVideoText)
-            {
-                return ViewModel.TranslateService.CanTranslateText(speechVideoText.Text);
             }
             else if (message.Content is MessagePoll poll)
             {
