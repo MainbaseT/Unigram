@@ -6,11 +6,13 @@
 //
 using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Telegram.Native;
 using Telegram.Services;
 using Telegram.Streams;
+using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
 using Telegram.Views;
 
@@ -40,21 +42,28 @@ namespace Telegram.Common
         {
             Start(item.ClientService.SessionId, item.Document.Id, ref token);
 
-            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}?duration={3}", Port, item.ClientService.SessionId, item.Document.Id, item.Duration));
+            return new Uri(string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/{1}/{2}?duration={3}", Port, item.ClientService.SessionId, item.Document.Id, item.Duration));
         }
 
         public static Uri Start(GalleryMedia video, ref long token)
         {
             Start(video.ClientService.SessionId, video.File.Id, ref token);
 
-            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}?duration={3}", Port, video.ClientService.SessionId, video.File.Id, video.Duration));
+            return new Uri(string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/{1}/{2}?duration={3}", Port, video.ClientService.SessionId, video.File.Id, video.Duration));
         }
 
         public static Uri Start(VideoPresentation presentation, ref long token)
         {
             Start(presentation.SessionId, presentation.FileId, ref token);
 
-            return new Uri(string.Format("http://127.0.0.1:{0}/{1}/{2}?duration={3}&priority=24", Port, presentation.SessionId, presentation.FileId, presentation.Duration));
+            return new Uri(string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/{1}/{2}?duration={3}&priority=24", Port, presentation.SessionId, presentation.FileId, presentation.Duration));
+        }
+
+        public static Uri Start(IClientService clientService, StoryVideo video, ref long token)
+        {
+            Start(clientService.SessionId, video.Video.Id, ref token);
+
+            return new Uri(string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/{1}/{2}?duration={3}&priority=24", Port, clientService.SessionId, video.Video.Id, video.Duration));
         }
 
         public static void Start(int sessionId, int fileId, ref long token)
@@ -143,7 +152,7 @@ namespace Telegram.Common
             var priority = 32;
             if (request.Query.TryGetValue("priority", out string priorityValue))
             {
-                int.TryParse(priorityValue, out priority);
+                int.TryParse(priorityValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out priority);
             }
 
             long offset = 0;
@@ -152,7 +161,7 @@ namespace Telegram.Common
 
             if (request.Headers.TryGetValue("Range", out var range) && RangeHeaderValue.TryParse(range, out var ranges))
             {
-                if (request.Query.TryGetValue("duration", out string durationValue) && int.TryParse(durationValue, out int duration) && duration > 0)
+                if (request.Query.TryGetValue("duration", out string durationValue) && double.TryParse(durationValue, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double duration) && duration > 0)
                 {
                     buffer = Math.Min((long)(((double)file.Size / duration) * 15), 4 * 1024 * 1024);
                 }

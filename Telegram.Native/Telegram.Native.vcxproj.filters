@@ -91,6 +91,9 @@
     <Filter Include="AI">
       <UniqueIdentifier>{672d3627-1f9c-4ddb-94d7-15d35e5e91e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Media">
+      <UniqueIdentifier>{fbafba8b-41cb-4c9e-8146-d54d4dac9573}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -114,9 +117,6 @@
       <Filter>Helpers</Filter>
     </ClCompile>
     <ClCompile Include="Composition\CompositionDevice.cpp">
-      <Filter>Composition</Filter>
-    </ClCompile>
-    <ClCompile Include="Composition\DirectRectangleClip.cpp">
       <Filter>Composition</Filter>
     </ClCompile>
     <ClCompile Include="..\Libraries\libtextclassifier\lang_id\lang-id.cc">
@@ -639,6 +639,27 @@
     <ClCompile Include="AI\RecognizedWord.cpp">
       <Filter>AI</Filter>
     </ClCompile>
+    <ClCompile Include="Media\AsyncMediaPlayer.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\AsyncMediaPlayerBufferingEventArgs.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\AsyncMediaPlayerDurationChangedEventArgs.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\AsyncMediaPlayerLogEventArgs.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\AsyncMediaPlayerPositionChangedEventArgs.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\AsyncMediaPlayerSwapChain.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -677,9 +698,6 @@
       <Filter>Composition</Filter>
     </ClInclude>
     <ClInclude Include="Composition\dcompex.h">
-      <Filter>Composition</Filter>
-    </ClInclude>
-    <ClInclude Include="Composition\DirectRectangleClip.h">
       <Filter>Composition</Filter>
     </ClInclude>
     <ClInclude Include="..\Libraries\libtextclassifier\lang_id\lang-id.h">
@@ -1046,6 +1064,27 @@
     <ClInclude Include="Helpers\BlurHelper.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Media\AsyncMediaPlayer.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\AsyncMediaPlayerBufferingEventArgs.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\AsyncMediaPlayerDurationChangedEventArgs.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\AsyncMediaPlayerLogEventArgs.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\AsyncMediaPlayerPositionChangedEventArgs.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\AsyncMediaPlayerSwapChain.h">
+      <Filter>Media</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Telegram.Native.def" />
@@ -1102,7 +1141,27 @@
       <Filter>AI</Filter>
     </Midl>
     <Midl Include="AnimationEffects.idl" />
-    <Midl Include="AsyncMediaPlayerSwapChain.idl" />
     <Midl Include="ChatBackgroundPattern.idl" />
+    <Midl Include="Media\AsyncMediaPlayer.idl">
+      <Filter>Media</Filter>
+    </Midl>
+    <Midl Include="Media\AsyncMediaPlayerBufferingEventArgs.idl">
+      <Filter>Media</Filter>
+    </Midl>
+    <Midl Include="Media\AsyncMediaPlayerDurationChangedEventArgs.idl">
+      <Filter>Media</Filter>
+    </Midl>
+    <Midl Include="Media\AsyncMediaPlayerLogEventArgs.idl">
+      <Filter>Media</Filter>
+    </Midl>
+    <Midl Include="Media\AsyncMediaPlayerPositionChangedEventArgs.idl">
+      <Filter>Media</Filter>
+    </Midl>
+    <Midl Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.idl">
+      <Filter>Media</Filter>
+    </Midl>
+    <Midl Include="Media\AsyncMediaPlayerSwapChain.idl">
+      <Filter>Media</Filter>
+    </Midl>
   </ItemGroup>
 </Project>

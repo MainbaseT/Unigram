@@ -5,9 +5,8 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using LibVLCSharp.Platforms.Windows;
-using LibVLCSharp.Shared;
-using System;
 using Telegram.Common;
+using Telegram.Native.Media;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
 using Windows.UI.Xaml;
@@ -22,7 +21,7 @@ namespace Telegram.Controls
         private long _bufferedToken;
         private long _httpServerToken;
 
-        private long _initialPosition;
+        private double _initialPosition;
 
         public NativeVideoPlayer()
         {
@@ -52,13 +51,13 @@ namespace Telegram.Controls
             {
                 _core.Vout -= OnVout;
                 _core.Stopped -= OnStopped;
-                _core.TimeChanged -= OnTimeChanged;
-                _core.LengthChanged -= OnLengthChanged;
+                _core.PositionChanged -= OnTimeChanged;
+                _core.DurationChanged -= OnLengthChanged;
                 _core.EndReached -= OnEndReached;
                 _core.Playing -= OnPlaying;
                 _core.Paused -= OnPaused;
                 _core.VolumeChanged -= OnVolumeChanged;
-                _core.ESSelected -= OnEESelected;
+                _core.StreamSelected -= OnEESelected;
 
                 _core.Close();
                 _core = null;
@@ -81,12 +80,12 @@ namespace Telegram.Controls
             if (_core == null)
             {
                 _video = video;
-                _initialPosition = (long)(position * 1000);
+                _initialPosition = position;
             }
             else
             {
                 _core.Play(MediaHttpServer.Start(video, ref _httpServerToken));
-                _core.Time = (long)(position * 1000);
+                _core.Position = position;
             }
 
             UpdateManager.Subscribe(this, video.ClientService, video.File, ref _bufferedToken, UpdateBuffered);
@@ -103,12 +102,12 @@ namespace Telegram.Controls
             //_player?.Play();
             switch (_core.State)
             {
-                case VLCState.Ended:
+                case AsyncMediaPlayerState.Ended:
                     _core.Stop();
-                    goto case VLCState.Stopped;
-                case VLCState.Paused:
-                case VLCState.Stopped:
-                case VLCState.Error:
+                    goto case AsyncMediaPlayerState.Stopped;
+                case AsyncMediaPlayerState.Paused:
+                case AsyncMediaPlayerState.Stopped:
+                case AsyncMediaPlayerState.Error:
                     _core.Play();
                     break;
             }
@@ -128,12 +127,12 @@ namespace Telegram.Controls
 
             switch (_core.State)
             {
-                case VLCState.Ended:
+                case AsyncMediaPlayerState.Ended:
                     _core.Stop();
-                    goto case VLCState.Stopped;
-                case VLCState.Paused:
-                case VLCState.Stopped:
-                case VLCState.Error:
+                    goto case AsyncMediaPlayerState.Stopped;
+                case AsyncMediaPlayerState.Paused:
+                case AsyncMediaPlayerState.Stopped:
+                case AsyncMediaPlayerState.Error:
                     _core.Play();
                     break;
                 default:
@@ -154,17 +153,17 @@ namespace Telegram.Controls
 
         public override void AddTime(double value)
         {
-            _core?.AddTime((long)value * 1000);
+            _core?.Seek(value, true);
         }
 
         public override double Position
         {
-            get => _core?.Time / 1000d ?? 0;
+            get => _core?.Position ?? 0;
             set
             {
                 if (_core != null)
                 {
-                    _core.Time = (long)(value * 1000);
+                    _core.Position = value;
                     OnPositionChanged(value);
                 }
             }
@@ -175,7 +174,7 @@ namespace Telegram.Controls
 
         public override double Duration
         {
-            get => _core?.Length / 1000d ?? 0;
+            get => _core?.Duration ?? 0;
         }
 
         public override bool IsPlaying
@@ -224,55 +223,55 @@ namespace Telegram.Controls
 
         private void OnInitialized(object sender, VideoViewInitializedEventArgs e)
         {
-            _core = new AsyncMediaPlayer(false, e.SwapChainOptions);
+            _core = new AsyncMediaPlayer(false, false, e.SwapChainOptions);
             _core.Vout += OnVout;
             _core.Stopped += OnStopped;
-            _core.TimeChanged += OnTimeChanged;
-            _core.LengthChanged += OnLengthChanged;
+            _core.PositionChanged += OnTimeChanged;
+            _core.DurationChanged += OnLengthChanged;
             _core.EndReached += OnEndReached;
             _core.Playing += OnPlaying;
             _core.Paused += OnPaused;
             _core.VolumeChanged += OnVolumeChanged;
-            _core.ESSelected += OnEESelected;
+            _core.StreamSelected += OnEESelected;
 
             if (_video != null)
             {
                 _core.Play(MediaHttpServer.Start(_video, ref _httpServerToken));
-                _core.Time = _initialPosition;
+                _core.Position = _initialPosition;
             }
 
             _video = null;
             _initialPosition = 0;
         }
 
-        private void OnVout(AsyncMediaPlayer sender, EventArgs args)
+        private void OnVout(AsyncMediaPlayer sender, object args)
         {
             OnFirstFrameReady(true);
         }
 
-        private void OnStopped(AsyncMediaPlayer sender, EventArgs args)
+        private void OnStopped(AsyncMediaPlayer sender, object args)
         {
             OnIsPlayingChanged(false);
 
-            if (sender.State == VLCState.Stopped)
+            if (sender.State == AsyncMediaPlayerState.Stopped)
             {
                 OnClosed();
             }
         }
 
-        private void OnTimeChanged(AsyncMediaPlayer sender, MediaPlayerTimeChangedEventArgs args)
+        private void OnTimeChanged(AsyncMediaPlayer sender, AsyncMediaPlayerPositionChangedEventArgs args)
         {
-            OnPositionChanged(args.Time / 1000d);
+            OnPositionChanged(args.Position);
         }
 
-        private void OnLengthChanged(AsyncMediaPlayer sender, MediaPlayerLengthChangedEventArgs args)
+        private void OnLengthChanged(AsyncMediaPlayer sender, AsyncMediaPlayerDurationChangedEventArgs args)
         {
-            OnDurationChanged(args.Length / 1000d);
+            OnDurationChanged(args.Duration);
         }
 
-        private void OnEndReached(AsyncMediaPlayer sender, EventArgs args)
+        private void OnEndReached(AsyncMediaPlayer sender, object args)
         {
-            OnPositionChanged(sender.Length / 1000d);
+            OnPositionChanged(sender.Duration);
 
             if (IsLoopingEnabled)
             {
@@ -281,34 +280,30 @@ namespace Telegram.Controls
             }
         }
 
-        private void OnPlaying(AsyncMediaPlayer sender, EventArgs args)
+        private void OnPlaying(AsyncMediaPlayer sender, object args)
         {
             OnIsPlayingChanged(true);
         }
 
-        private void OnPaused(AsyncMediaPlayer sender, EventArgs args)
+        private void OnPaused(AsyncMediaPlayer sender, object args)
         {
             OnIsPlayingChanged(false);
         }
 
-        private void OnVolumeChanged(AsyncMediaPlayer sender, MediaPlayerVolumeChangedEventArgs args)
+        private void OnVolumeChanged(AsyncMediaPlayer sender, object args)
         {
-            OnVolumeChanged(args.Volume / 100d);
+            //OnVolumeChanged(args.Volume / 100d);
         }
 
         private bool _volumeWorkaround = true;
 
-        private void OnEESelected(AsyncMediaPlayer sender, MediaPlayerESSelectedEventArgs args)
+        private void OnEESelected(AsyncMediaPlayer sender, AsyncMediaPlayerStreamSelectedEventArgs args)
         {
-            if (args.Type == TrackType.Video && args.Id != -1)
+            if (args.Type == AsyncMediaPlayerStreamType.Video && args.Id != -1)
             {
-                var track = sender.Track;
-                if (track != null)
-                {
-                    OnTrackChanged(track.Width, track.Height);
-                }
+                OnTrackChanged(args.Width, args.Height);
             }
-            else if (args.Type == TrackType.Audio && args.Id != -1)
+            else if (args.Type == AsyncMediaPlayerStreamType.Audio && args.Id != -1)
             {
                 if (_volumeWorkaround)
                 {

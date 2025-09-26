@@ -1,0 +1,62 @@
+import "Media/AsyncMediaPlayerDurationChangedEventArgs.idl";
+import "Media/AsyncMediaPlayerPositionChangedEventArgs.idl";
+import "Media/AsyncMediaPlayerStreamSelectedEventArgs.idl";
+import "Media/AsyncMediaPlayerBufferingEventArgs.idl";
+import "Media/AsyncMediaPlayerLogEventArgs.idl";
+import "Media/AsyncMediaPlayerSwapChain.idl";
+
+namespace Telegram.Native.Media
+{
+    enum AsyncMediaPlayerState
+    {
+        NothingSpecial = 0,
+        Opening = 1,
+        Buffering = 2,
+        Playing = 3,
+        Paused = 4,
+        Stopped = 5,
+        Ended = 6,
+        Error = 7
+    };
+
+    [default_interface]
+    runtimeclass AsyncMediaPlayer
+    {
+        AsyncMediaPlayer(Boolean createGraphicsContext, Boolean debug, Windows.Foundation.Collections.IVector<String> options);
+
+        AsyncMediaPlayerSwapChain Context{ get; };
+
+        void Play(Windows.Foundation.Uri uri);
+        void Play();
+        void Stop();
+        void Pause();
+        void Pause(Boolean pause);
+        void Close();
+
+        AsyncMediaPlayerState State{ get; };
+        Boolean IsPlaying{ get; };
+        Boolean CanPause{ get; };
+        Boolean Mute;
+
+        Double Duration{ get; };
+        Double Position;
+
+        void Seek(Double value, Boolean relative);
+
+        Single Rate;
+        Int32 Volume;
+
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> Vout;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, AsyncMediaPlayerStreamSelectedEventArgs> StreamSelected;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> EndReached;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, AsyncMediaPlayerBufferingEventArgs> Buffering;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, AsyncMediaPlayerPositionChangedEventArgs> PositionChanged;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, AsyncMediaPlayerDurationChangedEventArgs> DurationChanged;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> Playing;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> Paused;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> Stopped;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> VolumeChanged;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> EncounteredError;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, AsyncMediaPlayerLogEventArgs> Log;
+    }
+}

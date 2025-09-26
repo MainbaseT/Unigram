@@ -4,12 +4,11 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using LibVLCSharp.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Telegram.Common;
-using Telegram.Streams;
+using Telegram.Native.Media;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
@@ -249,7 +248,7 @@ namespace Telegram.Services
 
         #endregion
 
-        private void OnBuffering(object sender, MediaPlayerBufferingEventArgs args)
+        private void OnBuffering(object sender, AsyncMediaPlayerBufferingEventArgs args)
         {
             if (args.Cache == 100)
             {
@@ -266,7 +265,7 @@ namespace Telegram.Services
             }
         }
 
-        private void OnEndReached(object sender, EventArgs args)
+        private void OnEndReached(object sender, object args)
         {
             var item = CurrentItem;
             if (item != null)
@@ -282,7 +281,7 @@ namespace Telegram.Services
             }
         }
 
-        private void OnEncounteredError(object sender, EventArgs args)
+        private void OnEncounteredError(object sender, object args)
         {
             Clear();
             MediaFailed?.Invoke(this, null);
@@ -297,37 +296,37 @@ namespace Telegram.Services
 
             switch (_player.State)
             {
-                case VLCState.Playing:
+                case AsyncMediaPlayerState.Playing:
                     //sender.MediaPlayer.SystemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Playing;
                     break;
-                case VLCState.Paused:
+                case AsyncMediaPlayerState.Paused:
                     //sender.MediaPlayer.SystemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Paused;
                     break;
-                case VLCState.NothingSpecial:
-                case VLCState.Stopped:
+                case AsyncMediaPlayerState.NothingSpecial:
+                case AsyncMediaPlayerState.Stopped:
                     //sender.MediaPlayer.SystemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Stopped;
                     PlaybackState = PlaybackState.None;
                     break;
             }
         }
 
-        private void OnESSelected(AsyncMediaPlayer sender, MediaPlayerESSelectedEventArgs args)
+        private void OnESSelected(AsyncMediaPlayer sender, AsyncMediaPlayerStreamSelectedEventArgs args)
         {
-            if (args.Type == TrackType.Audio && args.Id != -1)
+            if (args.Type == AsyncMediaPlayerStreamType.Audio && args.Id != -1)
             {
                 sender.Volume = (int)Math.Round(_settingsService.VolumeLevel * 100);
             }
         }
 
-        private void OnTimeChanged(AsyncMediaPlayer sender, MediaPlayerTimeChangedEventArgs args)
+        private void OnTimeChanged(AsyncMediaPlayer sender, AsyncMediaPlayerPositionChangedEventArgs args)
         {
-            _positionChanged.Position = TimeSpan.FromMilliseconds(args.Time);
+            _positionChanged.Position = TimeSpan.FromSeconds(args.Position);
             PositionChanged?.Invoke(this, _positionChanged);
         }
 
-        private void OnLengthChanged(AsyncMediaPlayer sender, MediaPlayerLengthChangedEventArgs args)
+        private void OnLengthChanged(AsyncMediaPlayer sender, AsyncMediaPlayerDurationChangedEventArgs args)
         {
-            _positionChanged.Duration = TimeSpan.FromMilliseconds(args.Length);
+            _positionChanged.Duration = TimeSpan.FromSeconds(args.Duration);
             PositionChanged?.Invoke(this, _positionChanged);
         }
 
@@ -490,7 +489,7 @@ namespace Telegram.Services
                 player.Rate = (float)_playbackSpeed;
             }
 
-            if (player.State == VLCState.Ended)
+            if (player.State == AsyncMediaPlayerState.Ended)
             {
                 player.Stop();
             }
@@ -531,7 +530,7 @@ namespace Telegram.Services
             // Workaround for OGG files. It's unclear why this is needed,
             // but it's likely caused by our LibVLC build configuration,
             // as it doesn't happen with standalone VLC.
-            if (span.TotalMilliseconds < player.Time)
+            if (span.TotalSeconds < player.Position)
             {
                 var playing = player.IsPlaying;
 
@@ -544,7 +543,7 @@ namespace Telegram.Services
                 }
             }
 
-            player.Time = (long)span.TotalMilliseconds;
+            player.Position = span.TotalSeconds;
 
             _positionChanged.Position = span;
             PositionChanged?.Invoke(this, _positionChanged);
@@ -676,9 +675,9 @@ namespace Telegram.Services
 
                 player.Rate = (float)_playbackSpeed;
                 player.Play(MediaHttpServer.Start(_previous.CurrentItem, ref _httpServerToken));
-                player.Time = _previous.Time;
+                player.Position = _previous.Position;
 
-                _positionChanged.Position = TimeSpan.FromMilliseconds(_previous.Time);
+                _positionChanged.Position = TimeSpan.FromMilliseconds(_previous.Position);
                 PositionChanged?.Invoke(this, _positionChanged);
 
                 if (_previous.State != PlaybackState.Playing)
@@ -880,9 +879,9 @@ namespace Telegram.Services
 
                     //_mediaPlayer.SystemMediaTransportControls.ButtonPressed -= Transport_ButtonPressed;
                     //_mediaPlayer.PlaybackSession.PlaybackStateChanged -= OnPlaybackStateChanged;
-                    _player.ESSelected -= OnESSelected;
-                    _player.TimeChanged -= OnTimeChanged;
-                    _player.LengthChanged -= OnLengthChanged;
+                    _player.StreamSelected -= OnESSelected;
+                    _player.PositionChanged -= OnTimeChanged;
+                    _player.DurationChanged -= OnLengthChanged;
                     _player.EncounteredError -= OnEncounteredError;
                     _player.EndReached -= OnEndReached;
                     _player.Buffering -= OnBuffering;
@@ -922,7 +921,7 @@ namespace Telegram.Services
 
             public PlaybackItem CurrentItem { get; }
 
-            public long Time { get; }
+            public double Position { get; }
 
             public PlaybackState State { get; }
 
@@ -930,7 +929,7 @@ namespace Telegram.Services
             {
                 Items = service._items.ToList();
                 CurrentItem = service.CurrentItem;
-                Time = player.Time;
+                Position = player.Position;
                 State = service.PlaybackState;
             }
         }
@@ -939,13 +938,13 @@ namespace Telegram.Services
         {
             if (_player == null)
             {
-                _player = new AsyncMediaPlayer(true);
+                _player = new AsyncMediaPlayer(true, false, Array.Empty<string>());
                 //_mediaPlayer.SystemMediaTransportControls.AutoRepeatMode = _settingsService.Playback.RepeatMode;
                 //_mediaPlayer.SystemMediaTransportControls.ButtonPressed += Transport_ButtonPressed;
                 //_mediaPlayer.PlaybackSession.PlaybackStateChanged += OnPlaybackStateChanged;
-                _player.ESSelected += OnESSelected;
-                _player.TimeChanged += OnTimeChanged;
-                _player.LengthChanged += OnLengthChanged;
+                _player.StreamSelected += OnESSelected;
+                _player.PositionChanged += OnTimeChanged;
+                _player.DurationChanged += OnLengthChanged;
                 _player.EncounteredError += OnEncounteredError;
                 _player.EndReached += OnEndReached;
                 _player.Buffering += OnBuffering;

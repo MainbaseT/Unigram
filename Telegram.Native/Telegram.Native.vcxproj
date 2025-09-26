@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\VideoLAN.LibVLC.UWP.3.0.22-rc1\build\native\VideoLAN.LibVLC.UWP.props" Condition="Exists('..\packages\VideoLAN.LibVLC.UWP.3.0.22-rc1\build\native\VideoLAN.LibVLC.UWP.props')" />
   <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM64">
@@ -307,10 +308,6 @@
       <DependentUpon>AnimationEffects.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="AsyncMediaPlayerSwapChain.h">
-      <DependentUpon>AsyncMediaPlayerSwapChain.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
     <ClInclude Include="AudioPitchEffect.h">
       <DependentUpon>AudioPitchEffect.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -363,6 +360,13 @@
       <DependentUpon>LokiRng.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="Media\AsyncMediaPlayer.h" />
+    <ClInclude Include="Media\AsyncMediaPlayerBufferingEventArgs.h" />
+    <ClInclude Include="Media\AsyncMediaPlayerDurationChangedEventArgs.h" />
+    <ClInclude Include="Media\AsyncMediaPlayerLogEventArgs.h" />
+    <ClInclude Include="Media\AsyncMediaPlayerPositionChangedEventArgs.h" />
+    <ClInclude Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.h" />
+    <ClInclude Include="Media\AsyncMediaPlayerSwapChain.h" />
     <ClInclude Include="NativeUtils.h">
       <DependentUpon>NativeUtils.idl</DependentUpon>
     </ClInclude>
@@ -978,10 +982,6 @@
       <DependentUpon>AnimationEffects.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="AsyncMediaPlayerSwapChain.cpp">
-      <DependentUpon>AsyncMediaPlayerSwapChain.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
     <ClCompile Include="Composition\DirectRectangleClip2.cpp" />
     <ClCompile Include="Composition\WindowVisual.cpp" />
     <ClCompile Include="FatalError.cpp">
@@ -1020,6 +1020,13 @@
       <DependentUpon>AI\RecognizedWord.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="Media\AsyncMediaPlayer.cpp" />
+    <ClCompile Include="Media\AsyncMediaPlayerBufferingEventArgs.cpp" />
+    <ClCompile Include="Media\AsyncMediaPlayerDurationChangedEventArgs.cpp" />
+    <ClCompile Include="Media\AsyncMediaPlayerLogEventArgs.cpp" />
+    <ClCompile Include="Media\AsyncMediaPlayerPositionChangedEventArgs.cpp" />
+    <ClCompile Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.cpp" />
+    <ClCompile Include="Media\AsyncMediaPlayerSwapChain.cpp" />
     <ClCompile Include="ParticlesAnimation.cpp">
       <DependentUpon>ParticlesAnimation.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -1111,9 +1118,6 @@
     <Midl Include="AnimationEffects.idl">
       <SubType>Designer</SubType>
     </Midl>
-    <Midl Include="AsyncMediaPlayerSwapChain.idl">
-      <SubType>Designer</SubType>
-    </Midl>
     <Midl Include="AudioPitchEffect.idl">
       <SubType>Designer</SubType>
     </Midl>
@@ -1144,6 +1148,13 @@
     <Midl Include="LokiRng.idl">
       <SubType>Designer</SubType>
     </Midl>
+    <Midl Include="Media\AsyncMediaPlayer.idl" />
+    <Midl Include="Media\AsyncMediaPlayerBufferingEventArgs.idl" />
+    <Midl Include="Media\AsyncMediaPlayerDurationChangedEventArgs.idl" />
+    <Midl Include="Media\AsyncMediaPlayerLogEventArgs.idl" />
+    <Midl Include="Media\AsyncMediaPlayerPositionChangedEventArgs.idl" />
+    <Midl Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.idl" />
+    <Midl Include="Media\AsyncMediaPlayerSwapChain.idl" />
     <Midl Include="NativeUtils.idl" />
     <Midl Include="AI\TextRecognizer.idl" />
     <Midl Include="AI\RecognizedLine.idl" />
@@ -1179,6 +1190,7 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\packages\Telegram.Td.UWP.1.8.55\build\native\Telegram.Td.UWP.targets" Condition="Exists('..\packages\Telegram.Td.UWP.1.8.55\build\native\Telegram.Td.UWP.targets')" />
+    <Import Project="..\packages\VideoLAN.LibVLC.UWP.3.0.22-rc1\build\VideoLAN.LibVLC.UWP.targets" Condition="Exists('..\packages\VideoLAN.LibVLC.UWP.3.0.22-rc1\build\VideoLAN.LibVLC.UWP.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -1187,5 +1199,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\packages\Telegram.Td.UWP.1.8.55\build\native\Telegram.Td.UWP.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Telegram.Td.UWP.1.8.55\build\native\Telegram.Td.UWP.targets'))" />
+    <Error Condition="!Exists('..\packages\VideoLAN.LibVLC.UWP.3.0.22-rc1\build\VideoLAN.LibVLC.UWP.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\VideoLAN.LibVLC.UWP.3.0.22-rc1\build\VideoLAN.LibVLC.UWP.targets'))" />
+    <Error Condition="!Exists('..\packages\VideoLAN.LibVLC.UWP.3.0.22-rc1\build\native\VideoLAN.LibVLC.UWP.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\VideoLAN.LibVLC.UWP.3.0.22-rc1\build\native\VideoLAN.LibVLC.UWP.props'))" />
   </Target>
 </Project>
