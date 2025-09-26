@@ -76,8 +76,8 @@ namespace Telegram.Controls.Chats
             Symbol = GetTemplateChild(nameof(Symbol)) as AnimatedImage;
             Model = GetTemplateChild(nameof(Model)) as AnimatedImage;
 
-            Canvas.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
-            Negative.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
+            Canvas.Margin = new Thickness(-BorderThickness.Left * 2, -BorderThickness.Top * 2, 0, 0);
+            Negative.Margin = new Thickness(-BorderThickness.Left * 2, -BorderThickness.Top * 2, 0, 0);
 
             Symbol.Source = DelayedFileSource.FromSticker(_clientService, _symbol);
             Model.Source = DelayedFileSource.FromSticker(_clientService, _model);
@@ -87,8 +87,8 @@ namespace Telegram.Controls.Chats
 
         private void OnBorderThicknessChanged(DependencyObject sender, DependencyProperty dp)
         {
-            Canvas.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
-            Negative.Margin = new Thickness(-BorderThickness.Left, -BorderThickness.Top, 0, 0);
+            Canvas.Margin = new Thickness(-BorderThickness.Left * 2, -BorderThickness.Top * 2, 0, 0);
+            Negative.Margin = new Thickness(-BorderThickness.Left * 2, -BorderThickness.Top * 2, 0, 0);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
