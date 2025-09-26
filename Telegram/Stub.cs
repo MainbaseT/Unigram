@@ -6234,11 +6234,11 @@ public static class BufferSurface_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.Storage.Streams.IBuffer Create_stub(byte[] data)
+    public static Windows.Storage.Streams.IBuffer Create_stub(uint size)
     {
         try
         {
-            return Telegram.Native.BufferSurface.Create(data);
+            return Telegram.Native.BufferSurface.Create(size);
         }
         catch (Exception ex)
         {
@@ -6246,11 +6246,11 @@ public static class BufferSurface_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.Storage.Streams.IBuffer Create_stub(uint size)
+    public static Windows.Storage.Streams.IBuffer Create_stub(byte[] data)
     {
         try
         {
-            return Telegram.Native.BufferSurface.Create(size);
+            return Telegram.Native.BufferSurface.Create(data);
         }
         catch (Exception ex)
         {
@@ -6329,6 +6329,18 @@ public static class FileStreamFromApp_stub
         try
         {
             sender.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static int Read_stub(this Telegram.Native.FileStreamFromApp sender, Windows.Storage.Streams.IBuffer buffer, uint length)
+    {
+        try
+        {
+            return sender.Read(buffer, length);
         }
         catch (Exception ex)
         {
