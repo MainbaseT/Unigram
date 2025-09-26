@@ -136,6 +136,9 @@
 
         <Grid x:Name="SearchRoot"
               Grid.Row="1">
+            <Grid.Resources>
+                <x:Boolean x:Key="ListViewItemSelectionIndicatorVisualEnabled">False</x:Boolean>
+            </Grid.Resources>
             <ListView x:Name="ItemsHost"
                       ItemsSource="{x:Bind ViewModel.ItemsView, Mode=OneWay}"
                       IsItemClickEnabled="True"
