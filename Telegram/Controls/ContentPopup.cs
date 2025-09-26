@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System.Numerics;
+using System.Text;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Composition;
@@ -27,6 +28,12 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls
 {
+    public enum ContentPopupButtonsLayout
+    {
+        Horizontal,
+        Vertical
+    }
+
     public partial class ContentPopup : ContentDialogEx
     {
         private ContentDialogResult _result;
@@ -41,6 +48,10 @@ namespace Telegram.Controls
         private Button DismissButton;
 
         private Rectangle Smoke;
+
+        private long _primaryTextToken;
+        private long _secondaryTextToken;
+        private long _closeTextToken;
 
         public ContentPopup()
         {
@@ -166,6 +177,10 @@ namespace Telegram.Controls
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            this.RegisterPropertyChangedCallback(PrimaryButtonTextProperty, OnButtonTextChanged, ref _primaryTextToken);
+            this.RegisterPropertyChangedCallback(SecondaryButtonTextProperty, OnButtonTextChanged, ref _secondaryTextToken);
+            this.RegisterPropertyChangedCallback(CloseButtonTextProperty, OnButtonTextChanged, ref _closeTextToken);
+
             try
             {
                 if (XamlRoot.Content is IPopupHost host)
@@ -221,6 +236,10 @@ namespace Telegram.Controls
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
+            this.UnregisterPropertyChangedCallback(PrimaryButtonTextProperty, ref _primaryTextToken);
+            this.UnregisterPropertyChangedCallback(SecondaryButtonTextProperty, ref _secondaryTextToken);
+            this.UnregisterPropertyChangedCallback(CloseButtonTextProperty, ref _closeTextToken);
+
             try
             {
                 if (XamlRoot.Content is IPopupHost host)
@@ -297,6 +316,17 @@ namespace Telegram.Controls
                 LayoutRoot.ProcessKeyboardAccelerators += OnProcessKeyboardAccelerators;
                 ElementCompositionPreview.SetIsTranslationEnabled(LayoutRoot, true);
             }
+
+            this.RegisterPropertyChangedCallback(PrimaryButtonTextProperty, OnButtonTextChanged, ref _primaryTextToken);
+            this.RegisterPropertyChangedCallback(SecondaryButtonTextProperty, OnButtonTextChanged, ref _secondaryTextToken);
+            this.RegisterPropertyChangedCallback(CloseButtonTextProperty, OnButtonTextChanged, ref _closeTextToken);
+
+            CalculateButtonsVisualState();
+        }
+
+        private void OnButtonTextChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            CalculateButtonsVisualState();
         }
 
         private void DismissButton_Click(object sender, RoutedEventArgs e)
@@ -534,6 +564,76 @@ namespace Telegram.Controls
             DependencyProperty.Register("ContentMinHeight", typeof(double), typeof(ContentPopup), new PropertyMetadata(184d));
 
         #endregion
+
+        #region ButtonsLayout
+
+        public ContentPopupButtonsLayout ButtonsLayout
+        {
+            get { return (ContentPopupButtonsLayout)GetValue(ButtonsLayoutProperty); }
+            set { SetValue(ButtonsLayoutProperty, value); }
+        }
+
+        public static readonly DependencyProperty ButtonsLayoutProperty =
+            DependencyProperty.Register("ButtonsLayout", typeof(ContentPopupButtonsLayout), typeof(ContentPopup), new PropertyMetadata(ContentPopupButtonsLayout.Horizontal, OnButtonsLayoutChanged));
+
+        private static void OnButtonsLayoutChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ContentPopup)d).CalculateButtonsVisualState();
+        }
+
+        #endregion
+
+        private void CalculateButtonsVisualState()
+        {
+            var primary = !string.IsNullOrEmpty(PrimaryButtonText);
+            var secondary = !string.IsNullOrEmpty(SecondaryButtonText);
+            var close = !string.IsNullOrEmpty(CloseButtonText);
+
+            var builder = new StringBuilder();
+
+            if (primary && secondary && close)
+            {
+                builder.Append("ButtonsAllVisible");
+            }
+            else
+            {
+                if (primary)
+                {
+                    builder.Append("Primary");
+                }
+
+                if (secondary)
+                {
+                    if (builder.Length > 0)
+                    {
+                        builder.Append("And");
+                    }
+
+                    builder.Append("Secondary");
+                }
+
+                if (close)
+                {
+                    if (builder.Length > 0)
+                    {
+                        builder.Append("And");
+                    }
+
+                    builder.Append("Close");
+                }
+
+                if (builder.Length > 0)
+                {
+                    builder.Append(ButtonsLayout == ContentPopupButtonsLayout.Vertical ? "Vertical" : "Horizontal");
+                }
+                else
+                {
+                    builder.Append("ButtonsNoneVisible");
+                }
+            }
+
+            VisualStateManager.GoToState(this, builder.ToString(), false);
+        }
 
         // TODO: terrible naming, this is used to prevent NavigatedFrom logic on temporary hide
         public bool IsFinalized { get; set; } = true;

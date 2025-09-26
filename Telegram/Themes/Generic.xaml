@@ -3696,14 +3696,14 @@
                                 </VisualState>
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="ButtonsVisibilityStates">
-                                <VisualState x:Name="AllVisible" />
-                                <VisualState x:Name="NoneVisible">
+                                <VisualState x:Name="ButtonsAllVisible" />
+                                <VisualState x:Name="ButtonsNoneVisible">
                                     <VisualState.Setters>
                                         <Setter Target="CommandSpace.Visibility"
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
                                 </VisualState>
-                                <VisualState x:Name="PrimaryVisible">
+                                <VisualState x:Name="PrimaryHorizontal">
                                     <VisualState.Setters>
                                         <Setter Target="PrimaryRoot.(Grid.Column)"
                                                 Value="2" />
@@ -3717,7 +3717,7 @@
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
                                 </VisualState>
-                                <VisualState x:Name="SecondaryVisible">
+                                <VisualState x:Name="SecondaryHorizontal">
                                     <VisualState.Setters>
                                         <Setter Target="SecondaryButton.(Grid.Column)"
                                                 Value="2" />
@@ -3731,7 +3731,7 @@
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
                                 </VisualState>
-                                <VisualState x:Name="CloseVisible">
+                                <VisualState x:Name="CloseHorizontal">
                                     <VisualState.Setters>
                                         <!--<Setter Target="CloseButton.(Grid.Column)"
                                                 Value="2" />
@@ -3745,7 +3745,7 @@
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
                                 </VisualState>
-                                <VisualState x:Name="PrimaryAndSecondaryVisible">
+                                <VisualState x:Name="PrimaryAndSecondaryHorizontal">
                                     <VisualState.Setters>
                                         <Setter Target="PrimaryRoot.(Grid.ColumnSpan)"
                                                 Value="2" />
@@ -3759,7 +3759,7 @@
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
                                 </VisualState>
-                                <VisualState x:Name="PrimaryAndCloseVisible">
+                                <VisualState x:Name="PrimaryAndCloseHorizontal">
                                     <VisualState.Setters>
                                         <Setter Target="PrimaryRoot.(Grid.ColumnSpan)"
                                                 Value="4" />
@@ -3769,7 +3769,7 @@
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
                                 </VisualState>
-                                <VisualState x:Name="SecondaryAndCloseVisible">
+                                <VisualState x:Name="SecondaryAndCloseHorizontal">
                                     <VisualState.Setters>
                                         <Setter Target="SecondaryButton.(Grid.Column)"
                                                 Value="0" />
@@ -3781,6 +3781,82 @@
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
                                 </VisualState>
+
+                                <VisualState x:Name="PrimaryVertical">
+                                    <VisualState.Setters>
+                                        <Setter Target="PrimaryRoot.(Grid.ColumnSpan)"
+                                                Value="4" />
+                                        <Setter Target="PrimaryRoot.Margin"
+                                                Value="0,0,0,0" />
+                                        <Setter Target="SecondaryButton.Visibility"
+                                                Value="Collapsed" />
+                                        <Setter Target="CloseButton.Visibility"
+                                                Value="Collapsed" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="SecondaryVertical">
+                                    <VisualState.Setters>
+                                        <Setter Target="SecondaryButton.(Grid.ColumnSpan)"
+                                                Value="4" />
+                                        <Setter Target="SecondaryButton.Margin"
+                                                Value="0,0,0,0" />
+                                        <Setter Target="PrimaryRoot.Visibility"
+                                                Value="Collapsed" />
+                                        <Setter Target="CloseButton.Visibility"
+                                                Value="Collapsed" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CloseVertical">
+                                    <VisualState.Setters>
+                                        <!--<Setter Target="CloseButton.(Grid.Column)"
+                                                Value="2" />
+                                        <Setter Target="CloseButton.(Grid.ColumnSpan)"
+                                                Value="2" />
+                                        <Setter Target="CloseButton.Margin"
+                                                Value="2,0,0,0" />-->
+                                        <Setter Target="PrimaryRoot.Visibility"
+                                                Value="Collapsed" />
+                                        <Setter Target="SecondaryButton.Visibility"
+                                                Value="Collapsed" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="PrimaryAndSecondaryVertical">
+                                    <VisualState.Setters>
+                                        <Setter Target="PrimaryRoot.(Grid.ColumnSpan)"
+                                                Value="2" />
+                                        <Setter Target="SecondaryButton.(Grid.Column)"
+                                                Value="2" />
+                                        <Setter Target="SecondaryButton.(Grid.ColumnSpan)"
+                                                Value="2" />
+                                        <Setter Target="SecondaryButton.Margin"
+                                                Value="2,0,0,0" />
+                                        <Setter Target="CloseButton.Visibility"
+                                                Value="Collapsed" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="PrimaryAndCloseVertical">
+                                    <VisualState.Setters>
+                                        <Setter Target="PrimaryRoot.(Grid.ColumnSpan)"
+                                                Value="4" />
+                                        <Setter Target="PrimaryRoot.Margin"
+                                                Value="0,0,0,0" />
+                                        <Setter Target="SecondaryButton.Visibility"
+                                                Value="Collapsed" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="SecondaryAndCloseVertical">
+                                    <VisualState.Setters>
+                                        <Setter Target="SecondaryButton.(Grid.Column)"
+                                                Value="0" />
+                                        <Setter Target="SecondaryButton.(Grid.ColumnSpan)"
+                                                Value="4" />
+                                        <Setter Target="SecondaryButton.Margin"
+                                                Value="0,0,0,0" />
+                                        <Setter Target="PrimaryRoot.Visibility"
+                                                Value="Collapsed" />
+                                    </VisualState.Setters>
+                                </VisualState>
+
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="DefaultButtonStates">
                                 <VisualState x:Name="NoDefaultButton" />
