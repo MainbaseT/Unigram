@@ -11172,8 +11172,17 @@ seamlessly and efficiently.</value>
   <data name="Regular" xml:space="preserve">
     <value>Regular</value>
   </data>
+  <data name="RemindDayAt" xml:space="preserve">
+    <value>&apos;Remind on&apos; MMM d &apos;at&apos; HH:mm</value>
+  </data>
+  <data name="RemindDayYearAt" xml:space="preserve">
+    <value>&apos;Remind on&apos; MMM d yyyy &apos;at&apos; HH:mm</value>
+  </data>
   <data name="Reminders" xml:space="preserve">
     <value>Reminders</value>
+  </data>
+  <data name="RemindTodayAt" xml:space="preserve">
+    <value>&apos;Remind today at&apos; HH:mm</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>
@@ -11825,6 +11834,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="ScheduleMessage" xml:space="preserve">
     <value>Schedule Message</value>
   </data>
+  <data name="ScheduleMessageDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="ScheduleMessageTime" xml:space="preserve">
+    <value>Time</value>
+  </data>
   <data name="Search" xml:space="preserve">
     <value>Search</value>
   </data>
@@ -12011,6 +12026,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SendByEnterKey" xml:space="preserve">
     <value>Enter</value>
   </data>
+  <data name="SendDayAt" xml:space="preserve">
+    <value>&apos;Send on&apos; MMM d &apos;at&apos; HH:mm</value>
+  </data>
+  <data name="SendDayYearAt" xml:space="preserve">
+    <value>&apos;Send on&apos; MMM d yyyy &apos;at&apos; HH:mm</value>
+  </data>
   <data name="SendDirectMessage" xml:space="preserve">
     <value>Send direct message</value>
   </data>
@@ -12058,6 +12079,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="SendMessageRestrictedForever" xml:space="preserve">
     <value>The admins of this group have restricted your ability to send messages.</value>
+  </data>
+  <data name="SendTodayAt" xml:space="preserve">
+    <value>&apos;Send today at&apos; HH:mm</value>
   </data>
   <data name="SendWhenOnline" xml:space="preserve">
     <value>Send When Online</value>

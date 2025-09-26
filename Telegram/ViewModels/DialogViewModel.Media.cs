@@ -127,18 +127,17 @@ namespace Telegram.ViewModels
                 var popup = new ScheduleMessagePopup(user, ClientService.IsSavedMessages(chat));
 
                 var confirm = await ShowPopupAsync(popup);
-                if (confirm != ContentDialogResult.Primary)
+                if (confirm == ContentDialogResult.Primary)
                 {
-                    return null;
+                    schedulingState = new MessageSchedulingStateSendAtDate(popup.Value.ToTimestamp());
                 }
-
-                if (popup.IsUntilOnline)
+                else if (popup.IsUntilOnline)
                 {
                     schedulingState = new MessageSchedulingStateSendWhenOnline();
                 }
                 else
                 {
-                    schedulingState = new MessageSchedulingStateSendAtDate(popup.Value.ToTimestamp());
+                    return null;
                 }
             }
             else if (schedule == SchedulingState.WhenOnline)

@@ -11,16 +11,19 @@ using Telegram.Controls;
 using Telegram.Native;
 using Telegram.Td.Api;
 using Windows.System.UserProfile;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Popups
 {
     public sealed partial class ScheduleMessagePopup : ContentPopup
     {
+        private bool _reminder;
+
         public ScheduleMessagePopup(User user, bool reminder)
         {
             InitializeComponent();
+
+            _reminder = reminder;
 
             var date = DateTime.Now.AddMinutes(10);
             Date.Date = date.Date;
@@ -37,18 +40,15 @@ namespace Telegram.Views.Popups
 
             Title = reminder ? Strings.SetReminder : Strings.ScheduleMessage;
             PrimaryButtonText = Strings.OK;
-            SecondaryButtonText = Strings.Cancel;
 
             if (user != null && user.Type is UserTypeRegular && user.Status is not UserStatusRecently && !reminder)
             {
-                Online.Content = string.Format(Strings.MessageScheduledUntilOnline, user.FirstName);
-            }
-            else
-            {
-                Online.Visibility = Visibility.Collapsed;
+                CloseButtonText = string.Format(Strings.MessageScheduledUntilOnline, user.FirstName);
             }
 
             DefaultButton = ContentDialogButton.Primary;
+
+            UpdatePrimaryButtonText();
         }
 
         public DateTime Value
@@ -87,12 +87,33 @@ namespace Telegram.Views.Popups
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            IsUntilOnline = true;
         }
 
-        private void Online_Click(object sender, RoutedEventArgs e)
+        private void Date_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
         {
-            IsUntilOnline = true;
-            Hide(ContentDialogResult.Primary);
+            UpdatePrimaryButtonText();
+        }
+
+        private void Time_TimeChanged(object sender, TimePickerValueChangedEventArgs e)
+        {
+            UpdatePrimaryButtonText();
+        }
+
+        private void UpdatePrimaryButtonText()
+        {
+            if (Value.Date == DateTime.Today)
+            {
+                PrimaryButtonText = Value.ToString(_reminder ? Strings.RemindTodayAt : Strings.SendTodayAt);
+            }
+            else if (Value.Year == DateTime.Today.Year)
+            {
+                PrimaryButtonText = Value.ToString(_reminder ? Strings.RemindDayAt : Strings.SendDayAt);
+            }
+            else
+            {
+                PrimaryButtonText = Value.ToString(_reminder ? Strings.RemindDayYearAt : Strings.SendDayYearAt);
+            }
         }
     }
 }
