@@ -152,6 +152,8 @@ namespace Telegram.Controls
             _subtitleCollapsed = !show;
             SubtitleTab.Visibility = Visibility.Visible;
 
+            HeaderRoot.IsHitTestVisible = !show;
+
             var subtitleTab = ElementComposition.GetElementVisual(SubtitleTab);
             var subtitlePro = ElementComposition.GetElementVisual(SubtitleMain);
 
