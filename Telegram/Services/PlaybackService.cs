@@ -677,7 +677,7 @@ namespace Telegram.Services
                 player.Play(MediaHttpServer.Start(_previous.CurrentItem, ref _httpServerToken));
                 player.Position = _previous.Position;
 
-                _positionChanged.Position = TimeSpan.FromMilliseconds(_previous.Position);
+                _positionChanged.Position = TimeSpan.FromSeconds(_previous.Position);
                 PositionChanged?.Invoke(this, _positionChanged);
 
                 if (_previous.State != PlaybackState.Playing)
