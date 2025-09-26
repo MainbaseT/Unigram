@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Telegram.Native;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.ViewModels.Gallery;
@@ -207,13 +209,13 @@ namespace Telegram.Common
                     response.Headers["Content-Type"] = "video/mp4";
                     response.Headers["Content-Range"] = string.Format("bytes {0}-{1}/{2}", offset, offset + limit - 1, file.Size);
 
-                    using (var stream = new System.IO.FileStream(file.Local.Path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                    using (var stream = new FileStreamFromApp(file.Local.Path))
                     {
-                        stream.Seek(offset, System.IO.SeekOrigin.Begin);
+                        stream.Seek(offset);
 
-                        byte[] data = new byte[(int)limit];
-                        stream.Read(data, 0, data.Length);
-                        response.Content = data;
+                        var data = BufferSurface.Create((uint)limit);
+                        stream.Read(data, (uint)data.Length);
+                        response.Content = data.ToArray();
                     }
 
                     return response;

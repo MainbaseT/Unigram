@@ -6324,11 +6324,11 @@ public static class CachedVideoAnimation_stub
 }
 public static class FileStreamFromApp_stub
 {
-    public static void Close_stub(this Telegram.Native.FileStreamFromApp sender)
+    public static void Dispose_stub(this Telegram.Native.FileStreamFromApp sender)
     {
         try
         {
-            sender.Close();
+            sender.Dispose();
         }
         catch (Exception ex)
         {

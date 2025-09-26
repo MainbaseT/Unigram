@@ -60,7 +60,7 @@ namespace Telegram.Streams
                 var path = _source.FilePath;
                 if (path.Length > 0 && !_source.IsCanceled && (_fileStream == null || _filePath != path))
                 {
-                    _fileStream?.Close();
+                    _fileStream?.Dispose();
 
                     _fileStream = new FileStreamFromApp(path);
                     _filePath = path;
@@ -106,7 +106,7 @@ namespace Telegram.Streams
         {
             try
             {
-                _fileStream?.Close();
+                _fileStream?.Dispose();
                 _fileStream = null;
 
                 _source.Close(true);
