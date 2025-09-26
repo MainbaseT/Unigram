@@ -27,6 +27,18 @@ namespace winrt::Telegram::Native::Media::implementation
             argv.push_back(argsStorage.back().c_str());
         }
 
+        if (createGraphicsContext)
+        {
+            m_context = AsyncMediaPlayerSwapChain(true);
+
+            for (const auto& opt : m_context.SwapChainOptions())
+            {
+                argsStorage.push_back(winrt::to_string(opt));
+                argv.push_back(argsStorage.back().c_str());
+                argc++;
+            }
+        }
+
         argv.push_back("--aout=winstore");
 
         m_instance = libvlc_new(argc, argv.data());
@@ -34,11 +46,6 @@ namespace winrt::Telegram::Native::Media::implementation
         if (debug)
         {
             libvlc_log_set(m_instance, &LogCallback, this);
-        }
-
-        if (createGraphicsContext)
-        {
-            m_context = AsyncMediaPlayerSwapChain(true);
         }
 
         m_player = libvlc_media_player_new(m_instance);
