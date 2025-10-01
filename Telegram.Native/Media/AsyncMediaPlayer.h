@@ -116,12 +116,12 @@ namespace winrt::Telegram::Native::Media::implementation
 {
     struct AsyncMediaPlayer : AsyncMediaPlayerT<AsyncMediaPlayer>
     {
-        AsyncMediaPlayer(bool createGraphicsContext, bool debug, winrt::Windows::Foundation::Collections::IVector<hstring> options);
+        AsyncMediaPlayer(AsyncMediaPlayerOptions options, winrt::Windows::Foundation::Collections::IVector<hstring> args);
         ~AsyncMediaPlayer();
 
         AsyncMediaPlayerSwapChain Context();
 
-        void Play(winrt::Windows::Foundation::Uri uri);
+        void Play(winrt::Windows::Foundation::Uri uri, double position = 0);
         void Play();
         void Stop();
         void Pause(bool pause = true);
@@ -131,9 +131,6 @@ namespace winrt::Telegram::Native::Media::implementation
         bool IsPlaying();
         bool CanPause();
 
-        bool Mute();
-        void Mute(bool value);
-
         double Duration();
 
         double Position();
@@ -141,16 +138,19 @@ namespace winrt::Telegram::Native::Media::implementation
 
         void Seek(double value, bool relative);
 
-        float Rate();
-        void Rate(float value);
+        double Rate();
+        void Rate(double value);
 
-        int Volume();
-        void Volume(int value);
+        double Volume();
+        void Volume(double value);
 
-        winrt::event_token Vout(Windows::Foundation::TypedEventHandler<
+        bool Mute();
+        void Mute(bool value);
+
+        winrt::event_token VideoOut(Windows::Foundation::TypedEventHandler<
             winrt::Telegram::Native::Media::AsyncMediaPlayer,
             winrt::Windows::Foundation::IInspectable> const& value);
-        void Vout(winrt::event_token const& token);
+        void VideoOut(winrt::event_token const& token);
 
         winrt::event_token StreamSelected(Windows::Foundation::TypedEventHandler<
             winrt::Telegram::Native::Media::AsyncMediaPlayer,
@@ -208,7 +208,7 @@ namespace winrt::Telegram::Native::Media::implementation
         void Log(winrt::event_token const& token);
 
     private:
-        bool m_debug;
+        AsyncMediaPlayerOptions m_options;
 
         DispatcherQueue m_dispatcherQueue{ nullptr };
         AsyncMediaPlayerSwapChain m_context{ nullptr };
@@ -237,7 +237,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         winrt::event<Windows::Foundation::TypedEventHandler<
             winrt::Telegram::Native::Media::AsyncMediaPlayer,
-            winrt::Windows::Foundation::IInspectable>> m_vout;
+            winrt::Windows::Foundation::IInspectable>> m_videoOut;
         winrt::event<Windows::Foundation::TypedEventHandler<
             winrt::Telegram::Native::Media::AsyncMediaPlayer,
             winrt::Telegram::Native::Media::AsyncMediaPlayerStreamSelectedEventArgs>> m_streamSelected;
@@ -275,6 +275,11 @@ namespace winrt::Telegram::Native::Media::implementation
     private:
         mutable std::mutex close_lock_;
         bool closed_ = false;
+
+        std::atomic<bool> shutting_down{ false };
+        std::mutex callback_mutex;
+        std::condition_variable callback_done;
+        std::atomic<int> active_callbacks{ 0 };
 
         std::atomic<bool> work_started_{ false };
         std::unique_ptr<std::thread> work_thread_;

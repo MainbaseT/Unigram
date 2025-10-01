@@ -7,6 +7,15 @@ import "Media/AsyncMediaPlayerSwapChain.idl";
 
 namespace Telegram.Native.Media
 {
+    struct AsyncMediaPlayerOptions
+    {
+        Boolean Debug;
+        Boolean CreateSwapChain;
+        Boolean Mute;
+        Double Volume;
+        Double Rate;
+    };
+
     enum AsyncMediaPlayerState
     {
         NothingSpecial = 0,
@@ -22,11 +31,12 @@ namespace Telegram.Native.Media
     [default_interface]
     runtimeclass AsyncMediaPlayer
     {
-        AsyncMediaPlayer(Boolean createGraphicsContext, Boolean debug, Windows.Foundation.Collections.IVector<String> options);
+        AsyncMediaPlayer(AsyncMediaPlayerOptions options, Windows.Foundation.Collections.IVector<String> args);
 
         AsyncMediaPlayerSwapChain Context{ get; };
 
         void Play(Windows.Foundation.Uri uri);
+        void Play(Windows.Foundation.Uri uri, Double position);
         void Play();
         void Stop();
         void Pause();
@@ -36,17 +46,17 @@ namespace Telegram.Native.Media
         AsyncMediaPlayerState State{ get; };
         Boolean IsPlaying{ get; };
         Boolean CanPause{ get; };
-        Boolean Mute;
 
         Double Duration{ get; };
         Double Position;
 
         void Seek(Double value, Boolean relative);
 
-        Single Rate;
-        Int32 Volume;
+        Double Rate;
+        Double Volume;
+        Boolean Mute;
 
-        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> Vout;
+        event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> VideoOut;
         event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, AsyncMediaPlayerStreamSelectedEventArgs> StreamSelected;
         event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, IInspectable> EndReached;
         event Windows.Foundation.TypedEventHandler<AsyncMediaPlayer, AsyncMediaPlayerBufferingEventArgs> Buffering;

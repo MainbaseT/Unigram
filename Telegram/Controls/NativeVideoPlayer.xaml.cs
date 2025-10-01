@@ -7,6 +7,7 @@
 using LibVLCSharp.Platforms.Windows;
 using Telegram.Common;
 using Telegram.Native.Media;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
 using Windows.UI.Xaml;
@@ -49,7 +50,7 @@ namespace Telegram.Controls
 
             if (_core != null)
             {
-                _core.Vout -= OnVout;
+                _core.VideoOut -= OnVout;
                 _core.Stopped -= OnStopped;
                 _core.PositionChanged -= OnTimeChanged;
                 _core.DurationChanged -= OnLengthChanged;
@@ -84,8 +85,7 @@ namespace Telegram.Controls
             }
             else
             {
-                _core.Play(MediaHttpServer.Start(video, ref _httpServerToken));
-                _core.Position = position;
+                _core.Play(MediaHttpServer.Start(video, ref _httpServerToken), position);
             }
 
             UpdateManager.Subscribe(this, video.ClientService, video.File, ref _bufferedToken, UpdateBuffered);
@@ -189,7 +189,7 @@ namespace Telegram.Controls
             {
                 if (_core != null)
                 {
-                    _core.Volume = (int)(value * 100);
+                    _core.Volume = value;
                     OnVolumeChanged(value);
                 }
             }
@@ -202,7 +202,7 @@ namespace Telegram.Controls
             {
                 if (_core != null)
                 {
-                    _core.Rate = (float)(value);
+                    _core.Rate = value;
                     //OnRateChanged(value);
                 }
             }
@@ -223,8 +223,17 @@ namespace Telegram.Controls
 
         private void OnInitialized(object sender, VideoViewInitializedEventArgs e)
         {
-            _core = new AsyncMediaPlayer(false, false, e.SwapChainOptions);
-            _core.Vout += OnVout;
+            var options = new AsyncMediaPlayerOptions
+            {
+                CreateSwapChain = false,
+                Mute = SettingsService.Current.VolumeMuted,
+                Volume = SettingsService.Current.VolumeLevel,
+                Rate = SettingsService.Current.Playback.VideoSpeed,
+                Debug = SettingsService.Current.VerbosityLevel >= 4,
+            };
+
+            _core = new AsyncMediaPlayer(options, e.SwapChainOptions);
+            _core.VideoOut += OnVout;
             _core.Stopped += OnStopped;
             _core.PositionChanged += OnTimeChanged;
             _core.DurationChanged += OnLengthChanged;
@@ -236,8 +245,7 @@ namespace Telegram.Controls
 
             if (_video != null)
             {
-                _core.Play(MediaHttpServer.Start(_video, ref _httpServerToken));
-                _core.Position = _initialPosition;
+                _core.Play(MediaHttpServer.Start(_video, ref _httpServerToken), _initialPosition);
             }
 
             _video = null;
@@ -305,11 +313,11 @@ namespace Telegram.Controls
             }
             else if (args.Type == AsyncMediaPlayerStreamType.Audio && args.Id != -1)
             {
-                if (_volumeWorkaround)
-                {
-                    _volumeWorkaround = false;
-                    OnReady(true);
-                }
+                //if (_volumeWorkaround)
+                //{
+                //    _volumeWorkaround = false;
+                //    OnReady(true);
+                //}
             }
         }
     }

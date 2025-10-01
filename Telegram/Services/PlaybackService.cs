@@ -310,14 +310,6 @@ namespace Telegram.Services
             }
         }
 
-        private void OnESSelected(AsyncMediaPlayer sender, AsyncMediaPlayerStreamSelectedEventArgs args)
-        {
-            if (args.Type == AsyncMediaPlayerStreamType.Audio && args.Id != -1)
-            {
-                sender.Volume = (int)Math.Round(_settingsService.VolumeLevel * 100);
-            }
-        }
-
         private void OnTimeChanged(AsyncMediaPlayer sender, AsyncMediaPlayerPositionChangedEventArgs args)
         {
             _positionChanged.Position = TimeSpan.FromSeconds(args.Position);
@@ -446,7 +438,7 @@ namespace Telegram.Services
 
                 Run(player =>
                 {
-                    player.Rate = (float)value;
+                    player.Rate = value;
                     //player.SystemMediaTransportControls.PlaybackRate = value;
                 });
             }
@@ -458,7 +450,7 @@ namespace Telegram.Services
             set
             {
                 _settingsService.VolumeLevel = value;
-                Run(player => player.Volume = (int)Math.Round(value * 100));
+                Run(player => player.Volume = value);
             }
         }
 
@@ -486,7 +478,7 @@ namespace Telegram.Services
             if (CurrentItem is PlaybackItem item)
             {
                 _playbackSpeed = item.CanChangePlaybackRate ? _settingsService.Playback.AudioSpeed : 1;
-                player.Rate = (float)_playbackSpeed;
+                player.Rate = _playbackSpeed;
             }
 
             if (player.State == AsyncMediaPlayerState.Ended)
@@ -636,7 +628,7 @@ namespace Telegram.Services
                 _playbackSpeed = item.CanChangePlaybackRate ? _settingsService.Playback.AudioSpeed : 1;
                 CurrentItem = item;
 
-                player.Rate = (float)_playbackSpeed;
+                player.Rate = _playbackSpeed;
                 player.Play(MediaHttpServer.Start(item, ref _httpServerToken));
                 PlaybackState = PlaybackState.Playing;
             }
@@ -673,7 +665,7 @@ namespace Telegram.Services
                 _playbackSpeed = _previous.CurrentItem.CanChangePlaybackRate ? _settingsService.Playback.AudioSpeed : 1;
                 CurrentItem = _previous.CurrentItem;
 
-                player.Rate = (float)_playbackSpeed;
+                player.Rate = _playbackSpeed;
                 player.Play(MediaHttpServer.Start(_previous.CurrentItem, ref _httpServerToken));
                 player.Position = _previous.Position;
 
@@ -879,7 +871,6 @@ namespace Telegram.Services
 
                     //_mediaPlayer.SystemMediaTransportControls.ButtonPressed -= Transport_ButtonPressed;
                     //_mediaPlayer.PlaybackSession.PlaybackStateChanged -= OnPlaybackStateChanged;
-                    _player.StreamSelected -= OnESSelected;
                     _player.PositionChanged -= OnTimeChanged;
                     _player.DurationChanged -= OnLengthChanged;
                     _player.EncounteredError -= OnEncounteredError;
@@ -938,11 +929,18 @@ namespace Telegram.Services
         {
             if (_player == null)
             {
-                _player = new AsyncMediaPlayer(true, false, Array.Empty<string>());
+                var options = new AsyncMediaPlayerOptions
+                {
+                    CreateSwapChain = true,
+                    Mute = SettingsService.Current.VolumeMuted,
+                    Volume = SettingsService.Current.VolumeLevel,
+                    Debug = SettingsService.Current.VerbosityLevel >= 4,
+                };
+
+                _player = new AsyncMediaPlayer(options, Array.Empty<string>());
                 //_mediaPlayer.SystemMediaTransportControls.AutoRepeatMode = _settingsService.Playback.RepeatMode;
                 //_mediaPlayer.SystemMediaTransportControls.ButtonPressed += Transport_ButtonPressed;
                 //_mediaPlayer.PlaybackSession.PlaybackStateChanged += OnPlaybackStateChanged;
-                _player.StreamSelected += OnESSelected;
                 _player.PositionChanged += OnTimeChanged;
                 _player.DurationChanged += OnLengthChanged;
                 _player.EncounteredError += OnEncounteredError;

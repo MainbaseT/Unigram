@@ -6,49 +6,59 @@
 
 namespace winrt::Telegram::Native::Media::implementation
 {
-    AsyncMediaPlayer::AsyncMediaPlayer(bool createGraphicsContext, bool debug, winrt::Windows::Foundation::Collections::IVector<hstring> options)
-        : m_debug(debug)
+    AsyncMediaPlayer::AsyncMediaPlayer(AsyncMediaPlayerOptions options, winrt::Windows::Foundation::Collections::IVector<hstring> args)
+        : m_options(options)
         , m_dispatcherQueue(DispatcherQueue::GetForCurrentThread())
         , m_bufferingEventArgs(0.0f)
         , m_positionChangedEventArgs(0.0)
         , m_durationChangedEventArgs(0.0)
     {
-        auto argc = 1 + static_cast<int>(options.Size());
-
         std::vector<std::string> argsStorage;
-        argsStorage.reserve(argc);
+        argsStorage.reserve(args.Size());
 
-        std::vector<const char*> argv;
-        argv.reserve(argc);
-
-        for (const auto& opt : options)
+        for (const auto& opt : args)
         {
             argsStorage.push_back(winrt::to_string(opt));
-            argv.push_back(argsStorage.back().c_str());
         }
 
-        if (createGraphicsContext)
+        if (options.CreateSwapChain)
         {
             m_context = AsyncMediaPlayerSwapChain(true);
 
             for (const auto& opt : m_context.SwapChainOptions())
             {
                 argsStorage.push_back(winrt::to_string(opt));
-                argv.push_back(argsStorage.back().c_str());
-                argc++;
             }
         }
 
-        argv.push_back("--aout=winstore");
+        argsStorage.push_back("--aout=winstore");
+        argsStorage.push_back("--volume-save");
 
-        m_instance = libvlc_new(argc, argv.data());
+        if (options.Debug)
+        {
+            argsStorage.push_back("--verbose=2");
+        }
 
-        if (debug)
+        std::vector<const char*> argv;
+        argv.reserve(argsStorage.size());
+
+        for (const auto& s : argsStorage)
+        {
+            argv.push_back(s.c_str());
+        }
+
+        m_instance = libvlc_new(argv.size(), argv.data());
+
+        if (options.Debug)
         {
             libvlc_log_set(m_instance, &LogCallback, this);
         }
 
         m_player = libvlc_media_player_new(m_instance);
+
+        libvlc_audio_set_volume(m_player, static_cast<int>(options.Volume * 100));
+        libvlc_audio_set_mute(m_player, options.Mute);
+        libvlc_media_player_set_rate(m_player, options.Rate);
 
         libvlc_event_manager_t* em = libvlc_media_player_event_manager(m_player);
         libvlc_event_attach(em, libvlc_MediaPlayerESSelected, &EventCallback, this);
@@ -68,11 +78,6 @@ namespace winrt::Telegram::Native::Media::implementation
 
     AsyncMediaPlayer::~AsyncMediaPlayer()
     {
-        {
-            std::lock_guard<std::mutex> lock(close_lock_);
-            if (closed_) return;
-        }
-
         Close();
     }
 
@@ -89,9 +94,9 @@ namespace winrt::Telegram::Native::Media::implementation
         return m_context;
     }
 
-    void AsyncMediaPlayer::Play(winrt::Windows::Foundation::Uri uri)
+    void AsyncMediaPlayer::Play(winrt::Windows::Foundation::Uri uri, double position)
     {
-        Write([this, uri]() {
+        Write([this, uri, position]() {
             // #define CLOCK_FREQ         INT64_C(1000000)
             // #define DEFAULT_PTS_DELAY (3*CLOCK_FREQ/10)
             // INT64_C(1000) * var_InheritInteger(access, "network-caching")
@@ -103,6 +108,11 @@ namespace winrt::Telegram::Native::Media::implementation
             libvlc_media_player_set_media(m_player, media);
             libvlc_media_player_play(m_player);
             libvlc_media_release(media);
+
+            if (position != 0)
+            {
+                libvlc_media_player_set_time(m_player, static_cast<libvlc_time_t>(position * 1000));
+            }
             }, true);
     }
 
@@ -124,10 +134,19 @@ namespace winrt::Telegram::Native::Media::implementation
     void AsyncMediaPlayer::Close()
     {
         std::lock_guard<std::mutex> lock(close_lock_);
+        if (closed_) return;
+
         closed_ = true;
         work_queue_.clear();
 
         MediaDevice::DefaultAudioRenderDeviceChanged(m_defaultAudioRenderDeviceChanged);
+
+        shutting_down = true;
+
+        std::unique_lock<std::mutex> callbackLock(callback_mutex);
+        callback_done.wait(callbackLock, [&] {
+            return active_callbacks == 0;
+            });
 
         libvlc_event_manager_t* em = libvlc_media_player_event_manager(m_player);
         libvlc_event_detach(em, libvlc_MediaPlayerESSelected, &EventCallback, this);
@@ -144,7 +163,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         libvlc_media_player_set_pause(m_player, true);
 
-        if (m_debug)
+        if (m_options.Debug)
         {
             libvlc_log_unset(m_instance);
         }
@@ -158,6 +177,9 @@ namespace winrt::Telegram::Native::Media::implementation
             std::lock_guard<std::mutex> lock(work_lock_);
             MediaPlayerCleanupManager::Close(m_instance, m_player, std::move(*work_thread_));
         }
+
+        m_player = nullptr;
+        m_instance = nullptr;
     }
 
     AsyncMediaPlayerState AsyncMediaPlayer::State()
@@ -173,16 +195,6 @@ namespace winrt::Telegram::Native::Media::implementation
     bool AsyncMediaPlayer::CanPause()
     {
         return Get(libvlc_media_player_can_pause);
-    }
-
-    bool AsyncMediaPlayer::Mute()
-    {
-        return Get(libvlc_audio_get_mute);
-    }
-
-    void AsyncMediaPlayer::Mute(bool value)
-    {
-        Set(libvlc_audio_set_mute, value);
     }
 
     double AsyncMediaPlayer::Duration()
@@ -215,24 +227,36 @@ namespace winrt::Telegram::Native::Media::implementation
         }
     }
 
-    float AsyncMediaPlayer::Rate()
+    double AsyncMediaPlayer::Rate()
     {
         return Get(libvlc_media_player_get_rate);
     }
 
-    void AsyncMediaPlayer::Rate(float value)
+    void AsyncMediaPlayer::Rate(double value)
     {
-        Set(libvlc_media_player_set_rate, value);
+        auto rate = static_cast<float>(value);
+        Set(libvlc_media_player_set_rate, rate);
     }
 
-    int AsyncMediaPlayer::Volume()
+    double AsyncMediaPlayer::Volume()
     {
-        return Get(libvlc_audio_get_volume);
+        return Get(libvlc_audio_get_volume) / 100.0;
     }
 
-    void AsyncMediaPlayer::Volume(int value)
+    void AsyncMediaPlayer::Volume(double value)
     {
-        Set(libvlc_audio_set_volume, value);
+        auto volume = static_cast<int>(value * 100);
+        Set(libvlc_audio_set_volume, volume);
+    }
+
+    bool AsyncMediaPlayer::Mute()
+    {
+        return Get(libvlc_audio_get_mute);
+    }
+
+    void AsyncMediaPlayer::Mute(bool value)
+    {
+        Set(libvlc_audio_set_mute, value);
     }
 
     void AsyncMediaPlayer::LogCallback(void* data, int level, const libvlc_log_t* ctx, const char* fmt, va_list args)
@@ -264,7 +288,16 @@ namespace winrt::Telegram::Native::Media::implementation
     void AsyncMediaPlayer::EventCallback(const libvlc_event_t* event, void* user_data)
     {
         AsyncMediaPlayer* instance = static_cast<AsyncMediaPlayer*>(user_data);
+        if (instance->shutting_down) return;
+
+        instance->active_callbacks++;
         instance->HandleEvent(event);
+
+        instance->active_callbacks--;
+        if (instance->active_callbacks == 0)
+        {
+            instance->callback_done.notify_all();
+        }
     }
 
     void AsyncMediaPlayer::HandleEvent(const libvlc_event_t* event)
@@ -286,7 +319,7 @@ namespace winrt::Telegram::Native::Media::implementation
                         strongThis->GetVideoTrackInfo(trackId, width, height);
                     }
 
-                    return strongThis->m_streamSelected(*strongThis, AsyncMediaPlayerStreamSelectedEventArgs(trackId, (AsyncMediaPlayerStreamType)trackType, width, height));
+                    strongThis->m_streamSelected(*strongThis, AsyncMediaPlayerStreamSelectedEventArgs(trackId, (AsyncMediaPlayerStreamType)trackType, width, height));
                 }
                 });
         }
@@ -295,7 +328,7 @@ namespace winrt::Telegram::Native::Media::implementation
             TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
-                    return strongThis->m_vout(*strongThis, nullptr);
+                    strongThis->m_vout(*strongThis, nullptr);
                 }
                 });
             break;
@@ -306,7 +339,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_bufferingEventArgs.Cache(cache);
-                    return strongThis->m_buffering(*strongThis, strongThis->m_bufferingEventArgs);
+                    strongThis->m_buffering(*strongThis, strongThis->m_bufferingEventArgs);
                 }
                 });
         }
@@ -315,7 +348,7 @@ namespace winrt::Telegram::Native::Media::implementation
             TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
-                    return strongThis->m_endReached(*strongThis, nullptr);
+                    strongThis->m_endReached(*strongThis, nullptr);
                 }
                 });
             break;
@@ -327,7 +360,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_positionChangedEventArgs.Position(position);
-                    return strongThis->m_positionChanged(*strongThis, strongThis->m_positionChangedEventArgs);
+                    strongThis->m_positionChanged(*strongThis, strongThis->m_positionChangedEventArgs);
                 }
                 });
         }
@@ -339,7 +372,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_durationChangedEventArgs.Duration(duration);
-                    return strongThis->m_durationChanged(*strongThis, strongThis->m_durationChangedEventArgs);
+                    strongThis->m_durationChanged(*strongThis, strongThis->m_durationChangedEventArgs);
                 }
                 });
         }
@@ -348,7 +381,7 @@ namespace winrt::Telegram::Native::Media::implementation
             TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
-                    return strongThis->m_playing(*strongThis, nullptr);
+                    strongThis->m_playing(*strongThis, nullptr);
                 }
                 });
             break;
@@ -356,7 +389,7 @@ namespace winrt::Telegram::Native::Media::implementation
             TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
-                    return strongThis->m_paused(*strongThis, nullptr);
+                    strongThis->m_paused(*strongThis, nullptr);
                 }
                 });
             break;
@@ -364,7 +397,7 @@ namespace winrt::Telegram::Native::Media::implementation
             TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
-                    return strongThis->m_stopped(*strongThis, nullptr);
+                    strongThis->m_stopped(*strongThis, nullptr);
                 }
                 });
             break;
@@ -372,7 +405,7 @@ namespace winrt::Telegram::Native::Media::implementation
             TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
-                    return strongThis->m_volumeChanged(*strongThis, nullptr);
+                    strongThis->m_volumeChanged(*strongThis, nullptr);
                 }
                 });
             break;
@@ -381,7 +414,7 @@ namespace winrt::Telegram::Native::Media::implementation
             TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
-                    return strongThis->m_encounteredError(*strongThis, nullptr);
+                    strongThis->m_encounteredError(*strongThis, nullptr);
                 }
                 });
             break;
@@ -436,16 +469,16 @@ namespace winrt::Telegram::Native::Media::implementation
             });
     }
 
-    winrt::event_token AsyncMediaPlayer::Vout(Windows::Foundation::TypedEventHandler<
+    winrt::event_token AsyncMediaPlayer::VideoOut(Windows::Foundation::TypedEventHandler<
         winrt::Telegram::Native::Media::AsyncMediaPlayer,
         winrt::Windows::Foundation::IInspectable> const& value)
     {
-        return m_vout.add(value);
+        return m_videoOut.add(value);
     }
 
-    void AsyncMediaPlayer::Vout(winrt::event_token const& token)
+    void AsyncMediaPlayer::VideoOut(winrt::event_token const& token)
     {
-        m_vout.remove(token);
+        m_videoOut.remove(token);
     }
 
     winrt::event_token AsyncMediaPlayer::StreamSelected(Windows::Foundation::TypedEventHandler<

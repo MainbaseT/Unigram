@@ -16,6 +16,7 @@ using Telegram.Controls.Messages;
 using Telegram.Controls.Stories.Widgets;
 using Telegram.Native.Media;
 using Telegram.Navigation;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Stories;
 using Windows.UI;
@@ -80,8 +81,7 @@ namespace Telegram.Controls.Stories
 
             if (_player != null)
             {
-                _player.StreamSelected -= OnESSelected;
-                _player.Vout -= OnVout;
+                _player.VideoOut -= OnVout;
                 _player.Buffering -= OnBuffering;
                 _player.EndReached -= OnEndReached;
                 _player.Close();
@@ -1231,9 +1231,16 @@ namespace Telegram.Controls.Stories
 
             Logger.Info();
 
-            _player = new AsyncMediaPlayer(false, false, e.SwapChainOptions);
-            _player.StreamSelected += OnESSelected;
-            _player.Vout += OnVout;
+            var options = new AsyncMediaPlayerOptions
+            {
+                CreateSwapChain = false,
+                Mute = _viewModel.Settings.VolumeMuted,
+                //Volume = SettingsService.Current.VolumeLevel,
+                Debug = SettingsService.Current.VerbosityLevel >= 4,
+            };
+
+            _player = new AsyncMediaPlayer(options, e.SwapChainOptions);
+            _player.VideoOut += OnVout;
             _player.Buffering += OnBuffering;
             _player.EndReached += OnEndReached;
 
@@ -1251,76 +1258,6 @@ namespace Telegram.Controls.Stories
             Texture1.Source = null;
             Texture2.Source = null;
         }
-
-        private void OnESSelected(AsyncMediaPlayer sender, AsyncMediaPlayerStreamSelectedEventArgs e)
-        {
-            if (e.Type == AsyncMediaPlayerStreamType.Video && e.Id != -1)
-            {
-                //UpdateStretch();
-            }
-            else if (e.Type == AsyncMediaPlayerStreamType.Audio && e.Id != -1)
-            {
-                _player.Mute = _viewModel.Settings.VolumeMuted;
-            }
-        }
-
-        private void UpdateStretch()
-        {
-            //var videoTrack = GetVideoTrack(_player);
-            //if (videoTrack is not VideoTrack track)
-            //{
-            //    return;
-            //}
-
-            //var trackWidth = track.Width;
-            //var trackHeight = track.Height;
-
-            //if (trackWidth == 0 || trackHeight == 0)
-            //{
-            //    _player.Scale(0);
-            //}
-            //else
-            //{
-            //    if (track.SarNum != track.SarDen)
-            //    {
-            //        trackWidth = trackWidth * track.SarNum / track.SarDen;
-            //    }
-
-            //    var width = (Video.ActualSize.X * XamlRoot.RasterizationScale) / trackWidth;
-            //    var height = (Video.ActualSize.Y * XamlRoot.RasterizationScale) / trackHeight;
-
-            //    _player.Scale((float)Math.Max(width, height));
-            //}
-        }
-
-        //private VideoTrack? GetVideoTrack(MediaPlayer mediaPlayer)
-        //{
-        //    if (mediaPlayer == null)
-        //    {
-        //        return null;
-        //    }
-        //    var selectedVideoTrack = mediaPlayer.VideoTrack;
-        //    if (selectedVideoTrack == -1)
-        //    {
-        //        return null;
-        //    }
-
-        //    try
-        //    {
-        //        var media = mediaPlayer.Media;
-        //        MediaTrack? videoTrack = null;
-        //        if (media != null)
-        //        {
-        //            videoTrack = media.Tracks?.FirstOrDefault(t => t.Id == selectedVideoTrack);
-        //            media.Dispose();
-        //        }
-        //        return videoTrack == null ? (VideoTrack?)null : ((MediaTrack)videoTrack).Data.Video;
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return null;
-        //    }
-        //}
 
         private void OnEndReached(AsyncMediaPlayer sender, object e)
         {
