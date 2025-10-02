@@ -757,7 +757,7 @@ namespace Telegram.Controls.Chats
             public EmojiCollection(IClientService clientService, string query, long chatId)
             {
                 _clientService = clientService;
-                _query = query;
+                _query = query.Replace('_', ' ');
                 _inputLanguage = NativeUtils.GetKeyboardCulture();
                 _chatId = chatId;
             }
