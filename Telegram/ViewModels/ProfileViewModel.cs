@@ -1176,7 +1176,7 @@ namespace Telegram.ViewModels
                 {
                     return user.IsPremium || Chat.EmojiStatus != null;
                 }
-                else if (ClientService.TryGetSupergroup(Chat, out Supergroup supergroup) && supergroup.VerificationStatus?.IsScam is not true && user.VerificationStatus?.IsFake is not true)
+                else if (ClientService.TryGetSupergroup(Chat, out Supergroup supergroup) && supergroup.VerificationStatus?.IsScam is not true && supergroup.VerificationStatus?.IsFake is not true)
                 {
                     return Chat.EmojiStatus != null;
                 }
