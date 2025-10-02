@@ -719,7 +719,7 @@ namespace Telegram.Controls.Stories
         {
             if (_player != null && !_unloaded && _viewModel != null && stream != null)
             {
-                _player.Play(new RemoteFileSource(_viewModel.ClientService, stream.Video, limit: true));
+                _player.Play(new RemoteFileSource(_viewModel.ClientService, stream.Video));
             }
         }
 

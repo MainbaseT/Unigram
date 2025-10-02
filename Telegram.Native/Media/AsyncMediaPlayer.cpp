@@ -103,21 +103,19 @@ namespace winrt::Telegram::Native::Media::implementation
         static constexpr double bitrate_default_ = 2'000'000;
         static constexpr double bitrate_maximum_ = 20'000'000;
 
-        MediaContext(IVideoAnimationSource source)
+        MediaContext(IAsyncMediaPlayerSource source)
             : source(source)
             , file(INVALID_HANDLE_VALUE)
             , bitrate_last_(bitrate_default_)
             , bitrate_estimate_(bitrate_default_)
             , bitrate_accum_(0)
             , bitrate_warmup_(0.0)
-            , download_estimate_(bitrate_default_)
-            , download_accum_(0)
             , initialized_(false)
         {
-            source.SeekCallback(0);
+            source.Open();
         }
 
-        IVideoAnimationSource source;
+        IAsyncMediaPlayerSource source;
         HANDLE file;
 
         double Bitrate()
@@ -145,9 +143,6 @@ namespace winrt::Telegram::Native::Media::implementation
             using namespace std::chrono;
             auto now = steady_clock::now();
 
-            download_time_ = now;
-            download_accum_ = 0;
-
             if (!initialized_)
             {
                 bitrate_time_ = now;
@@ -171,38 +166,24 @@ namespace winrt::Telegram::Native::Media::implementation
             }
         }
 
-        void DownloadedBytes(int64_t bytes)
-        {
-            download_accum_ += bytes;
-
-            using namespace std::chrono;
-            auto now = steady_clock::now();
-
-            double delta = duration<double>(now - download_time_).count();
-            if (delta >= update_interval_)
-            {
-                double instant = (download_accum_ * 8.0) / delta;
-                download_estimate_ = alpha_ * instant + (1.0 - alpha_) * download_estimate_;
-                download_accum_ = 0;
-                download_time_ = now;
-            }
-        }
-
-        int64_t PrefetchSize(double target_seconds, int64_t buffered_bytes)
+        int64_t PrefetchSize(double target_seconds)
         {
             if (bitrate_warmup_ < warmup_seconds_)
                 return bitrate_last_;
 
             double media_br = Bitrate();
-            double dl_br = download_estimate_;
+            double dl_br = source.DownloadRate();
 
             media_br = std::clamp(media_br, 1.0, bitrate_maximum_);
             dl_br = std::max(dl_br, 1.0);
 
             double target_bytes = (media_br * target_seconds) / 8.0;
-            double missing = target_bytes - static_cast<double>(buffered_bytes);
+            double missing = target_bytes - static_cast<double>(source.Buffered());
             if (missing <= 0)
-                return target_bytes;
+            {
+                bitrate_last_ = target_bytes;
+                return bitrate_last_;
+            }
 
             if (dl_br < media_br)
                 missing *= media_br / dl_br;
@@ -215,26 +196,24 @@ namespace winrt::Telegram::Native::Media::implementation
         {
             DownloadStarted(count);
 
-            auto prefetch_size = PrefetchSize(30.0, source.Buffered());
+            auto prefetch_size = PrefetchSize(30.0);
 
             std::wstring msg = L"Read callback start " + std::to_wstring(prefetch_size / 1024.0 / 1024.0) + L" MB\n";
             OutputDebugString(msg.c_str());
 
-            int64_t bytesDownloaded;
-            source.ReadCallback(count, prefetch_size, bytesRead, bytesDownloaded);
-            DownloadedBytes(bytesDownloaded);
+            source.ReadCallback(count, prefetch_size, bytesRead);
         }
 
         void SeekCallback(int64_t offset)
         {
-            int64_t delta = std::abs(offset - source.Offset());
+            //int64_t delta = std::abs(offset - source.Offset());
 
             // bytes for duration
-            double br = Bitrate();
-            double bits_needed = br * 1.0; // seeked after 1 second of playback
-            double threshold = std::min(bits_needed / 8.0, bitrate_maximum_);
+            //double br = Bitrate();
+            //double bits_needed = br * 1.0; // seeked after 1 second of playback
+            //double threshold = std::min(bits_needed / 8.0, bitrate_maximum_);
 
-            if (delta > threshold)
+            //if (delta > threshold)
             {
                 initialized_ = false;
             }
@@ -249,16 +228,12 @@ namespace winrt::Telegram::Native::Media::implementation
         double bitrate_warmup_;
         int64_t bitrate_accum_;
 
-        double download_estimate_;
-        int64_t download_accum_;
-        std::chrono::steady_clock::time_point download_time_;
-
         bool initialized_;
     };
 
     static int OpenCallback(void* opaque, void** datap, uint64_t* sizep)
     {
-        IVideoAnimationSource source{ nullptr };
+        IAsyncMediaPlayerSource source{ nullptr };
         winrt::copy_from_abi(source, opaque);
 
         auto* ctx = new MediaContext(source);
@@ -317,11 +292,11 @@ namespace winrt::Telegram::Native::Media::implementation
         delete ctx;
     }
 
-    void AsyncMediaPlayer::Play(IVideoAnimationSource file, double position)
+    void AsyncMediaPlayer::Play(IAsyncMediaPlayerSource stream, double position)
     {
-        Write([this, file, position]() {
-            // TODO: make sure IVideoAnimationSource is not leaked once playback is done
-            void* ptr = winrt::get_abi(file);
+        Write([this, stream, position]() {
+            // TODO: make sure IAsyncMediaPlayerSource is not leaked once playback is done
+            void* ptr = winrt::get_abi(stream);
             auto media = libvlc_media_new_callbacks(m_instance, &OpenCallback, &ReadCallback, &SeekCallback, &CloseCallback, ptr);
 
             libvlc_media_player_set_media(m_player, media);

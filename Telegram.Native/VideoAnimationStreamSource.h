@@ -24,12 +24,7 @@ namespace winrt::Telegram::Native::implementation
 
         }
 
-        void ReadCallback(int64_t count, int64_t buffer, int64_t& bytesRead, int64_t& bytesDownloaded)
-        {
-
-        }
-
-        void Close()
+        void ReadCallback(int64_t count, int64_t buffer, int64_t& bytesRead)
         {
 
         }
@@ -45,11 +40,6 @@ namespace winrt::Telegram::Native::implementation
         }
 
         int64_t Offset()
-        {
-            return 0;
-        }
-
-        int64_t Buffered()
         {
             return 0;
         }

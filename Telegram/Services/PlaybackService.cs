@@ -628,7 +628,7 @@ namespace Telegram.Services
                 CurrentItem = item;
 
                 player.Rate = _playbackSpeed;
-                player.Play(new RemoteFileSource(item.ClientService, item.Document, limit: true));
+                player.Play(new RemoteFileSource(item.ClientService, item.Document, adaptive: true));
                 PlaybackState = PlaybackState.Playing;
             }
             catch
@@ -665,7 +665,7 @@ namespace Telegram.Services
                 CurrentItem = _previous.CurrentItem;
 
                 player.Rate = _playbackSpeed;
-                player.Play(new RemoteFileSource(_previous.CurrentItem.ClientService, _previous.CurrentItem.Document, limit: true));
+                player.Play(new RemoteFileSource(_previous.CurrentItem.ClientService, _previous.CurrentItem.Document, adaptive: true));
                 player.Position = _previous.Position;
 
                 _positionChanged.Position = TimeSpan.FromSeconds(_previous.Position);

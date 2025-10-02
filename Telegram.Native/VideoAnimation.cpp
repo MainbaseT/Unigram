@@ -92,11 +92,6 @@ namespace winrt::Telegram::Native::implementation
         return 0;
     }
 
-    void VideoAnimation::requestFd(VideoAnimation* info)
-    {
-        info->fd = CreateFile2FromAppW(info->file.FilePath().data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, OPEN_EXISTING, nullptr);
-    }
-
     int VideoAnimation::readCallback(void* opaque, uint8_t* buf, int buf_size)
     {
         VideoAnimation* info = reinterpret_cast<VideoAnimation*>(opaque);
@@ -110,23 +105,24 @@ namespace winrt::Telegram::Native::implementation
             }
             else
             {
-                int64_t result;
-                int64_t discard;
-                info->file.ReadCallback(buf_size, 0, result, discard);
+                int64_t bytesRead;
+                info->file.ReadCallback(buf_size, 0, bytesRead);
 
                 if (info->fd == INVALID_HANDLE_VALUE)
                 {
-                    requestFd(info);
+                    info->fd = CreateFile2FromAppW(info->file.FilePath().data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, OPEN_EXISTING, nullptr);
                 }
 
-                if (info->fd != INVALID_HANDLE_VALUE && result > 0)
+                if (info->fd != INVALID_HANDLE_VALUE && bytesRead >= 0)
                 {
-                    DWORD bytesRead;
-                    DWORD moved = SetFilePointer(info->fd, info->file.Offset(), NULL, FILE_BEGIN);
-                    BOOL result = ReadFile(info->fd, buf, buf_size, &bytesRead, NULL);
+                    SetFilePointer(info->fd, info->file.Offset(), NULL, FILE_BEGIN);
 
-                    info->file.SeekCallback(bytesRead + info->file.Offset());
-                    return bytesRead == 0 ? AVERROR_EOF : bytesRead;
+                    DWORD read;
+                    if (ReadFile(info->fd, buf, buf_size > bytesRead ? bytesRead : buf_size, &read, NULL))
+                    {
+                        info->file.SeekCallback(read + info->file.Offset());
+                        return read > 0 ? bytesRead : AVERROR_EOF;
+                    }
                 }
 
                 return AVERROR_EOF;

@@ -29,6 +29,16 @@ namespace Telegram.Native.Media
         Error = 7
     };
 
+    interface IAsyncMediaPlayerSource requires Telegram.Native.IVideoAnimationSource
+    {
+        void Open();
+        void Close();
+
+        Int64 Buffered{ get; };
+        Double DownloadRate{ get; };
+    };
+
+
     [default_interface]
     runtimeclass AsyncMediaPlayer
     {
@@ -37,9 +47,9 @@ namespace Telegram.Native.Media
         AsyncMediaPlayerSwapChain Context{ get; };
 
         [default_overload]
-        void Play(Telegram.Native.IVideoAnimationSource file);
+        void Play(IAsyncMediaPlayerSource stream);
         [default_overload]
-        void Play(Telegram.Native.IVideoAnimationSource file, Double position);
+        void Play(IAsyncMediaPlayerSource stream, Double position);
         void Play(Windows.Foundation.Uri uri);
         void Play(Windows.Foundation.Uri uri, Double position);
         void Play();

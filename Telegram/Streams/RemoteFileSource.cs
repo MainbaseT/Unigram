@@ -5,16 +5,16 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Native.Media;
 using Telegram.Services;
 using Telegram.Td.Api;
 
 namespace Telegram.Streams
 {
-    public partial class RemoteFileSource : AnimatedImageSource
+    public partial class RemoteFileSource : AnimatedImageSource, IAsyncMediaPlayerSource
     {
         private readonly ManualResetEvent _event;
         private readonly object _stateLock = new object();
@@ -22,6 +22,8 @@ namespace Telegram.Streams
         private readonly IClientService _clientService;
 
         private readonly File _file;
+
+        private readonly RemoteFileBitrate _bitrate;
 
         private bool _canceled;
 
@@ -33,19 +35,23 @@ namespace Telegram.Streams
         private long _fileToken;
 
         private readonly int _priority;
-        private readonly bool _limit;
+        private readonly bool _adaptive;
 
         private long _availableBytesResult;
-        private long _downloadedBytesResult;
 
-        public RemoteFileSource(IClientService clientService, File file, int priority = 32, bool limit = false)
+        public RemoteFileSource(IClientService clientService, File file, int priority = 32, bool adaptive = false)
         {
             _event = new ManualResetEvent(false);
 
             _clientService = clientService;
             _file = file;
             _priority = priority;
-            _limit = limit;
+            _adaptive = adaptive;
+
+            if (adaptive)
+            {
+                _bitrate = new RemoteFileBitrate(file);
+            }
 
             Format = new StickerFormatWebm();
             UpdateManager.Subscribe(this, clientService, file, ref _fileToken, UpdateFile);
@@ -57,14 +63,14 @@ namespace Telegram.Streams
             {
                 _offset = offset;
 
-                if (_file.Local.CanBeDownloaded && !_file.Local.IsDownloadingCompleted && !_limit)
+                if (_file.Local.CanBeDownloaded && !_file.Local.IsDownloadingCompleted && !_adaptive)
                 {
                     _clientService.DownloadFile(_file.Id, _priority, offset, 0, false);
                 }
             }
         }
 
-        public override void ReadCallback(long count, long buffer, out long bytesRead, out long bytesDownloaded)
+        public override void ReadCallback(long count, long buffer, out long bytesRead)
         {
             if (MustWait(count, buffer))
             {
@@ -73,15 +79,13 @@ namespace Telegram.Streams
                 lock (_stateLock)
                 {
                     bytesRead = _availableBytesResult;
-                    bytesDownloaded = _downloadedBytesResult;
                 }
             }
             else
             {
                 lock (_stateLock)
                 {
-                    bytesRead = CalculateAvailableBytes(count);
-                    bytesDownloaded = bytesRead;
+                    bytesRead = CalculateAvailableBytes(count, out _);
                 }
             }
         }
@@ -100,33 +104,42 @@ namespace Telegram.Streams
 
             lock (_stateLock)
             {
-                return CalculateAvailableBytes(count);
+                return CalculateAvailableBytes(count, out _);
             }
         }
 
-        // This must only be called from background threads because it's blocking
-        public override long Buffered
+        public double DownloadRate => _bitrate?.CurrentBitrate ?? 0;
+
+        public long Buffered
         {
             get
             {
-                var buffered = CalculateAvailableBytes(long.MaxValue);
-                if (buffered == 0)
+                var buffered = CalculateAvailableBytes(long.MaxValue, out bool seek);
+                if (seek)
                 {
-                    var response = _clientService.SendAsync(new GetFileDownloadedPrefixSize(_file.Id, _offset)).Result;
-                    if (response is FileDownloadedPrefixSize prefixSize)
+                    using var ev = new ManualResetEventSlim(false);
+
+                    _clientService.Send(new GetFileDownloadedPrefixSize(_file.Id, _offset), result =>
                     {
-                        return prefixSize.Size;
-                    }
+                        if (result is FileDownloadedPrefixSize prefixSize)
+                        {
+                            buffered = prefixSize.Size;
+                        }
+                        ev.Set();
+                    });
+
+                    ev.Wait();
                 }
 
                 return buffered;
             }
         }
 
-        private long CalculateAvailableBytes(long requestedCount)
+        private long CalculateAvailableBytes(long requestedCount, out bool seek)
         {
             if (_canceled)
             {
+                seek = false;
                 return -1;
             }
 
@@ -137,6 +150,8 @@ namespace Telegram.Streams
 
             if (_file.Local.Path.Length > 0 && inBegin)
             {
+                seek = false;
+
                 if (_file.Local.IsDownloadingCompleted)
                 {
                     return Math.Max(0, _file.Size - _offset);
@@ -147,6 +162,7 @@ namespace Telegram.Streams
                 }
             }
 
+            seek = true;
             return 0;
         }
 
@@ -161,7 +177,7 @@ namespace Telegram.Streams
                 }
 
                 count = Math.Min(_file.Size - _offset, count);
-                buffer = _limit ? Math.Min(_file.Size - _offset, Math.Max(count, buffer)) : 0;
+                buffer = _adaptive ? Math.Min(_file.Size - _offset, Math.Max(count, buffer)) : 0;
 
                 var begin = _file.Local.DownloadOffset;
                 var end = _file.Local.DownloadOffset + _file.Local.DownloadedPrefixSize;
@@ -205,6 +221,8 @@ namespace Telegram.Streams
                 return;
             }
 
+            _bitrate?.Update(file);
+
             lock (_stateLock)
             {
                 // No need to process the update if no one is waiting
@@ -234,14 +252,9 @@ namespace Telegram.Streams
                     }
 
                     // Calculate and store available bytes before setting the event
-                    _availableBytesResult = CalculateAvailableBytes(_count);
-                    _downloadedBytesResult = CalculateAvailableBytes(long.MaxValue);
+                    _availableBytesResult = CalculateAvailableBytes(_count, out _);
                     _event.Set();
                 }
-                //else
-                //{
-                //    Logger.Debug($"Not enough data available, expected offset: {_offset}, expected count: {_count}, offset: {file.Local.DownloadOffset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}, completed: {file.Local.IsDownloadingCompleted}");
-                //}
             }
         }
 
@@ -256,7 +269,7 @@ namespace Telegram.Streams
             SeekCallback(0);
         }
 
-        public override void Close(/*bool cancel*/)
+        public void Close(/*bool cancel*/)
         {
             lock (_stateLock)
             {
@@ -281,6 +294,96 @@ namespace Telegram.Streams
 
             //_event.Dispose();
             //_readLock.Dispose();
+        }
+
+        public class RemoteFileBitrate
+        {
+            public double CurrentBitrate => _bitrate;
+
+            private readonly double _alpha = 0.2;
+
+            private ulong _lastUpdateTime;
+            private long _lastDownloadOffset;
+            private long _lastDownloadedPrefixSize;
+            private double _bitrate;
+            private bool _downloadingActive;
+            private bool _initialized;
+
+            public RemoteFileBitrate(File file)
+            {
+                Update(file);
+            }
+
+            public double Update(File file)
+            {
+                ulong now = Logger.TickCount;
+
+                if (!_initialized)
+                {
+                    _lastDownloadOffset = file.Local.DownloadOffset;
+                    _lastDownloadedPrefixSize = file.Local.DownloadedPrefixSize;
+                    _lastUpdateTime = now;
+                    _downloadingActive = file.Local.IsDownloadingActive;
+                    _bitrate = 0;
+
+                    _initialized = true;
+                    return 0;
+                }
+
+                if (file.Local.IsDownloadingActive && !_downloadingActive)
+                {
+                    _lastDownloadOffset = file.Local.DownloadOffset;
+                    _lastDownloadedPrefixSize = file.Local.DownloadedPrefixSize;
+                    _lastUpdateTime = now;
+                    _downloadingActive = true;
+                    return _bitrate;
+                }
+
+                if (!file.Local.IsDownloadingActive)
+                {
+                    _downloadingActive = false;
+                    return _bitrate;
+                }
+
+                var delta = now - _lastUpdateTime;
+                if (delta < 100)
+                {
+                    return _bitrate;
+                }
+
+                long bytesDownloaded = 0;
+
+                if (file.Local.DownloadOffset != _lastDownloadOffset)
+                {
+                    bytesDownloaded = file.Local.DownloadedPrefixSize;
+                }
+                else
+                {
+                    var currentPosition = file.Local.DownloadedPrefixSize;
+                    var previousPosition = _lastDownloadedPrefixSize;
+                    bytesDownloaded = currentPosition - previousPosition;
+                }
+
+                _lastDownloadOffset = file.Local.DownloadOffset;
+                _lastDownloadedPrefixSize = file.Local.DownloadedPrefixSize;
+                _lastUpdateTime = now;
+
+                if (bytesDownloaded > 0)
+                {
+                    double instant = (bytesDownloaded * 8.0) / delta;
+
+                    if (_bitrate == 0)
+                    {
+                        _bitrate = instant;
+                    }
+                    else
+                    {
+                        _bitrate = _alpha * instant + (1 - _alpha) * _bitrate;
+                    }
+                }
+
+                return _bitrate;
+            }
         }
     }
 }

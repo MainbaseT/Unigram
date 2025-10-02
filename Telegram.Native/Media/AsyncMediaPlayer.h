@@ -141,7 +141,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         AsyncMediaPlayerSwapChain Context();
 
-        void Play(IVideoAnimationSource file, double position = 0);
+        void Play(IAsyncMediaPlayerSource stream, double position = 0);
         void Play(winrt::Windows::Foundation::Uri uri, double position = 0);
         void Play();
         void Stop();

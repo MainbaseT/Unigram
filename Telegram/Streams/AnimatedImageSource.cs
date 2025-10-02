@@ -55,12 +55,7 @@ namespace Telegram.Streams
         public StickerFormat Format { get; protected set; }
 
         public abstract void SeekCallback(long offset);
-        public abstract void ReadCallback(long count, long buffer, out long bytesRead, out long bytesDownloaded);
-
-        public virtual void Close()
-        {
-            // Do nothing
-        }
+        public abstract void ReadCallback(long count, long buffer, out long bytesRead);
 
         public abstract string FilePath { get; }
         public abstract long FileSize { get; }
@@ -68,8 +63,6 @@ namespace Telegram.Streams
         public abstract long Id { get; }
 
         public abstract long Offset { get; }
-
-        public virtual long Buffered => 0;
 
         public bool IsUnique { get; set; }
 

@@ -1,6 +1,6 @@
 param(
     [ValidateSet('x64', 'ARM64', IgnoreCase = $false)]
-    [string[]]$arch = @( "x64", "ARM64" ),
+    [string[]]$arch = @( "x64", "ARM64" )
 )
 
 $ArchMap = @{
@@ -53,18 +53,17 @@ if (Test-Path $RevisionFile) {
 }
 
 # Step 3: Build inside Docker with live logs
+$SourceFolder = Join-Path $CurrentPath "vlc"
 $DockerCommand = "cd ../vlc`n"
 
 foreach ($a in $NormalizedArch) {
-    $DockerCommand += "extras/package/win32/build.sh -a $a -z -r -u -w -D=$CurrentPath`n"
+    $DockerCommand += "extras/package/win32/build.sh -a $a -z -r -u -w -D=$SourceFolder`n"
 }
 
 $DockerCommand += "exit`n"
 
 Write-Host "Launching Docker..."
-docker run -it -v "${CurrentPath}\vlc:/vlc" `
-    registry.videolan.org/vlc-debian-llvm-uwp:20211020111246 `
-    bash -c "$DockerCommand"
+docker run -it -v "${CurrentPath}\vlc:/vlc" registry.videolan.org/vlc-debian-llvm-uwp:20211020111246 bash -c "$DockerCommand"
 
 # Step 4: Pack NuGet
 Write-Host "Packing NuGet..."

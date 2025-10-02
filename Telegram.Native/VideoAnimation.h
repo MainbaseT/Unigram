@@ -188,7 +188,6 @@ namespace winrt::Telegram::Native::implementation
 
     private:
         int decode_frame(uint8_t* pixels, int32_t width, int32_t height);
-        static void requestFd(VideoAnimation* info);
         static int readCallback(void* opaque, uint8_t* buf, int buf_size);
         static int64_t seekCallback(void* opaque, int64_t offset, int whence);
 
