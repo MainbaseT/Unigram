@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Telegram.Common;
 using Telegram.Native.Media;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
@@ -180,8 +181,6 @@ namespace Telegram.Services
         private MessageTopic _topic;
 
         private long _userId;
-
-        private long _httpServerToken;
 
         private List<PlaybackItem> _items;
 
@@ -629,7 +628,7 @@ namespace Telegram.Services
                 CurrentItem = item;
 
                 player.Rate = _playbackSpeed;
-                player.Play(MediaHttpServer.Start(item, ref _httpServerToken));
+                player.Play(new RemoteFileSource(item.ClientService, item.Document, limit: true));
                 PlaybackState = PlaybackState.Playing;
             }
             catch
@@ -666,7 +665,7 @@ namespace Telegram.Services
                 CurrentItem = _previous.CurrentItem;
 
                 player.Rate = _playbackSpeed;
-                player.Play(MediaHttpServer.Start(_previous.CurrentItem, ref _httpServerToken));
+                player.Play(new RemoteFileSource(_previous.CurrentItem.ClientService, _previous.CurrentItem.Document, limit: true));
                 player.Position = _previous.Position;
 
                 _positionChanged.Position = TimeSpan.FromSeconds(_previous.Position);
@@ -690,8 +689,6 @@ namespace Telegram.Services
 
                 CurrentItem = null;
                 Dispose(PlaybackPlaylistType.None);
-
-                MediaHttpServer.Stop(ref _httpServerToken);
             }
         }
 

@@ -8,6 +8,7 @@ using LibVLCSharp.Platforms.Windows;
 using Telegram.Common;
 using Telegram.Native.Media;
 using Telegram.Services;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
 using Windows.UI.Xaml;
@@ -20,7 +21,6 @@ namespace Telegram.Controls
         private GalleryMedia _video;
 
         private long _bufferedToken;
-        private long _httpServerToken;
 
         private double _initialPosition;
 
@@ -64,7 +64,6 @@ namespace Telegram.Controls
                 _core = null;
             }
 
-            MediaHttpServer.Stop(ref _httpServerToken);
             UpdateManager.Unsubscribe(this, ref _bufferedToken);
         }
 
@@ -85,7 +84,7 @@ namespace Telegram.Controls
             }
             else
             {
-                _core.Play(MediaHttpServer.Start(video, ref _httpServerToken), position);
+                _core.Play(new RemoteFileSource(video.ClientService, video.File, limit: true), position);
             }
 
             UpdateManager.Subscribe(this, video.ClientService, video.File, ref _bufferedToken, UpdateBuffered);
@@ -245,7 +244,7 @@ namespace Telegram.Controls
 
             if (_video != null)
             {
-                _core.Play(MediaHttpServer.Start(_video, ref _httpServerToken), _initialPosition);
+                _core.Play(new RemoteFileSource(_video.ClientService, _video.File, limit: true), _initialPosition);
             }
 
             _video = null;

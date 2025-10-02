@@ -17,6 +17,7 @@ using Telegram.Controls.Stories.Widgets;
 using Telegram.Native.Media;
 using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Stories;
 using Windows.UI;
@@ -86,8 +87,6 @@ namespace Telegram.Controls.Stories
                 _player.EndReached -= OnEndReached;
                 _player.Close();
             }
-
-            MediaHttpServer.Stop(ref _mediaStreamToken);
         }
 
         private void CollapseCaption()
@@ -720,7 +719,7 @@ namespace Telegram.Controls.Stories
         {
             if (_player != null && !_unloaded && _viewModel != null && stream != null)
             {
-                _player.Play(MediaHttpServer.Start(_viewModel.ClientService, stream, ref _mediaStreamToken));
+                _player.Play(new RemoteFileSource(_viewModel.ClientService, stream.Video, limit: true));
             }
         }
 
@@ -921,7 +920,6 @@ namespace Telegram.Controls.Stories
         }
 
         private StoryVideo _mediaStream;
-        private long _mediaStreamToken;
 
         private StoryType _type;
 
