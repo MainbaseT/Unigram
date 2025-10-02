@@ -92,26 +92,17 @@ You can choose to install both `x64` and `arm64` or just opt for the architectur
 Note that `gperf:x86-windows` is needed regardless of the architecture you choose.
 The resulting .nupkg file must be copied into Unigram\Libraries.
 
-### VLC
-Unigram uses VLC to play videos and audio in the app. This is required because the system provided media player doesn't meet the app quality expectations.
-You can freely use the pre-built NuGet packages `VideoLAN.LibVLC.UWP` and `LibVLCSharp` provided by VLC, however we ship the app with binaries built by us,
-as we disable all the features that we don't need to save a bit of disk space:
-1. Clone VLC [repository](https://code.videolan.org/videolan/vlc) in `C:\Source` and check out branch `3.0.22-rc`.
-2. Apply the patch located in `Unigram repository\Libraries\vlc` by running the following command :
-```
-git apply --3way --ignore-whitespace {Your Repository Folder}\Libraries\vlc\vlc.patch
-```
-3. Make sure to have docker installed on your machine 
-4. Open the terminal and run the following commands:
-```
-docker run -it -v C:\Source\vlc:/vlc registry.videolan.org/vlc-debian-llvm-uwp:20211020111246
-cd ../vlc
-extras/package/win32/build.sh -a x86_64 -z -r -u -w -D=C:/Source/vlc
-extras/package/win32/build.sh -a aarch64 -z -r -u -w -D=C:/Source/vlc
+### LibVLC
+Unigram uses LibVLC to play videos and audio in the app. We can't use the system provided media player doesn't meet the app quality expectations.
+The app is currently using version `3.0.22-rc1` with some patches applied on top, and can be built by running the script `build.ps1` located in `Unigram repository\Libraries\vlc`.
+
+Building LibVLC requires [Docker](https://docs.docker.com/desktop/setup/install/windows-install/) to be installed and running.
+
+```shell
+powershell -ExecutionPolicy ByPass ./build.ps1 -arch x64,ARM64
 ```
 
-You can choose to install both `x86_64` and `aarch64` or just opt for the architecture you need.
-When the building is complete, the NuGet package can be [manually created](https://code.videolan.org/videolan/LibVLCSharp).
+The script will automatically apply the needed patches to libvlc (that comes as a submodule when you clone the repository) and create a NuGet package inside the `Libraries` folder.
 
 For reference, this is the list of VLC plugins currently needed by Unigram to properly work:
 - access\libhttps_plugin.dll
@@ -149,23 +140,6 @@ For reference, this is the list of VLC plugins currently needed by Unigram to pr
 - video_chroma\libswscale_plugin.dll
 - video_chroma\libyuvp_plugin.dll
 - video_output\libdirect3d11_plugin.dll
-
-### VLC-arm64-NuGet Package
-
-To build the VLC-arm64 NuGet package for Unigram, please follow these steps in Git Bash shell:
-```
-git clone https://code.videolan.org/videolan/libvlc-nuget.git
-cd libvlc-nuget
-git apply <path-to-Unigram>/Libraries/vlc/0001-vlc-nuget-win-arm64.patch
-bash ./package-nuget-win-arm64.bash 4.0.0
-cp VideoLAN.LibVLC.UWP.4.0.0.nupkg <path-to-Unigram>/Libraries/
-```
-
-1. Clone the VLC-NuGet Repository at your desired location.
-2. Navigate to the root of the cloned repository and apply the patch from `Unigram/libraries/vlc`.
-3. Run the Package Creation Script (`package-nuget-win-arm64.bash`) with version (`4.0.0`) in git bash terminal from the root folder of the `libvlc-nuget` repository.
-4. On Successful execution, the `VideoLAN.LibVLC.UWP.4.0.0.nupkg` file will be created in the same directory.
-5. Copy the generated NuGet package to the `Unigram/Libraries` directory to build Unigram for win-arm64.
 
 ### WebRTC
 Unigram uses WebRTC for calls and video chats. Since WebRTC doesn't currently support UWP, you must use our fork to build it.
