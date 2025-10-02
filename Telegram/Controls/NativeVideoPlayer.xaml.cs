@@ -94,7 +94,7 @@ namespace Telegram.Controls
         private void UpdateBuffered(object target, File update)
         {
             var offset = update.Local.DownloadOffset + update.Local.DownloadedPrefixSize;
-            OnBufferedChanged(_buffered = update.Local.IsDownloadingCompleted || offset == update.Size ? 0 : (double)offset / update.Size);
+            OnBufferedChanged(_buffered = (double)offset / update.Size);
         }
 
         public override void Play()
