@@ -436,7 +436,7 @@ namespace Telegram.Controls
             var batch = banner.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
             {
-                if (DetailFrame.Content is IChatPage chatPage)
+                if (DetailFrame?.Content is IChatPage chatPage)
                 {
                     chatPage.CompleteBannerAnimation();
                 }
