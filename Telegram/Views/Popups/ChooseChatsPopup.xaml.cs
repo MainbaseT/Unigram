@@ -1867,7 +1867,7 @@ namespace Telegram.Views.Popups
                     maxExceeded = true;
                 }
 
-                if (maxExceeded || (ViewModel.ClientService.IsForum(newItem) && !ViewModel.SelectedTopics.ContainsKey(newItem.Id)))
+                if (maxExceeded || (ViewModel.Options.CanPostMessages && ViewModel.ClientService.IsForum(newItem) && !ViewModel.SelectedTopics.ContainsKey(newItem.Id)))
                 {
                     if (ChatsPanel.SelectionMode == ListViewSelectionMode.Multiple)
                     {
