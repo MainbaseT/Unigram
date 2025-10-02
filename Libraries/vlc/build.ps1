@@ -54,6 +54,9 @@ if (Test-Path $RevisionFile) {
 
 # Step 3: Build inside Docker with live logs
 $SourceFolder = Join-Path $CurrentPath "vlc"
+$SourceFolder = $SourceFolder -replace '\\','/'
+$SourceFolder = "`"$SourceFolder`""
+
 $DockerCommand = "cd ../vlc`n"
 
 foreach ($a in $NormalizedArch) {
