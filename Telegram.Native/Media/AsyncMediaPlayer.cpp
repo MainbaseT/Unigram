@@ -296,7 +296,8 @@ namespace winrt::Telegram::Native::Media::implementation
     {
         Write([this, stream, position]() {
             // TODO: make sure IAsyncMediaPlayerSource is not leaked once playback is done
-            void* ptr = winrt::get_abi(stream);
+            winrt::Windows::Foundation::IInspectable obj = stream;
+            void* ptr = winrt::detach_abi(obj);
             auto media = libvlc_media_new_callbacks(m_instance, &OpenCallback, &ReadCallback, &SeekCallback, &CloseCallback, ptr);
 
             libvlc_media_player_set_media(m_player, media);
