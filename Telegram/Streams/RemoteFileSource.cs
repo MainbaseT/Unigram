@@ -37,8 +37,6 @@ namespace Telegram.Streams
         private readonly int _priority;
         private readonly bool _adaptive;
 
-        private long _availableBytesResult;
-
         public RemoteFileSource(IClientService clientService, File file, int priority = 32, bool adaptive = false)
         {
             _event = new ManualResetEvent(false);
@@ -75,19 +73,9 @@ namespace Telegram.Streams
             if (MustWait(count, buffer))
             {
                 _event.WaitOne();
+            }
 
-                lock (_stateLock)
-                {
-                    bytesRead = _availableBytesResult;
-                }
-            }
-            else
-            {
-                lock (_stateLock)
-                {
-                    bytesRead = CalculateAvailableBytes(count, out _);
-                }
-            }
+            bytesRead = DownloadedBytes;
         }
 
         public async Task<long> ReadCallbackAsync(long count, long buffer)
@@ -95,84 +83,67 @@ namespace Telegram.Streams
             if (MustWait(count, buffer))
             {
                 await _event.WaitOneAsync();
-
-                lock (_stateLock)
-                {
-                    return _availableBytesResult;
-                }
             }
 
-            lock (_stateLock)
-            {
-                return CalculateAvailableBytes(count, out _);
-            }
+            return DownloadedBytes;
         }
 
         public double DownloadRate => _bitrate?.CurrentBitrate ?? 0;
 
-        public long Buffered
-        {
-            get
-            {
-                var buffered = CalculateAvailableBytes(long.MaxValue, out bool seek);
-                if (seek)
-                {
-                    using var ev = new ManualResetEventSlim(false);
+        public long DownloadedBytes => CalculateDownloadedBytes();
 
-                    _clientService.Send(new GetFileDownloadedPrefixSize(_file.Id, _offset), result =>
-                    {
-                        if (result is FileDownloadedPrefixSize prefixSize)
-                        {
-                            buffered = prefixSize.Size;
-                        }
-                        ev.Set();
-                    });
-
-                    ev.Wait();
-                }
-
-                return buffered;
-            }
-        }
-
-        private long CalculateAvailableBytes(long requestedCount, out bool seek)
+        private long CalculateDownloadedBytes()
         {
             if (_canceled)
             {
-                seek = false;
                 return -1;
+            }
+
+            if (_offset >= _file.Size - 1)
+            {
+                return 0;
             }
 
             var begin = _file.Local.DownloadOffset;
             var end = _file.Local.DownloadOffset + _file.Local.DownloadedPrefixSize;
 
             var inBegin = _offset >= begin;
+            var inEnd = end >= _offset;
 
-            if (_file.Local.Path.Length > 0 && inBegin)
+            if (_file.Local.Path.Length > 0 && inBegin && inEnd)
             {
-                seek = false;
-
                 if (_file.Local.IsDownloadingCompleted)
                 {
                     return Math.Max(0, _file.Size - _offset);
                 }
                 else
                 {
-                    return Math.Max(0, Math.Min(requestedCount, end - _offset));
+                    return Math.Max(0, end - _offset);
                 }
             }
 
-            seek = true;
-            return 0;
+            using var ev = new ManualResetEventSlim(false);
+            var buffered = 0L;
+
+            _clientService.Send(new GetFileDownloadedPrefixSize(_file.Id, _offset), result =>
+            {
+                if (result is FileDownloadedPrefixSize prefixSize)
+                {
+                    buffered = prefixSize.Size;
+                }
+                ev.Set();
+            });
+
+            ev.Wait(500);
+            return buffered;
         }
 
         protected bool MustWait(long count, long buffer)
         {
             lock (_stateLock)
             {
-                if (_canceled || _offset == _file.Size)
+                if (_canceled || _offset >= _file.Size - 1)
                 {
-                    //Logger.Info("Canceled");
                     return false;
                 }
 
@@ -251,8 +222,6 @@ namespace Telegram.Streams
                         Logger.Info($"Download was canceled for {_file.Id}");
                     }
 
-                    // Calculate and store available bytes before setting the event
-                    _availableBytesResult = CalculateAvailableBytes(_count, out _);
                     _event.Set();
                 }
             }

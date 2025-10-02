@@ -34,8 +34,8 @@ namespace Telegram.Native.Media
         void Open();
         void Close();
 
-        Int64 Buffered{ get; };
         Double DownloadRate{ get; };
+        Int64 DownloadedBytes{ get; };
     };
 
 
@@ -48,10 +48,10 @@ namespace Telegram.Native.Media
 
         [default_overload]
         void Play(IAsyncMediaPlayerSource stream);
-        [default_overload]
-        void Play(IAsyncMediaPlayerSource stream, Double position);
+        //[default_overload]
+        //void Play(IAsyncMediaPlayerSource stream, Double position);
         void Play(Windows.Foundation.Uri uri);
-        void Play(Windows.Foundation.Uri uri, Double position);
+        //void Play(Windows.Foundation.Uri uri, Double position);
         void Play();
         void Stop();
         void Pause();

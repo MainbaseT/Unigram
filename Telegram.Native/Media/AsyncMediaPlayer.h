@@ -241,6 +241,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         libvlc_instance_t* m_instance;
         libvlc_media_player_t* m_player;
+        IAsyncMediaPlayerSource m_stream{ nullptr };
 
         void OnDefaultAudioRenderDeviceChanged(winrt::Windows::Foundation::IInspectable const& sender, DefaultAudioRenderDeviceChangedEventArgs const& args);
 

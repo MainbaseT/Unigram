@@ -178,7 +178,7 @@ namespace winrt::Telegram::Native::Media::implementation
             dl_br = std::max(dl_br, 1.0);
 
             double target_bytes = (media_br * target_seconds) / 8.0;
-            double missing = target_bytes - static_cast<double>(source.Buffered());
+            double missing = target_bytes - static_cast<double>(source.DownloadedBytes());
             if (missing <= 0)
             {
                 bitrate_last_ = target_bytes;
@@ -295,6 +295,13 @@ namespace winrt::Telegram::Native::Media::implementation
     void AsyncMediaPlayer::Play(IAsyncMediaPlayerSource stream, double position)
     {
         Write([this, stream, position]() {
+            if (m_stream)
+            {
+                m_stream.Close();
+            }
+
+            m_stream = stream;
+
             // TODO: make sure IAsyncMediaPlayerSource is not leaked once playback is done
             winrt::Windows::Foundation::IInspectable obj = stream;
             void* ptr = winrt::detach_abi(obj);
@@ -307,9 +314,6 @@ namespace winrt::Telegram::Native::Media::implementation
             if (position != 0)
             {
                 libvlc_media_player_set_time(m_player, static_cast<libvlc_time_t>(position * 1000));
-
-                m_positionChangedEventArgs.Position(position);
-                m_positionChanged(*this, m_positionChangedEventArgs);
             }
             }, true);
     }
@@ -317,6 +321,13 @@ namespace winrt::Telegram::Native::Media::implementation
     void AsyncMediaPlayer::Play(winrt::Windows::Foundation::Uri uri, double position)
     {
         Write([this, uri, position]() {
+            if (m_stream)
+            {
+                m_stream.Close();
+            }
+
+            m_stream = nullptr;
+
             // #define CLOCK_FREQ         INT64_C(1000000)
             // #define DEFAULT_PTS_DELAY (3*CLOCK_FREQ/10)
             // INT64_C(1000) * var_InheritInteger(access, "network-caching")
@@ -332,9 +343,6 @@ namespace winrt::Telegram::Native::Media::implementation
             if (position != 0)
             {
                 libvlc_media_player_set_time(m_player, static_cast<libvlc_time_t>(position * 1000));
-
-                m_positionChangedEventArgs.Position(position);
-                m_positionChanged(*this, m_positionChangedEventArgs);
             }
             }, true);
     }
@@ -395,6 +403,13 @@ namespace winrt::Telegram::Native::Media::implementation
         {
             m_context.Destroy();
         }
+
+        if (m_stream)
+        {
+            m_stream.Close();
+        }
+
+        m_stream = nullptr;
 
         {
             std::lock_guard<std::mutex> lock(work_lock_);
