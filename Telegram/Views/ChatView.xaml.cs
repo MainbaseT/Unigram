@@ -2289,7 +2289,7 @@ namespace Telegram.Views
             {
                 flyout.CreateFlyoutItem(ViewModel.Report, Strings.ReportChat, Icons.ErrorCircle);
             }
-            if (supergroup != null && supergroup.IsForum && !chat.ViewAsTopics && (ViewModel.Type == DialogType.History || supergroup.HasForumTabs))
+            if (supergroup != null && supergroup.IsForum && !chat.ViewAsTopics && (ViewModel.Type == DialogType.History && !supergroup.HasForumTabs))
             {
                 flyout.CreateFlyoutItem(ViewModel.ViewAsTopics, Strings.TopicViewAsTopics, Icons.ChatEmpty);
 
