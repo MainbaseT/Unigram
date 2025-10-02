@@ -5806,6 +5806,216 @@ public static class XamlMarkupHelper_stub
         }
     }
 }
+public static class AsyncMediaPlayer_stub
+{
+    public static void Close_stub(this Telegram.Native.Media.AsyncMediaPlayer sender)
+    {
+        try
+        {
+            sender.Close();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Pause_stub(this Telegram.Native.Media.AsyncMediaPlayer sender)
+    {
+        try
+        {
+            sender.Pause();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Pause_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, bool pause)
+    {
+        try
+        {
+            sender.Pause(pause);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, System.Uri uri)
+    {
+        try
+        {
+            sender.Play(uri);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, Telegram.Native.Media.IAsyncMediaPlayerSource stream, double position)
+    {
+        try
+        {
+            sender.Play(stream, position);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender)
+    {
+        try
+        {
+            sender.Play();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, Telegram.Native.Media.IAsyncMediaPlayerSource stream)
+    {
+        try
+        {
+            sender.Play(stream);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Seek_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, double value, bool relative)
+    {
+        try
+        {
+            sender.Seek(value, relative);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Stop_stub(this Telegram.Native.Media.AsyncMediaPlayer sender)
+    {
+        try
+        {
+            sender.Stop();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class AsyncMediaPlayerSwapChain_stub
+{
+    public static void Attach_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender, Windows.UI.Xaml.Controls.SwapChainPanel panel, bool subscribe)
+    {
+        try
+        {
+            sender.Attach(panel, subscribe);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Clear_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.Clear();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static bool Create_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender, bool subscribe)
+    {
+        try
+        {
+            return sender.Create(subscribe);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Destroy_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.Destroy();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Detach_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender, Windows.UI.Xaml.Controls.SwapChainPanel panel)
+    {
+        try
+        {
+            sender.Detach(panel);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Trim_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.Trim();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void UpdateScale_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.UpdateScale();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void UpdateSize_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender)
+    {
+        try
+        {
+            sender.UpdateSize();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class AudioBuffer_stub
 {
     public static Windows.Foundation.IMemoryBufferReference CreateReference_stub(this Windows.Media.AudioBuffer sender)
@@ -6121,105 +6331,6 @@ public static class ApiInformation_stub
         }
     }
 }
-public static class AsyncMediaPlayerSwapChain_stub
-{
-    public static void Attach_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender, Windows.UI.Xaml.Controls.SwapChainPanel panel, bool subscribe)
-    {
-        try
-        {
-            sender.Attach(panel, subscribe);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void Clear_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
-    {
-        try
-        {
-            sender.Clear();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static bool Create_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender, bool subscribe)
-    {
-        try
-        {
-            return sender.Create(subscribe);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void Destroy_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
-    {
-        try
-        {
-            sender.Destroy();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void Detach_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender, Windows.UI.Xaml.Controls.SwapChainPanel panel)
-    {
-        try
-        {
-            sender.Detach(panel);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void Trim_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
-    {
-        try
-        {
-            sender.Trim();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void UpdateScale_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
-    {
-        try
-        {
-            sender.UpdateScale();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void UpdateSize_stub(this Telegram.Native.AsyncMediaPlayerSwapChain sender)
-    {
-        try
-        {
-            sender.UpdateSize();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-}
 public static class BufferSurface_stub
 {
     public static void Copy_stub(Windows.Storage.Streams.IBuffer source, Windows.Storage.Streams.IBuffer destination)
@@ -6324,35 +6435,11 @@ public static class CachedVideoAnimation_stub
 }
 public static class FileStreamFromApp_stub
 {
-    public static void Dispose_stub(this Telegram.Native.FileStreamFromApp sender)
-    {
-        try
-        {
-            sender.Dispose();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static int Read_stub(this Telegram.Native.FileStreamFromApp sender, Windows.Storage.Streams.IBuffer buffer, uint length)
     {
         try
         {
             return sender.Read(buffer, length);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static int Read_stub(this Telegram.Native.FileStreamFromApp sender, long pointer, uint length)
-    {
-        try
-        {
-            return sender.Read(pointer, length);
         }
         catch (Exception ex)
         {
@@ -6554,18 +6641,6 @@ public static class NativeUtils_stub
         try
         {
             return Telegram.Native.NativeUtils.GetLastInputTime();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static string GetLogMessage_stub(long format, long args)
-    {
-        try
-        {
-            return Telegram.Native.NativeUtils.GetLogMessage(format, args);
         }
         catch (Exception ex)
         {
