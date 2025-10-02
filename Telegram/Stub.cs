@@ -5856,11 +5856,11 @@ public static class AsyncMediaPlayer_stub
             throw new RuntimeException(ex);
         }
     }
-    public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, Telegram.Native.Media.IAsyncMediaPlayerSource stream, double position)
+    public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, Telegram.Native.Media.IAsyncMediaPlayerSource stream)
     {
         try
         {
-            sender.Play(stream, position);
+            sender.Play(stream);
         }
         catch (Exception ex)
         {
@@ -5873,18 +5873,6 @@ public static class AsyncMediaPlayer_stub
         try
         {
             sender.Play();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, Telegram.Native.Media.IAsyncMediaPlayerSource stream)
-    {
-        try
-        {
-            sender.Play(stream);
         }
         catch (Exception ex)
         {
