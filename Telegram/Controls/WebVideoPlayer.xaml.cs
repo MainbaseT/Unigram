@@ -118,20 +118,6 @@ namespace Telegram.Controls
             ExecuteScript("playerToggle()");
         }
 
-        public override void Stop()
-        {
-            try
-            {
-                _core?.NavigateToString(string.Empty);
-            }
-            catch
-            {
-                // All the remote procedure calls must be wrapped in a try-catch block
-            }
-
-            OnClosed();
-        }
-
         public override void Clear()
         {
             try

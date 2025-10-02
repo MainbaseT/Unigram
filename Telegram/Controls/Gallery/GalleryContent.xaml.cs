@@ -407,8 +407,6 @@ namespace Telegram.Controls.Gallery
 
         private GalleryTransportControls _controls;
 
-        private bool _stopped;
-
         private bool _unloaded;
         private int _fileId;
 
@@ -491,7 +489,6 @@ namespace Telegram.Controls.Gallery
                     video.TreeUpdated -= OnTreeUpdated;
                     video.FirstFrameReady -= OnFirstFrameReady;
                     video.TrackChanged -= OnTrackChanged;
-                    video.Closed -= OnClosed;
                 }
 
                 if (value != null)
@@ -499,7 +496,6 @@ namespace Telegram.Controls.Gallery
                     value.TreeUpdated += OnTreeUpdated;
                     value.FirstFrameReady += OnFirstFrameReady;
                     value.TrackChanged += OnTrackChanged;
-                    value.Closed += OnClosed;
                 }
 
                 Panel.Child = value;
@@ -517,7 +513,7 @@ namespace Telegram.Controls.Gallery
 
             if (Video != null)
             {
-                Video.Stop();
+                Video = null;
                 Button.Visibility = Visibility.Visible;
             }
 
@@ -550,16 +546,6 @@ namespace Telegram.Controls.Gallery
             }
         }
 
-        private void OnClosed(VideoPlayerBase sender, EventArgs e)
-        {
-            if (_stopped)
-            {
-                _stopped = false;
-                Video.Clear();
-                Button.Visibility = Visibility.Visible;
-            }
-        }
-
         public void Stop(out GalleryMedia item, out double position)
         {
             if (Video != null && !_unloaded)
@@ -578,10 +564,7 @@ namespace Telegram.Controls.Gallery
                     position = 0;
                 }
 
-                _stopped = true;
-                Video.Stop();
                 Video = null;
-
                 Button.Visibility = Visibility.Visible;
             }
             else

@@ -140,11 +140,6 @@ namespace Telegram.Controls
             }
         }
 
-        public override void Stop()
-        {
-            _core?.Stop();
-        }
-
         public override void Clear()
         {
             Video.Clear();

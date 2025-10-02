@@ -637,12 +637,7 @@ namespace Telegram.Services
             }
         }
 
-        public void Stop()
-        {
-            Run(StopImpl);
-        }
-
-        public void StopImpl(AsyncMediaPlayer player)
+        private void StopImpl(AsyncMediaPlayer player)
         {
             PlaybackState = PlaybackState.Paused;
             player.Stop();
@@ -656,7 +651,7 @@ namespace Telegram.Services
             Run(ClearImpl);
         }
 
-        public void ClearImpl(AsyncMediaPlayer player)
+        private void ClearImpl(AsyncMediaPlayer player)
         {
             if (_previous != null)
             {

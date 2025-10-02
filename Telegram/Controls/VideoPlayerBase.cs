@@ -93,8 +93,6 @@ namespace Telegram.Controls
 
         public abstract void Toggle();
 
-        public abstract void Stop();
-
         public abstract void Clear();
 
         public abstract void AddTime(double value);
