@@ -94,6 +94,250 @@ namespace winrt::Telegram::Native::Media::implementation
         return m_context;
     }
 
+    struct MediaContext
+    {
+        static constexpr double alpha_ = 0.2;
+        static constexpr double update_interval_ = 0.1;
+        static constexpr double idle_timeout_ = 3.0;
+        static constexpr double warmup_seconds_ = 5.0;
+        static constexpr double bitrate_default_ = 2'000'000;
+        static constexpr double bitrate_maximum_ = 20'000'000;
+
+        MediaContext(IVideoAnimationSource source)
+            : source(source)
+            , file(INVALID_HANDLE_VALUE)
+            , bitrate_last_(bitrate_default_)
+            , bitrate_estimate_(bitrate_default_)
+            , bitrate_accum_(0)
+            , bitrate_warmup_(0.0)
+            , download_estimate_(bitrate_default_)
+            , download_accum_(0)
+            , initialized_(false)
+        {
+            source.SeekCallback(0);
+        }
+
+        IVideoAnimationSource source;
+        HANDLE file;
+
+        double Bitrate()
+        {
+            //if (!initialized_)
+            //{
+            //    return bitrate_default_;
+            //}
+
+            using namespace std::chrono;
+            auto now = steady_clock::now();
+            double idle = duration<double>(now - bitrate_time_).count();
+
+            if (idle > idle_timeout_)
+            {
+                initialized_ = false;
+                return bitrate_estimate_;
+            }
+
+            return bitrate_estimate_;
+        }
+
+        void DownloadStarted(int64_t bytes)
+        {
+            using namespace std::chrono;
+            auto now = steady_clock::now();
+
+            download_time_ = now;
+            download_accum_ = 0;
+
+            if (!initialized_)
+            {
+                bitrate_time_ = now;
+                bitrate_accum_ = bytes;
+                bitrate_warmup_ = 0;
+                initialized_ = true;
+                return;
+            }
+
+            double delta = duration<double>(now - bitrate_time_).count();
+
+            bitrate_warmup_ += delta;
+            bitrate_accum_ += bytes;
+
+            if (delta >= update_interval_)
+            {
+                double instant = (bitrate_accum_ * 8.0) / delta;
+                bitrate_estimate_ = alpha_ * instant + (1.0 - alpha_) * bitrate_estimate_;
+                bitrate_accum_ = 0;
+                bitrate_time_ = now;
+            }
+        }
+
+        void DownloadedBytes(int64_t bytes)
+        {
+            download_accum_ += bytes;
+
+            using namespace std::chrono;
+            auto now = steady_clock::now();
+
+            double delta = duration<double>(now - download_time_).count();
+            if (delta >= update_interval_)
+            {
+                double instant = (download_accum_ * 8.0) / delta;
+                download_estimate_ = alpha_ * instant + (1.0 - alpha_) * download_estimate_;
+                download_accum_ = 0;
+                download_time_ = now;
+            }
+        }
+
+        int64_t PrefetchSize(double target_seconds, int64_t buffered_bytes)
+        {
+            if (bitrate_warmup_ < warmup_seconds_)
+                return bitrate_last_;
+
+            double media_br = Bitrate();
+            double dl_br = download_estimate_;
+
+            media_br = std::clamp(media_br, 1.0, bitrate_maximum_);
+            dl_br = std::max(dl_br, 1.0);
+
+            double target_bytes = (media_br * target_seconds) / 8.0;
+            double missing = target_bytes - static_cast<double>(buffered_bytes);
+            if (missing <= 0)
+                return target_bytes;
+
+            if (dl_br < media_br)
+                missing *= media_br / dl_br;
+
+            bitrate_last_ = static_cast<int64_t>(target_bytes + missing);
+            return bitrate_last_;
+        }
+
+        void ReadCallback(int64_t count, int64_t& bytesRead)
+        {
+            DownloadStarted(count);
+
+            auto prefetch_size = PrefetchSize(30.0, source.Buffered());
+
+            std::wstring msg = L"Read callback start " + std::to_wstring(prefetch_size / 1024.0 / 1024.0) + L" MB\n";
+            OutputDebugString(msg.c_str());
+
+            int64_t bytesDownloaded;
+            source.ReadCallback(count, prefetch_size, bytesRead, bytesDownloaded);
+            DownloadedBytes(bytesDownloaded);
+        }
+
+        void SeekCallback(int64_t offset)
+        {
+            int64_t delta = std::abs(offset - source.Offset());
+
+            // bytes for duration
+            double br = Bitrate();
+            double bits_needed = br * 1.0; // seeked after 1 second of playback
+            double threshold = std::min(bits_needed / 8.0, bitrate_maximum_);
+
+            if (delta > threshold)
+            {
+                initialized_ = false;
+            }
+
+            source.SeekCallback(offset);
+        }
+
+    private:
+        std::chrono::steady_clock::time_point bitrate_time_;
+        double bitrate_estimate_;
+        double bitrate_last_;
+        double bitrate_warmup_;
+        int64_t bitrate_accum_;
+
+        double download_estimate_;
+        int64_t download_accum_;
+        std::chrono::steady_clock::time_point download_time_;
+
+        bool initialized_;
+    };
+
+    static int OpenCallback(void* opaque, void** datap, uint64_t* sizep)
+    {
+        IVideoAnimationSource source{ nullptr };
+        winrt::copy_from_abi(source, opaque);
+
+        auto* ctx = new MediaContext(source);
+
+        *datap = ctx;
+        *sizep = source.FileSize();
+
+        return 0;
+    }
+
+    static ssize_t ReadCallback(void* opaque, unsigned char* buf, size_t len)
+    {
+        auto* ctx = static_cast<MediaContext*>(opaque);
+
+        int64_t bytesRead;
+        ctx->ReadCallback(len, bytesRead);
+
+        if (ctx->file == INVALID_HANDLE_VALUE)
+        {
+            ctx->file = CreateFile2FromAppW(ctx->source.FilePath().data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, OPEN_EXISTING, nullptr);;
+        }
+
+        if (ctx->file != INVALID_HANDLE_VALUE && bytesRead >= 0)
+        {
+            SetFilePointer(ctx->file, ctx->source.Offset(), NULL, FILE_BEGIN);
+
+            DWORD read;
+            if (ReadFile(ctx->file, buf, len > bytesRead ? bytesRead : len, &read, NULL))
+            {
+                ctx->source.SeekCallback(read + ctx->source.Offset());
+                return read;
+            }
+        }
+
+        return -1;
+    }
+
+    static int SeekCallback(void* opaque, uint64_t offset)
+    {
+        auto* ctx = static_cast<MediaContext*>(opaque);
+        ctx->SeekCallback(offset);
+
+        return 0;
+    }
+
+    static void CloseCallback(void* opaque)
+    {
+        auto* ctx = static_cast<MediaContext*>(opaque);
+        ctx->source.Close();
+
+        if (ctx->file != INVALID_HANDLE_VALUE)
+        {
+            CloseHandle(ctx->file);
+        }
+
+        delete ctx;
+    }
+
+    void AsyncMediaPlayer::Play(IVideoAnimationSource file, double position)
+    {
+        Write([this, file, position]() {
+            // TODO: make sure IVideoAnimationSource is not leaked once playback is done
+            void* ptr = winrt::get_abi(file);
+            auto media = libvlc_media_new_callbacks(m_instance, &OpenCallback, &ReadCallback, &SeekCallback, &CloseCallback, ptr);
+
+            libvlc_media_player_set_media(m_player, media);
+            libvlc_media_player_play(m_player);
+            libvlc_media_release(media);
+
+            if (position != 0)
+            {
+                libvlc_media_player_set_time(m_player, static_cast<libvlc_time_t>(position * 1000));
+
+                m_positionChangedEventArgs.Position(position);
+                m_positionChanged(*this, m_positionChangedEventArgs);
+            }
+            }, true);
+    }
+
     void AsyncMediaPlayer::Play(winrt::Windows::Foundation::Uri uri, double position)
     {
         Write([this, uri, position]() {
@@ -112,6 +356,9 @@ namespace winrt::Telegram::Native::Media::implementation
             if (position != 0)
             {
                 libvlc_media_player_set_time(m_player, static_cast<libvlc_time_t>(position * 1000));
+
+                m_positionChangedEventArgs.Position(position);
+                m_positionChanged(*this, m_positionChangedEventArgs);
             }
             }, true);
     }
@@ -328,7 +575,7 @@ namespace winrt::Telegram::Native::Media::implementation
             TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
-                    strongThis->m_vout(*strongThis, nullptr);
+                    strongThis->m_videoOut(*strongThis, nullptr);
                 }
                 });
             break;

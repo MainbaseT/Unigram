@@ -390,9 +390,9 @@ namespace Telegram.Controls
 
                 remote.SeekCallback(offset);
                 var bytesRead = await remote.ReadCallbackAsync(limit, buffer);
-                remote.Close(false);
+                remote.Close();
 
-                if (bytesRead > 0)
+                if (bytesRead >= 0)
                 {
                     if (extension == ".m3u8")
                     {

@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Common;
@@ -35,6 +36,7 @@ namespace Telegram.Streams
         private readonly bool _limit;
 
         private long _availableBytesResult;
+        private long _downloadedBytesResult;
 
         public RemoteFileSource(IClientService clientService, File file, int priority = 32, bool limit = false)
         {
@@ -62,7 +64,7 @@ namespace Telegram.Streams
             }
         }
 
-        public override void ReadCallback(long count, long buffer, out long bytesRead)
+        public override void ReadCallback(long count, long buffer, out long bytesRead, out long bytesDownloaded)
         {
             if (MustWait(count, buffer))
             {
@@ -71,6 +73,7 @@ namespace Telegram.Streams
                 lock (_stateLock)
                 {
                     bytesRead = _availableBytesResult;
+                    bytesDownloaded = _downloadedBytesResult;
                 }
             }
             else
@@ -78,6 +81,7 @@ namespace Telegram.Streams
                 lock (_stateLock)
                 {
                     bytesRead = CalculateAvailableBytes(count);
+                    bytesDownloaded = bytesRead;
                 }
             }
         }
@@ -100,11 +104,30 @@ namespace Telegram.Streams
             }
         }
 
+        // This must only be called from background threads because it's blocking
+        public override long Buffered
+        {
+            get
+            {
+                var buffered = CalculateAvailableBytes(long.MaxValue);
+                if (buffered == 0)
+                {
+                    var response = _clientService.SendAsync(new GetFileDownloadedPrefixSize(_file.Id, _offset)).Result;
+                    if (response is FileDownloadedPrefixSize prefixSize)
+                    {
+                        return prefixSize.Size;
+                    }
+                }
+
+                return buffered;
+            }
+        }
+
         private long CalculateAvailableBytes(long requestedCount)
         {
             if (_canceled)
             {
-                return 0;
+                return -1;
             }
 
             var begin = _file.Local.DownloadOffset;
@@ -131,11 +154,14 @@ namespace Telegram.Streams
         {
             lock (_stateLock)
             {
-                if (_canceled)
+                if (_canceled || _offset == _file.Size)
                 {
                     //Logger.Info("Canceled");
                     return false;
                 }
+
+                count = Math.Min(_file.Size - _offset, count);
+                buffer = _limit ? Math.Min(_file.Size - _offset, Math.Max(count, buffer)) : 0;
 
                 var begin = _file.Local.DownloadOffset;
                 var end = _file.Local.DownloadOffset + _file.Local.DownloadedPrefixSize;
@@ -145,7 +171,10 @@ namespace Telegram.Streams
 
                 if (_file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted))
                 {
-                    Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, count: {count}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                    // Always request new bytes
+                    _clientService.DownloadFile(_file.Id, _priority, _offset, buffer, false);
+
+                    Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, limit: {buffer}, count: {count}, download: {_file.Local.DownloadOffset}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
                     return false;
                 }
 
@@ -153,9 +182,9 @@ namespace Telegram.Streams
                 _event.Reset();
                 _count = count;
 
-                _clientService.DownloadFile(_file.Id, _priority, _offset, _limit ? Math.Max(count, buffer) : 0, false);
+                _clientService.DownloadFile(_file.Id, _priority, _offset, buffer, false);
 
-                Logger.Debug($"Not enough data available for {_file.Id}, offset: {_offset}, count: {count}, size: {_file.Size}");
+                Logger.Debug($"Not enough data available for {_file.Id}, offset: {_offset}, limit: {buffer}, count: {count}, download: {_file.Local.DownloadOffset}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
                 return true;
             }
         }
@@ -178,26 +207,35 @@ namespace Telegram.Streams
 
             lock (_stateLock)
             {
+                // No need to process the update if no one is waiting
+                if (_event.WaitOne(0))
+                {
+                    return;
+                }
+
                 var begin = _file.Local.DownloadOffset;
                 var end = _file.Local.DownloadOffset + _file.Local.DownloadedPrefixSize;
 
                 var inBegin = _offset >= begin;
                 var inEnd = end >= _offset + _count /*|| end == _file.Size*/;
 
-                if (_file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted))
+                var available = _file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted);
+                var canceled = _canceled || !file.Local.IsDownloadingActive;
+
+                if (available || canceled)
                 {
-                    Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, count: {_count}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                    if (available)
+                    {
+                        Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, count: {_count}, download: {_file.Local.DownloadOffset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                    }
+                    else
+                    {
+                        Logger.Info($"Download was canceled for {_file.Id}");
+                    }
 
                     // Calculate and store available bytes before setting the event
                     _availableBytesResult = CalculateAvailableBytes(_count);
-                    _event.Set();
-                }
-                else if (_canceled || !file.Local.IsDownloadingActive)
-                {
-                    Logger.Info($"Download was canceled for {_file.Id}");
-
-                    // Set result to 0 for canceled/inactive downloads
-                    _availableBytesResult = 0;
+                    _downloadedBytesResult = CalculateAvailableBytes(long.MaxValue);
                     _event.Set();
                 }
                 //else
@@ -218,7 +256,7 @@ namespace Telegram.Streams
             SeekCallback(0);
         }
 
-        public void Close(bool cancel)
+        public override void Close(/*bool cancel*/)
         {
             lock (_stateLock)
             {
@@ -232,11 +270,11 @@ namespace Telegram.Streams
                 //Logger.Debug($"Disposing the stream");
                 UpdateManager.Unsubscribe(this, ref _fileToken);
 
-                if (cancel)
-                {
-                    _canceled = true;
-                    _clientService.Send(new CancelDownloadFile(_file.Id, false));
-                }
+                //if (cancel)
+                //{
+                //    _canceled = true;
+                //    _clientService.Send(new CancelDownloadFile(_file.Id, false));
+                //}
 
                 _event.Set();
             }

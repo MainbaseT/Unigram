@@ -111,7 +111,8 @@ namespace winrt::Telegram::Native::implementation
             else
             {
                 int64_t result;
-                info->file.ReadCallback(buf_size, 0, result);
+                int64_t discard;
+                info->file.ReadCallback(buf_size, 0, result, discard);
 
                 if (info->fd == INVALID_HANDLE_VALUE)
                 {

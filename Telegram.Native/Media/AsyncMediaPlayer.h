@@ -19,12 +19,32 @@
 using namespace winrt::Windows::Media::Devices;
 using namespace winrt::Windows::System;
 
+template<typename Func>
+inline void post_to_threadpool(Func&& func)
+{
+    auto* heapFunc = new std::decay_t<Func>(std::forward<Func>(func));
+
+    PTP_WORK work = CreateThreadpoolWork(
+        [](PTP_CALLBACK_INSTANCE, PVOID context, PTP_WORK) {
+            std::unique_ptr<std::decay_t<Func>> funcPtr(
+                static_cast<std::decay_t<Func>*>(context)
+            );
+            (*funcPtr)();
+        },
+        heapFunc,
+        nullptr
+    );
+
+    SubmitThreadpoolWork(work);
+    CloseThreadpoolWork(work);
+}
+
 class MediaPlayerCleanupManager
 {
 public:
     static void Close(libvlc_instance_t* instance, libvlc_media_player_t* player, std::thread workerThread)
     {
-        std::thread([instance, player, workerThread = std::move(workerThread)]() mutable {
+        post_to_threadpool([instance, player, workerThread = std::move(workerThread)]() mutable {
             if (player)
             {
                 libvlc_media_player_stop(player);
@@ -38,7 +58,7 @@ public:
             {
                 workerThread.join();
             }
-            }).detach();
+            });
     }
 };
 
@@ -121,6 +141,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         AsyncMediaPlayerSwapChain Context();
 
+        void Play(IVideoAnimationSource file, double position = 0);
         void Play(winrt::Windows::Foundation::Uri uri, double position = 0);
         void Play();
         void Stop();

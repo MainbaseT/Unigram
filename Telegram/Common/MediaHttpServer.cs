@@ -205,10 +205,10 @@ namespace Telegram.Common
 
             var remote = new RemoteFileSource(clientService, file, priority, true);
             remote.SeekCallback(offset);
-            remote.ReadCallback(limit, buffer, out long bytesRead);
-            remote.Close(false);
+            remote.ReadCallback(limit, buffer, out long bytesRead, out _);
+            remote.Close();
 
-            if (bytesRead > 0)
+            if (bytesRead >= 0)
             {
                 try
                 {

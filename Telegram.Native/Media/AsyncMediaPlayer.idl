@@ -4,6 +4,7 @@ import "Media/AsyncMediaPlayerStreamSelectedEventArgs.idl";
 import "Media/AsyncMediaPlayerBufferingEventArgs.idl";
 import "Media/AsyncMediaPlayerLogEventArgs.idl";
 import "Media/AsyncMediaPlayerSwapChain.idl";
+import "VideoAnimation.idl";
 
 namespace Telegram.Native.Media
 {
@@ -35,6 +36,10 @@ namespace Telegram.Native.Media
 
         AsyncMediaPlayerSwapChain Context{ get; };
 
+        [default_overload]
+        void Play(Telegram.Native.IVideoAnimationSource file);
+        [default_overload]
+        void Play(Telegram.Native.IVideoAnimationSource file, Double position);
         void Play(Windows.Foundation.Uri uri);
         void Play(Windows.Foundation.Uri uri, Double position);
         void Play();
