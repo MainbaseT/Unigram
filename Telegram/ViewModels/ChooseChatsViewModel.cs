@@ -980,7 +980,7 @@ namespace Telegram.ViewModels
                 var selected = chats.Select(x => ClientService.GetUser(x)).Where(x => x != null).ToList();
 
                 var selectedBotUser = selected.FirstOrDefault(x => x.Type is UserTypeBot);
-                if (selectedBotUser != null)
+                if (selectedBotUser != null && chat.Type is ChatTypeSupergroup { IsChannel: true })
                 {
                     HidePopup(typeof(ChooseChatsPopup));
                     ShowPopup(new SupergroupEditAdministratorPopup(), new SupergroupEditMemberArgs(chat.Id, new MessageSenderUser(selectedBotUser.Id)));
