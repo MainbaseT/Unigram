@@ -51,28 +51,28 @@ namespace Telegram.Views.Popups
             UpdatePrimaryButtonText();
         }
 
-        public DateTime Value
+        public MessageSchedulingState SchedulingState { get; private set; }
+
+        private DateTime GetDateTime(bool utc)
         {
-            get
+            if (utc)
             {
-                if (Date.Date is DateTimeOffset date)
+                if (Date.Date is DateTimeOffset dateUtc)
                 {
-                    return date.Add(Time.Time).UtcDateTime;
+                    return dateUtc.Add(Time.Time).UtcDateTime;
                 }
-
-                return DateTime.MinValue;
             }
-        }
 
-        public bool IsUntilOnline { get; private set; }
+            if (Date.Date is DateTimeOffset date)
+            {
+                return date.Add(Time.Time).DateTime;
+            }
+
+            return DateTime.MinValue;
+        }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            if (IsUntilOnline)
-            {
-                return;
-            }
-
             if (Date.Date == null || Date.Date < DateTime.Today)
             {
                 VisualUtilities.ShakeView(Date);
@@ -83,11 +83,15 @@ namespace Telegram.Views.Popups
                 VisualUtilities.ShakeView(Time);
                 args.Cancel = true;
             }
+            else
+            {
+                SchedulingState = new MessageSchedulingStateSendAtDate(GetDateTime(true).ToTimestamp());
+            }
         }
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            IsUntilOnline = true;
+            SchedulingState = new MessageSchedulingStateSendWhenOnline();
         }
 
         private void Date_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
@@ -102,17 +106,18 @@ namespace Telegram.Views.Popups
 
         private void UpdatePrimaryButtonText()
         {
-            if (Value.Date == DateTime.Today)
+            var date = GetDateTime(false);
+            if (date.Date == DateTime.Today)
             {
-                PrimaryButtonText = Value.ToString(_reminder ? Strings.RemindTodayAt : Strings.SendTodayAt);
+                PrimaryButtonText = date.ToString(_reminder ? Strings.RemindTodayAt : Strings.SendTodayAt);
             }
-            else if (Value.Year == DateTime.Today.Year)
+            else if (date.Year == DateTime.Today.Year)
             {
-                PrimaryButtonText = Value.ToString(_reminder ? Strings.RemindDayAt : Strings.SendDayAt);
+                PrimaryButtonText = date.ToString(_reminder ? Strings.RemindDayAt : Strings.SendDayAt);
             }
             else
             {
-                PrimaryButtonText = Value.ToString(_reminder ? Strings.RemindDayYearAt : Strings.SendDayYearAt);
+                PrimaryButtonText = date.ToString(_reminder ? Strings.RemindDayYearAt : Strings.SendDayYearAt);
             }
         }
     }
