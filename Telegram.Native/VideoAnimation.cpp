@@ -121,7 +121,7 @@ namespace winrt::Telegram::Native::implementation
                     if (ReadFile(info->fd, buf, buf_size > bytesRead ? bytesRead : buf_size, &read, NULL))
                     {
                         info->file.SeekCallback(read + info->file.Offset());
-                        return read > 0 ? bytesRead : AVERROR_EOF;
+                        return read > 0 ? read : AVERROR_EOF;
                     }
                 }
 
