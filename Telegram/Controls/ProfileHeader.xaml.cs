@@ -806,6 +806,17 @@ namespace Telegram.Controls
                 Rating.Visibility = Visibility.Collapsed;
             }
 
+            if (fullInfo.Note != null)
+            {
+                UserNote.Visibility = Visibility.Visible;
+                UserNote.Description = string.Format("{0} ({1})", Strings.ProfileNotes, Strings.ProfileNotesInfo);
+                UserNoteLabel.SetText(ViewModel.ClientService, fullInfo.Note);
+            }
+            else
+            {
+                UserNote.Visibility = Visibility.Collapsed;
+            }
+
             if (fullInfo.FirstProfileAudio != null)
             {
                 UserFirstAudioRoot.Visibility = Visibility.Visible;
@@ -1357,6 +1368,32 @@ namespace Telegram.Controls
             {
                 MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, sender, description, args);
             }
+        }
+
+        private void UserNote_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            void Copy()
+            {
+                if (ViewModel.ClientService.TryGetUserFull(ViewModel.Chat, out UserFullInfo fullInfo))
+                {
+                    MessageHelper.CopyText(XamlRoot, fullInfo.Note);
+                }
+            }
+
+            async void Remove()
+            {
+                var confirm = await ViewModel.ShowPopupAsync(Strings.ProfileNotesRemoveText, Strings.ProfileNotesRemoveTitle, Strings.Delete, Strings.Cancel, destructive: true);
+                if (confirm == ContentDialogResult.Primary && ViewModel.ClientService.TryGetUser(ViewModel.Chat, out User user))
+                {
+                    ViewModel.ClientService.Send(new SetUserNote(user.Id, string.Empty.AsFormattedText()));
+                }
+            }
+
+            var flyout = new MenuFlyout();
+            flyout.CreateFlyoutItem(Copy, Strings.Copy, Icons.Copy);
+            flyout.CreateFlyoutItem(ViewModel.AddToContacts, Strings.Edit, Icons.Edit);
+            flyout.CreateFlyoutItem(Remove, Strings.Remove, Icons.Delete, destructive: true);
+            flyout.ShowAt(sender, args);
         }
 
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)

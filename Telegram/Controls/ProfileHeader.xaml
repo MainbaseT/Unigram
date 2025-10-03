@@ -486,6 +486,19 @@
                                          Click="Birthday_Click"
                                          Glyph="&#xEA84;" />
 
+                <controls:SettingsButton x:Name="UserNote"
+                                         Description="{CustomResource ProfileNotes}"
+                                         Visibility="Collapsed"
+                                         ContextRequested="UserNote_ContextRequested"
+                                         Glyph="&#xEADF;">
+                    <controls:FormattedTextBlock x:Name="UserNoteLabel"
+                                                 FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                 IsTextSelectionEnabled="False"
+                                                 TextTrimming="CharacterEllipsis"
+                                                 TextWrapping="Wrap"
+                                                 AutoFontSize="False" />
+                </controls:SettingsButton>
+
                 <controls:SettingsButton x:Name="Location"
                                          Visibility="Collapsed"
                                          Description="{CustomResource AttachLocation}"

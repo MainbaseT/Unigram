@@ -4,6 +4,8 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:controls="using:Telegram.Controls"
+                  xmlns:drawers="using:Telegram.Controls.Drawers"
+                  xmlns:messages="using:Telegram.Controls.Messages"
                   xmlns:local="using:Telegram.Views"
                   mc:Ignorable="d">
 
@@ -139,6 +141,59 @@
                     <controls:SettingsButton Click="{x:Bind ViewModel.EditSettings}"
                                              Content="{CustomResource BotChangeSettings}"
                                              Glyph="&#xE99A;" />
+                </controls:HeaderedControl>
+
+                <controls:HeaderedControl x:Name="NotePanel"
+                                          x:Load="False"
+                                          Footer="{CustomResource AddNotesInfo}">
+                    <Grid>
+                        <FlyoutBase.AttachedFlyout>
+                            <Flyout x:Name="EmojiFlyout"
+                                    Placement="Top"
+                                    ShowMode="Transient">
+                                <Flyout.FlyoutPresenterStyle>
+                                    <Style TargetType="FlyoutPresenter"
+                                           BasedOn="{StaticResource CommandFlyoutPresenterStyle}">
+                                        <Setter Property="Padding"
+                                                Value="0" />
+                                    </Style>
+                                </Flyout.FlyoutPresenterStyle>
+                                <drawers:EmojiDrawer x:Name="EmojiPanel"
+                                                     ItemClick="Emoji_ItemClick"
+                                                     Width="300"
+                                                     Height="360" />
+                            </Flyout>
+                        </FlyoutBase.AttachedFlyout>
+                        <controls:CaptionTextBox x:Name="NoteField"
+                                                 TextChanged="NoteField_TextChanged"
+                                                 PlaceholderText="{CustomResource AddNotes}"
+                                                 FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                 Padding="58,11,6,12"
+                                                 Height="44"
+                                                 MaxLength="12"
+                                                 AcceptsReturn="False" />
+
+                        <messages:CustomEmojiCanvas x:Name="CustomEmoji"
+                                                    IsHitTestVisible="False"
+                                                    Margin="58,10,0,0" />
+
+                        <controls:GlyphButton Click="Emoji_Click"
+                                              Glyph="&#xE76E;"
+                                              AutomationProperties.Name="{CustomResource Emoji}"
+                                              AllowFocusOnInteraction="False"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Bottom"
+                                              FontSize="24"
+                                              Height="44"
+                                              Grid.Column="1" />
+
+                        <TextBlock Text="&#xEADF;"
+                                   FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   FontSize="20"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Margin="20,0,0,0" />
+                    </Grid>
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl x:Name="SharePhonePanel"

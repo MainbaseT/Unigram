@@ -986,6 +986,12 @@ Your prize is **{0} Stars**.</value>
   <data name="AddMembersAlertTitle" xml:space="preserve">
     <value>Add {0}</value>
   </data>
+  <data name="AddNotes" xml:space="preserve">
+    <value>Add Notes...</value>
+  </data>
+  <data name="AddNotesInfo" xml:space="preserve">
+    <value>Notes are only visible to you.</value>
+  </data>
   <data name="AddPeopleNearby" xml:space="preserve">
     <value>Find People Nearby</value>
   </data>
@@ -10940,6 +10946,18 @@ seamlessly and efficiently.</value>
   </data>
   <data name="ProfileMyStories" xml:space="preserve">
     <value>My Stories</value>
+  </data>
+  <data name="ProfileNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="ProfileNotesInfo" xml:space="preserve">
+    <value>only visible to you</value>
+  </data>
+  <data name="ProfileNotesRemoveText" xml:space="preserve">
+    <value>Are you sure you want to remove the note?</value>
+  </data>
+  <data name="ProfileNotesRemoveTitle" xml:space="preserve">
+    <value>Delete Note</value>
   </data>
   <data name="ProfilePlaylistRemoveFromProfile" xml:space="preserve">
     <value>Remove from Profile</value>

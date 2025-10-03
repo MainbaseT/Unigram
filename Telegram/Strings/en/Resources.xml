@@ -12965,4 +12965,11 @@
     <string name="ScheduleMessageDate">Date</string>
     <string name="ScheduleMessageTime">Time</string>
 
+    <string name="AddNotes">Add Notes...</string>
+    <string name="AddNotesInfo">Notes are only visible to you.</string>
+    <string name="ProfileNotes">Notes</string>
+    <string name="ProfileNotesInfo">only visible to you</string>
+    <string name="ProfileNotesRemoveText">Are you sure you want to remove the note?</string>
+    <string name="ProfileNotesRemoveTitle">Delete Note</string>
+
 </resources>

@@ -69,6 +69,13 @@ namespace Telegram.ViewModels.Users
             set => Set(ref _description, value);
         }
 
+        private FormattedText _note;
+        public FormattedText Note
+        {
+            get => _note;
+            set => Set(ref _note, value);
+        }
+
         private bool _sharePhoneNumber;
         public bool SharePhoneNumber
         {
@@ -226,7 +233,7 @@ namespace Telegram.ViewModels.Users
                 }
                 else
                 {
-                    ClientService.Send(new AddContact(user.Id, new ImportedContact(user.PhoneNumber, _firstName, _lastName, null),
+                    ClientService.Send(new AddContact(user.Id, new ImportedContact(user.PhoneNumber, _firstName, _lastName, _note),
                         userFull.NeedPhoneNumberPrivacyException && SharePhoneNumber));
                 }
 
