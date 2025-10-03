@@ -7,7 +7,8 @@
                   xmlns:drawers="using:Telegram.Controls.Drawers"
                   xmlns:messages="using:Telegram.Controls.Messages"
                   xmlns:local="using:Telegram.Views"
-                  mc:Ignorable="d">
+                  mc:Ignorable="d"
+                  Title="{x:Bind ViewModel.Title, Mode=OneWay}">
 
     <local:HostedPage.Action>
         <Button Content="{CustomResource Save}"

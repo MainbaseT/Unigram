@@ -4914,7 +4914,7 @@ You can always switch back to the default Telegram theme here.</value>
     <value>Delete chat</value>
   </data>
   <data name="DeleteContact" xml:space="preserve">
-    <value>Delete contact</value>
+    <value>Delete Contact</value>
   </data>
   <data name="DeletedMessage" xml:space="preserve">
     <value>Deleted message</value>
@@ -5347,7 +5347,7 @@ Anyone from the channel will be able to see messages in this group.</value>
     <value>You can transfer this channel to **{0}** only if you have:</value>
   </data>
   <data name="EditContact" xml:space="preserve">
-    <value>Edit contact</value>
+    <value>Edit Contact</value>
   </data>
   <data name="EditedMessage" xml:space="preserve">
     <value>edited</value>

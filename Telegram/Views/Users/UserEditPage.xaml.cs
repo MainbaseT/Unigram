@@ -24,7 +24,6 @@ namespace Telegram.Views.Users
         public UserEditPage()
         {
             InitializeComponent();
-            Title = Strings.EditContact;
         }
 
         #region Delegate

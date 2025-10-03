@@ -36,6 +36,15 @@ namespace Telegram.ViewModels.Users
             SendCommand = new RelayCommand(Send, CanSend);
         }
 
+        private string _title;
+        public string Title
+        {
+            get => _title;
+            set => Set(ref _title, value);
+        }
+
+        private string _originalFirstName = string.Empty;
+
         private string _firstName = string.Empty;
         public string FirstName
         {
@@ -61,6 +70,8 @@ namespace Telegram.ViewModels.Users
                 }
             }
         }
+
+        private string _originalDescription = string.Empty;
 
         private string _description = string.Empty;
         public string Description
@@ -106,38 +117,48 @@ namespace Telegram.ViewModels.Users
 
                 if (user.Type is UserTypeBot)
                 {
-                    var response = await ClientService.SendAsync(new GetBotName(userId, string.Empty));
-                    if (response is Text text)
-                    {
-                        FirstName = text.TextValue;
-                    }
+                    Title = Strings.ChannelEdit;
+
+                    _originalFirstName = user.FirstName;
+                    FirstName = user.FirstName;
                 }
                 else
                 {
+                    Title = Strings.EditContact;
+
                     FirstName = user.FirstName;
                     LastName = user.LastName;
                 }
 
-                if (ClientService.TryGetUserFull(user.Id, out UserFullInfo userFull))
-                {
-                    if (user.Type is UserTypeBot)
-                    {
-                        var response = await ClientService.SendAsync(new GetBotInfoShortDescription(userId, string.Empty));
-                        if (response is Text text)
-                        {
-                            Description = text.TextValue;
-                        }
-                    }
-                }
-
+                ClientService.TryGetUserFull(user.Id, out UserFullInfo userFull);
                 Delegate?.UpdateUser(null, user, userFull, false, false);
 
                 ClientService.Send(new GetUserFullInfo(user.Id));
 
                 if (user.Type is UserTypeBot)
                 {
-                    var response = await ClientService.GetStarTransactionsAsync(new MessageSenderUser(userId), string.Empty, null, string.Empty, 1);
-                    if (response is StarTransactions transactions)
+                    if (userFull != null)
+                    {
+                        _originalDescription = userFull.BotInfo.ShortDescription;
+                        Description = userFull.BotInfo.ShortDescription;
+                    }
+
+                    var response = await ClientService.SendAsync(new GetBotName(userId, string.Empty));
+                    if (response is Text text1)
+                    {
+                        _originalFirstName = text1.TextValue;
+                        FirstName = text1.TextValue;
+                    }
+
+                    var response1 = await ClientService.SendAsync(new GetBotInfoShortDescription(userId, string.Empty));
+                    if (response1 is Text text2)
+                    {
+                        _originalDescription = text2.TextValue;
+                        Description = text2.TextValue;
+                    }
+
+                    var response2 = await ClientService.GetStarTransactionsAsync(new MessageSenderUser(userId), string.Empty, null, string.Empty, 1);
+                    if (response2 is StarTransactions transactions)
                     {
                         StarCount = transactions.StarAmount;
                     }
@@ -156,7 +177,7 @@ namespace Telegram.ViewModels.Users
             {
                 if (user.Type is UserTypeBot userTypeBot && userTypeBot.CanBeEdited)
                 {
-                    if (user.FirstName != _firstName || userFull.BotInfo?.ShortDescription != _description)
+                    if (_originalFirstName != _firstName || _originalDescription != _description)
                     {
                         args.Cancel = true;
 
@@ -167,6 +188,7 @@ namespace Telegram.ViewModels.Users
                         }
                         else
                         {
+                            _confirmed = true;
                             NavigationService.GoBack(args);
                         }
                     }
