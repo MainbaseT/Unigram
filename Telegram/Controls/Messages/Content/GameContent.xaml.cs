@@ -82,16 +82,26 @@ namespace Telegram.Controls.Messages.Content
             UpdateContent(message, game.Game);
 
             var outgoing = message.IsOutgoing && !message.IsChannelPost;
-            var sender = message.GetSender();
-
-            var accent = outgoing ? null : sender switch
+            var (accent, giftColors, customEmojiId) = outgoing ? (null, null, 0) : message.GetSender() switch
             {
-                User user => message.ClientService.GetAccentColor(user.AccentColorId),
-                Chat chat => message.ClientService.GetAccentColor(chat.AccentColorId),
-                _ => null
+                User user => (message.ClientService.GetAccentColor(user.AccentColorId), user.UpgradedGiftColors, user.BackgroundCustomEmojiId),
+                Chat chat => (message.ClientService.GetAccentColor(chat.AccentColorId), chat.UpgradedGiftColors, chat.BackgroundCustomEmojiId),
+                _ => (null, null, 0)
             };
 
-            if (accent != null)
+            if (giftColors != null)
+            {
+                HeaderBrush =
+                    BorderBrush = new SolidColorBrush(giftColors.LightThemeColors[0].ToColor());
+
+                AccentDash.Stripe1 = giftColors.LightThemeColors.Count > 1
+                    ? new SolidColorBrush(giftColors.LightThemeColors[1].ToColor())
+                    : null;
+                AccentDash.Stripe2 = giftColors.LightThemeColors.Count > 2
+                    ? new SolidColorBrush(giftColors.LightThemeColors[2].ToColor())
+                    : null;
+            }
+            else if (accent != null)
             {
                 HeaderBrush =
                     BorderBrush = new SolidColorBrush(accent.LightThemeColors[0]);

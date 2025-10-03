@@ -186,14 +186,12 @@ namespace Telegram.Controls.Messages.Content
             }
 
             var outgoing = message.IsOutgoing && !message.IsChannelPost;
-
             var (accent, giftColors, customEmojiId) = outgoing ? (null, null, 0) : message.GetSender() switch
             {
                 User user => (message.ClientService.GetAccentColor(user.AccentColorId), user.UpgradedGiftColors, user.BackgroundCustomEmojiId),
                 Chat chat => (message.ClientService.GetAccentColor(chat.AccentColorId), chat.UpgradedGiftColors, chat.BackgroundCustomEmojiId),
                 _ => (null, null, 0)
             };
-
 
             if (giftColors != null)
             {
@@ -227,7 +225,6 @@ namespace Telegram.Controls.Messages.Content
                 AccentDash.Stripe1 = null;
                 AccentDash.Stripe2 = null;
             }
-
 
             if (giftColors != null)
             {
