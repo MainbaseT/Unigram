@@ -721,6 +721,10 @@ namespace Telegram.Services
             {
                 launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;feedback_chat_topic_id={1}", launch, messageTopicDirectMessagesChat.DirectMessagesChatTopicId);
             }
+            else if (message.TopicId is MessageTopicThread messageTopicThread)
+            {
+                launch = string.Format(CultureInfo.InvariantCulture, "{0}&amp;thread_id={1}", launch, messageTopicThread.MessageThreadId);
+            }
 
             return launch;
         }
@@ -893,7 +897,7 @@ namespace Telegram.Services
                 settings.UseDefaultMuteFor = useDefault;
                 settings.MuteFor = value;
 
-                _clientService.Send(new SetForumTopicNotificationSettings(chat.Id, topic.Info.MessageThreadId, settings));
+                _clientService.Send(new SetForumTopicNotificationSettings(chat.Id, topic.Info.ForumTopicId, settings));
 
                 if (xamlRoot == null)
                 {

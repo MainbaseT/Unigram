@@ -2267,6 +2267,12 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
+                case global::Telegram.Td.Api.StarTransactionTypeGiftOriginalDetailsDrop starTransactionTypeGiftOriginalDetailsDrop:
+                    if (starTransactionTypeGiftOriginalDetailsDrop.Gift != null)
+                    {
+                        ProcessFiles(starTransactionTypeGiftOriginalDetailsDrop.Gift);
+                    }
+                    break;
                 case global::Telegram.Td.Api.StarTransactionTypeGiftPurchase starTransactionTypeGiftPurchase:
                     if (starTransactionTypeGiftPurchase.Gift != null)
                     {
@@ -2888,3 +2894,4 @@ namespace Telegram.Services
         }
     }
 }
+

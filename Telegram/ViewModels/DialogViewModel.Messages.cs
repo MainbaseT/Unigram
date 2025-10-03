@@ -1067,7 +1067,7 @@ namespace Telegram.ViewModels
             if (response is MessageThreadInfo threadInfo)
             {
                 // TODO: should thread be info.MessageThreadId?
-                NavigationService.NavigateToChat(message.ChatId, message.Id, new MessageTopicForum(threadInfo.MessageThreadId));
+                NavigationService.NavigateToChat(message.ChatId, message.Id, new MessageTopicThread(threadInfo.MessageThreadId));
             }
         }
 
@@ -1488,7 +1488,7 @@ namespace Telegram.ViewModels
                 var bot = message.GetViaBotUser();
                 if (bot != null)
                 {
-                    InformativeMessage = CreateMessage(new Message(-1, new MessageSenderUser(bot.Id), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageText(new FormattedText(Strings.Loading, Array.Empty<TextEntity>()), null, null), null));
+                    InformativeMessage = CreateMessage(new Message(-1, new MessageSenderUser(bot.Id), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageText(new FormattedText(Strings.Loading, Array.Empty<TextEntity>()), null, null), null));
                 }
 
                 var response = await ClientService.SendAsync(new GetCallbackQueryAnswer(chat.Id, message.Id, new CallbackQueryPayloadData(callback.Data)));
@@ -1511,7 +1511,7 @@ namespace Telegram.ViewModels
                                 return;
                             }
 
-                            InformativeMessage = CreateMessage(new Message(0, new MessageSenderUser(bot.Id), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageText(new FormattedText(answer.Text, Array.Empty<TextEntity>()), null, null), null));
+                            InformativeMessage = CreateMessage(new Message(0, new MessageSenderUser(bot.Id), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageText(new FormattedText(answer.Text, Array.Empty<TextEntity>()), null, null), null));
                         }
                     }
                     else if (!string.IsNullOrEmpty(answer.Url))
@@ -2208,7 +2208,7 @@ namespace Telegram.ViewModels
                     receivedGift = await ClientService.SendAsync(new GetReceivedGift(gift.ReceivedGiftId)) as ReceivedGift;
                 }
 
-                receivedGift ??= new ReceivedGift(gift.ReceivedGiftId, gift.SenderId, gift.Text, gift.IsPrivate, gift.IsSaved, false, gift.CanBeUpgraded && !gift.WasUpgraded, false, gift.WasRefunded, message.Date, new SentGiftRegular(gift.Gift), Array.Empty<int>(), gift.SellStarCount, gift.PrepaidUpgradeStarCount, gift.IsUpgradeSeparate, 0, 0, 0, 0, gift.PrepaidUpgradeHash);
+                receivedGift ??= new ReceivedGift(gift.ReceivedGiftId, gift.SenderId, gift.Text, gift.IsPrivate, gift.IsSaved, false, gift.CanBeUpgraded && !gift.WasUpgraded, false, gift.WasRefunded, message.Date, new SentGiftRegular(gift.Gift), Array.Empty<int>(), gift.SellStarCount, gift.PrepaidUpgradeStarCount, gift.IsUpgradeSeparate, 0, 0, 0, 0, 0, gift.PrepaidUpgradeHash);
 
                 ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, gift.ReceiverId, null));
             }
@@ -2220,7 +2220,7 @@ namespace Telegram.ViewModels
                     receivedGift = await ClientService.SendAsync(new GetReceivedGift(upgradedGift.ReceivedGiftId)) as ReceivedGift;
                 }
 
-                receivedGift ??= new ReceivedGift(upgradedGift.ReceivedGiftId, upgradedGift.SenderId, upgradedGift.Gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText(), true, upgradedGift.IsSaved, false, false, upgradedGift.CanBeTransferred, false, message.Date, new SentGiftUpgraded(upgradedGift.Gift), Array.Empty<int>(), 0, 0, false, upgradedGift.TransferStarCount, upgradedGift.NextTransferDate, upgradedGift.NextResaleDate, upgradedGift.ExportDate, string.Empty);
+                receivedGift ??= new ReceivedGift(upgradedGift.ReceivedGiftId, upgradedGift.SenderId, upgradedGift.Gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText(), true, upgradedGift.IsSaved, false, false, upgradedGift.CanBeTransferred, false, message.Date, new SentGiftUpgraded(upgradedGift.Gift), Array.Empty<int>(), 0, 0, false, upgradedGift.TransferStarCount, upgradedGift.DropOriginalDetailsStarCount, upgradedGift.NextTransferDate, upgradedGift.NextResaleDate, upgradedGift.ExportDate, string.Empty);
 
                 ShowPopup(new ReceivedGiftPopup(ClientService, NavigationService, receivedGift, upgradedGift.ReceiverId, null));
             }

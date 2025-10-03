@@ -207,7 +207,7 @@ namespace Telegram.Views.Premium.Popups
                 return;
             }
 
-            response = await _clientService.SendAsync(new GetReceivedGifts(string.Empty, _clientService.MyId, 0, false, false, true, true, true, false, false, string.Empty, 50));
+            response = await _clientService.SendAsync(new GetReceivedGifts(string.Empty, _clientService.MyId, 0, false, false, true, true, true, false, false, true, false, string.Empty, 50));
             if (response is ReceivedGifts receivedGifts && receivedGifts.Gifts.Count > 0)
             {
                 var transferable = new List<ReceivedGift>();
@@ -248,7 +248,7 @@ namespace Telegram.Views.Premium.Popups
                     var totalCount = 0u;
                     var now = DateTime.Now.ToTimestamp();
 
-                    var response = await _clientService.SendAsync(new GetReceivedGifts(string.Empty, _clientService.MyId, 0, false, false, true, true, true, false, false, _nextOffset, 50));
+                    var response = await _clientService.SendAsync(new GetReceivedGifts(string.Empty, _clientService.MyId, 0, false, false, true, true, true, false, false, true, false, _nextOffset, 50));
                     if (response is ReceivedGifts gifts)
                     {
                         foreach (var gift in gifts.Gifts)

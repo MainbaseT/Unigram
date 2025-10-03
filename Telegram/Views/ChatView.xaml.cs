@@ -76,7 +76,7 @@ namespace Telegram.Views
         public DialogViewModel ViewModel => _viewModel ??= DataContext as DialogViewModel;
 
         private TopicListViewModel _forumViewModel;
-        private long _forumTopicId;
+        private int _forumTopicId;
 
         private readonly DispatcherTimer _slowModeTimer;
 
@@ -5320,7 +5320,7 @@ namespace Telegram.Views
 
         public void UpdateChatLastMessage(Chat chat)
         {
-            if (_forumTopicId != chat.LastMessage.TopicId())
+            if (_forumTopicId != chat.LastMessage.ForumTopicId())
             {
                 UpdateChatTextPlaceholder(chat);
             }
@@ -5405,7 +5405,7 @@ namespace Telegram.Views
 
         private void UpdateChatTextPlaceholder(Chat chat)
         {
-            TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly, out long messageThreadId);
+            TextField.PlaceholderText = GetPlaceholder(chat, out bool readOnly, out int forumTopicId);
 
             if (_isTextReadOnly != readOnly)
             {
@@ -5413,7 +5413,7 @@ namespace Telegram.Views
                 TextField.IsReadOnly = readOnly;
             }
 
-            _forumTopicId = messageThreadId;
+            _forumTopicId = forumTopicId;
         }
 
         public void UpdateChatActions(Chat chat, IDictionary<MessageSender, ChatAction> actions)
@@ -5495,10 +5495,10 @@ namespace Telegram.Views
             }
         }
 
-        private string GetPlaceholder(Chat chat, out bool readOnly, out long messageThreadId)
+        private string GetPlaceholder(Chat chat, out bool readOnly, out int forumTopicId)
         {
             readOnly = false;
-            messageThreadId = 0;
+            forumTopicId = 0;
 
             if (ViewModel.ClientService.TryGetUserFull(chat, out UserFullInfo userFull))
             {
@@ -5509,7 +5509,7 @@ namespace Telegram.Views
             }
             else if (ViewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
-                return GetPlaceholder(chat, supergroup, out readOnly, out messageThreadId);
+                return GetPlaceholder(chat, supergroup, out readOnly, out forumTopicId);
             }
             else if (ViewModel.ClientService.TryGetBasicGroup(chat, out BasicGroup basicGroup))
             {
@@ -5519,10 +5519,10 @@ namespace Telegram.Views
             return Strings.TypeMessage;
         }
 
-        private string GetPlaceholder(Chat chat, Supergroup supergroup, out bool readOnly, out long messageThreadId)
+        private string GetPlaceholder(Chat chat, Supergroup supergroup, out bool readOnly, out int forumTopicId)
         {
             readOnly = false;
-            messageThreadId = 0;
+            forumTopicId = 0;
 
             if (supergroup.IsChannel)
             {
@@ -5564,9 +5564,9 @@ namespace Telegram.Views
             {
                 return string.Format(Strings.TypeMessageForStars.ReplaceStar(Icons.Premium), supergroup.PaidMessageStarCount.ToString("N0"));
             }
-            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetForumTopic(chat.Id, chat.LastMessage.TopicId(), out ForumTopic forumTopic))
+            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetForumTopic(chat.Id, chat.LastMessage.TopicId, out ForumTopic forumTopic))
             {
-                messageThreadId = forumTopic.Info.MessageThreadId;
+                forumTopicId = forumTopic.Info.ForumTopicId;
                 return string.Format(Strings.TypeMessageIn, forumTopic.Info.Name);
             }
 
@@ -7245,9 +7245,9 @@ namespace Telegram.Views
         {
             if (e.ClickedItem is ForumTopic forumTopic && ViewModel.ClientService.TryGetChat(forumTopic.Info.ChatId, out Chat chat))
             {
-                if (forumTopic.Info.MessageThreadId != 0)
+                if (forumTopic.Info.ForumTopicId != 0)
                 {
-                    NavigateToMessageTopic(chat, new MessageTopicForum(forumTopic.Info.MessageThreadId));
+                    NavigateToMessageTopic(chat, new MessageTopicForum(forumTopic.Info.ForumTopicId));
                 }
                 else
                 {

@@ -116,19 +116,19 @@ namespace Telegram.ViewModels
                     if (message.ForwardInfo?.Origin is MessageOriginUser or MessageOriginChat && message.ForwardInfo?.Source != null)
                     {
                         chatId = message.ForwardInfo.Source.ChatId;
-                        messageTopic = new MessageTopicForum(message.ForwardInfo.Source.MessageId);
+                        messageTopic = new MessageTopicThread(message.ForwardInfo.Source.MessageId);
                     }
                     else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel)
                     {
                         chatId = fromChannel.ChatId;
-                        messageTopic = new MessageTopicForum(fromChannel.MessageId);
+                        messageTopic = new MessageTopicThread(fromChannel.MessageId);
                     }
 
-                    if (messageTopic is MessageTopicForum messageTopicForum)
+                    if (messageTopic is MessageTopicThread messageTopicThread)
                     {
-                        await ClientService.SendAsync(new GetMessage(chatId, messageTopicForum.ForumTopicId));
+                        await ClientService.SendAsync(new GetMessage(chatId, messageTopicThread.MessageThreadId));
 
-                        var response = await ClientService.SendAsync(new GetMessageThread(chatId, messageTopicForum.ForumTopicId));
+                        var response = await ClientService.SendAsync(new GetMessageThread(chatId, messageTopicThread.MessageThreadId));
                         if (response is not MessageThreadInfo)
                         {
                             return;
@@ -188,7 +188,7 @@ namespace Telegram.ViewModels
             var response = await ClientService.SendAsync(new GetMessageThread(chatId, threadId));
             if (response is MessageThreadInfo)
             {
-                NavigationService.NavigateToChat(chatId, messageId, topic: new MessageTopicForum(threadId));
+                NavigationService.NavigateToChat(chatId, messageId, topic: new MessageTopicThread(threadId));
             }
         }
 

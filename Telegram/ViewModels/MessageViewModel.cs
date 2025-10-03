@@ -176,7 +176,6 @@ namespace Telegram.ViewModels
             SchedulingState = message.SchedulingState;
             SendingState = message.SendingState;
             ChatId = message.ChatId;
-            MessageThreadId = message.MessageThreadId;
             TopicId = message.TopicId;
             SenderId = message.SenderId;
             SenderBoostCount = message.SenderBoostCount;
@@ -218,7 +217,6 @@ namespace Telegram.ViewModels
             SchedulingState = message.SchedulingState;
             SendingState = message.SendingState;
             ChatId = message.ChatId;
-            MessageThreadId = message.MessageThreadId;
             TopicId = message.TopicId;
             SenderId = message.SenderId;
             SenderBoostCount = message.SenderBoostCount;
@@ -350,7 +348,6 @@ namespace Telegram.ViewModels
             SuggestedPostInfo = message.SuggestedPostInfo;
             IsOutgoing = message.IsOutgoing;
             IsPinned = message.IsPinned;
-            MessageThreadId = message.MessageThreadId;
             MediaAlbumId = message.MediaAlbumId;
             ReplyMarkup = message.ReplyMarkup;
             ReplyTo = message.ReplyTo;
@@ -459,7 +456,6 @@ namespace Telegram.ViewModels
             SchedulingState = message.SchedulingState;
             SendingState = message.SendingState;
             ChatId = message.ChatId;
-            MessageThreadId = message.MessageThreadId;
             TopicId = message.TopicId;
             SenderId = message.SenderId;
             SenderBoostCount = message.SenderBoostCount;
@@ -538,7 +534,6 @@ namespace Telegram.ViewModels
         public MessageSchedulingState SchedulingState { get; protected set; }
         public MessageSendingState SendingState { get; protected set; }
         public long ChatId { get; protected set; }
-        public long MessageThreadId { get; protected set; }
         public MessageTopic TopicId { get; protected set; }
         public MessageSender SenderId { get; set; }
         public int SenderBoostCount { get; protected set; }
@@ -602,7 +597,7 @@ namespace Telegram.ViewModels
         // TODO: Get rid of this
         public Message Get()
         {
-            return new Message(Id, SenderId, ChatId, SendingState, SchedulingState, IsOutgoing, IsPinned, IsFromOffline, CanBeSaved, HasTimestampedMedia, IsChannelPost, IsPaidStarSuggestedPost, IsPaidTonSuggestedPost, ContainsUnreadMention, Date, EditDate, ForwardInfo, ImportInfo, InteractionInfo, UnreadReactions, FactCheck, SuggestedPostInfo, ReplyTo, MessageThreadId, TopicId, SelfDestructType, SelfDestructIn, AutoDeleteIn, ViaBotUserId, SenderBusinessBotUserId, SenderBoostCount, PaidMessageStarCount, AuthorSignature, MediaAlbumId, EffectId, RestrictionInfo, Content, ReplyMarkup);
+            return new Message(Id, SenderId, ChatId, SendingState, SchedulingState, IsOutgoing, IsPinned, IsFromOffline, CanBeSaved, HasTimestampedMedia, IsChannelPost, IsPaidStarSuggestedPost, IsPaidTonSuggestedPost, ContainsUnreadMention, Date, EditDate, ForwardInfo, ImportInfo, InteractionInfo, UnreadReactions, FactCheck, SuggestedPostInfo, ReplyTo, TopicId, SelfDestructType, SelfDestructIn, AutoDeleteIn, ViaBotUserId, SenderBusinessBotUserId, SenderBoostCount, PaidMessageStarCount, AuthorSignature, MediaAlbumId, EffectId, RestrictionInfo, Content, ReplyMarkup);
         }
 
         public virtual bool CanBeAddedToDownloads

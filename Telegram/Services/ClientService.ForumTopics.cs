@@ -14,15 +14,15 @@ namespace Telegram.Services
 {
     public partial interface ICacheService
     {
-        void SetPinnedForumTopics(long chatId, IList<long> messageThreadIds);
+        void SetPinnedForumTopics(long chatId, IList<int> forumTopicIds);
 
-        Task<Topics> GetForumTopicsAsync(long chatId, int offset, int limit);
+        Task<ForumTopics2> GetForumTopicsAsync(long chatId, int offset, int limit);
 
-        bool TryGetForumTopic(long chatId, long id, out ForumTopic topic);
+        bool TryGetForumTopic(long chatId, int id, out ForumTopic topic);
         bool TryGetForumTopic(long chatId, MessageTopic messageTopic, out ForumTopic topic);
 
-        IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<long> ids);
-        ForumTopic GetForumTopic(long chatId, long id);
+        IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<int> ids);
+        ForumTopic GetForumTopic(long chatId, int id);
 
         int UnreadTopicCount(long chatId);
     }
@@ -31,15 +31,15 @@ namespace Telegram.Services
     {
         private readonly ReaderWriterDictionary<long, ForumTopicService> _forums = new();
 
-        public void SetPinnedForumTopics(long chatId, IList<long> messageThreadIds)
+        public void SetPinnedForumTopics(long chatId, IList<int> forumTopicIds)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
             {
-                manager.SetPinnedForumTopics(messageThreadIds);
+                manager.SetPinnedForumTopics(forumTopicIds);
             }
         }
 
-        public Task<Topics> GetForumTopicsAsync(long chatId, int offset, int limit)
+        public Task<ForumTopics2> GetForumTopicsAsync(long chatId, int offset, int limit)
         {
             _forums.TryGetValue(chatId, out ForumTopicService manager);
 
@@ -52,7 +52,7 @@ namespace Telegram.Services
             return manager.GetForumTopicsAsync(offset, limit);
         }
 
-        public ForumTopic GetForumTopic(long chatId, long id)
+        public ForumTopic GetForumTopic(long chatId, int id)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
             {
@@ -62,7 +62,7 @@ namespace Telegram.Services
             return null;
         }
 
-        public bool TryGetForumTopic(long chatId, long id, out ForumTopic topic)
+        public bool TryGetForumTopic(long chatId, int id, out ForumTopic topic)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
             {
@@ -85,7 +85,7 @@ namespace Telegram.Services
             return false;
         }
 
-        public IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<long> ids)
+        public IEnumerable<ForumTopic> GetForumTopics(long chatId, IEnumerable<int> ids)
         {
             if (_forums.TryGetValue(chatId, out ForumTopicService manager))
             {

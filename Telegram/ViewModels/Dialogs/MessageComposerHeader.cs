@@ -20,10 +20,11 @@ namespace Telegram.ViewModels
             {
                 if (Message.TopicId != null && (viewModel.IsForum || viewModel.IsDirectMessagesGroup))
                 {
-                    if (Message.TopicId.IsForum(ForumTopicService.GeneralId))
-                    {
-                        return new InputMessageReplyToTopicMessage(Message.Id, new MessageTopicForum(Message.MessageThreadId), Quote, ChecklistTaskId);
-                    }
+                    // TODO: this should no longer be needed
+                    //if (Message.TopicId.IsForum(ForumTopicService.GeneralId))
+                    //{
+                    //    return new InputMessageReplyToTopicMessage(Message.Id, new MessageTopicForum(Message.MessageThreadId), Quote, ChecklistTaskId);
+                    //}
 
                     return new InputMessageReplyToTopicMessage(Message.Id, Message.TopicId, Quote, ChecklistTaskId);
                 }

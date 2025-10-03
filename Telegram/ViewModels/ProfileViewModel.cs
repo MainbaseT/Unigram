@@ -102,7 +102,7 @@ namespace Telegram.ViewModels
                     if (ClientService.TryGetForumTopic(chatMessageTopic.ChatId, forum.ForumTopicId, out ForumTopic topic))
                     {
                         ForumTopic = topic;
-                        Topic = new MessageTopicForum(topic.Info.MessageThreadId);
+                        Topic = new MessageTopicForum(topic.Info.ForumTopicId);
                     }
                 }
             }
@@ -1116,7 +1116,7 @@ namespace Telegram.ViewModels
                 var confirm = await ShowPopupAsync(popup);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    ClientService.Send(new EditForumTopic(chat.Id, _forumTopic.Info.MessageThreadId, popup.SelectedName, true, popup.SelectedIcon.CustomEmojiId));
+                    ClientService.Send(new EditForumTopic(chat.Id, _forumTopic.Info.ForumTopicId, popup.SelectedName, true, popup.SelectedIcon.CustomEmojiId));
                 }
             }
             else if (chat.Type is ChatTypeSupergroup or ChatTypeBasicGroup)

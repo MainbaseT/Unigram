@@ -379,13 +379,13 @@ namespace Telegram.Views
                 };
 
                 // This is needed because we don't keep all topics messages in memory as TDLib would do
-                long messageThreadId = 0;
+                var forumTopicId = 0;
                 if (ViewModel.ForumTopic != null)
                 {
-                    messageThreadId = ViewModel.ForumTopic.Info.MessageThreadId;
+                    forumTopicId = ViewModel.ForumTopic.Info.ForumTopicId;
                 }
 
-                ViewModel.ClientService.ViewMessages(chat.Id, messageThreadId, messages, source, false);
+                ViewModel.ClientService.ViewMessages(chat.Id, forumTopicId, messages, source, false);
             }
 
             if (animations.Count > 0 && !intermediate && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated)

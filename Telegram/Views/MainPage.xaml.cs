@@ -1542,11 +1542,12 @@ namespace Telegram.Views
                 data.TryGetValue("forum_topic_id", out string forum_topic_id);
                 data.TryGetValue("saved_messages_topic_id", out string saved_messages_topic_id);
                 data.TryGetValue("feedback_chat_topic_id", out string feedback_chat_topic_id);
+                data.TryGetValue("thread_id", out string thread_id);
 
                 long.TryParse(chat_id, out long chatId);
 
                 MessageTopic messageTopic = null;
-                if (long.TryParse(forum_topic_id, out long forumTopicId))
+                if (int.TryParse(forum_topic_id, out int forumTopicId))
                 {
                     messageTopic = new MessageTopicForum(forumTopicId);
                 }
@@ -1557,6 +1558,10 @@ namespace Telegram.Views
                 else if (long.TryParse(feedback_chat_topic_id, out long directMessagesChatTopicId))
                 {
                     messageTopic = new MessageTopicDirectMessages(directMessagesChatTopicId);
+                }
+                else if (long.TryParse(thread_id, out long threadId))
+                {
+                    messageTopic = new MessageTopicThread(threadId);
                 }
 
                 if (_clientService.TryGetChat(chatId, out Chat chat))
@@ -1970,7 +1975,7 @@ namespace Telegram.Views
                             var createNewWindow = selectionChanged && modifiers == VirtualKeyModifiers.Control;
 
                             // TODO: new display mode
-                            var messageThreadId = chat.LastMessage != null && ViewModel.ClientService.IsForum(chat) ? chat.LastMessage.TopicId() : 0;
+                            var messageThreadId = chat.LastMessage != null && ViewModel.ClientService.IsForum(chat) ? chat.LastMessage.ForumTopicId() : 0;
                             messageThreadId = 0;
 
                             MasterDetail.NavigationService.NavigateToChat(chat, force: false, createNewWindow: createNewWindow, clearBackStack: true);

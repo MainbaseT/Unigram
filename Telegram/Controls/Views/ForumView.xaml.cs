@@ -276,7 +276,7 @@ namespace Telegram.Controls.Views
             var forumTopic = args.Item as ForumTopic;
             var directMessagesChatTopic = args.Item as DirectMessagesChatTopic;
 
-            var topicId = forumTopic?.Info.MessageThreadId ?? directMessagesChatTopic.Id;
+            var topicId = forumTopic?.Info.ForumTopicId ?? directMessagesChatTopic.Id;
 
             if (args.InRecycleQueue)
             {
@@ -338,7 +338,7 @@ namespace Telegram.Controls.Views
 
         private bool TryGetCell(ForumTopic topic, out IForumTopicDelegate cell)
         {
-            if (_itemToSelector.TryGetValue(topic.Info.MessageThreadId, out SelectorItem container))
+            if (_itemToSelector.TryGetValue(topic.Info.ForumTopicId, out SelectorItem container))
             {
                 cell = container.ContentTemplateRoot as IForumTopicDelegate;
                 return cell != null;
@@ -371,9 +371,9 @@ namespace Telegram.Controls.Views
             });
         }
 
-        public void HandleForumTopic(long messageThreadId, Action<IForumTopicDelegate, ForumTopic> action)
+        public void HandleForumTopic(int forumTopicId, Action<IForumTopicDelegate, ForumTopic> action)
         {
-            if (TryGetTopicAndCell(messageThreadId, out ForumTopic chat, out IForumTopicDelegate cell))
+            if (TryGetTopicAndCell(forumTopicId, out ForumTopic chat, out IForumTopicDelegate cell))
             {
                 action(cell, chat);
             }
@@ -517,13 +517,13 @@ namespace Telegram.Controls.Views
 
                 if (compare.IsPinned)
                 {
-                    var pinned = items.Where(x => x.IsPinned).Select(x => x.Info.MessageThreadId).ToArray();
+                    var pinned = items.Where(x => x.IsPinned).Select(x => x.Info.ForumTopicId).ToArray();
 
                     ViewModel.ClientService.SetPinnedForumTopics(ViewModel.Chat.Id, pinned);
                 }
                 else
                 {
-                    items.Handle(topic.Info.MessageThreadId, topic.Order);
+                    items.Handle(topic.Info.ForumTopicId, topic.Order);
                 }
             }
         }

@@ -44,7 +44,8 @@ namespace Telegram
             };
         }
 
-        public static long TopicId(this Message message)
+        // TODO: remove
+        public static int ForumTopicId(this Message message)
         {
             if (message?.TopicId is MessageTopicForum forum)
             {

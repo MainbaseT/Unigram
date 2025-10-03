@@ -226,7 +226,7 @@ namespace Telegram.ViewModels.Users
                 }
                 else
                 {
-                    ClientService.Send(new AddContact(new Contact(user.PhoneNumber, _firstName, _lastName, string.Empty, user.Id),
+                    ClientService.Send(new AddContact(user.Id, new ImportedContact(user.PhoneNumber, _firstName, _lastName, null),
                         userFull.NeedPhoneNumberPrivacyException && SharePhoneNumber));
                 }
 

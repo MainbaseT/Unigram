@@ -652,7 +652,7 @@ namespace Telegram.Common
             if (response is UpgradedGift gift)
             {
                 var text = gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText();
-                var receivedGift = new ReceivedGift(string.Empty, null, text, true, false, false, false, false, false, 0, new SentGiftUpgraded(gift), Array.Empty<int>(), 0, 0, false, 0, 0, 0, 0, string.Empty);
+                var receivedGift = new ReceivedGift(string.Empty, null, text, true, false, false, false, false, false, 0, new SentGiftUpgraded(gift), Array.Empty<int>(), 0, 0, false, 0, 0, 0, 0, 0, string.Empty);
 
                 navigation.ShowPopup(new ReceivedGiftPopup(clientService, navigation, receivedGift, null, null));
             }
@@ -975,6 +975,7 @@ namespace Telegram.Common
             var response = await clientService.SendAsync(new GetMessageLinkInfo(url));
             if (response is MessageLinkInfo info && clientService.TryGetChat(info.ChatId, out Chat chat))
             {
+                // TODO: rewrite to support TopicId
                 if (info.Message != null)
                 {
                     if (info.MessageThreadId != 0)
@@ -993,7 +994,7 @@ namespace Telegram.Common
                             if (properties != null && properties.CanGetMessageThread)
                             {
                                 messageThreadId = info.Message.Id;
-                                messageTopic = new MessageTopicForum(info.MessageThreadId);
+                                messageTopic = new MessageTopicThread(info.MessageThreadId);
                             }
                             else
                             {
@@ -1026,7 +1027,7 @@ namespace Telegram.Common
                 }
                 else if (info.MessageThreadId != 0)
                 {
-                    navigation.NavigateToChat(chat, topic: new MessageTopicForum(info.MessageThreadId));
+                    navigation.NavigateToChat(chat, topic: new MessageTopicThread(info.MessageThreadId));
                 }
                 else
                 {

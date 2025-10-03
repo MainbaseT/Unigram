@@ -1127,7 +1127,7 @@ namespace Telegram.Controls
 
             if (ViewModel.ForumTopic != null)
             {
-                ViewModel.ClientService.Send(new GetForumTopicLink(chat.Id, ViewModel.ForumTopic.Info.MessageThreadId), result =>
+                ViewModel.ClientService.Send(new GetForumTopicLink(chat.Id, ViewModel.ForumTopic.Info.ForumTopicId), result =>
                 {
                     if (result is MessageLink link)
                     {

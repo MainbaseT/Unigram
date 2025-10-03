@@ -4192,7 +4192,7 @@
       <Version>4.6.1</Version>
     </PackageReference>
     <PackageReference Include="Telegram.Td.UWP">
-      <Version>1.8.55</Version>
+      <Version>1.8.56</Version>
     </PackageReference>
     <PackageReference Include="VideoLAN.LibVLC.UWP">
       <Version>3.0.22-rc1</Version>

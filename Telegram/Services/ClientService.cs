@@ -56,7 +56,7 @@ namespace Telegram.Services
 
         void LoadFullInfo(Chat chat);
 
-        void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead);
+        void ViewMessages(long chatId, int forumTopicId, IList<long> messageIds, MessageSource source, bool forceRead);
 
         Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, TransactionDirection direction, string offset, int limit);
 
@@ -393,13 +393,13 @@ namespace Telegram.Services
             Initialize(online);
         }
 
-        public void ViewMessages(long chatId, long messageThreadId, IList<long> messageIds, MessageSource source, bool forceRead)
+        public void ViewMessages(long chatId, int forumTopicId, IList<long> messageIds, MessageSource source, bool forceRead)
         {
             Send(new ViewMessages(chatId, messageIds, source, forceRead));
 
             if (source is MessageSourceForumTopicHistory && _forums.TryGetValue(chatId, out ForumTopicService manager))
             {
-                manager.ViewMessages(messageThreadId, messageIds);
+                manager.ViewMessages(forumTopicId, messageIds);
             }
         }
 
@@ -3719,6 +3719,19 @@ namespace Telegram.Td.Api
         public IList<long> TopicIds { get; set; }
     }
 
+    public sealed partial class ForumTopics2
+    {
+        public ForumTopics2(int totalCount, IList<int> topics)
+        {
+            TotalCount = totalCount;
+            TopicIds = topics;
+        }
+
+        public int TotalCount { get; set; }
+
+        public IList<int> TopicIds { get; set; }
+    }
+
     public readonly struct OrderedItem : IComparable<OrderedItem>
     {
         public readonly long Id;
@@ -3756,4 +3769,43 @@ namespace Telegram.Td.Api
             return HashCode.Combine(Id, Order);
         }
     }
+
+    public readonly struct OrderedTopic : IComparable<OrderedTopic>
+    {
+        public readonly int Id;
+        public readonly long Order;
+
+        public OrderedTopic(int id, long order)
+        {
+            Id = id;
+            Order = order;
+        }
+
+        public int CompareTo(OrderedTopic o)
+        {
+            if (Order != o.Order)
+            {
+                return o.Order < Order ? -1 : 1;
+            }
+
+            if (Id != o.Id)
+            {
+                return o.Id < Id ? -1 : 1;
+            }
+
+            return 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            OrderedTopic o = (OrderedTopic)obj;
+            return Id == o.Id && Order == o.Order;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Order);
+        }
+    }
+
 }

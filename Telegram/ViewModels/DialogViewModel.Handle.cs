@@ -516,7 +516,7 @@ namespace Telegram.ViewModels
         }
         public void Handle(UpdateForumTopicReadOutbox update)
         {
-            if (update.ChatId == _chat?.Id && update.MessageThreadId == _forumTopic?.Info.MessageThreadId)
+            if (update.ChatId == _chat?.Id && update.ForumTopicId == _forumTopic?.Info.ForumTopicId)
             {
                 BeginOnUIThread(() =>
                 {
@@ -685,14 +685,7 @@ namespace Telegram.ViewModels
             }
             else if (Type == DialogType.Thread)
             {
-                if (Thread != null)
-                {
-                    return message.SchedulingState == null && message.MessageThreadId == ThreadId;
-                }
-                else
-                {
-                    return message.SchedulingState == null && message.TopicId.AreTheSame(Topic);
-                }
+                return message.SchedulingState == null && message.TopicId.AreTheSame(Topic);
             }
             else if (Type == DialogType.Pinned)
             {
