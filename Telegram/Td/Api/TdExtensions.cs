@@ -3448,6 +3448,14 @@ namespace Telegram
                     return supergroup.IsAdministeredDirectMessagesGroup;
                 }
             }
+            else if (clientService.TryGetUser(chat, out User user))
+            {
+                if (user.Type is UserTypeBot { HasTopics: true })
+                {
+                    isForum = true;
+                    return true;
+                }
+            }
 
             isForum = false;
             return false;
