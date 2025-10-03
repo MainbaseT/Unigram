@@ -2231,6 +2231,7 @@
     <Content Include="Assets\Fonts\Nunito.ttf" />
     <Content Include="Assets\Animations\QrLogo.json" />
     <Content Include="Assets\Animations\TextRecognitionDownload.tgs" />
+    <Content Include="Assets\Animations\Birthdate.tgs" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />

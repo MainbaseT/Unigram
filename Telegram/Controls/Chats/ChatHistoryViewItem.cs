@@ -22,6 +22,7 @@ namespace Telegram.Controls.Chats
         ServiceUnread,
         ServiceForumTopic,
         ServicePhoto,
+        ServiceBirthdate,
         ServiceBackground,
         ServiceGift,
         ServiceGiftCode,

@@ -24,6 +24,7 @@ using Telegram.Td.Api;
 using Telegram.ViewModels.Chats;
 using Telegram.Views.Chats;
 using Telegram.Views.Popups;
+using Telegram.Views.Settings.Popups;
 using Telegram.Views.Stars.Popups;
 using Telegram.Views.Users;
 using Windows.ApplicationModel.DataTransfer;
@@ -2157,6 +2158,18 @@ namespace Telegram.ViewModels
                     {
                         await EditPhotoAsync(media);
                     }
+                }
+            }
+            else if (message.Content is MessageSuggestBirthdate suggestBirthdate && !message.IsOutgoing)
+            {
+                var popup = new SettingsBirthdatePopup(suggestBirthdate.Birthdate, suggested: true);
+
+                var confirm = await ShowPopupAsync(popup);
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    ClientService.Send(new SetBirthdate(popup.Value));
+
+                    ShowToast(string.Format("**{0}**\n{1}", Strings.PrivacyBirthdaySetDone, Strings.PrivacyBirthdaySetDoneInfo), ToastPopupIcon.Gift);
                 }
             }
             else if (message.Content is MessageChatSetBackground chatSetBackground)

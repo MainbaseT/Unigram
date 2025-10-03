@@ -12976,4 +12976,16 @@
     <string name="UserSuggestBirthdayButton">Suggest Date of Birth</string>
     <string name="UserSuggestBirthdayTitle">{0}\'s Date Of Birth</string>
 
+    <string name="ActionSuggestBirthday">**un1** suggests you to add your date of birth</string>
+    <string name="ActionYouSuggestBirthday">You suggest to add date of birth</string>
+    <string name="SuggestedDateOfBirthView">View</string>
+    <string name="DateDay">Day</string>
+    <string name="DateMonth">Month</string>
+    <string name="DateOfBirth">Date Of Birth</string>
+    <string name="DateOfBirthAddToProfile">Add to My Profile</string>
+    <string name="DateOfBirthHideYear">Hide Year</string>
+    <string name="DateYear">Year</string>
+    <string name="PrivacyBirthdaySetDone">Date of birth added.</string>
+    <string name="PrivacyBirthdaySetDoneInfo">You can change your birth of date in settings.</string>
+
 </resources>

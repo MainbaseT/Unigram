@@ -746,6 +746,9 @@ Your prize is **{0} Stars**.</value>
   <data name="ActionStarGiveawayPrizeTitle" xml:space="preserve">
     <value>Congratulations!</value>
   </data>
+  <data name="ActionSuggestBirthday" xml:space="preserve">
+    <value>**un1** suggests you to add your date of birth</value>
+  </data>
   <data name="ActionSuggestPhotoFromYouDescription" xml:space="preserve">
     <value>You suggested this photo for {0}&apos;s Telegram profile</value>
   </data>
@@ -841,6 +844,9 @@ Your prize is **{0} Stars**.</value>
   </data>
   <data name="ActionYouScoredInGame" xml:space="preserve">
     <value>You scored {0} in un2</value>
+  </data>
+  <data name="ActionYouSuggestBirthday" xml:space="preserve">
+    <value>You suggest to add date of birth</value>
   </data>
   <data name="AdaptiveLayout" xml:space="preserve">
     <value>Adaptive Layout for Wide Screens</value>
@@ -4783,6 +4789,24 @@ You can always switch back to the default Telegram theme here.</value>
   </data>
   <data name="DataUsage" xml:space="preserve">
     <value>Disk and network usage</value>
+  </data>
+  <data name="DateDay" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="DateMonth" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="DateOfBirth" xml:space="preserve">
+    <value>Date Of Birth</value>
+  </data>
+  <data name="DateOfBirthAddToProfile" xml:space="preserve">
+    <value>Add to My Profile</value>
+  </data>
+  <data name="DateOfBirthHideYear" xml:space="preserve">
+    <value>Hide Year</value>
+  </data>
+  <data name="DateYear" xml:space="preserve">
+    <value>Year</value>
   </data>
   <data name="DayAgo" xml:space="preserve">
     <value>a day ago</value>
@@ -10628,6 +10652,9 @@ seamlessly and efficiently.</value>
   <data name="PrivacyBirthdaySetDone" xml:space="preserve">
     <value>Date of birth added.</value>
   </data>
+  <data name="PrivacyBirthdaySetDoneInfo" xml:space="preserve">
+    <value>You can change your birth of date in settings.</value>
+  </data>
   <data name="PrivacyBirthdayTitle" xml:space="preserve">
     <value>Who can see my date of birth?</value>
   </data>
@@ -13328,6 +13355,9 @@ list of viewers.</value>
   </data>
   <data name="SuggestContactsInfo" xml:space="preserve">
     <value>Display people you message frequently at the top of the search section for quick access.</value>
+  </data>
+  <data name="SuggestedDateOfBirthView" xml:space="preserve">
+    <value>View</value>
   </data>
   <data name="SuggestedMessageAcceptInfo" xml:space="preserve">
     <value>Do you want to publish this post from **{0}**?</value>

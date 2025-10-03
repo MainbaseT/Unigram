@@ -1106,6 +1106,10 @@ namespace Telegram.Views
                 {
                     return ChatHistoryViewItemType.ServicePhoto;
                 }
+                else if (message.Content is MessageSuggestBirthdate)
+                {
+                    return ChatHistoryViewItemType.ServiceBirthdate;
+                }
                 else if (message.Content is MessageChatSetBackground { OldBackgroundMessageId: 0 }
                     || message.Content is MessageChatEvent { Action: ChatEventBackgroundChanged { NewBackground: not null } })
                 {

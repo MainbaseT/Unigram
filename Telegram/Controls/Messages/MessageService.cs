@@ -480,6 +480,45 @@ namespace Telegram.Controls.Messages
                         : Strings.ViewPhotoAction;
                 }
             }
+            else if (message.Content is MessageSuggestBirthdate suggestBirthdate)
+            {
+                var dateRoot = FindName("DateRoot") as Grid;
+                var dayTitle = FindName("DateDayTitle") as TextBlock;
+                var monthTitle = FindName("DateMonthTitle") as TextBlock;
+                var yearTitle = FindName("DateYearTitle") as TextBlock;
+                var dayValue = FindName("DateDayValue") as TextBlock;
+                var monthValue = FindName("DateMonthValue") as TextBlock;
+                var yearValue = FindName("DateYearValue") as TextBlock;
+                var view = FindName("View") as Border;
+
+                LocaleService.Current.GetDatePositions(out int dayPosition, out int monthPosition, out int yearPosition);
+
+                Grid.SetColumn(dayTitle, dayPosition);
+                Grid.SetColumn(dayValue, dayPosition);
+
+                Grid.SetColumn(monthTitle, monthPosition);
+                Grid.SetColumn(monthValue, monthPosition);
+
+                Grid.SetColumn(yearTitle, yearPosition);
+                Grid.SetColumn(yearValue, yearPosition);
+
+                dayValue.Text = suggestBirthdate.Birthdate.ToString();
+                monthValue.Text = LocaleService.Current.CurrentCulture.DateTimeFormat.GetMonthName(suggestBirthdate.Birthdate.Month);
+                yearValue.Text = suggestBirthdate.Birthdate.ToString();
+
+                if (suggestBirthdate.Birthdate.Year == 0)
+                {
+                    dateRoot.ColumnDefinitions[yearPosition].Width = new GridLength(0, GridUnitType.Pixel);
+                }
+                else
+                {
+                    dateRoot.ColumnDefinitions[yearPosition].Width = new GridLength(1, GridUnitType.Star);
+                }
+
+                view.Visibility = message.IsOutgoing
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            }
             else if (message.Content is MessageSuggestProfilePhoto suggestProfilePhoto)
             {
                 var segments = FindName("Segments") as ActiveStoriesSegments;
@@ -639,6 +678,7 @@ namespace Telegram.Controls.Messages
                 MessagePaymentRefunded paymentRefunded => UpdatePaymentRefunded(message, paymentRefunded, history),
                 MessagePinMessage pinMessage => UpdatePinMessage(message, pinMessage, history),
                 MessageScreenshotTaken screenshotTaken => UpdateScreenshotTaken(message, screenshotTaken, history),
+                MessageSuggestBirthdate suggestBirthdate => UpdateSuggestBirthdate(message, suggestBirthdate, history),
                 MessageSuggestProfilePhoto suggestProfilePhoto => UpdateSuggestProfilePhoto(message, suggestProfilePhoto, history),
                 MessageSupergroupChatCreate supergroupChatCreate => UpdateSupergroupChatCreate(message, supergroupChatCreate, history),
                 MessageUpgradedGift upgradedGift => UpdateUpgradedGift(message, upgradedGift, history),
@@ -2324,6 +2364,18 @@ namespace Telegram.Controls.Messages
             else
             {
                 return ReplaceWithLink(Strings.ActionTakeScreenshoot, message.GetSender());
+            }
+        }
+
+        private static FormattedText UpdateSuggestBirthdate(MessageWithOwner message, MessageSuggestBirthdate suggestBirthdate, bool history)
+        {
+            if (message.IsOutgoing)
+            {
+                return Strings.ActionYouSuggestBirthday.AsFormattedText();
+            }
+            else
+            {
+                return ReplaceWithLink(Strings.ActionSuggestBirthday, message.GetSender());
             }
         }
 
