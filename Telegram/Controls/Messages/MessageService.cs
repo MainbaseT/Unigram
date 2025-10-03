@@ -502,9 +502,9 @@ namespace Telegram.Controls.Messages
                 Grid.SetColumn(yearTitle, yearPosition);
                 Grid.SetColumn(yearValue, yearPosition);
 
-                dayValue.Text = suggestBirthdate.Birthdate.ToString();
+                dayValue.Text = suggestBirthdate.Birthdate.Day.ToString();
                 monthValue.Text = LocaleService.Current.CurrentCulture.DateTimeFormat.GetMonthName(suggestBirthdate.Birthdate.Month);
-                yearValue.Text = suggestBirthdate.Birthdate.ToString();
+                yearValue.Text = suggestBirthdate.Birthdate.Year.ToString();
 
                 if (suggestBirthdate.Birthdate.Year == 0)
                 {
