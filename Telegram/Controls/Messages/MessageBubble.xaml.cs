@@ -1001,17 +1001,17 @@ namespace Telegram.Controls.Messages
                 if (message.ForwardInfo?.Origin is MessageOriginUser fromUser && message.ClientService.TryGetUser(fromUser.SenderUserId, out User fromUserUser))
                 {
                     title = fromUserUser.FullName();
-                    foreground = message.ClientService.GetAccentBrush(fromUserUser.AccentColorId);
+                    foreground = message.ClientService.GetAccentBrush(fromUserUser);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginChat fromChat && message.ClientService.TryGetChat(fromChat.SenderChatId, out Chat fromChatChat))
                 {
                     title = message.ClientService.GetTitle(fromChatChat);
-                    foreground = message.ClientService.GetAccentBrush(fromChatChat.AccentColorId);
+                    foreground = message.ClientService.GetAccentBrush(fromChatChat);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel && message.ClientService.TryGetChat(fromChannel.ChatId, out Chat fromChannelChat))
                 {
                     title = message.ClientService.GetTitle(fromChannelChat);
-                    foreground = message.ClientService.GetAccentBrush(fromChannelChat.AccentColorId);
+                    foreground = message.ClientService.GetAccentBrush(fromChannelChat);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser fromHiddenUser)
                 {
@@ -1049,7 +1049,7 @@ namespace Telegram.Controls.Messages
                     var title = senderUser.FullName();
                     var foreground = message.IsOutgoing && !message.IsChannelPost
                         ? null
-                        : message.ClientService.GetAccentBrush(senderUser.AccentColorId);
+                        : message.ClientService.GetAccentBrush(senderUser);
 
                     if (foreground != null)
                     {
@@ -1074,7 +1074,7 @@ namespace Telegram.Controls.Messages
                     var title = senderChat.Title;
                     var foreground = message.IsOutgoing && !message.IsChannelPost
                         ? null
-                        : message.ClientService.GetAccentBrush(senderChat.AccentColorId);
+                        : message.ClientService.GetAccentBrush(senderChat);
 
                     if (foreground != null)
                     {
@@ -1097,7 +1097,7 @@ namespace Telegram.Controls.Messages
                 header = true;
                 shown = true;
 
-                var foreground = message.ClientService.GetAccentBrush(chat.AccentColorId);
+                var foreground = message.ClientService.GetAccentBrush(chat);
                 var title = chat.Title;
 
                 HeaderLink.Foreground = foreground;

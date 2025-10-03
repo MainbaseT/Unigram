@@ -71,7 +71,7 @@ namespace Telegram.Controls
             Photo.SetChat(clientService, chat, 28);
             Title.Text = clientService.GetTitle(chat);
 
-            Background = clientService.GetAccentBrush(chat.AccentColorId);
+            Background = clientService.GetAccentBrush(chat);
         }
 
         public void SetUser(IClientService clientService, User user)
@@ -95,7 +95,7 @@ namespace Telegram.Controls
             Photo.SetUser(clientService, user, 28);
             Title.Text = user.FullName();
 
-            Background = clientService.GetAccentBrush(user.AccentColorId);
+            Background = clientService.GetAccentBrush(user);
         }
     }
 }

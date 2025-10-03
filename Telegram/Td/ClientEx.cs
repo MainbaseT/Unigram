@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -229,6 +230,38 @@ namespace Telegram.Td
             }
 
             return PlaceholderImage.GetBrush(id);
+        }
+
+        public static SolidColorBrush GetAccentBrush(this IClientService clientService, Chat chat)
+        {
+            if (chat.UpgradedGiftColors != null)
+            {
+                return new SolidColorBrush(chat.UpgradedGiftColors.LightThemeAccentColor.ToColor());
+            }
+
+            var accent = clientService.GetAccentColor(chat.AccentColorId);
+            if (accent != null)
+            {
+                return new SolidColorBrush(accent.LightThemeColors[0]);
+            }
+
+            return PlaceholderImage.GetBrush(chat.AccentColorId);
+        }
+
+        public static SolidColorBrush GetAccentBrush(this IClientService clientService, User user)
+        {
+            if (user.UpgradedGiftColors != null)
+            {
+                return new SolidColorBrush(user.UpgradedGiftColors.LightThemeAccentColor.ToColor());
+            }
+
+            var accent = clientService.GetAccentColor(user.AccentColorId);
+            if (accent != null)
+            {
+                return new SolidColorBrush(accent.LightThemeColors[0]);
+            }
+
+            return PlaceholderImage.GetBrush(user.AccentColorId);
         }
     }
 }
