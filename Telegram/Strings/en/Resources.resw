@@ -14767,6 +14767,15 @@ However, it is currently available for purchase. **Learn more…**</value>
   <data name="Users_other" xml:space="preserve">
     <value>{0} users</value>
   </data>
+  <data name="UserSuggestBirthday" xml:space="preserve">
+    <value>Suggest Date of Birth</value>
+  </data>
+  <data name="UserSuggestBirthdayButton" xml:space="preserve">
+    <value>Suggest Date of Birth</value>
+  </data>
+  <data name="UserSuggestBirthdayTitle" xml:space="preserve">
+    <value>{0}&apos;s Date Of Birth</value>
+  </data>
   <data name="UsesLimitHelp" xml:space="preserve">
     <value>You can make the link work only for a certain number of users.</value>
   </data>

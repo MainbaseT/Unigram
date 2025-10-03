@@ -21,6 +21,17 @@ namespace Telegram.Views.Settings.Popups
         private readonly ObservableCollection<int> _days = new();
         private readonly ObservableCollection<int> _months = new();
 
+        public SettingsBirthdatePopup(User user)
+            : this(new Birthdate(DateTime.Today.Day, DateTime.Today.Month, 0), null)
+        {
+            Title = string.Format(Strings.UserSuggestBirthdayTitle, user.FirstName);
+            PrimaryButtonText = Strings.UserSuggestBirthdayButton;
+            SecondaryButtonText = string.Empty;
+            ButtonsLayout = ContentPopupButtonsLayout.Vertical;
+
+            IsDismissButtonVisible = true;
+        }
+
         public SettingsBirthdatePopup(Birthdate date, UserPrivacySettingRule primaryRule = null)
         {
             InitializeComponent();

@@ -205,6 +205,11 @@
 
                 <controls:HeaderedControl x:Name="PhotoPanel"
                                           x:Load="False">
+                    <controls:SettingsButton x:Name="SuggestBirthday"
+                                             Click="{x:Bind ViewModel.SuggestBirthday}"
+                                             Content="{CustomResource UserSuggestBirthday}"
+                                             Glyph="&#xEAE0;"
+                                             Visibility="Collapsed" />
                     <controls:SettingsButton x:Name="SuggestPhoto"
                                              Glyph="&#xE9FE;"
                                              Visibility="Collapsed">

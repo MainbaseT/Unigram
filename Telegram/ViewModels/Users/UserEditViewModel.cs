@@ -249,6 +249,22 @@ namespace Telegram.ViewModels.Users
                 && _lastName.Length <= 64;
         }
 
+        public async void SuggestBirthday()
+        {
+            if (ClientService.TryGetUser(_userId, out User user))
+            {
+                var popup = new SettingsBirthdatePopup(user);
+
+                var confirm = await ShowPopupAsync(popup);
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    ClientService.Send(new SuggestUserBirthdate(user.Id, popup.Value));
+
+                    NavigationService.NavigateToUser(user.Id, true);
+                }
+            }
+        }
+
         public async void SetPhoto()
         {
             var success = await _profilePhotoService.SetPhotoAsync(NavigationService, _userId, isPersonal: false);

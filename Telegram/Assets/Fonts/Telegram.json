@@ -11497,12 +11497,20 @@
     {
       "selection": [
         {
+          "order": 994,
+          "id": 180,
+          "name": "tl_fluent_food_cake_add_20_regular",
+          "prevSize": 32,
+          "code": 60128,
+          "tempChar": ""
+        },
+        {
           "order": 989,
           "id": 179,
           "name": "tl_fluent_arrow_sync_horizontal_20_regular",
           "prevSize": 32,
           "code": 60123,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 985,
@@ -11515,7 +11523,7 @@
             60120,
             60121
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 984,
@@ -11523,7 +11531,7 @@
           "name": "tl_fluent_autodelete_20_filled",
           "prevSize": 32,
           "code": 60117,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 974,
@@ -11531,7 +11539,7 @@
           "name": "tl_fluent_chat_dollar_24_regular",
           "prevSize": 32,
           "code": 60110,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 969,
@@ -11539,7 +11547,7 @@
           "name": "tl_fluent_open_with_20_regular",
           "prevSize": 32,
           "code": 60104,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 968,
@@ -11547,7 +11555,7 @@
           "name": "tl_fluent_copy_20_regular",
           "prevSize": 32,
           "code": 60105,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 964,
@@ -11555,7 +11563,7 @@
           "name": "tl_fluent_poll_undo_20_regular",
           "prevSize": 32,
           "code": 60100,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 963,
@@ -11563,7 +11571,7 @@
           "name": "tl_copy_as_path_20_regular",
           "prevSize": 32,
           "code": 60099,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 957,
@@ -11571,7 +11579,7 @@
           "name": "tl_fluent_diamond_20_regular",
           "prevSize": 32,
           "code": 60093,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 935,
@@ -11579,7 +11587,7 @@
           "name": "tl_fluent_number_symbol_arrow_up_16_regular",
           "prevSize": 32,
           "code": 60075,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 936,
@@ -11587,7 +11595,7 @@
           "name": "tl_fluent_number_symbol_arrow_up_20_regular",
           "prevSize": 32,
           "code": 60076,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 937,
@@ -11595,7 +11603,7 @@
           "name": "tl_fluent_dollar_arrow_up_16_regular",
           "prevSize": 32,
           "code": 60077,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 938,
@@ -11603,7 +11611,7 @@
           "name": "tl_fluent_dollar_arrow_up_20_regular",
           "prevSize": 32,
           "code": 60078,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 939,
@@ -11611,7 +11619,7 @@
           "name": "tl_fluent_calendar_arrow_up_16_regular",
           "prevSize": 32,
           "code": 60079,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 940,
@@ -11619,7 +11627,7 @@
           "name": "tl_fluent_calendar_arrow_up_20_regular",
           "prevSize": 32,
           "code": 60080,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 929,
@@ -11627,7 +11635,7 @@
           "name": "tl_fluent_home_dismiss_20_regular",
           "prevSize": 32,
           "code": 60069,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 926,
@@ -11635,7 +11643,7 @@
           "name": "tl_fluent_chat_stars_20_filled",
           "prevSize": 32,
           "code": 59772,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 925,
@@ -11643,7 +11651,7 @@
           "name": "tl_fluent_spoiler_20_regular",
           "prevSize": 32,
           "code": 60065,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 924,
@@ -11651,7 +11659,7 @@
           "name": "tl_fluent_media_spoiler_20_regular",
           "prevSize": 32,
           "code": 60066,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 918,
@@ -11659,7 +11667,7 @@
           "name": "tl_fluent_clock_arrow_forward_20_regular",
           "prevSize": 32,
           "code": 60063,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 917,
@@ -11667,7 +11675,7 @@
           "name": "tl_fluent_clock_edit_20_regular",
           "prevSize": 32,
           "code": 60062,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 899,
@@ -11675,7 +11683,7 @@
           "name": "ic_fluent_person_add_20_regular",
           "prevSize": 32,
           "code": 60049,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 897,
@@ -11683,7 +11691,7 @@
           "name": "tl_fluent_fragment_20_filled",
           "prevSize": 32,
           "code": 60046,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 895,
@@ -11691,7 +11699,7 @@
           "name": "tl_fluent_coin_20_regular",
           "prevSize": 32,
           "code": 60045,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 890,
@@ -11699,7 +11707,7 @@
           "name": "Premium-1",
           "prevSize": 32,
           "code": 60039,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 886,
@@ -11707,7 +11715,7 @@
           "name": "tl_fluent_chat_link_20_filled",
           "prevSize": 32,
           "code": 60035,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 885,
@@ -11715,7 +11723,7 @@
           "name": "tl_fluent_chat_info_20_filled",
           "prevSize": 32,
           "code": 60034,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 884,
@@ -11723,7 +11731,7 @@
           "name": "tl_fluent_fifty_fifty_20_regular",
           "prevSize": 32,
           "code": 60031,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 883,
@@ -11731,7 +11739,7 @@
           "name": "tl_fluent_ton_coin_20_regular",
           "prevSize": 32,
           "code": 60033,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 881,
@@ -11739,7 +11747,7 @@
           "name": "tl_fluent_arrow_reply_20_filled",
           "prevSize": 32,
           "code": 60028,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 880,
@@ -11747,7 +11755,7 @@
           "name": "tl_fluent_chat_snooze_20_filled",
           "prevSize": 32,
           "code": 60029,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 877,
@@ -11755,7 +11763,7 @@
           "name": "tl_fluent_chat_unread_20_filled",
           "prevSize": 32,
           "code": 60025,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 874,
@@ -11763,7 +11771,7 @@
           "name": "tl_fluent_chat_snooze_20_regular",
           "prevSize": 32,
           "code": 60022,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 871,
@@ -11776,7 +11784,7 @@
             60020,
             60021
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 864,
@@ -11784,7 +11792,7 @@
           "name": "tl_fluent_last_seen_20_filled",
           "prevSize": 32,
           "code": 60013,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 853,
@@ -11792,7 +11800,7 @@
           "name": "tl_fluent_my_notes_20_filled",
           "prevSize": 32,
           "code": 60001,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 852,
@@ -11800,7 +11808,7 @@
           "name": "tl_fluent_author_hidden_20_filled",
           "prevSize": 32,
           "code": 60002,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 847,
@@ -11808,7 +11816,7 @@
           "name": "tl_fluent_view_once_20_regular",
           "prevSize": 32,
           "code": 59672,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 836,
@@ -11816,7 +11824,7 @@
           "name": "tl_fluent_videochat_20_filled",
           "prevSize": 32,
           "code": 59983,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 810,
@@ -11824,7 +11832,7 @@
           "name": "tl_fluent_move_down_20_regular",
           "prevSize": 32,
           "code": 59971,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 811,
@@ -11832,7 +11840,7 @@
           "name": "tl_fluent_move_up_20_regular",
           "prevSize": 32,
           "code": 59972,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 809,
@@ -11840,7 +11848,7 @@
           "name": "tl_fluent_enlarge_20_regular",
           "prevSize": 32,
           "code": 59973,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 808,
@@ -11848,7 +11856,7 @@
           "name": "tl_fluent_shrink_20_regular",
           "prevSize": 32,
           "code": 59974,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 807,
@@ -11856,7 +11864,7 @@
           "name": "tl_fluent_id_rectangle_20_regular",
           "prevSize": 32,
           "code": 59970,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 804,
@@ -11864,7 +11872,7 @@
           "name": "tl_fluent_reply_another_chat_20_regular",
           "prevSize": 32,
           "code": 59967,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 803,
@@ -11872,7 +11880,7 @@
           "name": "tl_fluent_quote_block_20_regular",
           "prevSize": 32,
           "code": 59966,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 800,
@@ -11880,7 +11888,7 @@
           "name": "tl_fluent_text_quote_20_regular",
           "prevSize": 32,
           "code": 59964,
-          "tempChar": "",
+          "tempChar": "",
           "codes": [
             59964
           ]
@@ -11891,7 +11899,7 @@
           "name": "tl_fluent_boost_20_regular",
           "prevSize": 32,
           "code": 59961,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 785,
@@ -11899,7 +11907,7 @@
           "name": "tl_fluent_stories_off_20_regular",
           "prevSize": 32,
           "code": 59949,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 784,
@@ -11907,7 +11915,7 @@
           "name": "tl_fluent_stealth_20_filled",
           "prevSize": 32,
           "code": 59948,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 783,
@@ -11915,7 +11923,7 @@
           "name": "tl_fluent_stealth_20_regular",
           "prevSize": 32,
           "code": 59944,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 782,
@@ -11923,7 +11931,7 @@
           "name": "tl_fluent_stealth_locked_20_regular",
           "prevSize": 32,
           "code": 59945,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 781,
@@ -11931,7 +11939,7 @@
           "name": "tl_fluent_eye_on_20_regular",
           "prevSize": 32,
           "code": 59946,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 780,
@@ -11939,7 +11947,7 @@
           "name": "tl_fluent_save_locked_20_regular",
           "prevSize": 32,
           "code": 59947,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 764,
@@ -11947,7 +11955,7 @@
           "name": "tl_fluent_unarchive_20_regular",
           "prevSize": 32,
           "code": 59940,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 759,
@@ -11958,7 +11966,7 @@
           "codes": [
             59859
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 757,
@@ -11966,7 +11974,7 @@
           "name": "Arrow",
           "prevSize": 32,
           "code": 59710,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 753,
@@ -11974,7 +11982,7 @@
           "name": "tl_fluent_arrow_forward_20_filled",
           "prevSize": 32,
           "code": 59668,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 752,
@@ -11982,7 +11990,7 @@
           "name": "tl_fluent_arrow_forward_20_regular",
           "prevSize": 32,
           "code": 59181,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 751,
@@ -11990,7 +11998,7 @@
           "name": "tl_fluent_arrow_reply_20_regular",
           "prevSize": 32,
           "code": 57928,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 749,
@@ -11998,7 +12006,7 @@
           "name": "VoiceRecognition1",
           "prevSize": 32,
           "code": 59667,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 750,
@@ -12006,7 +12014,7 @@
           "name": "VoiceRecognition2",
           "prevSize": 32,
           "code": 59659,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 725,
@@ -12014,7 +12022,7 @@
           "name": "ic_fluent_speed_template_20_regular",
           "prevSize": 32,
           "code": 59923,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 722,
@@ -12022,7 +12030,7 @@
           "name": "ic_fluent_folder_arrow_download_20_regular",
           "prevSize": 32,
           "code": 59920,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 717,
@@ -12030,7 +12038,7 @@
           "name": "ShieldStar",
           "prevSize": 32,
           "code": 59779,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 713,
@@ -12038,7 +12046,7 @@
           "name": "bot_command_0",
           "prevSize": 32,
           "code": 59915,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 696,
@@ -12049,7 +12057,7 @@
           "codes": [
             59895
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 697,
@@ -12057,7 +12065,7 @@
           "name": "link_1",
           "prevSize": 32,
           "code": 59896,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 692,
@@ -12072,7 +12080,7 @@
             59896,
             59897
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 691,
@@ -12087,7 +12095,7 @@
             59901,
             59902
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 690,
@@ -12102,7 +12110,7 @@
             59906,
             59907
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 689,
@@ -12117,7 +12125,7 @@
             59911,
             59912
           ],
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 652,
@@ -12125,7 +12133,7 @@
           "name": "gift_premium",
           "prevSize": 32,
           "code": 59860,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 630,
@@ -12133,7 +12141,7 @@
           "name": "Circle",
           "prevSize": 32,
           "code": 59963,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 621,
@@ -12141,7 +12149,7 @@
           "name": "Premium",
           "prevSize": 32,
           "code": 59829,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 603,
@@ -12149,7 +12157,7 @@
           "name": "ic_fluent_clock_alarm_hour_20_regular",
           "prevSize": 32,
           "code": 59811,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 601,
@@ -12157,7 +12165,7 @@
           "name": "never",
           "prevSize": 32,
           "code": 59807,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 599,
@@ -12165,7 +12173,7 @@
           "name": "day",
           "prevSize": 32,
           "code": 59808,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 602,
@@ -12173,7 +12181,7 @@
           "name": "week",
           "prevSize": 32,
           "code": 59809,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 600,
@@ -12181,7 +12189,7 @@
           "name": "month",
           "prevSize": 32,
           "code": 59810,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 592,
@@ -12189,7 +12197,7 @@
           "name": "mask_outline_2",
           "prevSize": 32,
           "code": 59799,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 521,
@@ -12197,7 +12205,7 @@
           "name": "Reactions",
           "prevSize": 32,
           "code": 59776,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 513,
@@ -12205,7 +12213,7 @@
           "name": "ic_fluent_dismiss_24_regular",
           "prevSize": 32,
           "code": 59768,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 497,
@@ -12213,7 +12221,7 @@
           "name": "Seen",
           "prevSize": 32,
           "code": 59755,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 494,
@@ -12221,7 +12229,7 @@
           "name": "ArrowDownSmall",
           "prevSize": 32,
           "code": 60892,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 492,
@@ -12229,7 +12237,7 @@
           "name": "ArrowLeftSmall",
           "prevSize": 32,
           "code": 60889,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 491,
@@ -12237,7 +12245,7 @@
           "name": "ArrowRightSmall",
           "prevSize": 32,
           "code": 60890,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 493,
@@ -12245,7 +12253,7 @@
           "name": "ArrowUpSmall",
           "prevSize": 32,
           "code": 60891,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 489,
@@ -12253,7 +12261,7 @@
           "name": "DismissSmall",
           "prevSize": 32,
           "code": 57610,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 403,
@@ -12261,7 +12269,7 @@
           "name": "tl_fluent_videochat_20_regular",
           "prevSize": 32,
           "code": 59648,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 397,
@@ -12269,7 +12277,7 @@
           "name": "ic_fluent_play_20_regular",
           "prevSize": 32,
           "code": 59240,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 394,
@@ -12277,7 +12285,7 @@
           "name": "uniE769",
           "prevSize": 32,
           "code": 59241,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 0,
@@ -12349,7 +12357,7 @@
           "name": "CancelSmall",
           "prevSize": 32,
           "code": 59711,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 237,
@@ -12357,7 +12365,7 @@
           "name": "DownloadSmall",
           "prevSize": 32,
           "code": 59690,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 0,
@@ -12437,7 +12445,7 @@
           "prevSize": 32,
           "code": 58880,
           "name": "uniE600",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 9,
@@ -12446,7 +12454,7 @@
           "prevSize": 32,
           "code": 58881,
           "name": "uniE601",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 10,
@@ -12455,7 +12463,7 @@
           "prevSize": 32,
           "code": 58882,
           "name": "uniE602",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 11,
@@ -12464,7 +12472,7 @@
           "prevSize": 32,
           "code": 58883,
           "name": "uniE603",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 12,
@@ -12500,7 +12508,7 @@
           "prevSize": 32,
           "code": 58885,
           "name": "uniE60B",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 16,
@@ -12509,7 +12517,7 @@
           "prevSize": 32,
           "code": 58892,
           "name": "uniE60C",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 235,
@@ -12517,7 +12525,7 @@
           "name": "Trending",
           "prevSize": 32,
           "code": 58893,
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 18,
@@ -12561,7 +12569,7 @@
           "prevSize": 32,
           "code": 58894,
           "name": "uniE611",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 23,
@@ -12570,7 +12578,7 @@
           "prevSize": 32,
           "code": 58898,
           "name": "uniE612",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "order": 0,
@@ -12668,7 +12676,7 @@
           "prevSize": 32,
           "code": 59654,
           "name": "uniE906",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 34,
@@ -12686,7 +12694,7 @@
           "prevSize": 32,
           "code": 59656,
           "name": "uniE908",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 36,
@@ -12704,7 +12712,7 @@
           "prevSize": 32,
           "code": 59658,
           "name": "uniE90A",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 38,
@@ -12776,7 +12784,7 @@
           "prevSize": 32,
           "code": 59666,
           "name": "uniE912",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 46,
@@ -12848,7 +12856,7 @@
           "prevSize": 32,
           "code": 59674,
           "name": "uniE91A",
-          "tempChar": ""
+          "tempChar": ""
         },
         {
           "id": 55,
@@ -12884,7 +12892,7 @@
           "prevSize": 32,
           "code": 942080,
           "name": "uE6000",
-          "tempChar": ""
+          "tempChar": ""
         }
       ],
       "id": 2,
@@ -12898,6 +12906,25 @@
       "height": 1024,
       "prevSize": 32,
       "icons": [
+        {
+          "id": 180,
+          "paths": [
+            "M742.4 512c127.247 0 230.4 103.153 230.4 230.4s-103.153 230.4-230.4 230.4c-127.247 0-230.4-103.153-230.4-230.4s103.153-230.4 230.4-230.4zM742.4 614.4c-14.141 0-25.6 11.464-25.6 25.6v76.8h-76.8c-14.141 0-25.6 11.464-25.6 25.6s11.459 25.6 25.6 25.6h76.8v76.8c0 14.136 11.459 25.6 25.6 25.6 14.136 0 25.6-11.464 25.6-25.6v-76.8h76.8c14.136 0 25.6-11.464 25.6-25.6s-11.464-25.6-25.6-25.6h-76.8v-76.8c0-14.136-11.464-25.6-25.6-25.6z",
+            "M768 409.6c49.121 0 90.112 34.599 100.050 80.75-25.293-12.632-52.731-21.613-81.649-26.15-5.709-2.2-11.914-3.4-18.401-3.4h-512c-28.277 0-51.2 22.923-51.2 51.2v39.752l113.2 101.197c21.127 18.888 53.578 17.034 72.4-4.147l45-50.703c23.312-26.26 56.771-37.443 88.75-33.649-14.029 17.188-26.101 36.040-35.8 56.248-5.365 2.796-10.366 6.579-14.65 11.402l-45 50.698c-37.636 42.378-102.539 46.121-144.8 8.351l-79.1-70.697v198.748h266.65c5.052 17.859 11.851 34.975 20.15 51.2h-363.6c-14.138 0-25.6-11.464-25.6-25.6s11.462-25.6 25.6-25.6h25.6v-307.2c0-56.554 45.846-102.4 102.4-102.4h512z",
+            "M511.8 102c39.67 0 65.772 28.523 80.451 53.35 14.981 25.345 23.117 54.787 24.3 72.8 2.432 37.063-3.697 70.030-22.548 94.15-19.564 25.015-48.998 35.7-82.202 35.7-32.736-0.004-62.27-9.588-81.95-34.6-18.835-23.95-24.552-57.091-22.45-95 1.058-19.052 9.068-48.603 24.1-73.85 14.81-24.872 40.904-52.541 80.3-52.55zM511.8 153.2c-12.525 0.008-25.072 8.692-36.3 27.55-11.012 18.495-16.423 40.086-17 50.5-1.809 32.649 3.976 50.807 11.6 60.5 6.787 8.626 18.671 15.047 41.7 15.050 22.134 0 34.555-6.718 41.851-16.050 8.003-10.234 13.809-28.583 11.796-59.25-0.62-9.482-6.134-31.16-17.295-50.050-11.469-19.407-24.090-28.25-36.353-28.25z"
+          ],
+          "attrs": [
+            {},
+            {},
+            {}
+          ],
+          "isMulticolor": false,
+          "isMulticolor2": false,
+          "grid": 0,
+          "tags": [
+            "tl_fluent_food_cake_add_20_regular"
+          ]
+        },
         {
           "id": 179,
           "paths": [
@@ -15379,7 +15406,7 @@
       "metadata": {
         "fontFamily": "Telegram",
         "majorVersion": 2,
-        "minorVersion": 162
+        "minorVersion": 163
       },
       "metrics": {
         "emSize": 1024,

@@ -116,6 +116,10 @@ namespace Telegram.Views.Users
                 SuggestPhoto.Visibility = fullInfo.OutgoingPaidMessageStarCount > 0
                     ? Visibility.Collapsed
                     : Visibility.Visible;
+
+                SuggestBirthday.Visibility = fullInfo.OutgoingPaidMessageStarCount > 0 || fullInfo.Birthdate != null
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
             }
 
             if (fullInfo.NeedPhoneNumberPrivacyException)

@@ -12972,4 +12972,8 @@
     <string name="ProfileNotesRemoveText">Are you sure you want to remove the note?</string>
     <string name="ProfileNotesRemoveTitle">Delete Note</string>
 
+    <string name="UserSuggestBirthday">Suggest Date of Birth</string>
+    <string name="UserSuggestBirthdayButton">Suggest Date of Birth</string>
+    <string name="UserSuggestBirthdayTitle">{0}\'s Date Of Birth</string>
+
 </resources>
