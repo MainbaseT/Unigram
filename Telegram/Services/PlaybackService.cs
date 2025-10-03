@@ -998,7 +998,7 @@ namespace Telegram.Services
                 Duration = audio.Audio.Duration;
                 CanChangePlaybackRate = audio.Audio.Duration >= 10 * 60;
 
-                if (string.IsNullOrEmpty(audio.Audio.Performer) || string.IsNullOrEmpty(audio.Audio.Title))
+                if (string.IsNullOrEmpty(audio.Audio.Title))
                 {
                     Title = audio.Audio.FileName;
                     Performer = string.Empty;
@@ -1029,7 +1029,7 @@ namespace Telegram.Services
                     Duration = previewAudio.Audio.Duration;
                     CanChangePlaybackRate = previewAudio.Audio.Duration >= 10 * 60;
 
-                    if (string.IsNullOrEmpty(previewAudio.Audio.Performer) || string.IsNullOrEmpty(previewAudio.Audio.Title))
+                    if (string.IsNullOrEmpty(previewAudio.Audio.Title))
                     {
                         Title = previewAudio.Audio.FileName;
                         Performer = string.Empty;
@@ -1075,7 +1075,7 @@ namespace Telegram.Services
             Duration = audio.Duration;
             CanChangePlaybackRate = audio.Duration >= 10 * 60;
 
-            if (string.IsNullOrEmpty(audio.Performer) || string.IsNullOrEmpty(audio.Title))
+            if (string.IsNullOrEmpty(audio.Title))
             {
                 Title = audio.FileName;
                 Performer = string.Empty;

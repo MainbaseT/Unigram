@@ -182,13 +182,13 @@ namespace Telegram.Views.Popups
                         return;
                     }
 
-                    if (audio.Performer.Length > 0 && audio.Title.Length > 0)
+                    if (string.IsNullOrEmpty(audio.Performer))
                     {
-                        UpdateText(message.ChatId, message.Id, audio.Title, audio.Performer);
+                        UpdateText(message.ChatId, message.Id, audio.Title, Strings.AudioUnknownArtist);
                     }
                     else
                     {
-                        UpdateText(message.ChatId, message.Id, audio.FileName, string.Empty);
+                        UpdateText(message.ChatId, message.Id, audio.Title, audio.Performer);
                     }
 
                     PreviousButton.Visibility = Visibility.Visible;
@@ -218,13 +218,13 @@ namespace Telegram.Views.Popups
                     HeaderLabel.Visibility = Visibility.Collapsed;
                 }
 
-                if (audio.Performer.Length > 0 && audio.Title.Length > 0)
+                if (string.IsNullOrEmpty(audio.Performer))
                 {
-                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Title, audio.Performer);
+                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Title, Strings.AudioUnknownArtist);
                 }
                 else
                 {
-                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Audio.FileName, string.Empty);
+                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Title, audio.Performer);
                 }
 
                 PreviousButton.Visibility = Visibility.Visible;

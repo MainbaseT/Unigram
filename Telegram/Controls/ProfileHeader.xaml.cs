@@ -810,10 +810,18 @@ namespace Telegram.Controls
             {
                 UserFirstAudioRoot.Visibility = Visibility.Visible;
 
-                if (fullInfo.FirstProfileAudio.Performer.Length > 0 && fullInfo.FirstProfileAudio.Title.Length > 0)
+                if (fullInfo.FirstProfileAudio.Title.Length > 0)
                 {
                     UserFirstAudioTitle.Text = fullInfo.FirstProfileAudio.Title;
-                    UserFirstAudioSubtitle.Text = "- " + fullInfo.FirstProfileAudio.Performer;
+
+                    if (fullInfo.FirstProfileAudio.Performer.Length > 0)
+                    {
+                        UserFirstAudioSubtitle.Text = "- " + fullInfo.FirstProfileAudio.Performer;
+                    }
+                    else
+                    {
+                        UserFirstAudioSubtitle.Text = string.Empty;
+                    }
                 }
                 else
                 {

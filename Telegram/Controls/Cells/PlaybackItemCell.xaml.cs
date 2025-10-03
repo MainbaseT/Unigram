@@ -84,7 +84,33 @@ namespace Telegram.Controls.Cells
 
             TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
 
-            Title.Text = audio.GetTitle();
+            if (string.IsNullOrEmpty(audio.Title))
+            {
+                var index = audio.FileName.LastIndexOf('.');
+                if (index > 0)
+                {
+                    Title.Text = audio.FileName.Substring(0, index + 1);
+                    TitleTrim.Text = audio.FileName.Substring(index + 1);
+                }
+                else
+                {
+                    Title.Text = audio.FileName;
+                    TitleTrim.Text = string.Empty;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(audio.Performer))
+                {
+                    Title.Text = audio.Title;
+                }
+                else
+                {
+                    Title.Text = $"{audio.Performer} - {audio.Title}";
+                }
+
+                TitleTrim.Text = string.Empty;
+            }
 
             if (audio.AlbumCoverThumbnail != null)
             {

@@ -2191,25 +2191,35 @@ namespace Telegram
 
         public static string GetTitle(this Audio audio)
         {
-            if (string.IsNullOrEmpty(audio.Performer) || string.IsNullOrEmpty(audio.Title))
+            if (string.IsNullOrEmpty(audio.Title))
             {
                 return audio.FileName;
             }
             else
             {
-                return $"{audio.Performer} - {audio.Title}";
+                if (string.IsNullOrEmpty(audio.Performer))
+                {
+                    return audio.Title;
+                }
+
+                return $"{audio.Title} - {audio.Performer}";
             }
         }
 
         public static string GetTitle(this AudioWithOwner audio)
         {
-            if (string.IsNullOrEmpty(audio.Performer) || string.IsNullOrEmpty(audio.Title))
+            if (string.IsNullOrEmpty(audio.Title))
             {
                 return audio.FileName;
             }
             else
             {
-                return $"{audio.Performer} - {audio.Title}";
+                if (string.IsNullOrEmpty(audio.Performer))
+                {
+                    return audio.Title;
+                }
+
+                return $"{audio.Title} - {audio.Performer}";
             }
         }
 

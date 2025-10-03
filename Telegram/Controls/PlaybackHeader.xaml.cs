@@ -182,13 +182,13 @@ namespace Telegram.Controls
                         return;
                     }
 
-                    if (audio.Performer.Length > 0 && audio.Title.Length > 0)
+                    if (audio.Performer.Length > 0)
                     {
                         UpdateText(message.ChatId, message.Id, audio.Title, "- " + audio.Performer);
                     }
                     else
                     {
-                        UpdateText(message.ChatId, message.Id, audio.FileName, string.Empty);
+                        UpdateText(message.ChatId, message.Id, audio.Title, string.Empty);
                     }
 
                     RepeatButton.Visibility = Visibility.Visible;
@@ -200,13 +200,13 @@ namespace Telegram.Controls
             }
             else if (item is PlaybackItemProfileAudio audio)
             {
-                if (audio.Performer.Length > 0 && audio.Title.Length > 0)
+                if (audio.Performer.Length > 0)
                 {
                     UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Title, "- " + audio.Performer);
                 }
                 else
                 {
-                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Audio.FileName, string.Empty);
+                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Title, string.Empty);
                 }
 
                 RepeatButton.Visibility = Visibility.Visible;

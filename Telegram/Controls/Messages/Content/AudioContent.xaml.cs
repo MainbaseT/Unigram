@@ -102,7 +102,7 @@ namespace Telegram.Controls.Messages.Content
 
             TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
 
-            if (string.IsNullOrEmpty(audio.Performer) || string.IsNullOrEmpty(audio.Title))
+            if (string.IsNullOrEmpty(audio.Title))
             {
                 var index = audio.FileName.LastIndexOf('.');
                 if (index > 0)
@@ -118,7 +118,15 @@ namespace Telegram.Controls.Messages.Content
             }
             else
             {
-                Title.Text = $"{audio.Performer} - {audio.Title}";
+                if (string.IsNullOrEmpty(audio.Performer))
+                {
+                    Title.Text = audio.Title;
+                }
+                else
+                {
+                    Title.Text = $"{audio.Performer} - {audio.Title}";
+                }
+
                 TitleTrim.Text = string.Empty;
             }
 

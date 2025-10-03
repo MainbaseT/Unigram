@@ -46,18 +46,32 @@
                              Style="{StaticResource StreamFileButtonStyle}" />
     </Grid>
 
-    <StackPanel x:Name="TextRoot"
-                Margin="8,0,0,2"
-                VerticalAlignment="Center"
-                Grid.Column="1">
-        <TextBlock x:Name="Title"
-                   Foreground="{ThemeResource MessageForegroundBrush}"
-                   MaxLines="1"
-                   TextWrapping="NoWrap"
-                   TextTrimming="CharacterEllipsis"
-                   Style="{StaticResource BaseTextBlockStyle}" />
+    <Grid x:Name="TextRoot"
+          Margin="8,0,0,2"
+          VerticalAlignment="Center"
+          Grid.Column="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid HorizontalAlignment="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="Title"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"
+                       Style="{StaticResource BaseTextBlockStyle}" />
+            <TextBlock x:Name="TitleTrim"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"
+                       Style="{StaticResource BaseTextBlockStyle}"
+                       Grid.Column="1" />
+        </Grid>
         <TextBlock x:Name="Subtitle"
                    Style="{StaticResource DisabledCaptionTextBlockStyle}"
-                   Typography.NumeralAlignment="Tabular" />
-    </StackPanel>
+                   Typography.NumeralAlignment="Tabular"
+                   Grid.Column="1" />
+    </Grid>
 </controls:GridEx>
