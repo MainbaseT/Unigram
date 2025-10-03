@@ -47,6 +47,7 @@ namespace Telegram.Td.Api
             Permissions = chat.Permissions;
             ProfileBackgroundCustomEmojiId = chat.ProfileBackgroundCustomEmojiId;
             ProfileAccentColorId = chat.ProfileAccentColorId;
+            UpgradedGiftColors = chat.UpgradedGiftColors;
             BackgroundCustomEmojiId = chat.BackgroundCustomEmojiId;
             AccentColorId = chat.AccentColorId;
             Photo = chat.Photo;
@@ -245,6 +246,12 @@ namespace Telegram.Td.Api
         // Summary:
         //     Identifier of the profile accent color for the chat's profile; -1 if none.
         public int ProfileAccentColorId { get; set; }
+
+        //
+        // Summary:
+        //     Color scheme based on an upgraded gift to be used for the chat instead of AccentColorId
+        //     and BackgroundCustomEmojiId; may be null if none.
+        public UpgradedGiftColors UpgradedGiftColors { get; set; }
 
         //
         // Summary:

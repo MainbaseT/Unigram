@@ -3143,6 +3143,7 @@ namespace Telegram.Services
                             value.BackgroundCustomEmojiId = updateChatAccentColors.BackgroundCustomEmojiId;
                             value.ProfileAccentColorId = updateChatAccentColors.ProfileAccentColorId;
                             value.ProfileBackgroundCustomEmojiId = updateChatAccentColors.ProfileBackgroundCustomEmojiId;
+                            value.UpgradedGiftColors = updateChatAccentColors.UpgradedGiftColors;
                         }
 
                         break;

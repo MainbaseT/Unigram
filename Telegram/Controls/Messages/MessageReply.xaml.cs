@@ -7,6 +7,7 @@
 using System;
 using System.Numerics;
 using System.Text;
+using Telegram.Common;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -39,6 +40,11 @@ namespace Telegram.Controls.Messages
             new Vector4(99, 34, 15, 0.4f),
         };
 
+        private SpriteVisual _modelVisual;
+        private AnimatedImage ModelAnimated;
+
+        private bool _templateApplied;
+
         public MessageReplyPattern()
         {
             DefaultStyleKey = typeof(MessageReplyPattern);
@@ -48,6 +54,12 @@ namespace Telegram.Controls.Messages
         {
             var animated = GetTemplateChild("Animated") as AnimatedImage;
             var layoutRoot = GetTemplateChild("LayoutRoot") as Border;
+
+            var hasModel = Model != null;
+            if (hasModel)
+            {
+                ModelAnimated = GetTemplateChild(nameof(ModelAnimated)) as AnimatedImage;
+            }
 
             var visual = ElementComposition.GetElementVisual(animated);
             var compositor = visual.Compositor;
@@ -82,9 +94,17 @@ namespace Telegram.Controls.Messages
                 redirect.Brush = surfaceBrush;
 
                 container.Children.InsertAtTop(redirect);
+
+                if (i == 4)
+                {
+                    _modelVisual = redirect;
+                    _modelVisual.IsVisible = !hasModel;
+                }
             }
 
             ElementCompositionPreview.SetElementChildVisual(layoutRoot, container);
+
+            _templateApplied = true;
         }
 
         #region Source
@@ -97,6 +117,37 @@ namespace Telegram.Controls.Messages
 
         public static readonly DependencyProperty SourceProperty =
             DependencyProperty.Register("Source", typeof(AnimatedImageSource), typeof(MessageReplyPattern), new PropertyMetadata(null));
+
+        #endregion
+
+        #region Model
+
+        public AnimatedImageSource Model
+        {
+            get { return (AnimatedImageSource)GetValue(ModelProperty); }
+            set { SetValue(ModelProperty, value); }
+        }
+
+        public static readonly DependencyProperty ModelProperty =
+            DependencyProperty.Register("Model", typeof(AnimatedImageSource), typeof(MessageReplyPattern), new PropertyMetadata(null, OnModelChanged));
+
+        private static void OnModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((MessageReplyPattern)d).OnModelChanged(e.NewValue as AnimatedImageSource);
+        }
+
+        private void OnModelChanged(AnimatedImageSource newValue)
+        {
+            if (_modelVisual != null)
+            {
+                _modelVisual.IsVisible = newValue == null;
+            }
+
+            if (newValue != null && _templateApplied && ModelAnimated == null)
+            {
+                ModelAnimated = GetTemplateChild(nameof(ModelAnimated)) as AnimatedImage;
+            }
+        }
 
         #endregion
     }
@@ -288,19 +339,11 @@ namespace Telegram.Controls.Messages
 
             Label.MaxLines = quote ? 5 : 1;
 
-            var sender = message?.ClientService.GetMessageSender(messageSender);
-            var accent = outgoing ? null : sender switch
+            var (accent, giftColors, customEmojiId) = outgoing ? (null, null, 0) : message?.ClientService.GetMessageSender(messageSender) switch
             {
-                User user => message.ClientService.GetAccentColor(user.AccentColorId),
-                Chat chat => message.ClientService.GetAccentColor(chat.AccentColorId),
-                _ => null
-            };
-
-            var customEmojiId = sender switch
-            {
-                User user2 => user2.BackgroundCustomEmojiId,
-                Chat chat2 => chat2.BackgroundCustomEmojiId,
-                _ => 0
+                User user => (message.ClientService.GetAccentColor(user.AccentColorId), user.UpgradedGiftColors, user.BackgroundCustomEmojiId),
+                Chat chat => (message.ClientService.GetAccentColor(chat.AccentColorId), chat.UpgradedGiftColors, chat.BackgroundCustomEmojiId),
+                _ => (null, null, 0)
             };
 
             if (white && !_light)
@@ -320,7 +363,19 @@ namespace Telegram.Controls.Messages
                 ClearValue(ForegroundProperty);
                 ClearValue(SubtleBrushProperty);
 
-                if (accent != null)
+                if (giftColors != null)
+                {
+                    HeaderBrush =
+                        BorderBrush = new SolidColorBrush(giftColors.LightThemeColors[0].ToColor());
+
+                    AccentDash.Stripe1 = giftColors.LightThemeColors.Count > 1
+                        ? new SolidColorBrush(giftColors.LightThemeColors[1].ToColor())
+                        : null;
+                    AccentDash.Stripe2 = giftColors.LightThemeColors.Count > 2
+                        ? new SolidColorBrush(giftColors.LightThemeColors[2].ToColor())
+                        : null;
+                }
+                else if (accent != null)
                 {
                     HeaderBrush =
                         BorderBrush = new SolidColorBrush(accent.LightThemeColors[0]);
@@ -344,13 +399,20 @@ namespace Telegram.Controls.Messages
                 Margin = new Thickness(0, 4, 0, 4);
             }
 
-            if (customEmojiId != 0)
+            if (giftColors != null)
+            {
+                Pattern.Source = new CustomEmojiFileSource(message.ClientService, giftColors.SymbolCustomEmojiId);
+                Pattern.Model = new CustomEmojiFileSource(message.ClientService, giftColors.ModelCustomEmojiId);
+            }
+            else if (customEmojiId != 0)
             {
                 Pattern.Source = new CustomEmojiFileSource(message.ClientService, customEmojiId);
+                Pattern.Model = null;
             }
             else
             {
                 Pattern.Source = null;
+                Pattern.Model = null;
             }
 
             _accent = white ? null : accent;
