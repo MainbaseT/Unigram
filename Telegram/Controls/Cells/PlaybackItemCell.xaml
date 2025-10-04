@@ -72,6 +72,6 @@
         <TextBlock x:Name="Subtitle"
                    Style="{StaticResource DisabledCaptionTextBlockStyle}"
                    Typography.NumeralAlignment="Tabular"
-                   Grid.Column="1" />
+                   Grid.Row="1" />
     </Grid>
 </controls:GridEx>
