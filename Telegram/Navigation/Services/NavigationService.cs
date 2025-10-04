@@ -30,6 +30,9 @@ namespace Telegram.Navigation.Services
 {
     public interface INavigationService
     {
+        void Connect();
+        void Disconnect();
+
         void GoBack(NavigationState state = null, NavigationTransitionInfo infoOverride = null);
         void GoBackAt(int index, bool back = true);
         void GoForward();
@@ -232,11 +235,29 @@ namespace Telegram.Navigation.Services
             FrameFacade = new FrameFacade(this, frame, id);
             FrameFacade.Navigating += OnNavigating;
             FrameFacade.Navigated += OnNavigated;
+        }
 
-            if (frame != null)
+        private bool _connected;
+
+        public void Connect()
+        {
+            if (_connected)
             {
-                Application.Current.Resuming += OnResuming;
-                Application.Current.Suspending += OnSuspending;
+                return;
+            }
+
+            _connected = true;
+            Application.Current.Resuming += OnResuming;
+            Application.Current.Suspending += OnSuspending;
+        }
+
+        public void Disconnect()
+        {
+            if (_connected)
+            {
+                _connected = false;
+                Application.Current.Resuming -= OnResuming;
+                Application.Current.Suspending -= OnSuspending;
             }
         }
 
