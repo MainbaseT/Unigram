@@ -685,6 +685,12 @@ namespace Telegram.ViewModels
             }
             else if (Type == DialogType.Thread)
             {
+                // TODO: remove when fixed in TDLib
+                if (ForumTopic != null && ForumTopic.Info.IsGeneral && message.TopicId == null)
+                {
+                    return message.SchedulingState == null;
+                }
+
                 return message.SchedulingState == null && message.TopicId.AreTheSame(Topic);
             }
             else if (Type == DialogType.Pinned)
