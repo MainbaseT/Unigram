@@ -978,8 +978,8 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            // TODO: this probably needs to go in MessageViewModel
-            //var outgoing = (message.IsOutgoing && !message.IsChannelPost && message.SenderId is MessageSenderUser) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
+            // IsVisuallyOutgoing here can't be used
+            var outgoing = (message.IsOutgoing && !message.IsChannelPost && message.SenderId is MessageSenderUser) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
             var content = message.GeneratedContent ?? message.Content;
             var light = content is MessageSticker
                 or MessageDice
@@ -993,7 +993,7 @@ namespace Telegram.Controls.Messages
 
             var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
 
-            if (!light && isFirst && (message.IsSaved || message.IsVerificationCode) && !message.IsVisuallyOutgoing)
+            if (!light && isFirst && (message.IsSaved || message.IsVerificationCode) && !outgoing)
             {
                 var title = string.Empty;
                 var foreground = default(SolidColorBrush);
@@ -1038,7 +1038,7 @@ namespace Telegram.Controls.Messages
                 HeaderLinkRun.Text = title;
                 Identity.ClearStatus();
             }
-            else if (!light && isFirst && !message.IsVisuallyOutgoing && (message.HasSenderPhoto || (!message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage)) && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+            else if (!light && isFirst && !outgoing && (message.HasSenderPhoto || (!message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage)) && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
             {
                 if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
                 {
@@ -1179,7 +1179,7 @@ namespace Telegram.Controls.Messages
             {
                 var title = message.Delegate?.GetAdminTitle(message);
 
-                if (message.SenderBoostCount > 0 && !message.IsVisuallyOutgoing)
+                if (message.SenderBoostCount > 0 && !outgoing)
                 {
                     if (title.Length > 0)
                     {
@@ -1196,7 +1196,7 @@ namespace Telegram.Controls.Messages
                     }
                 }
 
-                if (shown && !message.IsVisuallyOutgoing && !string.IsNullOrEmpty(title))
+                if (shown && !outgoing && !string.IsNullOrEmpty(title))
                 {
                     LoadObject(ref AdminLabel, nameof(AdminLabel));
                     AdminLabel.Text = title;
