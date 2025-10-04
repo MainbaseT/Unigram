@@ -150,13 +150,8 @@ namespace Telegram.Streams
                 count = Math.Min(_file.Size - _offset, count);
                 buffer = _adaptive ? Math.Min(_file.Size - _offset, Math.Max(count, buffer)) : 0;
 
-                var begin = _file.Local.DownloadOffset;
-                var end = _file.Local.DownloadOffset + _file.Local.DownloadedPrefixSize;
-
-                var inBegin = _offset >= begin;
-                var inEnd = end >= _offset + count /*|| end == _file.Size*/;
-
-                if (_file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted))
+                var downloaded = CalculateDownloadedBytes();
+                if (downloaded >= count)
                 {
                     // Always request new bytes
                     _clientService.DownloadFile(_file.Id, _priority, _offset, buffer, false);
