@@ -3033,11 +3033,11 @@ namespace Telegram.Controls.Messages
 
                     if (sender is User user)
                     {
-                        Reply.UpdateMockup(clientService, user.BackgroundCustomEmojiId, user.AccentColorId);
+                        Reply.UpdateMockup(clientService, user.BackgroundCustomEmojiId, user.AccentColorId, user.UpgradedGiftColors);
                     }
                     else if (sender is Chat chat)
                     {
-                        Reply.UpdateMockup(clientService, chat.BackgroundCustomEmojiId, chat.AccentColorId);
+                        Reply.UpdateMockup(clientService, chat.BackgroundCustomEmojiId, chat.AccentColorId, chat.UpgradedGiftColors);
                     }
                 }
 
@@ -3053,11 +3053,11 @@ namespace Telegram.Controls.Messages
 
                 if (sender is User user)
                 {
-                    Reply.UpdateMockup(clientService, user.BackgroundCustomEmojiId, user.AccentColorId);
+                    Reply.UpdateMockup(clientService, user.BackgroundCustomEmojiId, user.AccentColorId, user.UpgradedGiftColors);
                 }
                 else if (sender is Chat chat)
                 {
-                    Reply.UpdateMockup(clientService, chat.BackgroundCustomEmojiId, chat.AccentColorId);
+                    Reply.UpdateMockup(clientService, chat.BackgroundCustomEmojiId, chat.AccentColorId, chat.UpgradedGiftColors);
                 }
             }
 
@@ -3110,11 +3110,11 @@ namespace Telegram.Controls.Messages
 
                     if (obj is User user)
                     {
-                        Reply.UpdateMockup(clientService, user.BackgroundCustomEmojiId, user.AccentColorId);
+                        Reply.UpdateMockup(clientService, user.BackgroundCustomEmojiId, user.AccentColorId, user.UpgradedGiftColors);
                     }
                     else if (obj is Chat chat)
                     {
-                        Reply.UpdateMockup(clientService, chat.BackgroundCustomEmojiId, chat.AccentColorId);
+                        Reply.UpdateMockup(clientService, chat.BackgroundCustomEmojiId, chat.AccentColorId, chat.UpgradedGiftColors);
                     }
                 }
 
@@ -3139,11 +3139,11 @@ namespace Telegram.Controls.Messages
 
                     if (obj is User user)
                     {
-                        presenter.UpdateMockup(clientService, user.BackgroundCustomEmojiId, user.AccentColorId);
+                        presenter.UpdateMockup(clientService, user.BackgroundCustomEmojiId, user.AccentColorId, user.UpgradedGiftColors);
                     }
                     else if (obj is Chat chat)
                     {
-                        presenter.UpdateMockup(clientService, chat.BackgroundCustomEmojiId, chat.AccentColorId);
+                        presenter.UpdateMockup(clientService, chat.BackgroundCustomEmojiId, chat.AccentColorId, chat.UpgradedGiftColors);
                     }
                 }
 
@@ -3310,7 +3310,7 @@ namespace Telegram.Controls.Messages
             ContentPanel.CornerRadius = new CornerRadius(SettingsService.Current.Appearance.BubbleRadius);
         }
 
-        public void UpdateMockup(IClientService clientService, long customEmojiId, int color)
+        public void UpdateMockup(IClientService clientService, long customEmojiId, int color, UpgradedGiftColors upgradedGift)
         {
             if (!_templateApplied)
             {
