@@ -24,6 +24,7 @@ namespace Telegram.Views.Popups
     public sealed partial class ChooseNameColorView : UserControl
     {
         private IClientService _clientService;
+        private MessageSender _sender;
 
         public ChooseNameColorView()
         {
@@ -37,6 +38,7 @@ namespace Telegram.Views.Popups
             //Title = Strings.UserColorTitle;
 
             _clientService = clientService;
+            _sender = sender;
 
             var colors = clientService.GetAvailableAccentColors();
             List.ItemsSource = colors;
@@ -45,11 +47,13 @@ namespace Telegram.Views.Popups
 
             var customEmojiId = 0L;
             var accentColorId = 0;
+            var upgradedGift = default(UpgradedGiftColors);
 
             if (clientService.TryGetUser(sender, out User user))
             {
                 customEmojiId = user.BackgroundCustomEmojiId;
                 accentColorId = user.AccentColorId;
+                upgradedGift = user.UpgradedGiftColors;
 
                 var linkPreview = new LinkPreview
                 {
@@ -70,6 +74,7 @@ namespace Telegram.Views.Popups
             {
                 customEmojiId = chat.BackgroundCustomEmojiId;
                 accentColorId = chat.AccentColorId;
+                upgradedGift = chat.UpgradedGiftColors;
 
                 var linkPreview = new LinkPreview
                 {
@@ -87,10 +92,9 @@ namespace Telegram.Views.Popups
                 BackgroundControl.UpdateChat(clientService, chat.Background, chat.Theme);
             }
 
-            var accent = colors.FirstOrDefault(x => x.Id == accentColorId);
-            accent ??= colors.FirstOrDefault();
+            var accent = upgradedGift == null ? colors.FirstOrDefault(x => x.Id == accentColorId) ?? colors.FirstOrDefault() : null;
 
-            if (customEmojiId != 0)
+            if (customEmojiId != 0 && upgradedGift == null)
             {
                 Badge.Badge = null;
                 Badge.Glyph = string.Empty;
@@ -111,6 +115,8 @@ namespace Telegram.Views.Popups
             SelectedAccentColor = accent;
 
             List.SelectedItem = accent;
+
+            Message1.UpdateMockup(_clientService, customEmojiId, accent?.Id ?? 0, upgradedGift);
         }
 
         #region Recycle
@@ -159,8 +165,9 @@ namespace Telegram.Views.Popups
             if (List.SelectedItem is NameColor accent)
             {
                 SelectedAccentColor = accent;
+                SelectedGiftColors = null;
 
-                Message1.UpdateMockup(_clientService, SelectedCustomEmojiId, accent.Id);
+                Message1.UpdateMockup(_clientService, SelectedCustomEmojiId, accent.Id, null);
                 Animated.ReplacementColor = new SolidColorBrush(accent.LightThemeColors[0]);
             }
         }
@@ -179,8 +186,9 @@ namespace Telegram.Views.Popups
             }
 
             SelectedCustomEmojiId = customEmoji.CustomEmojiId;
+            SelectedGiftColors = null;
 
-            Message1.UpdateMockup(_clientService, SelectedCustomEmojiId, SelectedAccentColor.Id);
+            Message1.UpdateMockup(_clientService, SelectedCustomEmojiId, SelectedAccentColor.Id, null);
 
             if (customEmoji.CustomEmojiId != 0)
             {
@@ -255,6 +263,42 @@ namespace Telegram.Views.Popups
 
         public static readonly DependencyProperty SelectedCustomEmojiIdProperty =
             DependencyProperty.Register("SelectedCustomEmojiId", typeof(long), typeof(ChooseNameColorView), new PropertyMetadata(0L));
+
+        #endregion
+
+        #region SelectedGiftColors
+
+        public UpgradedGift SelectedGiftColors
+        {
+            get { return (UpgradedGift)GetValue(SelectedGiftColorsProperty); }
+            set { SetValue(SelectedGiftColorsProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectedGiftColorsProperty =
+            DependencyProperty.Register("SelectedGiftColors", typeof(UpgradedGift), typeof(ChooseNameColorView), new PropertyMetadata(null, OnSelectedGiftColorsChanged));
+
+        private static void OnSelectedGiftColorsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ChooseNameColorView)d).OnSelectedGiftColorsChanged(e.NewValue as UpgradedGift);
+        }
+
+        private void OnSelectedGiftColorsChanged(UpgradedGift upgradedGift)
+        {
+            if (upgradedGift == null)
+            {
+                return;
+            }
+
+            SelectedAccentColor = null;
+            SelectedCustomEmojiId = 0;
+            List.SelectedItem = null;
+
+            Message1.UpdateMockup(_clientService, 0, 0, upgradedGift.Colors);
+            Animated.ReplacementColor = new SolidColorBrush(upgradedGift.Colors.LightThemeAccentColor.ToColor());
+
+            Animated.Source = null;
+            Badge.Badge = Strings.UserReplyIconOff;
+        }
 
         #endregion
 

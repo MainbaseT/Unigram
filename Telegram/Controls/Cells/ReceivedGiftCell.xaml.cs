@@ -172,6 +172,73 @@ namespace Telegram.Controls.Cells
             }
         }
 
+        public void UpdateGift(IClientService clientService, SentGiftUpgraded upgraded)
+        {
+            StarCountRoot.Visibility = Visibility.Collapsed;
+
+            if (Hidden != null)
+            {
+                Hidden.Visibility = Visibility.Collapsed;
+
+                Animated.DominantColor = null;
+                Hidden.Background = null;
+            }
+
+            var centerColor = upgraded.Gift.Backdrop.Colors.CenterColor.ToColor();
+            var edgeColor = upgraded.Gift.Backdrop.Colors.EdgeColor.ToColor();
+
+            Pattern.Update(clientService, upgraded.Gift);
+
+            Pinned.Visibility = Visibility.Collapsed;
+
+            Photo.Visibility = Visibility.Collapsed;
+            Pattern.Visibility = Visibility.Visible;
+
+            Animated.Source = new DelayedFileSource(clientService, upgraded.Gift.Model.Sticker);
+
+            RibbonRoot.Visibility = Visibility.Collapsed;
+
+            if (ResaleStarCountRoot != null)
+            {
+                ResaleStarCountRoot.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
+        public void UpdateGift(IClientService clientService, EmojiStatusTypeUpgradedGift upgraded)
+        {
+            StarCountRoot.Visibility = Visibility.Collapsed;
+
+            if (Hidden != null)
+            {
+                Hidden.Visibility = Visibility.Collapsed;
+
+                Animated.DominantColor = null;
+                Hidden.Background = null;
+            }
+
+            var source = new CustomEmojiFileSource(clientService, upgraded.SymbolCustomEmojiId);
+            var centerColor = upgraded.BackdropColors.CenterColor.ToColor();
+            var edgeColor = upgraded.BackdropColors.EdgeColor.ToColor();
+            var symbolColor = upgraded.BackdropColors.SymbolColor.ToColor();
+
+            Pattern.Update(source, centerColor, edgeColor, symbolColor);
+
+            Pinned.Visibility = Visibility.Collapsed;
+
+            Photo.Visibility = Visibility.Collapsed;
+            Pattern.Visibility = Visibility.Visible;
+
+            Animated.Source = new CustomEmojiFileSource(clientService, upgraded.ModelCustomEmojiId);
+
+            RibbonRoot.Visibility = Visibility.Collapsed;
+
+            if (ResaleStarCountRoot != null)
+            {
+                ResaleStarCountRoot.Visibility = Visibility.Collapsed;
+            }
+        }
+
         public void UpdateGift(IClientService clientService, GiftForResale gift)
         {
             StarCountRoot.Visibility = Visibility.Collapsed;

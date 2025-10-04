@@ -542,7 +542,7 @@ namespace Telegram.ViewModels.Profile
         //public SearchCollection<ReceivedGift, ReceivedGiftsCollection> ItemsView { get; private set; }
         public ReceivedGiftsCollection Items => ItemsView.Source.Source;
 
-        public partial class ReceivedGiftsCollection : ObservableCollection<ReceivedGift>, ISupportIncrementalLoading
+        public partial class ReceivedGiftsCollection : ObservableCollection<ReceivedGift>, IIncrementalCollection<ReceivedGift>
         {
             private readonly ProfileGiftsTabViewModel _viewModel;
             private readonly MessageSender _ownerId;

@@ -274,6 +274,7 @@
 
         <controls:SettingsButton x:Name="Reset"
                                  Click="Reset_Click"
+                                 Glyph="&#xEA09;"
                                  BorderThickness="0,1,0,1"
                                  Grid.Row="4" />
     </controls:HeaderedControl>

@@ -76,6 +76,45 @@ namespace Telegram.Views.Popups
             Closed += OnClosed;
         }
 
+        public TransferGiftPopup(IClientService clientService, GiftForResale upgraded, Chat chat)
+        {
+            InitializeComponent();
+
+            Animated.Source = new DelayedFileSource(clientService, upgraded.Gift.Model.Sticker);
+
+            Photo1.Update(clientService, upgraded.Gift);
+
+            if (chat != null)
+            {
+                Photo2.SetChat(clientService, chat, 64);
+            }
+            else if (clientService.TryGetUser(clientService.Options.MyId, out User user))
+            {
+                Photo2.SetUser(clientService, user, 64);
+            }
+
+            if (upgraded.Gift.ResaleParameters != null)
+            {
+                if (chat != null)
+                {
+                    TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2BuyPriceText, upgraded.Gift.ResaleParameters.StarCount, upgraded.Gift.ToName(), chat.Title));
+                }
+                else
+                {
+                    TextBlockHelper.SetMarkdown(MessageLabel, Locale.Declension(Strings.R.Gift2BuyPriceSelfText, upgraded.Gift.ResaleParameters.StarCount, upgraded.Gift.ToName()));
+                }
+
+                ActionButtonContent = Strings.Gift2TransferDo;
+            }
+
+            ActionButtonClick += OnAction;
+
+            ActionButtonStyle = BootStrapper.Current.Resources["AccentButtonStyle"] as Style;
+            CloseButtonContent = Strings.Cancel;
+
+            Closed += OnClosed;
+        }
+
         private void OnAction(TeachingTip sender, object args)
         {
             _tsc.TrySetResult(ContentDialogResult.Primary);
@@ -101,6 +140,33 @@ namespace Telegram.Views.Popups
             }
 
             var popup = new TransferGiftPopup(clientService, gift, chat, resale)
+            {
+                PreferredPlacement = TeachingTipPlacementMode.Center,
+                Width = 314,
+                MinWidth = 314,
+                MaxWidth = 314,
+                IsLightDismissEnabled = true,
+                ShouldConstrainToRootBounds = true,
+            };
+
+            popup.Closed += (s, args) =>
+            {
+                host.ToastClosed(s);
+            };
+
+            host.ToastOpened(popup);
+
+            return popup.ShowAsync();
+        }
+
+        public static Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot, IClientService clientService, GiftForResale gift, Chat chat)
+        {
+            if (xamlRoot.Content is not IToastHost host)
+            {
+                return null;
+            }
+
+            var popup = new TransferGiftPopup(clientService, gift, chat)
             {
                 PreferredPlacement = TeachingTipPlacementMode.Center,
                 Width = 314,

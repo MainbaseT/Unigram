@@ -3317,7 +3317,7 @@ namespace Telegram.Controls.Messages
                 void loaded(object o, RoutedEventArgs e)
                 {
                     Loaded -= loaded;
-                    UpdateMockup(clientService, customEmojiId, color);
+                    UpdateMockup(clientService, customEmojiId, color, upgradedGift);
                 }
 
                 Loaded += loaded;
@@ -3326,14 +3326,21 @@ namespace Telegram.Controls.Messages
 
             if (Media.Child is WebPageContent webPageContent)
             {
-                webPageContent.UpdateMockup(clientService, customEmojiId, color);
+                webPageContent.UpdateMockup(clientService, customEmojiId, color, upgradedGift);
             }
 
-            Reply?.UpdateMockup(clientService, customEmojiId, color);
+            Reply?.UpdateMockup(clientService, customEmojiId, color, upgradedGift);
 
             if (HeaderLabel?.Inlines.Count > 0 && HeaderLabel.Inlines[0] is Hyperlink hyperlink)
             {
-                hyperlink.Foreground = clientService.GetAccentBrush(color);
+                if (upgradedGift != null)
+                {
+                    hyperlink.Foreground = new SolidColorBrush(upgradedGift.LightThemeAccentColor.ToColor());
+                }
+                else
+                {
+                    hyperlink.Foreground = clientService.GetAccentBrush(color);
+                }
             }
         }
 

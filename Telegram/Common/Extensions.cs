@@ -7,6 +7,7 @@
 using LinqToVisualTree;
 using Microsoft.Web.WebView2.Core;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -1540,6 +1541,11 @@ namespace Telegram.Common
         }
 
         public static bool Empty<T>(this IList<T> list)
+        {
+            return list.Count == 0;
+        }
+
+        public static bool EmptyT(this IList list)
         {
             return list.Count == 0;
         }

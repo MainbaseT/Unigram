@@ -6909,6 +6909,15 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2OwnerChange" xml:space="preserve">
     <value>change</value>
   </data>
+  <data name="Gift2PeerColorEmptyButton" xml:space="preserve">
+    <value>Browse gifts available for purchase &gt;</value>
+  </data>
+  <data name="Gift2PeerColorProfileEmptyTitle" xml:space="preserve">
+    <value>You don&apos;t have any gifts you can use as profile covers.</value>
+  </data>
+  <data name="Gift2PeerColorReplyEmptyTitle" xml:space="preserve">
+    <value>You don&apos;t have any gifts you can use as reply color.</value>
+  </data>
   <data name="Gift2PerUserLimit_one" xml:space="preserve">
     <value>You already sent **{0}** of these gifts, which is the limit.</value>
   </data>
@@ -14579,6 +14588,12 @@ If you are not comfortable with Telegram&apos;s modest needs, it won&apos;t be p
   </data>
   <data name="UserColorApplied" xml:space="preserve">
     <value>Your name color has been updated!</value>
+  </data>
+  <data name="UserColorApply" xml:space="preserve">
+    <value>Apply Style</value>
+  </data>
+  <data name="UserColorApplyCollectible" xml:space="preserve">
+    <value>Wear Collectible</value>
   </data>
   <data name="UserColorApplyIcon" xml:space="preserve">
     <value>Apply Color and Icon</value>

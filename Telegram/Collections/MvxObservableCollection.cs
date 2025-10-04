@@ -119,6 +119,11 @@ namespace Telegram.Collections
             OnCollectionChanged(args);
         }
 
+        public void AddRangeT(IEnumerable items)
+        {
+            AddRange(items.Cast<T>());
+        }
+
         /// <summary>
         /// Adds the specified items collection to the current <see cref="MvxObservableCollection{T}"/> instance.
         /// </summary>

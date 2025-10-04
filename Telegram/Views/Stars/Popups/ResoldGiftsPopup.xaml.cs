@@ -406,7 +406,6 @@ namespace Telegram.Views.Stars.Popups
             };
         }
 
-
         public bool HasMoreItems => _hasMoreItems;
 
         public GiftForResaleOrder Order => _order;

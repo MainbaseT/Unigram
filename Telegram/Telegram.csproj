@@ -1385,6 +1385,12 @@
     <Compile Include="Views\Profile\ProfileSavedChatsTabPage.xaml.cs">
       <DependentUpon>ProfileSavedChatsTabPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Settings\SettingsProfileColorNameTabPage.xaml.cs">
+      <DependentUpon>SettingsProfileColorNameTabPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings\SettingsProfileColorProfileTabPage.xaml.cs">
+      <DependentUpon>SettingsProfileColorProfileTabPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Settings\Password\SettingsPasswordCreatePopup.xaml.cs">
       <DependentUpon>SettingsPasswordCreatePopup.xaml</DependentUpon>
     </Compile>
@@ -2232,6 +2238,7 @@
     <Content Include="Assets\Animations\QrLogo.json" />
     <Content Include="Assets\Animations\TextRecognitionDownload.tgs" />
     <Content Include="Assets\Animations\Birthdate.tgs" />
+    <Content Include="Assets\Animations\ProfileColor.tgs" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -3463,6 +3470,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Profile\ProfileSavedChatsTabPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Settings\SettingsProfileColorNameTabPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Settings\SettingsProfileColorProfileTabPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

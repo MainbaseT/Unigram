@@ -12988,4 +12988,10 @@
     <string name="PrivacyBirthdaySetDone">Date of birth added.</string>
     <string name="PrivacyBirthdaySetDoneInfo">You can change your birth of date in settings.</string>
 
+    <string name="UserColorApply">Apply Style</string>
+    <string name="UserColorApplyCollectible">Wear Collectible</string>
+    <string name="Gift2PeerColorEmptyButton">Browse gifts available for purchase &gt;</string>
+    <string name="Gift2PeerColorProfileEmptyTitle">You don\'t have any gifts you can use as profile covers.</string>
+    <string name="Gift2PeerColorReplyEmptyTitle">You don\'t have any gifts you can use as reply color.</string>
+
 </resources>

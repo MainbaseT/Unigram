@@ -427,26 +427,53 @@ namespace Telegram.Controls.Messages.Content
             ButtonLine.Visibility = Visibility.Collapsed;
         }
 
-        public void UpdateMockup(IClientService clientService, long customEmojiId, int color)
+        public void UpdateMockup(IClientService clientService, long customEmojiId, int color, UpgradedGiftColors upgradedGift)
         {
             if (Pattern != null)
             {
-                Pattern.Source = new CustomEmojiFileSource(clientService, customEmojiId);
+                if (upgradedGift != null)
+                {
+                    Pattern.Source = new CustomEmojiFileSource(clientService, upgradedGift.SymbolCustomEmojiId);
+                    Pattern.Model = new CustomEmojiFileSource(clientService, upgradedGift.ModelCustomEmojiId);
+                }
+                else
+                {
+                    Pattern.Source = new CustomEmojiFileSource(clientService, customEmojiId);
+                    Pattern.Model = null;
+                }
             }
 
-            var accent = clientService.GetAccentColor(color);
-
-            HeaderBrush =
-                BorderBrush = new SolidColorBrush(accent.LightThemeColors[0]);
-
-            if (AccentDash != null)
+            if (upgradedGift != null)
             {
-                AccentDash.Stripe1 = accent.LightThemeColors.Count > 1
-                    ? new SolidColorBrush(accent.LightThemeColors[1])
-                    : null;
-                AccentDash.Stripe2 = accent.LightThemeColors.Count > 2
-                    ? new SolidColorBrush(accent.LightThemeColors[2])
-                    : null;
+                HeaderBrush =
+                    BorderBrush = new SolidColorBrush(upgradedGift.LightThemeColors[0].ToColor());
+
+                if (AccentDash != null)
+                {
+                    AccentDash.Stripe1 = upgradedGift.LightThemeColors.Count > 1
+                        ? new SolidColorBrush(upgradedGift.LightThemeColors[1].ToColor())
+                        : null;
+                    AccentDash.Stripe2 = upgradedGift.LightThemeColors.Count > 2
+                        ? new SolidColorBrush(upgradedGift.LightThemeColors[2].ToColor())
+                        : null;
+                }
+            }
+            else
+            {
+                var accent = clientService.GetAccentColor(color);
+
+                HeaderBrush =
+                    BorderBrush = new SolidColorBrush(accent.LightThemeColors[0]);
+
+                if (AccentDash != null)
+                {
+                    AccentDash.Stripe1 = accent.LightThemeColors.Count > 1
+                        ? new SolidColorBrush(accent.LightThemeColors[1])
+                        : null;
+                    AccentDash.Stripe2 = accent.LightThemeColors.Count > 2
+                        ? new SolidColorBrush(accent.LightThemeColors[2])
+                        : null;
+                }
             }
         }
 
