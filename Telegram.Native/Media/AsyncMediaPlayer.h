@@ -39,29 +39,6 @@ inline void post_to_threadpool(Func&& func)
     CloseThreadpoolWork(work);
 }
 
-class MediaPlayerCleanupManager
-{
-public:
-    static void Close(libvlc_instance_t* instance, libvlc_media_player_t* player, std::thread workerThread)
-    {
-        post_to_threadpool([instance, player, workerThread = std::move(workerThread)]() mutable {
-            if (player)
-            {
-                libvlc_media_player_stop(player);
-                libvlc_media_player_release(player);
-            }
-            if (instance)
-            {
-                libvlc_release(instance);
-            }
-            if (workerThread.joinable())
-            {
-                workerThread.join();
-            }
-            });
-    }
-};
-
 struct WorkItem
 {
     std::function<void()> action;
@@ -229,6 +206,83 @@ namespace winrt::Telegram::Native::Media::implementation
         void Log(winrt::event_token const& token);
 
     private:
+        struct EventContext
+        {
+            EventContext(libvlc_media_player_t* player, winrt::weak_ref<AsyncMediaPlayer> weak)
+                : m_weak(weak)
+            {
+                libvlc_event_manager_t* em = libvlc_media_player_event_manager(player);
+                libvlc_event_attach(em, libvlc_MediaPlayerESSelected, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerVout, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerBuffering, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerEndReached, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerTimeChanged, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerLengthChanged, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerPlaying, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerPaused, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerStopped, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerAudioVolume, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerEncounteredError, &EventCallback, this);
+            }
+
+            void Detach(libvlc_media_player_t* player)
+            {
+                libvlc_event_manager_t* em = libvlc_media_player_event_manager(player);
+                libvlc_event_attach(em, libvlc_MediaPlayerESSelected, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerVout, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerBuffering, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerEndReached, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerTimeChanged, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerLengthChanged, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerPlaying, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerPaused, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerStopped, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerAudioVolume, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerEncounteredError, &EventCallback, this);
+            }
+
+            winrt::weak_ref<AsyncMediaPlayer> m_weak;
+
+            static void EventCallback(const libvlc_event_t* event, void* user_data)
+            {
+                auto* ctx = static_cast<EventContext*>(user_data);
+                if (auto strong = ctx->m_weak.get())
+                {
+                    strong->HandleEvent(event);
+                }
+            }
+        };
+
+        class CleanupManager
+        {
+        public:
+            static void Close(libvlc_instance_t* instance, libvlc_media_player_t* player, EventContext* events, std::thread workerThread)
+            {
+                post_to_threadpool([instance, player, events, workerThread = std::move(workerThread)]() mutable {
+                    if (player)
+                    {
+                        libvlc_media_player_stop(player);
+
+                        if (events)
+                        {
+                            events->Detach(player);
+                            delete events;
+                        }
+
+                        libvlc_media_player_release(player);
+                    }
+                    if (instance)
+                    {
+                        libvlc_release(instance);
+                    }
+                    if (workerThread.joinable())
+                    {
+                        workerThread.join();
+                    }
+                    });
+            }
+        };
+
         AsyncMediaPlayerOptions m_options;
 
         DispatcherQueue m_dispatcherQueue{ nullptr };
@@ -241,6 +295,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         libvlc_instance_t* m_instance;
         libvlc_media_player_t* m_player;
+        EventContext* m_events;
         IAsyncMediaPlayerSource m_stream{ nullptr };
 
         void OnDefaultAudioRenderDeviceChanged(winrt::Windows::Foundation::IInspectable const& sender, DefaultAudioRenderDeviceChangedEventArgs const& args);
@@ -249,11 +304,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         void HandleLog(int level, const libvlc_log_t* ctx, const char* fmt, va_list args);
 
-        static void EventCallback(const libvlc_event_t* event, void* user_data);
-
         void HandleEvent(const libvlc_event_t* event);
-
-        void TryEnqueue(DispatcherQueueHandler action);
 
         void GetVideoTrackInfo(int32_t trackId, int32_t& width, int32_t& height);
 
@@ -297,11 +348,6 @@ namespace winrt::Telegram::Native::Media::implementation
     private:
         mutable std::mutex close_lock_;
         bool closed_ = false;
-
-        std::atomic<bool> shutting_down{ false };
-        std::mutex callback_mutex;
-        std::condition_variable callback_done;
-        std::atomic<int> active_callbacks{ 0 };
 
         std::atomic<bool> work_started_{ false };
         std::unique_ptr<std::thread> work_thread_;
