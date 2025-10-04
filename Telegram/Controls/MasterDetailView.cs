@@ -118,6 +118,17 @@ namespace Telegram.Controls
                 DetailHeaderPresenter.ItemClicked -= DetailHeaderPresenter_ItemClicked;
             }
 
+            if (DetailFrame?.Content is HostedPage hosted)
+            {
+                hosted.UnregisterPropertyChangedCallback(HostedPage.TitleProperty, _titleToken);
+
+                var scrollingHost = hosted.FindName("ScrollingHost");
+                if (scrollingHost is ListViewBase list)
+                {
+                    list.Loaded -= SetScrollingHost;
+                }
+            }
+
             NavigationService = null;
             ViewModel = null;
             DetailFrame = null;
