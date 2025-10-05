@@ -975,49 +975,36 @@ namespace Telegram.Common
             var response = await clientService.SendAsync(new GetMessageLinkInfo(url));
             if (response is MessageLinkInfo info && clientService.TryGetChat(info.ChatId, out Chat chat))
             {
-                // TODO: rewrite to support TopicId
                 if (info.Message != null)
                 {
-                    if (info.MessageThreadId != 0)
+                    if (info.TopicId is MessageTopicThread topicThread)
                     {
-                        long messageThreadId;
-                        MessageTopic messageTopic;
-
-                        if (info.Message.TopicId is MessageTopicForum forumTopic && clientService.IsForum(chat))
+                        var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, topicThread.MessageThreadId));
+                        if (thread is MessageThreadInfo)
                         {
-                            messageThreadId = forumTopic.ForumTopicId;
-                            messageTopic = forumTopic;
+                            navigation.NavigateToChat(chat, info.Message.Id, topic: info.TopicId);
                         }
                         else
                         {
-                            var properties = await clientService.SendAsync(new GetMessageProperties(info.Message.ChatId, info.Message.Id)) as MessageProperties;
-                            if (properties != null && properties.CanGetMessageThread)
-                            {
-                                messageThreadId = info.Message.Id;
-                                messageTopic = new MessageTopicThread(info.MessageThreadId);
-                            }
-                            else
-                            {
-                                messageThreadId = 0;
-                                messageTopic = null;
-                            }
+                            navigation.ShowPopup(Strings.LinkNotFound, Strings.AppName, Strings.OK);
                         }
-
-                        if (messageTopic != null)
+                    }
+                    if (info.TopicId is MessageTopicForum topicForum)
+                    {
+                        var topic = await clientService.SendAsync(new GetForumTopic(chat.Id, topicForum.ForumTopicId)) as ForumTopic;
+                        if (topic != null)
                         {
-                            var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, messageThreadId));
+                            await clientService.SendAsync(new GetMessage(chat.Id, topic.Info.MessageThreadId));
+
+                            var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, topic.Info.MessageThreadId));
                             if (thread is MessageThreadInfo)
                             {
-                                navigation.NavigateToChat(chat, info.Message.Id, topic: messageTopic);
+                                navigation.NavigateToChat(chat, info.Message.Id, topic: info.TopicId);
                             }
                             else
                             {
                                 navigation.ShowPopup(Strings.LinkNotFound, Strings.AppName, Strings.OK);
                             }
-                        }
-                        else
-                        {
-                            navigation.NavigateToChat(chat, info.Message.Id);
                         }
                     }
                     else
@@ -1025,13 +1012,9 @@ namespace Telegram.Common
                         navigation.NavigateToChat(chat, info.Message.Id);
                     }
                 }
-                else if (info.MessageThreadId != 0)
-                {
-                    navigation.NavigateToChat(chat, topic: new MessageTopicThread(info.MessageThreadId));
-                }
                 else
                 {
-                    navigation.NavigateToChat(chat);
+                    navigation.NavigateToChat(chat, topic: info.TopicId);
                 }
             }
             else

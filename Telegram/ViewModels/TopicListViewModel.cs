@@ -459,10 +459,9 @@ namespace Telegram.ViewModels
 
         private void Handle(UpdateChatAction update)
         {
-            if (update.ChatId == Chat?.Id && update.MessageThreadId != 0)
+            if (update.ChatId == Chat?.Id && update.TopicId is MessageTopicForum topicForum)
             {
-                // TODO: replace MessageThreadId with TopicId once available
-                //BeginOnUIThread(() => Delegate?.HandleForumTopic(update.MessageThreadId, (cell, topic) => cell.UpdateForumTopicActions(topic, ClientService.GetChatActions(update.ChatId, update.MessageThreadId))));
+                BeginOnUIThread(() => Delegate?.HandleForumTopic(topicForum.ForumTopicId, (cell, topic) => cell.UpdateForumTopicActions(topic, ClientService.GetChatActions(update.ChatId, update.TopicId))));
             }
         }
 

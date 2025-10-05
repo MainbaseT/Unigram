@@ -495,7 +495,7 @@ namespace Telegram.Controls.Cells
             //UpdateChatReadInbox(chat);
             UpdateForumTopicUnreadMentionCount(topic);
             UpdateForumTopicNotificationSettings(topic);
-            UpdateForumTopicActions(topic, _viewModel.ClientService.GetChatActions(topic.Info.ChatId, topic.Info.MessageThreadId));
+            UpdateForumTopicActions(topic, _viewModel.ClientService.GetChatActions(topic.Info.ChatId, new MessageTopicForum(topic.Info.ForumTopicId)));
         }
 
         #endregion

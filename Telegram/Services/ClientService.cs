@@ -140,7 +140,7 @@ namespace Telegram.Services
         Chat GetChat(long id);
         IEnumerable<Chat> GetChats(IEnumerable<long> ids);
 
-        IDictionary<MessageSender, ChatAction> GetChatActions(long id, long threadId = 0);
+        IDictionary<MessageSender, ChatAction> GetChatActions(long id, MessageTopic topicId = null);
 
         QuickReplyShortcut GetQuickReplyShortcut(int id);
         QuickReplyShortcut GetQuickReplyShortcut(string name);
@@ -297,7 +297,7 @@ namespace Telegram.Services
         private readonly ReaderWriterDictionary<long, Chat> _chats = new();
 
         private readonly ConcurrentDictionary<long, ConcurrentDictionary<MessageSender, ChatAction>> _chatActions = new();
-        private readonly ConcurrentDictionary<ChatMessageId, ConcurrentDictionary<MessageSender, ChatAction>> _topicActions = new();
+        private readonly ConcurrentDictionary<ChatMessageTopic, ConcurrentDictionary<MessageSender, ChatAction>> _topicActions = new();
 
         private readonly ReaderWriterDictionary<int, SecretChat> _secretChats = new();
 
@@ -1748,11 +1748,11 @@ namespace Telegram.Services
             return null;
         }
 
-        public IDictionary<MessageSender, ChatAction> GetChatActions(long id, long threadId = 0)
+        public IDictionary<MessageSender, ChatAction> GetChatActions(long id, MessageTopic topicId = null)
         {
-            if (threadId != 0)
+            if (topicId != null)
             {
-                if (_topicActions.TryGetValue(new ChatMessageId(id, threadId), out ConcurrentDictionary<MessageSender, ChatAction> value))
+                if (_topicActions.TryGetValue(new ChatMessageTopic(id, topicId), out ConcurrentDictionary<MessageSender, ChatAction> value))
                 {
                     return value;
                 }
@@ -3002,9 +3002,9 @@ namespace Telegram.Services
                     break;
                 case UpdateChatAction updateUserChatAction:
                     {
-                        if (updateUserChatAction.MessageThreadId != 0)
+                        if (updateUserChatAction.TopicId != null)
                         {
-                            var threadActions = _topicActions.GetOrAdd(new ChatMessageId(updateUserChatAction.ChatId, updateUserChatAction.MessageThreadId), x => new ConcurrentDictionary<MessageSender, ChatAction>(new MessageSenderEqualityComparer()));
+                            var threadActions = _topicActions.GetOrAdd(new ChatMessageTopic(updateUserChatAction.ChatId, updateUserChatAction.TopicId), x => new ConcurrentDictionary<MessageSender, ChatAction>(new MessageSenderEqualityComparer()));
                             if (updateUserChatAction.Action is ChatActionCancel)
                             {
                                 threadActions.TryRemove(updateUserChatAction.SenderId, out _);

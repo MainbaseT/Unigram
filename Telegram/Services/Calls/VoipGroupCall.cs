@@ -75,6 +75,8 @@ namespace Telegram.Services.Calls
             IsVideoRecorded = groupCall.IsVideoRecorded;
             RecordDuration = groupCall.RecordDuration;
             CanToggleMuteNewParticipants = groupCall.CanToggleMuteNewParticipants;
+            CanSendMessages = groupCall.CanSendMessages;
+            CanToggleCanSendMessages = groupCall.CanToggleCanSendMessages;
             MuteNewParticipants = groupCall.MuteNewParticipants;
             CanEnableVideo2 = groupCall.CanEnableVideo;
             IsMyVideoPaused = groupCall.IsMyVideoPaused;
@@ -868,7 +870,7 @@ namespace Telegram.Services.Calls
         {
             if (ScheduledStartDate > 0)
             {
-                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, Title, InviteLink, ScheduledStartDate, EnabledStartNotification, IsActive, IsVideoChat, IsRtmpStream, false, false, IsOwned, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, RecordDuration, IsVideoRecorded, Duration))));
+                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, Title, InviteLink, ScheduledStartDate, EnabledStartNotification, IsActive, IsVideoChat, IsRtmpStream, false, false, IsOwned, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, CanSendMessages, CanToggleCanSendMessages, RecordDuration, IsVideoRecorded, Duration))));
             }
             else if (end)
             {
@@ -1056,6 +1058,8 @@ namespace Telegram.Services.Calls
             IsVideoRecorded = call.IsVideoRecorded;
             RecordDuration = call.RecordDuration;
             CanToggleMuteNewParticipants = call.CanToggleMuteNewParticipants;
+            CanSendMessages = call.CanSendMessages;
+            CanToggleCanSendMessages = call.CanToggleCanSendMessages;
             MuteNewParticipants = call.MuteNewParticipants;
             CanEnableVideo2 = call.CanEnableVideo;
             IsMyVideoPaused = call.IsMyVideoPaused;
@@ -1197,6 +1201,17 @@ namespace Telegram.Services.Calls
         /// True, if the current user can enable or disable MuteNewParticipants setting.
         /// </summary>
         public bool CanToggleMuteNewParticipants { get; private set; }
+
+        /// <summary>
+        /// True, if users can send messages to the group call.
+        /// </summary>
+        public bool CanSendMessages { get; private set; }
+
+        /// <summary>
+        /// True, if the current user can enable or disable sending messages in the group
+        /// call.
+        /// </summary>
+        public bool CanToggleCanSendMessages { get; private set; }
 
         /// <summary>
         /// True, if only group call administrators can unmute new participants.

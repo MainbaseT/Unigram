@@ -221,6 +221,32 @@ namespace Telegram.ViewModels
             }
         }
 
+        public MessageTopic OutgoingTopicId
+        {
+            get
+            {
+                if (_forumTopic != null)
+                {
+                    return new MessageTopicForum(_forumTopic.Info.ForumTopicId);
+                }
+                else if (_thread != null)
+                {
+                    return new MessageTopicThread(_thread.MessageThreadId);
+                }
+                else if (IsForum && _chat.LastMessage != null && _chat.LastMessage.TopicId is MessageTopicForum topicForum)
+                {
+                    //if (topicForum.ForumTopicId != ForumTopicService.GeneralId)
+                    //{
+                    //    return _chat.LastMessage.MessageThreadId;
+                    //}
+
+                    return topicForum;
+                }
+
+                return null;
+            }
+        }
+
         public long DirectMessagesChatTopicId => DirectMessagesChatTopic?.Id ?? 0;
 
         // TODO: rename to TopicId
@@ -477,7 +503,7 @@ namespace Telegram.ViewModels
         {
             get
             {
-                return _chatActionManager ??= new OutputChatActionManager(ClientService, _chat, OutgoingThreadId);
+                return _chatActionManager ??= new OutputChatActionManager(ClientService, _chat, OutgoingTopicId);
             }
         }
 
