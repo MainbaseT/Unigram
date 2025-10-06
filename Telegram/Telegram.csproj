@@ -254,6 +254,9 @@
     <Compile Include="Controls\Cells\ForumTopicShareCell.xaml.cs">
       <DependentUpon>ForumTopicShareCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Cells\GroupCallMessageCell.xaml.cs">
+      <DependentUpon>GroupCallMessageCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Cells\PaidReactorCell.xaml.cs">
       <DependentUpon>PaidReactorCell.xaml</DependentUpon>
     </Compile>
@@ -370,6 +373,8 @@
     <Compile Include="Controls\Views\RecentChatsView.xaml.cs">
       <DependentUpon>RecentChatsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\Calls\VoipGroupCallMessage.cs" />
+    <Compile Include="Services\Calls\VoipGroupCallMessagesChangedEventArgs.cs" />
     <Compile Include="Services\Settings\ToolTipSettings.cs" />
     <Compile Include="Services\TextRecognitionService.cs" />
     <Compile Include="Td\Api\ChatProjection.cs" />
@@ -2530,6 +2535,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Cells\ForumTopicShareCell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Cells\GroupCallMessageCell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

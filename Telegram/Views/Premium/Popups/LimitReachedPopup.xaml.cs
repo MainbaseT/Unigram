@@ -59,7 +59,7 @@ namespace Telegram.Views.Premium.Popups
                 switch (type)
                 {
                     case PremiumLimitTypeChatFolderChosenChatCount:
-                        iconValue = Icons.ChatFilled;
+                        iconValue = Icons.ChatEmptyFilled;
                         freeValue = Strings.LimitReachedChatInFolders;
                         lockedValue = Strings.LimitReachedChatInFoldersLocked;
                         premiumValue = Strings.LimitReachedChatInFoldersPremium;

@@ -360,7 +360,7 @@ namespace Telegram.Controls
                     break;
                 default:
                     Name = network ? Strings.MessagesOverview : Strings.LocalCache;
-                    Glyph = Icons.ChatFilled;
+                    Glyph = Icons.ChatEmptyFilled;
                     Stroke = Color.FromArgb(0xFF, 0x58, 0xA8, 0xED);
                     break;
             }

@@ -15016,8 +15016,14 @@ Anonymously</value>
   <data name="VoipCallFailed2" xml:space="preserve">
     <value>Call Failed</value>
   </data>
+  <data name="VoipChannelDisableComments" xml:space="preserve">
+    <value>Disable Messages</value>
+  </data>
   <data name="VoipChannelEditTitle" xml:space="preserve">
     <value>Edit live stream title</value>
+  </data>
+  <data name="VoipChannelEnableComments" xml:space="preserve">
+    <value>Enable Messages</value>
   </data>
   <data name="VoipChannelEndAlertText" xml:space="preserve">
     <value>Do you want to end this live stream?</value>
@@ -15293,6 +15299,9 @@ Participants will see that the chat is being recorded.</value>
   </data>
   <data name="VoipMaximize" xml:space="preserve">
     <value>maximize</value>
+  </data>
+  <data name="VoipMessage" xml:space="preserve">
+    <value>Message</value>
   </data>
   <data name="VoipMinimize" xml:space="preserve">
     <value>minimize</value>

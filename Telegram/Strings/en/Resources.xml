@@ -12994,4 +12994,8 @@
     <string name="Gift2PeerColorProfileEmptyTitle">You don\'t have any gifts you can use as profile covers.</string>
     <string name="Gift2PeerColorReplyEmptyTitle">You don\'t have any gifts you can use as reply color.</string>
 
+    <string name="VoipChannelEnableComments">Enable Messages</string>
+    <string name="VoipChannelDisableComments">Disable Messages</string>
+    <string name="VoipMessage">Message</string>
+
 </resources>

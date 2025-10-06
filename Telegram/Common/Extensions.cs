@@ -169,6 +169,14 @@ namespace Telegram.Common
             return new FormattedText(str, Array.Empty<TextEntity>());
         }
 
+        public static FormattedText AsFormattedText(this string str, TextEntityType type)
+        {
+            return new FormattedText(str, new[]
+            {
+                new TextEntity(0, str.Length, type)
+            });
+        }
+
         public static bool TryGetValue(this CoreWebView2HttpRequestHeaders headers, string key, out string value)
         {
             if (headers.Contains(key))

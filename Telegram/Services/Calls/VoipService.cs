@@ -38,7 +38,8 @@ namespace Telegram.Services
                 .Subscribe<UpdateNewCallSignalingData>(Handle)
                 .Subscribe<UpdateGroupCall>(Handle)
                 .Subscribe<UpdateGroupCallParticipant>(Handle)
-                .Subscribe<UpdateGroupCallVerificationState>(Handle);
+                .Subscribe<UpdateGroupCallVerificationState>(Handle)
+                .Subscribe<UpdateGroupCallNewMessage>(Handle);
         }
 
         public VoipCallBase ActiveCall => TypeResolver.Current.Voip.ActiveCall;
@@ -102,6 +103,11 @@ namespace Telegram.Services
         }
 
         public void Handle(UpdateGroupCallVerificationState update)
+        {
+            TypeResolver.Current.Voip.Handle(ClientService, update);
+        }
+
+        public void Handle(UpdateGroupCallNewMessage update)
         {
             TypeResolver.Current.Voip.Handle(ClientService, update);
         }

@@ -59,6 +59,11 @@ namespace Telegram.Services.Calls
 
         private readonly MediaDeviceTracker _devices = new();
 
+        private readonly List<VoipGroupCallMessage> _messages = new();
+        private readonly object _messagesLock = new();
+
+        private Timer _messagesTimer;
+
         private VoipCallCoordinator _coordinator;
         private VoipPhoneCall _systemCall;
 
@@ -206,7 +211,7 @@ namespace Telegram.Services.Calls
         }
 
         public VoipGroupCall(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, XamlRoot xamlRoot, IList<long> userIds)
-    : base(clientService, settingsService, aggregator)
+            : base(clientService, settingsService, aggregator)
         {
             //Duration = groupCall.Duration;
             //IsVideoRecorded = groupCall.IsVideoRecorded;
@@ -270,6 +275,17 @@ namespace Telegram.Services.Calls
 
         public VoipGroupCallVerificationStateChangedEventArgs VerificationState { get; private set; }
 
+        public IReadOnlyList<VoipGroupCallMessage> Messages
+        {
+            get
+            {
+                lock (_messagesLock)
+                {
+                    return _messages.ToList();
+                }
+            }
+        }
+
         private IList<byte> EncryptData(GroupCallDataChannel dataChannel, IList<byte> data, int unencryptedPrefixSize)
         {
             Data response = null;
@@ -303,6 +319,8 @@ namespace Telegram.Services.Calls
         public event TypedEventHandler<VoipGroupCall, VoipGroupCallJoinedStateChangedEventArgs> JoinedStateChanged;
 
         public event TypedEventHandler<VoipGroupCall, VoipGroupCallVerificationStateChangedEventArgs> VerificationStateChanged;
+
+        public event TypedEventHandler<VoipGroupCall, VoipGroupCallMessagesChangedEventArgs> MessagesChanged;
 
         public event EventHandler AvailableStreamsChanged;
         public int AvailableStreamsCount => _availableStreamsCount;
@@ -1158,6 +1176,66 @@ namespace Telegram.Services.Calls
         {
             VerificationState = new VoipGroupCallVerificationStateChangedEventArgs(generation, emojis);
             VerificationStateChanged?.Invoke(this, new VoipGroupCallVerificationStateChangedEventArgs(generation, emojis));
+        }
+
+        public void Update(MessageSender senderId, FormattedText text)
+        {
+            var message = new VoipGroupCallMessage(senderId, text, DateTime.Now.ToTimestamp());
+
+            lock (_messagesLock)
+            {
+                if (_messagesTimer == null)
+                {
+                    _messagesTimer = new Timer(OnMessagesTick);
+                }
+
+                _messagesTimer.Change(1000, 1000);
+                _messages.Add(message);
+            }
+
+            MessagesChanged?.Invoke(this, new VoipGroupCallMessagesChangedEventArgs(message, false));
+        }
+
+        private void OnMessagesTick(object state)
+        {
+            var now = DateTime.Now.ToTimestamp();
+            var deadline = ClientService.Options.GroupCallMessageShowTimeMax;
+
+            var expired = default(List<VoipGroupCallMessage>);
+
+            lock (_messagesLock)
+            {
+                for (int i = 0; i < _messages.Count; i++)
+                {
+                    var message = _messages[i];
+                    if (message.Date <= now - deadline)
+                    {
+                        expired ??= new List<VoipGroupCallMessage>();
+                        expired.Add(message);
+
+                        _messages.Remove(message);
+                        i--;
+                    }
+                }
+
+                if (_messages.Empty())
+                {
+                    _messagesTimer.Change(0, 0);
+                }
+            }
+
+            if (expired != null)
+            {
+                foreach (var message in expired)
+                {
+                    MessagesChanged?.Invoke(this, new VoipGroupCallMessagesChangedEventArgs(message, true));
+                }
+            }
+        }
+
+        public void SendMessage(FormattedText text)
+        {
+            ClientService.Send(new SendGroupCallMessage(Id, text));
         }
 
         public string GetTitle()

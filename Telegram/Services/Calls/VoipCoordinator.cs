@@ -538,6 +538,17 @@ namespace Telegram.Services
             }
         }
 
+        public void Handle(IClientService clientService, UpdateGroupCallNewMessage update)
+        {
+            lock (_activeLock)
+            {
+                if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCallId && groupCall.ClientService == clientService)
+                {
+                    groupCall.Update(update.SenderId, update.Text);
+                }
+            }
+        }
+
         private static VoipState ToState(Call call)
         {
             return call.State switch
