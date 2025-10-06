@@ -328,6 +328,15 @@ namespace Telegram.Controls
                 {
                     OnAccept();
                 }
+                else if (modifiers != VirtualKeyModifiers.Shift)
+                {
+                    // If enter is pressed without shift modifier, text editor is going to insert a hard paragraph (\r)
+                    // We work around this here
+                    Document.Selection.SetText(TextSetOptions.None, "\v");
+                    Document.Selection.SetRange(Document.Selection.StartPosition + 1, Document.Selection.StartPosition + 1);
+
+                    e.Handled = true;
+                }
             }
             else if (e.Key == VirtualKey.Enter)
             {
@@ -493,7 +502,7 @@ namespace Telegram.Controls
 
         public void ToggleQuote()
         {
-            InsertBlockquote(Document.Selection);
+            InsertBlockquote(Document.Selection, Document.Selection.CharacterFormat.Size != 9);
 
             _selectionFlyout.Update(Document.Selection);
         }
@@ -644,7 +653,14 @@ namespace Telegram.Controls
                 var end = Math.Max(range.StartPosition, range.EndPosition);
 
                 range.SetRange(start, end);
+
+                if (range.CharacterFormat.Size != 10.5f)
+                {
+                    InsertBlockquote(range, true, false);
+                }
+
                 range.CharacterFormat = Document.GetDefaultCharacterFormat();
+                //range.ParagraphFormat = Document.GetDefaultParagraphFormat();
 
                 range.GetText(TextGetOptions.NoHidden, out string text);
                 range.SetText(TextSetOptions.Unlink, text);
@@ -813,6 +829,13 @@ namespace Telegram.Controls
                     }
                     else
                     {
+                        Document.GetText(TextGetOptions.NoHidden, out string value);
+
+                        if (value.Length + text.Length > MaxLength)
+                        {
+                            text = text.Substring(0, MaxLength - value.Length);
+                        }
+
                         Document.Selection.SetText(TextSetOptions.Unhide, text);
                         Document.Selection.SetRange(start + text.Length, start + text.Length);
                     }
@@ -1404,7 +1427,7 @@ namespace Telegram.Controls
 
                         if (entity.Type is TextEntityTypeBlockQuote or TextEntityTypeExpandableBlockQuote && (allowedEntities & FormattedTextEntity.Quote) != 0)
                         {
-                            InsertBlockquote(range, false);
+                            InsertBlockquote(range, true, false);
                         }
                         else if (entity.Type is TextEntityTypeBold && (allowedEntities & FormattedTextEntity.Bold) != 0)
                         {
@@ -1505,6 +1528,13 @@ namespace Telegram.Controls
 
         public void InsertText(string text, bool allowPreceding = false, bool allowTrailing = false)
         {
+            Document.GetText(TextGetOptions.NoHidden, out string value);
+
+            if (value.Length + text.Length > MaxLength)
+            {
+                return;
+            }
+
             var start = Document.Selection.StartPosition;
             var end = Document.Selection.EndPosition;
 
@@ -1540,6 +1570,13 @@ namespace Telegram.Controls
 
         public void InsertEmoji(ITextRange range, string emoji, long customEmojiId)
         {
+            Document.GetText(TextGetOptions.NoHidden, out string value);
+
+            if (value.Length + emoji.Length > MaxLength)
+            {
+                return;
+            }
+
             BeginUndoGroup();
             Document.BatchDisplayUpdates();
 
@@ -1568,10 +1605,10 @@ namespace Telegram.Controls
         public void InsertBlockquote(string quote)
         {
             Document.Selection.SetText(TextSetOptions.None, quote);
-            InsertBlockquote(Document.Selection);
+            InsertBlockquote(Document.Selection, true);
         }
 
-        public void InsertBlockquote(ITextRange textRange, bool batch = true)
+        public void InsertBlockquote(ITextRange textRange, bool enable, bool batch = true)
         {
             var start = textRange.StartPosition;
             var end = textRange.EndPosition;
@@ -1628,10 +1665,19 @@ namespace Telegram.Controls
             float magic = 0.75f;
 
             range.SetRange(start, Math.Max(start + 1, end));
-            range.CharacterFormat.Size = 12 * magic;
-            range.ParagraphFormat.SpaceBefore = 6 * magic;
-            range.ParagraphFormat.SpaceAfter = 8 * magic;
-            range.ParagraphFormat.SetIndents(0, 8 * magic, 24 * magic);
+
+            if (enable)
+            {
+                range.CharacterFormat.Size = 12 * magic;
+                range.ParagraphFormat.SpaceBefore = 6 * magic;
+                range.ParagraphFormat.SpaceAfter = 8 * magic;
+                range.ParagraphFormat.SetIndents(0, 8 * magic, 24 * magic);
+            }
+            else
+            {
+                range.CharacterFormat.Size = 14 * magic;
+                range.ParagraphFormat = Document.GetDefaultParagraphFormat();
+            }
 
             MergeParagraphs(range);
 
@@ -1849,13 +1895,7 @@ namespace Telegram.Controls
 
         private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key == Windows.System.VirtualKey.Enter)
-            {
-                //e.Handled = true;
-                //Document.Selection.SetText(TextSetOptions.None, "\v");
-                //Document.Selection.SetRange(Document.Selection.StartPosition + 1, Document.Selection.StartPosition + 1);
-            }
-            else if (e.Key is VirtualKey.Down or VirtualKey.Up && Document.Selection.ParagraphFormat.SpaceAfter != 0)
+            if (e.Key is VirtualKey.Down or VirtualKey.Up && Document.Selection.ParagraphFormat.SpaceAfter != 0)
             {
                 var range = Document.Selection.GetClone();
                 var direction = e.Key == VirtualKey.Down ? 1 : -1;
@@ -1870,7 +1910,10 @@ namespace Telegram.Controls
                     range.SetText(TextSetOptions.None, "\r");
                     range.SetRange(range.StartPosition + direction, range.StartPosition + direction);
                     range.ParagraphFormat = Document.GetDefaultParagraphFormat();
+                    range.CharacterFormat = Document.GetDefaultCharacterFormat();
                     Document.Selection.SetRange(range.StartPosition + direction, range.StartPosition + direction);
+
+                    EndUndoGroup();
                 }
             }
             else if (e.Key == VirtualKey.Back)
@@ -1895,6 +1938,7 @@ namespace Telegram.Controls
                         {
                             BeginUndoGroup();
                             range.Character = '\r';
+                            EndUndoGroup();
                         }
                     }
                 }
@@ -1908,6 +1952,7 @@ namespace Telegram.Controls
                     {
                         BeginUndoGroup();
                         range.Character = '\r';
+                        EndUndoGroup();
                     }
                 }
             }
