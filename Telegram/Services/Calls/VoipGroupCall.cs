@@ -685,14 +685,14 @@ namespace Telegram.Services.Calls
             }
             else
             {
-                args.Deferral(ClientService.UnixTime);
+                args.Deferral(ClientService.UnixTime * 1000);
             }
         }
 
         private async void OnBroadcastPartRequested(VoipGroupManager sender, BroadcastPartRequestedEventArgs args)
         {
             var response = await ClientService.SendAsync(new GetVideoChatStreamSegment(Id, args.Time, args.Scale, args.ChannelId, args.VideoQuality));
-            args.Deferral(args.Time, ClientService.UnixTime, response as Data);
+            args.Deferral(args.Time, ClientService.UnixTime * 1000, response as Data);
         }
 
         private async void OnMediaChannelDescriptionsRequested(VoipGroupManager sender, MediaChannelDescriptionsRequestedEventArgs args)
