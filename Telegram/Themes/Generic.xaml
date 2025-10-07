@@ -5655,6 +5655,10 @@
     </Style>
 
     <Style TargetType="local:PlaybackSlider">
+        <Setter Property="Foreground"
+                Value="{ThemeResource SystemControlHighlightAccentBrush}" />
+        <Setter Property="Background"
+                Value="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
         <Setter Property="UseSystemFocusVisuals"
                 Value="True" />
         <Setter Property="Template">
@@ -5670,11 +5674,11 @@
                                             <DoubleAnimation Duration="{ThemeResource ScrollBarExpandDuration}"
                                                              Storyboard.TargetName="ProgressBarIndicatorTransform"
                                                              Storyboard.TargetProperty="ScaleY"
-                                                             To="0.3333333333333333" />
+                                                             To="0.6666666666666666" />
                                             <DoubleAnimation Duration="{ThemeResource ScrollBarExpandDuration}"
                                                              Storyboard.TargetName="ProgressBarIndicatorTransform"
-                                                             Storyboard.TargetProperty="TranslateY"
-                                                             To="4" />
+                                                             Storyboard.TargetProperty="ScaleX"
+                                                             To="0.6666666666666666" />
                                         </Storyboard>
                                     </VisualTransition>
                                 </VisualStateGroup.Transitions>
@@ -5687,23 +5691,39 @@
                                                          To="1.0" />
                                         <DoubleAnimation Duration="{ThemeResource ScrollBarExpandDuration}"
                                                          Storyboard.TargetName="ProgressBarIndicatorTransform"
-                                                         Storyboard.TargetProperty="TranslateY"
-                                                         To="0" />
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1.0" />
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
+                        <Popup x:Name="ThumbToolTipPopup">
+                            <ToolTip x:Name="ThumbToolTip"
+                                     Content="{TemplateBinding ThumbToolTipContent}"
+                                     Padding="0" />
+                        </Popup>
                         <Grid x:Name="LayoutRoot"
-                              Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
-                            <Grid.RenderTransform>
-                                <CompositeTransform x:Name="ProgressBarIndicatorTransform"
-                                                    ScaleX="1.0"
-                                                    ScaleY="0.3333333333333333"
-                                                    TranslateX="0"
-                                                    TranslateY="4" />
-                            </Grid.RenderTransform>
+                              Margin="0,2">
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="2" />
                             <Border x:Name="ProgressBarIndicator"
-                                    Background="{ThemeResource SystemControlHighlightAccentBrush}" />
+                                    Background="{TemplateBinding Foreground}"
+                                    CornerRadius="2" />
+                            <Border x:Name="ProgressBarThumb"
+                                    HorizontalAlignment="Left">
+                                <Border Width="12"
+                                        Height="12"
+                                        Background="{TemplateBinding Foreground}"
+                                        CornerRadius="6"
+                                        Margin="-6,-4"
+                                        RenderTransformOrigin="0.5,0.5">
+                                    <Border.RenderTransform>
+                                        <CompositeTransform x:Name="ProgressBarIndicatorTransform"
+                                                            ScaleX="0.6666666666666666"
+                                                            ScaleY="0.6666666666666666" />
+                                    </Border.RenderTransform>
+                                </Border>
+                            </Border>
                         </Grid>
                     </Grid>
                 </ControlTemplate>

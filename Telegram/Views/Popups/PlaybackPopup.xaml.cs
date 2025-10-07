@@ -110,7 +110,7 @@ namespace Telegram.Views.Popups
                 return;
             }
 
-            Slider.UpdateValue(position, duration, state);
+            Slider.UpdateValue(position, duration, state == PlaybackState.Playing);
         }
 
         private void UpdateGlyph()

@@ -45,16 +45,17 @@ namespace Telegram.Controls.Gallery
             _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
             var muted = SettingsService.Current.VolumeMuted;
-            var volume = (int)Math.Round(SettingsService.Current.VolumeLevel * 100);
+            var volume = SettingsService.Current.VolumeLevel;
             var speed = SettingsService.Current.Playback.VideoSpeed;
 
-            VolumeSlider.Value = muted ? 0 : volume;
-            VolumeSlider.ValueChanged += VolumeSlider_ValueChanged;
+            VolumeSlider.UpdateValue(muted ? 0 : volume, 1, false);
+            VolumeSlider.PositionChanging += VolumeSlider_ValueChanged;
+            VolumeSlider.PositionChanged += VolumeSlider_ValueChanged;
 
             VolumeButton.Glyph = muted ? Icons.SpeakerMuteFilled : volume switch
             {
-                int n when n > 50 => Icons.Speaker2Filled,
-                int n when n > 0 => Icons.Speaker1Filled,
+                double n when n > 0.5 => Icons.Speaker2Filled,
+                double n when n > 0 => Icons.Speaker1Filled,
                 _ => Icons.SpeakerMuteFilled
             };
 
@@ -412,7 +413,7 @@ namespace Telegram.Controls.Gallery
                 return;
             }
 
-            Slider.UpdateValue(sender.Position, sender.Duration, PlaybackState.None);
+            Slider.UpdateValue(sender.Position, sender.Duration, false);
         }
 
         private void OnPositionChanged(VideoPlayerBase sender, VideoPlayerPositionChangedEventArgs args)
@@ -422,7 +423,7 @@ namespace Telegram.Controls.Gallery
                 return;
             }
 
-            Slider.UpdateValue(args.Position, sender.Duration, sender.IsPlaying ? PlaybackState.Playing : PlaybackState.None);
+            Slider.UpdateValue(args.Position, sender.Duration, sender.IsPlaying);
             TimeText.Text = FormatTime(args.Position);
         }
 
@@ -439,7 +440,7 @@ namespace Telegram.Controls.Gallery
                 return;
             }
 
-            Slider.UpdateValue(sender.Position, args.Duration, PlaybackState.None);
+            Slider.UpdateValue(sender.Position, args.Duration, false);
             LengthText.Text = FormatTime(args.Duration);
         }
 
@@ -581,30 +582,30 @@ namespace Telegram.Controls.Gallery
             TogglePlaybackState();
         }
 
-        private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        private void VolumeSlider_ValueChanged(PlaybackSlider sender, PlaybackSliderPositionChanged e)
         {
-            var volume = (int)e.NewValue;
+            var volume = e.NewPosition.TotalSeconds;
             var muted = false;
 
             if (volume == 0)
             {
-                volume = 100;
+                volume = 1;
                 muted = true;
             }
 
             if (_player != null)
             {
-                _player.Volume = volume / 100d;
+                _player.Volume = volume;
                 _player.Mute = muted;
             }
 
-            SettingsService.Current.VolumeLevel = volume / 100d;
+            SettingsService.Current.VolumeLevel = volume;
             SettingsService.Current.VolumeMuted = muted;
 
             VolumeButton.Glyph = muted ? Icons.SpeakerMuteFilled : volume switch
             {
-                int n when n > 50 => Icons.Speaker2Filled,
-                int n when n > 0 => Icons.Speaker1Filled,
+                double n when n > 0.5 => Icons.Speaker2Filled,
+                double n when n > 0 => Icons.Speaker1Filled,
                 _ => Icons.SpeakerMuteFilled
             };
 
@@ -630,9 +631,7 @@ namespace Telegram.Controls.Gallery
 
             SettingsService.Current.VolumeMuted = muted;
 
-            VolumeSlider.ValueChanged -= VolumeSlider_ValueChanged;
-            VolumeSlider.Value = muted ? 0 : volume;
-            VolumeSlider.ValueChanged += VolumeSlider_ValueChanged;
+            VolumeSlider.UpdateValue(muted ? 0 : volume, 1, false);
 
             VolumeButton.Glyph = muted ? Icons.SpeakerMuteFilled : volume switch
             {
@@ -704,12 +703,12 @@ namespace Telegram.Controls.Gallery
             }
             else if (args.Key is VirtualKey.Up && modifiers == VirtualKeyModifiers.None)
             {
-                VolumeSlider.Value += 10;
+                VolumeSlider.SetValue(VolumeSlider.Position.TotalSeconds + 0.1, 1, false);
                 args.Handled = true;
             }
             else if (args.Key is VirtualKey.Down && modifiers == VirtualKeyModifiers.None)
             {
-                VolumeSlider.Value -= 10;
+                VolumeSlider.SetValue(VolumeSlider.Position.TotalSeconds - 0.1, 1, false);
                 args.Handled = true;
             }
             else if ((args.Key is VirtualKey.J && modifiers == VirtualKeyModifiers.None) || (args.Key is VirtualKey.Left && modifiers == VirtualKeyModifiers.Control))

@@ -252,7 +252,7 @@ namespace Telegram.Controls.Messages.Content
         public void Mockup(MessageVoiceNote voiceNote)
         {
             Progress.UpdateWaveform(voiceNote.VoiceNote);
-            Progress.UpdateValue(0.3, 1, PlaybackState.None);
+            Progress.UpdateValue(0.3, 1, false);
 
             Subtitle.Text = FormatTime(TimeSpan.FromSeconds(1), 0) + " / " + FormatTime(TimeSpan.FromSeconds(3), 0);
 
@@ -302,12 +302,12 @@ namespace Telegram.Controls.Messages.Content
             if (message.Content is MessageVoiceNote voiceNoteMessage)
             {
                 Subtitle.Text = voiceNote.GetDuration() + (voiceNoteMessage.IsListened ? string.Empty : " ●");
-                Progress.UpdateValue(message.IsOutgoing || voiceNoteMessage.IsListened ? 0 : voiceNote.Duration, voiceNote.Duration, PlaybackState.None);
+                Progress.UpdateValue(message.IsOutgoing || voiceNoteMessage.IsListened ? 0 : voiceNote.Duration, voiceNote.Duration, false);
             }
             else
             {
                 Subtitle.Text = voiceNote.GetDuration();
-                Progress.UpdateValue(0, voiceNote.Duration, PlaybackState.None);
+                Progress.UpdateValue(0, voiceNote.Duration, false);
             }
         }
 
@@ -327,7 +327,7 @@ namespace Telegram.Controls.Messages.Content
                 }
 
                 Subtitle.Text = FormatTime(duration - position, duration.TotalHours);
-                Progress.UpdateValue(position, duration, state);
+                Progress.UpdateValue(position, duration, state == PlaybackState.Playing);
             }
         }
 

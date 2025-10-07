@@ -6,7 +6,6 @@
 //
 using System;
 using Telegram.Common;
-using Telegram.Services;
 using Windows.Foundation;
 using Windows.UI.Composition;
 using Windows.UI.Input;
@@ -41,7 +40,7 @@ namespace Telegram.Controls
             ThumbToolTipPopup = GetTemplateChild(nameof(ThumbToolTipPopup)) as Popup;
             ThumbToolTip = GetTemplateChild(nameof(ThumbToolTip)) as ToolTip;
 
-            UpdateValue(_position, _duration, _state);
+            UpdateValue(_position, _duration, _playing);
 
             base.OnApplyTemplate();
         }
@@ -67,20 +66,20 @@ namespace Telegram.Controls
 
         private TimeSpan _position;
         private TimeSpan _duration;
-        private PlaybackState _state;
+        private bool _playing;
 
         private CompositionPropertySet _props;
 
-        public void UpdateValue(double position, double duration, PlaybackState state)
+        public void UpdateValue(double position, double duration, bool playing)
         {
-            UpdateValue(TimeSpan.FromSeconds(position), TimeSpan.FromSeconds(duration), state);
+            UpdateValue(TimeSpan.FromSeconds(position), TimeSpan.FromSeconds(duration), playing);
         }
 
-        public void UpdateValue(TimeSpan position, TimeSpan duration, PlaybackState state)
+        public void UpdateValue(TimeSpan position, TimeSpan duration, bool playing)
         {
             _position = position;
             _duration = duration;
-            _state = state;
+            _playing = playing;
 
             if (ProgressBarIndicator == null)
             {
@@ -104,7 +103,7 @@ namespace Telegram.Controls
                 _props.InsertScalar("Progress", 0);
             }
 
-            if (state == PlaybackState.Playing && duration - position > TimeSpan.Zero)
+            if (playing && duration - position > TimeSpan.Zero)
             {
                 var linearEasing = compositor.CreateLinearEasingFunction();
                 var animation = compositor.CreateScalarKeyFrameAnimation();
@@ -170,7 +169,7 @@ namespace Telegram.Controls
                 PositionStarted?.Invoke(this, null);
 
                 var position = CalculatePosition(point);
-                UpdateValue(position, _duration, PlaybackState.None);
+                UpdateValue(position, _duration, false);
                 PositionChanging?.Invoke(this, new PlaybackSliderPositionChanged(position));
 
                 if (ComputedIsThumbToolTipEnabled)
@@ -187,7 +186,7 @@ namespace Telegram.Controls
             if (_pressed)
             {
                 var position = CalculatePosition(e.GetCurrentPoint(this));
-                UpdateValue(position, _duration, PlaybackState.None);
+                UpdateValue(position, _duration, false);
                 PositionChanging?.Invoke(this, new PlaybackSliderPositionChanged(position));
             }
 
@@ -287,9 +286,20 @@ namespace Telegram.Controls
             return TimeSpan.FromSeconds(Math.Clamp(point.Position.X, 0, ActualWidth) / ActualWidth * _duration.TotalSeconds);
         }
 
-        public void SetValue(TimeSpan position)
+        private void SetValue(TimeSpan position)
         {
             PositionChanged?.Invoke(this, new PlaybackSliderPositionChanged(position));
+        }
+
+        public void SetValue(double position, double duration, bool playing)
+        {
+            if (duration > 0)
+            {
+                position = Math.Clamp(position, 0, duration);
+            }
+
+            UpdateValue(TimeSpan.FromSeconds(position), TimeSpan.FromSeconds(duration), playing);
+            PositionChanged?.Invoke(this, new PlaybackSliderPositionChanged(TimeSpan.FromSeconds(position)));
         }
 
         public bool ComputedIsThumbToolTipEnabled => IsThumbToolTipEnabled && ThumbToolTip != null && ThumbToolTipPopup != null;
