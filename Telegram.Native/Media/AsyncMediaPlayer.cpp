@@ -431,12 +431,24 @@ namespace winrt::Telegram::Native::Media::implementation
 
     double AsyncMediaPlayer::Duration()
     {
-        return Get(libvlc_media_player_get_length) / 1000.0;
+        return std::clamp(Get(libvlc_media_player_get_length) / 1000.0, 0.0, 922337203685.0);
     }
 
     double AsyncMediaPlayer::Position()
     {
-        return Get(libvlc_media_player_get_time) / 1000.0;
+        auto time = Read<double>([this]() {
+            auto state = libvlc_media_player_get_state(m_player);
+            if (state == libvlc_Ended)
+            {
+                return libvlc_media_player_get_length(m_player);
+            }
+            else
+            {
+                return libvlc_media_player_get_time(m_player);
+            }
+        });
+
+        return std::clamp(time / 1000.0, 0.0, 922337203685.0);
     }
 
     void AsyncMediaPlayer::Position(double value)
@@ -572,7 +584,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         case libvlc_MediaPlayerTimeChanged:
         {
-            auto position = event->u.media_player_time_changed.new_time / 1000.0;
+            auto position = std::clamp(event->u.media_player_time_changed.new_time / 1000.0, 0.0, 922337203685.0);
             m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }, position]() {
                 if (auto strongThis = weakThis.get())
                 {
@@ -584,7 +596,7 @@ namespace winrt::Telegram::Native::Media::implementation
         break;
         case libvlc_MediaPlayerLengthChanged:
         {
-            auto duration = event->u.media_player_length_changed.new_length / 1000.0;
+            auto duration = std::clamp(event->u.media_player_length_changed.new_length / 1000.0, 0.0, 922337203685.0);
             m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }, duration]() {
                 if (auto strongThis = weakThis.get())
                 {
