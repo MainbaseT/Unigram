@@ -158,12 +158,12 @@ namespace Telegram.Controls.Gallery
 
         private void Slider_PositionChanged(PlaybackSlider sender, PlaybackSliderPositionChanged e)
         {
+            PlayAfterScrubbing();
+
             if (_player != null)
             {
                 _player.Position = e.NewPosition.TotalSeconds;
             }
-
-            PlayAfterScrubbing();
         }
 
         private void Slider_PositionCanceled(PlaybackSlider sender, object e)
@@ -384,8 +384,6 @@ namespace Telegram.Controls.Gallery
 
         private void OnIsPlayingChanged(VideoPlayerBase sender, VideoPlayerIsPlayingChangedEventArgs args)
         {
-            Slider.UpdateValue(sender.Position, sender.Duration, PlaybackState.None);
-
             if (args.IsPlaying)
             {
                 PlaybackButton.Glyph = Icons.PauseFilled24;
@@ -408,6 +406,13 @@ namespace Telegram.Controls.Gallery
                     _request = null;
                 }
             }
+
+            if (Slider.IsScrubbing)
+            {
+                return;
+            }
+
+            Slider.UpdateValue(sender.Position, sender.Duration, PlaybackState.None);
         }
 
         private void OnPositionChanged(VideoPlayerBase sender, VideoPlayerPositionChangedEventArgs args)
@@ -657,12 +662,12 @@ namespace Telegram.Controls.Gallery
 
         private void PauseBeforeScrubbing()
         {
-            if (_player == null || !_player.IsPlaying)
+            if (_player == null)
             {
                 return;
             }
 
-            _playing = true;
+            _playing = _player.IsPlaying;
             _player.Pause();
         }
 

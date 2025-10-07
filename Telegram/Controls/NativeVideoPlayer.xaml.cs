@@ -115,7 +115,13 @@ namespace Telegram.Controls
 
         public override void Pause()
         {
-            _core?.Pause();
+            if (_core.State == AsyncMediaPlayerState.Ended)
+            {
+                _core.Stop();
+                _core.Play();
+            }
+
+            _core.Pause();
         }
 
         public override void Toggle()
