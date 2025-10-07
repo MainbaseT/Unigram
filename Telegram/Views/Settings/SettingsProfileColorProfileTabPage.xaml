@@ -150,46 +150,48 @@
                     </controls:TopNavView>
                 </controls:SettingsPanel>
             </GridView.Header>
-            <Border Margin="0,0,0,60">
-                <Grid x:Name="EmptyState"
-                      Visibility="{x:Bind ViewModel.IsEmptyView, Mode=OneWay}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid VerticalAlignment="Center"
-                          MaxWidth="1000"
-                          Margin="24,0"
-                          Grid.Row="1">
+            <GridView.Footer>
+                <Border Margin="0,0,0,60">
+                    <Grid x:Name="EmptyState"
+                          Visibility="{x:Bind ViewModel.IsEmptyView, Mode=OneWay}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
-                        <controls:AnimatedImage Source="ms-appx:///Assets/Animations/ProfileColor.tgs"
-                                                IsCachingEnabled="False"
-                                                AutoPlay="True"
-                                                FrameSize="140,140"
-                                                DecodeFrameType="Logical"
-                                                LoopCount="1"
-                                                Width="140"
-                                                Height="140"
-                                                Margin="0,48,0,12" />
-                        <TextBlock common:TextBlockHelper.Markdown="{CustomResource Gift2PeerColorProfileEmptyTitle}"
-                                   Style="{StaticResource InfoBodyTextBlockStyle}"
-                                   TextAlignment="Center"
-                                   Margin="12,4,12,0"
-                                   Grid.Row="1" />
+                        <Grid VerticalAlignment="Center"
+                              MaxWidth="1000"
+                              Margin="24,0"
+                              Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <controls:AnimatedImage Source="ms-appx:///Assets/Animations/ProfileColor.tgs"
+                                                    IsCachingEnabled="False"
+                                                    AutoPlay="True"
+                                                    FrameSize="140,140"
+                                                    DecodeFrameType="Logical"
+                                                    LoopCount="1"
+                                                    Width="140"
+                                                    Height="140"
+                                                    Margin="0,48,0,12" />
+                            <TextBlock common:TextBlockHelper.Markdown="{CustomResource Gift2PeerColorProfileEmptyTitle}"
+                                       Style="{StaticResource InfoBodyTextBlockStyle}"
+                                       TextAlignment="Center"
+                                       Margin="12,4,12,0"
+                                       Grid.Row="1" />
 
-                        <Button Click="{x:Bind ViewModel.Browse}"
-                                Content="{CustomResource Gift2PeerColorEmptyButton}"
-                                Style="{StaticResource AccentTextButtonStyle}"
-                                HorizontalAlignment="Center"
-                                Margin="0,4,0,0"
-                                Grid.Row="2" />
+                            <Button Click="{x:Bind ViewModel.Browse}"
+                                    Content="{CustomResource Gift2PeerColorEmptyButton}"
+                                    Style="{StaticResource AccentTextButtonStyle}"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,4,0,0"
+                                    Grid.Row="2" />
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Border>
+                </Border>
+            </GridView.Footer>
             <GridView.ItemTemplate>
                 <DataTemplate>
                     <cells:ReceivedGiftCell />
