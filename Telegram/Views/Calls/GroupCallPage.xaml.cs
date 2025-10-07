@@ -2379,6 +2379,10 @@ namespace Telegram.Views.Calls
                     MessagePanel.Visibility = Visibility.Collapsed;
                     MessageField.ClearText();
                 }
+                else
+                {
+                    MessageField.Focus(FocusState.Keyboard);
+                }
             };
 
             var rectangle = compositor.CreateRoundedRectangleGeometry();
@@ -2472,11 +2476,6 @@ namespace Telegram.Views.Calls
         private void Message_Click(object sender, RoutedEventArgs e)
         {
             ShowHideMessage(_messageCollapsed);
-
-            return;
-
-            MessagePanel.Visibility = Visibility.Visible;
-            MessageField.Focus(FocusState.Keyboard);
         }
 
         private void MessageReactions_ItemClick(object sender, AvailableReaction e)

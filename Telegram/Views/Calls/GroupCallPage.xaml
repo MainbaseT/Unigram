@@ -545,6 +545,7 @@
                                               AutomationProperties.Name="{CustomResource Send}"
                                               ToolTipService.ToolTip="{CustomResource Send}"
                                               Foreground="{ThemeResource TelegramBackgroundAccentBrush}"
+                                              AllowFocusOnInteraction="False"
                                               VerticalAlignment="Bottom"
                                               Width="48"
                                               Height="48"
