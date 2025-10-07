@@ -71,12 +71,12 @@ namespace Telegram.Controls.Gallery
                 }
             };
 
-            Slider.HorizontalToolTipContent = _tooltip;
+            Slider.ThumbToolTipContent = _tooltip;
             Slider.AddHandler(KeyDownEvent, new KeyEventHandler(Slider_KeyDown), true);
-            Slider.AddHandler(PointerPressedEvent, new PointerEventHandler(Slider_PointerPressed), true);
-            Slider.AddHandler(PointerReleasedEvent, new PointerEventHandler(Slider_PointerReleased), true);
-            Slider.AddHandler(PointerCanceledEvent, new PointerEventHandler(Slider_PointerCanceled), true);
-            Slider.AddHandler(PointerCaptureLostEvent, new PointerEventHandler(Slider_PointerCaptureLost), true);
+            Slider.PositionStarted += Slider_PositionStarted;
+            Slider.PositionChanging += Slider_PositionChanging;
+            Slider.PositionChanged += Slider_PositionChanged;
+            Slider.PositionCanceled += Slider_PositionCanceled;
         }
 
         public bool IsFullScreen
@@ -123,8 +123,6 @@ namespace Telegram.Controls.Gallery
 
         #region Scrubbing
 
-        private bool _scrubbing;
-
         private void Slider_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Right || e.Key == VirtualKey.Up)
@@ -153,39 +151,23 @@ namespace Telegram.Controls.Gallery
             }
         }
 
-        private void Slider_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void Slider_PositionStarted(PlaybackSlider sender, object e)
         {
-            _scrubbing = true;
             PauseBeforeScrubbing();
         }
 
-        private void Slider_PointerReleased(object sender, PointerRoutedEventArgs e)
+        private void Slider_PositionChanged(PlaybackSlider sender, PlaybackSliderPositionChanged e)
         {
             if (_player != null)
             {
-                _player.Position = (long)Slider.Value;
+                _player.Position = e.NewPosition.TotalSeconds;
             }
 
-            _scrubbing = false;
-            PlayAfterScrubbing();
-
-            // Workaround Slider visual states bug
-            var pointer = e.GetCurrentPoint(Slider);
-            if (pointer.Position.X >= 0 && pointer.Position.X <= Slider.ActualWidth && pointer.Position.Y >= 0 && pointer.Position.Y <= Slider.ActualHeight)
-            {
-                VisualStateManager.GoToState(Slider, "PointerOver", false);
-            }
-        }
-
-        private void Slider_PointerCanceled(object sender, PointerRoutedEventArgs e)
-        {
-            _scrubbing = false;
             PlayAfterScrubbing();
         }
 
-        private void Slider_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        private void Slider_PositionCanceled(PlaybackSlider sender, object e)
         {
-            _scrubbing = false;
             PlayAfterScrubbing();
         }
 
@@ -402,6 +384,8 @@ namespace Telegram.Controls.Gallery
 
         private void OnIsPlayingChanged(VideoPlayerBase sender, VideoPlayerIsPlayingChangedEventArgs args)
         {
+            Slider.UpdateValue(sender.Position, sender.Duration, PlaybackState.None);
+
             if (args.IsPlaying)
             {
                 PlaybackButton.Glyph = Icons.PauseFilled24;
@@ -428,12 +412,12 @@ namespace Telegram.Controls.Gallery
 
         private void OnPositionChanged(VideoPlayerBase sender, VideoPlayerPositionChangedEventArgs args)
         {
-            if (_scrubbing)
+            if (Slider.IsScrubbing)
             {
                 return;
             }
 
-            Slider.Value = args.Position;
+            Slider.UpdateValue(args.Position, sender.Duration, sender.IsPlaying ? PlaybackState.Playing : PlaybackState.None);
             TimeText.Text = FormatTime(args.Position);
         }
 
@@ -445,24 +429,25 @@ namespace Telegram.Controls.Gallery
 
         private void OnDurationChanged(VideoPlayerBase sender, VideoPlayerDurationChangedEventArgs args)
         {
-            Slider.Maximum = args.Duration;
+            if (Slider.IsScrubbing)
+            {
+                return;
+            }
+
+            Slider.UpdateValue(sender.Position, args.Duration, PlaybackState.None);
             LengthText.Text = FormatTime(args.Duration);
         }
 
-        private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        private void Slider_PositionChanging(PlaybackSlider sender, PlaybackSliderPositionChanged e)
         {
-            if (_scrubbing)
-            {
-                Slider.Value = e.NewValue;
-                TimeText.Text = FormatTime(e.NewValue);
+            TimeText.Text = FormatTime(e.NewPosition.TotalSeconds);
 
-                if (_player != null)
-                {
-                    _player.Position = e.NewValue;
-                }
+            if (_player != null)
+            {
+                _player.Position = e.NewPosition.TotalSeconds;
             }
 
-            var closest = _storyboardFrames?.LastOrDefault(x => x.Key <= e.NewValue);
+            var closest = _storyboardFrames?.LastOrDefault(x => x.Key <= e.NewPosition.TotalSeconds);
             if (closest == null)
             {
                 return;
@@ -743,46 +728,6 @@ namespace Telegram.Controls.Gallery
         {
             _unloaded = true;
             Attach(null);
-        }
-    }
-
-    public class GalleryTransportSlider : Slider
-    {
-        private Thumb HorizontalThumb;
-        private ToolTip HorizontalToolTip;
-
-        public GalleryTransportSlider()
-        {
-
-        }
-
-        private object _horizontalToolTipContent;
-        public object HorizontalToolTipContent
-        {
-            get => HorizontalToolTip?.Content ?? _horizontalToolTipContent;
-            set
-            {
-                if (HorizontalToolTip != null)
-                {
-                    HorizontalToolTip.Content = value;
-                }
-                else
-                {
-                    _horizontalToolTipContent = value;
-                }
-            }
-        }
-
-        protected override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            HorizontalThumb = GetTemplateChild(nameof(HorizontalThumb)) as Thumb;
-            HorizontalToolTip = ToolTipService.GetToolTip(HorizontalThumb) as ToolTip;
-            HorizontalToolTip.Content = _horizontalToolTipContent;
-            HorizontalToolTip.Padding = new Thickness();
-
-            _horizontalToolTipContent = null;
         }
     }
 }

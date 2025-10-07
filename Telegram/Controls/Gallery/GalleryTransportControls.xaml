@@ -10,6 +10,83 @@
              d:DesignWidth="400">
 
     <UserControl.Resources>
+        <Style TargetType="controls:PlaybackSlider">
+            <Setter Property="Foreground"
+                    Value="{ThemeResource SystemControlHighlightAccentBrush}" />
+            <Setter Property="Background"
+                    Value="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
+            <Setter Property="UseSystemFocusVisuals"
+                    Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="controls:PlaybackSlider">
+                        <Grid Background="Transparent">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualStateGroup.Transitions>
+                                        <VisualTransition From="PointerOver"
+                                                          To="Normal">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="{ThemeResource ScrollBarExpandDuration}"
+                                                                 Storyboard.TargetName="ProgressBarIndicatorTransform"
+                                                                 Storyboard.TargetProperty="ScaleY"
+                                                                 To="0.6666666666666666" />
+                                                <DoubleAnimation Duration="{ThemeResource ScrollBarExpandDuration}"
+                                                                 Storyboard.TargetName="ProgressBarIndicatorTransform"
+                                                                 Storyboard.TargetProperty="ScaleX"
+                                                                 To="0.6666666666666666" />
+                                            </Storyboard>
+                                        </VisualTransition>
+                                    </VisualStateGroup.Transitions>
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="{ThemeResource ScrollBarExpandDuration}"
+                                                             Storyboard.TargetName="ProgressBarIndicatorTransform"
+                                                             Storyboard.TargetProperty="ScaleY"
+                                                             To="1.0" />
+                                            <DoubleAnimation Duration="{ThemeResource ScrollBarExpandDuration}"
+                                                             Storyboard.TargetName="ProgressBarIndicatorTransform"
+                                                             Storyboard.TargetProperty="ScaleX"
+                                                             To="1.0" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Popup x:Name="ThumbToolTipPopup">
+                                <ToolTip x:Name="ThumbToolTip"
+                                         Content="{TemplateBinding ThumbToolTipContent}"
+                                         Padding="0" />
+                            </Popup>
+                            <Grid x:Name="LayoutRoot"
+                                  Margin="0,2">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="2" />
+                                <Border x:Name="ProgressBarIndicator"
+                                        Background="{TemplateBinding Foreground}"
+                                        CornerRadius="2" />
+                                <Border x:Name="ProgressBarThumb"
+                                        HorizontalAlignment="Left">
+                                    <Border Width="12"
+                                            Height="12"
+                                            Background="{TemplateBinding Foreground}"
+                                            CornerRadius="6"
+                                            Margin="-6,-4"
+                                            RenderTransformOrigin="0.5,0.5">
+                                        <Border.RenderTransform>
+                                            <CompositeTransform x:Name="ProgressBarIndicatorTransform"
+                                                                ScaleX="0.6666666666666666"
+                                                                ScaleY="0.6666666666666666" />
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <ControlTemplate x:Key="GallerySliderTemplate"
                          TargetType="Slider">
             <Grid Margin="{TemplateBinding Padding}">
@@ -351,14 +428,12 @@
                         VerticalAlignment="Center"
                         CornerRadius="2"
                         Height="4" />
-                <local:GalleryTransportSlider x:Name="Slider"
-                                              AutomationProperties.Name="{CustomResource AccDescrSeek}"
-                                              Style="{StaticResource DefaultSliderStyle}"
-                                              Template="{StaticResource GallerySliderTemplate}"
-                                              Foreground="#FFFFFF"
-                                              ValueChanged="Slider_ValueChanged"
-                                              IsThumbToolTipEnabled="True"
-                                              Grid.ColumnSpan="2" />
+                <controls:PlaybackSlider x:Name="Slider"
+                                         AutomationProperties.Name="{CustomResource AccDescrSeek}"
+                                         Foreground="#FFFFFF"
+                                         Background="#55FFFFFF"
+                                         Height="8"
+                                         Grid.ColumnSpan="2" />
             </Grid>
 
             <TextBlock x:Name="LengthText"

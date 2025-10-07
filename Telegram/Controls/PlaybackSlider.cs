@@ -14,6 +14,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 
@@ -25,6 +26,8 @@ namespace Telegram.Controls
     {
         private UIElement ProgressBarIndicator;
         private UIElement ProgressBarThumb;
+        private Popup ThumbToolTipPopup;
+        private ToolTip ThumbToolTip;
 
         public PlaybackSlider()
         {
@@ -35,6 +38,8 @@ namespace Telegram.Controls
         {
             ProgressBarIndicator = GetTemplateChild(nameof(ProgressBarIndicator)) as UIElement;
             ProgressBarThumb = GetTemplateChild(nameof(ProgressBarThumb)) as UIElement;
+            ThumbToolTipPopup = GetTemplateChild(nameof(ThumbToolTipPopup)) as Popup;
+            ThumbToolTip = GetTemplateChild(nameof(ThumbToolTip)) as ToolTip;
 
             UpdateValue(_position, _duration, _state);
 
@@ -55,7 +60,10 @@ namespace Telegram.Controls
 
         public TimeSpan Duration => _duration;
 
+        public event TypedEventHandler<PlaybackSlider, PlaybackSliderPositionChanged> PositionStarted;
+        public event TypedEventHandler<PlaybackSlider, PlaybackSliderPositionChanged> PositionChanging;
         public event TypedEventHandler<PlaybackSlider, PlaybackSliderPositionChanged> PositionChanged;
+        public event TypedEventHandler<PlaybackSlider, object> PositionCanceled;
 
         private TimeSpan _position;
         private TimeSpan _duration;
@@ -127,6 +135,19 @@ namespace Telegram.Controls
                 var thumb = ElementComposition.GetElementVisual(ProgressBarThumb);
                 thumb.StartAnimation("Offset.X", thumbAnimation);
             }
+
+            if (ComputedIsThumbToolTipEnabled)
+            {
+                var toolTipAnimation = compositor.CreateExpressionAnimation("Vector3(_.Progress * visual.Size.X - this.Target.Size.X / 2, -this.Target.Size.Y - 8, 0)");
+                toolTipAnimation.SetReferenceParameter("_", _props);
+                toolTipAnimation.SetReferenceParameter("visual", visual);
+
+                var toolTip = ElementComposition.GetElementVisual(ThumbToolTip);
+                toolTip.StartAnimation("Offset", toolTipAnimation);
+
+                ThumbToolTip.Shadow = new Windows.UI.Xaml.Media.ThemeShadow();
+                ThumbToolTip.Translation = new System.Numerics.Vector3(0, 0, 32);
+            }
         }
 
         protected override void OnPointerEntered(PointerRoutedEventArgs e)
@@ -146,7 +167,16 @@ namespace Telegram.Controls
                 VisualStateManager.GoToState(this, "PointerOver", true);
                 CapturePointer(e.Pointer);
 
-                UpdateValue(CalculatePosition(point), _duration, PlaybackState.None);
+                PositionStarted?.Invoke(this, null);
+
+                var position = CalculatePosition(point);
+                UpdateValue(position, _duration, PlaybackState.None);
+                PositionChanging?.Invoke(this, new PlaybackSliderPositionChanged(position));
+
+                if (ComputedIsThumbToolTipEnabled)
+                {
+                    ThumbToolTipPopup.IsOpen = true;
+                }
             }
 
             base.OnPointerPressed(e);
@@ -156,7 +186,9 @@ namespace Telegram.Controls
         {
             if (_pressed)
             {
-                UpdateValue(CalculatePosition(e.GetCurrentPoint(this)), _duration, PlaybackState.None);
+                var position = CalculatePosition(e.GetCurrentPoint(this));
+                UpdateValue(position, _duration, PlaybackState.None);
+                PositionChanging?.Invoke(this, new PlaybackSliderPositionChanged(position));
             }
 
             VisualStateManager.GoToState(this, "PointerOver", true);
@@ -182,16 +214,36 @@ namespace Telegram.Controls
 
         protected override void OnPointerCanceled(PointerRoutedEventArgs e)
         {
+            if (_pressed)
+            {
+                PositionCanceled?.Invoke(this, null);
+            }
+
             _pressed = false;
             UpdateVisualState(e);
+
+            if (ComputedIsThumbToolTipEnabled)
+            {
+                ThumbToolTipPopup.IsOpen = false;
+            }
 
             base.OnPointerCanceled(e);
         }
 
         protected override void OnPointerCaptureLost(PointerRoutedEventArgs e)
         {
+            if (_pressed)
+            {
+                PositionCanceled?.Invoke(this, null);
+            }
+
             _pressed = false;
             UpdateVisualState(e);
+
+            if (ComputedIsThumbToolTipEnabled)
+            {
+                ThumbToolTipPopup.IsOpen = false;
+            }
 
             base.OnPointerCaptureLost(e);
         }
@@ -206,6 +258,11 @@ namespace Telegram.Controls
             _pressed = false;
             ReleasePointerCapture(e.Pointer);
             UpdateVisualState(e);
+
+            if (ComputedIsThumbToolTipEnabled)
+            {
+                ThumbToolTipPopup.IsOpen = false;
+            }
 
             base.OnPointerReleased(e);
         }
@@ -234,6 +291,34 @@ namespace Telegram.Controls
         {
             PositionChanged?.Invoke(this, new PlaybackSliderPositionChanged(position));
         }
+
+        public bool ComputedIsThumbToolTipEnabled => IsThumbToolTipEnabled && ThumbToolTip != null && ThumbToolTipPopup != null;
+
+        #region IsThumbToolTipEnabled
+
+        public bool IsThumbToolTipEnabled
+        {
+            get { return (bool)GetValue(IsThumbToolTipEnabledProperty); }
+            set { SetValue(IsThumbToolTipEnabledProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsThumbToolTipEnabledProperty =
+            DependencyProperty.Register("IsThumbToolTipEnabled", typeof(bool), typeof(PlaybackSlider), new PropertyMetadata(false));
+
+        #endregion
+
+        #region ThumbToolTipContent
+
+        public object ThumbToolTipContent
+        {
+            get { return (object)GetValue(ThumbToolTipContentProperty); }
+            set { SetValue(ThumbToolTipContentProperty, value); }
+        }
+
+        public static readonly DependencyProperty ThumbToolTipContentProperty =
+            DependencyProperty.Register("ThumbToolTipContent", typeof(object), typeof(PlaybackSlider), new PropertyMetadata(null));
+
+        #endregion
     }
 
     public partial class PlaybackSliderAutomationPeer : FrameworkElementAutomationPeer, IRangeValueProvider, IValueProvider
