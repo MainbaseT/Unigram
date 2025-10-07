@@ -829,11 +829,9 @@ namespace Telegram.Controls
                     }
                     else
                     {
-                        Document.GetText(TextGetOptions.NoHidden, out string value);
-
-                        if (value.Length + text.Length > MaxLength)
+                        if (IsLongerThanMaxLength(text.Length, out int exceeding))
                         {
-                            text = text.Substring(0, MaxLength - value.Length);
+                            text = text.Substring(0, exceeding);
                         }
 
                         Document.Selection.SetText(TextSetOptions.Unhide, text);
@@ -1528,9 +1526,7 @@ namespace Telegram.Controls
 
         public void InsertText(string text, bool allowPreceding = false, bool allowTrailing = false)
         {
-            Document.GetText(TextGetOptions.NoHidden, out string value);
-
-            if (value.Length + text.Length > MaxLength)
+            if (IsLongerThanMaxLength(text.Length, out _))
             {
                 return;
             }
@@ -1570,9 +1566,7 @@ namespace Telegram.Controls
 
         public void InsertEmoji(ITextRange range, string emoji, long customEmojiId)
         {
-            Document.GetText(TextGetOptions.NoHidden, out string value);
-
-            if (value.Length + emoji.Length > MaxLength)
+            if (IsLongerThanMaxLength(emoji.Length, out _))
             {
                 return;
             }
@@ -1600,6 +1594,23 @@ namespace Telegram.Controls
             {
                 TextChangedForRealNoCap?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        private bool IsLongerThanMaxLength(int length, out int exceeding)
+        {
+            if (MaxLength > 0)
+            {
+                Document.GetText(TextGetOptions.NoHidden, out string value);
+
+                if (value.Length + length > MaxLength)
+                {
+                    exceeding = MaxLength - value.Length;
+                    return true;
+                }
+            }
+
+            exceeding = 0;
+            return false;
         }
 
         public void InsertBlockquote(string quote)
