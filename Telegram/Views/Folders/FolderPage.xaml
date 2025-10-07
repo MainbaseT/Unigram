@@ -171,11 +171,6 @@
 
                                     <controls:HeaderedControl Header="{CustomResource FilterInclude}"
                                                               Margin="0,0,0,2">
-                                        <controls:HeaderedControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel />
-                                            </ItemsPanelTemplate>
-                                        </controls:HeaderedControl.ItemsPanel>
                                         <controls:SettingsButton Click="{x:Bind ViewModel.AddIncluded}"
                                                                  Content="{CustomResource FilterAddChats}"
                                                                  BorderThickness="0"
@@ -208,11 +203,6 @@
 
                                     <controls:HeaderedControl Header="{CustomResource FilterExclude}"
                                                               Visibility="{x:Bind ConvertExcludeVisibility(ViewModel.Links.Count), Mode=OneWay}">
-                                        <controls:HeaderedControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel />
-                                            </ItemsPanelTemplate>
-                                        </controls:HeaderedControl.ItemsPanel>
                                         <controls:SettingsButton Click="{x:Bind ViewModel.AddExcluded}"
                                                                  Content="{CustomResource FilterAddChats}"
                                                                  BorderThickness="0"
@@ -420,11 +410,6 @@
                             <controls:HeaderedControl Header="{CustomResource InviteLinks}"
                                                       Footer="{CustomResource FilterInviteLinksHint}"
                                                       Margin="0,0,0,2">
-                                <controls:HeaderedControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel />
-                                    </ItemsPanelTemplate>
-                                </controls:HeaderedControl.ItemsPanel>
                                 <controls:SettingsButton Click="{x:Bind ViewModel.CreateLink}"
                                                          Content="{CustomResource CreateNewLink}"
                                                          BorderThickness="0"

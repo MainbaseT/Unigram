@@ -366,7 +366,7 @@
                 BorderBrush="{ThemeResource SettingsItemBorderBrush}"
                 CornerRadius="{ThemeResource NavigationViewContentGridCornerRadius}"
                 BorderThickness="{ThemeResource NavigationViewContentGridBorderThickness}"
-                BackgroundSizing="InnerBorderEdge"
+                BackgroundSizing="OuterBorderEdge"
                 Grid.RowSpan="2" />
         <Border x:Name="VerticalBackgroundRoot"
                 Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
@@ -380,6 +380,7 @@
               Height="{StaticResource NavigationViewTopPaneHeight}"
               Canvas.ZIndex="3">
             <Border BorderBrush="{ThemeResource NavigationViewContentGridBorderBrush}"
+                    CornerRadius="{ThemeResource NavigationViewContentGridCornerRadius}"
                     BorderThickness="0,0,0,1" />
             <Grid x:Name="HeaderLeft"
                   HorizontalAlignment="Left"
@@ -410,7 +411,7 @@
                                     HorizontalContentAlignment="Stretch"
                                     VerticalContentAlignment="Stretch"
                                     BorderThickness="0"
-                                    CornerRadius="0"
+                                    CornerRadius="{ThemeResource NavigationViewContentGridCornerRadius}"
                                     Padding="60,0,0,0">
                 <Grid Background="Transparent"
                       VerticalAlignment="Center"
