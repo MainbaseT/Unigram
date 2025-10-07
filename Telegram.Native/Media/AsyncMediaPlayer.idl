@@ -34,6 +34,7 @@ namespace Telegram.Native.Media
         void Open();
         void Close();
 
+        Double Duration{ get; };
         Double DownloadRate{ get; };
         Int64 DownloadedBytes{ get; };
     };

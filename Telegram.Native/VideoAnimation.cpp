@@ -105,22 +105,30 @@ namespace winrt::Telegram::Native::implementation
             }
             else
             {
+                int64_t offset = info->file.Offset();
                 int64_t bytesRead;
                 info->file.ReadCallback(buf_size, 0, bytesRead);
 
                 if (info->fd == INVALID_HANDLE_VALUE)
                 {
                     info->fd = CreateFile2FromAppW(info->file.FilePath().data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, OPEN_EXISTING, nullptr);
+                
+                    LARGE_INTEGER distancetoMove{};
+                    distancetoMove.QuadPart = offset;
+
+                    BOOL moved = SetFilePointerEx(info->fd, distancetoMove, NULL, FILE_BEGIN);
+                    if (!moved)
+                    {
+                        return 0;
+                    }
                 }
 
                 if (info->fd != INVALID_HANDLE_VALUE && bytesRead >= 0)
                 {
-                    SetFilePointer(info->fd, info->file.Offset(), NULL, FILE_BEGIN);
-
                     DWORD read;
                     if (ReadFile(info->fd, buf, buf_size > bytesRead ? bytesRead : buf_size, &read, NULL))
                     {
-                        info->file.SeekCallback(read + info->file.Offset());
+                        info->file.SeekCallback(offset + read);
                         return read > 0 ? read : AVERROR_EOF;
                     }
                 }
@@ -152,6 +160,16 @@ namespace winrt::Telegram::Native::implementation
             else
             {
                 info->file.SeekCallback(offset);
+
+                if (info->fd != INVALID_HANDLE_VALUE)
+                {
+                    LARGE_INTEGER distancetoMove{};
+                    distancetoMove.QuadPart = offset;
+
+                    BOOL moved = SetFilePointerEx(info->fd, distancetoMove, NULL, FILE_BEGIN);
+                    return moved ? offset : 0;
+                }
+
                 return offset;
             }
         }

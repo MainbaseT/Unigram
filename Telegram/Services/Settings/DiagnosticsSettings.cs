@@ -186,7 +186,7 @@ namespace Telegram.Services.Settings
         private bool? _videoPreloadDebug;
         public bool VideoPreloadDebug
         {
-            get => _videoPreloadDebug ??= GetValueOrDefault("VideoPreloadDebug", ApiInfo.IsPackagedRelease);
+            get => _videoPreloadDebug ??= GetValueOrDefault("VideoPreloadDebug", false);
             set => AddOrUpdateValue(ref _videoPreloadDebug, "VideoPreloadDebug", value);
         }
 

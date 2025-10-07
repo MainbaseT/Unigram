@@ -84,7 +84,7 @@ namespace Telegram.Controls
             }
             else
             {
-                _core.Play(new RemoteFileSource(video.ClientService, video.File, adaptive: true));
+                _core.Play(new RemoteFileSource(video.ClientService, video.File, video.Duration));
                 _core.Position = position;
             }
 
@@ -240,7 +240,7 @@ namespace Telegram.Controls
 
             if (_video != null)
             {
-                _core.Play(new RemoteFileSource(_video.ClientService, _video.File, adaptive: true));
+                _core.Play(new RemoteFileSource(_video.ClientService, _video.File, _video.Duration));
                 _core.Position = _initialPosition;
             }
 

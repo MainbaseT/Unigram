@@ -46,6 +46,7 @@ Use this LibVLC build for Windows Universal projects (UAP) on Windows 10 Desktop
     <file src="vlc/winarm64-uwp/vlc-3.0.22-rc1/plugins/demux/libmp4_plugin.dll" target="build/win10-arm64/plugins/demux/libmp4_plugin.dll" />
     <file src="vlc/winarm64-uwp/vlc-3.0.22-rc1/plugins/demux/libogg_plugin.dll" target="build/win10-arm64/plugins/demux/libogg_plugin.dll" />
     <file src="vlc/winarm64-uwp/vlc-3.0.22-rc1/plugins/demux/libps_plugin.dll" target="build/win10-arm64/plugins/demux/libps_plugin.dll" />
+    <file src="vlc/winarm64-uwp/vlc-3.0.22-rc1/plugins/keystore/libmemory_keystore_plugin.dll" target="build/win10-arm64/plugins/keystore/libmemory_keystore_plugin.dll" />
     <file src="vlc/winarm64-uwp/vlc-3.0.22-rc1/plugins/packetizer/libpacketizer_flac_plugin.dll" target="build/win10-arm64/plugins/packetizer/libpacketizer_flac_plugin.dll" />
     <file src="vlc/winarm64-uwp/vlc-3.0.22-rc1/plugins/packetizer/libpacketizer_h264_plugin.dll" target="build/win10-arm64/plugins/packetizer/libpacketizer_h264_plugin.dll" />
     <file src="vlc/winarm64-uwp/vlc-3.0.22-rc1/plugins/packetizer/libpacketizer_mpegaudio_plugin.dll" target="build/win10-arm64/plugins/packetizer/libpacketizer_mpegaudio_plugin.dll" />
@@ -188,6 +189,7 @@ Use this LibVLC build for Windows Universal projects (UAP) on Windows 10 Desktop
     <file src="vlc/win64-uwp/vlc-3.0.22-rc1/plugins/demux/libmp4_plugin.dll" target="build/win10-x64/plugins/demux/libmp4_plugin.dll" />
     <file src="vlc/win64-uwp/vlc-3.0.22-rc1/plugins/demux/libogg_plugin.dll" target="build/win10-x64/plugins/demux/libogg_plugin.dll" />
     <file src="vlc/win64-uwp/vlc-3.0.22-rc1/plugins/demux/libps_plugin.dll" target="build/win10-x64/plugins/demux/libps_plugin.dll" />
+    <file src="vlc/win64-uwp/vlc-3.0.22-rc1/plugins/keystore/libmemory_keystore_plugin.dll" target="build/win10-x64/plugins/keystore/libmemory_keystore_plugin.dll" />
     <file src="vlc/win64-uwp/vlc-3.0.22-rc1/plugins/packetizer/libpacketizer_flac_plugin.dll" target="build/win10-x64/plugins/packetizer/libpacketizer_flac_plugin.dll" />
     <file src="vlc/win64-uwp/vlc-3.0.22-rc1/plugins/packetizer/libpacketizer_h264_plugin.dll" target="build/win10-x64/plugins/packetizer/libpacketizer_h264_plugin.dll" />
     <file src="vlc/win64-uwp/vlc-3.0.22-rc1/plugins/packetizer/libpacketizer_mpegaudio_plugin.dll" target="build/win10-x64/plugins/packetizer/libpacketizer_mpegaudio_plugin.dll" />

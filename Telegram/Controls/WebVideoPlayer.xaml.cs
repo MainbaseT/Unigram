@@ -321,8 +321,6 @@ namespace Telegram.Controls
                     return;
                 }
 
-                var remote = new Telegram.Streams.RemoteFileSource(_video.ClientService, file, extension == ".m3u8" ? 32 : 31, true);
-
                 long offset = 0;
                 long limit = 0;
                 long buffer = 0;
@@ -374,6 +372,7 @@ namespace Telegram.Controls
 
                 //Logger.Info(resource + ", offset: " + offset + ", count:" + limit);
 
+                var remote = new Telegram.Streams.RemoteFileSource(_video.ClientService, file, _video.Duration);
                 remote.SeekCallback(offset);
                 var bytesRead = await remote.ReadCallbackAsync(limit, buffer);
                 remote.Close();

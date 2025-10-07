@@ -1,7 +1,7 @@
-From fcc6521170d6b156184cba36a0acb19d40d514dd Mon Sep 17 00:00:00 2001
+From 3becf6173b42d4e23773f56b847c622a82d8fa34 Mon Sep 17 00:00:00 2001
 From: Fela <frayx@live.it>
 Date: Wed, 1 Oct 2025 20:45:49 +0400
-Subject: [PATCH 2/3] Print plugin file name on load
+Subject: [PATCH 2/4] Print plugin file name on load
 
 ---
  src/modules/modules.c | 4 ++--

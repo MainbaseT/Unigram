@@ -158,10 +158,11 @@ namespace Telegram.Common
             long offset = 0;
             long limit = 0;
             long buffer = 0;
+            double duration = 0;
 
             if (request.Headers.TryGetValue("Range", out var range) && RangeHeaderValue.TryParse(range, out var ranges))
             {
-                if (request.Query.TryGetValue("duration", out string durationValue) && double.TryParse(durationValue, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double duration) && duration > 0)
+                if (request.Query.TryGetValue("duration", out string durationValue) && double.TryParse(durationValue, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out duration) && duration > 0)
                 {
                     buffer = Math.Min((long)(((double)file.Size / duration) * 15), 4 * 1024 * 1024);
                 }
@@ -203,7 +204,7 @@ namespace Telegram.Common
                 buffer = file.Size - offset;
             }
 
-            var remote = new RemoteFileSource(clientService, file, priority, true);
+            var remote = new RemoteFileSource(clientService, file, duration);
             remote.SeekCallback(offset);
             remote.ReadCallback(limit, buffer, out long bytesRead);
             remote.Close();

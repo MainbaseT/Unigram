@@ -1,7 +1,7 @@
-From cadf09c9c3c102b34b7bc7a10c478766516ea8b8 Mon Sep 17 00:00:00 2001
+From 317b3bb62f6c09d0143d195248064040cc57522c Mon Sep 17 00:00:00 2001
 From: Fela <frayx@live.it>
 Date: Wed, 1 Oct 2025 20:47:21 +0400
-Subject: [PATCH 3/3] Use software gain, inherit volume from parent
+Subject: [PATCH 3/4] Use software gain, inherit volume from parent
 
 ---
  modules/audio_output/winstore.c | 107 ++++----------------------------

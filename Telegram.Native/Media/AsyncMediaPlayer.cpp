@@ -36,8 +36,13 @@ namespace winrt::Telegram::Native::Media::implementation
 
         if (options.Debug)
         {
-            argsStorage.push_back("--verbose=2");
+            argsStorage.push_back("--verbose=3");
         }
+        
+        // Generating plugins cache requires a breakpoint in bank.c#504
+        //argsStorage.clear();
+        //argsStorage.push_back("--quiet");
+        //argsStorage.push_back("--reset-plugins-cache");
 
         std::vector<const char*> argv;
         argv.reserve(argsStorage.size());
@@ -101,6 +106,13 @@ namespace winrt::Telegram::Native::Media::implementation
             , initialized_(false)
         {
             source.Open();
+
+            auto duration = source.Duration();
+            if (duration > 0.0 && duration < 86400.0)
+            {
+                bitrate_last_ = static_cast<int64_t>(source.FileSize() / duration * 15.0);
+                bitrate_estimate_ = static_cast<int64_t>(source.FileSize() / duration * 15.0);
+            }
         }
 
         IAsyncMediaPlayerSource source;
@@ -163,20 +175,16 @@ namespace winrt::Telegram::Native::Media::implementation
             double dl_br = source.DownloadRate();
 
             media_br = std::clamp(media_br, 1.0, bitrate_maximum_);
-            dl_br = std::max(dl_br, 1.0);
 
             double target_bytes = (media_br * target_seconds) / 8.0;
             double missing = target_bytes - static_cast<double>(source.DownloadedBytes());
-            if (missing <= 0)
+
+            if (missing > 0 && dl_br > 0 && dl_br < media_br)
             {
-                bitrate_last_ = target_bytes;
-                return bitrate_last_;
+                target_bytes *= std::min(media_br / dl_br, 2.0);
             }
 
-            if (dl_br < media_br)
-                missing *= media_br / dl_br;
-
-            bitrate_last_ = static_cast<int64_t>(target_bytes + missing);
+            bitrate_last_ = alpha_ * target_bytes + (1.0 - alpha_) * bitrate_last_;
             return bitrate_last_;
         }
 
@@ -203,7 +211,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
             //if (delta > threshold)
             {
-                initialized_ = false;
+                //initialized_ = false;
             }
 
             source.SeekCallback(offset);
@@ -236,22 +244,30 @@ namespace winrt::Telegram::Native::Media::implementation
     {
         auto* ctx = static_cast<MediaContext*>(opaque);
 
+        int64_t offset = ctx->source.Offset();
         int64_t bytesRead;
         ctx->ReadCallback(len, bytesRead);
 
         if (ctx->file == INVALID_HANDLE_VALUE)
         {
             ctx->file = CreateFile2FromAppW(ctx->source.FilePath().data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, OPEN_EXISTING, nullptr);;
+        
+            LARGE_INTEGER distancetoMove{};
+            distancetoMove.QuadPart = offset;
+
+            BOOL moved = SetFilePointerEx(ctx->file, distancetoMove, NULL, FILE_BEGIN);
+            if (!moved)
+            {
+                return -1;
+            }
         }
 
         if (ctx->file != INVALID_HANDLE_VALUE && bytesRead >= 0)
         {
-            SetFilePointer(ctx->file, ctx->source.Offset(), NULL, FILE_BEGIN);
-
             DWORD read;
             if (ReadFile(ctx->file, buf, len > bytesRead ? bytesRead : len, &read, NULL))
             {
-                ctx->source.SeekCallback(read + ctx->source.Offset());
+                ctx->source.SeekCallback(offset + read);
                 return read;
             }
         }
@@ -263,6 +279,15 @@ namespace winrt::Telegram::Native::Media::implementation
     {
         auto* ctx = static_cast<MediaContext*>(opaque);
         ctx->SeekCallback(offset);
+
+        if (ctx->file != INVALID_HANDLE_VALUE)
+        {
+            LARGE_INTEGER distancetoMove{};
+            distancetoMove.QuadPart = offset;
+
+            BOOL moved = SetFilePointerEx(ctx->file, distancetoMove, NULL, FILE_BEGIN);
+            return moved ? 0 : -1;
+        }
 
         return 0;
     }

@@ -20,12 +20,12 @@ namespace Telegram.Streams
         private readonly object _stateLock = new object();
 
         private readonly IClientService _clientService;
-
         private readonly File _file;
+        private readonly double _duration;
+        private readonly int _priority;
+        private readonly bool _adaptive;
 
         private readonly RemoteFileBitrate _bitrate;
-
-        private bool _canceled;
 
         private long _offset;
         private long _count;
@@ -34,22 +34,31 @@ namespace Telegram.Streams
 
         private long _fileToken;
 
-        private readonly int _priority;
-        private readonly bool _adaptive;
-
-        public RemoteFileSource(IClientService clientService, File file, int priority = 32, bool adaptive = false)
+        public RemoteFileSource(IClientService clientService, File file, double duration)
         {
             _event = new ManualResetEvent(false);
 
             _clientService = clientService;
             _file = file;
-            _priority = priority;
-            _adaptive = adaptive;
+            _duration = duration;
+            _priority = 32;
+            _adaptive = true;
 
-            if (adaptive)
-            {
-                _bitrate = new RemoteFileBitrate(file);
-            }
+            _bitrate = new RemoteFileBitrate(file);
+
+            Format = new StickerFormatWebm();
+            UpdateManager.Subscribe(this, clientService, file, ref _fileToken, UpdateFile);
+        }
+
+        public RemoteFileSource(IClientService clientService, File file/*, int priority = 32*/)
+        {
+            _event = new ManualResetEvent(false);
+
+            _clientService = clientService;
+            _file = file;
+            _duration = 0;
+            _priority = 32;
+            _adaptive = false;
 
             Format = new StickerFormatWebm();
             UpdateManager.Subscribe(this, clientService, file, ref _fileToken, UpdateFile);
@@ -88,13 +97,15 @@ namespace Telegram.Streams
             return DownloadedBytes;
         }
 
+        public double Duration => _duration;
+
         public double DownloadRate => _bitrate?.CurrentBitrate ?? 0;
 
         public long DownloadedBytes => CalculateDownloadedBytes();
 
         private long CalculateDownloadedBytes()
         {
-            if (_canceled)
+            if (_closed)
             {
                 return -1;
             }
@@ -142,7 +153,7 @@ namespace Telegram.Streams
         {
             lock (_stateLock)
             {
-                if (_canceled || _offset >= _file.Size - 1)
+                if (_closed || _file.Local.IsDownloadingCompleted || _offset >= _file.Size - 1)
                 {
                     return false;
                 }
@@ -178,8 +189,6 @@ namespace Telegram.Streams
 
         public override long Offset => _offset;
 
-        public bool IsCanceled => _canceled;
-
         private void UpdateFile(object target, File file)
         {
             if (file.Id != _file.Id)
@@ -204,7 +213,7 @@ namespace Telegram.Streams
                 var inEnd = end >= _offset + _count /*|| end == _file.Size*/;
 
                 var available = _file.Local.Path.Length > 0 && ((inBegin && inEnd) || _file.Local.IsDownloadingCompleted);
-                var canceled = _canceled || !file.Local.IsDownloadingActive;
+                var canceled = _closed || !file.Local.IsDownloadingActive;
 
                 if (available || canceled)
                 {
@@ -227,7 +236,6 @@ namespace Telegram.Streams
             lock (_stateLock)
             {
                 _closed = false;
-                _canceled = false;
             }
 
             SeekCallback(0);
