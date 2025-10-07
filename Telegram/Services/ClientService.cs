@@ -70,6 +70,8 @@ namespace Telegram.Services
         bool IsPremium { get; }
         bool IsPremiumAvailable { get; }
 
+        long UnixTime { get; }
+
         bool TranslateMessages { get; }
         bool TranslateChats { get; }
 
@@ -873,6 +875,7 @@ namespace Telegram.Services
 
         private void Clear()
         {
+            _unixTimeDifference = 0;
             _options.Clear();
 
             _files.Clear();
@@ -1372,6 +1375,10 @@ namespace Telegram.Services
         public bool IsPremium => _options.IsPremium;
 
         public bool IsPremiumAvailable => _options.IsPremium || _options.IsPremiumAvailable;
+
+        private long _unixTimeDifference;
+
+        public long UnixTime => _unixTimeDifference + DateTime.Now.ToTimestamp();
 
         public StarAmount OwnedStarCount
         {
@@ -3401,6 +3408,10 @@ namespace Telegram.Services
                     {
                         _options.Update(updateOption.Name, updateOption.Value);
 
+                        if (updateOption.Name == OptionsService.R.UnixTime && updateOption.Value is OptionValueInteger unixTime)
+                        {
+                            _unixTimeDifference = DateTime.Now.ToTimestamp() - unixTime.Value;
+                        }
                         if (updateOption.Name == OptionsService.R.MyId && updateOption.Value is OptionValueInteger myId)
                         {
                             _settings.UserId = myId.Value;

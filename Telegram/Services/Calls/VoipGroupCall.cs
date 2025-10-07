@@ -11,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Common;
-using Telegram.Converters;
 using Telegram.Native.Calls;
 using Telegram.Navigation;
 using Telegram.Td.Api;
@@ -43,8 +42,6 @@ namespace Telegram.Services.Calls
         private TaskCompletionSource<MessageSenders> _availableAliasesTask;
 
         private GroupCallParticipant _currentUser;
-
-        private TimeSpan _timeDifference;
 
         private readonly object _managerLock = new();
 
@@ -102,10 +99,6 @@ namespace Telegram.Services.Calls
             IsVideoChat = groupCall.IsVideoChat;
             InviteLink = groupCall.InviteLink;
             Id = groupCall.Id;
-
-            var unix = ClientService.SendAsync(new GetOption("unix_time")).Result as OptionValueInteger;
-
-            _timeDifference = DateTime.Now - Formatter.ToLocalTime(unix.Value);
 
             _chat = chat;
             _inviteHash = inviteHash ?? string.Empty;
@@ -173,10 +166,6 @@ namespace Telegram.Services.Calls
             //InviteLink = groupCall.InviteLink;
             //Id = groupCall.Id;
 
-            var unix = ClientService.SendAsync(new GetOption("unix_time")).Result as OptionValueInteger;
-
-            _timeDifference = DateTime.Now - Formatter.ToLocalTime(unix.Value);
-
             _inputGroupCall = inputGroupCall;
 
             _inputGroupCallTask = new TaskCompletionSource<InputGroupCall>();
@@ -237,10 +226,6 @@ namespace Telegram.Services.Calls
             //IsVideoChat = groupCall.IsVideoChat;
             //InviteLink = groupCall.InviteLink;
             //Id = groupCall.Id;
-
-            var unix = ClientService.SendAsync(new GetOption("unix_time")).Result as OptionValueInteger;
-
-            _timeDifference = DateTime.Now - Formatter.ToLocalTime(unix.Value);
 
             _inviteUserIds = userIds;
             _inputGroupCallTask = new TaskCompletionSource<InputGroupCall>();
@@ -700,32 +685,14 @@ namespace Telegram.Services.Calls
             }
             else
             {
-                var now = DateTime.Now + _timeDifference;
-                var stamp = now.ToTimestampMilliseconds();
-
-                args.Deferral(stamp);
+                args.Deferral(ClientService.UnixTime);
             }
         }
 
         private async void OnBroadcastPartRequested(VoipGroupManager sender, BroadcastPartRequestedEventArgs args)
         {
-            var now = DateTime.Now + _timeDifference;
-            var stamp = now.ToTimestampMilliseconds();
-
-            var time = args.Time;
-            if (time == 0)
-            {
-                time = stamp;
-            }
-
-            var test = args.VideoQuality;
-
-            var response = await ClientService.SendAsync(new GetVideoChatStreamSegment(Id, time, args.Scale, args.ChannelId, args.VideoQuality));
-
-            now = DateTime.Now + _timeDifference;
-            stamp = now.ToTimestamp();
-
-            args.Deferral(time, stamp, response as Data);
+            var response = await ClientService.SendAsync(new GetVideoChatStreamSegment(Id, args.Time, args.Scale, args.ChannelId, args.VideoQuality));
+            args.Deferral(args.Time, ClientService.UnixTime, response as Data);
         }
 
         private async void OnMediaChannelDescriptionsRequested(VoipGroupManager sender, MediaChannelDescriptionsRequestedEventArgs args)
