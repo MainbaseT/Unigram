@@ -95,12 +95,27 @@ namespace Telegram.Controls.Gallery
             ShowHideTransport(false);
         }
 
+        protected override void OnPointerExited(PointerRoutedEventArgs e)
+        {
+            _inactivityTimer.Stop();
+            ShowHideTransport(false);
+
+            base.OnPointerExited(e);
+        }
+
         protected override void OnPointerMoved(PointerRoutedEventArgs e)
         {
             _inactivityTimer.Stop();
-            ShowHideTransport(true);
-
             base.OnPointerMoved(e);
+
+            var point = e.GetCurrentPoint(this);
+            if (ActualWidth - point.Position.X < 1)
+            {
+                ShowHideTransport(false);
+                return;
+            }
+
+            ShowHideTransport(true);
 
             if (_transportEntered)
             {
