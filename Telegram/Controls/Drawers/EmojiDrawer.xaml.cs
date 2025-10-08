@@ -614,7 +614,7 @@ namespace Telegram.Controls.Drawers
                         animation.Source = null;
                     }
 
-                    if (_mode == EmojiDrawerMode.Reactions && args.ItemIndex > 5 && args.ItemIndex < 8 * 6)
+                    if (false && _mode == EmojiDrawerMode.Reactions && args.ItemIndex > 5 && args.ItemIndex < 8 * 6)
                     {
                         var x1 = 4;
                         var y1 = 0;
