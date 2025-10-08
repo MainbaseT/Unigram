@@ -570,7 +570,7 @@ namespace Telegram.Controls.Messages
                 outgoing,
                 sender,
                 title,
-                Strings.AttachPhoto,
+                quote != null ? null : Strings.AttachPhoto,
                 quote,
                 manual,
                 white);
@@ -795,7 +795,7 @@ namespace Telegram.Controls.Messages
                 outgoing,
                 sender,
                 title,
-                $"\uD83C\uDFB5 {audio.Audio.GetTitle()}",
+                quote != null ? null : $"\uD83C\uDFB5 {audio.Audio.GetTitle()}",
                 quote,
                 manual,
                 white);
@@ -852,7 +852,7 @@ namespace Telegram.Controls.Messages
                 outgoing,
                 sender,
                 title,
-                Strings.AttachAudio,
+                quote != null ? null : Strings.AttachAudio,
                 quote,
                 manual,
                 white);
@@ -892,7 +892,7 @@ namespace Telegram.Controls.Messages
                 outgoing,
                 sender,
                 title,
-                Strings.AttachVideo,
+                quote != null ? null : Strings.AttachVideo,
                 quote,
                 manual,
                 white);
@@ -948,7 +948,7 @@ namespace Telegram.Controls.Messages
                 outgoing,
                 sender,
                 title,
-                Strings.AttachGif,
+                quote != null ? null : Strings.AttachGif,
                 quote,
                 manual,
                 white);
@@ -992,7 +992,7 @@ namespace Telegram.Controls.Messages
                 outgoing,
                 sender,
                 title,
-                document.Document.FileName,
+                quote != null ? null : document.Document.FileName,
                 quote,
                 manual,
                 white);
