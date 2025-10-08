@@ -4198,10 +4198,10 @@
       <Version>2.8.7</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Web.WebView2">
-      <Version>1.0.3351.48</Version>
+      <Version>1.0.3537.50</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.3</Version>
+      <Version>13.0.4</Version>
     </PackageReference>
     <PackageReference Include="PolySharp">
       <Version>1.15.0</Version>
@@ -4231,7 +4231,7 @@
       <Version>2.1.11</Version>
     </PackageReference>
     <PackageReference Include="System.Reflection.Metadata">
-      <Version>9.0.7</Version>
+      <Version>9.0.9</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
