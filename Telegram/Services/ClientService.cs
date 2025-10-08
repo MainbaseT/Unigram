@@ -1890,6 +1890,10 @@ namespace Telegram.Services
             {
                 return supergroup.IsForum;
             }
+            else if (TryGetUser(chat, out User user))
+            {
+                return user.Type is UserTypeBot { HasTopics: true };
+            }
 
             return false;
         }
