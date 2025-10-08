@@ -28,9 +28,18 @@ namespace Telegram.Controls
         private Popup ThumbToolTipPopup;
         private ToolTip ThumbToolTip;
 
+        private DispatcherTimer _staleTimer;
+
         public PlaybackSlider()
         {
             DefaultStyleKey = typeof(PlaybackSlider);
+
+            Unloaded += OnUnloaded;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            _staleTimer?.Stop();
         }
 
         protected override void OnApplyTemplate()
@@ -97,6 +106,8 @@ namespace Telegram.Controls
                 step = 0;
             }
 
+            _staleTimer?.Stop();
+
             if (_props == null)
             {
                 _props = compositor.CreatePropertySet();
@@ -112,6 +123,15 @@ namespace Telegram.Controls
                 animation.InsertKeyFrame(1, 1, linearEasing);
 
                 _props.StartAnimation("Progress", animation);
+
+                if (_staleTimer == null)
+                {
+                    _staleTimer = new DispatcherTimer();
+                    _staleTimer.Interval = TimeSpan.FromSeconds(1);
+                    _staleTimer.Tick += OnStaleTimerTick;
+                }
+
+                _staleTimer.Start();
             }
             else
             {
@@ -147,6 +167,25 @@ namespace Telegram.Controls
                 ThumbToolTip.Shadow = new Windows.UI.Xaml.Media.ThemeShadow();
                 ThumbToolTip.Translation = new System.Numerics.Vector3(0, 0, 32);
             }
+        }
+
+        private void OnStaleTimerTick(object sender, object e)
+        {
+            _staleTimer.Stop();
+
+            if (_props == null)
+            {
+                return;
+            }
+
+            var step = (float)(_position.TotalSeconds / _duration.TotalSeconds);
+            if (double.IsNaN(step))
+            {
+                step = 0;
+            }
+
+            _props.StopAnimation("Progress");
+            _props.InsertScalar("Progress", step);
         }
 
         protected override void OnPointerEntered(PointerRoutedEventArgs e)
