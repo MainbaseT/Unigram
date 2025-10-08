@@ -7017,6 +7017,15 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2ReleasedBy" xml:space="preserve">
     <value>released by **{0}**</value>
   </data>
+  <data name="Gift2RemoveDescriptionButton" xml:space="preserve">
+    <value>Remove for ⭐️{0}</value>
+  </data>
+  <data name="Gift2RemoveDescriptionText" xml:space="preserve">
+    <value>Do you want to permanently remove this description from your gift?</value>
+  </data>
+  <data name="Gift2RemoveDescriptionTitle" xml:space="preserve">
+    <value>Remove Description</value>
+  </data>
   <data name="Gift2Resale" xml:space="preserve">
     <value>resale</value>
   </data>

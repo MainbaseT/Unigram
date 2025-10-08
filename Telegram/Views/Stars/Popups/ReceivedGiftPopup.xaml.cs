@@ -413,6 +413,9 @@ namespace Telegram.Views.Stars.Popups
                 }
 
                 UpgradedButtons.Visibility = Visibility.Visible;
+                UpgradedCaptionRemove.Visibility = receivedGift.DropOriginalDetailsStarCount > 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
 
                 if (gift.ResaleParameters != null)
                 {
@@ -599,12 +602,15 @@ namespace Telegram.Views.Stars.Popups
 
                 _gift.ReceivedGiftId = result.ReceivedGiftId;
                 _gift.ExportDate = result.ExportDate;
+                _gift.NextResaleDate = result.NextResaleDate;
+                _gift.NextTransferDate = result.NextTransferDate;
+                _gift.DropOriginalDetailsStarCount = result.DropOriginalDetailsStarCount;
                 _gift.TransferStarCount = result.TransferStarCount;
                 _gift.CanBeTransferred = result.CanBeTransferred;
                 _gift.IsSaved = result.IsSaved;
                 _gift.Gift = new SentGiftUpgraded(result.Gift);
 
-                _aggregator.Publish(new UpdateGiftUpgraded(id, _gift));
+                _aggregator.Publish(new UpdateGiftUpgraded(id, result.ReceivedGiftId, _gift));
 
                 UpgradedAnimatedPhoto.LoopCompleted -= OnLoopCompleted;
 
@@ -1025,7 +1031,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 upgraded.Gift.ResaleParameters = new GiftResaleParameters(popup.Value, 0, false);
 
-                _aggregator.Publish(new UpdateGiftUpgraded(_gift.ReceivedGiftId, _gift));
+                _aggregator.Publish(new UpdateGiftUpgraded(_gift.ReceivedGiftId, _gift.ReceivedGiftId, _gift));
 
                 ResaleStarCountRoot.Visibility = Visibility.Visible;
                 ResaleStarCount.Text = upgraded.Gift.ResaleParameters.StarCount.ToString("N0");
@@ -1175,6 +1181,38 @@ namespace Telegram.Views.Stars.Popups
             if (valueInfo != null && _gift.Gift is SentGiftUpgraded upgraded)
             {
                 await UpgradedGiftValuePopup.ShowAsync(XamlRoot, _clientService, _navigationService, upgraded.Gift, valueInfo);
+            }
+        }
+
+        private async void UpgradedCaptionRemove_Click(object sender, RoutedEventArgs e)
+        {
+            var confirm = await _navigationService.ShowPopupAsync(Strings.Gift2RemoveDescriptionText, Strings.Gift2RemoveDescriptionTitle, string.Format(Strings.Gift2RemoveDescriptionButton.ReplaceStar(Icons.Premium), _gift.DropOriginalDetailsStarCount));
+            if (confirm == ContentDialogResult.Primary)
+            {
+                var response = await _clientService.SendPaymentAsync(_gift.DropOriginalDetailsStarCount, new DropGiftOriginalDetails(_gift.ReceivedGiftId, _gift.DropOriginalDetailsStarCount));
+                if (response is Ok)
+                {
+                    _gift.DropOriginalDetailsStarCount = 0;
+                    
+                    if (_gift.Gift is SentGiftUpgraded upgraded)
+                    {
+                        upgraded.Gift.OriginalDetails = null;
+                    }
+
+                    UpgradedTableRoot.BorderThickness = new Thickness(1);
+                    UpgradedTableRoot.CornerRadius = new CornerRadius(4);
+
+                    UpgradedCaptionRoot.Visibility = Visibility.Collapsed;
+                }
+                else if (response is Error error)
+                {
+                    ToastPopup.ShowError(XamlRoot, error);
+                }
+                else if (response is ErrorStarsNeeded)
+                {
+                    Hide();
+                    await _navigationService.ShowPopupAsync(new BuyPopup(), BuyStarsArgs.ForChannel(_gift.DropOriginalDetailsStarCount, 0));
+                }
             }
         }
     }

@@ -12998,4 +12998,8 @@
     <string name="VoipChannelDisableComments">Disable Messages</string>
     <string name="VoipMessage">Message</string>
 
+    <string name="Gift2RemoveDescriptionTitle">Remove Description</string>
+    <string name="Gift2RemoveDescriptionText">Do you want to permanently remove this description from your gift?</string>
+    <string name="Gift2RemoveDescriptionButton">Remove for &#11088;&#65039;{0}</string>
+
 </resources>

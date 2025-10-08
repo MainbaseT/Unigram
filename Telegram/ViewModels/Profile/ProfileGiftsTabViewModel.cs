@@ -326,7 +326,7 @@ namespace Telegram.ViewModels.Profile
         {
             BeginOnUIThread(() =>
             {
-                var receivedGift = Items.FirstOrDefault(x => x.ReceivedGiftId == update.ReceivedGiftId);
+                var receivedGift = Items.FirstOrDefault(x => x.ReceivedGiftId == update.ReceivedGiftId || x.ReceivedGiftId == update.OldReceivedGiftId);
                 if (receivedGift == null)
                 {
                     return;
