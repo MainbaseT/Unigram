@@ -285,21 +285,21 @@
                        Grid.Row="1" />
         </Grid>
 
-        <Grid Margin="24,8,24,0"
+        <Grid Margin="24,0,24,0"
               Grid.Row="1">
             <controls:PlaybackSlider x:Name="Slider"
                                      VerticalAlignment="Top"
-                                     Height="8" />
+                                     Height="20" />
             <TextBlock x:Name="Position"
                        Style="{StaticResource DisabledCaptionTextBlockStyle}"
                        Typography.NumeralAlignment="Tabular"
-                       Margin="0,12,0,0" />
+                       Margin="0,18,0,0" />
             <TextBlock x:Name="Duration"
                        HorizontalAlignment="Right"
                        TextAlignment="Right"
                        Style="{StaticResource DisabledCaptionTextBlockStyle}"
                        Typography.NumeralAlignment="Tabular"
-                       Margin="0,12,0,0" />
+                       Margin="0,18,0,0" />
         </Grid>
 
         <Grid Margin="0,0,0,4"
