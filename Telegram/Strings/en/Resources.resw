@@ -4237,6 +4237,9 @@ Minimum length is 5 characters.</value>
   <data name="ChatSettings" xml:space="preserve">
     <value>Chat Settings</value>
   </data>
+  <data name="ChatsLeaveAlert" xml:space="preserve">
+    <value>Are you sure you want to leave the selected chats?</value>
+  </data>
   <data name="ChatsMute" xml:space="preserve">
     <value>Mute</value>
   </data>
@@ -7900,6 +7903,12 @@ This setting does not affect group chats.</value>
   <data name="ImportContacts" xml:space="preserve">
     <value>Import Contacts</value>
   </data>
+  <data name="InactiveChannelSignature" xml:space="preserve">
+    <value>channel, inactive for {0}</value>
+  </data>
+  <data name="InactiveChatSignature" xml:space="preserve">
+    <value>{0}, inactive for {1}</value>
+  </data>
   <data name="InAppNotifications" xml:space="preserve">
     <value>In-app notifications</value>
   </data>
@@ -8123,6 +8132,9 @@ You can change your language back at any time in Settings.</value>
   <data name="LargeEmoji" xml:space="preserve">
     <value>Large Emoji</value>
   </data>
+  <data name="LastActiveCommunities" xml:space="preserve">
+    <value>Least active communities</value>
+  </data>
   <data name="LastName" xml:space="preserve">
     <value>Last name (optional)</value>
   </data>
@@ -8194,6 +8206,12 @@ You can change your language back at any time in Settings.</value>
   </data>
   <data name="LeaveChannelMenu" xml:space="preserve">
     <value>Leave channel</value>
+  </data>
+  <data name="LeaveCommunities_one" xml:space="preserve">
+    <value>Leave community</value>
+  </data>
+  <data name="LeaveCommunities_other" xml:space="preserve">
+    <value>Leave {0} communities</value>
   </data>
   <data name="LeaveMegaMenu" xml:space="preserve">
     <value>Leave group</value>

@@ -3312,6 +3312,14 @@ namespace Telegram.ViewModels
 
                     ToastPopup.Show(XamlRoot, text, ToastPopupIcon.JoinRequested);
                 }
+                else if (error.MessageEquals(ErrorType.CHANNELS_TOO_MUCH))
+                {
+                    NavigationService.ShowLimitReached(new PremiumLimitTypeSupergroupCount());
+                }
+                else
+                {
+                    ShowToast(error);
+                }
             }
             else if (Constants.DEBUG)
             {
