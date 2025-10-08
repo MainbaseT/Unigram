@@ -179,6 +179,7 @@ namespace Telegram.Controls
             }
 
             _backgroundCollapsed = !show;
+            UserFirstAudioRoot.IsHitTestVisible = !show;
 
             if (HeaderTheme != ElementTheme.Default)
             {
