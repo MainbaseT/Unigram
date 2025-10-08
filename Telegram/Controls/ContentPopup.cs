@@ -280,12 +280,14 @@ namespace Telegram.Controls
 
             VisualStateManager.GoToState(this, IsPrimaryButtonSplit ? "PrimaryAsSplitButton" : "NoSplitButton", false);
 
+            // TODO: Name
             var button = GetTemplateChild("PrimaryButton") as Button;
             if (button != null && FocusPrimaryButton)
             {
                 button.Loaded += PrimaryButton_Loaded;
             }
 
+            // TODO: Name
             var rectangle = GetTemplateChild("LightDismiss") as Rectangle;
             if (rectangle != null)
             {
@@ -383,6 +385,7 @@ namespace Telegram.Controls
 
             if (result == ContentDialogResult.Primary)
             {
+                // TODO: Name
                 var button = GetTemplateChild("PrimaryButton") as Button;
                 if (button != null)
                 {
@@ -397,6 +400,7 @@ namespace Telegram.Controls
             }
             else if (result == ContentDialogResult.Secondary)
             {
+                // TODO: Name
                 var button = GetTemplateChild("SecondaryButton") as Button;
                 if (button != null)
                 {

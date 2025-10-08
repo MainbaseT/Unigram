@@ -142,6 +142,7 @@ namespace Telegram.Controls.Chats
 
         protected override void OnApplyTemplate()
         {
+            // TODO: Name
             ScrollingHost = (ScrollViewer)GetTemplateChild("ScrollViewer");
 
             // Used by saved messages tab

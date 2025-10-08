@@ -6920,19 +6920,6 @@ namespace Telegram.Views
             }
         }
 
-        #region XamlMarkupHelper
-
-        private void LoadObject<T>(ref T element, /*[CallerArgumentExpression("element")]*/string name)
-            where T : DependencyObject
-        {
-            if (element == null)
-            {
-                FindName(name);
-            }
-        }
-
-        #endregion
-
         private void Stickers_Redirect(object sender, EventArgs e)
         {
             _focusState.Set(FocusState.Programmatic);

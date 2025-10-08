@@ -52,6 +52,7 @@ namespace Telegram.Controls.Messages
 
         protected override void OnApplyTemplate()
         {
+            // TODO: Name
             var animated = GetTemplateChild("Animated") as AnimatedImage;
             var layoutRoot = GetTemplateChild("LayoutRoot") as Border;
 

@@ -756,7 +756,7 @@ namespace Telegram.Controls.Messages
                 {
                     _photoId = null;
                     Photo = null;
-                    UnloadObject(ref PhotoRoot);
+                    UnloadTemplateChild(ref PhotoRoot);
                 }
 
                 if (PhotoColumn.Width.IsAbsolute)
@@ -1198,17 +1198,17 @@ namespace Telegram.Controls.Messages
 
                 if (shown && !outgoing && !string.IsNullOrEmpty(title))
                 {
-                    LoadObject(ref AdminLabel, nameof(AdminLabel));
+                    LoadTemplateChild(ref AdminLabel);
                     AdminLabel.Text = title;
                 }
                 else if (shown && !message.IsChannelPost && message.SenderId is MessageSenderChat && message.ForwardInfo != null)
                 {
-                    LoadObject(ref AdminLabel, nameof(AdminLabel));
+                    LoadTemplateChild(ref AdminLabel);
                     AdminLabel.Text = Strings.DiscussChannel;
                 }
                 else if (AdminLabel != null)
                 {
-                    UnloadObject(ref AdminLabel);
+                    UnloadTemplateChild(ref AdminLabel);
                 }
 
                 if (header is false)
@@ -1226,7 +1226,7 @@ namespace Telegram.Controls.Messages
             }
             else
             {
-                UnloadObject(ref AdminLabel);
+                UnloadTemplateChild(ref AdminLabel);
 
                 //if (HeaderPanel != null)
                 //{
@@ -1557,7 +1557,7 @@ namespace Telegram.Controls.Messages
 
                 if (message.InteractionInfo?.Reactions?.Reactions.Count > 0)
                 {
-                    LoadObject(ref MediaReactions, nameof(MediaReactions));
+                    LoadTemplateChild(ref MediaReactions);
                     MediaReactions.HorizontalContentAlignment = message.IsVisuallyOutgoing ? HorizontalAlignment.Right : HorizontalAlignment.Left;
                     MediaReactions.UpdateMessageReactions(message, animate);
                 }
@@ -1572,7 +1572,7 @@ namespace Telegram.Controls.Messages
 
                 if (message.InteractionInfo?.Reactions?.Reactions.Count > 0)
                 {
-                    LoadObject(ref Reactions, nameof(Reactions));
+                    LoadTemplateChild(ref Reactions);
                     Reactions.UpdateMessageReactions(message, animate);
                 }
                 else
@@ -3163,8 +3163,8 @@ namespace Telegram.Controls.Messages
 
             Message.SetText(null, message, Array.Empty<TextEntity>());
 
-            LoadObject(ref HeaderPanel, nameof(HeaderPanel));
-            LoadObject(ref HeaderLabel, nameof(HeaderLabel));
+            LoadTemplateChild(ref HeaderPanel);
+            LoadTemplateChild(ref HeaderLabel);
 
             var hyperlink = HeaderLabel.Inlines[0] as Hyperlink;
             var run = hyperlink.Inlines[0] as Run;
@@ -3712,14 +3712,14 @@ namespace Telegram.Controls.Messages
         #region XamlMarkupHelper
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void LoadObject<T>(ref T element, /*[CallerArgumentExpression("element")]*/string name)
+        private void LoadTemplateChild<T>(ref T element, [CallerArgumentExpression("element")] string name = null)
             where T : DependencyObject
         {
             element ??= GetTemplateChild(name) as T;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UnloadObject<T>(ref T element)
+        private void UnloadTemplateChild<T>(ref T element)
             where T : DependencyObject
         {
             if (element != null)

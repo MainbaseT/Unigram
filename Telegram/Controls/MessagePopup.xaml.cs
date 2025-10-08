@@ -243,6 +243,7 @@ namespace Telegram.Controls
 
         protected override void OnApplyTemplate()
         {
+            // TODO: Name
             var container = GetTemplateChild("Container") as Border;
 
             var rootElement = container?.Child as FrameworkElement;

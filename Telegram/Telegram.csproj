@@ -321,6 +321,7 @@
     <Compile Include="Controls\Chats\ChatConnectedBotHeader.xaml.cs">
       <DependentUpon>ChatConnectedBotHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ControlEx.cs" />
     <Compile Include="Controls\Drawers\EmojiSkinFlyout.xaml.cs">
       <DependentUpon>EmojiSkinFlyout.xaml</DependentUpon>
     </Compile>

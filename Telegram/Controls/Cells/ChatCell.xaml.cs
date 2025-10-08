@@ -822,7 +822,7 @@ namespace Telegram.Controls.Cells
                 verification = user.VerificationStatus?.BotVerificationIconCustomEmojiId;
                 Identity.SetStatus(_clientService, user, true);
 
-                UnloadObject(ref DirectMessagesGroup);
+                UnloadTemplateChild(ref DirectMessagesGroup);
             }
             else if (_clientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
@@ -831,11 +831,11 @@ namespace Telegram.Controls.Cells
 
                 if (supergroup.IsDirectMessagesGroup)
                 {
-                    LoadObject(ref DirectMessagesGroup, nameof(DirectMessagesGroup));
+                    LoadTemplateChild(ref DirectMessagesGroup);
                 }
                 else
                 {
-                    UnloadObject(ref DirectMessagesGroup);
+                    UnloadTemplateChild(ref DirectMessagesGroup);
                 }
             }
             else
@@ -843,7 +843,7 @@ namespace Telegram.Controls.Cells
                 verification = null;
                 Identity.ClearStatus();
 
-                UnloadObject(ref DirectMessagesGroup);
+                UnloadTemplateChild(ref DirectMessagesGroup);
             }
 
             if (verification is not null and not 0)
@@ -1347,8 +1347,8 @@ namespace Telegram.Controls.Cells
 
             if (compact)
             {
-                LoadObject(ref CompactBadgeRoot, nameof(CompactBadgeRoot));
-                LoadObject(ref CompactBadge, nameof(CompactBadge));
+                LoadTemplateChild(ref CompactBadgeRoot);
+                LoadTemplateChild(ref CompactBadge);
 
                 CompactBadgeRoot.Visibility = UnreadBadge.Visibility;
                 CompactBadge.Text = UnreadBadge.Text;
@@ -2523,27 +2523,6 @@ namespace Telegram.Controls.Cells
         }
 
         #endregion
-
-        #region XamlMarkupHelper
-
-        private void LoadObject<T>(ref T element, /*[CallerArgumentExpression("element")]*/string name)
-            where T : DependencyObject
-        {
-            element ??= GetTemplateChild(name) as T;
-        }
-
-        private void UnloadObject<T>(ref T element)
-            where T : DependencyObject
-        {
-            if (element != null)
-            {
-                XamlMarkupHelper.UnloadObject(element);
-                element = null;
-            }
-        }
-
-        #endregion
-
     }
 
     public partial class ChatFoldersPanel : Panel

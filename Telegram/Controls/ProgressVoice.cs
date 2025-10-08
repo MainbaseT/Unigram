@@ -35,8 +35,8 @@ namespace Telegram.Controls
         protected override void OnApplyTemplate()
         {
             RootGrid = GetTemplateChild(nameof(RootGrid)) as Grid;
-            ProgressBarIndicator = GetTemplateChild("ProgressBarIndicator") as Rectangle;
-            HorizontalTrackRect = GetTemplateChild("HorizontalTrackRect") as Rectangle;
+            ProgressBarIndicator = GetTemplateChild(nameof(ProgressBarIndicator)) as Rectangle;
+            HorizontalTrackRect = GetTemplateChild(nameof(HorizontalTrackRect)) as Rectangle;
 
             var visual = ElementComposition.GetElementVisual(RootGrid);
             visual.Clip = _clip;
