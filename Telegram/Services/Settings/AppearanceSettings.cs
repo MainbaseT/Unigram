@@ -504,6 +504,8 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _bubbleRadius, "BubbleRadius", value);
         }
 
+        public int CornerRadius => BubbleRadius > 0 ? BubbleRadius < 15 ? BubbleRadius : 24 : 0;
+
         private bool? _isQuickReplySelected;
         public bool IsQuickReplySelected
         {

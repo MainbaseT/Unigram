@@ -9,6 +9,7 @@ using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -1748,6 +1749,20 @@ namespace Telegram.Common
             }
 
             return new Uri("file:///" + directory + "\\" + Uri.EscapeDataString(file));
+        }
+    }
+
+    public static class MonotonicUnixTime
+    {
+        private static readonly long startTicks = Stopwatch.GetTimestamp();
+        private static readonly double startUnixTime = (DateTime.UtcNow -
+            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+
+        public static long Now()
+        {
+            long ticks = Stopwatch.GetTimestamp();
+            double elapsedSeconds = (double)(ticks - startTicks) / Stopwatch.Frequency;
+            return (long)(startUnixTime + elapsedSeconds);
         }
     }
 }
