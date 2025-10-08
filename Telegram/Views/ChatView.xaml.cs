@@ -81,7 +81,6 @@ namespace Telegram.Views
         private readonly DispatcherTimer _slowModeTimer;
 
         private readonly Visual _rootVisual;
-        private readonly Visual _textShadowVisual;
 
         private readonly DispatcherTimer _dateHeaderTimer;
         private readonly Visual _dateHeaderPanel;
@@ -216,16 +215,19 @@ namespace Telegram.Views
                 btnSendMessage.SlowModeDelayExpiresIn = fullInfo.SlowModeDelayExpiresIn;
             };
 
-            _textShadowVisual = VisualUtilities.DropShadow(Separator);
-            _textShadowVisual.IsVisible = false;
-
-            if (ApiInfo.CanCreateThemeShadow && SettingsService.Current.Diagnostics.BubbleElevationDebug)
+            if (ApiInfo.CanCreateThemeShadow && PowerSavingPolicy.AreMaterialsEnabled)
             {
                 _shadow = new ThemeShadow();
                 _shadow.Receivers.Add(ShadowReceiver);
 
                 ShadowCaster.Shadow = _shadow;
                 ShadowCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+
+                InlineShadow.Shadow = _shadow;
+                InlineShadow.Translation = new Vector3(0, 0, 64);
+
+                InlinePanel.Shadow = _shadow;
+                InlinePanel.Translation = new Vector3(0, 0, Constants.BubbleElevation);
             }
         }
 
@@ -644,7 +646,7 @@ namespace Telegram.Views
 
                         if (messages.Clip is InsetClip messagesClip)
                         {
-                            messagesClip.BottomInset = -8 - SettingsService.Current.Appearance.BubbleRadius;
+                            messagesClip.BottomInset = -8 - SettingsService.Current.Appearance.CornerRadius;
                         }
                     };
 
@@ -2043,7 +2045,6 @@ namespace Telegram.Views
 
             if (show)
             {
-                _textShadowVisual.IsVisible = true;
                 ReplyMarkupPanel.Visibility = Visibility.Visible;
 
                 ButtonMarkup.Glyph = Icons.ChevronDown;
@@ -2054,7 +2055,6 @@ namespace Telegram.Views
             }
             else
             {
-                _textShadowVisual.IsVisible = Math.Round(InlinePanel.ActualHeight) > ViewModel.Settings.Appearance.BubbleRadius;
                 ReplyMarkupPanel.Visibility = Visibility.Collapsed;
 
                 ButtonMarkup.Glyph = Icons.BotMarkup24;
@@ -2141,7 +2141,7 @@ namespace Telegram.Views
             var value1 = TextArea.ActualSize.Y;
 
             var rect = textArea.Compositor.CreateRoundedRectangleGeometry();
-            rect.CornerRadius = new Vector2(SettingsService.Current.Appearance.BubbleRadius);
+            rect.CornerRadius = new Vector2(SettingsService.Current.Appearance.CornerRadius);
             rect.Size = TextArea.ActualSize;
             rect.Offset = new Vector2(0, value);
 
@@ -4360,12 +4360,6 @@ namespace Telegram.Views
             _focusState.Set(FocusState.Programmatic);
         }
 
-        private void InlinePanel_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            _textShadowVisual.IsVisible = Math.Round(e.NewSize.Height) > ViewModel.Settings.Appearance.BubbleRadius
-                || ReplyMarkupPanel.Visibility == Visibility.Visible;
-        }
-
         private void TextArea_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             _rootVisual.Size = e.NewSize.ToVector2();
@@ -4735,7 +4729,7 @@ namespace Telegram.Views
 
             if (args.Item is EmojiData or Sticker)
             {
-                var radius = SettingsService.Current.Appearance.BubbleRadius;
+                var radius = SettingsService.Current.Appearance.CornerRadius;
                 var min = Math.Max(4, radius - 2);
 
                 args.ItemContainer.Margin = new Thickness(4);
@@ -5809,7 +5803,7 @@ namespace Telegram.Views
             var width = Math.Max(0, _textAreaRadius > 0 ? ActualSize.X - 24 : ActualSize.X);
 
             var rect = textArea.Compositor.CreateRoundedRectangleGeometry();
-            rect.CornerRadius = new Vector2(SettingsService.Current.Appearance.BubbleRadius);
+            rect.CornerRadius = new Vector2(SettingsService.Current.Appearance.CornerRadius);
             rect.Size = new Vector2(width, 192 + 48);
             rect.Offset = new Vector2(0, value);
 
@@ -6117,7 +6111,7 @@ namespace Telegram.Views
 
         private void UpdateTextAreaRadius(bool force = true)
         {
-            var radius = SettingsService.Current.Appearance.BubbleRadius;
+            var radius = SettingsService.Current.Appearance.CornerRadius;
             if (radius == _textAreaRadius && !force)
             {
                 return;
@@ -6128,6 +6122,9 @@ namespace Telegram.Views
             var min = Math.Max(4, radius - 2);
             var max = ComposerHeader.Visibility == Visibility.Visible ? 4 : min;
 
+            ShadowCaster.RadiusX = InlineShadow.RadiusX = radius;
+            ShadowCaster.RadiusY = InlineShadow.RadiusY = radius;
+
             ButtonAttach.CornerRadius = new CornerRadius(_sideMenuCollapsed == SideButton.None ? max : 4, 4, 4, _sideMenuCollapsed == SideButton.None ? min : 4);
             ButtonFeedback.CornerRadius = new CornerRadius(min, 4, 4, min);
             ButtonGift.CornerRadius = new CornerRadius(4, min, min, 4);
@@ -6136,6 +6133,7 @@ namespace Telegram.Views
             btnEdit.CornerRadius = new CornerRadius(4, max, min, 4);
             ButtonDelete.CornerRadius = new CornerRadius(4, min, min, 4);
             ButtonManage.CornerRadius = new CornerRadius(min, 4, 4, min);
+            ComposerHeaderReference.CornerRadius = new CornerRadius(4, min, 4, 4);
 
             ComposerHeaderCancel.CornerRadius = new CornerRadius(4, min, 4, 4);
             TextRoot.CornerRadius =
@@ -6144,8 +6142,6 @@ namespace Telegram.Views
                 ManagePanel.CornerRadius =
                 ButtonAction.CornerRadius = new CornerRadius(radius);
 
-            // It would be cool to have shadow to respect text field corner radius
-            //Separator.CornerRadius = new CornerRadius(radius);
             ListAutocomplete.CornerRadius = InlinePanel.CornerRadius = new CornerRadius(radius, radius, 0, 0);
             ListAutocomplete.Padding = new Thickness(0, 0, 0, radius);
 
@@ -6160,6 +6156,7 @@ namespace Telegram.Views
                     SettingsService.Current.IsAdaptiveWideEnabled ? 1000 : double.PositiveInfinity;
                 Footer.Margin = Separator.Margin = new Thickness(12, 0, 12, 8);
                 InlinePanel.Margin = new Thickness(12, 0, 12, -radius);
+                InlineShadow.Margin = new Thickness(0, 0, 0, -radius);
                 ReplyMarkupPanel.Margin = new Thickness(12, -8 - radius, 12, 8);
             }
             else
@@ -6168,6 +6165,7 @@ namespace Telegram.Views
                     SettingsService.Current.IsAdaptiveWideEnabled ? 1024 : double.PositiveInfinity;
                 Footer.Margin = Separator.Margin = new Thickness();
                 InlinePanel.Margin = new Thickness();
+                InlineShadow.Margin = new Thickness();
                 ReplyMarkupPanel.Margin = new Thickness();
             }
 
@@ -6913,7 +6911,7 @@ namespace Telegram.Views
 
         private void InlineBotResults_Loaded(object sender, RoutedEventArgs e)
         {
-            ListInline.UpdateCornerRadius(SettingsService.Current.Appearance.BubbleRadius);
+            ListInline.UpdateCornerRadius(SettingsService.Current.Appearance.CornerRadius);
             ListInline.MaxHeight = Math.Min(320, Math.Max(ContentPanel.ActualHeight - 48, 0));
 
             if (ViewModel?.Chat is Chat chat)

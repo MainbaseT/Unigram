@@ -101,7 +101,7 @@ namespace Telegram.Controls.Chats
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
-            var radius = SettingsService.Current.Appearance.BubbleRadius;
+            var radius = SettingsService.Current.Appearance.CornerRadius;
             var min = Math.Max(4, radius - 2);
 
             Close.CornerRadius = new CornerRadius(4, min, 4, 4);

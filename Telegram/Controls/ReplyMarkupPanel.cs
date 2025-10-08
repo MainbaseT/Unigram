@@ -125,10 +125,43 @@ namespace Telegram.Controls
                     var button = new ReplyMarkupButton(item);
                     button.HorizontalAlignment = HorizontalAlignment.Stretch;
                     button.VerticalAlignment = VerticalAlignment.Stretch;
-                    button.Margin = new Thickness(4, 8, 4, 0);
-                    button.Height = resize ? 36 : double.NaN;
+                    button.Margin = new Thickness(4, 4, 4, 0);
+                    button.Height = resize ? 40 : double.NaN;
                     button.Text = item.Text;
                     button.Click += Button_Click;
+
+                    var topLeft = 4;
+                    var topRight = 4;
+                    var bottomRight = 4;
+                    var bottomLeft = 4;
+
+                    //if (j == 0)
+                    //{
+                    //    if (i == 0)
+                    //    {
+                    //        topLeft = 24 - 8;
+                    //    }
+
+                    //    if (i == row.Count - 1)
+                    //    {
+                    //        topRight = 24 - 8;
+                    //    }
+                    //}
+
+                    if (j == rows.Count - 1)
+                    {
+                        if (i == 0)
+                        {
+                            bottomLeft = 24 - 8;
+                        }
+
+                        if (i == row.Count - 1)
+                        {
+                            bottomRight = 24 - 8;
+                        }
+                    }
+
+                    button.CornerRadius = new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
 
                     if (item.Type is KeyboardButtonTypeWebApp)
                     {
@@ -146,7 +179,7 @@ namespace Telegram.Controls
 
             if (Children.Count > 0)
             {
-                Padding = new Thickness(0, 0, 0, 4);
+                Padding = new Thickness(0, 4, 0, 4);
                 return true;
             }
 

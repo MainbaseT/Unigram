@@ -1632,7 +1632,6 @@
                                          VerticalAlignment="Bottom" />
 
                 <Grid x:Name="InlinePanel"
-                      SizeChanged="InlinePanel_SizeChanged"
                       VerticalAlignment="Bottom"
                       Visibility="{x:Bind ViewModel.Search, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}"
                       Margin="12,0,12,-12"
@@ -1667,6 +1666,12 @@
                             <TransitionCollection />
                         </GridView.ItemContainerTransitions>
                     </controls:OrientableListView>
+                    <Rectangle x:Name="InlineShadow"
+                               VerticalAlignment="Bottom"
+                               Margin="0,0,0,-24"
+                               Height="48"
+                               RadiusX="24"
+                               RadiusY="24" />
                 </Grid>
             </Grid>
 
@@ -1682,7 +1687,7 @@
                 <controls:ReplyMarkupPanel x:Name="ReplyMarkup"
                                            AllowFocusOnInteraction="False"
                                            ButtonClick="ReplyMarkup_ButtonClick"
-                                           Margin="8,0,8,4" />
+                                           Margin="4,0,4,4" />
             </ScrollViewer>
 
             <controls:StickerPanel x:Name="StickersPanel"
@@ -1701,8 +1706,8 @@
             <Grid x:Name="Footer"
                   Grid.Row="3">
                 <Rectangle x:Name="ShadowCaster"
-                           RadiusX="15"
-                           RadiusY="15" />
+                           RadiusX="24"
+                           RadiusY="24" />
 
                 <ContentControl x:Name="TextArea"
                                 IsTabStop="False"
@@ -1712,7 +1717,7 @@
                           Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
                           MinHeight="{StaticResource TelegramToolBarHeight}"
                           SizeChanged="TextArea_SizeChanged"
-                          CornerRadius="15">
+                          CornerRadius="24">
                         <Grid x:Name="TextMain"
                               VerticalAlignment="Bottom">
                             <Grid.RowDefinitions>
@@ -1846,7 +1851,8 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Button to access scheduled messages -->
-                                    <Border x:Name="btnScheduled">
+                                    <Border x:Name="btnScheduled"
+                                            Margin="0,0,-8,0">
                                         <controls:GlyphButton x:Name="ButtonScheduled"
                                                               Glyph="&#xE9DA;"
                                                               Click="{x:Bind ViewModel.ShowScheduled}"
@@ -1863,6 +1869,7 @@
                                                                        VerticalAlignment="Bottom"
                                                                        Glyph="&#xE9DF;"
                                                                        CheckedGlyph="&#xE9DE;"
+                                                                       Margin="0,0,-8,0"
                                                                        Grid.Column="1">
                                         <controls:AnimatedIconToggleButton.Source>
                                             <icons:MuteUnmute />
@@ -1875,11 +1882,13 @@
                                                           Click="{x:Bind ViewModel.SetTimer}"
                                                           FontSize="{StaticResource GlyphLargeFontSize}"
                                                           VerticalAlignment="Bottom"
+                                                          Margin="0,0,-8,0"
                                                           Grid.Column="1" />
 
                                     <!-- Button to use bot commands, bots/groups only -->
                                     <Border x:Name="btnCommands"
                                             VerticalAlignment="Bottom"
+                                            Margin="0,0,-8,0"
                                             Grid.Column="2">
                                         <controls:GlyphButton x:Name="ButtonCommands"
                                                               Click="Commands_Click"
@@ -1896,6 +1905,7 @@
                                     <!-- Button to use bot keyboard, bots/groups only -->
                                     <Border x:Name="btnMarkup"
                                             VerticalAlignment="Bottom"
+                                            Margin="0,0,-8,0"
                                             Grid.Column="2">
                                         <controls:AnimatedGlyphButton x:Name="ButtonMarkup"
                                                                       Click="Markup_Click"
@@ -1910,6 +1920,7 @@
 
                                     <Border x:Name="btnSuggest"
                                             VerticalAlignment="Bottom"
+                                            Margin="0,0,-8,0"
                                             Grid.Column="3">
                                         <controls:GlyphButton x:Name="ButtonSuggest"
                                                               Click="Suggest_Click"
@@ -1930,6 +1941,7 @@
                                                          AllowFocusOnInteraction="False"
                                                          VerticalAlignment="Bottom"
                                                          AutomationProperties.Name="{CustomResource AccDescrEmojiButton}"
+                                                         Margin="0,0,-8,0"
                                                          Grid.Column="1" />
                                 <!--ToolTipService.ToolTip="{CustomResource AccDescrEmojiButton}"-->
 
@@ -2041,7 +2053,7 @@
                                      Visibility="Collapsed" />
 
                 <Grid x:Name="ChatFooter"
-                      CornerRadius="15">
+                      CornerRadius="24">
                     <chats:ChatBottomButton x:Name="ButtonAction"
                                             LosingFocus="ButtonAction_LosingFocus"
                                             Click="{x:Bind ViewModel.Action}"
@@ -2072,7 +2084,7 @@
                       Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
                       VerticalAlignment="Bottom"
                       Visibility="Collapsed"
-                      CornerRadius="15">
+                      CornerRadius="24">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
@@ -2123,15 +2135,6 @@
                                           Grid.Column="4" />
                 </Grid>
             </Grid>
-
-            <!--<Border x:Name="TextAreaBorder"
-                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                Margin="12,0,12,8"
-                CornerRadius="15"
-                Grid.Row="3" />-->
-
-            <!--<controls:UndoView x:Name="Undo" VerticalAlignment="Bottom" Margin="0,0,0,-48" Grid.RowSpan="4"/>-->
         </Grid>
 
         <controls:GlyphToggleButton x:Name="ForumModeButton"
