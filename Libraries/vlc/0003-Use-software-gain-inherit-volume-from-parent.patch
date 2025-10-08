@@ -1,4 +1,4 @@
-From 317b3bb62f6c09d0143d195248064040cc57522c Mon Sep 17 00:00:00 2001
+From cce95e96bf43c9726d4961b23ba4a2cc2c06dc1f Mon Sep 17 00:00:00 2001
 From: Fela <frayx@live.it>
 Date: Wed, 1 Oct 2025 20:47:21 +0400
 Subject: [PATCH 3/4] Use software gain, inherit volume from parent
@@ -9,7 +9,7 @@ Subject: [PATCH 3/4] Use software gain, inherit volume from parent
  2 files changed, 15 insertions(+), 97 deletions(-)
 
 diff --git a/modules/audio_output/winstore.c b/modules/audio_output/winstore.c
-index 8366200344..79203994be 100644
+index 8366200344..28aab2e215 100644
 --- a/modules/audio_output/winstore.c
 +++ b/modules/audio_output/winstore.c
 @@ -62,7 +62,8 @@ struct aout_sys_t
@@ -58,7 +58,7 @@ index 8366200344..79203994be 100644
 -    }
 +    sys->volume = vol;
  
-+    aout_GainRequest(aout, sys->mute ? 0.0f : vol);
++    aout_GainRequest(aout, sys->mute ? 0.0f : powf(vol, 3.0f));
      aout_VolumeReport(aout, vol);
  
 -done:
@@ -92,7 +92,7 @@ index 8366200344..79203994be 100644
 -    }
 +    sys->mute = mute;
  
-+    aout_GainRequest(aout, mute ? 0.0f : sys->volume);
++    aout_GainRequest(aout, mute ? 0.0f : powf(sys->volume, 3.0f));
      aout_MuteReport(aout, mute);
  
 -done:
@@ -142,7 +142,7 @@ index 8366200344..79203994be 100644
 -        if (pc_AudioVolume)
 -            ISimpleAudioVolume_Release(pc_AudioVolume);
 -    }
-+    aout_GainRequest(aout, sys->mute ? 0.0f : sys->volume);
++    aout_GainRequest(aout, sys->mute ? 0.0f : powf(sys->volume, 3.0f));
 +    aout_VolumeReport(aout, sys->volume);
 +    aout_MuteReport(aout, sys->mute);
  

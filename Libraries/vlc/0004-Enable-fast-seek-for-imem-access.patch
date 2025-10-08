@@ -1,4 +1,4 @@
-From 31a4dca8c3bd94a3c4255261abc9dc208faec69b Mon Sep 17 00:00:00 2001
+From 7c5ae01b98180bfc60195857146d34f2bade7a89 Mon Sep 17 00:00:00 2001
 From: Fela <frayx@live.it>
 Date: Tue, 7 Oct 2025 18:16:24 +0400
 Subject: [PATCH 4/4] Enable fast seek for imem access

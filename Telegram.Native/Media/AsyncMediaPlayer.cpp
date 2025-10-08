@@ -38,7 +38,7 @@ namespace winrt::Telegram::Native::Media::implementation
         {
             argsStorage.push_back("--verbose=3");
         }
-        
+
         // Generating plugins cache requires a breakpoint in bank.c#504
         //argsStorage.clear();
         //argsStorage.push_back("--quiet");
@@ -251,7 +251,7 @@ namespace winrt::Telegram::Native::Media::implementation
         if (ctx->file == INVALID_HANDLE_VALUE)
         {
             ctx->file = CreateFile2FromAppW(ctx->source.FilePath().data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, OPEN_EXISTING, nullptr);;
-        
+
             LARGE_INTEGER distancetoMove{};
             distancetoMove.QuadPart = offset;
 
@@ -446,7 +446,7 @@ namespace winrt::Telegram::Native::Media::implementation
             {
                 return libvlc_media_player_get_time(m_player);
             }
-        });
+            });
 
         return std::clamp(time / 1000.0, 0.0, 922337203685.0);
     }
