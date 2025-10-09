@@ -25,6 +25,7 @@ using Telegram.Views.Popups;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Composition;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -97,10 +98,21 @@ namespace Telegram.Controls.Gallery
 
         protected override void OnPointerExited(PointerRoutedEventArgs e)
         {
-            _inactivityTimer.Stop();
-            ShowHideTransport(false);
+            if (IsLoaded)
+            {
+                _inactivityTimer.Stop();
+                ShowHideTransport(false);
+            }
 
             base.OnPointerExited(e);
+        }
+
+        protected override void OnPointerPressed(PointerRoutedEventArgs e)
+        {
+            _inactivityTimer.Stop();
+            ShowHideTransport(true);
+
+            base.OnPointerPressed(e);
         }
 
         protected override void OnPointerMoved(PointerRoutedEventArgs e)
@@ -222,6 +234,11 @@ namespace Telegram.Controls.Gallery
             BottomPanel.IsHitTestVisible = false;
             BottomPanel.Visibility = Visibility.Visible;
 
+            if (show)
+            {
+                Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
+            }
+
             var parent = ElementComposition.GetElementVisual(BottomPanel);
             var next = ElementComposition.GetElementVisual(NextButton);
             var prev = ElementComposition.GetElementVisual(PrevButton);
@@ -233,6 +250,11 @@ namespace Telegram.Controls.Gallery
             batch.Completed += (s, args) =>
             {
                 BottomPanel.IsHitTestVisible = !_transportCollapsed;
+
+                if (_transportCollapsed && IsLoaded)
+                {
+                    Window.Current.CoreWindow.PointerCursor = null;
+                }
             };
 
             var opacity = parent.Compositor.CreateScalarKeyFrameAnimation();
@@ -777,6 +799,8 @@ namespace Telegram.Controls.Gallery
             Element0.Unload();
             Element1.Unload();
             Element2.Unload();
+
+            Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
         }
 
         private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs args)
