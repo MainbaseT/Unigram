@@ -120,6 +120,7 @@ namespace Telegram.Views.Calls
             EmojiPanel.DataContext = EmojiDrawerViewModel.Create(_call.SessionId);
             MessageField.CustomEmoji = CustomEmoji;
             MessageField.DataContext = EmojiPanel.DataContext;
+            MessageField.MaxLength = (int)_call.ClientService.Options.GroupCallMessageTextLengthMax;
             MessageReactions.Initialize(_call.ClientService);
 
             Window.Current.SetTitleBar(TitleArea);
