@@ -280,9 +280,9 @@ namespace Telegram.Controls.Messages.Content
         {
             var position = args.Position;
             var duration = args.Duration;
-            var state = sender.PlaybackState;
+            var playing = sender.IsPlaying;
 
-            this.BeginOnUIThread(() => UpdatePosition(position, duration, state));
+            this.BeginOnUIThread(() => UpdatePosition(position, duration, playing));
         }
 
         private void UpdateDuration()
@@ -311,7 +311,7 @@ namespace Telegram.Controls.Messages.Content
             }
         }
 
-        private void UpdatePosition(TimeSpan position, TimeSpan duration, PlaybackState state)
+        private void UpdatePosition(TimeSpan position, TimeSpan duration, bool playing)
         {
             var message = _message;
             if (message == null || Progress.IsScrubbing)
@@ -327,7 +327,7 @@ namespace Telegram.Controls.Messages.Content
                 }
 
                 Subtitle.Text = FormatTime(duration - position, duration.TotalHours);
-                Progress.UpdateValue(position, duration, state == PlaybackState.Playing);
+                Progress.UpdateValue(position, duration, playing);
             }
         }
 
@@ -382,7 +382,7 @@ namespace Telegram.Controls.Messages.Content
                     Button.SetGlyph(file.Id, MessageContentState.Pause);
                 }
 
-                UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration, TypeResolver.Current.Playback.PlaybackState);
+                UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration, TypeResolver.Current.Playback.IsPlaying);
 
                 TypeResolver.Current.Playback.StateChanged += OnPlaybackStateChanged;
                 TypeResolver.Current.Playback.PositionChanged += OnPositionChanged;

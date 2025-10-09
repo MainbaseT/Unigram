@@ -123,6 +123,7 @@ namespace winrt::Telegram::Native::Media::implementation
         void Play();
         void Stop();
         void Pause(bool pause = true);
+        void Toggle();
         void Close();
 
         AsyncMediaPlayerState State();
@@ -144,6 +145,11 @@ namespace winrt::Telegram::Native::Media::implementation
 
         bool Mute();
         void Mute(bool value);
+
+        winrt::event_token StateChanged(Windows::Foundation::TypedEventHandler<
+            winrt::Telegram::Native::Media::AsyncMediaPlayer,
+            winrt::Telegram::Native::Media::AsyncMediaPlayerStateChangedEventArgs> const& value);
+        void StateChanged(winrt::event_token const& token);
 
         winrt::event_token VideoOut(Windows::Foundation::TypedEventHandler<
             winrt::Telegram::Native::Media::AsyncMediaPlayer,
@@ -223,22 +229,26 @@ namespace winrt::Telegram::Native::Media::implementation
                 libvlc_event_attach(em, libvlc_MediaPlayerStopped, &EventCallback, this);
                 libvlc_event_attach(em, libvlc_MediaPlayerAudioVolume, &EventCallback, this);
                 libvlc_event_attach(em, libvlc_MediaPlayerEncounteredError, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerNothingSpecial, &EventCallback, this);
+                libvlc_event_attach(em, libvlc_MediaPlayerOpening, &EventCallback, this);
             }
 
             void Detach(libvlc_media_player_t* player)
             {
                 libvlc_event_manager_t* em = libvlc_media_player_event_manager(player);
-                libvlc_event_attach(em, libvlc_MediaPlayerESSelected, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerVout, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerBuffering, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerEndReached, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerTimeChanged, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerLengthChanged, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerPlaying, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerPaused, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerStopped, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerAudioVolume, &EventCallback, this);
-                libvlc_event_attach(em, libvlc_MediaPlayerEncounteredError, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerESSelected, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerVout, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerBuffering, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerEndReached, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerTimeChanged, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerLengthChanged, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerPlaying, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerPaused, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerStopped, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerAudioVolume, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerEncounteredError, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerNothingSpecial, &EventCallback, this);
+                libvlc_event_detach(em, libvlc_MediaPlayerOpening, &EventCallback, this);
             }
 
             winrt::weak_ref<AsyncMediaPlayer> m_weak;
@@ -289,6 +299,7 @@ namespace winrt::Telegram::Native::Media::implementation
         AsyncMediaPlayerSwapChain m_context{ nullptr };
         winrt::event_token m_defaultAudioRenderDeviceChanged{};
 
+        AsyncMediaPlayerStateChangedEventArgs m_stateChangedEventArgs;
         AsyncMediaPlayerBufferingEventArgs m_bufferingEventArgs;
         AsyncMediaPlayerPositionChangedEventArgs m_positionChangedEventArgs;
         AsyncMediaPlayerDurationChangedEventArgs m_durationChangedEventArgs;
@@ -308,6 +319,9 @@ namespace winrt::Telegram::Native::Media::implementation
 
         void GetVideoTrackInfo(int32_t trackId, int32_t& width, int32_t& height);
 
+        winrt::event<Windows::Foundation::TypedEventHandler<
+            winrt::Telegram::Native::Media::AsyncMediaPlayer,
+            winrt::Telegram::Native::Media::AsyncMediaPlayerStateChangedEventArgs>> m_stateChanged;
         winrt::event<Windows::Foundation::TypedEventHandler<
             winrt::Telegram::Native::Media::AsyncMediaPlayer,
             winrt::Windows::Foundation::IInspectable>> m_videoOut;

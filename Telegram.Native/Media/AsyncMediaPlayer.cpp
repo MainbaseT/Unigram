@@ -9,6 +9,7 @@ namespace winrt::Telegram::Native::Media::implementation
     AsyncMediaPlayer::AsyncMediaPlayer(AsyncMediaPlayerOptions options, winrt::Windows::Foundation::Collections::IVector<hstring> args)
         : m_options(options)
         , m_dispatcherQueue(DispatcherQueue::GetForCurrentThread())
+        , m_stateChangedEventArgs(AsyncMediaPlayerState::NothingSpecial)
         , m_bufferingEventArgs(0.0f)
         , m_positionChangedEventArgs(0.0)
         , m_durationChangedEventArgs(0.0)
@@ -360,9 +361,24 @@ namespace winrt::Telegram::Native::Media::implementation
             }, true);
     }
 
+    static inline void libvlc_media_player_play_aware(libvlc_media_player_t* p_mi)
+    {
+        auto state = libvlc_media_player_get_state(p_mi);
+        switch (state)
+        {
+        case libvlc_Ended:
+            libvlc_media_player_stop(p_mi);
+        case libvlc_Paused:
+        case libvlc_Stopped:
+        case libvlc_Error:
+            libvlc_media_player_play(p_mi);
+            break;
+        }
+    }
+
     void AsyncMediaPlayer::Play()
     {
-        Set(libvlc_media_player_play);
+        Set(libvlc_media_player_play_aware);
     }
 
     void AsyncMediaPlayer::Stop()
@@ -370,9 +386,44 @@ namespace winrt::Telegram::Native::Media::implementation
         Set(libvlc_media_player_stop);
     }
 
+    static inline void libvlc_media_player_set_pause_aware(libvlc_media_player_t* p_mi, int do_pause)
+    {
+        auto state = libvlc_media_player_get_state(p_mi);
+        if (state == libvlc_Ended)
+        {
+            libvlc_media_player_stop(p_mi);
+            libvlc_media_player_play(p_mi);
+        }
+
+        libvlc_media_player_set_pause(p_mi, do_pause);
+    }
+
     void AsyncMediaPlayer::Pause(bool pause)
     {
-        Set(libvlc_media_player_set_pause, pause);
+        Set(libvlc_media_player_set_pause_aware, pause);
+    }
+
+    static inline void libvlc_media_player_toggle_aware(libvlc_media_player_t* p_mi)
+    {
+        auto state = libvlc_media_player_get_state(p_mi);
+        switch (state)
+        {
+        case libvlc_Ended:
+            libvlc_media_player_stop(p_mi);
+        case libvlc_Paused:
+        case libvlc_Stopped:
+        case libvlc_Error:
+            libvlc_media_player_play(p_mi);
+            break;
+        default:
+            libvlc_media_player_set_pause(p_mi, true);
+            break;
+        }
+    }
+
+    void AsyncMediaPlayer::Toggle()
+    {
+        Set(libvlc_media_player_toggle_aware);
     }
 
     void AsyncMediaPlayer::Close()
@@ -451,10 +502,22 @@ namespace winrt::Telegram::Native::Media::implementation
         return std::clamp(time / 1000.0, 0.0, 922337203685.0);
     }
 
+    static inline void libvlc_media_player_set_time_aware(libvlc_media_player_t* p_mi, libvlc_time_t i_time)
+    {
+        auto state = libvlc_media_player_get_state(p_mi);
+        if (state == libvlc_Ended)
+        {
+            libvlc_media_player_stop(p_mi);
+            libvlc_media_player_play(p_mi);
+        }
+
+        libvlc_media_player_set_time(p_mi, i_time);
+    }
+
     void AsyncMediaPlayer::Position(double value)
     {
         auto time = static_cast<libvlc_time_t>(value * 1000);
-        Set(libvlc_media_player_set_time, time);
+        Set(libvlc_media_player_set_time_aware, time);
     }
 
     void AsyncMediaPlayer::Seek(double value, bool relative)
@@ -463,11 +526,11 @@ namespace winrt::Telegram::Native::Media::implementation
 
         if (relative)
         {
-            Write([this, time] { libvlc_media_player_set_time(m_player, libvlc_media_player_get_time(m_player) + time); });
+            Write([this, time] { libvlc_media_player_set_time_aware(m_player, libvlc_media_player_get_time(m_player) + time); });
         }
         else
         {
-            Set(libvlc_media_player_set_time, time);
+            Set(libvlc_media_player_set_time_aware, time);
         }
     }
 
@@ -567,6 +630,9 @@ namespace winrt::Telegram::Native::Media::implementation
             m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }, cache]() {
                 if (auto strongThis = weakThis.get())
                 {
+                    //strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Buffering);
+                    //strongThis->m_stateChanged(*strongThis, strongThis->m_stateChangedEventArgs);
+
                     strongThis->m_bufferingEventArgs.Cache(cache);
                     strongThis->m_buffering(*strongThis, strongThis->m_bufferingEventArgs);
                 }
@@ -577,6 +643,9 @@ namespace winrt::Telegram::Native::Media::implementation
             m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
+                    strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Ended);
+                    strongThis->m_stateChanged(*strongThis, strongThis->m_stateChangedEventArgs);
+
                     strongThis->m_endReached(*strongThis, nullptr);
                 }
                 });
@@ -610,6 +679,9 @@ namespace winrt::Telegram::Native::Media::implementation
             m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
+                    strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Playing);
+                    strongThis->m_stateChanged(*strongThis, strongThis->m_stateChangedEventArgs);
+
                     strongThis->m_playing(*strongThis, nullptr);
                 }
                 });
@@ -618,6 +690,9 @@ namespace winrt::Telegram::Native::Media::implementation
             m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
+                    strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Paused);
+                    strongThis->m_stateChanged(*strongThis, strongThis->m_stateChangedEventArgs);
+
                     strongThis->m_paused(*strongThis, nullptr);
                 }
                 });
@@ -626,6 +701,9 @@ namespace winrt::Telegram::Native::Media::implementation
             m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
+                    strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Stopped);
+                    strongThis->m_stateChanged(*strongThis, strongThis->m_stateChangedEventArgs);
+
                     strongThis->m_stopped(*strongThis, nullptr);
                 }
                 });
@@ -638,12 +716,31 @@ namespace winrt::Telegram::Native::Media::implementation
                 }
                 });
             break;
-
         case libvlc_MediaPlayerEncounteredError:
             m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
+                    strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Error);
+                    strongThis->m_stateChanged(*strongThis, strongThis->m_stateChangedEventArgs);
                     strongThis->m_encounteredError(*strongThis, nullptr);
+                }
+                });
+            break;
+        case libvlc_MediaPlayerNothingSpecial:
+            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+                if (auto strongThis = weakThis.get())
+                {
+                    strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::NothingSpecial);
+                    strongThis->m_stateChanged(*strongThis, strongThis->m_stateChangedEventArgs);
+                }
+                });
+            break;
+        case libvlc_MediaPlayerOpening:
+            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+                if (auto strongThis = weakThis.get())
+                {
+                    strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Opening);
+                    strongThis->m_stateChanged(*strongThis, strongThis->m_stateChangedEventArgs);
                 }
                 });
             break;
@@ -679,6 +776,18 @@ namespace winrt::Telegram::Native::Media::implementation
 
             return 0;
             });
+    }
+
+    winrt::event_token AsyncMediaPlayer::StateChanged(Windows::Foundation::TypedEventHandler<
+        winrt::Telegram::Native::Media::AsyncMediaPlayer,
+        winrt::Telegram::Native::Media::AsyncMediaPlayerStateChangedEventArgs> const& value)
+    {
+        return m_stateChanged.add(value);
+    }
+
+    void AsyncMediaPlayer::StateChanged(winrt::event_token const& token)
+    {
+        m_stateChanged.remove(token);
     }
 
     winrt::event_token AsyncMediaPlayer::VideoOut(Windows::Foundation::TypedEventHandler<

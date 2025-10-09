@@ -365,6 +365,7 @@
     <ClInclude Include="Media\AsyncMediaPlayerDurationChangedEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerLogEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerPositionChangedEventArgs.h" />
+    <ClInclude Include="Media\AsyncMediaPlayerStateChangedEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerSwapChain.h" />
     <ClInclude Include="NativeUtils.h">
@@ -1025,6 +1026,7 @@
     <ClCompile Include="Media\AsyncMediaPlayerDurationChangedEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerLogEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerPositionChangedEventArgs.cpp" />
+    <ClCompile Include="Media\AsyncMediaPlayerStateChangedEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerSwapChain.cpp" />
     <ClCompile Include="ParticlesAnimation.cpp">
@@ -1153,6 +1155,7 @@
     <Midl Include="Media\AsyncMediaPlayerDurationChangedEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerLogEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerPositionChangedEventArgs.idl" />
+    <Midl Include="Media\AsyncMediaPlayerStateChangedEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerSwapChain.idl" />
     <Midl Include="NativeUtils.idl" />

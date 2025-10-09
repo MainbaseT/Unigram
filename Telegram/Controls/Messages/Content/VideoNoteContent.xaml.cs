@@ -148,9 +148,9 @@ namespace Telegram.Controls.Messages.Content
         {
             var position = args.Position;
             var duration = args.Duration;
-            var state = sender.PlaybackState;
+            var playing = sender.IsPlaying;
 
-            this.BeginOnUIThread(() => UpdatePosition(position, duration, state));
+            this.BeginOnUIThread(() => UpdatePosition(position, duration, playing));
         }
 
         private void UpdateDuration()
@@ -179,7 +179,7 @@ namespace Telegram.Controls.Messages.Content
             }
         }
 
-        private void UpdatePosition(TimeSpan position, TimeSpan duration, PlaybackState state)
+        private void UpdatePosition(TimeSpan position, TimeSpan duration, bool playing)
         {
             var message = _message;
             if (message == null /*|| Progress.IsScrubbing*/)
@@ -254,7 +254,7 @@ namespace Telegram.Controls.Messages.Content
 
                 Player.Source = null;
 
-                UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration, TypeResolver.Current.Playback.PlaybackState);
+                UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration, TypeResolver.Current.Playback.IsPlaying);
             }
             else
             {

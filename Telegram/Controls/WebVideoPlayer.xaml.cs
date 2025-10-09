@@ -130,7 +130,7 @@ namespace Telegram.Controls
             }
         }
 
-        public override void AddTime(double value)
+        public override void Seek(double value)
         {
             ExecuteScript($"playerAddTime({value})");
         }

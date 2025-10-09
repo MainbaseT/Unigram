@@ -99,52 +99,17 @@ namespace Telegram.Controls
 
         public override void Play()
         {
-            //_player?.Play();
-            switch (_core.State)
-            {
-                case AsyncMediaPlayerState.Ended:
-                    _core.Stop();
-                    goto case AsyncMediaPlayerState.Stopped;
-                case AsyncMediaPlayerState.Paused:
-                case AsyncMediaPlayerState.Stopped:
-                case AsyncMediaPlayerState.Error:
-                    _core.Play();
-                    break;
-            }
+            _core?.Play();
         }
 
         public override void Pause()
         {
-            if (_core.State == AsyncMediaPlayerState.Ended)
-            {
-                _core.Stop();
-                _core.Play();
-            }
-
-            _core.Pause();
+            _core?.Pause();
         }
 
         public override void Toggle()
         {
-            if (_core == null)
-            {
-                return;
-            }
-
-            switch (_core.State)
-            {
-                case AsyncMediaPlayerState.Ended:
-                    _core.Stop();
-                    goto case AsyncMediaPlayerState.Stopped;
-                case AsyncMediaPlayerState.Paused:
-                case AsyncMediaPlayerState.Stopped:
-                case AsyncMediaPlayerState.Error:
-                    _core.Play();
-                    break;
-                default:
-                    _core.Pause();
-                    break;
-            }
+            _core?.Toggle();
         }
 
         public override void Clear()
@@ -152,7 +117,7 @@ namespace Telegram.Controls
             Video.Clear();
         }
 
-        public override void AddTime(double value)
+        public override void Seek(double value)
         {
             _core?.Seek(value, true);
         }

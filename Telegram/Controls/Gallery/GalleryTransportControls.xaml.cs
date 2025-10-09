@@ -128,19 +128,19 @@ namespace Telegram.Controls.Gallery
         {
             if (e.Key == VirtualKey.Right || e.Key == VirtualKey.Up)
             {
-                _player.AddTime(5);
+                _player.Seek(5);
             }
             else if (e.Key == VirtualKey.Left || e.Key == VirtualKey.Down)
             {
-                _player.AddTime(-5);
+                _player.Seek(-5);
             }
             else if (e.Key == VirtualKey.PageUp)
             {
-                _player.AddTime(30);
+                _player.Seek(30);
             }
             else if (e.Key == VirtualKey.PageDown)
             {
-                _player.AddTime(-30);
+                _player.Seek(-30);
             }
             else if (e.Key == VirtualKey.Home)
             {
@@ -713,12 +713,12 @@ namespace Telegram.Controls.Gallery
             }
             else if ((args.Key is VirtualKey.J && modifiers == VirtualKeyModifiers.None) || (args.Key is VirtualKey.Left && modifiers == VirtualKeyModifiers.Control))
             {
-                _player.AddTime(-10);
+                _player.Seek(-10);
                 args.Handled = true;
             }
             else if ((args.Key is VirtualKey.L && modifiers == VirtualKeyModifiers.None) || (args.Key is VirtualKey.Right && modifiers == VirtualKeyModifiers.Control))
             {
-                _player.AddTime(10);
+                _player.Seek(10);
                 args.Handled = true;
             }
             else if (keyCode is 188 or 190 && modifiers == VirtualKeyModifiers.Shift)

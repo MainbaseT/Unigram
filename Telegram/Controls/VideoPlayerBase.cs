@@ -95,7 +95,7 @@ namespace Telegram.Controls
 
         public abstract void Clear();
 
-        public abstract void AddTime(double value);
+        public abstract void Seek(double value);
 
         protected bool _isReady;
 

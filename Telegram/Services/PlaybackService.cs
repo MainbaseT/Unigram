@@ -143,6 +143,8 @@ namespace Telegram.Services
         TimeSpan Position { get; }
         TimeSpan Duration { get; }
 
+        public bool IsPlaying { get; }
+
         PlaybackState PlaybackState { get; }
 
 
@@ -371,6 +373,8 @@ namespace Telegram.Services
         public TimeSpan Position => _positionChanged.Position;
 
         public TimeSpan Duration => _positionChanged.Duration;
+
+        public bool IsPlaying { get; private set; }
 
         private PlaybackState _playbackState;
         public PlaybackState PlaybackState
@@ -865,8 +869,7 @@ namespace Telegram.Services
                     //_mediaPlayer.PlaybackSession.PlaybackStateChanged -= OnPlaybackStateChanged;
                     _player.PositionChanged -= OnTimeChanged;
                     _player.DurationChanged -= OnLengthChanged;
-                    _player.EncounteredError -= OnEncounteredError;
-                    _player.EndReached -= OnEndReached;
+                    _player.StateChanged -= OnStateChanged;
                     _player.Buffering -= OnBuffering;
                     _player.Close();
 
@@ -874,6 +877,8 @@ namespace Telegram.Services
                     {
                         _player = null;
                     }
+
+                    IsPlaying = false;
                 }
                 else
                 {
@@ -888,6 +893,20 @@ namespace Telegram.Services
 
             _items = null;
             _type = type;
+        }
+
+        private void OnStateChanged(AsyncMediaPlayer sender, AsyncMediaPlayerStateChangedEventArgs args)
+        {
+            IsPlaying = args.State == AsyncMediaPlayerState.Playing;
+
+            if (args.State == AsyncMediaPlayerState.Ended)
+            {
+                OnEndReached(sender, args);
+            }
+            else if (args.State == AsyncMediaPlayerState.Error)
+            {
+                OnEncounteredError(sender, args);
+            }
         }
 
         enum PlaybackPlaylistType
@@ -935,8 +954,7 @@ namespace Telegram.Services
                 //_mediaPlayer.PlaybackSession.PlaybackStateChanged += OnPlaybackStateChanged;
                 _player.PositionChanged += OnTimeChanged;
                 _player.DurationChanged += OnLengthChanged;
-                _player.EncounteredError += OnEncounteredError;
-                _player.EndReached += OnEndReached;
+                _player.StateChanged += OnStateChanged;
                 _player.Buffering += OnBuffering;
                 //_mediaPlayer.CommandManager.IsEnabled = false;
 
