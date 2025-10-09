@@ -805,19 +805,17 @@ namespace Telegram.Controls
         {
             try
             {
+                e.Handled = true;
+
                 // If the user tries to paste RTF content from any TOM control (Visual Studio, Word, Wordpad, browsers)
                 // we have to handle the pasting operation manually to allow plaintext only.
                 if (package.AvailableFormats.Contains(StandardDataFormats.Text) && package.AvailableFormats.Contains("application/x-tl-field-tags"))
                 {
-                    e.Handled = true;
-
                     var text = await MessageHelper.PasteTextAsync(package);
                     SetText(text.Text, text.Entities, true);
                 }
                 else if (package.AvailableFormats.Contains(StandardDataFormats.Text) /*&& package.Contains("Rich Text Format")*/)
                 {
-                    e.Handled = true;
-
                     var text = await package.GetTextAsync();
                     var start = Document.Selection.StartPosition;
                     var length = Math.Abs(Document.Selection.Length);
