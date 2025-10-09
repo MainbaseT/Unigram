@@ -4730,7 +4730,7 @@ namespace Telegram.Views
             if (args.Item is EmojiData or Sticker)
             {
                 var radius = SettingsService.Current.Appearance.CornerRadius;
-                var min = Math.Max(4, radius - 2);
+                var min = Math.Max(4, radius - 4);
 
                 args.ItemContainer.Margin = new Thickness(4);
                 args.ItemContainer.CornerRadius = new CornerRadius(args.ItemIndex == 0 ? min : 4, 4, 4, 4);
@@ -6119,7 +6119,7 @@ namespace Telegram.Views
 
             _textAreaRadius = radius;
 
-            var min = Math.Max(4, radius - 2);
+            var min = Math.Max(4, radius - 4);
             var max = ComposerHeader.Visibility == Visibility.Visible ? 4 : min;
 
             ShadowCaster.RadiusX = InlineShadow.RadiusX = radius;

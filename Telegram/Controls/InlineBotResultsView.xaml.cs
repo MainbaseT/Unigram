@@ -37,7 +37,7 @@ namespace Telegram.Controls
 
         public void UpdateCornerRadius(double radius)
         {
-            var min = Math.Max(4, radius - 2);
+            var min = Math.Max(4, radius - 4);
 
             ScrollingHost.Padding = new Thickness(0, 0, 0, radius);
             SwitchPm.CornerRadius = new CornerRadius(min, min, 4, 4);
