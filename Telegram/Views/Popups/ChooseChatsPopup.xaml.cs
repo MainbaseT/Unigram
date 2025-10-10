@@ -279,7 +279,7 @@ namespace Telegram.Views.Popups
                 case ChatTypeSupergroup supergroup:
                     if ((supergroup.IsChannel ? AllowChannelChats : AllowGroupChats) && clientService.TryGetSupergroup(supergroup.SupergroupId, out Supergroup super))
                     {
-                        if (super.IsDirectMessagesGroup)
+                        if (super.IsDirectMessagesGroup && !CanPostMessages)
                         {
                             return false;
                         }
@@ -2017,7 +2017,7 @@ namespace Telegram.Views.Popups
                     return true;
                 }
             }
-            else if (ViewModel.Options.CanPostMessages && origin && (ViewModel.ClientService.IsForum(chat) || ViewModel.ClientService.IsDirectMessagesGroup(chat)))
+            else if (ViewModel.Options.CanPostMessages && origin && (ViewModel.ClientService.IsForum(chat) || ViewModel.ClientService.IsAdministeredDirectMessagesGroup(chat)))
             {
                 if (ViewModel.SelectedItems.Contains(chat))
                 {
