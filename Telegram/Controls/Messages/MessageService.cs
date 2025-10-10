@@ -1783,8 +1783,12 @@ namespace Telegram.Controls.Messages
 
             if (true)
             {
-                content = string.Format(Strings.TopicWasCreatedAction, $"\U0001F4C3 {forumTopicCreated.Name}");
-                entities.Add(new TextEntity(0, 2, new TextEntityTypeCustomEmoji(forumTopicCreated.Icon.CustomEmojiId)));
+                var topicName = new FormattedText($"\U0001F4C3 {forumTopicCreated.Name}", new[]
+                {
+                    new TextEntity(0, 2, new TextEntityTypeCustomEmoji(forumTopicCreated.Icon.CustomEmojiId))
+                });
+
+                return ClientEx.Format(Strings.TopicWasCreatedAction, topicName);
             }
             else
             {
