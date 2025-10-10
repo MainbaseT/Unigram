@@ -13,7 +13,7 @@ namespace Telegram.ViewModels
     {
         public InputMessageReplyTo ToInput(DialogViewModel viewModel)
         {
-            var sameTopic = (viewModel.Topic == null || viewModel.Thread != null) || (viewModel.Topic != null && Message.TopicId.AreTheSame(viewModel.Topic));
+            var sameTopic = (viewModel.TopicId == null || viewModel.Thread != null) || (viewModel.TopicId != null && Message.TopicId.AreTheSame(viewModel.TopicId));
 
             var chatId = Message.ChatId;
             if (chatId == viewModel.ChatId && sameTopic)

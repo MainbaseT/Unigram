@@ -225,7 +225,7 @@ namespace Telegram.ViewModels
             }
             else
             {
-                function = new SendInlineQueryResultMessage(chat.Id, OutgoingThreadId, reply, options, queryId, queryResult.GetId(), false);
+                function = new SendInlineQueryResultMessage(chat.Id, OutgoingTopicId, reply, options, queryId, queryResult.GetId(), false);
             }
 
             var response = await ClientService.SendAsync(function);

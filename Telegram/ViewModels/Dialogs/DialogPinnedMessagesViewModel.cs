@@ -105,9 +105,9 @@ namespace Telegram.ViewModels
             }
 
             var filter = new SearchMessagesFilterPinned();
-            var messageTopic = _viewModel.Topic;
+            var messageTopic = _viewModel.TopicId;
 
-            if (direction == PanelScrollingDirection.None && !_hasLoadedLastPinnedMessage && _viewModel.Topic == null)
+            if (direction == PanelScrollingDirection.None && !_hasLoadedLastPinnedMessage && _viewModel.TopicId == null)
             {
                 _hasLoadedLastPinnedMessage = true;
 

@@ -385,7 +385,7 @@ namespace Telegram.ViewModels
         {
             if (message.Content is MessageAudio or MessageVoiceNote)
             {
-                TypeResolver.Current.Playback.Play(XamlRoot, message, Topic);
+                TypeResolver.Current.Playback.Play(XamlRoot, message, TopicId);
 
                 if (timestamp > 0)
                 {
@@ -473,7 +473,7 @@ namespace Telegram.ViewModels
                         }
                         else
                         {
-                            viewModel = new ChatGalleryViewModel(ClientService, _storageService, Aggregator, message.ChatId, Topic, message, properties);
+                            viewModel = new ChatGalleryViewModel(ClientService, _storageService, Aggregator, message.ChatId, TopicId, message, properties);
                         }
                     }
 
@@ -523,7 +523,7 @@ namespace Telegram.ViewModels
 
         public void PlayMessage(MessageViewModel message)
         {
-            TypeResolver.Current.Playback.Play(XamlRoot, message, Topic);
+            TypeResolver.Current.Playback.Play(XamlRoot, message, TopicId);
         }
 
         public bool RecognizeSpeech(MessageViewModel message)

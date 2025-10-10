@@ -1407,7 +1407,7 @@ namespace Telegram.Views
                     args.Handled = true;
                 }
 
-                if (ViewModel.Topic != null && _forumCollapsed != ForumViewType.List)
+                if (ViewModel.TopicId != null && _forumCollapsed != ForumViewType.List)
                 {
                     ViewModel.NavigationService.NavigateToChat(ViewModel.Chat, force: false);
                     args.Handled = true;
@@ -2243,7 +2243,7 @@ namespace Telegram.Views
             var supergroup = chat.Type is ChatTypeSupergroup supergroupType ? ViewModel.ClientService.GetSupergroup(supergroupType.SupergroupId) : null;
             var supergroupFull = supergroup != null ? ViewModel.ClientService.GetSupergroupFull(supergroup.Id) : null;
 
-            if (user != null && user.Id == ViewModel.ClientService.Options.MyId && ViewModel.SavedMessagesTopicId == 0)
+            if (user != null && user.Id == ViewModel.ClientService.Options.MyId && ViewModel.SavedMessagesTopic == null)
             {
                 flyout.CreateFlyoutItem(ViewModel.ViewAsChats, Strings.SavedViewAsChats, Icons.AppsListDetails);
             }
@@ -4573,7 +4573,7 @@ namespace Telegram.Views
             var button = sender as Button;
             if (button.Tag is DateTime date && ViewModel.Type is DialogType.History or DialogType.Thread)
             {
-                var dialog = new CalendarPopup(ViewModel.ClientService, ViewModel.ChatId, ViewModel.Topic, date);
+                var dialog = new CalendarPopup(ViewModel.ClientService, ViewModel.ChatId, ViewModel.TopicId, date);
                 dialog.MaxDate = DateTimeOffset.Now.Date;
 
                 var confirm = await dialog.ShowQueuedAsync(XamlRoot);
@@ -5038,8 +5038,8 @@ namespace Telegram.Views
                 }
 
                 _forumViewModel.SetChat(chat);
-                _forumViewModel.SelectedItem = ViewModel.Topic;
-                _forumViewModel.Delegate?.SetSelectedItem(_forumViewModel.Items.GetItem(ViewModel.Topic));
+                _forumViewModel.SelectedItem = ViewModel.TopicId;
+                _forumViewModel.Delegate?.SetSelectedItem(_forumViewModel.Items.GetItem(ViewModel.TopicId));
 
                 ShowHideForumTopics(ViewModel.Settings.UseLeftTabsForForums ? ForumViewType.Vertical : ForumViewType.Horizontal);
             }

@@ -542,11 +542,11 @@ namespace Telegram.Views.Popups
         {
             if (item is PlaybackItemMessage message)
             {
-                _clientService.Send(new ForwardMessages(_clientService.Options.MyId, 0, message.ChatId, new[] { message.Id }, null, false, false));
+                _clientService.Send(new ForwardMessages(_clientService.Options.MyId, null, message.ChatId, new[] { message.Id }, null, false, false));
             }
             else if (item is PlaybackItemProfileAudio audio)
             {
-                _clientService.Send(new SendMessage(_clientService.Options.MyId, 0, null, null, null, audio.ToInputMessage()));
+                _clientService.Send(new SendMessage(_clientService.Options.MyId, null, null, null, null, audio.ToInputMessage()));
             }
 
             _navigationService.ShowToast(Strings.AudioSaveToSavedMessagesSaved, ToastPopupIcon.SavedMessages);

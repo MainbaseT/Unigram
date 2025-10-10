@@ -897,7 +897,8 @@ namespace Telegram.Views
             var response = await _clientService.SendAsync(new GetPreparedInlineMessage(_botUser.Id, preparedMessageId));
             if (response is PreparedInlineMessage prepared)
             {
-                var response2 = await _clientService.SendAsync(new SendInlineQueryResultMessage(_clientService.Options.MyId, 0, null, Constants.PreviewOnly, prepared.InlineQueryId, prepared.Result.GetId(), false));
+                // TODO: is this correct?
+                var response2 = await _clientService.SendAsync(new SendInlineQueryResultMessage(_clientService.Options.MyId, null, null, Constants.PreviewOnly, prepared.InlineQueryId, prepared.Result.GetId(), false));
                 if (response2 is not Message message)
                 {
                     PostEvent("prepared_message_failed", "error", "UNKNOWN_ERROR");
@@ -1192,7 +1193,7 @@ namespace Telegram.Views
                     await _clientService.SendAsync(new SetMessageSenderBlockList(new MessageSenderUser(_botUser.Id), null));
                 }
 
-                await _clientService.SendAsync(new SendMessage(chat.Id, 0, null, null, null, new InputMessageContact(new Contact(user.PhoneNumber, user.FirstName, user.LastName, string.Empty, user.Id))));
+                await _clientService.SendAsync(new SendMessage(chat.Id, null, null, null, null, new InputMessageContact(new Contact(user.PhoneNumber, user.FirstName, user.LastName, string.Empty, user.Id))));
 
                 _blockingAction = false;
                 PostEvent("phone_requested", "status", "sent");

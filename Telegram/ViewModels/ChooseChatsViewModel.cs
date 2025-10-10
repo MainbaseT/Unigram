@@ -658,26 +658,13 @@ namespace Telegram.ViewModels
             return Task.FromResult(ContentDialogResult.Primary);
         }
 
-        public void SendWithChat(Chat chat, Action<MessageSendOptions, long> action)
+        public void SendWithChat(Chat chat, Action<MessageSendOptions, MessageTopic> action)
         {
-            SelectedTopics.TryGetValue(chat.Id, out MessageTopic topic);
-
-            long directMessagesChatTopicId = 0;
-            long messageThreadId = 0;
-
-            if (topic is MessageTopicDirectMessages directMessagesChat)
-            {
-                directMessagesChatTopicId = directMessagesChat.DirectMessagesChatTopicId;
-            }
-            else if (topic is MessageTopicForum forum && ClientService.TryGetForumTopic(chat.Id, forum.ForumTopicId, out ForumTopic forumTopic))
-            {
-                messageThreadId = forumTopic.Info.MessageThreadId;
-            }
-
             var starCount = ClientService.PaidMessageStarCount(chat);
-            var options = new MessageSendOptions(directMessagesChatTopicId, null, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+            var options = new MessageSendOptions(null, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
 
-            action(options, messageThreadId);
+            SelectedTopics.TryGetValue(chat.Id, out MessageTopic topic);
+            action(options, topic);
         }
 
         public RelayCommand SendCommand { get; }
@@ -699,9 +686,9 @@ namespace Telegram.ViewModels
             {
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(_caption, null, false)));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(_caption, null, false)));
                     });
                 }
             }
@@ -722,9 +709,9 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageForwarded(shareGame.Messages[0].ChatId, shareGame.Messages[0].Id, shareGame.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageForwarded(shareGame.Messages[0].ChatId, shareGame.Messages[0].Id, shareGame.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
                     });
                 }
             }
@@ -736,9 +723,9 @@ namespace Telegram.ViewModels
                 {
                     foreach (var messages in shareMessages.Messages.GroupBy(x => x.ChatId))
                     {
-                        SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                        SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                         {
-                            ClientService.Send(new ForwardMessages(chat.Id, messageThreadId, messages.Key, messages.Select(x => x.Id).ToList(), options, _sendAsCopy || _removeCaptions, _removeCaptions));
+                            ClientService.Send(new ForwardMessages(chat.Id, topic, messages.Key, messages.Select(x => x.Id).ToList(), options, _sendAsCopy || _removeCaptions, _removeCaptions));
                         });
                     }
                 }
@@ -749,9 +736,9 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
                     });
                 }
             }
@@ -759,9 +746,9 @@ namespace Telegram.ViewModels
             {
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, postMessage.Content));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, postMessage.Content));
                     });
                 }
 
@@ -776,9 +763,9 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                        SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                         {
-                            ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                            ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
                         });
                     }
                 }
@@ -789,9 +776,9 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
                     });
                 }
 
@@ -825,9 +812,9 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                        SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                         {
-                            ClientService.Send(new SendInlineQueryResultMessage(chat.Id, messageThreadId, null, options, switchInline.InlineQueryId, switchInline.Result.GetId(), false));
+                            ClientService.Send(new SendInlineQueryResultMessage(chat.Id, topic, null, options, switchInline.InlineQueryId, switchInline.Result.GetId(), false));
                         });
                     }
                 }
@@ -853,9 +840,9 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        SendWithChat(chat, (MessageSendOptions options, long messageThreadId) =>
+                        SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
                         {
-                            ClientService.Send(new SendMessage(chat.Id, messageThreadId, null, options, null, new InputMessageText(formatted, null, false)));
+                            ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
                         });
                     }
                 }

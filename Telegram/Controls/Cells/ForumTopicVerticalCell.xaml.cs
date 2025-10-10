@@ -335,7 +335,7 @@ namespace Telegram.Controls.Cells
                 General.Visibility = Visibility.Visible;
                 AllTopics.Visibility = Visibility.Collapsed;
             }
-            else if (topic.Info.MessageThreadId == 0)
+            else if (topic.Info.ForumTopicId == 0)
             {
                 Animated.Source = null;
                 IconRoot.Visibility = Visibility.Collapsed;

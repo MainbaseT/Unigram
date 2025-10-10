@@ -422,7 +422,7 @@ namespace Telegram.Common
                 }
             }
 
-            if (Frame?.Content is ChatPage page && page.ViewModel?.ChatId == chat.Id && page.ViewModel?.Topic.AreTheSame(topic) is true && !scheduled && !createNewWindow)
+            if (Frame?.Content is ChatPage page && page.ViewModel?.ChatId == chat.Id && page.ViewModel?.TopicId.AreTheSame(topic) is true && !scheduled && !createNewWindow)
             {
                 var viewModel = page.ViewModel;
                 if (message != null)

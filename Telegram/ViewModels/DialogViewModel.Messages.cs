@@ -392,7 +392,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var popup = new DeleteMessagesPopup(ClientService, chat, Topic, updated, properties);
+            var popup = new DeleteMessagesPopup(ClientService, chat, TopicId, updated, properties);
 
             var confirm = await ShowPopupAsync(popup);
             if (confirm != ContentDialogResult.Primary)
@@ -1604,7 +1604,7 @@ namespace Telegram.ViewModels
                     return;
                 }
 
-                var response = await ClientService.SendAsync(new OpenWebApp(chat.Id, botUser.Id, webApp.Url, OutgoingThreadId, DirectMessagesChatTopicId, null, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
+                var response = await ClientService.SendAsync(new OpenWebApp(chat.Id, botUser.Id, webApp.Url, OutgoingTopicId, null, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
                 if (response is WebAppInfo webAppInfo)
                 {
                     NavigationService.NavigateToWebApp(botUser, webAppInfo.Url, webAppInfo.LaunchId, null, sourceChat: chat, buttonText: inline.Text);
@@ -1771,7 +1771,7 @@ namespace Telegram.ViewModels
             {
                 if (ClientService.TryGetUser(message.SenderId, out Td.Api.User botUser))
                 {
-                    var response = await ClientService.SendAsync(new OpenWebApp(chat.Id, botUser.Id, webApp.Url, OutgoingThreadId, DirectMessagesChatTopicId, null, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
+                    var response = await ClientService.SendAsync(new OpenWebApp(chat.Id, botUser.Id, webApp.Url, OutgoingTopicId, null, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
                     if (response is WebAppInfo webAppInfo)
                     {
                         NavigationService.NavigateToWebApp(botUser, webAppInfo.Url, webAppInfo.LaunchId, null, sourceChat: chat, buttonText: keyboardButton.Text);
@@ -1803,7 +1803,7 @@ namespace Telegram.ViewModels
             }
             else
             {
-                var response = await ClientService.SendAsync(new OpenWebApp(chat.Id, botUser.Id, url, OutgoingThreadId, DirectMessagesChatTopicId, null, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
+                var response = await ClientService.SendAsync(new OpenWebApp(chat.Id, botUser.Id, url, OutgoingTopicId, null, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
                 if (response is WebAppInfo webAppInfo)
                 {
                     NavigationService.NavigateToWebApp(botUser, webAppInfo.Url, webAppInfo.LaunchId, null, sourceChat: chat);
@@ -1819,7 +1819,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var response = await ClientService.SendAsync(new OpenWebApp(chat.Id, menuBot.BotUserId, string.Empty, OutgoingThreadId, DirectMessagesChatTopicId, null, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
+            var response = await ClientService.SendAsync(new OpenWebApp(chat.Id, menuBot.BotUserId, string.Empty, OutgoingTopicId, null, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
             if (response is WebAppInfo webAppInfo)
             {
                 NavigationService.NavigateToWebApp(botUser, webAppInfo.Url, webAppInfo.LaunchId, menuBot, sourceChat: chat);
@@ -1989,7 +1989,7 @@ namespace Telegram.ViewModels
 
         public void ViewMessageInChat(MessageViewModel message)
         {
-            NavigationService.NavigateToChat(message.Chat, message.Id, Topic);
+            NavigationService.NavigateToChat(message.Chat, message.Id, TopicId);
         }
 
         #endregion
@@ -2052,7 +2052,7 @@ namespace Telegram.ViewModels
             {
                 var date = Formatter.ToLocalTime(message.Date);
 
-                var dialog = new CalendarPopup(ClientService, ChatId, Topic, date);
+                var dialog = new CalendarPopup(ClientService, ChatId, TopicId, date);
                 dialog.MaxDate = DateTimeOffset.Now.Date;
 
                 var confirm = await ShowPopupAsync(dialog);

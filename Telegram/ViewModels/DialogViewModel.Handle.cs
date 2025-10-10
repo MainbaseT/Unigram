@@ -138,7 +138,7 @@ namespace Telegram.ViewModels
 
         public void Handle(UpdateChatAction update)
         {
-            if (update.ChatId == _chat?.Id && update.TopicId.AreTheSame(Topic) && Type is DialogType.History or DialogType.Thread)
+            if (update.ChatId == _chat?.Id && update.TopicId.AreTheSame(TopicId) && Type is DialogType.History or DialogType.Thread)
             {
                 BeginOnUIThread(() => Delegate?.UpdateChatActions(_chat, ClientService.GetChatActions(update.ChatId)));
             }
@@ -685,13 +685,7 @@ namespace Telegram.ViewModels
             }
             else if (Type == DialogType.Thread)
             {
-                // TODO: remove when fixed in TDLib
-                if (ForumTopic != null && ForumTopic.Info.IsGeneral && message.TopicId == null)
-                {
-                    return message.SchedulingState == null;
-                }
-
-                return message.SchedulingState == null && message.TopicId.AreTheSame(Topic);
+                return message.SchedulingState == null && message.TopicId.AreTheSame(TopicId);
             }
             else if (Type == DialogType.Pinned)
             {

@@ -163,6 +163,8 @@ namespace Telegram.ViewModels.Stories
             _task?.TrySetResult(true);
         }
 
+        public override MessageTopic TopicId { get; set; }
+
         public override long ThreadId => 0;
 
         protected override bool CanSchedule => false;
@@ -194,7 +196,7 @@ namespace Telegram.ViewModels.Stories
 
         public override Task<MessageSendOptions> PickMessageSendOptionsAsync(int messageCount = 1, SchedulingState schedule = SchedulingState.Auto, bool? silent = null, bool reorder = false)
         {
-            return Task.FromResult(new MessageSendOptions(0, null, silent ?? false, false, false, false, 0, Settings.Stickers.DynamicPackOrder && reorder, null, 0, 0, false));
+            return Task.FromResult(new MessageSendOptions(null, silent ?? false, false, false, false, 0, Settings.Stickers.DynamicPackOrder && reorder, null, 0, 0, false));
         }
 
         public void Handle(UpdateStory update)
