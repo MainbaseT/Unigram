@@ -278,10 +278,22 @@ namespace Telegram.Views.Premium.Popups
         {
             ContentDialogResult confirm = ContentDialogResult.Primary;
 
-            if (e.ClickedItem is AvailableGift { Gift.UserLimits.RemainingCount: 0, MinResaleStarCount: 0 } available)
+            if (e.ClickedItem is AvailableGift available)
             {
-                ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.Gift2PerUserLimit, available.Gift.UserLimits.TotalCount), new DelayedFileSource(_clientService, available.Gift.Sticker));
-                return;
+                if (available is AvailableGift { Gift.UserLimits.RemainingCount: 0, MinResaleStarCount: 0 })
+                {
+                    ToastPopup.Show(XamlRoot, Locale.Declension(Strings.R.Gift2PerUserLimit, available.Gift.UserLimits.TotalCount), new DelayedFileSource(_clientService, available.Gift.Sticker));
+                    return;
+                }
+                else if (available.Gift.NextSendDate > _clientService.UnixTime)
+                {
+                    var response = await _clientService.SendAsync(new CanSendGift(available.Gift.Id));
+                    if (response is CanSendGiftResultFail fail)
+                    {
+                        _navigationService.ShowPopup(fail.Reason, Strings.GiftLocked, Strings.OK);
+                        return;
+                    }
+                }
             }
             else if (e.ClickedItem is ReceivedGift receivedGift)
             {
