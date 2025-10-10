@@ -3246,7 +3246,8 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    SuggestedPostInfo = popup.SuggestedPostInfo
+                    SuggestedPostInfo = popup.SuggestedPostInfo,
+                    ReplyTo = ComposerHeader?.ReplyTo,
                 };
             }
         }
