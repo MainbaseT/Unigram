@@ -724,13 +724,19 @@ namespace Telegram.Views
             String value;
             try
             {
-                if (eventData.ValueType == JsonValueType.Object)
+                var valueData = eventData.GetNamedValue("value");
+                if (valueData.ValueType == JsonValueType.String)
+                {
+                    value = valueData.GetString();
+                }
+                else if (valueData.ValueType == JsonValueType.Null)
                 {
                     value = null;
                 }
                 else
                 {
-                    value = eventData.GetNamedString("value");
+                    PostEvent(eventFail, "req_id", req_id, "error", "VALUE_INVALID");
+                    return;
                 }
             }
             catch (Exception)
