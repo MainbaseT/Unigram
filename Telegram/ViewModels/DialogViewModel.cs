@@ -105,6 +105,8 @@ namespace Telegram.ViewModels
 
         protected static readonly Dictionary<MessageId, MessageContent> _contentOverrides = new();
 
+        protected Dictionary<long, DialogPendingTextMessage> _pendingTextMessages = new();
+
         protected readonly DisposableMutex _loadMoreLock = new();
 
         protected readonly IMessageDelegate _messageDelegate;
@@ -2579,6 +2581,15 @@ namespace Telegram.ViewModels
             {
                 return;
             }
+
+            foreach (var pending in _pendingTextMessages.Values)
+            {
+                pending.Stop();
+                pending.Updated -= PendingTextMessage_Updated;
+                pending.Completed -= PendingTextMessage_Completed;
+            }
+
+            _pendingTextMessages.Clear();
 
             _lastSeenTimer?.Stop();
             _groupedMessages.Clear();

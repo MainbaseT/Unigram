@@ -43,6 +43,7 @@ namespace Telegram.ViewModels
                 .Subscribe<UpdateChatLastMessage>(Handle)
                 .Subscribe<UpdateChatBusinessBotManageBar>(Handle)
                 .Subscribe<UpdateNewMessage>(Handle)
+                .Subscribe<UpdatePendingTextMessage>(Handle)
                 .Subscribe<UpdateDeleteMessages>(Handle)
                 .Subscribe<UpdateMessageContent>(Handle)
                 .Subscribe<UpdateMessageContentOpened>(Handle)
@@ -705,7 +706,48 @@ namespace Telegram.ViewModels
 
                 BeginOnUIThread(() =>
                 {
-                    InsertMessage(message);
+                    DialogPendingTextMessage pending = null;
+
+                    if (_chat.Type is ChatTypePrivate privata && update.Message.SenderId.IsUser(privata.UserId))
+                    {
+                        ulong lastUpdate = 0;
+
+                        foreach (var item in _pendingTextMessages.Values)
+                        {
+                            if (item.LastUpdate > lastUpdate)
+                            {
+                                lastUpdate = item.LastUpdate;
+                                pending = item;
+                            }
+                        }
+
+                        foreach (var item in _pendingTextMessages.Values)
+                        {
+                            if (item.DraftId != pending?.DraftId)
+                            {
+                                item.Stop();
+
+                                item.Updated -= PendingTextMessage_Updated;
+                                item.Completed -= PendingTextMessage_Completed;
+
+                                if (Items.TryGetValue(item.DraftId, out MessageViewModel old))
+                                {
+                                    Items.Remove(old);
+                                }
+                            }
+                        }
+
+                        _pendingTextMessages.Clear();
+                    }
+
+                    if (pending != null && Items.ContainsKey(long.MaxValue))
+                    {
+                        pending.Update(update.Message);
+                    }
+                    else
+                    {
+                        InsertMessage(message);
+                    }
 
                     if (!update.Message.IsOutgoing && Settings.Notifications.InAppSounds)
                     {
@@ -715,6 +757,94 @@ namespace Telegram.ViewModels
                         }
                     }
                 });
+            }
+        }
+
+        public void Handle(UpdatePendingTextMessage update)
+        {
+            if (_chat?.Id == update.ChatId && (TopicId == null || TopicId.IsForum(update.ForumTopicId)) && ClientService.TryGetUser(Chat, out User user))
+            {
+                var topicId = new MessageTopicForum(update.ForumTopicId);
+                var content = new MessageText(update.Text, null, null);
+                var message = CreateMessage(new Message(long.MaxValue, new MessageSenderUser(user.Id), update.ChatId, null, null, false, false, false, false, false, false, false, false, false, DateTime.Now.ToTimestamp(), 0, null, null, null, null, null, null, null, topicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null));
+                message.GeneratedContentUnread = true;
+                message.IsInitial = false;
+
+                BeginOnUIThread(() =>
+                {
+                    if (_pendingTextMessages.TryGetValue(update.DraftId, out DialogPendingTextMessage pending))
+                    {
+                        pending.Update(update);
+                    }
+                    else
+                    {
+                        pending = new DialogPendingTextMessage(update, message);
+                        pending.Updated += PendingTextMessage_Updated;
+                        pending.Completed += PendingTextMessage_Completed;
+
+                        _pendingTextMessages[update.DraftId] = pending;
+                    }
+
+                    if (Items.TryGetValue(long.MaxValue, out MessageViewModel already))
+                    {
+                        return;
+                    }
+
+                    InsertMessage(message);
+                });
+            }
+        }
+
+        private void PendingTextMessage_Updated(DialogPendingTextMessage sender, MessageViewModel message)
+        {
+            if (Items.TryGetValue(long.MaxValue, out MessageViewModel already))
+            {
+                already.Replace(message);
+                Delegate?.UpdateBubbleWithMessageId(long.MaxValue, bubble => bubble.UpdateMessageContent(already));
+            }
+        }
+
+        private void PendingTextMessage_Completed(DialogPendingTextMessage sender, Message completed)
+        {
+            _pendingTextMessages.Remove(sender.DraftId);
+
+            sender.Updated -= PendingTextMessage_Updated;
+            sender.Completed -= PendingTextMessage_Completed;
+
+            if (completed != null)
+            {
+                Handle(long.MaxValue, message =>
+                {
+                    message.Replace(completed);
+                    message.IsInitial = true;
+                    message.GeneratedContentUnread = true;
+
+                    if (message.Content is MessagePaidMedia paidMedia)
+                    {
+                        message.Content = new MessagePaidAlbum(paidMedia);
+                    }
+
+                    InsertMessage(message, long.MaxValue);
+
+                    return true;
+                },
+                (bubble, message) =>
+                {
+                    if (bubble.Parent is MessageSelector selector)
+                    {
+                        selector.PrepareForItemOverride(message, true);
+                    }
+
+                    bubble.UpdateMessage(message);
+                    Delegate?.ViewVisibleMessages();
+                }, newMessageId: completed.Id);
+            }
+            else
+            {
+                if (Items.TryGetValue(sender.DraftId, out MessageViewModel already))
+                {
+                    Items.Remove(already);
+                }
             }
         }
 
