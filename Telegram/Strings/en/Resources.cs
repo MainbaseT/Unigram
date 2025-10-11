@@ -3907,6 +3907,11 @@ namespace Telegram
         public static string BotEmojiStatusTitle => Resource.GetString("BotEmojiStatusTitle");
         
         /// <summary>
+        /// Localized resource similar to "New Chat"
+        /// </summary>
+        public static string BotForumNewTopic => Resource.GetString("BotForumNewTopic");
+        
+        /// <summary>
         /// Localized resource similar to "Help"
         /// </summary>
         public static string BotHelp => Resource.GetString("BotHelp");

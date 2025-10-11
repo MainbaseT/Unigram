@@ -2629,6 +2629,9 @@ from **{0}**.</value>
   <data name="BotEmojiStatusTitle" xml:space="preserve">
     <value>Set Emoji Status</value>
   </data>
+  <data name="BotForumNewTopic" xml:space="preserve">
+    <value>New Chat</value>
+  </data>
   <data name="BotHelp" xml:space="preserve">
     <value>Help</value>
   </data>

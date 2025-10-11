@@ -994,17 +994,11 @@ namespace Telegram.Common
                         var topic = await clientService.SendAsync(new GetForumTopic(chat.Id, topicForum.ForumTopicId)) as ForumTopic;
                         if (topic != null)
                         {
-                            await clientService.SendAsync(new GetMessage(chat.Id, topic.Info.MessageThreadId));
-
-                            var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, topic.Info.MessageThreadId));
-                            if (thread is MessageThreadInfo)
-                            {
-                                navigation.NavigateToChat(chat, info.Message.Id, topic: info.TopicId);
-                            }
-                            else
-                            {
-                                navigation.ShowPopup(Strings.LinkNotFound, Strings.AppName, Strings.OK);
-                            }
+                            navigation.NavigateToChat(chat, info.Message.Id, topic: info.TopicId);
+                        }
+                        else
+                        {
+                            navigation.ShowPopup(Strings.LinkNotFound, Strings.AppName, Strings.OK);
                         }
                     }
                     else

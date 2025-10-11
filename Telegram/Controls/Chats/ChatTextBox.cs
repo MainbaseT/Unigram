@@ -451,7 +451,7 @@ namespace Telegram.Controls.Chats
 
                     var members = chat.Type is ChatTypePrivate or ChatTypeSecret or ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false };
 
-                    autocomplete = new UsernameCollection(ViewModel.ClientService, ViewModel.Chat.Id, ViewModel.ThreadId, result, index == 0, members, false);
+                    autocomplete = new UsernameCollection(ViewModel.ClientService, ViewModel.Chat.Id, ViewModel.TopicId, result, index == 0, members, false);
                     return true;
                 }
                 else if (entity == AutocompleteEntity.Hashtag)
@@ -658,7 +658,7 @@ namespace Telegram.Controls.Chats
         {
             private readonly IClientService _clientService;
             private readonly long _chatId;
-            private readonly long _threadId;
+            private readonly MessageTopic _topicId;
             private readonly string _query;
 
             private readonly bool _bots;
@@ -667,11 +667,11 @@ namespace Telegram.Controls.Chats
 
             private bool _hasMore = true;
 
-            public UsernameCollection(IClientService clientService, long chatId, long threadId, string query, bool bots, bool members, bool self)
+            public UsernameCollection(IClientService clientService, long chatId, MessageTopic topicId, string query, bool bots, bool members, bool self)
             {
                 _clientService = clientService;
                 _chatId = chatId;
-                _threadId = threadId;
+                _topicId = topicId;
                 _query = query;
 
                 _bots = bots;
@@ -711,7 +711,7 @@ namespace Telegram.Controls.Chats
                             count++;
                         }
 
-                        var response = await _clientService.SendAsync(new SearchChatMembers(_chatId, _query, 20, new ChatMembersFilterMention(_threadId)));
+                        var response = await _clientService.SendAsync(new SearchChatMembers(_chatId, _query, 20, new ChatMembersFilterMention(_topicId)));
                         if (response is ChatMembers members)
                         {
                             foreach (var member in members.Members)

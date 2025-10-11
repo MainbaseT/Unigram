@@ -564,6 +564,11 @@ namespace Telegram
             {
                 return oldDirectMessagesChat.DirectMessagesChatTopicId == newDirectMessagesChat.DirectMessagesChatTopicId;
             }
+            else if (x is MessageTopicThread oldThread
+                && y is MessageTopicThread newThread)
+            {
+                return oldThread.MessageThreadId == newThread.MessageThreadId;
+            }
 
             return false;
         }
@@ -581,6 +586,11 @@ namespace Telegram
         public static bool IsDirectMessagesChat(this MessageTopic messageTopic, long directMessagesChatTopicId)
         {
             return messageTopic is MessageTopicDirectMessages directMessagesChat && directMessagesChat.DirectMessagesChatTopicId == directMessagesChatTopicId;
+        }
+
+        public static bool IsThread(this MessageTopic messageTopic, long messageThreadId)
+        {
+            return messageTopic is MessageTopicThread thread && thread.MessageThreadId == messageThreadId;
         }
 
         public static MessageTopic TopicIdNotGeneral(this Message message)

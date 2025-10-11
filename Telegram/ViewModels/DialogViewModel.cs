@@ -70,6 +70,7 @@ namespace Telegram.ViewModels
                 MessageTopicDirectMessages directMessages => directMessages.DirectMessagesChatTopicId,
                 MessageTopicForum forum => forum.ForumTopicId,
                 MessageTopicSavedMessages savedMessages => savedMessages.SavedMessagesTopicId,
+                MessageTopicThread thread => thread.MessageThreadId,
                 _ => 0
             };
 
@@ -218,7 +219,7 @@ namespace Telegram.ViewModels
                 }
                 else if (_forumTopic != null)
                 {
-                    return _forumTopic.Info.MessageThreadId;
+                    return _forumTopic.Info.ForumTopicId << 20;
                 }
                 else if (_thread != null)
                 {
@@ -2226,10 +2227,6 @@ namespace Telegram.ViewModels
 
                     if (ForumTopic != null)
                     {
-                        // TODO: Workaround, should be removed some day
-                        await ClientService.SendAsync(new GetMessage(chatMessageTopic.ChatId, _forumTopic.Info.MessageThreadId));
-                        await ClientService.SendAsync(new GetMessageThread(chatMessageTopic.ChatId, _forumTopic.Info.MessageThreadId));
-
                         parameter = chatMessageTopic.ChatId;
                         TopicId = new MessageTopicForum(_forumTopic.Info.ForumTopicId);
                     }
@@ -2547,7 +2544,7 @@ namespace Telegram.ViewModels
             }
             else if (ForumTopic != null)
             {
-                messageThreadId = ForumTopic.Info.MessageThreadId;
+                messageThreadId = ForumTopic.Info.ForumTopicId << 20;
                 lastMessageId = ForumTopic.LastMessage?.Id ?? long.MaxValue;
                 lastReadInboxMessageId = ForumTopic.LastReadInboxMessageId;
             }

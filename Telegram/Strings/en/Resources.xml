@@ -13011,4 +13011,5 @@
     <string name="MegaLeaveAlertWithName">Are you sure you want to leave **{0}**?</string>
     <string name="ChannelLeaveAlertWithName">Are you sure you want to leave **{0}**?</string>
 
+    <string name="BotForumNewTopic">New Chat</string>
 </resources>

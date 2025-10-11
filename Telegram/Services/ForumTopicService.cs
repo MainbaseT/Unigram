@@ -187,8 +187,14 @@ namespace Telegram.Services
             {
                 if (id == int.MaxValue)
                 {
-                    // TODO: translate
-                    yield return new ForumTopic(new ForumTopicInfo(_chatId, 0, 0, Strings.AllTopicsShort, new ForumTopicIcon(), 0, null, false, false, false, false, false), null, long.MaxValue, false, 0, 0, 0, 0, 0, new ChatNotificationSettings(), null);
+                    if (_clientService.TryGetChat(_chatId, out Chat chat) && chat.Type is ChatTypePrivate)
+                    {
+                        yield return new ForumTopic(new ForumTopicInfo(_chatId, 0, Strings.BotForumNewTopic, new ForumTopicIcon(), 0, null, false, false, false, false, false), null, long.MaxValue, false, 0, 0, 0, 0, 0, new ChatNotificationSettings(), null);
+                    }
+                    else
+                    {
+                        yield return new ForumTopic(new ForumTopicInfo(_chatId, 0, Strings.AllTopicsShort, new ForumTopicIcon(), 0, null, false, false, false, false, false), null, long.MaxValue, false, 0, 0, 0, 0, 0, new ChatNotificationSettings(), null);
+                    }
                 }
 
                 var topic = GetTopic(id);
@@ -350,7 +356,7 @@ namespace Telegram.Services
                 return topic.LastMessage.Id;
             }
 
-            return topic.Info.MessageThreadId;
+            return topic.Info.ForumTopicId;
         }
 
         public void UpdateForumTopic(UpdateForumTopic update)
@@ -602,7 +608,7 @@ namespace Telegram.Services
 
         private Message MessageForumTopicCreated(ForumTopic topic)
         {
-            return new Message(topic.Info.MessageThreadId, topic.Info.CreatorId, _chatId, null, null, topic.Info.IsOutgoing, false, false, false, false, false, false, false, false, topic.Info.CreationDate, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, new MessageTopicForum(topic.Info.ForumTopicId), null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageForumTopicCreated(topic.Info.Name, false, topic.Info.Icon), null);
+            return new Message(topic.Info.ForumTopicId, topic.Info.CreatorId, _chatId, null, null, topic.Info.IsOutgoing, false, false, false, false, false, false, false, false, topic.Info.CreationDate, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, new MessageTopicForum(topic.Info.ForumTopicId), null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageForumTopicCreated(topic.Info.Name, false, topic.Info.Icon), null);
         }
 
         public void UpdateMessageSendSucceeded(Message message, long oldMessageId)
