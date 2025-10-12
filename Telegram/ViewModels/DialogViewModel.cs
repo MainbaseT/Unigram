@@ -2981,7 +2981,18 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (header.LinkPreview != null)
+            if (header.SuggestedPostInfo != null)
+            {
+                ComposerHeader = new MessageComposerHeader(ClientService)
+                {
+                    Editing = header.Editing,
+                    ReplyTo = header.ReplyTo,
+                    LinkPreviewUrl = header.LinkPreviewUrl,
+                    LinkPreview = header.LinkPreview,
+                    LinkPreviewDisabled = header.LinkPreviewDisabled
+                };
+            }
+            else if (header.LinkPreview != null)
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
