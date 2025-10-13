@@ -443,11 +443,14 @@ namespace Telegram.Views.Popups
         private async void OnContextRequested(UIElement sender, ContextRequestedEventArgs args)
         {
             var item = ScrollingHost.ItemFromContainer(sender) as PlaybackItem;
-            var flyout = new MenuFlyout();
+            if (item != null)
+            {
+                var flyout = new MenuFlyout();
 
-            await PopulateContextMenuAsync(flyout, item);
+                await PopulateContextMenuAsync(flyout, item);
 
-            flyout.ShowAt(sender, args);
+                flyout.ShowAt(sender, args);
+            }
         }
 
         private async Task PopulateContextMenuAsync(MenuFlyout flyout, PlaybackItem item)
@@ -463,7 +466,7 @@ namespace Telegram.Views.Popups
                 flyout.CreateFlyoutSeparator();
                 flyout.CreateFlyoutItem(ShowInChat, message, Strings.ShowInChat, Icons.ChatEmpty);
 
-                if (properties.CanBeForwarded)
+                if (properties != null && properties.CanBeForwarded)
                 {
                     flyout.CreateFlyoutItem(Forward, (message, properties), Strings.Forward, Icons.Share);
                 }
