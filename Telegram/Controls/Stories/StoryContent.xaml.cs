@@ -1233,7 +1233,7 @@ namespace Telegram.Controls.Stories
             {
                 CreateSwapChain = false,
                 Mute = _viewModel.Settings.VolumeMuted,
-                //Volume = SettingsService.Current.VolumeLevel,
+                Volume = 1,
                 Debug = SettingsService.Current.VerbosityLevel >= 4,
             };
 
