@@ -10,8 +10,10 @@ using System.Numerics;
 using Telegram.Common;
 using Telegram.Native.Calls;
 using Telegram.Services.Settings;
+using Telegram.Td.Api;
 using Windows.Storage;
 using Windows.System.Profile;
+using AutoDownloadSettings = Telegram.Services.Settings.AutoDownloadSettings;
 
 #if !ENABLE_CALLS
 
@@ -745,15 +747,15 @@ namespace Telegram.Services
         {
         }
 
-        public object this[long chatId, long threadId, ChatSetting key]
+        public object this[long chatId, MessageTopic topicId, ChatSetting key]
         {
             //get => GetValueOrDefault<object>(chatId + key, null);
-            set => AddOrUpdateValue(ConvertToKey(chatId, threadId, key), value);
+            set => AddOrUpdateValue(ConvertToKey(chatId, topicId, key), value);
         }
 
-        public bool TryRemove<T>(long chatId, long threadId, ChatSetting key, out T value)
+        public bool TryRemove<T>(long chatId, MessageTopic topicId, ChatSetting key, out T value)
         {
-            var setting = ConvertToKey(chatId, threadId, key);
+            var setting = ConvertToKey(chatId, topicId, key);
             if (_container.Values.TryGet(setting, out value))
             {
                 _container.Values.Remove(setting);
@@ -764,15 +766,15 @@ namespace Telegram.Services
             return false;
         }
 
-        public bool TryGet<T>(long chatId, long threadId, ChatSetting key, out T value)
+        public bool TryGet<T>(long chatId, MessageTopic topicId, ChatSetting key, out T value)
         {
-            var setting = ConvertToKey(chatId, threadId, key);
+            var setting = ConvertToKey(chatId, topicId, key);
             return _container.Values.TryGet(setting, out value);
         }
 
-        public T GetValueOrDefault<T>(long chatId, long threadId, ChatSetting key, T defaultValue)
+        public T GetValueOrDefault<T>(long chatId, MessageTopic topicId, ChatSetting key, T defaultValue)
         {
-            var setting = ConvertToKey(chatId, threadId, key);
+            var setting = ConvertToKey(chatId, topicId, key);
             if (_container.Values.TryGet(setting, out T value))
             {
                 return value;
@@ -781,25 +783,27 @@ namespace Telegram.Services
             return defaultValue;
         }
 
-        public void Clear(long chatId, long threadId)
+        public void Clear(long chatId, MessageTopic topicId)
         {
-            var setting1 = ConvertToKey(chatId, threadId, ChatSetting.ReadInboxMaxId);
-            var setting2 = ConvertToKey(chatId, threadId, ChatSetting.Index);
-            var setting3 = ConvertToKey(chatId, threadId, ChatSetting.Pixel);
+            var setting1 = ConvertToKey(chatId, topicId, ChatSetting.ReadInboxMaxId);
+            var setting2 = ConvertToKey(chatId, topicId, ChatSetting.Index);
+            var setting3 = ConvertToKey(chatId, topicId, ChatSetting.Pixel);
 
             _container.Values.Remove(setting1);
             _container.Values.Remove(setting2);
             _container.Values.Remove(setting3);
         }
 
-        private string ConvertToKey(long chatId, long threadId, ChatSetting setting)
+        private string ConvertToKey(long chatId, MessageTopic topicId, ChatSetting setting)
         {
-            if (threadId != 0)
+            return topicId switch
             {
-                return $"{chatId}{threadId}{setting}";
-            }
-
-            return $"{chatId}{setting}";
+                MessageTopicDirectMessages directMesages => $"{chatId}{directMesages.DirectMessagesChatTopicId}{setting}",
+                MessageTopicForum forum => $"{chatId}{forum.ForumTopicId << 20}{setting}",
+                MessageTopicSavedMessages savedMessages => $"{chatId}{savedMessages.SavedMessagesTopicId}{setting}",
+                MessageTopicThread thread => $"{chatId}{thread.MessageThreadId}{setting}",
+                _ => $"{chatId}{setting}"
+            };
         }
     }
 

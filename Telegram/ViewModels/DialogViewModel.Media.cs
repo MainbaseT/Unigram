@@ -48,7 +48,7 @@ namespace Telegram.ViewModels
 
         private async Task<ContentDialogResult> ShowPaidMessageConfirmationAsync(int messageCount, long starCount)
         {
-            Settings.Chats.TryGet(Chat.Id, 0, Services.ChatSetting.PaidMessageStarCount, out long savedMessageStarCount);
+            Settings.Chats.TryGet(Chat.Id, null, Services.ChatSetting.PaidMessageStarCount, out long savedMessageStarCount);
 
             if (starCount != 0 && starCount != savedMessageStarCount)
             {
@@ -79,7 +79,7 @@ namespace Telegram.ViewModels
                 var confirm = await ShowPopupAsync(popup);
                 if (confirm == ContentDialogResult.Primary && popup.IsChecked is true)
                 {
-                    Settings.Chats[Chat.Id, 0, Services.ChatSetting.PaidMessageStarCount] = starCount;
+                    Settings.Chats[Chat.Id, null, Services.ChatSetting.PaidMessageStarCount] = starCount;
                 }
 
                 return confirm;
