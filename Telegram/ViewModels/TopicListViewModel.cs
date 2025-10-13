@@ -622,7 +622,7 @@ namespace Telegram.ViewModels
                 _hasMoreItems = false;
 #endif
 
-                _ = LoadMoreItemsAsync(0);
+                //_ = LoadMoreItemsAsync(0);
             }
 
             public Task ReloadAsync(Chat chat)
