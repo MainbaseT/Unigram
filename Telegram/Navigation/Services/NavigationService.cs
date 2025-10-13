@@ -595,6 +595,12 @@ namespace Telegram.Navigation.Services
 
         public void ShowPopup(FormattedText message, string title = null, string primary = null, string secondary = null, string tertiary = null, bool destructive = false, ElementTheme requestedTheme = ElementTheme.Default)
         {
+            if (ContentPopup.IsAnyPopupOpen(XamlRoot))
+            {
+                _ = MessagePopup.ShowAsync(XamlRoot, target: null, message, title, primary, secondary ?? tertiary, destructive, requestedTheme);
+                return;
+            }
+
             _ = MessagePopup.ShowAsync(XamlRoot, message, title, primary, secondary, tertiary, destructive, requestedTheme);
         }
 
