@@ -1002,6 +1002,8 @@ namespace winrt::Telegram::Native::implementation
 
         m_deviceLostHelper.WatchDevice(dxgiDevice);
         m_deviceLostHelper.DeviceLost({ this, &PlaceholderImageHelper::OnDirect3DDeviceLost });
+
+        return S_OK;
     }
 
     void PlaceholderImageHelper::OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& /* args */)
