@@ -112,7 +112,7 @@ namespace Telegram.Controls.Messages.Content
 
             TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
 
-            Progress.UpdateWaveform(voiceNote);
+            Progress.UpdateWaveform(voiceNote.Waveform, voiceNote.Duration);
             ViewOnce.Visibility = message.SelfDestructType is MessageSelfDestructTypeImmediately
                 ? Visibility.Visible
                 : Visibility.Collapsed;
@@ -251,7 +251,7 @@ namespace Telegram.Controls.Messages.Content
 
         public void Mockup(MessageVoiceNote voiceNote)
         {
-            Progress.UpdateWaveform(voiceNote.VoiceNote);
+            Progress.UpdateWaveform(voiceNote.VoiceNote.Waveform, voiceNote.VoiceNote.Duration);
             Progress.UpdateValue(0.3, 1, false);
 
             Subtitle.Text = FormatTime(TimeSpan.FromSeconds(1), 0) + " / " + FormatTime(TimeSpan.FromSeconds(3), 0);

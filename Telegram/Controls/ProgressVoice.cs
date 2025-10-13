@@ -44,11 +44,12 @@ namespace Telegram.Controls
             base.OnApplyTemplate();
         }
 
-        private VoiceNote _deferred;
+        private IList<byte> _waveform;
+        private int _duration;
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (_deferred is VoiceNote voiceNote)
+            if (_waveform != null)
             {
                 var maxVoiceLength = 30.0;
                 var minVoiceLength = 2.0;
@@ -56,7 +57,7 @@ namespace Telegram.Controls
                 var minVoiceWidth = 72.0;
                 var maxVoiceWidth = 226.0;
 
-                var calcDuration = Math.Max(minVoiceLength, Math.Min(maxVoiceLength, voiceNote.Duration));
+                var calcDuration = Math.Max(minVoiceLength, Math.Min(maxVoiceLength, _duration));
                 var waveformWidth = minVoiceWidth + (maxVoiceWidth - minVoiceWidth) * (calcDuration - minVoiceLength) / (maxVoiceLength - minVoiceLength);
 
                 availableSize = new Size(waveformWidth, 20);
@@ -70,17 +71,18 @@ namespace Telegram.Controls
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            if (_deferred != null)
+            if (_waveform != null)
             {
-                UpdateWaveform(_deferred.Waveform, 0, finalSize.Width);
+                UpdateWaveform(_waveform, 0, finalSize.Width);
             }
 
             return base.ArrangeOverride(finalSize);
         }
 
-        public void UpdateWaveform(VoiceNote voiceNote)
+        public void UpdateWaveform(IList<byte> waveform, int duration)
         {
-            _deferred = voiceNote;
+            _waveform = waveform;
+            _duration = duration;
             InvalidateMeasure();
             InvalidateArrange();
         }
