@@ -442,6 +442,14 @@ namespace Telegram.Controls.Gallery
 
             Slider.UpdateValue(sender.Position, args.Duration, false);
             LengthText.Text = FormatTime(args.Duration);
+
+            SkipBackButton.Visibility = args.Duration > 30
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            SkipForwardButton.Visibility = args.Duration > 30
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private void Slider_PositionChanging(PlaybackSlider sender, PlaybackSliderPositionChanged e)
@@ -726,6 +734,16 @@ namespace Telegram.Controls.Gallery
                 ChangePlaybackSpeed(keyCode is 188 ? -0.25f : 0.25f);
                 args.Handled = true;
             }
+        }
+
+        private void SkipBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            _player.Seek(-10);
+        }
+
+        private void SkipForwardButton_Click(object sender, RoutedEventArgs e)
+        {
+            _player.Seek(10);
         }
 
         public void Unload()

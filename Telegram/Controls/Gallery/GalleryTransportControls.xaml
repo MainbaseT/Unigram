@@ -43,12 +43,33 @@
                                          Grid.Column="1" />
             </Grid>
 
-            <controls:AnimatedGlyphButton x:Name="PlaybackButton"
-                                          Click="Toggle_Click"
-                                          Glyph="&#xE768;"
-                                          HorizontalAlignment="Center"
-                                          FontSize="24"
-                                          Grid.Column="1" />
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <controls:GlyphButton x:Name="SkipBackButton"
+                                      Click="SkipBackButton_Click"
+                                      AutomationProperties.Name="{CustomResource AccDescrMiniPlayer}"
+                                      ToolTipService.ToolTip="{CustomResource AccDescrMiniPlayer}"
+                                      Glyph="&#xEAE6;"
+                                      Margin="0,0,-8,0" />
+
+                <controls:AnimatedGlyphButton x:Name="PlaybackButton"
+                                              Click="Toggle_Click"
+                                              Glyph="&#xE768;"
+                                              HorizontalAlignment="Center"
+                                              FontSize="24"
+                                              Grid.Column="1" />
+                <controls:GlyphButton x:Name="SkipForwardButton"
+                                      Click="SkipForwardButton_Click"
+                                      AutomationProperties.Name="{CustomResource AccDescrMiniPlayer}"
+                                      ToolTipService.ToolTip="{CustomResource AccDescrMiniPlayer}"
+                                      Glyph="&#xEAE5;"
+                                      Margin="-8,0,0,0"
+                                      Grid.Column="2" />
+            </Grid>
 
             <Grid HorizontalAlignment="Right"
                   Grid.Column="2">
