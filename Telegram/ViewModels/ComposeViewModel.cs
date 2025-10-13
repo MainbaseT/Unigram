@@ -491,10 +491,11 @@ namespace Telegram.ViewModels
                         {
                             StorageDocument => StorageAlbumType.Documents,
                             StorageAudio => StorageAlbumType.Audio,
+                            StoragePhoto photo => forceDocuments ? StorageAlbumType.Documents : photo.IsAnimated ? StorageAlbumType.NotSupported : StorageAlbumType.Media,
                             _ => forceDocuments ? StorageAlbumType.Documents : StorageAlbumType.Media
                         };
 
-                        if (album.Count > 9 || (type != albumType && albumType != StorageAlbumType.None))
+                        if (album.Count > 9 || type == StorageAlbumType.NotSupported || (type != albumType && albumType != StorageAlbumType.None))
                         {
                             AddAlbum();
                         }
