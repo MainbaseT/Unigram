@@ -7,6 +7,7 @@
                 xmlns:controls="using:Telegram.Controls"
                 xmlns:calls="using:Telegram.Controls.Calls"
                 xmlns:cells="using:Telegram.Controls.Cells"
+                xmlns:chats="using:Telegram.Controls.Chats"
                 xmlns:drawers="using:Telegram.Controls.Drawers"
                 xmlns:messages="using:Telegram.Controls.Messages"
                 xmlns:local="using:Telegram.Views.Calls"
@@ -540,7 +541,7 @@
                                               FontSize="24"
                                               Grid.Column="1" />
 
-                        <controls:GlyphButton x:Name="SendMessage"
+                        <chats:ChatSendButton x:Name="SendMessage"
                                               Click="Send_Click"
                                               AutomationProperties.Name="{CustomResource Send}"
                                               ToolTipService.ToolTip="{CustomResource Send}"
@@ -549,8 +550,6 @@
                                               VerticalAlignment="Bottom"
                                               Width="48"
                                               Height="48"
-                                              FontSize="24"
-                                              Glyph="&#xE919;"
                                               Margin="-8,0,0,0"
                                               CornerRadius="4,20,20,4"
                                               Grid.Column="2" />

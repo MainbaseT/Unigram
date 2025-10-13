@@ -5570,11 +5570,11 @@
         <Setter Property="FontFamily"
                 Value="{ThemeResource TelegramThemeFontFamily}" />
         <Setter Property="FontSize"
-                Value="{StaticResource GlyphLargeFontSize}" />
+                Value="32" />
         <Setter Property="FontWeight"
                 Value="Normal" />
         <Setter Property="Glyph"
-                Value="&#xE919;" />
+                Value="&#xEAE8;" />
         <Setter Property="Height"
                 Value="48" />
         <Setter Property="Width"
@@ -5620,6 +5620,11 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource SystemControlForegroundBaseLowBrush}" />
                                         </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                       Storyboard.TargetName="ContentBackground">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="0" />
+                                        </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -5635,6 +5640,10 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
+                        <Ellipse x:Name="ContentBackground"
+                                 Fill="#FFFFFF"
+                                 Width="16"
+                                 Height="16" />
 
                         <TextBlock x:Name="ContentPresenter"
                                    Margin="{TemplateBinding Padding}"

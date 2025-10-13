@@ -2066,7 +2066,7 @@
                                                           ContextRequested="Send_ContextRequested"
                                                           VerticalAlignment="Bottom"
                                                           Click="btnSendMessage_Click"
-                                                          Glyph="&#xE919;"
+                                                          Glyph="&#xEAE8;"
                                                           AllowFocusOnInteraction="False"
                                                           AutomationProperties.Name="{CustomResource Send}"
                                                           ToolTipService.ToolTip="{CustomResource Send}" />
@@ -2126,7 +2126,7 @@
                                                           Glyph="&#xE9F4;"
                                                           AllowFocusOnInteraction="False"
                                                           Foreground="{ThemeResource TelegramBackgroundAccentBrush}"
-                                                          FontSize="24"
+                                                          FontSize="32"
                                                           AutomationProperties.Name="{CustomResource Done}"
                                                           ToolTipService.ToolTip="{CustomResource Done}" />
 

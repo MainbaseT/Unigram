@@ -8,6 +8,7 @@
                        xmlns:messages="using:Telegram.Controls.Messages"
                        xmlns:entities="using:Telegram.Entities"
                        xmlns:local="using:Telegram.Views.Popups"
+                       xmlns:chats="using:Telegram.Controls.Chats"
                        mc:Ignorable="d"
                        PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
                        SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
@@ -365,15 +366,13 @@
                                   FontSize="24"
                                   Grid.Column="1" />
 
-            <controls:GlyphButton x:Name="SendMessage"
+            <chats:ChatSendButton x:Name="SendMessage"
                                   Click="Send_Click"
                                   ContextRequested="Send_ContextRequested"
                                   AutomationProperties.Name="{CustomResource Send}"
                                   ToolTipService.ToolTip="{CustomResource Send}"
                                   Foreground="{ThemeResource TelegramBackgroundAccentBrush}"
                                   VerticalAlignment="Bottom"
-                                  FontSize="24"
-                                  Glyph="&#xE919;"
                                   Margin="-8,0,0,0"
                                   Grid.Column="2" />
             <Button x:Name="PaidMessage"
