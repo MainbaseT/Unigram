@@ -2,16 +2,26 @@
 
 #include "Composition/CompositionDevice.g.h"
 
-#include "dcompex.h"
+#pragma push_macro("WINAPI_FAMILY")
+#undef WINAPI_FAMILY
+#define WINAPI_FAMILY WINAPI_FAMILY_DESKTOP_APP
+#define IUnknown ::IUnknown
+#include <UIAnimation.h>
+#include <dcomp.h>
+#pragma pop_macro("WINAPI_FAMILY")
+#undef IUnknown
+
 #include <winrt/windows.ui.composition.h>
 #include <winrt/windows.ui.xaml.h>
 
 using namespace winrt::Windows::UI::Composition;
 using namespace winrt::Windows::UI::Xaml;
 
+using PFN_CreateVisual = HRESULT(WINAPI*)(IDCompositionDevice2* pThis, IDCompositionVisual2** ppVisual);
+
 namespace winrt::Telegram::Native::Composition::implementation
 {
-    static struct CompositionDevice : CompositionDeviceT<CompositionDevice>
+    struct CompositionDevice : CompositionDeviceT<CompositionDevice>
     {
         CompositionDevice();
 
@@ -32,9 +42,19 @@ namespace winrt::Telegram::Native::Composition::implementation
         static winrt::Telegram::Native::Composition::DirectRectangleClip2 CreateRectangleClip2(Visual visual);
         static void SetClip(Visual visual, winrt::Telegram::Native::Composition::DirectRectangleClip2 clip);
 
+        static LayerVisual GetElementLayerVisual(UIElement const& element);
+
     private:
         winrt::com_ptr<IUIAnimationManager2> _manager;
         winrt::com_ptr<IUIAnimationTransitionLibrary2> _transitionLibrary;
+
+        static bool s_Hooked;
+        static DWORD s_ThreadId;
+        static std::mutex s_Mutex;
+        static PFN_CreateVisual s_CreateVisual;
+
+        static void EnsureHooked();
+        static HRESULT WINAPI CreateVisualHook(IDCompositionDevice2* pThis, IDCompositionVisual2** ppVisual);
 
         static std::mutex s_lock;
         static winrt::com_ptr<CompositionDevice> s_current;

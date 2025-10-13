@@ -18,6 +18,7 @@ using Telegram.Controls.Messages.Content;
 using Telegram.Controls.Stories;
 using Telegram.Converters;
 using Telegram.Native;
+using Telegram.Native.Composition;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td;
@@ -80,6 +81,8 @@ namespace Telegram.Controls.Messages
 
         private bool _hasReplyMarkup;
 
+        private LayerVisual _layerVisual;
+        private bool _corners;
         private float _topLeft;
         private float _topRight;
         private float _bottomRight;
@@ -210,6 +213,8 @@ namespace Telegram.Controls.Messages
             ContentPanel.SizeChanged += OnSizeChanged;
             Message.ContextMenuOpening += Message_ContextMenuOpening;
             Message.TextEntityClick += Message_TextEntityClick;
+
+            _layerVisual = CompositionDevice.GetElementLayerVisual(ContentPanel);
 
             if (_shadow != null)
             {
@@ -668,9 +673,6 @@ namespace Telegram.Controls.Messages
             _bottomRight = bottomRight;
             _bottomLeft = bottomLeft;
 
-            var width = (float)Math.Truncate(ContentPanel.ActualWidth);
-            var height = (float)Math.Truncate(ContentPanel.ActualHeight);
-
             var radius = topLeft == 0 && topRight == 0 && bottomRight == 0 && bottomLeft == 0;
             if (radius)
             {
@@ -682,30 +684,17 @@ namespace Telegram.Controls.Messages
             }
 
             radius |= bottomLeft != 0 && bottomRight != 0;
-            radius |= width == 0 && height == 0;
 
             if (radius)
             {
-                if (_tail != null)
-                {
-                    _tail = null;
-
-                    var visual = ElementComposition.GetElementVisual(ContentPanel);
-                    visual.Clip = null;
-                }
+                _layerVisual.Effect = null;
 
                 _corners = true;
                 ContentPanel.CornerRadius = new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
             }
             else
             {
-                var compositor = BootStrapper.Current.Compositor;
-
-                _tail ??= compositor.CreatePathGeometry();
-                _tail.Path = PlaceholderHelper.Foreground.GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
-
-                var visual = ElementComposition.GetElementVisual(ContentPanel);
-                visual.Clip ??= compositor.CreateGeometricClip(_tail);
+                _layerVisual.Effect = PlaceholderHelper.Foreground.GetTail(topLeft, topRight, bottomRight, bottomLeft); //PlaceholderHelper.Foreground.GetTail3(XamlRoot, topLeft, topRight, bottomRight, bottomLeft);
 
                 if (_corners)
                 {
@@ -2210,39 +2199,6 @@ namespace Telegram.Controls.Messages
             _ignoreSizeChanged = true;
         }
 
-        private CompositionPathGeometry _tail;
-        private bool _corners;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UpdateClip(Size newSize)
-        {
-            var width = (float)Math.Truncate(newSize.Width);
-            var height = (float)Math.Truncate(newSize.Height);
-
-            var radius = _topLeft == 0 && _topRight == 0 && _bottomRight == 0 && _bottomLeft == 0;
-            radius |= _bottomLeft != 0 && _bottomRight != 0;
-            radius |= width == 0 && height == 0;
-
-            if (radius)
-            {
-                return;
-            }
-
-            var compositor = BootStrapper.Current.Compositor;
-
-            _tail ??= compositor.CreatePathGeometry();
-            _tail.Path = PlaceholderHelper.Foreground.GetTail(width, height, _topLeft, _topRight, _bottomRight, _bottomLeft);
-
-            var visual = ElementComposition.GetElementVisual(ContentPanel);
-            visual.Clip ??= compositor.CreateGeometricClip(_tail);
-
-            if (_corners)
-            {
-                _corners = false;
-                ContentPanel.CornerRadius = new CornerRadius();
-            }
-        }
-
         public void AnimateSendout(float xTranslate, float xScale, float yScale, float fontScale, double outer, double inner, double delay, bool reply)
         {
             if (!_templateApplied)
@@ -2405,8 +2361,6 @@ namespace Telegram.Controls.Messages
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            UpdateClip(e.NewSize);
-
             var message = _message;
             if (message == null || _ignoreSizeChanged || e.PreviousSize.Width < 1 || e.PreviousSize.Height < 1)
             {
@@ -2432,23 +2386,6 @@ namespace Telegram.Controls.Messages
 
             var factor = BootStrapper.Current.Compositor.CreateExpressionAnimation("Vector3(1 / content.Scale.X, 1 / content.Scale.Y, 1)");
             factor.SetReferenceParameter("content", panel);
-
-            // It crashes...
-            //if (_tail != null && ApiInfo.IsWindows11 && panel.Clip is CompositionGeometricClip clip2 && clip2.Geometry is CompositionPathGeometry path2)
-            //{
-            //    var width = (float)Math.Truncate(ContentPanel.ActualWidth);
-            //    var height = (float)Math.Truncate(ContentPanel.ActualHeight);
-            //    var compositor = BootStrapper.Current.Compositor;
-
-            //    var path = compositor.CreatePathKeyFrameAnimation();
-            //    path.InsertKeyFrame(0, GetTail(prev.X, prev.Y, _topLeft, _topRight, _bottomRight, _bottomLeft));
-            //    path.InsertKeyFrame(1, GetTail(next.X, next.Y, _topLeft, _topRight, _bottomRight, _bottomLeft));
-            //    path.Duration = TimeSpan.FromSeconds(3);
-
-            //    path2.StartAnimation("Path", anim);
-
-            //    //panel.Clip.StartAnimation("Scale", factor);
-            //}
 
             var header = ElementComposition.GetElementVisual(Header);
             var text = ElementComposition.GetElementVisual(Message);
@@ -2930,8 +2867,6 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            UpdateMockup(outgoing, first, last);
-
             Header.Visibility = Visibility.Collapsed;
 
             Footer.Mockup(outgoing, date);
@@ -2945,7 +2880,7 @@ namespace Telegram.Controls.Messages
 
             Message.SetText(null, message, Array.Empty<TextEntity>());
 
-            UpdateMockup();
+            UpdateMockup(outgoing, first, last);
         }
 
         public void Mockup(string message, string sender, string reply, bool outgoing, DateTime date, bool first = true, bool last = true)
@@ -2961,8 +2896,6 @@ namespace Telegram.Controls.Messages
                 Loaded += loaded;
                 return;
             }
-
-            UpdateMockup(outgoing, first, last);
 
             Header.Visibility = Visibility.Visible;
 
@@ -2996,7 +2929,7 @@ namespace Telegram.Controls.Messages
 
             Message.SetText(null, message, Array.Empty<TextEntity>());
 
-            UpdateMockup();
+            UpdateMockup(outgoing, first, last);
         }
 
         public void Mockup(IClientService clientService, string message, object sender, string reply, bool outgoing, DateTime date, bool first = true, bool last = true)
@@ -3012,8 +2945,6 @@ namespace Telegram.Controls.Messages
                 Loaded += loaded;
                 return;
             }
-
-            UpdateMockup(outgoing, first, last);
 
             Header.Visibility = Visibility.Visible;
 
@@ -3072,7 +3003,7 @@ namespace Telegram.Controls.Messages
 
             Message.SetText(null, message, Array.Empty<TextEntity>());
 
-            UpdateMockup();
+            UpdateMockup(outgoing, first, last);
         }
 
         public void Mockup(IClientService clientService, string message, MessageSender sender, string reply, LinkPreview linkPreview, bool outgoing, DateTime date, bool first = true, bool last = true)
@@ -3088,8 +3019,6 @@ namespace Telegram.Controls.Messages
                 Loaded += loaded;
                 return;
             }
-
-            UpdateMockup(outgoing, first, last);
 
             Header.Visibility = Visibility.Visible;
 
@@ -3195,7 +3124,7 @@ namespace Telegram.Controls.Messages
 
             PhotoColumn.Width = new GridLength(38, GridUnitType.Pixel);
 
-            UpdateMockup();
+            UpdateMockup(outgoing, first, last);
         }
 
         public void Mockup(MessageContent content, bool outgoing, DateTime date, bool first = true, bool last = true)
@@ -3211,8 +3140,6 @@ namespace Telegram.Controls.Messages
                 Loaded += loaded;
                 return;
             }
-
-            UpdateMockup(outgoing, first, last);
 
             Header.Visibility = Visibility.Collapsed;
             Message.Visibility = Visibility.Collapsed;
@@ -3255,7 +3182,7 @@ namespace Telegram.Controls.Messages
 
             Message.Clear();
 
-            UpdateMockup();
+            UpdateMockup(outgoing, first, last);
         }
 
         public void Mockup(MessageContent content, string caption, bool outgoing, DateTime date, bool first = true, bool last = true)
@@ -3271,8 +3198,6 @@ namespace Telegram.Controls.Messages
                 Loaded += loaded;
                 return;
             }
-
-            UpdateMockup(outgoing, first, last);
 
             Header.Visibility = Visibility.Collapsed;
 
@@ -3301,13 +3226,7 @@ namespace Telegram.Controls.Messages
 
             Message.SetText(null, caption, Array.Empty<TextEntity>());
 
-            UpdateMockup();
-        }
-
-        public void UpdateMockup()
-        {
-            Message.SetFontSize(Theme.Current.MessageFontSize);
-            ContentPanel.CornerRadius = new CornerRadius(SettingsService.Current.Appearance.BubbleRadius);
+            UpdateMockup(outgoing, first, last);
         }
 
         public void UpdateMockup(IClientService clientService, long customEmojiId, int color, UpgradedGiftColors upgradedGift)
@@ -3344,54 +3263,62 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private void UpdateMockup(bool outgoing, bool first, bool last)
+        public void UpdateMockup(bool outgoing, bool first, bool last)
         {
-            var topLeft = 15d;
-            var topRight = 15d;
-            var bottomRight = 15d;
-            var bottomLeft = 15d;
+            var radius = SettingsService.Current.Appearance.BubbleRadius;
+            var small = radius < 4 ? radius : 4;
+
+            var topLeft = radius;
+            var topRight = radius;
+            var bottomRight = radius;
+            var bottomLeft = radius;
 
             if (outgoing)
             {
                 if (first && last)
                 {
+                    bottomRight = 0;
                 }
                 else if (first)
                 {
-                    bottomRight = 4;
+                    bottomRight = small;
                 }
                 else if (last)
                 {
-                    topRight = 4;
+                    topRight = small;
+                    bottomRight = 0;
                 }
                 else
                 {
-                    topRight = 4;
-                    bottomRight = 4;
+                    topRight = small;
+                    bottomRight = small;
                 }
             }
             else
             {
                 if (first && last)
                 {
+                    bottomLeft = 0;
                 }
                 else if (first)
                 {
-                    bottomLeft = 4;
+                    bottomLeft = small;
                 }
                 else if (last)
                 {
-                    topLeft = 4;
+                    topLeft = small;
+                    bottomLeft = 0;
                 }
                 else
                 {
-                    topLeft = 4;
-                    bottomLeft = 4;
+                    topLeft = small;
+                    bottomLeft = small;
                 }
             }
 
-            ContentPanel.CornerRadius = new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
             Margin = new Thickness(outgoing ? 50 : 12, first ? 2 : 1, outgoing ? 12 : 50, last ? 2 : 1);
+            Message.SetFontSize(Theme.Current.MessageFontSize);
+            SetCorners(topLeft, topRight, bottomRight, bottomLeft);
         }
 
 

@@ -12,7 +12,7 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.Storage;
-using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -31,7 +31,7 @@ namespace Telegram.Common
                 {
                     try
                     {
-                        _foreground = new PlaceholderImageHelper();
+                        _foreground = new PlaceholderImageHelper(Window.Current);
                     }
                     catch
                     {
@@ -58,7 +58,7 @@ namespace Telegram.Common
                     {
                         try
                         {
-                            _background = new PlaceholderImageHelper();
+                            _background = new PlaceholderImageHelper(null);
                         }
                         catch
                         {

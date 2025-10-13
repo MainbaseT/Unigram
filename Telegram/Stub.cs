@@ -6810,7 +6810,7 @@ public static class PlaceholderImageHelper_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.UI.Composition.CompositionPath GetTail_stub(this Telegram.Native.PlaceholderImageHelper sender, float width, float height, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
+    public static Windows.UI.Composition.CompositionEffectBrush GetTail_stub(this Telegram.Native.PlaceholderImageHelper sender, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
     {
         try
         {

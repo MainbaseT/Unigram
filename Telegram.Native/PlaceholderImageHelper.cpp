@@ -4,6 +4,8 @@
 #include "PlaceholderImageHelper.g.cpp"
 #endif
 
+#include "MessageBubbleNineGrid.h";
+
 #include "SVG/nanosvg.h"
 #include "StringUtils.h"
 #include "Helpers\COMHelper.h"
@@ -19,6 +21,7 @@
 
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Graphics.Effects.h>
 #include <winrt/Windows.UI.Xaml.Media.Imaging.h>
 #include <winrt/Windows.Security.Cryptography.h>
 #include <windows.ui.xaml.media.dxinterop.h>
@@ -29,13 +32,6 @@ using namespace D2D1;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::Graphics::DirectX;
 using namespace winrt::Windows::UI::Xaml::Media::Imaging;
-
-namespace abi
-{
-    using namespace ABI::Windows::Foundation;
-    using namespace ABI::Windows::Graphics::DirectX;
-    using namespace ABI::Windows::UI::Composition;
-}
 
 namespace winrt::Telegram::Native::implementation
 {
@@ -395,7 +391,7 @@ namespace winrt::Telegram::Native::implementation
 
         if (result == DXGI_ERROR_DEVICE_REMOVED || result == DXGI_ERROR_DEVICE_RESET)
         {
-            ReturnIfFailed(result, CreateDeviceResources());
+            ReturnIfFailed(result, HandleDirect3DDeviceLost());
             ReturnIfFailed(result, source->CreateDeviceResources(m_d2dDevice.get()));
             return Invalidate(imageSource, buffer);
         }
@@ -841,7 +837,7 @@ namespace winrt::Telegram::Native::implementation
 
         if ((result = m_d2dContext->EndDraw()) == D2DERR_RECREATE_TARGET)
         {
-            ReturnIfFailed(result, CreateDeviceResources());
+            ReturnIfFailed(result, HandleDirect3DDeviceLost());
             return DrawBlurredImpl(wicBitmapSource, blurAmount, bitmap, minithumbnail);
         }
 
@@ -898,14 +894,33 @@ namespace winrt::Telegram::Native::implementation
         return readBitmap->Unmap();
     }
 
-    PlaceholderImageHelper::PlaceholderImageHelper()
+    PlaceholderImageHelper::PlaceholderImageHelper(Window window)
+        : m_window(window)
+        , m_compositor(nullptr)
+        , m_compositionDevice(nullptr)
+        , m_alphaMaskFactory(nullptr)
     {
+        if (window)
+        {
+            m_compositor = window.Compositor();
+        }
+
         winrt::check_hresult(CreateDeviceIndependentResources());
         winrt::check_hresult(CreateDeviceResources());
     }
 
     HRESULT PlaceholderImageHelper::CreateDeviceIndependentResources()
     {
+        if (m_compositor)
+        {
+            auto alphaMask = winrt::make_self<CompositionAlphaMaskEffect>();
+            alphaMask->Name(L"AlphaMask");
+            alphaMask->Source(CompositionEffectSourceParameter(L"source"));
+            alphaMask->AlphaMask(CompositionEffectSourceParameter(L"mask"));
+
+            m_alphaMaskFactory = m_compositor.CreateEffectFactory(alphaMask.as<IGraphicsEffect>());
+        }
+
         HRESULT result;
         D2D1_FACTORY_OPTIONS options = {};
         ReturnIfFailed(result, D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, __uuidof(ID2D1Factory1), &options, m_d2dFactory.put_void()));
@@ -974,7 +989,33 @@ namespace winrt::Telegram::Native::implementation
 
         m_d2dContext->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 
-        return m_wicFactory->CreateImageEncoder(m_d2dDevice.get(), m_imageEncoder.put());
+        ReturnIfFailed(result, m_wicFactory->CreateImageEncoder(m_d2dDevice.get(), m_imageEncoder.put()));
+
+        if (m_compositor)
+        {
+            auto compositorInterop = m_compositor.as<abi::ICompositorInterop>();
+            winrt::com_ptr<abi::ICompositionGraphicsDevice> deviceInterop;
+            ReturnIfFailed(result, compositorInterop->CreateGraphicsDevice(m_d2dDevice.get(), deviceInterop.put()));
+
+            m_compositionDevice = deviceInterop.as<CompositionGraphicsDevice>();
+        }
+
+        m_deviceLostHelper.WatchDevice(dxgiDevice);
+        m_deviceLostHelper.DeviceLost({ this, &PlaceholderImageHelper::OnDirect3DDeviceLost });
+    }
+
+    void PlaceholderImageHelper::OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& /* args */)
+    {
+        HandleDirect3DDeviceLost();
+    }
+
+    HRESULT PlaceholderImageHelper::HandleDirect3DDeviceLost()
+    {
+        HRESULT result;
+        ReturnIfFailed(result, CreateDeviceResources());
+
+        winrt::com_ptr<abi::ICompositionGraphicsDeviceInterop> compositionGraphicsDeviceInterop{ m_compositionDevice.as<abi::ICompositionGraphicsDeviceInterop>() };
+        return compositionGraphicsDeviceInterop->SetRenderingDevice(m_d2dDevice.get());
     }
 
     HRESULT PlaceholderImageHelper::CreateTextFormat(double fontSize)
@@ -1464,76 +1505,34 @@ namespace winrt::Telegram::Native::implementation
         return S_OK;
     }
 
-    CompositionPath PlaceholderImageHelper::GetTail(float width, float height, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
+    CompositionEffectBrush PlaceholderImageHelper::GetTail(int topLeftRadius, int topRightRadius, int bottomRightRadius, int bottomLeftRadius)
     {
-        std::lock_guard const guard(m_criticalSection);
-        HRESULT result;
+        // Pack 4 radius values into one int
+        // Each value needs only 5 bits (0-31 range), so 4 values fit in 20 bits
+        int key = (topLeftRadius << 15) | (topRightRadius << 10) | (bottomRightRadius << 5) | bottomLeftRadius;
 
-        winrt::com_ptr<ID2D1GeometrySink> d2dGeometrySink;
-        winrt::com_ptr<ID2D1PathGeometry1> d2dPathGeometry;
-
-        ReturnNullIfFailed(result, m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
-        ReturnNullIfFailed(result, d2dPathGeometry->Open(d2dGeometrySink.put()));
-
-        d2dGeometrySink->BeginFigure({ topLeftRadius, 0 }, D2D1_FIGURE_BEGIN_FILLED);
-
-        // Top edge
-        d2dGeometrySink->AddLine({ width - topRightRadius, 0 });
-
-        // Top-right corner
-        if (topRightRadius > 0)
-            d2dGeometrySink->AddArc({ {width, topRightRadius}, {topRightRadius, topRightRadius}, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
-
-        // Right edge
-        d2dGeometrySink->AddLine({ width, height - (bottomRightRadius > 0 ? bottomRightRadius : 15) });
-
-        auto xshift = width - 30;
-        auto yshift = height - 30;
-
-        // Bottom-right corner
-        if (bottomRightRadius > 0)
+        auto it = m_nineGridCache.find(key);
+        if (it != m_nineGridCache.end())
         {
-            d2dGeometrySink->AddArc({ { width - bottomRightRadius, height }, { bottomRightRadius, bottomRightRadius}, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
+            return it->second->Effect();
         }
-        else
+        else if (m_compositionDevice)
         {
-            d2dGeometrySink->AddBezier({ { xshift + 30.f, yshift + 15.f }, { xshift + 30.f, yshift + 18.493f }, { xshift + 28.796f, yshift + 21.704f } });
-            d2dGeometrySink->AddBezier({ { xshift + 26.802f, yshift + 24.259f }, { xshift + 26.802f, yshift + 27.222f }, { xshift + 29.444f, yshift + 28.889f } });
-            d2dGeometrySink->AddBezier({ { xshift + 29.833f, yshift + 29.167f }, { xshift + 30.f, yshift + 29.444f }, { xshift + 29.815f, yshift + 29.815f } });
-            d2dGeometrySink->AddBezier({ { xshift + 29.444f, yshift + 29.815f }, { xshift + 25.463f, yshift + 29.815f }, { xshift + 24.630f, yshift + 29.815f } });
-            d2dGeometrySink->AddBezier({ { xshift + 21.667f, yshift + 28.444f }, { xshift + 19.630f, yshift + 29.444f }, { xshift + 17.407f, yshift + 30.f } });
+            auto content = m_window.Content();
+            if (content)
+            {
+                auto xamlRoot = content.XamlRoot();
+                if (xamlRoot)
+                {
+                    auto nineGrid = winrt::make_self<MessageBubbleNineGrid>(get_strong(), m_compositor, xamlRoot, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
+                    m_nineGridCache[key] = nineGrid;
+                    return nineGrid->Effect();
+                }
+            }
         }
 
-        // Bottom edge
-        d2dGeometrySink->AddLine({ bottomLeftRadius > 0 ? bottomLeftRadius : 15, height });
-
-        // Bottom-left corner
-        if (bottomLeftRadius > 0)
-        {
-            d2dGeometrySink->AddArc({ { 0, height - bottomLeftRadius }, { bottomLeftRadius, bottomLeftRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
-        }
-        else
-        {
-            d2dGeometrySink->AddBezier({ { 12.593f, yshift + 30.f }, { 10.370f, yshift + 29.444f }, { 8.333f, yshift + 28.444f } });
-            d2dGeometrySink->AddBezier({ { 5.370f, yshift + 29.815f }, { 4.537f, yshift + 29.815f }, { 0.556f, yshift + 29.815f } });
-            d2dGeometrySink->AddBezier({ { 0.185f, yshift + 29.815f }, { 0.f, yshift + 29.444f }, { 0.167f, yshift + 29.167f } });
-            d2dGeometrySink->AddBezier({ { 0.556f, yshift + 28.889f }, { 3.198f, yshift + 27.222f }, { 3.198f, yshift + 24.259f } });
-            d2dGeometrySink->AddBezier({ { 1.204f, yshift + 21.704f }, { 0.f, yshift + 18.493f }, { 0.f, yshift + 15.f } });
-        }
-
-        // Left edge
-        d2dGeometrySink->AddLine({ 0, topLeftRadius });
-
-        // Top-left corner
-        if (topLeftRadius > 0)
-            d2dGeometrySink->AddArc({ { topLeftRadius, 0 }, { topLeftRadius, topLeftRadius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL });
-
-        d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
-
-        ReturnNullIfFailed(result, d2dGeometrySink->Close());
-
-        auto geometry = winrt::make_self<CompositionPathSource>(d2dPathGeometry);
-        return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
+        // XamlRoot is not ready
+        return nullptr;
     }
 
     CompositionPath PlaceholderImageHelper::GetOutline(IVector<ClosedVectorPath> contours)

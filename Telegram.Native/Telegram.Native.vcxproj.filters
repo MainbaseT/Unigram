@@ -700,9 +700,6 @@
     <ClInclude Include="Composition\CompositionDevice.h">
       <Filter>Composition</Filter>
     </ClInclude>
-    <ClInclude Include="Composition\dcompex.h">
-      <Filter>Composition</Filter>
-    </ClInclude>
     <ClInclude Include="..\Libraries\libtextclassifier\lang_id\lang-id.h">
       <Filter>libtextclassifier\lang_id</Filter>
     </ClInclude>
@@ -1043,9 +1040,6 @@
     <ClInclude Include="Composition\DwmThumbnail.h">
       <Filter>Composition</Filter>
     </ClInclude>
-    <ClInclude Include="Composition\dcomp.local.h">
-      <Filter>Composition</Filter>
-    </ClInclude>
     <ClInclude Include="AI\TextRecognizer.h">
       <Filter>AI</Filter>
     </ClInclude>
@@ -1172,5 +1166,6 @@
     <Midl Include="Media\AsyncMediaPlayerStateChangedEventArgs.idl">
       <Filter>Media</Filter>
     </Midl>
+    <Midl Include="MessageBubbleNineGrid.idl" />
   </ItemGroup>
 </Project>

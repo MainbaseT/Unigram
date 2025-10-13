@@ -322,8 +322,6 @@
     <ClInclude Include="Composition\CompositionDevice.h">
       <DependentUpon>Composition\CompositionDevice.idl</DependentUpon>
     </ClInclude>
-    <ClInclude Include="Composition\dcomp.local.h" />
-    <ClInclude Include="Composition\dcompex.h" />
     <ClInclude Include="Composition\DirectRectangleClip2.h" />
     <ClInclude Include="Composition\DwmThumbnail.h" />
     <ClInclude Include="Composition\WindowVisual.h" />
@@ -368,6 +366,10 @@
     <ClInclude Include="Media\AsyncMediaPlayerStateChangedEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerSwapChain.h" />
+    <ClInclude Include="MessageBubbleNineGrid.h">
+      <DependentUpon>MessageBubbleNineGrid.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="NativeUtils.h">
       <DependentUpon>NativeUtils.idl</DependentUpon>
     </ClInclude>
@@ -1029,6 +1031,10 @@
     <ClCompile Include="Media\AsyncMediaPlayerStateChangedEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerSwapChain.cpp" />
+    <ClCompile Include="MessageBubbleNineGrid.cpp">
+      <DependentUpon>MessageBubbleNineGrid.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="ParticlesAnimation.cpp">
       <DependentUpon>ParticlesAnimation.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -1158,6 +1164,9 @@
     <Midl Include="Media\AsyncMediaPlayerStateChangedEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerSwapChain.idl" />
+    <Midl Include="MessageBubbleNineGrid.idl">
+      <SubType>Designer</SubType>
+    </Midl>
     <Midl Include="NativeUtils.idl" />
     <Midl Include="AI\TextRecognizer.idl" />
     <Midl Include="AI\RecognizedLine.idl" />

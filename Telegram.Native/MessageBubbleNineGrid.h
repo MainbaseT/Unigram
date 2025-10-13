@@ -1,0 +1,67 @@
+﻿#pragma once
+
+#include "MessageBubbleNineGrid.g.h"
+
+#include "PlaceholderImageHelper.h"
+
+#include <winrt/Windows.UI.Composition.h>
+#include <winrt/Windows.UI.Xaml.h>
+#include <windows.ui.xaml.media.dxinterop.h>
+
+using namespace winrt::Windows::UI::Composition;
+using namespace winrt::Windows::UI::Xaml;
+
+namespace abi
+{
+    using namespace ABI::Windows::Foundation;
+    using namespace ABI::Windows::Graphics::DirectX;
+    using namespace ABI::Windows::UI::Composition;
+}
+
+namespace winrt::Telegram::Native::implementation
+{
+    // TODO: consider creating a base class, use it for ChatBackgroundPattern as well
+    // TODO: this type is not currently exposed through IDL as we just return CompositionEffectBrush
+    struct MessageBubbleNineGrid : MessageBubbleNineGridT<MessageBubbleNineGrid>
+    {
+        MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, Compositor compositor, XamlRoot xamlRoot, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius);
+
+        ~MessageBubbleNineGrid();
+
+        CompositionEffectBrush Effect();
+
+    private:
+        static constexpr float s_width = 40.f;
+        static constexpr float s_height = 40.f;
+        static constexpr float s_insets = 15.f;
+
+        Compositor m_compositor;
+        XamlRoot m_xamlRoot;
+        winrt::com_ptr<PlaceholderImageHelper> m_context;
+        winrt::com_ptr<abi::ICompositionDrawingSurfaceInterop> m_surface;
+        CompositionNineGridBrush m_brush;
+        CompositionEffectBrush m_effect;
+
+        float m_topLeftRadius;
+        float m_topRightRadius;
+        float m_bottomRightRadius;
+        float m_bottomLeftRadius;
+        double m_rasterizationScale;
+
+        winrt::event_token m_xamlRootChanged;
+        winrt::event_token m_renderingDeviceReplaced;
+
+        void OnXamlRootChanged(XamlRoot const& sender, XamlRootChangedEventArgs const& args);
+        void OnRenderingDeviceReplaced(CompositionGraphicsDevice const&, RenderingDeviceReplacedEventArgs const&);
+
+        HRESULT Invalidate(double rasterizationScale);
+    };
+}
+
+// No need since the type has no public constructor
+//namespace winrt::Telegram::Native::factory_implementation
+//{
+//    struct MessageBubbleNineGrid : MessageBubbleNineGridT<MessageBubbleNineGrid, implementation::MessageBubbleNineGrid>
+//    {
+//    };
+//}

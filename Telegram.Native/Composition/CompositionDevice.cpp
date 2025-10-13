@@ -5,14 +5,71 @@
 #include "Composition/CompositionDevice.g.cpp"
 #endif
 
+#include <detours.h>
+
+#include <winrt/Windows.Foundation.Metadata.h>
 #include <winrt/Windows.UI.Xaml.Hosting.h>
+
+using namespace winrt::Windows::Foundation::Metadata;
+using namespace winrt::Windows::UI::Xaml::Hosting;
+
+struct __declspec(uuid("7cc8cb07-5a0d-46bb-8c54-9beafe63b476"))
+	IUIElementStaticsPrivate : ::IUnknown
+{
+	// IInspectable methods
+	virtual HRESULT __stdcall GetIids(
+		uint32_t* iidCount,
+		GUID** iids) = 0;
+
+	virtual HRESULT __stdcall GetRuntimeClassName(
+		HSTRING* className) = 0;
+
+	virtual HRESULT __stdcall GetTrustLevel(
+		TrustLevel* trustLevel) = 0;
+
+	// IUIElementStaticsPrivate methods
+	virtual HRESULT __stdcall add_PopupOpening(
+	/* parameters needed */) = 0;
+
+	virtual HRESULT __stdcall remove_PopupOpening(
+		EventRegistrationToken token) = 0;
+
+	virtual HRESULT __stdcall add_PopupPlacement(
+	/* parameters needed */) = 0;
+
+	virtual HRESULT __stdcall remove_PopupPlacement(
+		EventRegistrationToken token) = 0;
+
+	virtual HRESULT __stdcall InternalGetIsEnabled(
+	/* parameters needed */) = 0;
+
+	virtual HRESULT __stdcall InternalPutIsEnabled(
+	/* parameters needed */) = 0;
+
+	virtual HRESULT __stdcall GetRasterizationScale(
+		float* value) = 0;
+
+	virtual HRESULT __stdcall PutRasterizationScale(
+		float value) = 0;
+
+	virtual HRESULT __stdcall PutPopupRootLightDismissBounds(
+	/* parameters needed */) = 0;
+
+	virtual HRESULT __stdcall EnablePopupZIndexSorting(
+	/* parameters needed */) = 0;
+
+	virtual HRESULT __stdcall GetElementLayerVisual(
+		void* pElement,
+		void** result) = 0;
+};
 
 namespace winrt::Telegram::Native::Composition::implementation
 {
 	std::mutex CompositionDevice::s_lock;
 	winrt::com_ptr<CompositionDevice> CompositionDevice::s_current{ nullptr };
 
-	CompositionDevice::CompositionDevice() {
+	CompositionDevice::CompositionDevice()
+	{
 		HRESULT hr = ::CoCreateInstance(
 			CLSID_UIAnimationManager2,
 			nullptr,
@@ -20,7 +77,8 @@ namespace winrt::Telegram::Native::Composition::implementation
 			IID_IUIAnimationManager2,
 			reinterpret_cast<LPVOID*>(&_manager));
 
-		if (SUCCEEDED(hr)) {
+		if (SUCCEEDED(hr))
+		{
 			hr = ::CoCreateInstance(
 				CLSID_UIAnimationTransitionLibrary2,
 				nullptr,
@@ -28,6 +86,74 @@ namespace winrt::Telegram::Native::Composition::implementation
 				IID_IUIAnimationTransitionLibrary2,
 				reinterpret_cast<LPVOID*>(&_transitionLibrary));
 		}
+	}
+
+	bool CompositionDevice::s_Hooked = false;
+	DWORD CompositionDevice::s_ThreadId = NULL;
+	std::mutex CompositionDevice::s_Mutex = { };
+	PFN_CreateVisual CompositionDevice::s_CreateVisual = nullptr;
+
+	static bool IsOnWindows11OrHigher()
+	{
+		bool isWin11 = ApiInformation::IsApiContractPresent(L"Windows.Foundation.UniversalApiContract", 14);
+		return isWin11;
+	}
+
+	// Courtesy of @ahmed605
+	LayerVisual CompositionDevice::GetElementLayerVisual(UIElement const& element)
+	{
+		// On Windows 11 b22000 and higher, we can use the IUIElementStaticsPrivate interface to get the LayerVisual directly
+		com_ptr<IUIElementStaticsPrivate> uiElementPrivate;
+		if (IsOnWindows11OrHigher() && (uiElementPrivate = try_get_activation_factory<UIElement, IUIElementStaticsPrivate>()))
+		{
+			LayerVisual layerVisual{ nullptr };
+			check_hresult(uiElementPrivate->GetElementLayerVisual(winrt::get_abi(element), put_abi(layerVisual)));
+			return layerVisual;
+		}
+
+		// We are using the thread ID to verify and ensure that we aren't hooking any other ElementCompositionPreview::GetElementVisual call
+		// that happened to be going in another thread at the same time we are hooking the function to return a LayerVisual,
+		// and we use a lock to ensure that only one thread can be hooking at a time so that thread ID doesn't get changed mid-hook.
+		std::scoped_lock lock(s_Mutex);
+		EnsureHooked();
+
+		s_ThreadId = GetCurrentThreadId();
+		auto visual = ElementCompositionPreview::GetElementVisual(element);
+		s_ThreadId = NULL;
+		return visual.as<LayerVisual>();
+	}
+
+	void CompositionDevice::EnsureHooked()
+	{
+		if (!s_Hooked)
+		{
+			// assuming we are on the UI thread, it wouldn't work otherwise anyway
+			auto compositor = Window::Current().Compositor();
+			auto device3 = compositor.as<IDCompositionDevice3>();
+			auto vtbl = *reinterpret_cast<void***>(device3.get());
+			s_CreateVisual = reinterpret_cast<PFN_CreateVisual>(vtbl[6]);
+
+			DetourTransactionBegin();
+			DetourUpdateThread(GetCurrentThread());
+			DetourAttach(reinterpret_cast<PVOID*>(&s_CreateVisual), &CompositionDevice::CreateVisualHook);
+			DetourTransactionCommit();
+			s_Hooked = true;
+		}
+	}
+
+	HRESULT WINAPI CompositionDevice::CreateVisualHook(IDCompositionDevice2* pThis, IDCompositionVisual2** ppVisual)
+	{
+		// Ensure that we are only hooking our own calls to ElementCompositionPreview::GetElementVisual / IDCompositionDevice2::CreateVisual
+		if (s_ThreadId != GetCurrentThreadId())
+			return s_CreateVisual(pThis, ppVisual);
+
+		Compositor compositor{ nullptr };
+		copy_from_abi(compositor, pThis);
+
+		LayerVisual layerVisual = compositor.CreateLayerVisual();
+		copy_to_abi(layerVisual, *(void**&)ppVisual);
+
+		return S_OK;
 	}
 
 	winrt::Telegram::Native::Composition::DirectRectangleClip2 CompositionDevice::CreateRectangleClip2(UIElement element)

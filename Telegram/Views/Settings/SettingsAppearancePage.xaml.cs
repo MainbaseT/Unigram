@@ -112,8 +112,8 @@ namespace Telegram.Views.Settings
         {
             if (e.PropertyName == nameof(ViewModel.FontSize) || e.PropertyName == nameof(ViewModel.BubbleRadius))
             {
-                Message1.UpdateMockup();
-                Message2.UpdateMockup();
+                Message1.UpdateMockup(false, true, true);
+                Message2.UpdateMockup(true, true, true);
             }
             else if (e.PropertyName == nameof(ViewModel.UseDefaultScaling))
             {
