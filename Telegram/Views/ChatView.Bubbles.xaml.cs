@@ -721,7 +721,7 @@ namespace Telegram.Views
         private readonly Dictionary<long, ChatHistoryViewItem> _messageIdToSelector = new();
         private readonly MultiValueDictionary<long, long> _messageIdToMessageIds = new();
 
-        private readonly MultiValueDictionary<long, ChatHistoryViewItem> _messageTopicToSelectors = new();
+        private readonly MultiValueDictionary<int, ChatHistoryViewItem> _messageTopicToSelectors = new();
 
         private readonly Dictionary<ChatHistoryViewItemType, ChoosingItemStrategy> _typeToStrategy = new();
 
@@ -1090,45 +1090,20 @@ namespace Telegram.Views
 
             if (message.IsService)
             {
-                if (message.Content is MessageGiveawayPrizeStars)
+                return message.Content switch
                 {
-                    return ChatHistoryViewItemType.ServiceGiftCode;
-                }
-                else if (message.Content is MessageGiftedPremium or MessageGiftedStars or MessageGift or MessagePremiumGiftCode)
-                {
-                    return ChatHistoryViewItemType.ServiceGift;
-                }
-                else if (message.Content is MessageUpgradedGift)
-                {
-                    return ChatHistoryViewItemType.ServiceUpgradedGift;
-                }
-                else if (message.Content is MessageChatChangePhoto or MessageSuggestProfilePhoto or MessageAsyncStory)
-                {
-                    return ChatHistoryViewItemType.ServicePhoto;
-                }
-                else if (message.Content is MessageSuggestBirthdate)
-                {
-                    return ChatHistoryViewItemType.ServiceBirthdate;
-                }
-                else if (message.Content is MessageChatSetBackground { OldBackgroundMessageId: 0 }
-                    || message.Content is MessageChatEvent { Action: ChatEventBackgroundChanged { NewBackground: not null } })
-                {
-                    return ChatHistoryViewItemType.ServiceBackground;
-                }
-                else if (message.Content is MessageHeaderUnread)
-                {
-                    return ChatHistoryViewItemType.ServiceUnread;
-                }
-                else if (message.Content is MessageHeaderMessageTopic)
-                {
-                    return ChatHistoryViewItemType.ServiceForumTopic;
-                }
-                else if (message.Content is MessageHeaderAccountInfo)
-                {
-                    return ChatHistoryViewItemType.ServiceAccountInfo;
-                }
-
-                return ChatHistoryViewItemType.Service;
+                    MessageGiveawayPrizeStars => ChatHistoryViewItemType.ServiceGiftCode,
+                    MessageGiftedPremium or MessageGiftedStars or MessageGift or MessagePremiumGiftCode => ChatHistoryViewItemType.ServiceGift,
+                    MessageUpgradedGift => ChatHistoryViewItemType.ServiceUpgradedGift,
+                    MessageChatChangePhoto or MessageSuggestProfilePhoto or MessageAsyncStory => ChatHistoryViewItemType.ServicePhoto,
+                    MessageSuggestBirthdate => ChatHistoryViewItemType.ServiceBirthdate,
+                    MessageChatSetBackground { OldBackgroundMessageId: 0 } or MessageChatEvent { Action: ChatEventBackgroundChanged { NewBackground: not null } } => ChatHistoryViewItemType.ServiceBackground,
+                    MessageHeaderUnread => ChatHistoryViewItemType.ServiceUnread,
+                    MessageHeaderMessageTopic => ChatHistoryViewItemType.ServiceForumTopic,
+                    MessageHeaderAccountInfo => ChatHistoryViewItemType.ServiceAccountInfo,
+                    MessageHeaderNewThread => ChatHistoryViewItemType.ServiceNewThread,
+                    _ => ChatHistoryViewItemType.Service
+                };
             }
 
             if (message.IsChannelPost || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: false }))
@@ -1208,7 +1183,7 @@ namespace Telegram.Views
             }
         }
 
-        public void UpdateServiceWithForumTopic(long forumTopicId, Action<MessageService> action)
+        public void UpdateServiceWithForumTopic(int forumTopicId, Action<MessageService> action)
         {
             if (_messageTopicToSelectors.TryGetValue(forumTopicId, out var containers))
             {
@@ -1219,6 +1194,12 @@ namespace Telegram.Views
                         action(service);
                     }
                 }
+            }
+
+            if (_forumTopicHeaderTopic.IsForum(forumTopicId))
+            {
+                _forumTopicHeaderTopic = null;
+                UpdateForumTopicHeader(new MessageTopicForum(forumTopicId));
             }
         }
 

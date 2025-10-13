@@ -2629,6 +2629,15 @@ from **{0}**.</value>
   <data name="BotEmojiStatusTitle" xml:space="preserve">
     <value>Set Emoji Status</value>
   </data>
+  <data name="BotForumAskForStartNewChat" xml:space="preserve">
+    <value>Type any message to create a new thread.</value>
+  </data>
+  <data name="BotForumAskForStartNewChatTitle" xml:space="preserve">
+    <value>New Thread</value>
+  </data>
+  <data name="BotForumContinueChat" xml:space="preserve">
+    <value>Continue last thread</value>
+  </data>
   <data name="BotForumNewTopic" xml:space="preserve">
     <value>New Chat</value>
   </data>
@@ -7343,6 +7352,9 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   </data>
   <data name="GiftAddedToCollectionX" xml:space="preserve">
     <value>This gift has been added to **{0}** collection.</value>
+  </data>
+  <data name="GiftLocked" xml:space="preserve">
+    <value>Gift Locked</value>
   </data>
   <data name="GiftMonths_one" xml:space="preserve">
     <value>{0}-month</value>

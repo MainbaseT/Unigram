@@ -13012,4 +13012,10 @@
     <string name="ChannelLeaveAlertWithName">Are you sure you want to leave **{0}**?</string>
 
     <string name="BotForumNewTopic">New Chat</string>
+    <string name="BotForumContinueChat">Continue last thread</string>
+    <string name="BotForumAskForStartNewChatTitle">New Thread</string>
+    <string name="BotForumAskForStartNewChat">Type any message to create a new thread.</string>
+
+    <string name="GiftLocked">Gift Locked</string>
+
 </resources>

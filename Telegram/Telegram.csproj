@@ -467,6 +467,7 @@
     <Compile Include="Services\MessageAlbumLastMessageService.cs" />
     <Compile Include="Td\Api\MessageHeaderAccountInfo.cs" />
     <Compile Include="Td\Api\MessageHeaderMessageTopic.cs" />
+    <Compile Include="Td\Api\MessageHeaderNewThread.cs" />
     <Compile Include="Td\Api\PremiumLimitTypeFileSize.cs" />
     <Compile Include="Td\Api\ReactionTypeEqualityComparer.cs" />
     <Compile Include="Controls\PremiumStarCount.cs" />

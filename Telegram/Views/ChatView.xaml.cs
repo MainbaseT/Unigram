@@ -129,6 +129,7 @@ namespace Telegram.Views
             AddStrategy(ChatHistoryViewItemType.ServiceGift, ServiceMessageGiftTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceUpgradedGift, ServiceMessageUpgradedGiftTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceAccountInfo, ServiceMessageAccountInfoTemplate);
+            AddStrategy(ChatHistoryViewItemType.ServiceNewThread, ServiceMessageNewThreadTemplate);
 
             _focusState = new DebouncedProperty<FocusState>(100, FocusText, CanFocusText);
 

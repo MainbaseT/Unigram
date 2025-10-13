@@ -28,6 +28,7 @@ namespace Telegram.Controls.Chats
         ServiceGiftCode,
         ServiceUpgradedGift,
         ServiceAccountInfo,
+        ServiceNewThread,
     }
 
     public partial class ChatHistoryViewItem : ListViewItemEx

@@ -1297,11 +1297,20 @@ namespace Telegram.ViewModels
 
                     ProcessMessages(chat, messages);
 
-                    if (endReached && messages.Count > 0 && IsSavedMessagesTab)
+                    if (endReached && messages.Count > 0)
                     {
                         var previous = messages[^1];
-                        messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageHeaderDate(previous.Date), null)));
-                        messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageCustomServiceAction(Strings.SavedMessagesProfileHint), null)));
+
+                        if (IsSavedMessagesTab)
+                        {
+                            messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageHeaderDate(previous.Date), null)));
+                            messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageCustomServiceAction(Strings.SavedMessagesProfileHint), null)));
+                        }
+                        else if (IsForum && ForumTopic == null && chat.Type is ChatTypePrivate privata)
+                        {
+                            messages.Add(CreateMessage(new Message(0, new MessageSenderUser(privata.UserId), previous.ChatId, null, null, false, false, false, false, false, false, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageHeaderNewThread(), null)));
+                            fromMessageId = 0;
+                        }
                     }
 
                     Items.RawReplaceWith(messages);
