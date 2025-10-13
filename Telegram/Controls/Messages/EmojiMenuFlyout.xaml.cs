@@ -203,14 +203,14 @@ namespace Telegram.Controls.Messages
 
             Presenter.Children.Add(view);
 
-            if (_mode is EmojiDrawerMode.EmojiStatus or EmojiDrawerMode.ChatEmojiStatus)
+            //if (_mode is EmojiDrawerMode.EmojiStatus or EmojiDrawerMode.ChatEmojiStatus)
             {
                 view.Activate(null, EmojiSearchType.EmojiStatus);
             }
-            else
-            {
-                viewModel.Update();
-            }
+            //else
+            //{
+            //    viewModel.Update();
+            //}
 
             Shadow.Width = width;
             Pill.Width = width;

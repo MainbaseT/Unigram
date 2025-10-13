@@ -204,6 +204,7 @@ namespace Telegram.Controls.Drawers
                     EmojiDrawerMode.UserPhoto => EmojiSearchType.ChatPhoto,
                     EmojiDrawerMode.EmojiStatus => EmojiSearchType.EmojiStatus,
                     EmojiDrawerMode.ChatEmojiStatus => EmojiSearchType.EmojiStatus,
+                    EmojiDrawerMode.Reactions => EmojiSearchType.Combined,
                     _ => EmojiSearchType.Default
                 });
             }
