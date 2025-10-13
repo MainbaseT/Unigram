@@ -26,12 +26,12 @@ namespace Telegram.Controls.Messages.Service
                 var changed = new List<string>();
                 var builder = new StringBuilder();
 
-                if (!message.SuggestedPostInfo.Price.AreTheSame(replyTo.SuggestedPostInfo.Price))
+                if (replyTo.SuggestedPostInfo == null || !message.SuggestedPostInfo.Price.AreTheSame(replyTo.SuggestedPostInfo.Price))
                 {
                     changed.Add(Strings.SuggestionOfferInfoTitleEditedPrice);
                 }
 
-                if (message.SuggestedPostInfo.SendDate != replyTo.SuggestedPostInfo.SendDate)
+                if (replyTo.SuggestedPostInfo == null || message.SuggestedPostInfo.SendDate != replyTo.SuggestedPostInfo.SendDate)
                 {
                     changed.Add(Strings.SuggestionOfferInfoTitleEditedTime);
                 }
