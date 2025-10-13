@@ -35,7 +35,8 @@
 
                         <controls:AnimatedImage x:Name="Player"
                                                 AutoPlay="False"
-                                                FrameSize="420,420"
+                                                FrameSize="0,0"
+                                                ResizeMode="Fit"
                                                 DecodeFrameType="Logical"
                                                 IsCachingEnabled="False"
                                                 Stretch="UniformToFill"

@@ -46,7 +46,7 @@ namespace winrt::Telegram::Native::implementation
             }
         }
 
-        static winrt::Telegram::Native::CachedVideoAnimation LoadFromFile(IVideoAnimationSource file, int32_t width, int32_t height, bool precache);
+        static winrt::Telegram::Native::CachedVideoAnimation LoadFromFile(IVideoAnimationSource file, int32_t width, int32_t height, bool fit, bool precache);
 
         void RenderSync(IBuffer bitmap, double& seconds, bool& completed);
         void Stop();
@@ -83,7 +83,7 @@ namespace winrt::Telegram::Native::implementation
         }
 
     private:
-        bool Load(IVideoAnimationSource file, int32_t width, int32_t height);
+        bool Load(IVideoAnimationSource file, int32_t width, int32_t height, bool fit);
         void RenderSync(uint8_t* pixels, double& seconds, bool& completed, bool* rendered);
 
         bool ReadHeader(HANDLE precacheFile);

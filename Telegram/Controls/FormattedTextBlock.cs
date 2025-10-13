@@ -1283,7 +1283,7 @@ namespace Telegram.Controls
                 {
                     IsViewportAware = true,
                     FrameSize = new Size(0, 0),
-                    FitToSize = true,
+                    ResizeMode = AnimatedImageResizeMode.Fill,
                     DecodeFrameType = DecodePixelType.Logical,
                     Stretch = Stretch.UniformToFill,
                     Source = new ParticlesImageSource(foreground),

@@ -41,7 +41,7 @@
                         <controls:AnimatedImage x:Name="Particles"
                                                 IsViewportAware="True"
                                                 FrameSize="0,0"
-                                                FitToSize="True"
+                                                ResizeMode="Fill"
                                                 DecodeFrameType="Logical"
                                                 Stretch="UniformToFill" />
 

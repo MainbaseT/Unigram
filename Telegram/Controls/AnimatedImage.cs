@@ -45,6 +45,13 @@ namespace Telegram.Controls
 
     }
 
+    public enum AnimatedImageResizeMode
+    {
+        None,
+        Fit,
+        Fill
+    }
+
     public partial class AnimatedImage : ControlEx, IPlayerView
     {
         enum PlayingState
@@ -80,15 +87,13 @@ namespace Telegram.Controls
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (FitToSize)
+            if (ResizeMode != AnimatedImageResizeMode.None)
             {
                 Load();
             }
 
             UpdateRotation(LayoutRoot.Background as ImageBrush);
         }
-
-        public bool FitToSize { get; set; }
 
         public event EventHandler Ready;
         public event EventHandler<AnimatedImagePositionChangedEventArgs> PositionChanged;
@@ -377,9 +382,18 @@ namespace Telegram.Controls
 
         #endregion
 
+        #region ResizeMode
 
+        public AnimatedImageResizeMode ResizeMode
+        {
+            get { return (AnimatedImageResizeMode)GetValue(ResizeModeProperty); }
+            set { SetValue(ResizeModeProperty, value); }
+        }
 
+        public static readonly DependencyProperty ResizeModeProperty =
+            DependencyProperty.Register("ResizeMode", typeof(AnimatedImageResizeMode), typeof(AnimatedImage), new PropertyMetadata(AnimatedImageResizeMode.None, OnPropertyChanged));
 
+        #endregion
 
         #region Stretch
 
@@ -398,8 +412,9 @@ namespace Telegram.Controls
         {
             if (Source != null)
             {
-                var width = FitToSize ? (int)ActualWidth : (int)FrameSize.Width;
-                var height = FitToSize ? (int)ActualHeight : (int)FrameSize.Height;
+                var resize = ResizeMode;
+                var width = resize != AnimatedImageResizeMode.None ? (int)ActualWidth : (int)FrameSize.Width;
+                var height = resize != AnimatedImageResizeMode.None ? (int)ActualHeight : (int)FrameSize.Height;
                 var scale = 1d;
 
                 if (DecodeFrameType == DecodePixelType.Logical)
@@ -409,12 +424,12 @@ namespace Telegram.Controls
                     scale = _rasterizationScale;
                 }
 
-                if (FitToSize && (width <= 0 || height <= 0))
+                if (resize != AnimatedImageResizeMode.None && (width <= 0 || height <= 0))
                 {
                     return null;
                 }
 
-                return new AnimatedImagePresentation(Source, width, height, scale, LimitFps, LoopCount, AutoPlay, IsCachingEnabled);
+                return new AnimatedImagePresentation(Source, width, height, scale, LimitFps, LoopCount, AutoPlay, IsCachingEnabled, resize);
             }
 
             return null;
@@ -1753,7 +1768,7 @@ namespace Telegram.Controls
         }
     }
 
-    public record AnimatedImagePresentation(AnimatedImageSource Source, int PixelWidth, int PixelHeight, double RasterizationScale, bool LimitFps, int LoopCount, bool AutoPlay, bool IsCachingEnabled);
+    public record AnimatedImagePresentation(AnimatedImageSource Source, int PixelWidth, int PixelHeight, double RasterizationScale, bool LimitFps, int LoopCount, bool AutoPlay, bool IsCachingEnabled, AnimatedImageResizeMode ResizeMode);
 
     public partial class AnimatedImageLoader
     {
@@ -2008,7 +2023,7 @@ namespace Telegram.Controls
                     && !double.IsNaN(animation.FrameRate);
             }
 
-            var animation = CachedVideoAnimation.LoadFromFile(work.Presentation.Source, work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.IsCachingEnabled);
+            var animation = CachedVideoAnimation.LoadFromFile(work.Presentation.Source, work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.ResizeMode == AnimatedImageResizeMode.Fit, work.Presentation.IsCachingEnabled);
             if (animation != null)
             {
                 if (IsValid(animation))

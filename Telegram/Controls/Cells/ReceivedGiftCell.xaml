@@ -104,7 +104,7 @@
             <controls:AnimatedImage x:Name="StarCountParticles"
                                     IsViewportAware="True"
                                     FrameSize="0,0"
-                                    FitToSize="True"
+                                    ResizeMode="Fill"
                                     DecodeFrameType="Logical"
                                     Stretch="UniformToFill"
                                     Grid.ColumnSpan="2" />

@@ -33,7 +33,7 @@
                         <controls:AnimatedImage x:Name="Particles"
                                                 IsViewportAware="True"
                                                 FrameSize="0,0"
-                                                FitToSize="True"
+                                                ResizeMode="Fill"
                                                 DecodeFrameType="Logical"
                                                 Stretch="UniformToFill" />
 
@@ -42,7 +42,8 @@
 
                         <controls:AnimatedImage x:Name="Player"
                                                 AutoPlay="False"
-                                                FrameSize="420,420"
+                                                FrameSize="0,0"
+                                                ResizeMode="Fit"
                                                 DecodeFrameType="Logical"
                                                 IsCachingEnabled="False"
                                                 Stretch="UniformToFill"
