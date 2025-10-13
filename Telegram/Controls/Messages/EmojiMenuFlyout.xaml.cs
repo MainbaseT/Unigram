@@ -273,26 +273,12 @@ namespace Telegram.Controls.Messages
 
             Pill.Data = data;
             Pill.Margin = new Thickness(0, -yy, 0, 0);
-            Shadow.Margin = new Thickness(0, -yy, 0, 0);
             Presenter.Margin = new Thickness(0, -yy - byy, 0, 0);
 
             LayoutRoot.Padding = new Thickness(16, 36, 16, 16);
 
             var rootVisual = ElementComposition.GetElementVisual(LayoutRoot);
             var compositor = rootVisual.Compositor;
-
-            var pillShadow = compositor.CreateDropShadow();
-            pillShadow.BlurRadius = 16;
-            pillShadow.Opacity = 0.14f;
-            pillShadow.Color = Colors.Black;
-            pillShadow.Mask = Pill.GetAlphaMask();
-
-            var pillReceiver = compositor.CreateSpriteVisual();
-            pillReceiver.Shadow = pillShadow;
-            pillReceiver.Size = new Vector2(width, height + yy);
-            pillReceiver.Offset = new Vector3(0, -yy + 16, 0);
-
-            ElementCompositionPreview.SetElementChildVisual(Shadow, pillReceiver);
 
             var x = position.X - 6;
             var y = position.Y + element.ActualHeight + 8;
@@ -345,19 +331,9 @@ namespace Telegram.Controls.Messages
             var batch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += Batch_Completed;
 
-            var opacity = compositor.CreateScalarKeyFrameAnimation();
-
             var drawer = ElementComposition.GetElementVisual(Presenter);
             var presenter = ElementComposition.GetElementVisual(this);
             ElementCompositionPreview.SetIsTranslationEnabled(this, true);
-
-            opacity.InsertKeyFrame(0, 0);
-            opacity.InsertKeyFrame(1, 0.24f);
-            opacity.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
-            opacity.DelayTime = Constants.SoftAnimation;
-            opacity.Duration = Constants.FastAnimation + TimeSpan.FromSeconds(0);
-
-            pillShadow.StartAnimation("Opacity", opacity);
 
             var test = ElementComposition.GetElementVisual(LayoutRoot);
             if (_allowCustomEmoji)
@@ -530,6 +506,9 @@ namespace Telegram.Controls.Messages
 
         private void Batch_Completed(object sender, CompositionBatchCompletedEventArgs args)
         {
+            Shadow.Shadow = new ThemeShadow();
+            Shadow.Translation = new Vector3(0, 0, 32);
+
             Opened?.Invoke(this, EventArgs.Empty);
         }
 
