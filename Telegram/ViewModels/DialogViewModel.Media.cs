@@ -239,7 +239,7 @@ namespace Telegram.ViewModels
                     var header = _composerHeader;
                     if (header?.Editing != null && files.Count > 0)
                     {
-                        await EditMediaAsync(files[0], false);
+                        await EditMediaAsync(files[0], header.Editing.Message?.Content is not MessageDocument and not MessageAudio);
                     }
                     else
                     {
