@@ -50,7 +50,12 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            if (embedded.LinkPreview != null && !embedded.LinkPreviewDisabled)
+            if (embedded.SuggestedPostInfo != null)
+            {
+                Message = null;
+                GetSuggestedPostInfoTemplate(embedded.SuggestedPostInfo.Price, embedded.SuggestedPostInfo.SendDate);
+            }
+            else if (embedded.LinkPreview != null && !embedded.LinkPreviewDisabled)
             {
                 Message = null;
                 Visibility = Visibility.Visible;
@@ -88,11 +93,6 @@ namespace Telegram.Controls.Messages
                 Message = embedded.ReplyTo.Message;
                 GetMessageTemplate(embedded.ReplyTo.Message, embedded.ReplyTo.Quote?.Text, false, embedded.ReplyTo.ChecklistTaskId, embedded.ReplyTo.Quote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
             }
-            else if (embedded.SuggestedPostInfo != null)
-            {
-                Message = null;
-                GetSuggestedPostInfoTemplate(embedded.SuggestedPostInfo.Price, embedded.SuggestedPostInfo.SendDate);
-            }
         }
 
         #endregion
@@ -122,6 +122,10 @@ namespace Telegram.Controls.Messages
             else if (price is SuggestedPostPriceTon priceTon)
             {
                 SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Ton), priceTon.ToncoinCentCount / 100d, string.Format("\U0001F4C6 {0}", Formatter.DateAt(sendDate))).AsFormattedText());
+            }
+            else
+            {
+                SetText(null, false, null, Strings.SuggestAPostBelow, null, string.Format(Strings.SuggestAPostBelowSubtitleStarsAndTime.ReplaceStar(Icons.Premium), 0, string.Format("\U0001F4C6 {0}", Formatter.DateAt(sendDate))).AsFormattedText());
             }
         }
 
