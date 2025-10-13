@@ -1567,6 +1567,17 @@ namespace Telegram.Common
             }
         }
 
+        public static bool Contains(this FrameworkElement element, PointerRoutedEventArgs e)
+        {
+            var point = e.GetCurrentPoint(element);
+            if (point.Position.X >= 0 && point.Position.Y >= 0 && point.Position.X <= element.ActualWidth && point.Position.Y <= element.ActualHeight)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public static T GetChild<T>(this DependencyObject parentContainer)
         {
             return parentContainer.Descendants<T>().FirstOrDefault();

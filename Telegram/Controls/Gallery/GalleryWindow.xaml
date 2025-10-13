@@ -49,6 +49,11 @@
                 </controls:CarouselViewer>
             </controls:ZoomViewer>
         </Grid>
+        <Border x:Name="SafeArea"
+                Background="Transparent"
+                VerticalAlignment="Top"
+                Margin="0,-40,0,0"
+                Height="48" />
         <Border x:Name="TitleBar"
                 Background="Transparent"
                 VerticalAlignment="Top"

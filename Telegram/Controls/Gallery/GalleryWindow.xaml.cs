@@ -98,7 +98,7 @@ namespace Telegram.Controls.Gallery
 
         protected override void OnPointerExited(PointerRoutedEventArgs e)
         {
-            if (IsLoaded)
+            if (IsLoaded && !SafeArea.Contains(e))
             {
                 _inactivityTimer.Stop();
                 ShowHideTransport(false);
@@ -214,7 +214,7 @@ namespace Telegram.Controls.Gallery
 
         private void ShowHideTransport(bool show)
         {
-            if (show != _transportCollapsed || (_transportFocused && !show))
+            if (show != _transportCollapsed || _unloaded || (_transportFocused && !show))
             {
                 return;
             }
@@ -238,6 +238,10 @@ namespace Telegram.Controls.Gallery
             {
                 Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
             }
+            else
+            {
+                Window.Current.CoreWindow.PointerCursor = null;
+            }
 
             var parent = ElementComposition.GetElementVisual(BottomPanel);
             var next = ElementComposition.GetElementVisual(NextButton);
@@ -250,11 +254,6 @@ namespace Telegram.Controls.Gallery
             batch.Completed += (s, args) =>
             {
                 BottomPanel.IsHitTestVisible = !_transportCollapsed;
-
-                if (_transportCollapsed && IsLoaded)
-                {
-                    Window.Current.CoreWindow.PointerCursor = null;
-                }
             };
 
             var opacity = parent.Compositor.CreateScalarKeyFrameAnimation();
