@@ -162,6 +162,7 @@ namespace Telegram.Services
 
         bool IsForum(Chat chat);
         bool IsDirectMessagesGroup(Chat chat);
+        bool IsAdministeredDirectMessagesGroup(Chat chat);
         bool HasTabs(Chat chat);
 
         bool IsPaid(Chat chat);
@@ -1903,6 +1904,16 @@ namespace Telegram.Services
             if (TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 return supergroup.IsDirectMessagesGroup;
+            }
+
+            return false;
+        }
+
+        public bool IsAdministeredDirectMessagesGroup(Chat chat)
+        {
+            if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                return supergroup.IsAdministeredDirectMessagesGroup;
             }
 
             return false;

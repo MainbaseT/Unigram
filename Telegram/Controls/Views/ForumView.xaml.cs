@@ -535,9 +535,19 @@ namespace Telegram.Controls.Views
             var viewModel = ViewModel;
             var chat = viewModel?.Chat;
 
-            if (viewModel == null || !viewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
+            if (viewModel == null)
             {
                 return;
+            }
+
+            var canManage = false;
+            if (viewModel.ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                canManage = supergroup.CanManageTopics();
+            }
+            else if (chat.Type is ChatTypePrivate)
+            {
+                canManage = true;
             }
 
             var flyout = new MenuFlyout();
@@ -545,7 +555,6 @@ namespace Telegram.Controls.Views
             var topic = ScrollingHost.ItemFromContainer(sender);
             if (topic is ForumTopic forumTopic)
             {
-                var canManage = supergroup.CanManageTopics();
                 if (canManage)
                 {
                     //Telegram.Td.Api.ToggleForumTopicIsPinned // CanManageTopics
@@ -555,7 +564,7 @@ namespace Telegram.Controls.Views
                 var muted = ViewModel.ClientService.Notifications.IsMuted(chat, forumTopic);
                 flyout.CreateFlyoutItem(viewModel.NotifyTopic, forumTopic, muted ? Strings.Unmute : Strings.Mute, forumTopic.IsPinned ? Icons.Alert : Icons.AlertOff);
 
-                if (canManage)
+                if (canManage && chat.Type is ChatTypeSupergroup)
                 {
                     //Telegram.Td.Api.ToggleGeneralForumTopicIsHidden // CanManageTopics
                     //Telegram.Td.Api.ToggleForumTopicIsClosed // CanManageTopics
@@ -575,7 +584,7 @@ namespace Telegram.Controls.Views
                     flyout.CreateFlyoutItem(viewModel.DeleteTopic, forumTopic, Strings.Delete, Icons.Delete, destructive: true);
                 }
 
-                if (viewModel.SelectionMode != ListViewSelectionMode.Multiple)
+                if (viewModel.SelectionMode != ListViewSelectionMode.Multiple && chat.Type is ChatTypeSupergroup)
                 {
                     flyout.CreateFlyoutSeparator();
                     flyout.CreateFlyoutItem(viewModel.OpenTopic, forumTopic, Strings.OpenInNewWindow, Icons.WindowNew);
