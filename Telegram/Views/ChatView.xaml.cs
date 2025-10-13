@@ -7707,6 +7707,21 @@ namespace Telegram.Views
         {
             ViewModel.SuggestPost();
         }
+
+        private void ContinueLastThread_Click(object sender, RoutedEventArgs e)
+        {
+            var items = _forumViewModel.Items as TopicListViewModel.ForumTopicsCollection;
+            var topic = items?.FirstOrDefault(x => x.Info.ForumTopicId != 0);
+            if (topic != null)
+            {
+                NavigateToMessageTopic(_forumViewModel.Chat, new MessageTopicForum(topic.Info.ForumTopicId));
+            }
+        }
+
+        private void NewThread_Click(object sender, RoutedEventArgs e)
+        {
+            TextField.Focus(FocusState.Keyboard);
+        }
     }
 
     public enum StickersPanelMode
