@@ -102,9 +102,11 @@ namespace winrt::Telegram::Native::Composition::implementation
 	// Courtesy of @ahmed605
 	LayerVisual CompositionDevice::GetElementLayerVisual(UIElement const& element)
 	{
+		const static bool windows11 = IsOnWindows11OrHigher();
+
 		// On Windows 11 b22000 and higher, we can use the IUIElementStaticsPrivate interface to get the LayerVisual directly
 		com_ptr<IUIElementStaticsPrivate> uiElementPrivate;
-		if (IsOnWindows11OrHigher() && (uiElementPrivate = try_get_activation_factory<UIElement, IUIElementStaticsPrivate>()))
+		if (windows11 && (uiElementPrivate = try_get_activation_factory<UIElement, IUIElementStaticsPrivate>()))
 		{
 			LayerVisual layerVisual{ nullptr };
 			check_hresult(uiElementPrivate->GetElementLayerVisual(winrt::get_abi(element), put_abi(layerVisual)));
