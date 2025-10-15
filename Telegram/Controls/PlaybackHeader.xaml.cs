@@ -7,19 +7,15 @@
 using System;
 using System.Numerics;
 using Telegram.Common;
-using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
-using Telegram.Converters;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.ViewModels;
 using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.UI.Composition;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
@@ -151,24 +147,19 @@ namespace Telegram.Controls
 
             if (item is PlaybackItemMessage message)
             {
+                if (item.Performer.Length > 0)
+                {
+                    UpdateText(message.ChatId, message.Id, item.Title, "- " + item.Performer);
+                }
+                else
+                {
+                    UpdateText(message.ChatId, message.Id, item.Title, string.Empty);
+                }
+
                 var linkPreview = message.Message.Content is MessageText text ? text.LinkPreview : null;
 
                 if (message.Message.Content is MessageVoiceNote || message.Message.Content is MessageVideoNote || linkPreview?.Type is LinkPreviewTypeVoiceNote or LinkPreviewTypeVideoNote)
                 {
-                    var title = string.Empty;
-                    var date = Formatter.DateAt(message.Message.Date);
-
-                    if (_clientService.TryGetUser(message.Message.SenderId, out Telegram.Td.Api.User senderUser))
-                    {
-                        title = senderUser.Id == _clientService.Options.MyId ? Strings.ChatYourSelfName : senderUser.FullName();
-                    }
-                    else if (_clientService.TryGetChat(message.Message.SenderId, out Chat senderChat))
-                    {
-                        title = _clientService.GetTitle(senderChat);
-                    }
-
-                    UpdateText(message.ChatId, message.Id, title, date);
-
                     RepeatButton.Visibility = Visibility.Collapsed;
                     //ShuffleButton.Visibility = Visibility.Collapsed;
 
@@ -176,43 +167,28 @@ namespace Telegram.Controls
                 }
                 else if (message.Message.Content is MessageAudio || linkPreview?.Type is LinkPreviewTypeAudio)
                 {
-                    var audio = message.Message.Content is MessageAudio messageAudio ? messageAudio.Audio : (linkPreview?.Type is LinkPreviewTypeAudio previewAudio ? previewAudio.Audio : null);
-                    if (audio == null)
-                    {
-                        return;
-                    }
-
-                    if (audio.Performer.Length > 0)
-                    {
-                        UpdateText(message.ChatId, message.Id, audio.Title, "- " + audio.Performer);
-                    }
-                    else
-                    {
-                        UpdateText(message.ChatId, message.Id, audio.Title, string.Empty);
-                    }
-
                     RepeatButton.Visibility = Visibility.Visible;
                     //ShuffleButton.Visibility = Visibility.Visible;
 
-                    UpdateSpeed(audio.Duration);
+                    UpdateSpeed(item.Duration);
                     UpdateRepeat();
                 }
             }
             else if (item is PlaybackItemProfileAudio audio)
             {
-                if (audio.Performer.Length > 0)
+                if (item.Performer.Length > 0)
                 {
-                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Title, "- " + audio.Performer);
+                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, item.Title, "- " + item.Performer);
                 }
                 else
                 {
-                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, audio.Title, string.Empty);
+                    UpdateText(audio.UserId, audio.Audio.AudioValue.Id, item.Title, string.Empty);
                 }
 
                 RepeatButton.Visibility = Visibility.Visible;
                 //ShuffleButton.Visibility = Visibility.Visible;
 
-                UpdateSpeed(audio.Audio.Duration);
+                UpdateSpeed(item.Duration);
                 UpdateRepeat();
             }
         }

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Telegram.Common;
+using Telegram.Converters;
 using Telegram.Native.Media;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -1032,12 +1033,42 @@ namespace Telegram.Services
                 Document = voiceNote.VoiceNote.Voice;
                 Duration = voiceNote.VoiceNote.Duration;
                 CanChangePlaybackRate = true;
+
+                var title = string.Empty;
+                var date = Formatter.DateAt(message.Date);
+
+                if (message.ClientService.TryGetUser(message.SenderId, out Telegram.Td.Api.User senderUser))
+                {
+                    title = senderUser.Id == message.ClientService.Options.MyId ? Strings.ChatYourSelfName : senderUser.FullName();
+                }
+                else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+                {
+                    title = message.ClientService.GetTitle(senderChat);
+                }
+
+                Title = title;
+                Performer = date;
             }
             else if (message.Content is MessageVideoNote videoNote)
             {
                 Document = videoNote.VideoNote.Video;
                 Duration = videoNote.VideoNote.Duration;
                 CanChangePlaybackRate = true;
+
+                var title = string.Empty;
+                var date = Formatter.DateAt(message.Date);
+
+                if (message.ClientService.TryGetUser(message.SenderId, out Telegram.Td.Api.User senderUser))
+                {
+                    title = senderUser.Id == message.ClientService.Options.MyId ? Strings.ChatYourSelfName : senderUser.FullName();
+                }
+                else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+                {
+                    title = message.ClientService.GetTitle(senderChat);
+                }
+
+                Title = title;
+                Performer = date;
             }
             else if (message.Content is MessageText text && text.LinkPreview != null)
             {
@@ -1063,12 +1094,42 @@ namespace Telegram.Services
                     Document = previewVoiceNote.VoiceNote.Voice;
                     Duration = previewVoiceNote.VoiceNote.Duration;
                     CanChangePlaybackRate = true;
+
+                    var title = string.Empty;
+                    var date = Formatter.DateAt(message.Date);
+
+                    if (message.ClientService.TryGetUser(message.SenderId, out Telegram.Td.Api.User senderUser))
+                    {
+                        title = senderUser.Id == message.ClientService.Options.MyId ? Strings.ChatYourSelfName : senderUser.FullName();
+                    }
+                    else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+                    {
+                        title = message.ClientService.GetTitle(senderChat);
+                    }
+
+                    Title = title;
+                    Performer = date;
                 }
                 else if (text.LinkPreview.Type is LinkPreviewTypeVideoNote previewVideoNote)
                 {
                     Document = previewVideoNote.VideoNote.Video;
                     Duration = previewVideoNote.VideoNote.Duration;
                     CanChangePlaybackRate = true;
+
+                    var title = string.Empty;
+                    var date = Formatter.DateAt(message.Date);
+
+                    if (message.ClientService.TryGetUser(message.SenderId, out Telegram.Td.Api.User senderUser))
+                    {
+                        title = senderUser.Id == message.ClientService.Options.MyId ? Strings.ChatYourSelfName : senderUser.FullName();
+                    }
+                    else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+                    {
+                        title = message.ClientService.GetTitle(senderChat);
+                    }
+
+                    Title = title;
+                    Performer = date;
                 }
             }
         }
