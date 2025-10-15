@@ -63,7 +63,7 @@ namespace Telegram.Collections
         public static async Task<MediaDataSource> Create(IClientService clientService, long chatId, long savedMessagesTopicId, SearchMessagesFilter filter)
         {
             MediaDataSource ds = new MediaDataSource(clientService, chatId, savedMessagesTopicId, filter);
-            await ds.UpdateCount(false);
+            await ds.UpdateCount(false, false);
             return ds;
         }
 
@@ -76,7 +76,7 @@ namespace Telegram.Collections
             }
 
             _filter = filter;
-            await UpdateCount(true);
+            await UpdateCount(true, false);
 
             _itemCache = new ItemCacheManager<MessageWithOwner>(FetchDataCallback, 50);
             _itemCache.CacheChanged += ItemCache_CacheChanged;
@@ -87,7 +87,7 @@ namespace Telegram.Collections
             }
         }
 
-        private async Task UpdateCount(bool getSparseMessages)
+        private async Task UpdateCount(bool getSparseMessages, bool raise)
         {
             await _gettingPositions.WaitAsync();
 
@@ -116,7 +116,7 @@ namespace Telegram.Collections
 
             _gettingPositions.Release();
 
-            if (CollectionChanged != null)
+            if (CollectionChanged != null && raise)
             {
                 CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
@@ -384,7 +384,7 @@ namespace Telegram.Collections
             {
                 HasMoreItems = false;
 
-                await UpdateCount(true);
+                await UpdateCount(true, true);
                 return new LoadMoreItemsResult();
             });
         }
