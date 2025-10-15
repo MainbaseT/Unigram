@@ -125,25 +125,30 @@ namespace Telegram.Views.Popups
                 {
                     if (anyCanBeDeletedForAllUsers && !canBeDeletedForAllUsers)
                     {
-                        TextBlockHelper.SetMarkdown(Message, chat.Type is ChatTypePrivate && clientService.TryGetUser(chat, out User user)
+                        User user = null;
+                        TextBlockHelper.SetMarkdown(Message, chat.Type is ChatTypePrivate && clientService.TryGetUser(chat, out user)
                             ? string.Format(Strings.DeleteMessagesText, Locale.Declension(Strings.R.messages, messages.Count), user.FirstName)
                             : string.Format(Strings.DeleteMessagesTextGroup, Locale.Declension(Strings.R.messages, messages.Count)));
 
-                        RevokeCheck.IsChecked = true;
-                        RevokeCheck.Visibility = Visibility.Visible;
-                        RevokeCheck.Content = Strings.DeleteMessagesOption;
+                        if (user?.Type is not UserTypeBot)
+                        {
+                            RevokeCheck.IsChecked = true;
+                            RevokeCheck.Visibility = Visibility.Visible;
+                            RevokeCheck.Content = Strings.DeleteMessagesOption;
+                        }
                     }
                     else
                     {
+                        User user = clientService.GetUser(chat);
                         TextBlockHelper.SetMarkdown(Message, messages.Count == 1
                             ? Strings.AreYouSureDeleteSingleMessage
                             : Strings.AreYouSureDeleteFewMessages);
 
-                        if (canBeDeletedForAllUsers)
+                        if (canBeDeletedForAllUsers && user?.Type is not UserTypeBot)
                         {
                             RevokeCheck.IsChecked = true;
                             RevokeCheck.Visibility = Visibility.Visible;
-                            RevokeCheck.Content = chat.Type is ChatTypePrivate && clientService.TryGetUser(chat, out User user)
+                            RevokeCheck.Content = chat.Type is ChatTypePrivate && user != null
                                 ? string.Format(Strings.DeleteMessagesOptionAlso, user.FirstName)
                                 : Strings.DeleteForAll;
                         }
