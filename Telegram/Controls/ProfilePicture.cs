@@ -792,10 +792,45 @@ namespace Telegram.Controls
         #endregion
     }
 
-    public abstract record ProfilePictureSource(IClientService ClientService);
+    public abstract record ProfilePictureSource(IClientService ClientService)
+    {
+        public static ProfilePictureSource Message(MessageViewModel message)
+        {
+            if (message.IsSaved || message.IsVerificationCode)
+            {
+                if (message.ForwardInfo?.Origin is MessageOriginUser fromUser && message.ClientService.TryGetUser(fromUser.SenderUserId, out User fromUserUser))
+                {
+                    return new ProfilePictureSourceUser(message.ClientService, fromUserUser);
+                }
+                else if (message.ForwardInfo?.Origin is MessageOriginChat fromChat && message.ClientService.TryGetChat(fromChat.SenderChatId, out Chat fromChatChat))
+                {
+                    return new ProfilePictureSourceChat(message.ClientService, fromChatChat);
+                }
+                else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel && message.ClientService.TryGetChat(fromChannel.ChatId, out Chat fromChannelChat))
+                {
+                    return new ProfilePictureSourceChat(message.ClientService, fromChannelChat);
+                }
+                else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser fromHiddenUser)
+                {
+                    return ProfilePictureSourceText.GetNameForUser(fromHiddenUser.SenderName, long.MinValue);
+                }
+                else if (message.ImportInfo != null)
+                {
+                    return ProfilePictureSourceText.GetNameForUser(message.ImportInfo.SenderName, long.MinValue);
+                }
+            }
+            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            {
+                return new ProfilePictureSourceUser(message.ClientService, senderUser);
+            }
+            else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+            {
+                return new ProfilePictureSourceChat(message.ClientService, senderChat);
+            }
 
-    public record ProfilePictureSourceMessage(MessageViewModel Message)
-        : ProfilePictureSource(Message.ClientService);
+            return null;
+        }
+    }
 
     public record ProfilePictureSourceChat(IClientService ClientService, Chat Chat)
         : ProfilePictureSource(ClientService);

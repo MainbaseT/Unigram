@@ -10,7 +10,6 @@ using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.ViewModels;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -296,10 +295,6 @@ namespace Telegram.Controls
                 {
                     SetUser(source.ClientService, sourceUser.User, sourceUser.User.ProfilePhoto?.Small, _presentation.Size, state);
                 }
-                else if (source is ProfilePictureSourceMessage sourceMessage)
-                {
-                    SetMessage(sourceMessage.Message, _presentation.Size, state);
-                }
                 else if (source is ProfilePictureSourceText sourceText)
                 {
                     // Local handling within MessageProfilePicture would be better...
@@ -442,41 +437,6 @@ namespace Telegram.Controls
                 }
 
                 return ProfilePictureSourceText.GetUser(clientService, user);
-            }
-
-            private void SetMessage(MessageViewModel message, int side, State state = State.Download)
-            {
-                if (message.IsSaved || message.IsVerificationCode)
-                {
-                    if (message.ForwardInfo?.Origin is MessageOriginUser fromUser && message.ClientService.TryGetUser(fromUser.SenderUserId, out User fromUserUser))
-                    {
-                        SetUser(message.ClientService, fromUserUser, fromUserUser.ProfilePhoto?.Small, side, state);
-                    }
-                    else if (message.ForwardInfo?.Origin is MessageOriginChat fromChat && message.ClientService.TryGetChat(fromChat.SenderChatId, out Chat fromChatChat))
-                    {
-                        SetChat(message.ClientService, fromChatChat, fromChatChat.Photo?.Small, side, state);
-                    }
-                    else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel && message.ClientService.TryGetChat(fromChannel.ChatId, out Chat fromChannelChat))
-                    {
-                        SetChat(message.ClientService, fromChannelChat, fromChannelChat.Photo?.Small, side, state);
-                    }
-                    else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser fromHiddenUser)
-                    {
-                        Source = ProfilePictureSourceText.GetNameForUser(fromHiddenUser.SenderName, long.MinValue);
-                    }
-                    else if (message.ImportInfo != null)
-                    {
-                        Source = ProfilePictureSourceText.GetNameForUser(message.ImportInfo.SenderName, long.MinValue);
-                    }
-                }
-                else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
-                {
-                    SetUser(message.ClientService, senderUser, senderUser.ProfilePhoto?.Small, side, state);
-                }
-                else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
-                {
-                    SetChat(message.ClientService, senderChat, senderChat.Photo?.Small, side, state);
-                }
             }
 
             public object Source

@@ -723,7 +723,7 @@ namespace Telegram.Controls.Messages
 
                         _photoId = message.Id;
                         PhotoRoot.Visibility = Visibility.Visible;
-                        Photo.Source = new ProfilePictureSourceMessage(message);
+                        Photo.Source = ProfilePictureSource.Message(message);
                     }
                 }
                 else if (PhotoRoot != null)
