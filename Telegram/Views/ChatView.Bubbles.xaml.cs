@@ -125,7 +125,12 @@ namespace Telegram.Views
             var tracker = ElementComposition.GetElementVisual(DateHeaderRelative);
 
             var top = 0d;
+            var bottom = 0d;
 
+            var stickyAbove = false;
+            var stickyBelow = false;
+
+            for (int i = panel.FirstVisibleIndex; i <= Math.Min(panel.LastVisibleIndex + 1, Messages.Items.Count - 1); i++)
             {
                 // TODO: this would be preferable, but it can't be done because
                 // date service messages aren't mapped in the array
@@ -163,6 +168,7 @@ namespace Telegram.Views
                     // We calculate the item position relative to the current viewport manually
                     // instead of relying on TransformToVisual. This should save us some milliseconds.
                     top = (container.ActualOffset.Y - Messages.ScrollingHost.VerticalOffset) - (tracker.Offset.Y - _messagesHeaderRootPadding);
+                    bottom = (container.ActualOffset.Y - Messages.ScrollingHost.VerticalOffset) - (messages.Size.Y - _messagesHeaderRootPadding);
                 }
 
                 if (minItem > 0 && i >= panel.FirstVisibleIndex)
@@ -237,10 +243,10 @@ namespace Telegram.Views
                     {
                         if (_dateHeaderTracked != container)
                         {
-                            var viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
-                            var heightExp = "(this.Target.Size.Y + 8)";
-                            var offsetExp = $"({viewportTopExp}) + {heightExp}";
-                            var translationExp = $"-{heightExp} * 2 + {offsetExp}";
+                            const string viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
+                            const string heightExp = "(this.Target.Size.Y + 8)";
+                            const string offsetExp = $"({viewportTopExp}) + {heightExp}";
+                            const string translationExp = $"-{heightExp} * 2 + {offsetExp}";
 
                             var reference = ElementComposition.GetElementVisual(container);
                             var translation = reference.Compositor.CreateExpressionAnimation(translationExp);
@@ -288,11 +294,11 @@ namespace Telegram.Views
                         {
                             if (_forumTopicHeaderTracked != container)
                             {
-                                var viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
-                                var heightExp = "(this.Target.Size.Y + 8)";
-                                var offsetExp = $"({viewportTopExp}) + {heightExp}";
-                                var translationExp = $"-{heightExp} * 2 + ({offsetExp} - {heightExp})";
-                                var scaleExp = $"({offsetExp} - {heightExp}) / ({heightExp} * 2)";
+                                const string viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
+                                const string heightExp = "(this.Target.Size.Y + 8)";
+                                const string offsetExp = $"({viewportTopExp}) + {heightExp}";
+                                const string translationExp = $"-{heightExp} * 2 + ({offsetExp} - {heightExp})";
+                                const string scaleExp = $"({offsetExp} - {heightExp}) / ({heightExp} * 2)";
 
                                 var reference = ElementComposition.GetElementVisual(container);
                                 var translation = reference.Compositor.CreateExpressionAnimation(translationExp);
@@ -328,6 +334,98 @@ namespace Telegram.Views
                 {
                     SetContentOpacity(1);
                 }
+
+                bool AnimateStickyPhoto(HyperlinkButton stickyPhotoRoot, MessageProfilePicture stickyPhoto, ref SelectorItem tracked, ref MessageViewModel item, bool below)
+                {
+                    if (message.HasSenderPhoto && container.ContentTemplateRoot is MessageSelector { ContentTemplateRoot: MessageBubble bubble })
+                    {
+                        var visual = ElementComposition.GetElementVisual(stickyPhotoRoot);
+                        var reference = ElementComposition.GetElementVisual(container);
+
+                        const string topExp = "(reference.Offset.Y + scroll.Translation.Y) - (messages.Size.Y - props.Padding)";
+                        const string bottomExp = $"(reference.Offset.Y + child.Size.Y + scroll.Translation.Y) - (messages.Size.Y - props.Padding)";
+
+                        const string trueTrueExp = $"{topExp} < -38 ? Min(0, {bottomExp}) : {topExp} + 38";
+                        const string trueFalseExp = $"{topExp} < -38 ? 0 : {topExp} + 38";
+                        const string falseTrueExp = $"Min(0, {bottomExp})";
+
+                        // 38 = min bubble height + top margin
+                        string exp;
+                        if (below)
+                        {
+                            exp = message.IsFirst ? trueFalseExp : null;
+                        }
+                        else
+                        {
+                            exp = (message.IsFirst, message.IsLast) switch
+                            {
+                                (true, true) => trueTrueExp,
+                                (true, false) => trueFalseExp,
+                                (false, true) => falseTrueExp,
+                                (false, false) => null
+                            };
+                        }
+
+                        if (exp != null)
+                        {
+                            if (tracked != container)
+                            {
+                                var animation = reference.Compositor.CreateExpressionAnimation(exp);
+                                animation.SetReferenceParameter("reference", reference);
+                                animation.SetReferenceParameter("scroll", scroll);
+                                animation.SetReferenceParameter("messages", messages);
+                                animation.SetReferenceParameter("child", ElementComposition.GetElementVisual(container.ContentTemplateRoot));
+                                animation.SetReferenceParameter("props", _messagesPaddingSet);
+
+                                visual.StartAnimation("Translation.Y", animation);
+                                tracked = container;
+                            }
+                        }
+                        else
+                        {
+                            visual.Properties.InsertVector3("Translation", Vector3.Zero);
+                            tracked = null;
+                        }
+
+                        if (below && exp == null)
+                        {
+                            return false;
+                        }
+
+                        item = message;
+                        bubble.ShowHidePhoto(false);
+
+                        stickyPhoto.Source = ProfilePictureSource.Message(message);
+                        stickyPhotoRoot.Visibility = Visibility.Visible;
+                        return true;
+                    }
+                    else
+                    {
+                        stickyPhotoRoot.Visibility = Visibility.Collapsed;
+                        return false;
+                    }
+                }
+
+                var childHeight = container.ContentTemplateRoot.ActualSize.Y;
+
+                if (bottom + childHeight >= 0 && bottom + childHeight <= childHeight)
+                {
+                    stickyAbove = AnimateStickyPhoto(StickyPhotoRootAbove, StickyPhotoAbove, ref _stickyPhotoAboveTracked, ref _stickyPhotoAboveMessage, false);
+                }
+                else if (bottom + childHeight >= childHeight)
+                {
+                    stickyBelow = AnimateStickyPhoto(StickyPhotoRootBelow, StickyPhotoBelow, ref _stickyPhotoBelowTracked, ref _stickyPhotoBelowMessage, true);
+
+                    // We found the message after the last visible message, we can break the loop
+                    break;
+                }
+                else if (container.ContentTemplateRoot is MessageSelector { ContentTemplateRoot: MessageBubble bubble })
+                {
+                    bubble.ShowHidePhoto(true);
+                }
+
+                top += container.ActualHeight;
+                bottom += container.ActualHeight;
 
                 // Read and play messages logic:
                 if (message.Id == 0)
@@ -391,6 +489,20 @@ namespace Telegram.Views
                 _forumTopicHeader.Scale = Vector3.One;
                 _forumTopicHeader.Properties.InsertVector3("Translation", Vector3.Zero);
                 _forumTopicHeaderTracked = null;
+            }
+
+            if (!stickyAbove)
+            {
+                _stickyPhotoAboveTracked = null;
+                _stickyPhotoAboveMessage = null;
+                StickyPhotoRootAbove.Visibility = Visibility.Collapsed;
+            }
+
+            if (!stickyBelow)
+            {
+                _stickyPhotoBelowTracked = null;
+                _stickyPhotoBelowMessage = null;
+                StickyPhotoRootBelow.Visibility = Visibility.Collapsed;
             }
 
             // TODO: do not hide if above corresponding message

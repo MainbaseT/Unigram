@@ -1615,6 +1615,38 @@
                             </Style>
                         </ListView.ItemContainerStyle>
                     </chats:ChatHistoryView>
+
+                    <Grid x:Name="MessagesStickyPhoto"
+                          VerticalAlignment="Stretch"
+                          MaxWidth="1024"
+                          Padding="12,0">
+                        <HyperlinkButton x:Name="StickyPhotoRootAbove"
+                                         Click="StickyPhotoAbove_Click"
+                                         ContextRequested="StickyPhotoAbove_ContextRequested"
+                                         Style="{StaticResource EmptyHyperlinkButtonStyle}"
+                                         IsTabStop="False"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Bottom"
+                                         Width="30"
+                                         Height="30"
+                                         Margin="0,0,0,8">
+                            <controls:MessageProfilePicture x:Name="StickyPhotoAbove"
+                                                            Size="30" />
+                        </HyperlinkButton>
+                        <HyperlinkButton x:Name="StickyPhotoRootBelow"
+                                         Click="StickyPhotoBelow_Click"
+                                         ContextRequested="StickyPhotoBelow_ContextRequested"
+                                         Style="{StaticResource EmptyHyperlinkButtonStyle}"
+                                         IsTabStop="False"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Bottom"
+                                         Width="30"
+                                         Height="30"
+                                         Margin="0,0,0,8">
+                            <controls:MessageProfilePicture x:Name="StickyPhotoBelow"
+                                                            Size="30" />
+                        </HyperlinkButton>
+                    </Grid>
                 </Grid>
                 <Grid x:Name="MessagesOverlay">
                     <StackPanel x:Name="EmptyChatRoot"

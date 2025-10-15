@@ -90,6 +90,12 @@ namespace Telegram.Views
         private readonly Visual _forumTopicHeader;
         private SelectorItem _forumTopicHeaderTracked;
 
+        // Optimize by holding these in two structs
+        private MessageViewModel _stickyPhotoAboveMessage;
+        private SelectorItem _stickyPhotoAboveTracked;
+        private MessageViewModel _stickyPhotoBelowMessage;
+        private SelectorItem _stickyPhotoBelowTracked;
+
         private readonly ZoomableListHandler _autocompleteZoomer;
         private readonly AnimatedListHandler _autocompleteHandler;
 
@@ -186,8 +192,13 @@ namespace Telegram.Views
             _forumTopicHeaderPanel = ElementComposition.GetElementVisual(ForumTopicHeaderPanel);
             _forumTopicHeader = ElementComposition.GetElementVisual(ForumTopicHeader);
 
+            _messagesPaddingSet = BootStrapper.Current.Compositor.CreatePropertySet();
+            _messagesPaddingSet.InsertScalar("Padding", 0);
+
             ElementCompositionPreview.SetIsTranslationEnabled(DateHeader, true);
             ElementCompositionPreview.SetIsTranslationEnabled(ForumTopicHeader, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(StickyPhotoRootAbove, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(StickyPhotoRootBelow, true);
 
             _debouncer = new DispatcherTimer();
             _debouncer.Interval = TimeSpan.FromMilliseconds(Constants.AnimatedThrottle);
@@ -376,6 +387,11 @@ namespace Telegram.Views
             _dateHeaderTracked = null;
             _forumTopicHeaderTracked = null;
             _forumTopicHeaderTopic = null;
+
+            _stickyPhotoAboveTracked = null;
+            _stickyPhotoAboveMessage = null;
+            _stickyPhotoBelowTracked = null;
+            _stickyPhotoBelowMessage = null;
         }
 
         public void Deactivate(bool navigation)
@@ -2734,7 +2750,7 @@ namespace Telegram.Views
                     return;
                 }
 
-                var profilePicture = children.FirstOrDefault(x => x is ProfilePicture) as ProfilePicture;
+                var profilePicture = children.FirstOrDefault(x => x is MessageProfilePicture) as MessageProfilePicture;
                 if (profilePicture != null && profilePicture.Parent is HyperlinkButton)
                 {
                     ProfilePhoto_ContextRequested(message, profilePicture, args);
@@ -3233,7 +3249,7 @@ namespace Telegram.Views
             flyout.ShowAt(sender, args, selectionEnd - selectionStart > 0 ? FlyoutShowMode.Transient : FlyoutShowMode.Auto);
         }
 
-        private void ProfilePhoto_ContextRequested(MessageViewModel message, ProfilePicture profilePicture, ContextRequestedEventArgs args)
+        private void ProfilePhoto_ContextRequested(MessageViewModel message, MessageProfilePicture profilePicture, ContextRequestedEventArgs args)
         {
             var flyout = new MenuFlyout();
 
@@ -6143,7 +6159,7 @@ namespace Telegram.Views
 
             if (radius > 0)
             {
-                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth =
+                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth = MessagesStickyPhoto.MaxWidth =
                     SettingsService.Current.IsAdaptiveWideEnabled ? 1000 : double.PositiveInfinity;
                 Footer.Margin = Separator.Margin = new Thickness(12, 0, 12, 8);
                 InlinePanel.Margin = new Thickness(12, 0, 12, -radius);
@@ -6152,12 +6168,22 @@ namespace Telegram.Views
             }
             else
             {
-                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth =
+                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth = MessagesStickyPhoto.MaxWidth =
                     SettingsService.Current.IsAdaptiveWideEnabled ? 1024 : double.PositiveInfinity;
                 Footer.Margin = Separator.Margin = new Thickness();
                 InlinePanel.Margin = new Thickness();
                 InlineShadow.Margin = new Thickness();
                 ReplyMarkupPanel.Margin = new Thickness();
+            }
+
+            var stickyPhoto = ElementComposition.GetElementVisual(MessagesStickyPhoto);
+            if (stickyPhoto.Clip is InsetClip stickyPhotoClip)
+            {
+                stickyPhotoClip.BottomInset = -radius;
+            }
+            else
+            {
+                stickyPhoto.Clip = stickyPhoto.Compositor.CreateInsetClip(0, 0, 0, -radius);
             }
 
             var messages = ElementComposition.GetElementVisual(Messages);
@@ -7052,6 +7078,7 @@ namespace Telegram.Views
             //UpdateMessagesHeaderPadding();
         }
 
+        private CompositionPropertySet _messagesPaddingSet;
         private float _messagesHeaderRootPadding;
         private float _messagesScrollBarPadding;
         private bool _messagesScrollBarPaddingBottom;
@@ -7174,9 +7201,11 @@ namespace Telegram.Views
                 var diff = _messagesHeaderRootPadding - padding;
 
                 _messagesHeaderRootPadding = padding;
+                _messagesPaddingSet.InsertScalar("Padding", padding);
 
                 MessagesRoot.Margin = new Thickness(0, padding, 0, -padding);
                 MessagesOverlay.Margin = new Thickness(0, padding, 0, 0);
+                MessagesStickyPhoto.Margin = new Thickness(0, 0, 0, padding);
 
                 if (animate)
                 {
@@ -7711,6 +7740,38 @@ namespace Telegram.Views
         private void NewThread_Click(object sender, RoutedEventArgs e)
         {
             TextField.Focus(FocusState.Keyboard);
+        }
+
+        private void StickyPhotoAbove_Click(object sender, RoutedEventArgs e)
+        {
+            if (_stickyPhotoAboveMessage != null)
+            {
+                _stickyPhotoAboveMessage.Delegate.OpenSender(_stickyPhotoAboveMessage);
+            }
+        }
+
+        private void StickyPhotoBelow_Click(object sender, RoutedEventArgs e)
+        {
+            if (_stickyPhotoBelowMessage != null)
+            {
+                _stickyPhotoBelowMessage.Delegate.OpenSender(_stickyPhotoBelowMessage);
+            }
+        }
+
+        private void StickyPhotoAbove_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            if (_stickyPhotoAboveMessage != null)
+            {
+                ProfilePhoto_ContextRequested(_stickyPhotoAboveMessage, StickyPhotoAbove, args);
+            }
+        }
+
+        private void StickyPhotoBelow_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            if (_stickyPhotoBelowMessage != null)
+            {
+                ProfilePhoto_ContextRequested(_stickyPhotoBelowMessage, StickyPhotoBelow, args);
+            }
         }
     }
 

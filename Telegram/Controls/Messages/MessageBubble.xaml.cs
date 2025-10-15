@@ -704,6 +704,22 @@ namespace Telegram.Controls.Messages
             }
         }
 
+        private bool _photoCollapsed = false;
+
+        public void ShowHidePhoto(bool show)
+        {
+            if (PhotoRoot != null)
+            {
+                if (_photoCollapsed != show)
+                {
+                    return;
+                }
+
+                _photoCollapsed = !show;
+                PhotoRoot.Opacity = show ? 1 : 0;
+            }
+        }
+
         private void UpdatePhoto(MessageViewModel message)
         {
             if (message.HasSenderPhoto)
@@ -744,6 +760,8 @@ namespace Telegram.Controls.Messages
                 if (PhotoRoot != null)
                 {
                     _photoId = null;
+                    _photoCollapsed = false;
+
                     Photo = null;
                     UnloadTemplateChild(ref PhotoRoot);
                 }
@@ -763,41 +781,7 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            if (message.IsSaved || message.IsVerificationCode)
-            {
-                if (message.ForwardInfo?.Origin is MessageOriginUser fromUser)
-                {
-                    message.Delegate.OpenUser(fromUser.SenderUserId);
-                }
-                else if (message.ForwardInfo?.Origin is MessageOriginChat fromChat)
-                {
-                    message.Delegate.OpenChat(fromChat.SenderChatId, true);
-                }
-                else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel)
-                {
-                    // TODO: verify if this is sufficient
-                    message.Delegate.OpenChat(fromChannel.ChatId);
-                }
-                else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser)
-                {
-                    ToastPopup.Show(XamlRoot, Strings.HidAccount);
-                }
-            }
-            else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
-            {
-                if (senderChat.Type is ChatTypeSupergroup supergroup && supergroup.IsChannel)
-                {
-                    message.Delegate.OpenChat(senderChat.Id);
-                }
-                else
-                {
-                    message.Delegate.OpenChat(senderChat.Id, true);
-                }
-            }
-            else if (message.SenderId is MessageSenderUser senderUser)
-            {
-                message.Delegate.OpenUser(senderUser.UserId);
-            }
+            message.Delegate.OpenSender(message);
         }
 
         private bool _outgoingAction;
