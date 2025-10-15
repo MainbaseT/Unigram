@@ -68,7 +68,7 @@ namespace Telegram.Controls.Cells
 
                     if (gift.IsPrivate)
                     {
-                        Photo.Source = PlaceholderImage.GetGlyph(Icons.AuthorHiddenFilled, 5);
+                        Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.AuthorHiddenFilled, 5);
                     }
                     else if (clientService.TryGetUser(gift.SenderId, out User user))
                     {

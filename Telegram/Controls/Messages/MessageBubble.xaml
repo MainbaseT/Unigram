@@ -143,6 +143,12 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
+                        <!--
+                        Once again we have to work around some bug caused by Grid measure implementation:
+                        Setting RowSpan="3" while being on Column="0" (the one we need) causes the Grid to insert
+                        some vertical space between row zero and two. Since in code we already control column zero
+                        width programmatically, it's safe to use negative margins.
+                        -->
                         <HyperlinkButton x:Name="PhotoRoot"
                                          x:Load="False"
                                          Style="{StaticResource EmptyHyperlinkButtonStyle}"
@@ -150,10 +156,12 @@
                                          HorizontalAlignment="Left"
                                          VerticalAlignment="Bottom"
                                          Width="30"
-                                         Height="30">
-                            <controls:ProfilePicture x:Name="Photo"
-                                                     Width="30"
-                                                     Height="30" />
+                                         Height="30"
+                                         Margin="-38,0,0,0"
+                                         Grid.Column="1"
+                                         Grid.RowSpan="3">
+                            <controls:MessageProfilePicture x:Name="Photo"
+                                                            Size="30" />
                         </HyperlinkButton>
 
                         <Rectangle x:Name="ShadowCaster"

@@ -4990,6 +4990,30 @@
         </Setter>
     </Style>
 
+    <Style TargetType="local:MessageProfilePicture">
+        <Setter Property="IsTabStop"
+                Value="False" />
+        <Setter Property="UseSystemFocusVisuals"
+                Value="{StaticResource UseSystemFocusVisuals}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:MessageProfilePicture">
+                    <Border x:Name="LayoutRoot">
+                        <TextBlock x:Name="Initials"
+                                   AutomationProperties.AccessibilityView="Raw"
+                                   Visibility="Collapsed"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="0,1,0,2"
+                                   Foreground="#FFFFFF"
+                                   FontFamily="{StaticResource EmojiThemeFontFamilyWithRounded}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="local:ImageView">
         <Setter Property="HorizontalContentAlignment"
                 Value="Stretch" />

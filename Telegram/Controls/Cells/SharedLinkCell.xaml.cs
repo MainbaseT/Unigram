@@ -240,7 +240,7 @@ namespace Telegram.Controls.Cells
                 var link = links[i];
                 if (MessageHelper.TryCreateUri(link, out Uri uri))
                 {
-                    Photo.Source ??= PlaceholderImage.GetNameForChat(uri.Host, uri.GetHashCode());
+                    Photo.Source ??= ProfilePictureSourceText.GetNameForChat(uri.Host, uri.GetHashCode());
 
                     var textBlock = new RichTextBlock { TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis, IsTextSelectionEnabled = false };
                     var paragraph = new Paragraph();

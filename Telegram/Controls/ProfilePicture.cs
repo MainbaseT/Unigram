@@ -7,6 +7,7 @@
 using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
@@ -269,7 +270,7 @@ namespace Telegram.Controls
                 return;
             }
 
-            if (newValue is PlaceholderImage or null)
+            if (newValue is ProfilePictureSourceText or null)
             {
                 UpdateManager.Unsubscribe(this, ref _fileToken);
 
@@ -279,7 +280,7 @@ namespace Telegram.Controls
                 _parameters = null;
             }
 
-            if (newValue is PlaceholderImage placeholder)
+            if (newValue is ProfilePictureSourceText placeholder)
             {
                 Gradient.GradientStops[0].Color = placeholder.TopColor;
                 Gradient.GradientStops[1].Color = placeholder.BottomColor;
@@ -379,12 +380,12 @@ namespace Telegram.Controls
 
         private void SetStory(IClientService clientService, Story story, int fileId, File file, int side, State state = State.Download)
         {
-            UpdateManager.Unsubscribe(this, ref _fileToken);
-
             if (_referenceId != story.Id || _fileId != file?.Id || Source == null || state != State.Download)
             {
                 _referenceId = story.Id;
                 _fileId = file?.Id;
+
+                UpdateManager.Unsubscribe(this, ref _fileToken);
 
                 Source = GetStory(clientService, story, fileId, file, side, out var shape, state);
                 Shape = shape;
@@ -468,12 +469,12 @@ namespace Telegram.Controls
 
         private void SetChat(IClientService clientService, Chat chat, File file, int side, State state = State.Download)
         {
-            UpdateManager.Unsubscribe(this, ref _fileToken);
-
             if (_referenceId != chat.Id || _fileId != file?.Id || Source == null || state != State.Download)
             {
                 _referenceId = chat.Id;
                 _fileId = file?.Id;
+
+                UpdateManager.Unsubscribe(this, ref _fileToken);
 
                 Source = GetChat(clientService, chat, file, side, out var shape, state);
                 Shape = shape;
@@ -491,12 +492,12 @@ namespace Telegram.Controls
             if (chat.Id == clientService.Options.MyId)
             {
                 _controller?.Recycle();
-                return PlaceholderImage.GetGlyph(Icons.BookmarkFilled, 5);
+                return ProfilePictureSourceText.GetGlyph(Icons.BookmarkFilled, 5);
             }
             else if (chat.Id == clientService.Options.RepliesBotChatId)
             {
                 _controller?.Recycle();
-                return PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
+                return ProfilePictureSourceText.GetGlyph(Icons.ArrowReplyFilled, 5);
             }
 
             if (IsShapeEnabled && clientService.TryGetSupergroup(chat, out Supergroup supergroup))
@@ -547,13 +548,13 @@ namespace Telegram.Controls
             {
                 if (user.Type is UserTypeDeleted)
                 {
-                    return PlaceholderImage.GetGlyph(Icons.GhostFilled, long.MinValue);
+                    return ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
                 }
 
-                return PlaceholderImage.GetUser(clientService, user);
+                return ProfilePictureSourceText.GetUser(clientService, user);
             }
 
-            return PlaceholderImage.GetChat(clientService, chat);
+            return ProfilePictureSourceText.GetChat(clientService, chat);
         }
 
         #endregion
@@ -587,12 +588,12 @@ namespace Telegram.Controls
 
         private void SetUser(IClientService clientService, User user, File file, int side, State state = State.Download)
         {
-            UpdateManager.Unsubscribe(this, ref _fileToken);
-
             if (_referenceId != user.Id || _fileId != file?.Id || Source == null || state != State.Download)
             {
                 _referenceId = user.Id;
                 _fileId = file?.Id;
+
+                UpdateManager.Unsubscribe(this, ref _fileToken);
 
                 Source = GetUser(clientService, user, file, side, state);
                 Shape = ProfilePictureShape.Ellipse;
@@ -637,10 +638,10 @@ namespace Telegram.Controls
 
             if (user.Type is UserTypeDeleted)
             {
-                return PlaceholderImage.GetGlyph(Icons.GhostFilled, long.MinValue);
+                return ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
             }
 
-            return PlaceholderImage.GetUser(clientService, user);
+            return ProfilePictureSourceText.GetUser(clientService, user);
         }
 
 
@@ -713,7 +714,7 @@ namespace Telegram.Controls
             }
 
             _controller?.Recycle();
-            return PlaceholderImage.GetChat(clientService, chat);
+            return ProfilePictureSourceText.GetChat(clientService, chat);
         }
 
         #endregion
@@ -789,100 +790,22 @@ namespace Telegram.Controls
         }
 
         #endregion
-
-        public void SetMessage(MessageViewModel message)
-        {
-            if (message.IsSaved || message.IsVerificationCode)
-            {
-                if (message.ForwardInfo?.Origin is MessageOriginUser fromUser && message.ClientService.TryGetUser(fromUser.SenderUserId, out User fromUserUser))
-                {
-                    SetUser(message.ClientService, fromUserUser, 30);
-                }
-                else if (message.ForwardInfo?.Origin is MessageOriginChat fromChat && message.ClientService.TryGetChat(fromChat.SenderChatId, out Chat fromChatChat))
-                {
-                    SetChat(message.ClientService, fromChatChat, 30);
-                }
-                else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel && message.ClientService.TryGetChat(fromChannel.ChatId, out Chat fromChannelChat))
-                {
-                    SetChat(message.ClientService, fromChannelChat, 30);
-                }
-                else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser fromHiddenUser)
-                {
-                    Source = PlaceholderImage.GetNameForUser(fromHiddenUser.SenderName, long.MinValue);
-                    Shape = ProfilePictureShape.Ellipse;
-                }
-                else if (message.ImportInfo != null)
-                {
-                    Source = PlaceholderImage.GetNameForUser(message.ImportInfo.SenderName, long.MinValue);
-                    Shape = ProfilePictureShape.Ellipse;
-                }
-            }
-            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
-            {
-                SetUser(message.ClientService, senderUser, 30);
-            }
-            else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
-            {
-                SetChat(message.ClientService, senderChat, 30);
-            }
-        }
     }
 
-    public partial class PlaceholderImage
+    public abstract record ProfilePictureSource(IClientService ClientService);
+
+    public record ProfilePictureSourceMessage(MessageViewModel Message)
+        : ProfilePictureSource(Message.ClientService);
+
+    public record ProfilePictureSourceChat(IClientService ClientService, Chat Chat)
+        : ProfilePictureSource(ClientService);
+
+    public record ProfilePictureSourceUser(IClientService ClientService, User User)
+        : ProfilePictureSource(ClientService);
+
+    public record ProfilePictureSourceText(string Initials, bool IsGlyph, Color TopColor, Color BottomColor)
+        : ProfilePictureSource(ClientService: null)
     {
-        public string Initials { get; }
-
-        public bool IsGlyph { get; }
-
-        public Color TopColor { get; }
-
-        public Color BottomColor { get; }
-
-        public PlaceholderImage(string initials, bool isGlyph, NameColor color)
-        {
-            Initials = initials;
-            IsGlyph = isGlyph;
-
-            if (color == null)
-            {
-                TopColor = _disabledTop;
-                BottomColor = _disabled;
-            }
-            else
-            {
-                TopColor = _colorsTop[Math.Abs(color.BuiltInAccentColorId % _colors.Length)];
-                BottomColor = _colors[Math.Abs(color.BuiltInAccentColorId % _colors.Length)];
-            }
-        }
-
-        public PlaceholderImage(string initials, bool isGlyph, long id)
-        {
-            Initials = initials;
-            IsGlyph = isGlyph;
-
-            if (id == long.MinValue)
-            {
-                TopColor = _disabledTop;
-                BottomColor = _disabled;
-            }
-            else
-            {
-                TopColor = _colorsTop[Math.Abs(id % _colors.Length)];
-                BottomColor = _colors[Math.Abs(id % _colors.Length)];
-            }
-        }
-
-        public PlaceholderImage(string initials, bool isGlyph, Color topColor, Color bottomColor)
-        {
-            Initials = initials;
-            IsGlyph = isGlyph;
-
-            TopColor = topColor;
-            BottomColor = bottomColor;
-        }
-
-        #region Static stuff
-
         private static readonly Color[] _colorsTop = new Color[7]
         {
             Color.FromArgb(0xFF, 0xEF, 0x8E, 0x67), // orange
@@ -931,41 +854,65 @@ namespace Telegram.Controls
             return compositor.CreateColorBrush(_colors[Math.Abs(i % _colors.Length)]);
         }
 
-        public static PlaceholderImage GetChat(IClientService clientService, Chat chat)
+        public static ProfilePictureSourceText GetChat(IClientService clientService, Chat chat)
         {
-            return new PlaceholderImage(InitialNameStringConverter.Convert(chat.Title), false, clientService.GetAccentColor(chat.AccentColorId));
+            return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(chat.Title), false, clientService.GetAccentColor(chat.AccentColorId));
         }
 
-        public static PlaceholderImage GetChat(IClientService clientService, ChatInviteLinkInfo chat)
+        public static ProfilePictureSourceText GetChat(IClientService clientService, ChatInviteLinkInfo chat)
         {
-            return new PlaceholderImage(InitialNameStringConverter.Convert(chat.Title), false, clientService.GetAccentColor(chat.AccentColorId));
+            return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(chat.Title), false, clientService.GetAccentColor(chat.AccentColorId));
         }
 
-        public static PlaceholderImage GetUser(IClientService clientService, User user)
+        public static ProfilePictureSourceText GetUser(IClientService clientService, User user)
         {
-            return new PlaceholderImage(InitialNameStringConverter.Convert(user.FirstName, user.LastName), false, clientService.GetAccentColor(user.AccentColorId));
+            return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(user.FirstName, user.LastName), false, clientService.GetAccentColor(user.AccentColorId));
         }
 
-        public static PlaceholderImage GetNameForUser(string firstName, string lastName, long id = 5)
+        public static ProfilePictureSourceText GetNameForUser(string firstName, string lastName, long id = 5)
         {
-            return new PlaceholderImage(InitialNameStringConverter.Convert(firstName, lastName), false, id);
+            return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(firstName, lastName), false, id);
         }
 
-        public static PlaceholderImage GetNameForUser(string name, long id = 5)
+        public static ProfilePictureSourceText GetNameForUser(string name, long id = 5)
         {
-            return new PlaceholderImage(InitialNameStringConverter.Convert(name), false, id);
+            return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(name), false, id);
         }
 
-        public static PlaceholderImage GetNameForChat(string title, long id = 5)
+        public static ProfilePictureSourceText GetNameForChat(string title, long id = 5)
         {
-            return new PlaceholderImage(InitialNameStringConverter.Convert(title), false, id);
+            return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(title), false, id);
         }
 
-        public static PlaceholderImage GetGlyph(string glyph, long id = 5)
+        public static ProfilePictureSourceText GetGlyph(string glyph, long id = 5)
         {
-            return new PlaceholderImage(glyph, true, id);
+            return ProfilePictureSourceText.FromId(glyph, true, id);
         }
 
-        #endregion
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ProfilePictureSourceText FromNameColor(string initials, bool isGlyph, NameColor color)
+        {
+            if (color == null)
+            {
+                return new ProfilePictureSourceText(initials, isGlyph, _disabledTop, _disabled);
+            }
+            else
+            {
+                return new ProfilePictureSourceText(initials, isGlyph, _colorsTop[Math.Abs(color.BuiltInAccentColorId % _colors.Length)], _colors[Math.Abs(color.BuiltInAccentColorId % _colors.Length)]);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ProfilePictureSourceText FromId(string initials, bool isGlyph, long id)
+        {
+            if (id == long.MinValue)
+            {
+                return new ProfilePictureSourceText(initials, isGlyph, _disabledTop, _disabled);
+            }
+            else
+            {
+                return new ProfilePictureSourceText(initials, isGlyph, _colorsTop[Math.Abs(id % _colors.Length)], _colors[Math.Abs(id % _colors.Length)]);
+            }
+        }
     }
 }

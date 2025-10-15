@@ -59,11 +59,11 @@ namespace Telegram.Controls.Cells
                     case ChatBoostSourceGiveaway giveaway:
                         if (giveaway.IsUnclaimed)
                         {
-                            Photo.Source = PlaceholderImage.GetGlyph(Icons.PersonDeleteFilled);
+                            Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.PersonDeleteFilled);
                         }
                         else if (giveaway.UserId == 0)
                         {
-                            Photo.Source = PlaceholderImage.GetGlyph(Icons.PersonQuestionMarkFilled);
+                            Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.PersonQuestionMarkFilled);
                         }
                         else
                         {

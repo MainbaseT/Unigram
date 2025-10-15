@@ -46,7 +46,7 @@ namespace Telegram.Controls.Cells
         {
             set
             {
-                Photo.Source = PlaceholderImage.GetGlyph(value, long.MinValue);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(value, long.MinValue);
                 SelectionOutline.RadiusX = 18;
                 SelectionOutline.RadiusY = 18;
             }
@@ -254,7 +254,7 @@ namespace Telegram.Controls.Cells
 
         public void UpdateChatFolder(FolderFlag folder)
         {
-            Photo.Source = PlaceholderImage.GetGlyph(MainPage.GetFolderIcon(folder.Flag), (int)folder.Flag);
+            Photo.Source = ProfilePictureSourceText.GetGlyph(MainPage.GetFolderIcon(folder.Flag), (int)folder.Flag);
             Identity.ClearStatus(BotVerified);
 
             SelectionOutline.RadiusX = 18;

@@ -165,7 +165,7 @@ namespace Telegram.Controls.Messages
         private MessageFooter Footer;
 
         // Lazy loaded
-        private ProfilePicture Photo;
+        private MessageProfilePicture Photo;
         private HyperlinkButton PhotoRoot;
 
         private Border BackgroundPanel;
@@ -718,12 +718,12 @@ namespace Telegram.Controls.Messages
                             PhotoRoot = GetTemplateChild(nameof(PhotoRoot)) as HyperlinkButton;
                             PhotoRoot.Click += Photo_Click;
 
-                            Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
+                            Photo = GetTemplateChild(nameof(Photo)) as MessageProfilePicture;
                         }
 
                         _photoId = message.Id;
                         PhotoRoot.Visibility = Visibility.Visible;
-                        Photo.SetMessage(message);
+                        Photo.Source = new ProfilePictureSourceMessage(message);
                     }
                 }
                 else if (PhotoRoot != null)
@@ -731,7 +731,7 @@ namespace Telegram.Controls.Messages
                     _photoId = null;
 
                     PhotoRoot.Visibility = Visibility.Collapsed;
-                    Photo.Clear();
+                    Photo.Source = null;
                 }
 
                 if (PhotoColumn.Width.IsAuto)
@@ -3100,18 +3100,18 @@ namespace Telegram.Controls.Messages
                 PhotoRoot = GetTemplateChild(nameof(PhotoRoot)) as HyperlinkButton;
                 PhotoRoot.Click += Photo_Click;
 
-                Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
+                Photo = GetTemplateChild(nameof(Photo)) as MessageProfilePicture;
             }
 
             PhotoRoot.Visibility = Visibility.Visible;
 
             if (obj is User user)
             {
-                Photo.SetUser(clientService, user, 30);
+                Photo.Source = new ProfilePictureSourceUser(clientService, user);
             }
             else if (obj is Chat chat)
             {
-                Photo.SetChat(clientService, chat, 30);
+                Photo.Source = new ProfilePictureSourceChat(clientService, chat);
             }
 
             PhotoColumn.Width = new GridLength(38, GridUnitType.Pixel);

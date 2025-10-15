@@ -259,7 +259,7 @@ namespace Telegram.Controls.Cells
                 if (savedMessagesTopic.Type is SavedMessagesTopicTypeMyNotes)
                 {
                     TitleLabel.Text = Strings.MyNotes;
-                    Photo.Source = PlaceholderImage.GetGlyph(Icons.MyNotesFilled, 5);
+                    Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.MyNotesFilled, 5);
                     Photo.Shape = ProfilePictureShape.Ellipse;
                     Identity.ClearStatus();
                     BotVerified.Visibility = Visibility.Collapsed;
@@ -267,7 +267,7 @@ namespace Telegram.Controls.Cells
                 else if (savedMessagesTopic.Type is SavedMessagesTopicTypeAuthorHidden)
                 {
                     TitleLabel.Text = Strings.AnonymousForward;
-                    Photo.Source = PlaceholderImage.GetGlyph(Icons.AuthorHiddenFilled, 5);
+                    Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.AuthorHiddenFilled, 5);
                     Photo.Shape = ProfilePictureShape.Ellipse;
                     Identity.ClearStatus();
                     BotVerified.Visibility = Visibility.Collapsed;
@@ -351,7 +351,7 @@ namespace Telegram.Controls.Cells
                 }
 
                 TitleLabel.Text = Strings.ArchivedChats;
-                Photo.Source = PlaceholderImage.GetGlyph(Icons.ArchiveFilled, 5);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.ArchiveFilled, 5);
 
                 UnreadMentionsBadge.Visibility = Visibility.Collapsed;
                 PinnedIcon.Visibility = Visibility.Collapsed;
@@ -2114,7 +2114,7 @@ namespace Telegram.Controls.Cells
             }
 
             TitleLabel.Text = title;
-            Photo.Source = type is ChatTypeSupergroup ? PlaceholderImage.GetNameForChat(title, color) : PlaceholderImage.GetNameForUser(title, color);
+            Photo.Source = type is ChatTypeSupergroup ? ProfilePictureSourceText.GetNameForChat(title, color) : ProfilePictureSourceText.GetNameForUser(title, color);
 
             MutedIcon.Visibility = muted ? Visibility.Visible : Visibility.Collapsed;
 

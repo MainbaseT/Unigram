@@ -361,7 +361,7 @@ namespace Telegram.ViewModels.Settings
             {
                 var cell = new ChatShareCell
                 {
-                    PhotoSource = new PlaceholderImage(Icons.Premium16, true, Color.FromArgb(0xFF, 0x97, 0x6F, 0xFF), Color.FromArgb(0xFF, 0xE4, 0x6A, 0xCE)),
+                    PhotoSource = new ProfilePictureSourceText(Icons.Premium16, true, Color.FromArgb(0xFF, 0x97, 0x6F, 0xFF), Color.FromArgb(0xFF, 0xE4, 0x6A, 0xCE)),
                     PhotoShape = ProfilePictureShape.Superellipse,
                     Title = Strings.PrivacyPremium,
                     SelectionStroke = BootStrapper.Current.Resources["ContentDialogBackground"] as SolidColorBrush,
@@ -397,7 +397,7 @@ namespace Telegram.ViewModels.Settings
             {
                 var cell = new ChatShareCell
                 {
-                    PhotoSource = PlaceholderImage.GetGlyph(Icons.BotFilled),
+                    PhotoSource = ProfilePictureSourceText.GetGlyph(Icons.BotFilled),
                     PhotoShape = ProfilePictureShape.Superellipse,
                     Title = Strings.PrivacyMiniapps,
                     SelectionStroke = BootStrapper.Current.Resources["ContentDialogBackground"] as SolidColorBrush,
@@ -514,7 +514,7 @@ namespace Telegram.ViewModels.Settings
             {
                 var cell = new ChatShareCell
                 {
-                    PhotoSource = PlaceholderImage.GetGlyph(Icons.BotFilled),
+                    PhotoSource = ProfilePictureSourceText.GetGlyph(Icons.BotFilled),
                     PhotoShape = ProfilePictureShape.Superellipse,
                     Title = Strings.PrivacyMiniapps,
                     SelectionStroke = BootStrapper.Current.Resources["ContentDialogBackground"] as SolidColorBrush,

@@ -24,7 +24,7 @@ namespace Telegram.Views.Popups
             _clientService = clientService;
 
             //Photo.SetChat(clientService, info, 96);
-            Photo.Source = PlaceholderImage.GetGlyph(Icons.CallFilled24);
+            Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.CallFilled24);
 
             //Identity.SetStatus(info);
 

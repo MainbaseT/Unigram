@@ -84,14 +84,14 @@ namespace Telegram.Controls.Cells.Revenue
             else if (transaction.Type is StarTransactionTypePremiumBotDeposit)
             {
                 MediaPreview.Visibility = Visibility.Collapsed;
-                Photo.Source = new PlaceholderImage(Icons.Premium, true, Color.FromArgb(0xFF, 0xFD, 0xD2, 0x1A), Color.FromArgb(0xFF, 0xE4, 0x7B, 0x03));
+                Photo.Source = new ProfilePictureSourceText(Icons.Premium, true, Color.FromArgb(0xFF, 0xFD, 0xD2, 0x1A), Color.FromArgb(0xFF, 0xE4, 0x7B, 0x03));
                 Title.Text = Strings.StarsTransactionBot;
                 Subtitle.Visibility = Visibility.Collapsed;
             }
             else if (transaction.Type is StarTransactionTypeFragmentWithdrawal or StarTransactionTypeFragmentDeposit)
             {
                 MediaPreview.Visibility = Visibility.Collapsed;
-                Photo.Source = new PlaceholderImage(Icons.FragmentFilled, true, Colors.Black, Colors.Black);
+                Photo.Source = new ProfilePictureSourceText(Icons.FragmentFilled, true, Colors.Black, Colors.Black);
                 Subtitle.Visibility = Visibility.Collapsed;
 
                 if (transaction.Type is StarTransactionTypeFragmentWithdrawal)
@@ -106,7 +106,7 @@ namespace Telegram.Controls.Cells.Revenue
             else if (transaction.Type is StarTransactionTypeAppStoreDeposit or StarTransactionTypeGooglePlayDeposit)
             {
                 MediaPreview.Visibility = Visibility.Collapsed;
-                Photo.Source = new PlaceholderImage(Icons.Premium, true, Color.FromArgb(0xFF, 0xFD, 0xD2, 0x1A), Color.FromArgb(0xFF, 0xE4, 0x7B, 0x03));
+                Photo.Source = new ProfilePictureSourceText(Icons.Premium, true, Color.FromArgb(0xFF, 0xFD, 0xD2, 0x1A), Color.FromArgb(0xFF, 0xE4, 0x7B, 0x03));
                 Title.Text = Strings.StarsTransactionInApp;
                 Subtitle.Visibility = Visibility.Collapsed;
             }
@@ -186,7 +186,7 @@ namespace Telegram.Controls.Cells.Revenue
                 }
                 else
                 {
-                    Photo.Source = new PlaceholderImage(Icons.FragmentFilled, true, Colors.Black, Colors.Black);
+                    Photo.Source = new ProfilePictureSourceText(Icons.FragmentFilled, true, Colors.Black, Colors.Black);
                     Subtitle.Text = Strings.StarsTransactionUnknown;
                 }
             }
@@ -292,7 +292,7 @@ namespace Telegram.Controls.Cells.Revenue
             else if (transaction.Type is StarTransactionTypeTelegramApiUsage telegramApiUsage)
             {
                 Title.Text = Strings.StarsTransactionFloodskip;
-                Photo.Source = PlaceholderImage.GetGlyph(Icons.ChatStarsFilled, 3);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.ChatStarsFilled, 3);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
 
@@ -302,7 +302,7 @@ namespace Telegram.Controls.Cells.Revenue
             else
             {
                 MediaPreview.Visibility = Visibility.Collapsed;
-                Photo.Source = PlaceholderImage.GetGlyph(Icons.QuestionCircle, long.MinValue);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.QuestionCircle, long.MinValue);
                 Title.Text = Strings.StarsTransactionUnsupported;
                 Subtitle.Visibility = Visibility.Collapsed;
             }

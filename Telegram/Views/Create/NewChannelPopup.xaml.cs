@@ -49,10 +49,10 @@ namespace Telegram.Views.Create
             }
             else if (string.IsNullOrWhiteSpace(title))
             {
-                return PlaceholderImage.GetGlyph(Icons.CameraAddFilled);
+                return ProfilePictureSourceText.GetGlyph(Icons.CameraAddFilled);
             }
 
-            return PlaceholderImage.GetNameForChat(title);
+            return ProfilePictureSourceText.GetNameForChat(title);
         }
 
         #endregion

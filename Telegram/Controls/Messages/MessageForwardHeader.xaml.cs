@@ -351,13 +351,13 @@ namespace Telegram.Controls.Messages
                 {
                     line2 = fromHiddenUser.SenderName;
                     ForwardLink.FontWeight = FontWeights.Normal;
-                    ForwardPhoto.Source = PlaceholderImage.GetNameForUser(fromHiddenUser.SenderName, long.MinValue);
+                    ForwardPhoto.Source = ProfilePictureSourceText.GetNameForUser(fromHiddenUser.SenderName, long.MinValue);
                 }
                 else if (message.ImportInfo != null)
                 {
                     line2 = message.ImportInfo.SenderName;
                     ForwardLink.FontWeight = FontWeights.Normal;
-                    ForwardPhoto.Source = PlaceholderImage.GetNameForUser(message.ImportInfo.SenderName, long.MinValue);
+                    ForwardPhoto.Source = ProfilePictureSourceText.GetNameForUser(message.ImportInfo.SenderName, long.MinValue);
                 }
 
                 ForwardText.Text = line1;

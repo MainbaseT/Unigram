@@ -100,7 +100,7 @@ namespace Telegram.Views.Users
                     }
                     else
                     {
-                        ResetPhotoPhoto.Source = PlaceholderImage.GetUser(ViewModel.ClientService, user);
+                        ResetPhotoPhoto.Source = ProfilePictureSourceText.GetUser(ViewModel.ClientService, user);
                     }
 
                     ResetPhotoPhoto.Visibility = Visibility.Visible;

@@ -44,7 +44,7 @@ namespace Telegram.Views.Stars.Popups
 
             InitializeOwnedChats();
 
-            Photo1.Source = PlaceholderImage.GetGlyph(Icons.LinkDiagonal);
+            Photo1.Source = ProfilePictureSourceText.GetGlyph(Icons.LinkDiagonal);
 
             Link.Text = program.Url.Replace("https://", string.Empty);
 

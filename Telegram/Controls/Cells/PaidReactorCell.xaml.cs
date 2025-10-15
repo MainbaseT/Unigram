@@ -22,7 +22,7 @@ namespace Telegram.Controls.Cells
         {
             if (reactor.IsAnonymous)
             {
-                Photo.Source = PlaceholderImage.GetGlyph(Icons.AuthorHiddenFilled, long.MinValue);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.AuthorHiddenFilled, long.MinValue);
                 Title.Text = Strings.StarsReactionAnonymous;
             }
             else if (clientService.TryGetChat(reactor.SenderId, out Chat chat))

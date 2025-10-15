@@ -1198,7 +1198,7 @@ namespace Telegram.Controls.Cells
                         break;
                 }
 
-                Photo.Source = PlaceholderImage.GetGlyph(MainPage.GetFolderIcon(flag.Flag), (int)flag.Flag);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(MainPage.GetFolderIcon(flag.Flag), (int)flag.Flag);
                 Identity.ClearStatus(BotVerified);
             }
         }

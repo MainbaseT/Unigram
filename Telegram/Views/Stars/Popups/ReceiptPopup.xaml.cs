@@ -121,7 +121,7 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (transaction.Type is StarTransactionTypePremiumBotDeposit)
             {
-                FromPhoto.Source = new PlaceholderImage(Icons.Premium, true, Color.FromArgb(0xFF, 0xFD, 0xD2, 0x1A), Color.FromArgb(0xFF, 0xE4, 0x7B, 0x03));
+                FromPhoto.Source = new ProfilePictureSourceText(Icons.Premium, true, Color.FromArgb(0xFF, 0xFD, 0xD2, 0x1A), Color.FromArgb(0xFF, 0xE4, 0x7B, 0x03));
                 FromPhoto.Visibility = Visibility.Collapsed;
                 FromTitle.Text = Strings.StarsTransactionBot;
                 From.Header = Strings.StarsTransactionSource;
@@ -135,7 +135,7 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (transaction.Type is StarTransactionTypeFragmentWithdrawal or StarTransactionTypeFragmentDeposit)
             {
-                FromPhoto.Source = new PlaceholderImage(Icons.FragmentFilled, true, Colors.Black, Colors.Black);
+                FromPhoto.Source = new ProfilePictureSourceText(Icons.FragmentFilled, true, Colors.Black, Colors.Black);
                 FromPhoto.Visibility = Visibility.Collapsed;
                 FromTitle.Text = Strings.Fragment;
                 From.Header = Strings.StarsTransactionSource;
@@ -149,7 +149,7 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (transaction.Type is StarTransactionTypeAppStoreDeposit or StarTransactionTypeGooglePlayDeposit)
             {
-                FromPhoto.Source = new PlaceholderImage(Icons.Premium, true, Color.FromArgb(0xFF, 0xFD, 0xD2, 0x1A), Color.FromArgb(0xFF, 0xE4, 0x7B, 0x03));
+                FromPhoto.Source = new ProfilePictureSourceText(Icons.Premium, true, Color.FromArgb(0xFF, 0xFD, 0xD2, 0x1A), Color.FromArgb(0xFF, 0xE4, 0x7B, 0x03));
                 FromPhoto.Visibility = Visibility.Collapsed;
                 FromTitle.Text = Strings.StarsTransactionInApp;
                 From.Header = Strings.StarsTransactionSource;
@@ -270,7 +270,7 @@ namespace Telegram.Views.Stars.Popups
                 }
                 else
                 {
-                    FromPhoto.Source = new PlaceholderImage(Icons.FragmentFilled, true, Colors.Black, Colors.Black);
+                    FromPhoto.Source = new ProfilePictureSourceText(Icons.FragmentFilled, true, Colors.Black, Colors.Black);
                     FromTitle.Text = Strings.StarsTransactionUnknown;
                 }
 
@@ -427,7 +427,7 @@ namespace Telegram.Views.Stars.Popups
             else if (transaction.Type is StarTransactionTypeTelegramApiUsage telegramApiUsage)
             {
                 Title.Text = Strings.StarsTransactionFloodskip;
-                Photo.Source = PlaceholderImage.GetGlyph(Icons.ChatStarsFilled, 3);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.ChatStarsFilled, 3);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
 
@@ -437,14 +437,14 @@ namespace Telegram.Views.Stars.Popups
             }
             else
             {
-                FromPhoto.Source = PlaceholderImage.GetGlyph(Icons.QuestionCircle, long.MinValue);
+                FromPhoto.Source = ProfilePictureSourceText.GetGlyph(Icons.QuestionCircle, long.MinValue);
                 FromPhoto.Visibility = Visibility.Collapsed;
                 FromTitle.Text = Strings.StarsTransactionUnsupported;
                 From.Header = Strings.StarsTransactionSource;
 
                 Title.Text = Strings.StarsTransactionUnsupported;
                 Subtitle.Visibility = Visibility.Collapsed;
-                Photo.Source = PlaceholderImage.GetGlyph(Icons.QuestionCircle, long.MinValue);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.QuestionCircle, long.MinValue);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -502,14 +502,14 @@ namespace Telegram.Views.Stars.Popups
             }
             else
             {
-                FromPhoto.Source = PlaceholderImage.GetGlyph(Icons.QuestionCircle, long.MinValue);
+                FromPhoto.Source = ProfilePictureSourceText.GetGlyph(Icons.QuestionCircle, long.MinValue);
                 FromPhoto.Visibility = Visibility.Collapsed;
                 FromTitle.Text = Strings.StarsTransactionUnsupported;
                 From.Header = Strings.StarsTransactionSource;
 
                 Title.Text = Strings.StarsTransactionUnsupported;
                 Subtitle.Visibility = Visibility.Collapsed;
-                Photo.Source = PlaceholderImage.GetGlyph(Icons.QuestionCircle, long.MinValue);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.QuestionCircle, long.MinValue);
             }
 
             Identifier.Text = stars.TransactionId;

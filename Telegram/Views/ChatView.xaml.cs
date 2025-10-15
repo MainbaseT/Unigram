@@ -5280,7 +5280,7 @@ namespace Telegram.Views
                 TopicIconGeneral.Visibility = Visibility.Collapsed;
 
                 Icon.Source = null;
-                Photo.Source = PlaceholderImage.GetGlyph(Icons.ArrowReplyFilled, 5);
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.ArrowReplyFilled, 5);
             }
             else if (ViewModel.SavedMessagesTopic != null)
             {
@@ -5291,12 +5291,12 @@ namespace Telegram.Views
 
                 if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeMyNotes)
                 {
-                    Photo.Source = PlaceholderImage.GetGlyph(Icons.MyNotesFilled, 5);
+                    Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.MyNotesFilled, 5);
                     Photo.Shape = ProfilePictureShape.Ellipse;
                 }
                 else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeAuthorHidden)
                 {
-                    Photo.Source = PlaceholderImage.GetGlyph(Icons.AuthorHiddenFilled, 5);
+                    Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.AuthorHiddenFilled, 5);
                     Photo.Shape = ProfilePictureShape.Ellipse;
                 }
                 else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))

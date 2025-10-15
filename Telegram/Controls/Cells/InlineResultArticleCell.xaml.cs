@@ -137,7 +137,7 @@ namespace Telegram.Controls.Cells
             }
             else
             {
-                Photo.Source = PlaceholderImage.GetNameForChat(Title.Text, Title.Text.GetHashCode());
+                Photo.Source = ProfilePictureSourceText.GetNameForChat(Title.Text, Title.Text.GetHashCode());
                 UpdateManager.Unsubscribe(this, ref _thumbnailToken);
             }
         }

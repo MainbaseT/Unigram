@@ -1549,6 +1549,11 @@ namespace Telegram.Common
             return false;
         }
 
+        public static bool Empty<T>(this ISet<T> list)
+        {
+            return list.Count == 0;
+        }
+
         public static bool Empty<T>(this IList<T> list)
         {
             return list.Count == 0;

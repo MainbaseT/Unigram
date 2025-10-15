@@ -229,7 +229,7 @@ namespace Telegram.Td
                 return new SolidColorBrush(accent.LightThemeColors[0]);
             }
 
-            return PlaceholderImage.GetBrush(id);
+            return ProfilePictureSourceText.GetBrush(id);
         }
 
         public static SolidColorBrush GetAccentBrush(this IClientService clientService, Chat chat)
@@ -245,7 +245,7 @@ namespace Telegram.Td
                 return new SolidColorBrush(accent.LightThemeColors[0]);
             }
 
-            return PlaceholderImage.GetBrush(chat.AccentColorId);
+            return ProfilePictureSourceText.GetBrush(chat.AccentColorId);
         }
 
         public static SolidColorBrush GetAccentBrush(this IClientService clientService, User user)
@@ -261,7 +261,7 @@ namespace Telegram.Td
                 return new SolidColorBrush(accent.LightThemeColors[0]);
             }
 
-            return PlaceholderImage.GetBrush(user.AccentColorId);
+            return ProfilePictureSourceText.GetBrush(user.AccentColorId);
         }
     }
 }
