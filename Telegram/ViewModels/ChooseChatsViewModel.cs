@@ -308,7 +308,7 @@ namespace Telegram.ViewModels
             else if (parameter is ChooseChatsConfigurationCreateGroupCall)
             {
                 SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.Users;
+                Options = ChooseChatsOptions.Contacts;
                 IsCommentEnabled = false;
                 IsChatSelection = false;
 
