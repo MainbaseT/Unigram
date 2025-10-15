@@ -368,6 +368,7 @@
     <Compile Include="Common\ThumbnailController.cs" />
     <Compile Include="Controls\PremiumProgressBar.cs" />
     <Compile Include="Controls\ProgressRingIndeterminate.cs" />
+    <Compile Include="Controls\SlidePanel.cs" />
     <Compile Include="Controls\Views\SearchPostsTabPage.xaml.cs">
       <DependentUpon>SearchPostsTabPage.xaml</DependentUpon>
     </Compile>

@@ -255,13 +255,13 @@ namespace Telegram.Views
         private void OnNavigatedTo()
         {
             SearchMask.InitializeParent(Header, ClipperOuter, DateHeaderRelative);
-            GroupCall.InitializeParent(this, ClipperGroupCall);
-            JoinRequests.InitializeParent(this, ClipperJoinRequests);
-            TranslateHeader.InitializeParent(this, ClipperTranslate);
-            ActionBar.InitializeParent(this, ClipperActionBar);
-            ConnectedBot.InitializeParent(this, ClipperConnected);
-            PinnedMessage.InitializeParent(this, ClipperPinned);
-            AccountInfoHeader.InitializeParent(this, ClipperAccountInfo);
+            GroupCall.InitializeParent(this);
+            JoinRequests.InitializeParent(this);
+            TranslateHeader.InitializeParent(this);
+            ActionBar.InitializeParent(this);
+            ConnectedBot.InitializeParent(this);
+            PinnedMessage.InitializeParent(this);
+            AccountInfoHeader.InitializeParent(this);
             Sponsored.InitializeParent(this, Clipper);
         }
 
@@ -449,6 +449,12 @@ namespace Telegram.Views
             DataContext = _viewModel = viewModel;
             Messages.ViewModel = viewModel;
 
+            if (_needActivation)
+            {
+                _needActivation = false;
+                OnNavigatedTo();
+            }
+
             _forumTopicHeaderTopic = null;
             _headerUnreadViewport = null;
             _headerUnreadNotReady = false;
@@ -508,12 +514,6 @@ namespace Telegram.Views
             if (TextRoot.Children.Count > 1)
             {
                 ShowHideChatThemeDrawer(false, TextRoot.Children[1] as ChatThemeDrawer);
-            }
-
-            if (_needActivation)
-            {
-                _needActivation = false;
-                OnNavigatedTo();
             }
 
             if (FromPreview)
