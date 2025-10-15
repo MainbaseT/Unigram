@@ -2135,14 +2135,6 @@ namespace Telegram.Controls.Messages
                     // TODO
                 }
             }
-            else if (e.Type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode && e.Data is string code)
-            {
-                MessageHelper.CopyText(textBlock.XamlRoot, code);
-            }
-            else if (e.Type is TextEntityTypeSpoiler)
-            {
-                textBlock.IgnoreSpoilers = true;
-            }
         }
 
         private string _currentState = "Normal";

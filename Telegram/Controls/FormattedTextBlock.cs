@@ -7,6 +7,7 @@
 using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Telegram.Common;
@@ -35,7 +36,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Telegram.Controls
 {
-    public partial class TextEntityClickEventArgs : EventArgs
+    public partial class TextEntityClickEventArgs : HandledEventArgs
     {
         public TextEntityClickEventArgs(int offset, int length, TextEntityType type, object data)
         {
@@ -849,6 +850,12 @@ namespace Telegram.Controls
                                 player.IsEnabled = false;
                                 player.Emoji = data;
 
+                                BindingOperations.SetBinding(player, AnimatedImage.ReplacementColorProperty, new Binding
+                                {
+                                    Path = new PropertyPath("IconForeground"),
+                                    Source = this
+                                });
+
                                 if (autoFontSize != 0)
                                 {
                                     player.Width = autoFontSize * (20d / 14d);
@@ -1494,7 +1501,24 @@ namespace Telegram.Controls
 
         private void Entity_Click(int offset, int length, TextEntityType type, object data)
         {
-            TextEntityClick?.Invoke(this, new TextEntityClickEventArgs(offset, length, type, data));
+            var args = new TextEntityClickEventArgs(offset, length, type, data);
+            TextEntityClick?.Invoke(this, args);
+
+            if (args.Handled)
+            {
+                return;
+            }
+
+            if (type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode && data is string code)
+            {
+                MessageHelper.CopyText(XamlRoot, code);
+            }
+            else if (type is TextEntityTypeSpoiler)
+            {
+                IgnoreSpoilers = true;
+            }
+            
+            // TODO: handle more cases internally
         }
 
         #region TextAlignment

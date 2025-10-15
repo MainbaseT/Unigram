@@ -1540,14 +1540,6 @@ namespace Telegram.Controls.Stories
             {
                 // Never happens here
             }
-            else if (e.Type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode && e.Data is string code)
-            {
-                MessageHelper.CopyText(XamlRoot, code);
-            }
-            else if (e.Type is TextEntityTypeSpoiler)
-            {
-                Caption.IgnoreSpoilers = true;
-            }
         }
     }
 
