@@ -889,6 +889,11 @@ namespace Telegram.ViewModels
 
                     if (result is Messages messages)
                     {
+                        if (messages.MessagesValue.Count > 0 && messages.MessagesValue[^1].Content is MessageForumTopicCreated)
+                        {
+                            messages.MessagesValue.RemoveAt(messages.MessagesValue.Count - 1);
+                        }
+
                         var endReached = messages.MessagesValue.Empty();
                         if (endReached && direction == PanelScrollingDirection.Backward)
                         {
@@ -1308,8 +1313,8 @@ namespace Telegram.ViewModels
                         }
                         else if (IsForum && ForumTopic == null && chat.Type is ChatTypePrivate privata)
                         {
-                            messages.Add(CreateMessage(new Message(0, new MessageSenderUser(privata.UserId), previous.ChatId, null, null, false, false, false, false, false, false, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageHeaderNewThread(), null)));
-                            fromMessageId = 0;
+                            messages.Add(CreateMessage(new Message(long.MaxValue, new MessageSenderUser(privata.UserId), previous.ChatId, null, null, false, false, false, false, false, false, false, false, false, int.MaxValue, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageHeaderNewThread(), null)));
+                            fromMessageId = long.MaxValue;
                         }
                     }
 
@@ -1550,7 +1555,7 @@ namespace Telegram.ViewModels
                         for (int i = messages.MessagesValue.Count - 1; i >= 0; i--)
                         {
                             var current = messages.MessagesValue[i];
-                            if (current.Id > details.LastReadInboxMessageId)
+                            if (current.Id > details.LastReadInboxMessageId && current.Id < long.MaxValue)
                             {
                                 if (index == -1)
                                 {
@@ -2358,6 +2363,14 @@ namespace Telegram.ViewModels
                 state.TryRemove("checklist_task_id", out int checklistTaskId);
                 LoadMessageSliceAsync(null, navigation, highlight: quote, checklistTaskId: checklistTaskId);
             }
+            else if (state.TryRemove("prepared_message", out Function preparedMessage))
+            {
+                // TODO: this is quite terrible
+                IsOldestSliceLoaded = true;
+                IsNewestSliceLoaded = true;
+                NotifyMessageSliceLoaded();
+                _ = SendMessageAsync(preparedMessage);
+            }
             else
             {
                 var details = GetCurrentDetails();
@@ -3096,15 +3109,23 @@ namespace Telegram.ViewModels
                 return new AddQuickReplyShortcutMessage(QuickReplyShortcut.Name, 0, inputMessageContent);
             }
 
-            //if (IsForum && ForumTopic == null && Chat.Type is ChatTypePrivate)
-            //{
-            //    var test = ClientService.SendAsync(new CreateForumTopic(chatId, "Yolo", true, new ForumTopicIcon(0x6FB9F0, 0))).Result;
-            //    if (test is ForumTopicInfo info)
-            //    {
-            //        messageThreadId = info.MessageThreadId;
-            //        NavigationService.NavigateToChat(chatId, topic: new MessageTopicForum(info.ForumTopicId));
-            //    }
-            //}
+            if (IsForum && ForumTopic == null && Chat.Type is ChatTypePrivate)
+            {
+                var response = ClientService.SendAsync(new CreateForumTopic(chatId, Strings.BotForumNewTopic, true, new ForumTopicIcon(0x6FB9F0, 0))).Result;
+                if (response is ForumTopicInfo info)
+                {
+                    topicId = new MessageTopicForum(info.ForumTopicId);
+
+                    var function = base.CreateSendMessage(chatId, topicId, replyTo, messageSendOptions, inputMessageContent);
+                    var state = new NavigationState
+                    {
+                        { "prepared_message", function }
+                    };
+
+                    NavigationService.NavigateToChat(chatId, topic: topicId, force: false, state: state);
+                    return null;
+                }
+            }
 
             return base.CreateSendMessage(chatId, topicId, replyTo, messageSendOptions, inputMessageContent);
         }
@@ -3119,6 +3140,24 @@ namespace Telegram.ViewModels
                 }
 
                 return new AddQuickReplyShortcutMessageAlbum(QuickReplyShortcut.Name, 0, inputMessageContent);
+            }
+
+            if (IsForum && ForumTopic == null && Chat.Type is ChatTypePrivate)
+            {
+                var response = ClientService.SendAsync(new CreateForumTopic(chatId, Strings.BotForumNewTopic, true, new ForumTopicIcon(0x6FB9F0, 0))).Result;
+                if (response is ForumTopicInfo info)
+                {
+                    topicId = new MessageTopicForum(info.ForumTopicId);
+
+                    var function = base.CreateSendMessageAlbum(chatId, topicId, replyTo, messageSendOptions, inputMessageContent);
+                    var state = new NavigationState
+                    {
+                        { "prepared_message", function }
+                    };
+
+                    NavigationService.NavigateToChat(chatId, topic: topicId, force: false, state: state);
+                    return null;
+                }
             }
 
             return base.CreateSendMessageAlbum(chatId, topicId, replyTo, messageSendOptions, inputMessageContent);

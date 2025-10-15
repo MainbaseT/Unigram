@@ -644,7 +644,7 @@ namespace Telegram.Services
                 // _pendingLastReadInboxMessageId tries to workaround this issue by keeping track of currently sent messages and by invoking
                 // messages.readDiscussion only when updateReadChannelDiscussionInbox is not received in messages.sendMessage response.
                 // At the same time, ChatView.Bubbles.cs makes sure not to include outgoing messages when calling ViewMessages from a topic.
-                _clientService.ViewMessages(_chatId, topicForum.ForumTopicId, new[] { message.Id }, new MessageSourceForumTopicHistory(), false);
+                _clientService.ViewMessages(_chatId, topicForum, new[] { message.Id }, new MessageSourceForumTopicHistory(), false);
             }
         }
 

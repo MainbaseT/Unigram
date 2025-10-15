@@ -708,7 +708,18 @@ namespace Telegram.ViewModels
             options ??= new MessageSendOptions();
             options.SendingId = Math.Max(options.SendingId, 1);
 
-            var response = await ClientService.SendAsync(CreateSendMessage(chat.Id, OutgoingTopicId, replyTo, options, inputMessageContent));
+            var function = CreateSendMessage(chat.Id, OutgoingTopicId, replyTo, options, inputMessageContent);
+            if (function == null)
+            {
+                return null;
+            }
+
+            return await SendMessageAsync(function);
+        }
+
+        protected async Task<Object> SendMessageAsync(Function function)
+        {
+            var response = await ClientService.SendAsync(function);
             if (response is Error error)
             {
                 if (error.MessageEquals(ErrorType.PEER_FLOOD))
@@ -724,9 +735,13 @@ namespace Telegram.ViewModels
                     await ShowPopupAsync(Strings.MessageScheduledLimitReached, Strings.AppName, Strings.OK);
                 }
             }
-            else
+            else if (function is SendMessage sendMessage)
             {
-                ContinueSendMessage(options);
+                ContinueSendMessage(sendMessage.Options);
+            }
+            else if (function is SendMessageAlbum sendMessageAlbum)
+            {
+                ContinueSendMessage(sendMessageAlbum.Options);
             }
 
             return response;
@@ -890,7 +905,13 @@ namespace Telegram.ViewModels
                 return await SendMessageAsync(reply, new InputMessagePaidMedia(starCount, paidOperations, caption, captionAboveMedia, string.Empty), options);
             }
 
-            return await ClientService.SendAsync(CreateSendMessageAlbum(chat.Id, OutgoingTopicId, reply, options, operations));
+            var function = CreateSendMessageAlbum(chat.Id, OutgoingTopicId, reply, options, operations);
+            if (function == null)
+            {
+                return null;
+            }
+
+            return await SendMessageAsync(function);
         }
 
         protected virtual Function CreateSendMessageAlbum(long chatId, MessageTopic topicId, InputMessageReplyTo replyTo, MessageSendOptions messageSendOptions, IList<InputMessageContent> inputMessageContent)

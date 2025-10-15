@@ -154,7 +154,7 @@ namespace Telegram.ViewModels
             {
                 if (topic.LastMessage != null)
                 {
-                    ClientService.ViewMessages(topic.Info.ChatId, topic.Info.ForumTopicId, new[] { topic.LastMessage.Id }, new MessageSourceForumTopicHistory(), true);
+                    ClientService.ViewMessages(topic.Info.ChatId, topic.ToId(), new[] { topic.LastMessage.Id }, new MessageSourceForumTopicHistory(), true);
                 }
 
                 if (topic.UnreadMentionCount > 0)

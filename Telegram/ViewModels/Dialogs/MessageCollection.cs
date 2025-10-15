@@ -189,7 +189,7 @@ namespace Telegram.ViewModels
                 _last = Math.Max(item.Id, _last);
             }
 
-            if (_suppressOperations)
+            if (_suppressOperations || item.Content is MessageHeaderNewThread)
             {
                 base.InsertItem(index, item);
             }
@@ -369,7 +369,8 @@ namespace Telegram.ViewModels
 
         protected override void RemoveItem(int index)
         {
-            if (this[index].Content is MessageAlbum album)
+            var item = this[index];
+            if (item.Content is MessageAlbum album)
             {
                 foreach (var child in album.Messages)
                 {
@@ -377,9 +378,9 @@ namespace Telegram.ViewModels
                 }
             }
 
-            _messages.Remove(this[index].Id);
+            _messages.Remove(item.Id);
 
-            if (_suppressOperations)
+            if (_suppressOperations || item.Content is MessageHeaderNewThread)
             {
                 base.RemoveItem(index);
                 return;
@@ -418,6 +419,11 @@ namespace Telegram.ViewModels
         {
             if (item != null && next != null && item.Content is not MessageHeaderDate && next.Content is not MessageHeaderDate)
             {
+                if (item.Content is MessageHeaderNewThread || next.Content is MessageHeaderNewThread)
+                {
+                    return null;
+                }
+
                 if (!item.AreOnTheSameDay(next))
                 {
                     return new MessageViewModel(next.ClientService, next.Delegate, next.Chat, _viewModel.ForumTopic, _viewModel.DirectMessagesChatTopic, new Message(0, next.SenderId, next.ChatId, null, _viewModel.IsSavedMessagesTab ? item.SchedulingState : next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, false, false, next.Date, 0, null, null, null, null, null, null, null, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageHeaderDate(_viewModel.IsSavedMessagesTab ? item.Date : next.Date), null));
@@ -436,6 +442,11 @@ namespace Telegram.ViewModels
 
             if (item != null && next != null && item.Content is not MessageHeaderMessageTopic && next.Content is not MessageHeaderMessageTopic)
             {
+                if (item.Content is MessageHeaderNewThread || next.Content is MessageHeaderNewThread)
+                {
+                    return null;
+                }
+
                 if (!item.TopicId.AreTheSame(next.TopicId))
                 {
                     return new MessageViewModel(next.ClientService, next.Delegate, next.Chat, _viewModel.ForumTopic, _viewModel.DirectMessagesChatTopic, new Message(0, next.SenderId, next.ChatId, null, next.SchedulingState, next.IsOutgoing, false, false, false, false, next.IsChannelPost, false, false, false, next.Date, 0, null, null, null, null, null, null, null, next.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageHeaderMessageTopic(), null));
