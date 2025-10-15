@@ -117,10 +117,15 @@ namespace Telegram.Views
             var minMessageTopicIndex = panel.FirstVisibleIndex;
             var minMessageTopicValue = default(MessageTopic);
 
-            var messages = new List<long>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
+            var visible = new List<long>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
             var animations = new List<(SelectorItem, MessageViewModel)>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
 
-            for (int i = panel.FirstVisibleIndex; i <= panel.LastVisibleIndex; i++)
+            var messages = ElementComposition.GetElementVisual(Messages);
+            var scroll = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(Messages.ScrollingHost);
+            var tracker = ElementComposition.GetElementVisual(DateHeaderRelative);
+
+            var top = 0d;
+
             {
                 // TODO: this would be preferable, but it can't be done because
                 // date service messages aren't mapped in the array
@@ -153,14 +158,16 @@ namespace Telegram.Views
                     lastVisibleId = message.Id;
                 }
 
-                GeneralTransform transform = null;
+                if (i == panel.FirstVisibleIndex)
+                {
+                    // We calculate the item position relative to the current viewport manually
+                    // instead of relying on TransformToVisual. This should save us some milliseconds.
+                    top = (container.ActualOffset.Y - Messages.ScrollingHost.VerticalOffset) - (tracker.Offset.Y - _messagesHeaderRootPadding);
+                }
 
                 if (minItem > 0 && i >= panel.FirstVisibleIndex)
                 {
-                    transform = container.TransformToVisual(DateHeaderRelative);
-                    var point = transform.TransformPoint(new Point());
-
-                    if (minItem == 2 && point.Y + container.ActualHeight >= 0)
+                    if (minItem == 2 && top + container.ActualHeight >= 0)
                     {
                         minItem = ViewModel.IsForum || ViewModel.IsDirectMessagesGroup ? 1 : 0;
 
@@ -189,7 +196,7 @@ namespace Telegram.Views
                         }
                     }
 
-                    if (minItem == 1 && point.Y + container.ActualHeight + DateHeader.ActualSize.Y + 4 >= 0)
+                    if (minItem == 1 && top + container.ActualHeight + DateHeader.ActualSize.Y + 8 >= 0)
                     {
                         minItem = 0;
 
@@ -210,10 +217,8 @@ namespace Telegram.Views
 
                 if (message.Content is MessageHeaderDate && minDate && i >= panel.FirstVisibleIndex)
                 {
-                    transform ??= container.TransformToVisual(DateHeaderRelative);
-                    var point = transform.TransformPoint(new Point());
                     var height = DateHeader.ActualSize.Y + 4;
-                    var offset = (float)point.Y + height;
+                    var offset = (float)top + height;
 
                     minDate = false;
 
@@ -239,10 +244,8 @@ namespace Telegram.Views
                 }
                 else if (message.Content is MessageHeaderMessageTopic && minMessageTopic && i >= panel.FirstVisibleIndex)
                 {
-                    transform ??= container.TransformToVisual(DateHeaderRelative);
-                    var point = transform.TransformPoint(new Point());
                     var height = ForumTopicHeader.ActualSize.Y + 4;
-                    var offset = (float)point.Y + height;
+                    var offset = (float)top + height;
 
                     if (offset > height)
                     {
@@ -317,11 +320,11 @@ namespace Telegram.Views
                 {
                     if (message.Content is MessageAlbum album)
                     {
-                        messages.AddRange(album.Messages.Keys);
+                        visible.AddRange(album.Messages.Keys);
                     }
                     else
                     {
-                        messages.Add(message.Id);
+                        visible.Add(message.Id);
                     }
                 }
 
@@ -365,7 +368,7 @@ namespace Telegram.Views
             }
 
             // Read and play messages logic:
-            if (messages.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !FromPreview)
+            if (visible.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !FromPreview)
             {
                 MessageSource source = ViewModel.Type switch
                 {
