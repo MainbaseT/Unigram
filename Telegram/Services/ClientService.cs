@@ -56,7 +56,7 @@ namespace Telegram.Services
 
         void LoadFullInfo(Chat chat);
 
-        void ViewMessages(long chatId, int forumTopicId, IList<long> messageIds, MessageSource source, bool forceRead);
+        void ViewMessages(long chatId, MessageTopic topicId, IList<long> messageIds, MessageSource source, bool forceRead);
 
         Task<Object> GetStarTransactionsAsync(MessageSender ownerId, string subscriptionId, TransactionDirection direction, string offset, int limit);
 
@@ -396,13 +396,13 @@ namespace Telegram.Services
             Initialize(online);
         }
 
-        public void ViewMessages(long chatId, int forumTopicId, IList<long> messageIds, MessageSource source, bool forceRead)
+        public void ViewMessages(long chatId, MessageTopic topicId, IList<long> messageIds, MessageSource source, bool forceRead)
         {
             Send(new ViewMessages(chatId, messageIds, source, forceRead));
 
-            if (source is MessageSourceForumTopicHistory && _forums.TryGetValue(chatId, out ForumTopicService manager))
+            if (source is MessageSourceForumTopicHistory && topicId is MessageTopicForum forumTopic && _forums.TryGetValue(chatId, out ForumTopicService manager))
             {
-                manager.ViewMessages(forumTopicId, messageIds);
+                manager.ViewMessages(forumTopic.ForumTopicId, messageIds);
             }
         }
 
