@@ -235,11 +235,28 @@ namespace Telegram.Views
 
                     if (offset >= height && offset < height * 2)
                     {
-                        _dateHeader.Properties.InsertVector3("Translation", new Vector3(0, -height * 2 + offset, 0));
+                        if (_dateHeaderTracked != container)
+                        {
+                            var viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
+                            var heightExp = "(this.Target.Size.Y + 8)";
+                            var offsetExp = $"({viewportTopExp}) + {heightExp}";
+                            var translationExp = $"-{heightExp} * 2 + {offsetExp}";
+
+                            var reference = ElementComposition.GetElementVisual(container);
+                            var translation = reference.Compositor.CreateExpressionAnimation(translationExp);
+                            translation.SetReferenceParameter("reference", reference);
+                            translation.SetReferenceParameter("scroll", scroll);
+                            translation.SetReferenceParameter("tracker", tracker);
+                            translation.SetReferenceParameter("props", _messagesPaddingSet);
+
+                            _dateHeader.StartAnimation("Translation.Y", translation);
+                            _dateHeaderTracked = container;
+                        }
                     }
                     else
                     {
                         _dateHeader.Properties.InsertVector3("Translation", Vector3.Zero);
+                        _dateHeaderTracked = null;
                     }
                 }
                 else if (message.Content is MessageHeaderMessageTopic && minMessageTopic && i >= panel.FirstVisibleIndex)
@@ -269,13 +286,37 @@ namespace Telegram.Views
 
                         if (offset >= height && offset < height * 2)
                         {
-                            _forumTopicHeader.Scale = new Vector3(offset / (height * 2));
-                            _forumTopicHeader.Properties.InsertVector3("Translation", new Vector3(0, -height * 2 + offset, 0));
+                            if (_forumTopicHeaderTracked != container)
+                            {
+                                var viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
+                                var heightExp = "(this.Target.Size.Y + 8)";
+                                var offsetExp = $"({viewportTopExp}) + {heightExp}";
+                                var translationExp = $"-{heightExp} * 2 + ({offsetExp} - {heightExp})";
+                                var scaleExp = $"({offsetExp} - {heightExp}) / ({heightExp} * 2)";
+
+                                var reference = ElementComposition.GetElementVisual(container);
+                                var translation = reference.Compositor.CreateExpressionAnimation(translationExp);
+                                translation.SetReferenceParameter("reference", reference);
+                                translation.SetReferenceParameter("scroll", scroll);
+                                translation.SetReferenceParameter("tracker", tracker);
+                                translation.SetReferenceParameter("props", _messagesPaddingSet);
+
+                                var scale = reference.Compositor.CreateExpressionAnimation($"Vector3({scaleExp}, {scaleExp}, 0)");
+                                scale.SetReferenceParameter("reference", reference);
+                                scale.SetReferenceParameter("scroll", scroll);
+                                scale.SetReferenceParameter("tracker", tracker);
+                                scale.SetReferenceParameter("props", _messagesPaddingSet);
+
+                                _forumTopicHeader.StartAnimation("Translation.Y", translation);
+                                _forumTopicHeader.StartAnimation("Scale", scale);
+                                _forumTopicHeaderTracked = container;
+                            }
                         }
                         else
                         {
                             _forumTopicHeader.Scale = Vector3.One;
                             _forumTopicHeader.Properties.InsertVector3("Translation", Vector3.Zero);
+                            _forumTopicHeaderTracked = null;
                         }
                     }
                     else
@@ -342,12 +383,14 @@ namespace Telegram.Views
             if (minDate)
             {
                 _dateHeader.Properties.InsertVector3("Translation", Vector3.Zero);
+                _dateHeaderTracked = null;
             }
 
             if (minMessageTopic)
             {
                 _forumTopicHeader.Scale = Vector3.One;
                 _forumTopicHeader.Properties.InsertVector3("Translation", Vector3.Zero);
+                _forumTopicHeaderTracked = null;
             }
 
             // TODO: do not hide if above corresponding message

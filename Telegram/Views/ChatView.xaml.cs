@@ -85,8 +85,10 @@ namespace Telegram.Views
         private readonly DispatcherTimer _dateHeaderTimer;
         private readonly Visual _dateHeaderPanel;
         private readonly Visual _dateHeader;
+        private SelectorItem _dateHeaderTracked;
         private readonly Visual _forumTopicHeaderPanel;
         private readonly Visual _forumTopicHeader;
+        private SelectorItem _forumTopicHeaderTracked;
 
         private readonly ZoomableListHandler _autocompleteZoomer;
         private readonly AnimatedListHandler _autocompleteHandler;
@@ -357,6 +359,25 @@ namespace Telegram.Views
             return null;
         }
 
+        private void ClearTrackedContainers()
+        {
+            _headerUnreadViewport = null;
+            _headerUnreadNotReady = false;
+            _headerUnreadRetry = false;
+
+            _oldestItem = null;
+            _oldestItemAsHeader = null;
+            _oldestItemAsHeaderNeeded = null;
+
+            _newestItem = null;
+            _newestItemAsFooter = null;
+            _newestItemAsFooterNeeded = null;
+
+            _dateHeaderTracked = null;
+            _forumTopicHeaderTracked = null;
+            _forumTopicHeaderTopic = null;
+        }
+
         public void Deactivate(bool navigation)
         {
             if (ViewModel != null)
@@ -385,17 +406,7 @@ namespace Telegram.Views
                 }
             }
 
-            _headerUnreadViewport = null;
-            _headerUnreadNotReady = false;
-            _headerUnreadRetry = false;
-
-            _oldestItem = null;
-            _oldestItemAsHeader = null;
-            _oldestItemAsHeaderNeeded = null;
-
-            _newestItem = null;
-            _newestItemAsFooter = null;
-            _newestItemAsFooterNeeded = null;
+            ClearTrackedContainers();
 
             ButtonStickers.Collapse();
 
@@ -416,17 +427,7 @@ namespace Telegram.Views
             _messageIdToMessageIds.Clear();
             _messageTopicToSelectors.Clear();
 
-            _headerUnreadViewport = null;
-            _headerUnreadNotReady = false;
-            _headerUnreadRetry = false;
-
-            _oldestItem = null;
-            _oldestItemAsHeader = null;
-            _oldestItemAsHeaderNeeded = null;
-
-            _newestItem = null;
-            _newestItemAsFooter = null;
-            _newestItemAsFooterNeeded = null;
+            ClearTrackedContainers();
 
             if (sender is DialogViewModel viewModel)
             {
@@ -455,18 +456,7 @@ namespace Telegram.Views
                 OnNavigatedTo();
             }
 
-            _forumTopicHeaderTopic = null;
-            _headerUnreadViewport = null;
-            _headerUnreadNotReady = false;
-            _headerUnreadRetry = false;
-
-            _oldestItem = null;
-            _oldestItemAsHeader = null;
-            _oldestItemAsHeaderNeeded = null;
-
-            _newestItem = null;
-            _newestItemAsFooter = null;
-            _newestItemAsFooterNeeded = null;
+            ClearTrackedContainers();
 
             _updateThemeTask = new TaskCompletionSource<bool>();
             ViewModel.MessageSliceLoaded += OnMessageSliceLoaded;
