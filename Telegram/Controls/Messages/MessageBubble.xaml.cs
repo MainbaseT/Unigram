@@ -610,7 +610,7 @@ namespace Telegram.Controls.Messages
 
             if (message.Delegate != null && message.Delegate.IsDialog)
             {
-                var top = isFirst ? 4 : 2;
+                var top = isFirst ? 8 : 2;
                 var action = message.IsSaved || message.CanBeShared;
 
                 if (message.IsSaved || (chat != null && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup)) && !message.IsChannelPost)

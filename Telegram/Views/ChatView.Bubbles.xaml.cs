@@ -217,7 +217,7 @@ namespace Telegram.Views
 
                 if (message.Content is MessageHeaderDate && minDate && i >= panel.FirstVisibleIndex)
                 {
-                    var height = DateHeader.ActualSize.Y + 4;
+                    var height = DateHeader.ActualSize.Y + 8;
                     var offset = (float)top + height;
 
                     minDate = false;
@@ -244,7 +244,7 @@ namespace Telegram.Views
                 }
                 else if (message.Content is MessageHeaderMessageTopic && minMessageTopic && i >= panel.FirstVisibleIndex)
                 {
-                    var height = ForumTopicHeader.ActualSize.Y + 4;
+                    var height = ForumTopicHeader.ActualSize.Y + 8;
                     var offset = (float)top + height;
 
                     if (offset > height)
