@@ -586,6 +586,16 @@ namespace Telegram.Views
             var panel = Messages.ItemsPanelRoot as ItemsStackPanel;
             if (panel == null)
             {
+                // TODO: this happens in new bot topics
+                //Messages.UpdateLayout();
+
+                //panel = Messages.ItemsPanelRoot as ItemsStackPanel;
+
+                //if (panel == null)
+                //{
+                //    return;
+                //}
+
                 return;
             }
 
@@ -1028,11 +1038,8 @@ namespace Telegram.Views
             ListInline = null;
             ListAutocomplete = null;
             GroupCall = null;
-            ClipperJoinRequests = null;
             JoinRequests = null;
-            ClipperActionBar = null;
             ActionBar = null;
-            ClipperTranslate = null;
             TranslateHeader = null;
             Clipper = null;
             ClipperBackground = null;
@@ -7349,7 +7356,7 @@ namespace Telegram.Views
                 _forumViewModel.Delegate = null;
             }
 
-            ClipperOuter.Padding = new Thickness(0, changingHori ? 40 : 0, 0, 0);
+            ClipperOuterPadding.Height = changingHori ? 40 : 0;
 
             Header.Children[0].Visibility = type != ForumViewType.Horizontal
                 ? Visibility.Visible
@@ -7393,7 +7400,7 @@ namespace Telegram.Views
                     ForumNavigationHorizontal.Visibility = Visibility.Collapsed;
                 }
 
-                ClipperOuter.Padding = new Thickness(0, _forumCollapsed == ForumViewType.Horizontal ? 40 : 0, 0, 0);
+                ClipperOuterPadding.Height = _forumCollapsed == ForumViewType.Horizontal ? 40 : 0;
 
                 buttons.Properties.InsertVector3("Translation", Vector3.Zero);
                 header.Properties.InsertVector3("Translation", Vector3.Zero);
