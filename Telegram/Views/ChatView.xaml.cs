@@ -5412,7 +5412,7 @@ namespace Telegram.Views
             if (_isTextReadOnly != readOnly)
             {
                 _isTextReadOnly = readOnly;
-                TextField.IsReadOnly = readOnly;
+                TextField.IsEnabled = !readOnly;
             }
 
             _forumTopicId = forumTopicId;
@@ -5595,7 +5595,7 @@ namespace Telegram.Views
                 if (_isTextReadOnly != readOnly)
                 {
                     _isTextReadOnly = readOnly;
-                    TextField.IsReadOnly = readOnly;
+                    TextField.IsEnabled = !readOnly;
                 }
             }
 
@@ -6484,7 +6484,7 @@ namespace Telegram.Views
                 if (_isTextReadOnly != readOnly)
                 {
                     _isTextReadOnly = readOnly;
-                    TextField.IsReadOnly = readOnly;
+                    TextField.IsEnabled = !readOnly;
                 }
 
                 ViewModel.UpdateLastSeen(Locale.Declension(Strings.R.Members, group.MemberCount));
