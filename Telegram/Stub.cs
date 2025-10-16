@@ -1425,6 +1425,18 @@ public static class CompositionDevice_stub
             throw new RuntimeException(ex);
         }
     }
+    public static Windows.UI.Composition.LayerVisual GetElementLayerVisual_stub(Windows.UI.Xaml.UIElement element)
+    {
+        try
+        {
+            return Telegram.Native.Composition.CompositionDevice.GetElementLayerVisual(element);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
 }
 public static class DirectRectangleClip2_stub
 {
@@ -5778,6 +5790,18 @@ public static class JsonValue_stub
             throw new RuntimeException(ex);
         }
     }
+    public static string GetString_stub(this Windows.Data.Json.JsonValue sender)
+    {
+        try
+        {
+            return sender.GetString();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
     public static string Stringify_stub(this Windows.Data.Json.JsonValue sender)
     {
         try
@@ -5897,6 +5921,18 @@ public static class AsyncMediaPlayer_stub
         try
         {
             sender.Stop();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Toggle_stub(this Telegram.Native.Media.AsyncMediaPlayer sender)
+    {
+        try
+        {
+            sender.Toggle();
         }
         catch (Exception ex)
         {
@@ -6384,11 +6420,11 @@ public static class CachedVideoAnimation_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Telegram.Native.CachedVideoAnimation LoadFromFile_stub(Telegram.Native.IVideoAnimationSource file, int width, int height, bool precache)
+    public static Telegram.Native.CachedVideoAnimation LoadFromFile_stub(Telegram.Native.IVideoAnimationSource file, int width, int height, bool fit, bool precache)
     {
         try
         {
-            return Telegram.Native.CachedVideoAnimation.LoadFromFile(file, width, height, precache);
+            return Telegram.Native.CachedVideoAnimation.LoadFromFile(file, width, height, fit, precache);
         }
         catch (Exception ex)
         {
@@ -6814,7 +6850,7 @@ public static class PlaceholderImageHelper_stub
     {
         try
         {
-            return sender.GetTail(width, height, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
+            return sender.GetTail(topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
         }
         catch (Exception ex)
         {
