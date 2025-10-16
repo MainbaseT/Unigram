@@ -113,6 +113,10 @@ namespace winrt::Telegram::Native::Composition::implementation
 			return layerVisual;
 		}
 
+		// The code below definitely works on late Windows 10 builds, but it definitely crashes on 1909 and earlier
+		// Thus, for now we just disable bubble tails on Windows 10.
+		return nullptr;
+
 		// We are using the thread ID to verify and ensure that we aren't hooking any other ElementCompositionPreview::GetElementVisual call
 		// that happened to be going in another thread at the same time we are hooking the function to return a LayerVisual,
 		// and we use a lock to ensure that only one thread can be hooking at a time so that thread ID doesn't get changed mid-hook.
