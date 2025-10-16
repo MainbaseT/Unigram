@@ -692,6 +692,18 @@ namespace Telegram.Controls.Messages
                 {
                     _layerVisual.Effect = null;
                 }
+                else
+                {
+                    if (bottomRight == 0)
+                    {
+                        bottomRight = 15;
+                    }
+
+                    if (bottomLeft == 0)
+                    {
+                        bottomLeft = 15;
+                    }
+                }
 
                 _corners = true;
                 ContentPanel.CornerRadius = new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
