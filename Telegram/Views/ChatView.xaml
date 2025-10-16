@@ -1576,7 +1576,8 @@
                         </ListView.Header>
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <ItemsStackPanel Loading="ItemsStackPanel_Loading"
+                                <ItemsStackPanel Loading="ItemsPanelRoot_Loading"
+                                                 LayoutUpdated="ItemsPanelRoot_LayoutUpdated"
                                                  SizeChanged="OnViewSizeChanged"
                                                  ItemsUpdatingScrollMode="KeepItemsInView"
                                                  VerticalAlignment="Bottom" />

@@ -4664,7 +4664,7 @@ namespace Telegram.Views
             ElementComposition.GetElementVisual(sender as UIElement).CenterPoint = new Vector3((float)e.NewSize.Width / 2f, (float)e.NewSize.Height / 2f, 0);
         }
 
-        private void ItemsStackPanel_Loading(FrameworkElement sender, object args)
+        private void ItemsPanelRoot_Loading(FrameworkElement sender, object args)
         {
             sender.MaxWidth = SettingsService.Current.IsAdaptiveWideEnabled ? 1024 : double.PositiveInfinity;
             Messages.SetScrollingMode();

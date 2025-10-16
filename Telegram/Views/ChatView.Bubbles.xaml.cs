@@ -49,10 +49,22 @@ namespace Telegram.Views
             ViewVisibleMessages(false);
         }
 
+        private bool _viewChanged;
+
         private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
+            _viewChanged = true;
             UpdateArrowVisibility();
-            ViewVisibleMessages(false);
+            //ViewVisibleMessages(false);
+        }
+
+        private void ItemsPanelRoot_LayoutUpdated(object sender, object e)
+        {
+            if (_viewChanged)
+            {
+                _viewChanged = false;
+                ViewVisibleMessages(false);
+            }
         }
 
         private void UpdateArrowVisibility()
