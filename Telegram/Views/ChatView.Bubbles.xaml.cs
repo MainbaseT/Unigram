@@ -137,9 +137,52 @@ namespace Telegram.Views
             var minMessageTopicIndex = panel.FirstVisibleIndex;
             var minMessageTopicValue = default(MessageTopic);
 
-            var messages = ElementComposition.GetElementVisual(Messages);
-            var scroll = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(Messages.ScrollingHost);
-            var tracker = ElementComposition.GetElementVisual(DateHeaderRelative);
+            if (_dateHeaderTranslation == null)
+            {
+                const string viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
+                const string heightExp = "(this.Target.Size.Y + 8)";
+                const string offsetExp = $"({viewportTopExp}) + {heightExp}";
+                const string translationExp = $"-{heightExp} * 2 + {offsetExp}";
+
+                //var reference = ElementComposition.GetElementVisual(container);
+                _dateHeaderTranslation = _dateHeader.Compositor.CreateExpressionAnimation(translationExp);
+                //_dateHeaderExpression.SetReferenceParameter("reference", reference);
+                _dateHeaderTranslation.SetReferenceParameter("scroll", Messages.ScrollingPropertySet);
+                _dateHeaderTranslation.SetReferenceParameter("tracker", _dateHeaderRelative);
+                _dateHeaderTranslation.SetReferenceParameter("props", _messagesPaddingSet);
+            }
+
+            if (_forumTopicHeaderTranslation == null)
+            {
+                const string viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
+                const string heightExp = "(this.Target.Size.Y + 8)";
+                const string offsetExp = $"({viewportTopExp}) + {heightExp}";
+                const string translationExp = $"-{heightExp} * 2 + ({offsetExp} - {heightExp})";
+                const string scaleExp = $"({offsetExp} - {heightExp}) / ({heightExp} * 2)";
+
+                //var reference = ElementComposition.GetElementVisual(container);
+                _forumTopicHeaderTranslation = _forumTopicHeader.Compositor.CreateExpressionAnimation(translationExp);
+                //_forumTopicHeaderTranslation.SetReferenceParameter("reference", reference);
+                _forumTopicHeaderTranslation.SetReferenceParameter("scroll", Messages.ScrollingPropertySet);
+                _forumTopicHeaderTranslation.SetReferenceParameter("tracker", _dateHeaderRelative);
+                _forumTopicHeaderTranslation.SetReferenceParameter("props", _messagesPaddingSet);
+
+                _forumTopicHeaderScale = _forumTopicHeader.Compositor.CreateExpressionAnimation($"Vector3({scaleExp}, {scaleExp}, 0)");
+                //_forumTopicHeaderScale.SetReferenceParameter("reference", reference);
+                _forumTopicHeaderScale.SetReferenceParameter("scroll", Messages.ScrollingPropertySet);
+                _forumTopicHeaderScale.SetReferenceParameter("tracker", _dateHeaderRelative);
+                _forumTopicHeaderScale.SetReferenceParameter("props", _messagesPaddingSet);
+            }
+
+            if (_stickyPhotoExpression == null)
+            {
+                _stickyPhotoExpression = _forumTopicHeader.Compositor.CreateExpressionAnimation();
+                //animation.SetReferenceParameter("reference", reference);
+                //animation.SetReferenceParameter("child", ElementComposition.GetElementVisual(container.ContentTemplateRoot));
+                _stickyPhotoExpression.SetReferenceParameter("scroll", Messages.ScrollingPropertySet);
+                _stickyPhotoExpression.SetReferenceParameter("messages", _messagesVisual);
+                _stickyPhotoExpression.SetReferenceParameter("props", _messagesPaddingSet);
+            }
 
             var top = 0d;
             var bottom = 0d;
@@ -186,8 +229,8 @@ namespace Telegram.Views
                 {
                     // We calculate the item position relative to the current viewport manually
                     // instead of relying on TransformToVisual. This should save us some milliseconds.
-                    top = (container.ActualOffset.Y - Messages.ScrollingHost.VerticalOffset) - (tracker.Offset.Y - _messagesHeaderRootPadding);
-                    bottom = (container.ActualOffset.Y - Messages.ScrollingHost.VerticalOffset) - (messages.Size.Y - _messagesHeaderRootPadding);
+                    top = (container.ActualOffset.Y - Messages.ScrollingHost.VerticalOffset) - (_dateHeaderRelative.Offset.Y - _messagesHeaderRootPadding);
+                    bottom = (container.ActualOffset.Y - Messages.ScrollingHost.VerticalOffset) - (_messagesVisual.Size.Y - _messagesHeaderRootPadding);
                 }
 
                 if (minItem > 0 && i >= panel.FirstVisibleIndex)
@@ -262,19 +305,10 @@ namespace Telegram.Views
                     {
                         if (_dateHeaderTracked != container)
                         {
-                            const string viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
-                            const string heightExp = "(this.Target.Size.Y + 8)";
-                            const string offsetExp = $"({viewportTopExp}) + {heightExp}";
-                            const string translationExp = $"-{heightExp} * 2 + {offsetExp}";
-
                             var reference = ElementComposition.GetElementVisual(container);
-                            var translation = reference.Compositor.CreateExpressionAnimation(translationExp);
-                            translation.SetReferenceParameter("reference", reference);
-                            translation.SetReferenceParameter("scroll", scroll);
-                            translation.SetReferenceParameter("tracker", tracker);
-                            translation.SetReferenceParameter("props", _messagesPaddingSet);
-
-                            _dateHeader.StartAnimation("Translation.Y", translation);
+                            _dateHeaderTranslation.SetReferenceParameter("reference", reference);
+                            
+                            _dateHeader.StartAnimation("Translation.Y", _dateHeaderTranslation);
                             _dateHeaderTracked = container;
                         }
                     }
@@ -313,27 +347,12 @@ namespace Telegram.Views
                         {
                             if (_forumTopicHeaderTracked != container)
                             {
-                                const string viewportTopExp = $"(reference.Offset.Y + scroll.Translation.Y) - (tracker.Offset.Y - props.Padding)";
-                                const string heightExp = "(this.Target.Size.Y + 8)";
-                                const string offsetExp = $"({viewportTopExp}) + {heightExp}";
-                                const string translationExp = $"-{heightExp} * 2 + ({offsetExp} - {heightExp})";
-                                const string scaleExp = $"({offsetExp} - {heightExp}) / ({heightExp} * 2)";
-
                                 var reference = ElementComposition.GetElementVisual(container);
-                                var translation = reference.Compositor.CreateExpressionAnimation(translationExp);
-                                translation.SetReferenceParameter("reference", reference);
-                                translation.SetReferenceParameter("scroll", scroll);
-                                translation.SetReferenceParameter("tracker", tracker);
-                                translation.SetReferenceParameter("props", _messagesPaddingSet);
+                                _forumTopicHeaderTranslation.SetReferenceParameter("reference", reference);
+                                _forumTopicHeaderScale.SetReferenceParameter("reference", reference);
 
-                                var scale = reference.Compositor.CreateExpressionAnimation($"Vector3({scaleExp}, {scaleExp}, 0)");
-                                scale.SetReferenceParameter("reference", reference);
-                                scale.SetReferenceParameter("scroll", scroll);
-                                scale.SetReferenceParameter("tracker", tracker);
-                                scale.SetReferenceParameter("props", _messagesPaddingSet);
-
-                                _forumTopicHeader.StartAnimation("Translation.Y", translation);
-                                _forumTopicHeader.StartAnimation("Scale", scale);
+                                _forumTopicHeader.StartAnimation("Translation.Y", _forumTopicHeaderTranslation);
+                                _forumTopicHeader.StartAnimation("Scale", _forumTopicHeaderScale);
                                 _forumTopicHeaderTracked = container;
                             }
                         }
@@ -359,7 +378,6 @@ namespace Telegram.Views
                     if (message.HasSenderPhoto && container.ContentTemplateRoot is MessageSelector { ContentTemplateRoot: MessageBubble bubble })
                     {
                         var visual = ElementComposition.GetElementVisual(stickyPhotoRoot);
-                        var reference = ElementComposition.GetElementVisual(container);
 
                         const string topExp = "(reference.Offset.Y + scroll.Translation.Y) - (messages.Size.Y - props.Padding)";
                         const string bottomExp = $"(reference.Offset.Y + child.Size.Y + scroll.Translation.Y) - (messages.Size.Y - props.Padding)";
@@ -389,14 +407,13 @@ namespace Telegram.Views
                         {
                             if (tracked != container)
                             {
-                                var animation = reference.Compositor.CreateExpressionAnimation(exp);
-                                animation.SetReferenceParameter("reference", reference);
-                                animation.SetReferenceParameter("scroll", scroll);
-                                animation.SetReferenceParameter("messages", messages);
-                                animation.SetReferenceParameter("child", ElementComposition.GetElementVisual(container.ContentTemplateRoot));
-                                animation.SetReferenceParameter("props", _messagesPaddingSet);
+                                var reference = ElementComposition.GetElementVisual(container);
 
-                                visual.StartAnimation("Translation.Y", animation);
+                                _stickyPhotoExpression.Expression = exp;
+                                _stickyPhotoExpression.SetReferenceParameter("reference", reference);
+                                _stickyPhotoExpression.SetReferenceParameter("child", ElementComposition.GetElementVisual(container.ContentTemplateRoot));
+
+                                visual.StartAnimation("Translation.Y", _stickyPhotoExpression);
                                 tracked = container;
                             }
                         }

@@ -83,18 +83,24 @@ namespace Telegram.Views
         private readonly Visual _rootVisual;
 
         private readonly DispatcherTimer _dateHeaderTimer;
+        private readonly Visual _dateHeaderRelative;
         private readonly Visual _dateHeaderPanel;
         private readonly Visual _dateHeader;
         private SelectorItem _dateHeaderTracked;
+        private ExpressionAnimation _dateHeaderTranslation;
+
         private readonly Visual _forumTopicHeaderPanel;
         private readonly Visual _forumTopicHeader;
         private SelectorItem _forumTopicHeaderTracked;
+        private ExpressionAnimation _forumTopicHeaderTranslation;
+        private ExpressionAnimation _forumTopicHeaderScale;
 
         // Optimize by holding these in two structs
         private MessageViewModel _stickyPhotoAboveMessage;
         private SelectorItem _stickyPhotoAboveTracked;
         private MessageViewModel _stickyPhotoBelowMessage;
         private SelectorItem _stickyPhotoBelowTracked;
+        private ExpressionAnimation _stickyPhotoExpression;
 
         private readonly ZoomableListHandler _autocompleteZoomer;
         private readonly AnimatedListHandler _autocompleteHandler;
@@ -186,12 +192,14 @@ namespace Telegram.Views
 
             DateHeaderRelative.CreateInsetClip();
 
+            _dateHeaderRelative = ElementComposition.GetElementVisual(DateHeaderRelative);
             _dateHeaderPanel = ElementComposition.GetElementVisual(DateHeaderPanel);
             _dateHeader = ElementComposition.GetElementVisual(DateHeader);
 
             _forumTopicHeaderPanel = ElementComposition.GetElementVisual(ForumTopicHeaderPanel);
             _forumTopicHeader = ElementComposition.GetElementVisual(ForumTopicHeader);
 
+            _messagesVisual = ElementComposition.GetElementVisual(Messages);
             _messagesPaddingSet = BootStrapper.Current.Compositor.CreatePropertySet();
             _messagesPaddingSet.InsertScalar("Padding", 0);
 
@@ -817,6 +825,16 @@ namespace Telegram.Views
                 {
                     bubble.UpdateAttach(message);
                     bubble.UpdateMessageHeader(message);
+                }
+
+                if (_stickyPhotoAboveTracked == container)
+                {
+                    _stickyPhotoAboveTracked = null;
+                }
+
+                if (_stickyPhotoBelowTracked == container)
+                {
+                    _stickyPhotoBelowTracked = null;
                 }
 
                 if (ViewModel.IsSavedMessagesTab)
@@ -7092,7 +7110,8 @@ namespace Telegram.Views
             //UpdateMessagesHeaderPadding();
         }
 
-        private CompositionPropertySet _messagesPaddingSet;
+        private readonly Visual _messagesVisual;
+        private readonly CompositionPropertySet _messagesPaddingSet;
         private float _messagesHeaderRootPadding;
         private float _messagesScrollBarPadding;
         private bool _messagesScrollBarPaddingBottom;

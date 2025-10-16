@@ -16,13 +16,13 @@ using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Windows.Devices.Input;
 using Windows.Foundation;
+using Windows.UI.Composition;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
-using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
@@ -34,6 +34,7 @@ namespace Telegram.Controls.Chats
         public IDialogDelegate Delegate { get; set; }
 
         public ScrollViewer ScrollingHost { get; private set; }
+        public CompositionPropertySet ScrollingPropertySet { get; private set; }
 
         public bool IsBottomReached
         {
@@ -151,6 +152,8 @@ namespace Telegram.Controls.Chats
             ScrollingHost.ViewChanged += OnViewChanged;
             ScrollingHost.DirectManipulationStarted += OnDirectManipulationStarted;
             ScrollingHost.AddHandler(PointerWheelChangedEvent, new PointerEventHandler(OnPointerWheelChanged), true);
+
+            ScrollingPropertySet = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
 
             base.OnApplyTemplate();
         }
