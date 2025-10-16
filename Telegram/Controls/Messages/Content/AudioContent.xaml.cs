@@ -124,7 +124,7 @@ namespace Telegram.Controls.Messages.Content
                 }
                 else
                 {
-                    Title.Text = $"{audio.Performer} - {audio.Title}";
+                    Title.Text = $"{audio.Title} - {audio.Performer}";
                 }
 
                 TitleTrim.Text = string.Empty;
