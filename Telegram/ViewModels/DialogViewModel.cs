@@ -4160,7 +4160,7 @@ namespace Telegram.ViewModels
 
         public void SearchExecute(string query, MessageSender from = null)
         {
-            if (Search == null)
+            if (Search == null || !string.IsNullOrEmpty(query) || from != null)
             {
                 Search = new ChatSearchViewModel(ClientService, NavigationService, Settings, Aggregator, this, query, from);
             }
