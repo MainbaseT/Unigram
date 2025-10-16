@@ -94,7 +94,7 @@ namespace Telegram.Controls
         private void Load()
         {
             var source = Source;
-            if (source != null && IsLoaded)
+            if (source != null && IsConnected)
             {
                 var presentation = new MessageProfilePicturePresentation(source, Size);
 

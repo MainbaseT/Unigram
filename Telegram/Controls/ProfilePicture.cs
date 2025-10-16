@@ -835,6 +835,7 @@ namespace Telegram.Controls
     public record ProfilePictureSourceChat(IClientService ClientService, Chat Chat)
         : ProfilePictureSource(ClientService);
 
+    // TODO: this doesn't properly support equality because User is not singleton
     public record ProfilePictureSourceUser(IClientService ClientService, User User)
         : ProfilePictureSource(ClientService);
 
