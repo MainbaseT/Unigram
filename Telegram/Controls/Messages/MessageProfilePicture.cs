@@ -7,8 +7,6 @@
 using System;
 using System.Collections.Generic;
 using Telegram.Common;
-using Telegram.Controls.Media;
-using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -102,9 +100,8 @@ namespace Telegram.Controls
                 {
                     _presenter?.Unload(this);
                     _presenter = MessageProfilePictureLoader.Current.GetOrCreate(presentation);
+                    _presenter.Load(this);
                 }
-
-                _presenter.Load(this);
             }
             else if (source == null)
             {
@@ -119,43 +116,36 @@ namespace Telegram.Controls
             _presenter = null;
         }
 
-        #region Source
-
+        private ProfilePictureSource _source;
         public ProfilePictureSource Source
         {
-            get => (ProfilePictureSource)GetValue(SourceProperty);
-            set => SetValue(SourceProperty, value);
+            get => _source;
+            set
+            {
+                if (_source != value)
+                {
+                    _source = value;
+                    Load();
+                }
+            }
         }
 
-        public static readonly DependencyProperty SourceProperty =
-            DependencyProperty.Register("Source", typeof(ProfilePictureSource), typeof(MessageProfilePicture), new PropertyMetadata(null, OnPropertyChanged));
-
-        #endregion
-
-        #region Size
-
+        private int _size;
         public int Size
         {
-            get { return (int)GetValue(SizeProperty); }
-            set { SetValue(SizeProperty, value); }
-        }
-
-        public static readonly DependencyProperty SizeProperty =
-            DependencyProperty.Register("Size", typeof(int), typeof(MessageProfilePicture), new PropertyMetadata(0, OnPropertyChanged));
-
-        #endregion
-
-        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.Property == SizeProperty)
+            get => _size;
+            set
             {
-                ((MessageProfilePicture)d).InvalidateMeasure();
+                if (_size != value)
+                {
+                    _size = value;
+                    InvalidateMeasure();
+                    Load();
+                }
             }
-
-            ((MessageProfilePicture)d).Load();
         }
 
-        private void Invalidate(object newValue)
+        private void Invalidate(object newValue, ProfilePictureShape shape)
         {
             if (LayoutRoot == null)
             {
@@ -181,13 +171,11 @@ namespace Telegram.Controls
             else if (newValue is ImageBrush texture)
             {
                 LayoutRoot.Background = texture;
-
                 Initials.Visibility = Visibility.Collapsed;
             }
             else
             {
                 LayoutRoot.Background = null;
-
                 Initials.Visibility = Visibility.Collapsed;
             }
 
@@ -256,6 +244,7 @@ namespace Telegram.Controls
             private long _fileToken;
 
             private object _source;
+            private ProfilePictureShape _shape;
 
             public MessageProfilePicturePresenter(MessageProfilePictureLoader loader, MessageProfilePicturePresentation presentation)
             {
@@ -279,7 +268,7 @@ namespace Telegram.Controls
             public void Load(MessageProfilePicture picture)
             {
                 _pictures.Add(picture);
-                picture.Invalidate(_source);
+                picture.Invalidate(_source, _presentation.Source.Shape);
 
                 Invalidate(State.Download);
             }
@@ -287,171 +276,63 @@ namespace Telegram.Controls
             private void Invalidate(State state)
             {
                 var source = _presentation.Source;
-                if (source is ProfilePictureSourceChat sourceChat)
+                if (source is ProfilePictureSourcePhoto sourcePhoto && _fileId != sourcePhoto.Photo.Id)
                 {
-                    SetChat(source.ClientService, sourceChat.Chat, sourceChat.Chat.Photo?.Small, _presentation.Size, state);
-                }
-                else if (source is ProfilePictureSourceUser sourceUser)
-                {
-                    SetUser(source.ClientService, sourceUser.User, sourceUser.User.ProfilePhoto?.Small, _presentation.Size, state);
+                    _fileId = sourcePhoto.Photo.Id;
+                    UpdateManager.Unsubscribe(this, ref _fileToken);
+
+                    Invalidate(sourcePhoto, _presentation.Size, state);
                 }
                 else if (source is ProfilePictureSourceText sourceText)
                 {
-                    // Local handling within MessageProfilePicture would be better...
-                    UpdateManager.Unsubscribe(this, ref _fileToken);
-
                     _fileId = null;
-                    Source = sourceText;
-                }
-            }
-
-            private void SetChat(IClientService clientService, Chat chat, File file, int side, State state = State.Download)
-            {
-                var fileId = file?.Id ?? 0;
-                if (fileId != _fileId || /*Source == null ||*/ state != State.Download)
-                {
                     UpdateManager.Unsubscribe(this, ref _fileToken);
 
-                    _fileId = file?.Id;
-                    Source = GetChat(clientService, chat, file, side, out var shape, state);
+                    Invalidate(sourceText, sourceText.Shape);
                 }
             }
 
-            private object GetChat(IClientService clientService, Chat chat, File file, int side, out ProfilePictureShape shape, State state = State.Download)
+            private void Invalidate(ProfilePictureSourcePhoto photo, int side, State state = State.Download)
             {
-                // TODO: this method may throw a NullReferenceException in some conditions
-
-                shape = ProfilePictureShape.Ellipse;
-
-                if (chat.Id == clientService.Options.MyId)
+                if (photo.Photo.Local.IsDownloadingCompleted)
                 {
-                    _controller?.Recycle();
-                    return ProfilePictureSourceText.GetGlyph(Icons.BookmarkFilled, 5);
+                    _controller.Bitmap(photo.Photo.Local.Path, side, side, photo.Id);
+                    Invalidate(_texture, photo.Shape);
+
+                    return;
                 }
-                else if (chat.Id == clientService.Options.RepliesBotChatId)
+                else
                 {
-                    _controller?.Recycle();
-                    return ProfilePictureSourceText.GetGlyph(Icons.ArrowReplyFilled, 5);
+                    if (photo.Photo.Local.CanBeDownloaded && !photo.Photo.Local.IsDownloadingActive && state != State.Update)
+                    {
+                        photo.ClientService.DownloadFile(photo.Photo.Id, 1);
+                    }
+
+                    UpdateManager.Subscribe(this, photo.ClientService, photo.Photo, ref _fileToken, UpdateFile, true);
                 }
 
-                //if (IsShapeEnabled && clientService.TryGetSupergroup(chat, out Supergroup supergroup))
-                //{
-                //    if (supergroup.IsForum)
-                //    {
-                //        shape = ProfilePictureShape.Superellipse;
-                //    }
-                //    else if (supergroup.IsDirectMessagesGroup)
-                //    {
-                //        shape = ProfilePictureShape.Tail;
-                //    }
-                //}
-
-                if (file != null)
+                if (photo.Minithumbnail != null)
                 {
-                    if (file.Local.IsDownloadingCompleted)
-                    {
-                        _controller.Bitmap(file.Local.Path, side, side, chat.Id);
+                    _controller.Blur(photo.Minithumbnail.Data, 3, photo.Id);
+                    Invalidate(_texture, photo.Shape);
 
-                        return _texture;
-                    }
-                    else
-                    {
-                        if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && state != State.Update)
-                        {
-                            clientService.DownloadFile(file.Id, 1);
-                        }
-
-                        UpdateManager.Subscribe(this, clientService, file, ref _fileToken, UpdateFile, true);
-                    }
-
-                    var minithumbnail = chat.Photo?.Minithumbnail;
-                    if (minithumbnail != null)
-                    {
-                        _controller.Blur(minithumbnail.Data, 3, chat.Id);
-
-                        return _texture;
-                    }
+                    return;
                 }
 
                 _controller.Recycle();
-
-                if (clientService.TryGetUser(chat, out User user))
-                {
-                    if (user.Type is UserTypeDeleted)
-                    {
-                        return ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
-                    }
-
-                    return ProfilePictureSourceText.GetUser(clientService, user);
-                }
-
-                return ProfilePictureSourceText.GetChat(clientService, chat);
+                Invalidate(photo.Text, photo.Shape);
             }
 
-            private void SetUser(IClientService clientService, User user, File file, int side, State state = State.Download)
+            private void Invalidate(object value, ProfilePictureShape shape)
             {
-                var fileId = file?.Id ?? 0;
-                if (fileId != _fileId || /*Source == null ||*/ state != State.Download)
+                if (_source != value || _shape != shape)
                 {
-                    UpdateManager.Unsubscribe(this, ref _fileToken);
+                    _source = value;
+                    _shape = shape;
 
-                    _fileId = fileId;
-                    Source = GetUser(clientService, user, file, side, state);
-                }
-            }
-
-            private object GetUser(IClientService clientService, User user, File file, int side, State state = State.Download)
-            {
-                if (file != null)
-                {
-                    if (file.Local.IsDownloadingCompleted)
+                    foreach (var picture in _pictures)
                     {
-                        _controller.Bitmap(file.Local.Path, side, side, user.Id);
-
-                        return _texture;
-                    }
-                    else
-                    {
-                        if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && state != State.Update)
-                        {
-                            clientService.DownloadFile(file.Id, 1);
-                        }
-
-                        UpdateManager.Subscribe(this, clientService, file, ref _fileToken, UpdateFile, true);
-                    }
-
-                    var minithumbnail = user.ProfilePhoto?.Minithumbnail;
-                    if (minithumbnail != null)
-                    {
-                        _controller.Blur(minithumbnail.Data, 3, user.Id);
-
-                        return _texture;
-                    }
-                }
-
-                _controller.Recycle();
-
-                if (user.Type is UserTypeDeleted)
-                {
-                    return ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
-                }
-
-                return ProfilePictureSourceText.GetUser(clientService, user);
-            }
-
-            public object Source
-            {
-                get => _source;
-                set
-                {
-                    if (_source != value)
-                    {
-                        _source = value;
-
-                        foreach (var picture in _pictures)
-                        {
-                            picture.Invalidate(value);
-                        }
+                        picture.Invalidate(value, shape);
                     }
                 }
             }
@@ -464,7 +345,7 @@ namespace Telegram.Controls
             public void Unload(MessageProfilePicture picture)
             {
                 _pictures.Remove(picture);
-                picture.Invalidate(null);
+                picture.Invalidate(null, _shape);
 
                 if (_pictures.Empty())
                 {
@@ -480,7 +361,6 @@ namespace Telegram.Controls
         {
             [ThreadStatic]
             private static MessageProfilePictureLoader _current;
-
             public static MessageProfilePictureLoader Current => _current ??= new();
 
             private readonly Dictionary<MessageProfilePicturePresentation, MessageProfilePicturePresenter> _presenters = new();

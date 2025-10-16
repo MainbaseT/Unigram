@@ -3091,11 +3091,11 @@ namespace Telegram.Controls.Messages
 
             if (obj is User user)
             {
-                Photo.Source = new ProfilePictureSourceUser(clientService, user);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
             }
             else if (obj is Chat chat)
             {
-                Photo.Source = new ProfilePictureSourceChat(clientService, chat);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
             }
 
             PhotoColumn.Width = new GridLength(38, GridUnitType.Pixel);

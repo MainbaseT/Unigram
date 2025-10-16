@@ -792,7 +792,7 @@ namespace Telegram.Controls
         #endregion
     }
 
-    public abstract record ProfilePictureSource(IClientService ClientService)
+    public abstract record ProfilePictureSource(ProfilePictureShape Shape)
     {
         public static ProfilePictureSource Message(MessageViewModel message)
         {
@@ -800,15 +800,15 @@ namespace Telegram.Controls
             {
                 if (message.ForwardInfo?.Origin is MessageOriginUser fromUser && message.ClientService.TryGetUser(fromUser.SenderUserId, out User fromUserUser))
                 {
-                    return new ProfilePictureSourceUser(message.ClientService, fromUserUser);
+                    return ProfilePictureSource.User(message.ClientService, fromUserUser);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginChat fromChat && message.ClientService.TryGetChat(fromChat.SenderChatId, out Chat fromChatChat))
                 {
-                    return new ProfilePictureSourceChat(message.ClientService, fromChatChat);
+                    return ProfilePictureSource.Chat(message.ClientService, fromChatChat);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel && message.ClientService.TryGetChat(fromChannel.ChatId, out Chat fromChannelChat))
                 {
-                    return new ProfilePictureSourceChat(message.ClientService, fromChannelChat);
+                    return ProfilePictureSource.Chat(message.ClientService, fromChannelChat);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser fromHiddenUser)
                 {
@@ -821,26 +821,107 @@ namespace Telegram.Controls
             }
             else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
             {
-                return new ProfilePictureSourceUser(message.ClientService, senderUser);
+                return ProfilePictureSource.User(message.ClientService, senderUser);
             }
             else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
             {
-                return new ProfilePictureSourceChat(message.ClientService, senderChat);
+                return ProfilePictureSource.Chat(message.ClientService, senderChat);
             }
 
             return null;
         }
+
+        public static ProfilePictureSource MessageSender(IClientService clientService, MessageSender sender)
+        {
+            if (clientService.TryGetUser(sender, out User user))
+            {
+                return ProfilePictureSource.User(clientService, user);
+            }
+            else if (clientService.TryGetChat(sender, out Chat chat))
+            {
+                return ProfilePictureSource.Chat(clientService, chat);
+            }
+
+            return null;
+        }
+
+        public static ProfilePictureSource User(IClientService clientService, User user)
+        {
+            ProfilePictureSourceText text;
+            if (user.Type is UserTypeDeleted)
+            {
+                text = ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
+            }
+            else
+            {
+                text = ProfilePictureSourceText.GetUser(clientService, user);
+            }
+
+            var photo = user.ProfilePhoto;
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, user.Id, photo.Small, photo.Minithumbnail, text, ProfilePictureShape.Ellipse);
+            }
+
+            return text;
+        }
+
+        public static ProfilePictureSource Chat(IClientService clientService, Chat chat)
+        {
+            if (chat.Id == clientService.Options.MyId)
+            {
+                return ProfilePictureSourceText.GetGlyph(Icons.BookmarkFilled, 5);
+            }
+            else if (chat.Id == clientService.Options.RepliesBotChatId)
+            {
+                return ProfilePictureSourceText.GetGlyph(Icons.ArrowReplyFilled, 5);
+            }
+
+            var shape = ProfilePictureShape.Ellipse;
+            if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                if (supergroup.IsForum)
+                {
+                    shape = ProfilePictureShape.Superellipse;
+                }
+                else if (supergroup.IsDirectMessagesGroup)
+                {
+                    shape = ProfilePictureShape.Tail;
+                }
+            }
+
+            ProfilePictureSourceText text;
+            if (supergroup == null && clientService.TryGetUser(chat, out User user))
+            {
+                if (user.Type is UserTypeDeleted)
+                {
+                    text = ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
+                }
+                else
+                {
+                    text = ProfilePictureSourceText.GetUser(clientService, user);
+                }
+            }
+            else
+            {
+                text = ProfilePictureSourceText.GetChat(clientService, chat, shape);
+            }
+
+            var photo = chat.Photo;
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, chat.Id, photo.Small, photo.Minithumbnail, text, shape);
+            }
+
+            return text;
+        }
     }
 
-    public record ProfilePictureSourceChat(IClientService ClientService, Chat Chat)
-        : ProfilePictureSource(ClientService);
+    public record ProfilePictureSourcePhoto(IClientService ClientService, long Id, File Photo, Minithumbnail Minithumbnail, ProfilePictureSourceText Text, ProfilePictureShape Shape)
+        : ProfilePictureSource(Shape);
 
-    // TODO: this doesn't properly support equality because User is not singleton
-    public record ProfilePictureSourceUser(IClientService ClientService, User User)
-        : ProfilePictureSource(ClientService);
-
-    public record ProfilePictureSourceText(string Initials, bool IsGlyph, Color TopColor, Color BottomColor)
-        : ProfilePictureSource(ClientService: null)
+    public record ProfilePictureSourceText(string Initials, bool IsGlyph, Color TopColor, Color BottomColor, ProfilePictureShape Shape = ProfilePictureShape.Ellipse)
+        : ProfilePictureSource(Shape)
     {
         private static readonly Color[] _colorsTop = new Color[7]
         {
@@ -890,9 +971,26 @@ namespace Telegram.Controls
             return compositor.CreateColorBrush(_colors[Math.Abs(i % _colors.Length)]);
         }
 
-        public static ProfilePictureSourceText GetChat(IClientService clientService, Chat chat)
+        public static ProfilePictureSourceText GetChat(IClientService clientService, Chat chat, ProfilePictureShape shape = ProfilePictureShape.None)
         {
-            return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(chat.Title), false, clientService.GetAccentColor(chat.AccentColorId));
+            if (shape == ProfilePictureShape.None)
+            {
+                shape = ProfilePictureShape.Ellipse;
+
+                if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
+                {
+                    if (supergroup.IsForum)
+                    {
+                        shape = ProfilePictureShape.Superellipse;
+                    }
+                    else if (supergroup.IsDirectMessagesGroup)
+                    {
+                        shape = ProfilePictureShape.Tail;
+                    }
+                }
+            }
+
+            return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(chat.Title), false, clientService.GetAccentColor(chat.AccentColorId), shape);
         }
 
         public static ProfilePictureSourceText GetChat(IClientService clientService, ChatInviteLinkInfo chat)
@@ -905,49 +1003,49 @@ namespace Telegram.Controls
             return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(user.FirstName, user.LastName), false, clientService.GetAccentColor(user.AccentColorId));
         }
 
-        public static ProfilePictureSourceText GetNameForUser(string firstName, string lastName, long id = 5)
+        public static ProfilePictureSourceText GetNameForUser(string firstName, string lastName, long id = 5, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
         {
             return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(firstName, lastName), false, id);
         }
 
-        public static ProfilePictureSourceText GetNameForUser(string name, long id = 5)
+        public static ProfilePictureSourceText GetNameForUser(string name, long id = 5, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
         {
             return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(name), false, id);
         }
 
-        public static ProfilePictureSourceText GetNameForChat(string title, long id = 5)
+        public static ProfilePictureSourceText GetNameForChat(string title, long id = 5, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
         {
             return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(title), false, id);
         }
 
-        public static ProfilePictureSourceText GetGlyph(string glyph, long id = 5)
+        public static ProfilePictureSourceText GetGlyph(string glyph, long id = 5, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
         {
             return ProfilePictureSourceText.FromId(glyph, true, id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ProfilePictureSourceText FromNameColor(string initials, bool isGlyph, NameColor color)
+        private static ProfilePictureSourceText FromNameColor(string initials, bool isGlyph, NameColor color, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
         {
             if (color == null)
             {
-                return new ProfilePictureSourceText(initials, isGlyph, _disabledTop, _disabled);
+                return new ProfilePictureSourceText(initials, isGlyph, _disabledTop, _disabled, shape);
             }
             else
             {
-                return new ProfilePictureSourceText(initials, isGlyph, _colorsTop[Math.Abs(color.BuiltInAccentColorId % _colors.Length)], _colors[Math.Abs(color.BuiltInAccentColorId % _colors.Length)]);
+                return new ProfilePictureSourceText(initials, isGlyph, _colorsTop[Math.Abs(color.BuiltInAccentColorId % _colors.Length)], _colors[Math.Abs(color.BuiltInAccentColorId % _colors.Length)], shape);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ProfilePictureSourceText FromId(string initials, bool isGlyph, long id)
+        private static ProfilePictureSourceText FromId(string initials, bool isGlyph, long id, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
         {
             if (id == long.MinValue)
             {
-                return new ProfilePictureSourceText(initials, isGlyph, _disabledTop, _disabled);
+                return new ProfilePictureSourceText(initials, isGlyph, _disabledTop, _disabled, shape);
             }
             else
             {
-                return new ProfilePictureSourceText(initials, isGlyph, _colorsTop[Math.Abs(id % _colors.Length)], _colors[Math.Abs(id % _colors.Length)]);
+                return new ProfilePictureSourceText(initials, isGlyph, _colorsTop[Math.Abs(id % _colors.Length)], _colors[Math.Abs(id % _colors.Length)], shape);
             }
         }
     }
