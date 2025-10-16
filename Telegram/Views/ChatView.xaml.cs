@@ -5060,6 +5060,7 @@ namespace Telegram.Views
                 {
                     _forumViewModel = new TopicListViewModel(ViewModel.ClientService, ViewModel.Settings, ViewModel.Aggregator, null, false, forum);
                     _forumViewModel.NavigationService = ViewModel.NavigationService;
+                    _forumViewModel.Dispatcher = ViewModel.Dispatcher;
 
                     ForumNavigation.UpdateType(ForumViewType.Vertical);
                     ForumNavigationHorizontal.UpdateType(ForumViewType.Horizontal);
