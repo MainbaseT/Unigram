@@ -245,18 +245,6 @@ namespace winrt::Telegram::Native::implementation
                     moduleFilename = moduleFilename.substr(moduleFilenamePos + 1);
                 }
 
-                if (moduleFilename.rfind(L"Telegram", 0) != 0)
-                {
-                    skipping = true;
-                    continue;
-                }
-
-                if (skipping)
-                {
-                    skipping = false;
-                    trace += L"    ...\n";
-                }
-
                 trace += wstrprintf(L"   at %s+0x%08lx\n", moduleFilename.c_str(), (uint32_t)((unsigned char*)pointer - moduleBase));
                 frames.Append({ (intptr_t)pointer, (intptr_t)moduleBase });
             }
