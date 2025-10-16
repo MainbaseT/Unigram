@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls;
@@ -88,6 +89,13 @@ namespace Telegram.Views
             _debouncer.Start();
         }
 
+        private readonly List<long> _viewVisibleMessages = new();
+        private readonly Dictionary<long, IPlayerView> _viewVisibleMessagesNext = new();
+        private readonly HashSet<long> _viewVisibleMessagesPrev = new();
+
+        private long _viewMessagesFirstVisibleId = 0;
+        private long _viewMessagesLastVisibleId = 0;
+
         public void ViewVisibleMessages(bool intermediate)
         {
             var chat = ViewModel.Chat;
@@ -117,9 +125,6 @@ namespace Telegram.Views
             var minMessageTopicIndex = panel.FirstVisibleIndex;
             var minMessageTopicValue = default(MessageTopic);
 
-            var visible = new List<long>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
-            var animations = new List<(SelectorItem, MessageViewModel)>(panel.LastVisibleIndex - panel.FirstVisibleIndex);
-
             var messages = ElementComposition.GetElementVisual(Messages);
             var scroll = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(Messages.ScrollingHost);
             var tracker = ElementComposition.GetElementVisual(DateHeaderRelative);
@@ -129,6 +134,8 @@ namespace Telegram.Views
 
             var stickyAbove = false;
             var stickyBelow = false;
+
+            var playAnimations = !intermediate && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated;
 
             for (int i = panel.FirstVisibleIndex; i <= Math.Min(panel.LastVisibleIndex + 1, Messages.Items.Count - 1); i++)
             {
@@ -459,17 +466,25 @@ namespace Telegram.Views
                 {
                     if (message.Content is MessageAlbum album)
                     {
-                        visible.AddRange(album.Messages.Keys);
+                        _viewVisibleMessages.AddRange(album.Messages.Keys);
                     }
                     else
                     {
-                        visible.Add(message.Id);
+                        _viewVisibleMessages.Add(message.Id);
                     }
                 }
 
-                if (message.Content is not MessageAlbum)
+                if (playAnimations && message.Content is not MessageAlbum)
                 {
-                    animations.Add((container, message));
+                    var result = Play(container, message);
+                    if (result.Item2 != null)
+                    {
+                        _viewVisibleMessagesNext[result.Item1] = result.Item2;
+                    }
+                    else if (result.Item1 != 0)
+                    {
+                        _viewVisibleMessagesPrev.Add(result.Item1);
+                    }
                 }
 
                 while (ViewModel.RepliesStack.TryPeek(out long reply) && reply == message.Id)
@@ -523,7 +538,7 @@ namespace Telegram.Views
             }
 
             // Read and play messages logic:
-            if (visible.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !FromPreview)
+            if (_viewVisibleMessages.Count > 0 && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && !FromPreview)
             {
                 MessageSource source = ViewModel.Type switch
                 {
@@ -537,19 +552,53 @@ namespace Telegram.Views
                 };
 
                 // This is needed because we don't keep all topics messages in memory as TDLib would do
-                ViewModel.ClientService.ViewMessages(chat.Id, ViewModel.TopicId, visible, source, false);
+                ViewModel.ClientService.ViewMessages(chat.Id, ViewModel.TopicId, _viewVisibleMessages, source, false);
             }
 
-            if (animations.Count > 0 && !intermediate && ViewModel.NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated)
+            if (playAnimations && (_prev.Count > 0 || _viewVisibleMessagesNext.Count > 0))
             {
-                Play(animations);
+                List<long> keysToRemove = null;
+                foreach (var kvp in _prev)
+                {
+                    var key = kvp.Key;
+                    if (_viewVisibleMessagesNext.ContainsKey(key) || _viewVisibleMessagesPrev.Contains(key))
+                        continue;
+
+                    if (kvp.Value.Target is IPlayerView presenter && presenter.LoopCount == 0)
+                        presenter.ViewportChanged(false);
+
+                    keysToRemove ??= new();
+                    keysToRemove.Add(key);
+                }
+
+                if (keysToRemove != null)
+                {
+                    foreach (var key in keysToRemove)
+                        _prev.Remove(key);
+                }
+
+                foreach (var item in _viewVisibleMessagesNext)
+                {
+                    //if (_prev.TryGetValue(item.Key, out var wr))
+                    //    wr.Target = item.Value;
+                    //else
+                    _prev[item.Key] = new WeakReference(item.Value);
+                    item.Value.ViewportChanged(true);
+                }
             }
+
+            _viewVisibleMessages.Clear();
+            _viewVisibleMessagesNext.Clear();
+            _viewVisibleMessagesPrev.Clear();
 
             // Pinned banner
-            if (firstVisibleId == 0 || lastVisibleId == 0)
+            if (firstVisibleId == 0 || lastVisibleId == 0 || firstVisibleId == _viewMessagesFirstVisibleId || lastVisibleId == _viewMessagesLastVisibleId)
             {
                 return;
             }
+
+            _viewMessagesFirstVisibleId = firstVisibleId;
+            _viewMessagesLastVisibleId = lastVisibleId;
 
             if (ViewModel.Thread != null)
             {
@@ -775,6 +824,53 @@ namespace Telegram.Views
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private (int, IPlayerView) Play(SelectorItem container, MessageViewModel message)
+        {
+            if (message.Content is MessageDice dice)
+            {
+                if (message.GeneratedContentUnread)
+                {
+                    message.GeneratedContentUnread = dice.IsInitialState();
+                }
+                else
+                {
+                    // We don't want to start already played dices
+                    // but we don't even want to stop them if they're already playing.
+                    return (message.AnimationHash(), null);
+                }
+            }
+
+            if (message.IsAnimatedContentDownloadCompleted())
+            {
+                var root = container.ContentTemplateRoot as FrameworkElement;
+                if (root is not MessageSelector selector || selector.Content is not MessageBubble bubble)
+                {
+                    return (0, null);
+                }
+
+                var player = bubble.GetPlaybackElement();
+                if (player != null)
+                {
+                    return (message.AnimationHash(), player);
+                }
+            }
+
+            if (message.Effect != null && message.GeneratedContentUnread && message.SendingState == null)
+            {
+                var root = container.ContentTemplateRoot as FrameworkElement;
+                if (root is not MessageSelector selector || selector.Content is not MessageBubble bubble)
+                {
+                    return (0, null);
+                }
+
+                message.GeneratedContentUnread = !bubble.PlayMessageEffect(message);
+            }
+
+            return (0, null);
+        }
+
+        // TODO: remove
         public void Play(IEnumerable<(SelectorItem Container, MessageViewModel Message)> items)
         {
             Dictionary<long, IPlayerView> next = null;

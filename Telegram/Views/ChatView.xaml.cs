@@ -205,6 +205,10 @@ namespace Telegram.Views
             _debouncer.Tick += (s, args) =>
             {
                 _debouncer.Stop();
+
+                _viewMessagesFirstVisibleId = 0;
+                _viewMessagesLastVisibleId = 0;
+
                 ViewVisibleMessages(false);
             };
 
@@ -392,6 +396,9 @@ namespace Telegram.Views
             _stickyPhotoAboveMessage = null;
             _stickyPhotoBelowTracked = null;
             _stickyPhotoBelowMessage = null;
+
+            _viewMessagesFirstVisibleId = 0;
+            _viewMessagesLastVisibleId = 0;
         }
 
         public void Deactivate(bool navigation)
