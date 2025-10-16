@@ -27,7 +27,7 @@ namespace Telegram.Navigation.Services
         public void Remove(INavigationService navigationService)
         {
             _items.Remove(navigationService);
-            navigationService.Disconnect();
+            navigationService?.Disconnect();
         }
 
         public void Clear()
