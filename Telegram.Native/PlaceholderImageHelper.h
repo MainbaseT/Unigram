@@ -214,7 +214,7 @@ namespace winrt::Telegram::Native::implementation
 
         void StopWatchingCurrentDevice()
         {
-            if (m_dxgiDevice)
+            if (m_dxgiDevice && m_onDeviceLostHandler)
             {
                 // QI For the ID3D11Device4 interface.
                 auto d3dDevice{ m_dxgiDevice.as<::ID3D11Device4>() };
@@ -271,7 +271,7 @@ namespace winrt::Telegram::Native::implementation
         {
             if (FAILED(m_d3dDevice->GetDeviceRemovedReason()))
             {
-                return HandleDirect3DDeviceLost(true);
+                return CreateDeviceResources();
             }
 
             return S_OK;
@@ -339,7 +339,6 @@ namespace winrt::Telegram::Native::implementation
         HRESULT CreateTextFormat(double fontSize);
 
         void OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& /* args */);
-        HRESULT HandleDirect3DDeviceLost(bool stop);
 
         HRESULT DrawBlurredImpl(IWICBitmapSource* wicBitmapSource, float blurAmount, SoftwareBitmap& bitmap, bool minithumbnail);
         HRESULT SaveImageToStream(ID2D1Image* image, REFGUID wicFormat, IRandomAccessStream randomAccessStream);

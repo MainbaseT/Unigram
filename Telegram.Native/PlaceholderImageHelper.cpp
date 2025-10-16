@@ -391,7 +391,7 @@ namespace winrt::Telegram::Native::implementation
 
         if (result == DXGI_ERROR_DEVICE_REMOVED || result == DXGI_ERROR_DEVICE_RESET)
         {
-            ReturnIfFailed(result, HandleDirect3DDeviceLost(true));
+            ReturnIfFailed(result, CreateDeviceResources());
             ReturnIfFailed(result, source->CreateDeviceResources(m_d2dDevice.get()));
             return Invalidate(imageSource, buffer);
         }
@@ -837,7 +837,7 @@ namespace winrt::Telegram::Native::implementation
 
         if ((result = m_d2dContext->EndDraw()) == D2DERR_RECREATE_TARGET)
         {
-            ReturnIfFailed(result, HandleDirect3DDeviceLost(true));
+            ReturnIfFailed(result, CreateDeviceResources());
             return DrawBlurredImpl(wicBitmapSource, blurAmount, bitmap, minithumbnail);
         }
 
@@ -993,11 +993,20 @@ namespace winrt::Telegram::Native::implementation
 
         if (m_compositor)
         {
-            auto compositorInterop = m_compositor.as<abi::ICompositorInterop>();
-            winrt::com_ptr<abi::ICompositionGraphicsDevice> deviceInterop;
-            ReturnIfFailed(result, compositorInterop->CreateGraphicsDevice(m_d2dDevice.get(), deviceInterop.put()));
+            // If the composition device already exists, invalidate the rendering device
+            if (m_compositionDevice)
+            {
+                winrt::com_ptr<abi::ICompositionGraphicsDeviceInterop> compositionGraphicsDeviceInterop{ m_compositionDevice.as<abi::ICompositionGraphicsDeviceInterop>() };
+                result = compositionGraphicsDeviceInterop->SetRenderingDevice(m_d2dDevice.get());
+            }
+            else
+            {
+                auto compositorInterop = m_compositor.as<abi::ICompositorInterop>();
+                winrt::com_ptr<abi::ICompositionGraphicsDevice> deviceInterop;
+                ReturnIfFailed(result, compositorInterop->CreateGraphicsDevice(m_d2dDevice.get(), deviceInterop.put()));
 
-            m_compositionDevice = deviceInterop.as<CompositionGraphicsDevice>();
+                m_compositionDevice = deviceInterop.as<CompositionGraphicsDevice>();
+            }
         }
 
         m_deviceLostHelper.WatchDevice(dxgiDevice);
@@ -1006,23 +1015,9 @@ namespace winrt::Telegram::Native::implementation
         return S_OK;
     }
 
-    void PlaceholderImageHelper::OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& /* args */)
+    void PlaceholderImageHelper::OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& args)
     {
-        HandleDirect3DDeviceLost(false);
-    }
-
-    HRESULT PlaceholderImageHelper::HandleDirect3DDeviceLost(bool stop)
-    {
-        if (stop)
-        {
-            m_deviceLostHelper.StopWatchingCurrentDevice();
-        }
-
-        HRESULT result;
-        ReturnIfFailed(result, CreateDeviceResources());
-
-        winrt::com_ptr<abi::ICompositionGraphicsDeviceInterop> compositionGraphicsDeviceInterop{ m_compositionDevice.as<abi::ICompositionGraphicsDeviceInterop>() };
-        return compositionGraphicsDeviceInterop->SetRenderingDevice(m_d2dDevice.get());
+        CreateDeviceResources();
     }
 
     HRESULT PlaceholderImageHelper::CreateTextFormat(double fontSize)

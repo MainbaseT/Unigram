@@ -41,7 +41,7 @@ namespace winrt::Telegram::Native::implementation
         Invalidate(m_rasterizationScale);
 
         m_xamlRootChanged = m_xamlRoot.Changed({ this, &MessageBubbleNineGrid::OnXamlRootChanged });
-        m_context->m_compositionDevice.RenderingDeviceReplaced({ this, &MessageBubbleNineGrid::OnRenderingDeviceReplaced });
+        m_renderingDeviceReplaced = m_context->m_compositionDevice.RenderingDeviceReplaced({ this, &MessageBubbleNineGrid::OnRenderingDeviceReplaced });
     }
 
     MessageBubbleNineGrid::~MessageBubbleNineGrid()
