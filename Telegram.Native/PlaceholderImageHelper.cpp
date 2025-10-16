@@ -391,7 +391,7 @@ namespace winrt::Telegram::Native::implementation
 
         if (result == DXGI_ERROR_DEVICE_REMOVED || result == DXGI_ERROR_DEVICE_RESET)
         {
-            ReturnIfFailed(result, HandleDirect3DDeviceLost());
+            ReturnIfFailed(result, HandleDirect3DDeviceLost(true));
             ReturnIfFailed(result, source->CreateDeviceResources(m_d2dDevice.get()));
             return Invalidate(imageSource, buffer);
         }
@@ -837,7 +837,7 @@ namespace winrt::Telegram::Native::implementation
 
         if ((result = m_d2dContext->EndDraw()) == D2DERR_RECREATE_TARGET)
         {
-            ReturnIfFailed(result, HandleDirect3DDeviceLost());
+            ReturnIfFailed(result, HandleDirect3DDeviceLost(true));
             return DrawBlurredImpl(wicBitmapSource, blurAmount, bitmap, minithumbnail);
         }
 
@@ -1008,11 +1008,16 @@ namespace winrt::Telegram::Native::implementation
 
     void PlaceholderImageHelper::OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& /* args */)
     {
-        HandleDirect3DDeviceLost();
+        HandleDirect3DDeviceLost(false);
     }
 
-    HRESULT PlaceholderImageHelper::HandleDirect3DDeviceLost()
+    HRESULT PlaceholderImageHelper::HandleDirect3DDeviceLost(bool stop)
     {
+        if (stop)
+        {
+            m_deviceLostHelper.StopWatchingCurrentDevice();
+        }
+
         HRESULT result;
         ReturnIfFailed(result, CreateDeviceResources());
 

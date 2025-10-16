@@ -271,7 +271,7 @@ namespace winrt::Telegram::Native::implementation
         {
             if (FAILED(m_d3dDevice->GetDeviceRemovedReason()))
             {
-                return HandleDirect3DDeviceLost();
+                return HandleDirect3DDeviceLost(true);
             }
 
             return S_OK;
@@ -339,7 +339,7 @@ namespace winrt::Telegram::Native::implementation
         HRESULT CreateTextFormat(double fontSize);
 
         void OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& /* args */);
-        HRESULT HandleDirect3DDeviceLost();
+        HRESULT HandleDirect3DDeviceLost(bool stop);
 
         HRESULT DrawBlurredImpl(IWICBitmapSource* wicBitmapSource, float blurAmount, SoftwareBitmap& bitmap, bool minithumbnail);
         HRESULT SaveImageToStream(ID2D1Image* image, REFGUID wicFormat, IRandomAccessStream randomAccessStream);
