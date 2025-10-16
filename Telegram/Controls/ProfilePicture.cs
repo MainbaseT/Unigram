@@ -29,7 +29,8 @@ namespace Telegram.Controls
         None,
         Ellipse,
         Superellipse,
-        Tail
+        Tail,
+        Auto
     }
 
     public partial class ProfilePicture : Control

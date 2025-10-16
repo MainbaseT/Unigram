@@ -4,13 +4,18 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Telegram.Common;
+using Telegram.Navigation;
 using Telegram.Td.Api;
 using Windows.Foundation;
+using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
@@ -34,8 +39,12 @@ namespace Telegram.Controls
         private LinearGradientBrush Gradient;
         private TextBlock Initials;
 
+        private ProfilePictureShape _appliedShape;
+        private int _appliedSize;
+
         private int _fontSize;
         private bool _glyph;
+        private bool _tail;
 
         private bool _templateApplied;
 
@@ -61,6 +70,7 @@ namespace Telegram.Controls
             Gradient.GradientStops.Add(new GradientStop { Offset = 1 });
 
             _templateApplied = true;
+            InvalidateShape();
 
             base.OnApplyTemplate();
         }
@@ -94,13 +104,23 @@ namespace Telegram.Controls
             var source = Source;
             if (source != null && IsConnected)
             {
-                var presentation = new MessageProfilePicturePresentation(source, Size);
-
-                if (_presenter == null || _presenter.Presentation != presentation)
+                if (source is ProfilePictureSourceText)
                 {
                     _presenter?.Unload(this);
-                    _presenter = MessageProfilePictureLoader.Current.GetOrCreate(presentation);
-                    _presenter.Load(this);
+                    _presenter = null;
+
+                    Invalidate(source);
+                }
+                else
+                {
+                    var presentation = new MessageProfilePicturePresentation(source, Size);
+
+                    if (_presenter == null || _presenter.Presentation != presentation)
+                    {
+                        _presenter?.Unload(this);
+                        _presenter = MessageProfilePictureLoader.Current.GetOrCreate(presentation);
+                        _presenter.Load(this);
+                    }
                 }
             }
             else if (source == null)
@@ -125,6 +145,7 @@ namespace Telegram.Controls
                 if (_source != value)
                 {
                     _source = value;
+                    InvalidateShape();
                     Load();
                 }
             }
@@ -140,12 +161,45 @@ namespace Telegram.Controls
                 {
                     _size = value;
                     InvalidateMeasure();
+                    InvalidateShape();
                     Load();
                 }
             }
         }
 
-        private void Invalidate(object newValue, ProfilePictureShape shape)
+        private ProfilePictureShape _shape = ProfilePictureShape.Auto;
+        public ProfilePictureShape Shape
+        {
+            get => _shape;
+            set
+            {
+                if (_shape != value)
+                {
+                    _shape = value;
+                    InvalidateShape();
+                }
+            }
+        }
+
+        public ProfilePictureShape CalculatedShape
+        {
+            get
+            {
+                if (_shape == ProfilePictureShape.Auto)
+                {
+                    if (_source != null)
+                    {
+                        return _source.Shape;
+                    }
+
+                    return ProfilePictureShape.Ellipse;
+                }
+
+                return _shape;
+            }
+        }
+
+        private void Invalidate(object newValue)
         {
             if (LayoutRoot == null)
             {
@@ -167,6 +221,8 @@ namespace Telegram.Controls
                     _glyph = text.IsGlyph;
                     Initials.Margin = new Thickness(0, 1, 0, _glyph ? 0 : 2);
                 }
+
+                InvalidateFontSize();
             }
             else if (newValue is ImageBrush texture)
             {
@@ -178,29 +234,96 @@ namespace Telegram.Controls
                 LayoutRoot.Background = null;
                 Initials.Visibility = Visibility.Collapsed;
             }
-
-            UpdateCornerRadius();
-            UpdateFontSize();
         }
 
-        private void UpdateCornerRadius()
+        private void InvalidateShape()
         {
-            if (LayoutRoot == null || Size == 0)
+            var shape = CalculatedShape;
+            var size = Size;
+
+            if (shape == _appliedShape && size == _appliedSize)
             {
                 return;
             }
 
-            LayoutRoot.CornerRadius = new CornerRadius(Size / 2d);
-        }
-
-        private void UpdateFontSize()
-        {
-            if (Initials == null || double.IsNaN(Width))
+            if (LayoutRoot == null || size == 0)
             {
                 return;
             }
 
-            var fontSize = Width switch
+            _appliedShape = shape;
+            _appliedSize = size;
+
+            if (shape == ProfilePictureShape.Tail)
+            {
+                _tail = true;
+
+                static CompositionPath GetTail(float radius)
+                {
+                    CanvasGeometry result;
+                    using (var builder = new CanvasPathBuilder(null))
+                    {
+                        var cy = radius;
+                        var cx = radius;
+                        var r = radius;
+
+                        float b = cy + r;
+                        float x = r / 81.0f;
+
+                        float startAngle = -180 * (MathF.PI / 180);
+                        float sweepAngle = 270 * (MathF.PI / 180);
+
+                        float x1 = cx + MathF.Cos(startAngle) * r;
+                        float y1 = cy + MathF.Sin(startAngle) * r;
+
+                        float x2 = cx + MathF.Cos(startAngle + sweepAngle) * r;
+                        float y2 = cy + MathF.Sin(startAngle + sweepAngle) * r;
+
+                        builder.BeginFigure(new Vector2(x1, y1));
+                        builder.AddArc(new Vector2(x2, y2), r, r, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Large);
+                        builder.AddCubicBezier(new Vector2(cx - 13 * x, b), new Vector2(cx - 25 * x, b - 3 * x), new Vector2(cx - 36f * x, b - 8.42f * x));
+                        builder.AddCubicBezier(new Vector2(cx - 52 * x, b - x), new Vector2(cx - 56.5f * x, b - x), new Vector2(cx - 78.02f * x, b - x));
+                        builder.AddCubicBezier(new Vector2(cx - 80 * x, b - x), new Vector2(cx - 81 * x, b - 3 * x), new Vector2(cx - 79.52f * x, b - 4.5f * x));
+                        builder.AddCubicBezier(new Vector2(cx - 78 * x, b - 6 * x), new Vector2(cx - 63.73f * x, b - 15 * x), new Vector2(cx - 63.73f * x, b - 31 * x));
+                        builder.AddCubicBezier(new Vector2(cx - 74.5f * x, b - 44.75f * x), new Vector2(cx - r, cy + 18.87f * x), new Vector2(cx - r, cy));
+                        builder.EndFigure(CanvasFigureLoop.Closed);
+                        result = CanvasGeometry.CreatePath(builder);
+                    }
+                    return new CompositionPath(result);
+                }
+
+                var compositor = BootStrapper.Current.Compositor;
+
+                var polygon = compositor.CreatePathGeometry();
+                polygon.Path = GetTail(Size / 2f);
+
+                var visual = ElementComposition.GetElementVisual(this);
+                visual.Clip = compositor.CreateGeometricClip(polygon);
+            }
+            else if (_tail)
+            {
+                _tail = false;
+
+                var visual = ElementComposition.GetElementVisual(this);
+                visual.Clip = null;
+            }
+
+            LayoutRoot.CornerRadius = new CornerRadius(shape switch
+            {
+                ProfilePictureShape.Superellipse => size / 4d,
+                ProfilePictureShape.Ellipse => size / 2d,
+                _ => 0
+            });
+        }
+
+        private void InvalidateFontSize()
+        {
+            if (Initials == null || Size == 0)
+            {
+                return;
+            }
+
+            var fontSize = Size switch
             {
                 < 20 => 10,
                 < 30 => 12,
@@ -225,7 +348,6 @@ namespace Telegram.Controls
         {
             public enum State
             {
-                Template,
                 Download,
                 Update
             }
@@ -244,7 +366,6 @@ namespace Telegram.Controls
             private long _fileToken;
 
             private object _source;
-            private ProfilePictureShape _shape;
 
             public MessageProfilePicturePresenter(MessageProfilePictureLoader loader, MessageProfilePicturePresentation presentation)
             {
@@ -260,7 +381,7 @@ namespace Telegram.Controls
 
                 _controller = new ThumbnailController(_texture);
 
-                _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                _dispatcherQueue = loader.DispatcherQueue;
             }
 
             public MessageProfilePicturePresentation Presentation => _presentation;
@@ -268,15 +389,15 @@ namespace Telegram.Controls
             public void Load(MessageProfilePicture picture)
             {
                 _pictures.Add(picture);
-                picture.Invalidate(_source, _presentation.Source.Shape);
+                picture.Invalidate(_source);
 
-                Invalidate(State.Download);
+                Load(State.Download);
             }
 
-            private void Invalidate(State state)
+            private void Load(State state)
             {
                 var source = _presentation.Source;
-                if (source is ProfilePictureSourcePhoto sourcePhoto && _fileId != sourcePhoto.Photo.Id)
+                if (source is ProfilePictureSourcePhoto sourcePhoto && (_fileId != sourcePhoto.Photo.Id || state != State.Download))
                 {
                     _fileId = sourcePhoto.Photo.Id;
                     UpdateManager.Unsubscribe(this, ref _fileToken);
@@ -288,7 +409,7 @@ namespace Telegram.Controls
                     _fileId = null;
                     UpdateManager.Unsubscribe(this, ref _fileToken);
 
-                    Invalidate(sourceText, sourceText.Shape);
+                    Invalidate(sourceText);
                 }
             }
 
@@ -297,7 +418,7 @@ namespace Telegram.Controls
                 if (photo.Photo.Local.IsDownloadingCompleted)
                 {
                     _controller.Bitmap(photo.Photo.Local.Path, side, side, photo.Id);
-                    Invalidate(_texture, photo.Shape);
+                    Invalidate(_texture);
 
                     return;
                 }
@@ -314,38 +435,37 @@ namespace Telegram.Controls
                 if (photo.Minithumbnail != null)
                 {
                     _controller.Blur(photo.Minithumbnail.Data, 3, photo.Id);
-                    Invalidate(_texture, photo.Shape);
+                    Invalidate(_texture);
 
                     return;
                 }
 
                 _controller.Recycle();
-                Invalidate(photo.Text, photo.Shape);
+                Invalidate(photo.Text);
             }
 
-            private void Invalidate(object value, ProfilePictureShape shape)
+            private void Invalidate(object value)
             {
-                if (_source != value || _shape != shape)
+                if (_source != value)
                 {
                     _source = value;
-                    _shape = shape;
 
                     foreach (var picture in _pictures)
                     {
-                        picture.Invalidate(value, shape);
+                        picture.Invalidate(value);
                     }
                 }
             }
 
             private void UpdateFile(object target, File file)
             {
-                _dispatcherQueue.TryEnqueue(() => Invalidate(State.Update));
+                _dispatcherQueue.TryEnqueue(() => Load(State.Update));
             }
 
             public void Unload(MessageProfilePicture picture)
             {
                 _pictures.Remove(picture);
-                picture.Invalidate(null, _shape);
+                picture.Invalidate(null);
 
                 if (_pictures.Empty())
                 {
@@ -364,6 +484,14 @@ namespace Telegram.Controls
             public static MessageProfilePictureLoader Current => _current ??= new();
 
             private readonly Dictionary<MessageProfilePicturePresentation, MessageProfilePicturePresenter> _presenters = new();
+            private readonly DispatcherQueue _dispatcherQueue;
+
+            private MessageProfilePictureLoader()
+            {
+                _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+            }
+
+            public DispatcherQueue DispatcherQueue => _dispatcherQueue;
 
             public MessageProfilePicturePresenter GetOrCreate(MessageProfilePicturePresentation presentation)
             {
