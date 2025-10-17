@@ -916,6 +916,17 @@ namespace Telegram.Controls
             {
                 Location.Visibility = Visibility.Visible;
                 Location.Content = fullInfo.BusinessInfo.Location.Address;
+
+                if (fullInfo.BusinessInfo.Location.Location != null)
+                {
+                    LocationMap.Visibility = Visibility.Visible;
+                    LocationMap.XamlRoot = ViewModel.XamlRoot;
+                    LocationMap.SetSource(ViewModel.ClientService, fullInfo.BusinessInfo.Location.Location, 44, 44, chat.Id);
+                }
+                else
+                {
+                    LocationMap.Visibility = Visibility.Collapsed;
+                }
             }
 
             if (fullInfo.Birthdate != null)

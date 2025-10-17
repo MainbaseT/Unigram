@@ -513,6 +513,13 @@
                             </MenuFlyoutItem>
                         </MenuFlyout>
                     </Button.ContextFlyout>
+                    <controls:SettingsButton.Badge>
+                        <controls:ImageView x:Name="LocationMap"
+                                            Width="44"
+                                            Height="44"
+                                            CornerRadius="4"
+                                            Margin="0,-3,0,-4" />
+                    </controls:SettingsButton.Badge>
                 </controls:SettingsButton>
 
                 <cells:ProfileHoursCell x:Name="BusinessHours"
