@@ -167,7 +167,7 @@ namespace Telegram.Streams
                     // Always request new bytes
                     _clientService.DownloadFile(_file.Id, _priority, _offset, buffer, false);
 
-                    Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, limit: {buffer}, count: {count}, download: {_file.Local.DownloadOffset}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                    //Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, limit: {buffer}, count: {count}, download: {_file.Local.DownloadOffset}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
                     return false;
                 }
 
@@ -177,7 +177,7 @@ namespace Telegram.Streams
 
                 _clientService.DownloadFile(_file.Id, _priority, _offset, buffer, false);
 
-                Logger.Debug($"Not enough data available for {_file.Id}, offset: {_offset}, limit: {buffer}, count: {count}, download: {_file.Local.DownloadOffset}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                //Logger.Debug($"Not enough data available for {_file.Id}, offset: {_offset}, limit: {buffer}, count: {count}, download: {_file.Local.DownloadOffset}, prefix: {_file.Local.DownloadedPrefixSize}, size: {_file.Size}");
                 return true;
             }
         }
@@ -217,14 +217,14 @@ namespace Telegram.Streams
 
                 if (available || canceled)
                 {
-                    if (available)
-                    {
-                        Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, count: {_count}, download: {_file.Local.DownloadOffset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
-                    }
-                    else
-                    {
-                        Logger.Info($"Download was canceled for {_file.Id}");
-                    }
+                    //if (available)
+                    //{
+                    //    Logger.Debug($"Next chunk is available for {_file.Id}, offset: {_offset}, count: {_count}, download: {_file.Local.DownloadOffset}, prefix: {file.Local.DownloadedPrefixSize}, size: {_file.Size}");
+                    //}
+                    //else
+                    //{
+                    //    Logger.Info($"Download was canceled for {_file.Id}");
+                    //}
 
                     _event.Set();
                 }
