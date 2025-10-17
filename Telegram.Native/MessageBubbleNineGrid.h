@@ -24,17 +24,17 @@ namespace winrt::Telegram::Native::implementation
     // TODO: this type is not currently exposed through IDL as we just return CompositionEffectBrush
     struct MessageBubbleNineGrid : MessageBubbleNineGridT<MessageBubbleNineGrid>
     {
-        MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, Compositor compositor, XamlRoot xamlRoot, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius);
+        MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, Compositor compositor, XamlRoot xamlRoot, CompositionDrawingSurface surface, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius);
 
         ~MessageBubbleNineGrid();
 
         CompositionEffectBrush Effect();
 
-    private:
         static constexpr float s_width = 40.f;
         static constexpr float s_height = 40.f;
         static constexpr float s_insets = 15.f;
 
+    private:
         Compositor m_compositor;
         XamlRoot m_xamlRoot;
         winrt::com_ptr<PlaceholderImageHelper> m_context;

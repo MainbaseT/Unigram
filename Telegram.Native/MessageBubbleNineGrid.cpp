@@ -13,10 +13,11 @@ using namespace winrt::Windows::Graphics::DirectX;
 
 namespace winrt::Telegram::Native::implementation
 {
-    MessageBubbleNineGrid::MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, Compositor compositor, XamlRoot xamlRoot, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
+    MessageBubbleNineGrid::MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, Compositor compositor, XamlRoot xamlRoot, CompositionDrawingSurface surface, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
         : m_context(context)
         , m_compositor(compositor)
         , m_xamlRoot(xamlRoot)
+        , m_surface(surface.as<abi::ICompositionDrawingSurfaceInterop>())
         , m_topLeftRadius(topLeftRadius)
         , m_topRightRadius(topRightRadius)
         , m_bottomRightRadius(bottomRightRadius)
@@ -25,13 +26,9 @@ namespace winrt::Telegram::Native::implementation
         , m_brush(compositor.CreateNineGridBrush())
         , m_effect(context->m_alphaMaskFactory.CreateBrush())
     {
-        winrt::Windows::Graphics::SizeInt32 imageSize(std::ceil(s_width * m_rasterizationScale), std::ceil(s_height * m_rasterizationScale));
-        auto surface = m_context->m_compositionDevice.CreateDrawingSurface2(imageSize, DirectXPixelFormat::B8G8R8A8UIntNormalized, DirectXAlphaMode::Premultiplied);
         auto surfaceBrush = compositor.CreateSurfaceBrush();
         surfaceBrush.Surface(surface);
         surfaceBrush.Stretch(CompositionStretch::Fill);
-
-        m_surface = surface.as<abi::ICompositionDrawingSurfaceInterop>();
 
         m_brush.Source(surfaceBrush);
         m_brush.SetInsets(s_insets * static_cast<float>(m_rasterizationScale));

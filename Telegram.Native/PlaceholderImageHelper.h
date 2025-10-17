@@ -340,6 +340,8 @@ namespace winrt::Telegram::Native::implementation
 
         void OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& /* args */);
 
+        CompositionDrawingSurface CreateDrawingSurface(SizeInt32 size);
+
         HRESULT DrawBlurredImpl(IWICBitmapSource* wicBitmapSource, float blurAmount, SoftwareBitmap& bitmap, bool minithumbnail);
         HRESULT SaveImageToStream(ID2D1Image* image, REFGUID wicFormat, IRandomAccessStream randomAccessStream);
 

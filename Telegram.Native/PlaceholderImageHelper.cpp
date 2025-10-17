@@ -1526,15 +1526,35 @@ namespace winrt::Telegram::Native::implementation
                 auto xamlRoot = content.XamlRoot();
                 if (xamlRoot)
                 {
-                    auto nineGrid = winrt::make_self<MessageBubbleNineGrid>(get_strong(), m_compositor, xamlRoot, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
-                    m_nineGridCache[key] = nineGrid;
-                    return nineGrid->Effect();
+                    double rasterizationScale = xamlRoot.RasterizationScale();
+                    SizeInt32 imageSize(std::ceil(MessageBubbleNineGrid::s_width * rasterizationScale), std::ceil(MessageBubbleNineGrid::s_height * rasterizationScale));
+                    
+                    auto surface = CreateDrawingSurface(imageSize);
+                    if (surface)
+                    {
+                        auto nineGrid = winrt::make_self<MessageBubbleNineGrid>(get_strong(), m_compositor, xamlRoot, surface, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
+                        m_nineGridCache[key] = nineGrid;
+                        return nineGrid->Effect();
+                    }
                 }
             }
         }
 
         // XamlRoot is not ready
         return nullptr;
+    }
+
+    CompositionDrawingSurface PlaceholderImageHelper::CreateDrawingSurface(SizeInt32 size)
+    {
+        try
+        {
+            return m_compositionDevice.CreateDrawingSurface2(size, DirectXPixelFormat::B8G8R8A8UIntNormalized, DirectXAlphaMode::Premultiplied);
+        }
+        catch (...)
+        {
+            // TODO: handle device lost, for now we return null
+            return nullptr;
+        }
     }
 
     CompositionPath PlaceholderImageHelper::GetOutline(IVector<ClosedVectorPath> contours)
