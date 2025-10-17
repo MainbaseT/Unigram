@@ -12,8 +12,7 @@
         <ColumnDefinition />
     </Grid.ColumnDefinitions>
     <controls:ProfilePicture x:Name="Photo"
-                             Width="36"
-                             Height="36" />
+                             Size="36" />
 
     <controls:CustomEmojiIcon x:Name="Animated"
                               Width="28"

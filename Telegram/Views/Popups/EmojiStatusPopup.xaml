@@ -55,8 +55,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <controls:ProfilePicture x:Name="Photo"
-                                         Width="28"
-                                         Height="28" />
+                                         Size="28" />
 
                 <TextBlock x:Name="TitleText"
                            Style="{StaticResource BodyTextBlockStyle}"

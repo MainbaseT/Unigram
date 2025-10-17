@@ -2782,7 +2782,7 @@ namespace Telegram.Views
                     return;
                 }
 
-                var profilePicture = children.FirstOrDefault(x => x is MessageProfilePicture) as MessageProfilePicture;
+                var profilePicture = children.FirstOrDefault(x => x is ProfilePicture) as ProfilePicture;
                 if (profilePicture != null && profilePicture.Parent is HyperlinkButton)
                 {
                     ProfilePhoto_ContextRequested(message, profilePicture, args);
@@ -3281,7 +3281,7 @@ namespace Telegram.Views
             flyout.ShowAt(sender, args, selectionEnd - selectionStart > 0 ? FlyoutShowMode.Transient : FlyoutShowMode.Auto);
         }
 
-        private void ProfilePhoto_ContextRequested(MessageViewModel message, MessageProfilePicture profilePicture, ContextRequestedEventArgs args)
+        private void ProfilePhoto_ContextRequested(MessageViewModel message, ProfilePicture profilePicture, ContextRequestedEventArgs args)
         {
             var flyout = new MenuFlyout();
 
@@ -3534,9 +3534,8 @@ namespace Telegram.Views
                 {
                     var user = message.ClientService.GetUser(viewers[i].UserId);
                     var picture = new ProfilePicture();
-                    picture.Width = 24;
-                    picture.Height = 24;
-                    picture.SetUser(message.ClientService, user, 24);
+                    picture.Size = 24;
+                    picture.Source = ProfilePictureSource.User(message.ClientService, user);
                     picture.Margin = new Thickness(pictures.Children.Count > 0 ? -10 : 0, -2, 0, -2);
 
                     if (pictures.Children.Count > 0)
@@ -4806,7 +4805,7 @@ namespace Telegram.Views
 
                 if (ViewModel.ClientService.TryGetUser(userCommand.UserId, out User user))
                 {
-                    photo.SetUser(ViewModel.ClientService, user, 32);
+                    photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
                 }
             }
             else if (args.Item is QuickReplyShortcut shortcut)
@@ -4824,7 +4823,7 @@ namespace Telegram.Views
 
                 if (ViewModel.ClientService.TryGetUser(ViewModel.ClientService.Options.MyId, out User user))
                 {
-                    photo.SetUser(ViewModel.ClientService, user, 32);
+                    photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
                 }
             }
             else if (args.Item is User user)
@@ -4848,7 +4847,7 @@ namespace Telegram.Views
                     username.Text = string.Empty;
                 }
 
-                photo.SetUser(ViewModel.ClientService, user, 32);
+                photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
             }
             else if (args.Item is string hashtag)
             {
@@ -5100,7 +5099,7 @@ namespace Telegram.Views
             }
             else
             {
-                PhotoAlias.SetMessageSender(ViewModel.ClientService, defaultMessageSenderId, 32);
+                PhotoAlias.Source = ProfilePictureSource.MessageSender(ViewModel.ClientService, defaultMessageSenderId);
                 ShowHideSideButton(SideButton.Alias);
             }
         }
@@ -5278,7 +5277,7 @@ namespace Telegram.Views
         {
             if (ViewModel.ForumTopic is ForumTopic topic)
             {
-                Photo.Clear();
+                Photo.Source = null;
 
                 if (topic.Info.Icon.CustomEmojiId != 0)
                 {
@@ -5311,7 +5310,7 @@ namespace Telegram.Views
                 TopicIconGeneral.Visibility = Visibility.Collapsed;
 
                 Icon.Source = null;
-                Photo.SetMessageSender(ViewModel.ClientService, ViewModel.DirectMessagesChatTopic.SenderId, 36);
+                Photo.Source = ProfilePictureSource.MessageSender(ViewModel.ClientService, ViewModel.DirectMessagesChatTopic.SenderId);
             }
             else if (ViewModel.Thread != null)
             {
@@ -5331,16 +5330,14 @@ namespace Telegram.Views
                 if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeMyNotes)
                 {
                     Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.MyNotesFilled, 5);
-                    Photo.Shape = ProfilePictureShape.Ellipse;
                 }
                 else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeAuthorHidden)
                 {
                     Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.AuthorHiddenFilled, 5);
-                    Photo.Shape = ProfilePictureShape.Ellipse;
                 }
                 else if (ViewModel.SavedMessagesTopic?.Type is SavedMessagesTopicTypeSavedFromChat savedFromChat && ViewModel.ClientService.TryGetChat(savedFromChat.ChatId, out Chat savedChat))
                 {
-                    Photo.SetChat(ViewModel.ClientService, savedChat, 36);
+                    Photo.Source = ProfilePictureSource.Chat(ViewModel.ClientService, savedChat);
                 }
             }
             else
@@ -5349,7 +5346,7 @@ namespace Telegram.Views
                 TopicIconGeneral.Visibility = Visibility.Collapsed;
 
                 Icon.Source = null;
-                Photo.SetChat(ViewModel.ClientService, chat, 36);
+                Photo.Source = ProfilePictureSource.Chat(ViewModel.ClientService, chat);
             }
         }
 
@@ -6922,8 +6919,7 @@ namespace Telegram.Views
                 foreach (var messageSender in senders.Senders)
                 {
                     var picture = new ProfilePicture();
-                    picture.Width = 36;
-                    picture.Height = 36;
+                    picture.Size = 36;
                     picture.Margin = new Thickness(-4, -2, 0, -2);
 
                     var item = new MenuFlyoutProfile();
@@ -6935,14 +6931,14 @@ namespace Telegram.Views
 
                     if (ViewModel.ClientService.TryGetUser(messageSender.Sender, out User senderUser))
                     {
-                        picture.SetUser(ViewModel.ClientService, senderUser, 36);
+                        picture.Source = ProfilePictureSource.User(ViewModel.ClientService, senderUser);
 
                         item.Text = senderUser.FullName();
                         item.Info = Strings.VoipGroupPersonalAccount;
                     }
                     else if (ViewModel.ClientService.TryGetChat(messageSender.Sender, out Chat senderChat))
                     {
-                        picture.SetChat(ViewModel.ClientService, senderChat, 36);
+                        picture.Source = ProfilePictureSource.Chat(ViewModel.ClientService, senderChat);
 
                         item.Text = senderChat.Title;
 

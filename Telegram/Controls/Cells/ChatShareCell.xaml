@@ -22,8 +22,7 @@
                    StrokeThickness="2"
                    Stroke="{ThemeResource SystemControlBackgroundAccentBrush}" />
         <controls:ProfilePicture x:Name="Photo"
-                                 Width="36"
-                                 Height="36" />
+                                 Size="36" />
 
         <Border x:Name="OnlineBadge"
                 x:Load="False"

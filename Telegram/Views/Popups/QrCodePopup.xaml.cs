@@ -69,7 +69,7 @@ namespace Telegram.Views.Popups
         public QrCodePopup(IClientService clientService, INavigationService navigationService, ISettingsService settingsService, User user)
             : this(clientService, navigationService, settingsService)
         {
-            Photo.SetUser(clientService, user, 96);
+            Photo.Source = ProfilePictureSource.User(clientService, user);
 
             if (user.HasActiveUsername(out string username))
             {
@@ -87,14 +87,14 @@ namespace Telegram.Views.Popups
         {
             if (_clientService.TryGetSupergroup(chat, out Supergroup supergroup) && supergroup.HasActiveUsername(out string username))
             {
-                Photo.SetChat(clientService, chat, 96);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
                 Username.Text = string.Format("@{0}", username.ToUpper());
                 InitializeCode(username);
             }
             else if (_clientService.TryGetUser(chat, out User user))
             {
-                Photo.SetUser(clientService, user, 96);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
 
                 if (user.HasActiveUsername(out username))
                 {

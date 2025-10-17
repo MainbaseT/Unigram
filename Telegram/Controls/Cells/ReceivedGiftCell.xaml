@@ -48,8 +48,7 @@
         </controls:PatternBackground>
 
         <controls:ProfilePicture x:Name="Photo"
-                                 Width="24"
-                                 Height="24"
+                                 Size="24"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Top"
                                  Margin="4" />

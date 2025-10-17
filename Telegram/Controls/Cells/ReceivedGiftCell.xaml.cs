@@ -72,11 +72,11 @@ namespace Telegram.Controls.Cells
                     }
                     else if (clientService.TryGetUser(gift.SenderId, out User user))
                     {
-                        Photo.SetUser(clientService, user, 24);
+                        Photo.Source = ProfilePictureSource.User(clientService, user);
                     }
                     else if (clientService.TryGetChat(gift.SenderId, out Chat chat))
                     {
-                        Photo.SetChat(clientService, chat, 24);
+                        Photo.Source = ProfilePictureSource.Chat(clientService, chat);
                     }
                 }
 

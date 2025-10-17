@@ -62,7 +62,7 @@ namespace Telegram.Controls.Cells
 
                 if (usedChatId != gift.GiftTheme.Gift.UsedThemeChatId && theme.ClientService.TryGetChat(gift.GiftTheme.Gift.UsedThemeChatId, out Chat userChat))
                 {
-                    UsedThemePhoto.SetChat(theme.ClientService, userChat, 20);
+                    UsedThemePhoto.Source = ProfilePictureSource.Chat(theme.ClientService, userChat);
                     UsedTheme.Visibility = Visibility.Visible;
                 }
                 else

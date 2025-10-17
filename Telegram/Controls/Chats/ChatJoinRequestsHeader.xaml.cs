@@ -36,14 +36,7 @@ namespace Telegram.Controls.Chats
 
         private void RecentUsers_RecentUserHeadChanged(ProfilePicture sender, MessageSender messageSender)
         {
-            if (ViewModel.ClientService.TryGetUser(messageSender, out User user))
-            {
-                sender.SetUser(ViewModel.ClientService, user, 28);
-            }
-            else if (ViewModel.ClientService.TryGetChat(messageSender, out Chat chat))
-            {
-                sender.SetChat(ViewModel.ClientService, chat, 28);
-            }
+            sender.Source = ProfilePictureSource.MessageSender(ViewModel.ClientService, messageSender);
         }
 
         public bool UpdateChat(Chat chat)

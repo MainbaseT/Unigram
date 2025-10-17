@@ -33,7 +33,7 @@ namespace Telegram.Controls
     // These will be passed by MessageProfilePicturePresenter to MessageProfilePicture.Invalidate
     // + ProfilePictureSourceTexture(ImageBrush Texture, ProfilePictureShape Shape);
     // * ProfilePictureSourceText(..., ProfilePictureShape Shape);
-    public class MessageProfilePicture : ControlEx
+    public class ProfilePicture : ControlEx
     {
         private Border LayoutRoot;
         private LinearGradientBrush Gradient;
@@ -50,9 +50,9 @@ namespace Telegram.Controls
 
         private MessageProfilePicturePresenter _presenter;
 
-        public MessageProfilePicture()
+        public ProfilePicture()
         {
-            DefaultStyleKey = typeof(MessageProfilePicture);
+            DefaultStyleKey = typeof(ProfilePicture);
 
             Connected += OnLoaded;
             Disconnected += OnUnloaded;
@@ -104,7 +104,7 @@ namespace Telegram.Controls
             var source = Source;
             if (source != null && IsConnected)
             {
-                if (source is ProfilePictureSourceText)
+                if (source is ProfilePictureSourceText or ProfilePictureSourceBitmap)
                 {
                     _presenter?.Unload(this);
                     _presenter = null;
@@ -196,7 +196,7 @@ namespace Telegram.Controls
             }
         }
 
-        public ProfilePictureShape CalculatedShape
+        public ProfilePictureShape ComputedShape
         {
             get
             {
@@ -235,7 +235,12 @@ namespace Telegram.Controls
                 return;
             }
 
-            if (newValue is ProfilePictureSourceText text)
+            if (newValue is ImageBrush texture)
+            {
+                LayoutRoot.Background = texture;
+                Initials.Visibility = Visibility.Collapsed;
+            }
+            else if (newValue is ProfilePictureSourceText text)
             {
                 Gradient.GradientStops[0].Color = text.TopColor;
                 Gradient.GradientStops[1].Color = text.BottomColor;
@@ -253,9 +258,15 @@ namespace Telegram.Controls
 
                 InvalidateFontSize();
             }
-            else if (newValue is ImageBrush texture)
+            else if (newValue is ProfilePictureSourceBitmap bitmap)
             {
-                LayoutRoot.Background = texture;
+                LayoutRoot.Background = new ImageBrush
+                {
+                    ImageSource = bitmap.Bitmap,
+                    Stretch = Stretch.UniformToFill,
+                    AlignmentX = AlignmentX.Center,
+                    AlignmentY = AlignmentY.Center
+                };
                 Initials.Visibility = Visibility.Collapsed;
             }
             else
@@ -267,7 +278,7 @@ namespace Telegram.Controls
 
         private void InvalidateShape()
         {
-            var shape = CalculatedShape;
+            var shape = ComputedShape;
             var size = Size;
 
             if (shape == _appliedShape && size == _appliedSize)
@@ -389,7 +400,7 @@ namespace Telegram.Controls
 
             private readonly DispatcherQueue _dispatcherQueue;
 
-            private readonly HashSet<MessageProfilePicture> _pictures = new();
+            private readonly HashSet<ProfilePicture> _pictures = new();
 
             private int? _fileId;
             private long _fileToken;
@@ -449,13 +460,10 @@ namespace Telegram.Controls
                 }
             }
 
-            public void Load(MessageProfilePicture picture)
+            public void Load(ProfilePicture picture)
             {
-                if (IsCachingEnabled)
-                {
-                    _pictures.Add(picture);
-                    picture.Invalidate(_source);
-                }
+                _pictures.Add(picture);
+                picture.Invalidate(_source);
 
                 Load(State.Download);
             }
@@ -528,20 +536,17 @@ namespace Telegram.Controls
                 _dispatcherQueue.TryEnqueue(() => Load(State.Update));
             }
 
-            public void Unload(MessageProfilePicture picture)
+            public void Unload(ProfilePicture picture)
             {
-                if (IsCachingEnabled)
+                _pictures.Remove(picture);
+                picture.Invalidate(null);
+
+                if (_pictures.Empty())
                 {
-                    _pictures.Remove(picture);
-                    picture.Invalidate(null);
+                    UpdateManager.Unsubscribe(this, ref _fileToken);
 
-                    if (_pictures.Empty())
-                    {
-                        UpdateManager.Unsubscribe(this, ref _fileToken);
-
-                        _controller.Recycle();
-                        _loader.Unload(this);
-                    }
+                    _controller.Recycle();
+                    _loader?.Unload(this);
                 }
             }
         }

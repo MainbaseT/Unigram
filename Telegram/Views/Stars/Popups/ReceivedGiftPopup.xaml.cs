@@ -101,13 +101,13 @@ namespace Telegram.Views.Stars.Popups
 
             if (clientService.TryGetUser(receivedGift.SenderId, out User user))
             {
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
             }
             else if (clientService.TryGetChat(receivedGift.SenderId, out Chat chat))
             {
-                FromPhoto.SetChat(clientService, chat, 24);
+                FromPhoto.Source = ProfilePictureSource.Chat(clientService, chat);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = chat.Title;
             }
@@ -305,13 +305,13 @@ namespace Telegram.Views.Stars.Popups
 
             if (clientService.TryGetUser(gift.OwnerId, out User user))
             {
-                UpgradedFromPhoto.SetUser(clientService, user, 24);
+                UpgradedFromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 UpgradedFromPhoto.Visibility = Visibility.Visible;
                 UpgradedFromTitle.Text = user.FullName();
             }
             else if (clientService.TryGetChat(gift.OwnerId, out Chat chat))
             {
-                UpgradedFromPhoto.SetChat(clientService, chat, 24);
+                UpgradedFromPhoto.Source = ProfilePictureSource.Chat(clientService, chat);
                 UpgradedFromPhoto.Visibility = Visibility.Visible;
                 UpgradedFromTitle.Text = chat.Title;
             }

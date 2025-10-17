@@ -38,7 +38,7 @@ namespace Telegram.Controls.Cells.Revenue
                 var user = clientService.GetUser(premiumPurchase.UserId);
 
                 Subtitle.Visibility = Visibility.Visible;
-                Photo.SetUser(clientService, user, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
                 MediaPreview.Visibility = Visibility.Collapsed;
 
                 Title.Text = user.FullName();
@@ -49,7 +49,7 @@ namespace Telegram.Controls.Cells.Revenue
                 var user = clientService.GetUser(upgradedGiftSale.UserId);
 
                 Subtitle.Visibility = Visibility.Visible;
-                Photo.SetUser(clientService, user, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
                 MediaPreview.Visibility = Visibility.Collapsed;
 
                 Title.Text = user.FullName();
@@ -62,7 +62,7 @@ namespace Telegram.Controls.Cells.Revenue
                 var user = clientService.GetUser(upgradedGiftPurchase.UserId);
 
                 Subtitle.Visibility = Visibility.Visible;
-                Photo.SetUser(clientService, user, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
                 MediaPreview.Visibility = Visibility.Collapsed;
 
                 Title.Text = user.FullName();
@@ -73,7 +73,7 @@ namespace Telegram.Controls.Cells.Revenue
             else if (transaction.Type is StarTransactionTypeGiftTransfer giftTransfer)
             {
                 Subtitle.Visibility = Visibility.Visible;
-                Photo.SetMessageSender(clientService, giftTransfer.OwnerId, 36);
+                Photo.Source = ProfilePictureSource.MessageSender(clientService, giftTransfer.OwnerId);
                 MediaPreview.Visibility = Visibility.Collapsed;
 
                 Title.Text = clientService.GetTitle(giftTransfer.OwnerId);
@@ -118,7 +118,7 @@ namespace Telegram.Controls.Cells.Revenue
                 Subtitle.Visibility = Visibility.Visible;
 
                 Title.Text = botInvoicePurchase.ProductInfo.Title;
-                Photo.SetUser(clientService, botUser, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, botUser);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -141,7 +141,7 @@ namespace Telegram.Controls.Cells.Revenue
                 Subtitle.Visibility = Visibility.Visible;
 
                 Title.Text = botInvoiceSale.ProductInfo.Title;
-                Photo.SetUser(clientService, botUser, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, botUser);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -160,7 +160,7 @@ namespace Telegram.Controls.Cells.Revenue
                 var user = clientService.GetUser(giftSale.UserId);
 
                 Subtitle.Visibility = Visibility.Visible;
-                Photo.SetUser(clientService, user, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
                 MediaPreview.Visibility = Visibility.Collapsed;
 
                 Title.Text = user.FullName();
@@ -181,7 +181,7 @@ namespace Telegram.Controls.Cells.Revenue
 
                 if (user != null)
                 {
-                    Photo.SetUser(clientService, user, 36);
+                    Photo.Source = ProfilePictureSource.User(clientService, user);
                     Subtitle.Text = user.FullName();
                 }
                 else
@@ -194,12 +194,12 @@ namespace Telegram.Controls.Cells.Revenue
             {
                 if (clientService.TryGetUser(giftPurchase.OwnerId, out User user))
                 {
-                    Photo.SetUser(clientService, user, 36);
+                    Photo.Source = ProfilePictureSource.User(clientService, user);
                     Title.Text = user.FullName();
                 }
                 else if (clientService.TryGetChat(giftPurchase.OwnerId, out Chat chat))
                 {
-                    Photo.SetChat(clientService, chat, 36);
+                    Photo.Source = ProfilePictureSource.Chat(clientService, chat);
                     Title.Text = chat.Title;
                 }
 
@@ -227,7 +227,7 @@ namespace Telegram.Controls.Cells.Revenue
                 Subtitle.Visibility = Visibility.Visible;
 
                 Title.Text = Strings.StarsReactionsSent;
-                Photo.SetChat(clientService, chat, 36);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -239,7 +239,7 @@ namespace Telegram.Controls.Cells.Revenue
                 Subtitle.Visibility = Visibility.Visible;
 
                 Title.Text = Strings.StarsTransactionSubscriptionMonthly;
-                Photo.SetChat(clientService, chat, 36);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -261,7 +261,7 @@ namespace Telegram.Controls.Cells.Revenue
                 Subtitle.Visibility = Visibility.Visible;
 
                 Title.Text = Strings.StarsReactionsSent;
-                Photo.SetUser(clientService, user, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -273,7 +273,7 @@ namespace Telegram.Controls.Cells.Revenue
                 Subtitle.Visibility = Visibility.Visible;
 
                 Title.Text = Strings.StarsTransactionSubscriptionMonthly;
-                Photo.SetUser(clientService, user, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -285,7 +285,7 @@ namespace Telegram.Controls.Cells.Revenue
                 Subtitle.Visibility = Visibility.Visible;
 
                 Title.Text = Strings.StarsGiveawayPrizeReceived;
-                Photo.SetChat(clientService, chat, 36);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -350,13 +350,13 @@ namespace Telegram.Controls.Cells.Revenue
             }
             else if (fallbackUser != null)
             {
-                Photo.SetUser(clientService, fallbackUser, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, fallbackUser);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
             else if (fallbackChat != null)
             {
-                Photo.SetChat(clientService, fallbackChat, 36);
+                Photo.Source = ProfilePictureSource.Chat(clientService, fallbackChat);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }

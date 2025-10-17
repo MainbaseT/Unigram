@@ -130,8 +130,7 @@
                                 <controls:ProfilePicture x:Name="Photo"
                                                          HorizontalAlignment="Center"
                                                          VerticalAlignment="Center"
-                                                         Width="20"
-                                                         Height="20" />
+                                                         Size="20" />
                             </Grid>
 
                             <TextBlock x:Name="TitleLabel"
@@ -398,8 +397,7 @@
                                                 AutomationProperties.Name="{CustomResource AccDescrProfilePicture}"
                                                 Grid.Column="1">
                     <controls:ProfilePicture x:Name="Photo"
-                                             Width="36"
-                                             Height="36" />
+                                             Size="36" />
                 </controls:ActiveStoriesSegments>
             </Grid>
 

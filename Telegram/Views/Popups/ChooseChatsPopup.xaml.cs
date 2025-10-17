@@ -1150,7 +1150,7 @@ namespace Telegram.Views.Popups
                 && ViewModel.ClientService.TryGetUser(ViewModel.ClientService.Options.MyId, out User user))
             {
                 Alias.Visibility = Visibility.Visible;
-                Photo.SetUser(ViewModel.ClientService, user, 28);
+                Photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
             }
         }
 
@@ -2207,9 +2207,8 @@ namespace Telegram.Views.Popups
                 if (session.ClientService.TryGetUser(session.ClientService.Options.MyId, out User user))
                 {
                     var photo = new ProfilePicture();
-                    photo.Width = 20;
-                    photo.Height = 20;
-                    photo.SetUser(session.ClientService, user, 20);
+                    photo.Size = 20;
+                    photo.Source = ProfilePictureSource.User(session.ClientService, user);
 
                     var item = new ToggleMenuFlyoutItem();
                     item.Style = BootStrapper.Current.Resources["ProfilePictureToggleMenuFlyoutItemStyle"] as Style;

@@ -175,8 +175,8 @@ namespace Telegram.Controls.Stories
                         Identity.SetStatus(activeStories.ClientService, user);
                     }
 
-                    PhotoMini.SetUser(activeStories.ClientService, user, 48);
-                    Photo.SetUser(activeStories.ClientService, user, 32);
+                    PhotoMini.Source = ProfilePictureSource.User(activeStories.ClientService, user);
+                    Photo.Source = ProfilePictureSource.User(activeStories.ClientService, user);
                 }
                 else
                 {
@@ -185,8 +185,8 @@ namespace Telegram.Controls.Stories
 
                     Identity.SetStatus(activeStories.ClientService, chat);
 
-                    PhotoMini.SetChat(activeStories.ClientService, chat, 48);
-                    Photo.SetChat(activeStories.ClientService, chat, 32);
+                    PhotoMini.Source = ProfilePictureSource.Chat(activeStories.ClientService, chat);
+                    Photo.Source = ProfilePictureSource.Chat(activeStories.ClientService, chat);
                 }
 
                 if (activeStories.Item != null)

@@ -24,8 +24,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <controls:ProfilePicture x:Name="Photo"
-                                         Width="96"
-                                         Height="96"
+                                         Size="96"
                                          Margin="0,0,0,8" />
                 <controls:AnimatedImage x:Name="AnimatedPhoto"
                                         Width="120"
@@ -111,8 +110,7 @@
                         </Grid.ColumnDefinitions>
                         <controls:ProfilePicture x:Name="FromPhoto"
                                                  Margin="8,4,0,4"
-                                                 Width="24"
-                                                 Height="24" />
+                                                 Size="24" />
                         <TextBlock Margin="8,5,4,6"
                                    Style="{StaticResource BodyTextBlockStyle}"
                                    VerticalAlignment="Top"

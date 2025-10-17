@@ -31,8 +31,7 @@
                                      Margin="12,8"
                                      Grid.RowSpan="2">
                         <controls:ProfilePicture x:Name="Photo"
-                                                 Height="48"
-                                                 Width="48" />
+                                                 Size="48" />
                     </HyperlinkButton>
 
                     <Grid VerticalAlignment="Bottom"

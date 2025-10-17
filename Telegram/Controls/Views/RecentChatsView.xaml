@@ -33,8 +33,7 @@
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <controls:ProfilePicture Width="56"
-                                                     Height="56"
+                            <controls:ProfilePicture Size="56"
                                                      Margin="12,8,12,4" />
                             <TextBlock TextAlignment="Center"
                                        TextWrapping="WrapWholeWords"

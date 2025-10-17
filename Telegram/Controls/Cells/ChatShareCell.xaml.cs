@@ -52,7 +52,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public object PhotoSource
+        public ProfilePictureSource PhotoSource
         {
             set
             {
@@ -116,11 +116,11 @@ namespace Telegram.Controls.Cells
             }
             else if (args.Phase == 2)
             {
-                Photo.SetChat(clientService, chat, 36);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
                 Identity.SetStatus(clientService, chat, BotVerified);
 
-                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
-                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusX = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusY = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
             }
 
             if (args.Phase < 2)
@@ -148,7 +148,7 @@ namespace Telegram.Controls.Cells
             }
             else if (args.Phase == 2)
             {
-                Photo.SetUser(clientService, user, 36);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
                 Identity.SetStatus(clientService, user, BotVerified);
 
                 SelectionOutline.RadiusX = 18;
@@ -190,17 +190,17 @@ namespace Telegram.Controls.Cells
             {
                 if (clientService.TryGetUser(messageSender, out User user))
                 {
-                    Photo.SetUser(clientService, user, 36);
+                    Photo.Source = ProfilePictureSource.User(clientService, user);
                     Identity.SetStatus(clientService, user, BotVerified);
                 }
                 else if (clientService.TryGetChat(messageSender, out Chat chat))
                 {
-                    Photo.SetChat(clientService, chat, 36);
+                    Photo.Source = ProfilePictureSource.Chat(clientService, chat);
                     Identity.SetStatus(clientService, chat, BotVerified);
                 }
 
-                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
-                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusX = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusY = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
             }
 
             if (args.Phase < 2)
@@ -237,11 +237,11 @@ namespace Telegram.Controls.Cells
             }
             else if (args.Phase == 2)
             {
-                Photo.SetChat(clientService, chat, 36);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
                 Identity.SetStatus(clientService, chat, BotVerified);
 
-                SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
-                SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusX = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusY = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
             }
 
             if (args.Phase < 2)

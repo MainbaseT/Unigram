@@ -1612,12 +1612,12 @@ namespace Telegram.Views.Calls
 
             if (_call.ClientService.TryGetUser(participant.ParticipantId, out Telegram.Td.Api.User user))
             {
-                photo.SetUser(_call.ClientService, user, 36);
+                photo.Source = ProfilePictureSource.User(_call.ClientService, user);
                 title.Text = user.FullName();
             }
             else if (_call.ClientService.TryGetChat(participant.ParticipantId, out Chat chat))
             {
-                photo.SetChat(_call.ClientService, chat, 36);
+                photo.Source = ProfilePictureSource.Chat(_call.ClientService, chat);
                 title.Text = _call.ClientService.GetTitle(chat);
             }
 

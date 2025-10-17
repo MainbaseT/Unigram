@@ -373,7 +373,7 @@ namespace Telegram.Views
                     SetContentOpacity(1);
                 }
 
-                bool AnimateStickyPhoto(HyperlinkButton stickyPhotoRoot, MessageProfilePicture stickyPhoto, ref SelectorItem tracked, ref MessageViewModel item, bool below)
+                bool AnimateStickyPhoto(HyperlinkButton stickyPhotoRoot, ProfilePicture stickyPhoto, ref SelectorItem tracked, ref MessageViewModel item, bool below)
                 {
                     if (message.HasSenderPhoto && container.ContentTemplateRoot is MessageSelector { ContentTemplateRoot: MessageBubble bubble })
                     {
@@ -781,7 +781,7 @@ namespace Telegram.Views
                 }
 
                 ForumTopicHeaderLabel.Text = forumTopic.Info.Name;
-                ForumTopicHeaderPhoto.Clear();
+                ForumTopicHeaderPhoto.Source = null;
 
                 if (forumTopic.Info.IsGeneral || forumTopic.Info.Icon.CustomEmojiId != 0)
                 {
@@ -803,7 +803,7 @@ namespace Telegram.Views
             else if (ViewModel.ClientService.TryGetDirectMessagesChatTopic(ViewModel.ChatId, messageTopic, out DirectMessagesChatTopic directMessagesChatTopic))
             {
                 ForumTopicHeaderLabel.Text = ViewModel.ClientService.GetTitle(directMessagesChatTopic.SenderId);
-                ForumTopicHeaderPhoto.SetMessageSender(ViewModel.ClientService, directMessagesChatTopic.SenderId, 16);
+                ForumTopicHeaderPhoto.Source = ProfilePictureSource.MessageSender(ViewModel.ClientService, directMessagesChatTopic.SenderId);
 
                 ForumTopicHeaderTypeIcon.ClearStatus();
                 ForumTopicHeaderIconRoot.Visibility = Visibility.Collapsed;

@@ -317,7 +317,7 @@ namespace Telegram.Controls.Drawers
                     return;
                 }
 
-                photo.SetChat(ViewModel.ClientService, chat, 24);
+                photo.Source = ProfilePictureSource.Chat(ViewModel.ClientService, chat);
                 args.Handled = true;
             }
             else if (args.Item is StickerSetViewModel sticker)

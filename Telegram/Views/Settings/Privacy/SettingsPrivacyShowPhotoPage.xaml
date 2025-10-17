@@ -86,8 +86,7 @@
                     </controls:SettingsButton>
 
                     <controls:ProfilePicture x:Name="RemovePhotoPhoto"
-                                             Width="28"
-                                             Height="28"
+                                             Size="28"
                                              HorizontalAlignment="Left"
                                              Margin="16,0,0,-44"
                                              Canvas.ZIndex="1" />

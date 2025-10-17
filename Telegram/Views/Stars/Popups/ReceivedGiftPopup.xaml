@@ -213,8 +213,7 @@
                                         </Grid.ColumnDefinitions>
                                         <controls:ProfilePicture x:Name="FromPhoto"
                                                                  Margin="8,4,0,4"
-                                                                 Width="24"
-                                                                 Height="24" />
+                                                                 Size="24" />
                                         <TextBlock Margin="8,5,4,6"
                                                    Style="{StaticResource BodyTextBlockStyle}"
                                                    VerticalAlignment="Top"
@@ -288,8 +287,7 @@
                                         </Grid.ColumnDefinitions>
                                         <controls:ProfilePicture x:Name="UpgradedFromPhoto"
                                                                  Margin="8,4,0,4"
-                                                                 Width="24"
-                                                                 Height="24" />
+                                                                 Size="24" />
                                         <TextBlock x:Name="UpgradedFromText"
                                                    Margin="8,5,4,6"
                                                    Style="{StaticResource BodyTextBlockStyle}"

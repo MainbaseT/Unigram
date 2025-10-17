@@ -23,7 +23,7 @@ namespace Telegram.Views.Popups
 
             _clientService = clientService;
 
-            Photo.SetChat(clientService, info, 96);
+            Photo.Source = ProfilePictureSource.Chat(clientService, info);
 
             Identity.SetStatus(clientService, info, BotVerified);
 
@@ -99,7 +99,7 @@ namespace Telegram.Views.Popups
 
         private void Participants_RecentUserHeadChanged(ProfilePicture sender, MessageSender messageSender)
         {
-            sender.SetMessageSender(_clientService, messageSender, 36);
+            sender.Source = ProfilePictureSource.MessageSender(_clientService, messageSender);
         }
     }
 }

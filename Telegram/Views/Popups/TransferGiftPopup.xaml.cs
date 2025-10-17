@@ -36,11 +36,11 @@ namespace Telegram.Views.Popups
 
                 if (chat != null)
                 {
-                    Photo2.SetChat(clientService, chat, 64);
+                    Photo2.Source = ProfilePictureSource.Chat(clientService, chat);
                 }
                 else if (clientService.TryGetUser(clientService.Options.MyId, out User user))
                 {
-                    Photo2.SetUser(clientService, user, 64);
+                    Photo2.Source = ProfilePictureSource.User(clientService, user);
                 }
 
                 if (resale && upgraded.Gift.ResaleParameters != null)
@@ -86,11 +86,11 @@ namespace Telegram.Views.Popups
 
             if (chat != null)
             {
-                Photo2.SetChat(clientService, chat, 64);
+                Photo2.Source = ProfilePictureSource.Chat(clientService, chat);
             }
             else if (clientService.TryGetUser(clientService.Options.MyId, out User user))
             {
-                Photo2.SetUser(clientService, user, 64);
+                Photo2.Source = ProfilePictureSource.User(clientService, user);
             }
 
             if (upgraded.Gift.ResaleParameters != null)

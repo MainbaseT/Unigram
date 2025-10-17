@@ -90,8 +90,7 @@
                                                     AutomationProperties.Name="{CustomResource AccDescrProfilePicture}">
                         <Grid CornerRadius="75">
                             <controls:ProfilePicture x:Name="Photo"
-                                                     Width="140"
-                                                     Height="140" />
+                                                     Size="140" />
                             <controls:AnimatedImage x:Name="AnimatedPhoto"
                                                     Width="140"
                                                     Height="140"

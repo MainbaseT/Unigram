@@ -233,7 +233,7 @@ namespace Telegram.Controls.Cells
             SubtitleText.Text = Locale.Declension(Strings.R.InviteLinkCount, inviteLinkCount.InviteLinkCount);
             StatusText.Text = string.Empty;
 
-            Photo.SetUser(clientService, user, 36);
+            Photo.Source = ProfilePictureSource.User(clientService, user);
             Identity.SetStatus(clientService, user);
         }
 

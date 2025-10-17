@@ -26,8 +26,6 @@ namespace Telegram.Views.Stars.Popups
             InitializeComponent();
         }
 
-        private long _thumbnailToken;
-
         private ThumbnailController _media1Controller;
         private ThumbnailController _media2Controller;
 
@@ -91,12 +89,11 @@ namespace Telegram.Views.Stars.Popups
                 var small = ViewModel.PaymentForm.ProductInfo.Photo?.GetSmall();
                 if (small != null)
                 {
-                    UpdateManager.Subscribe(this, ViewModel.ClientService, small.Photo, ref _thumbnailToken, UpdateFile, true);
-                    UpdateThumbnail(ViewModel.PaymentForm, small.Photo);
+                    Photo.Source = new ProfilePictureSourcePhoto(ViewModel.ClientService, user.Id, small.Photo, ViewModel.PaymentForm.ProductInfo.Photo.Minithumbnail);
                 }
                 else
                 {
-                    Photo.SetUser(ViewModel.ClientService, user, 96);
+                    Photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
                 }
             }
 
@@ -165,32 +162,6 @@ namespace Telegram.Views.Stars.Popups
 
             //Hide();
             //ViewModel.Submit();
-        }
-
-        private void UpdateFile(object target, File file)
-        {
-            UpdateFile(ViewModel.PaymentForm, file);
-        }
-
-        private void UpdateFile(PaymentForm paymentForm, File file)
-        {
-            var small = paymentForm.ProductInfo.Photo?.GetSmall();
-            if (small != null && (file == null || small.Photo.Id == file.Id))
-            {
-                UpdateThumbnail(paymentForm, small.Photo);
-            }
-        }
-
-        private void UpdateThumbnail(PaymentForm paymentForm, File file)
-        {
-            if (file.Local.IsDownloadingCompleted)
-            {
-                Photo.Source = UriEx.ToBitmap(file.Local.Path);
-            }
-            else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
-            {
-                ViewModel.ClientService.DownloadFile(file.Id, 1);
-            }
         }
 
         private void UpdateMedia(PaidMedia media, ImageBrush brush, ref ThumbnailController controller)

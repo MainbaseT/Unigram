@@ -472,13 +472,13 @@ namespace Telegram.Controls.Cells
             if (topic.SenderId == null)
             {
                 TitleLabel.Text = Strings.AllTopicsShort;
-                Photo.Clear();
+                Photo.Source = null;
                 AllTopics.Visibility = Visibility.Visible;
             }
             else
             {
                 TitleLabel.Text = _viewModel.ClientService.GetTitle(topic.SenderId);
-                Photo.SetMessageSender(_viewModel.ClientService, topic.SenderId, _vertical ? 28 : 20);
+                Photo.Source = ProfilePictureSource.MessageSender(_viewModel.ClientService, topic.SenderId);
                 AllTopics.Visibility = Visibility.Collapsed;
             }
 

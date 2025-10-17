@@ -210,18 +210,7 @@ namespace Telegram.Controls.Messages
 
         private void RecentChoosers_RecentUserHeadChanged(ProfilePicture photo, MessageSender sender)
         {
-            if (_message.ClientService.TryGetUser(sender, out Td.Api.User user))
-            {
-                photo.SetUser(_message.ClientService, user, 20);
-            }
-            else if (_message.ClientService.TryGetChat(sender, out Chat chat))
-            {
-                photo.SetChat(_message.ClientService, chat, 20);
-            }
-            else
-            {
-                photo.Clear();
-            }
+            photo.Source = ProfilePictureSource.MessageSender(_message.ClientService, sender);
         }
 
         protected override void OnApplyTemplate()

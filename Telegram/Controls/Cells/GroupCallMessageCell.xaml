@@ -18,8 +18,7 @@
         </Grid.ColumnDefinitions>
         <controls:ProfilePicture x:Name="Photo"
                                  VerticalAlignment="Top"
-                                 Width="24"
-                                 Height="24" />
+                                 Size="24" />
         <local:GroupCallMessagePanel Margin="8,1,4,2"
                                      Grid.Column="1">
             <controls:FormattedTextBlock x:Name="Text"

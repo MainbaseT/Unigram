@@ -57,7 +57,7 @@ namespace Telegram.Controls.Cells
             General.Visibility = Visibility.Collapsed;
 
             TitleLabel.Text = clientService.GetTitle(topic.SenderId);
-            Photo.SetMessageSender(clientService, topic.SenderId, 36);
+            Photo.Source = ProfilePictureSource.MessageSender(clientService, topic.SenderId);
         }
     }
 }

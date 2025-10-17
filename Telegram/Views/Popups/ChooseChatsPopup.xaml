@@ -107,8 +107,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <controls:ProfilePicture x:Name="Photo"
-                                         Width="28"
-                                         Height="28"
+                                         Size="28"
                                          Grid.Column="2" />
 
                 <Grid Width="20"

@@ -303,7 +303,7 @@ namespace Telegram.Controls.Messages
                 }
 
                 ForwardLink.Text = "\uEA4F\u00A0" + storyChat.Title;
-                ForwardPhoto.SetChat(message.ClientService, storyChat, 16);
+                ForwardPhoto.Source = ProfilePictureSource.Chat(message.ClientService, storyChat);
 
                 Visibility = Visibility.Visible;
             }
@@ -333,19 +333,19 @@ namespace Telegram.Controls.Messages
                 {
                     line2 = fromUserUser.FullName();
                     ForwardLink.FontWeight = FontWeights.SemiBold;
-                    ForwardPhoto.SetUser(message.ClientService, fromUserUser, 16);
+                    ForwardPhoto.Source = ProfilePictureSource.User(message.ClientService, fromUserUser);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginChat fromChat && message.ClientService.TryGetChat(fromChat.SenderChatId, out Chat fromChatChat))
                 {
                     line2 = fromChatChat.Title;
                     ForwardLink.FontWeight = FontWeights.SemiBold;
-                    ForwardPhoto.SetChat(message.ClientService, fromChatChat, 16);
+                    ForwardPhoto.Source = ProfilePictureSource.Chat(message.ClientService, fromChatChat);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel && message.ClientService.TryGetChat(fromChannel.ChatId, out Chat fromChannelChat))
                 {
                     line2 = fromChannelChat.Title;
                     ForwardLink.FontWeight = FontWeights.SemiBold;
-                    ForwardPhoto.SetChat(message.ClientService, fromChannelChat, 16);
+                    ForwardPhoto.Source = ProfilePictureSource.Chat(message.ClientService, fromChannelChat);
                 }
                 else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser fromHiddenUser)
                 {

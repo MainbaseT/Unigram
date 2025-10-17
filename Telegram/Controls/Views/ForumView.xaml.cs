@@ -173,7 +173,7 @@ namespace Telegram.Controls.Views
         {
             if (chat != null)
             {
-                Photo.SetChat(ViewModel.ClientService, chat, 36);
+                Photo.Source = ProfilePictureSource.Chat(ViewModel.ClientService, chat);
             }
         }
 

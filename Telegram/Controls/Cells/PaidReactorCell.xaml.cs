@@ -27,12 +27,12 @@ namespace Telegram.Controls.Cells
             }
             else if (clientService.TryGetChat(reactor.SenderId, out Chat chat))
             {
-                Photo.SetChat(clientService, chat, 48);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
                 Title.Text = chat.Title;
             }
             else if (clientService.TryGetUser(reactor.SenderId, out User user))
             {
-                Photo.SetUser(clientService, user, 48);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
                 Title.Text = user.FullName();
             }
 

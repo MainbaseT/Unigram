@@ -63,7 +63,7 @@ namespace Telegram.Views.Popups
                 upgradedGift = user.EmojiStatus?.Type as EmojiStatusTypeUpgradedGift;
 
                 Segments.UpdateSegments(140, false, true);
-                Photo.SetUser(clientService, user, 140);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
 
                 Title.Text = user.FullName();
                 Subtitle.Text = Strings.Online;
@@ -82,7 +82,7 @@ namespace Telegram.Views.Popups
                 upgradedGift = chat.EmojiStatus?.Type as EmojiStatusTypeUpgradedGift;
 
                 Segments.UpdateSegments(140, false, true);
-                Photo.SetChat(clientService, chat, 140);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
                 Title.Text = chat.Title;
 

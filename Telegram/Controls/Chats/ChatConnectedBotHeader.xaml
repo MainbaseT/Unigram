@@ -24,8 +24,7 @@
                 Grid.ColumnSpan="4" />
 
         <controls:ProfilePicture x:Name="Photo"
-                                 Width="36"
-                                 Height="36"
+                                 Size="36"
                                  Margin="12,0" />
 
         <StackPanel VerticalAlignment="Center"

@@ -245,18 +245,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void RecentVoters_RecentUserHeadChanged(ProfilePicture photo, MessageSender sender)
         {
-            if (_message.ClientService.TryGetUser(sender, out User user))
-            {
-                photo.SetUser(_message.ClientService, user, 18);
-            }
-            else if (_message.ClientService.TryGetChat(sender, out Chat chat))
-            {
-                photo.SetChat(_message.ClientService, chat, 18);
-            }
-            else
-            {
-                photo.Clear();
-            }
+            photo.Source = ProfilePictureSource.MessageSender(_message.ClientService, sender);
         }
 
         private void TimeoutTimer_Tick(object sender, object e)

@@ -266,7 +266,7 @@ namespace Telegram.Controls.Views
                 var photo = content.Children[0] as ProfilePicture;
                 var textBlock = content.Children[1] as TextBlock;
 
-                photo.SetChat(_clientService, chat, 56);
+                photo.Source = ProfilePictureSource.Chat(_clientService, chat);
                 textBlock.Text = chat.Title;
 
                 AutomationProperties.SetName(args.ItemContainer, chat.Title);

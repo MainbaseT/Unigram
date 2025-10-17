@@ -69,7 +69,7 @@ namespace Telegram.Controls.Messages.Content
 
             if (message.ClientService.TryGetUser(contact.Contact.UserId, out User user))
             {
-                Photo.SetUser(message.ClientService, user, 48);
+                Photo.Source = ProfilePictureSource.User(message.ClientService, user);
             }
             else
             {

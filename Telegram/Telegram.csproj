@@ -366,7 +366,7 @@
     <Compile Include="AI\RecognizedTextSelection.cs" />
     <Compile Include="AI\RecognizedTextSelectionManager.cs" />
     <Compile Include="Common\ThumbnailController.cs" />
-    <Compile Include="Controls\Messages\MessageProfilePicture.cs" />
+    <Compile Include="Controls\Messages\ProfilePicture.cs" />
     <Compile Include="Controls\PremiumProgressBar.cs" />
     <Compile Include="Controls\ProgressRingIndeterminate.cs" />
     <Compile Include="Controls\SlidePanel.cs" />
@@ -1007,7 +1007,7 @@
     <Compile Include="Controls\ProfileHeader.xaml.cs">
       <DependentUpon>ProfileHeader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ProfilePicture.cs" />
+    <Compile Include="Controls\ProfilePicture2.cs" />
     <Compile Include="Controls\LottieView.cs" />
     <Compile Include="Controls\QrCode.cs" />
     <Compile Include="Controls\RecentUserHeads.cs" />

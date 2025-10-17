@@ -33,7 +33,7 @@ namespace Telegram.Controls
         Auto
     }
 
-    public partial class ProfilePicture : Control
+    public partial class ProfilePicture2 : Control
     {
         public enum State
         {
@@ -64,9 +64,9 @@ namespace Telegram.Controls
 
         private bool _templateApplied;
 
-        public ProfilePicture()
+        public ProfilePicture2()
         {
-            DefaultStyleKey = typeof(ProfilePicture);
+            DefaultStyleKey = typeof(ProfilePicture2);
         }
 
         protected override void OnApplyTemplate()
@@ -227,11 +227,11 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty ShapeProperty =
-            DependencyProperty.Register("Shape", typeof(ProfilePictureShape), typeof(ProfilePicture), new PropertyMetadata(ProfilePictureShape.Ellipse, OnShapeChanged));
+            DependencyProperty.Register("Shape", typeof(ProfilePictureShape), typeof(ProfilePicture2), new PropertyMetadata(ProfilePictureShape.Ellipse, OnShapeChanged));
 
         private static void OnShapeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((ProfilePicture)d).UpdateCornerRadius();
+            ((ProfilePicture2)d).UpdateCornerRadius();
         }
 
         #endregion
@@ -257,11 +257,11 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty SourceProperty =
-            DependencyProperty.Register("Source", typeof(object), typeof(ProfilePicture), new PropertyMetadata(null, OnSourceChanged));
+            DependencyProperty.Register("Source", typeof(object), typeof(ProfilePicture2), new PropertyMetadata(null, OnSourceChanged));
 
         private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((ProfilePicture)d).OnSourceChanged((object)e.NewValue);
+            ((ProfilePicture2)d).OnSourceChanged((object)e.NewValue);
         }
 
         private void OnSourceChanged(object newValue)
@@ -867,6 +867,41 @@ namespace Telegram.Controls
             return text;
         }
 
+        public static ProfilePictureSource ChatPhoto(IClientService clientService, User user, ChatPhoto chatPhoto, bool big)
+        {
+            ProfilePictureSourceText text;
+            if (user.Type is UserTypeDeleted)
+            {
+                text = ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
+            }
+            else
+            {
+                text = ProfilePictureSourceText.GetUser(clientService, user);
+            }
+
+            var photo = big ? chatPhoto?.GetBig() : chatPhoto?.GetSmall();
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, user.Id, photo.Photo, chatPhoto.Minithumbnail, text, ProfilePictureShape.Ellipse);
+            }
+
+            return text;
+        }
+
+        public static ProfilePictureSource ChatPhoto(IClientService clientService, Chat chat, ChatPhoto chatPhoto, bool big)
+        {
+            ProfilePictureSourceText text;
+            text = ProfilePictureSourceText.GetChat(clientService, chat);
+
+            var photo = big ? chatPhoto?.GetBig() : chatPhoto?.GetSmall();
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, chat.Id, photo.Photo, chatPhoto.Minithumbnail, text, ProfilePictureShape.Ellipse);
+            }
+
+            return text;
+        }
+
         public static ProfilePictureSource Chat(IClientService clientService, Chat chat)
         {
             if (chat.Id == clientService.Options.MyId)
@@ -916,9 +951,58 @@ namespace Telegram.Controls
 
             return text;
         }
+
+        public static ProfilePictureSource Chat(IClientService clientService, ChatInviteLinkInfo chat)
+        {
+            ProfilePictureSourceText text;
+            text = ProfilePictureSourceText.GetChat(clientService, chat);
+
+            var photo = chat.Photo;
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, chat.ChatId, photo.Small, photo.Minithumbnail, text);
+            }
+
+            return text;
+        }
+
+        public static ProfilePictureSource Story(IClientService clientService, Story story)
+        {
+            if (story.Content is StoryContentPhoto photo)
+            {
+                var file = photo.Photo.GetSmall()?.Photo;
+                if (file != null)
+                {
+                    return new ProfilePictureSourcePhoto(clientService, photo.Photo.Sizes[0].Photo.Id, file, photo.Photo.Minithumbnail);
+                }
+            }
+            else if (story.Content is StoryContentVideo video)
+            {
+                var file = video.Video.Thumbnail?.File;
+                if (file != null)
+                {
+                    return new ProfilePictureSourcePhoto(clientService, video.Video.Video.Id, file, video.Video.Minithumbnail);
+                }
+            }
+
+            if (story.PosterId != null)
+            {
+                return ProfilePictureSource.MessageSender(clientService, story.PosterId);
+            }
+
+            if (clientService.TryGetChat(story.PosterChatId, out Chat chat))
+            {
+                return ProfilePictureSource.Chat(clientService, chat);
+            }
+
+            return null;
+        }
     }
 
-    public record ProfilePictureSourcePhoto(IClientService ClientService, long Id, File Photo, Minithumbnail Minithumbnail, ProfilePictureSourceText Text, ProfilePictureShape Shape)
+    public record ProfilePictureSourceBitmap(ImageSource Bitmap, ProfilePictureShape Shape = ProfilePictureShape.Ellipse)
+        : ProfilePictureSource(Shape);
+
+    public record ProfilePictureSourcePhoto(IClientService ClientService, long Id, File Photo, Minithumbnail Minithumbnail, ProfilePictureSourceText Text = null, ProfilePictureShape Shape = ProfilePictureShape.Ellipse)
         : ProfilePictureSource(Shape);
 
     public record ProfilePictureSourceText(string Initials, bool IsGlyph, Color TopColor, Color BottomColor, ProfilePictureShape Shape = ProfilePictureShape.Ellipse)

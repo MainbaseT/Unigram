@@ -59,7 +59,7 @@ namespace Telegram.Controls.Cells
             var formatted = title.AsFormattedText(new TextEntityTypeBold());
             formatted = ClientEx.Format("{0} {1}", formatted, reaction ? Icons.ZWNJ : message.Text);
 
-            Photo.SetMessageSender(clientService, message.SenderId, 24);
+            Photo.Source = ProfilePictureSource.MessageSender(clientService, message.SenderId);
             Text.SetText(clientService, formatted);
 
             Reaction.Visibility = reaction

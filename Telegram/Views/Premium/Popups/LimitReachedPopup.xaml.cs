@@ -400,7 +400,7 @@ namespace Telegram.Views.Premium.Popups
             else if (args.Phase == 2)
             {
                 var photo = content.Children[0] as ProfilePicture;
-                photo.SetChat(_clientService, chat, 36);
+                photo.Source = ProfilePictureSource.Chat(_clientService, chat);
             }
 
             if (args.Phase < 2)

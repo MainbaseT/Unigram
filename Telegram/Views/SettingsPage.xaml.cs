@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using Telegram.Common;
+using Telegram.Controls;
 using Telegram.Controls.Gallery;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -174,7 +175,7 @@ namespace Telegram.Views
         public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
             Title.Text = user.FullName();
-            Photo.SetUser(ViewModel.ClientService, user, 48);
+            Photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
             Identity.SetStatus(ViewModel.ClientService, user, BotVerified);
         }
 

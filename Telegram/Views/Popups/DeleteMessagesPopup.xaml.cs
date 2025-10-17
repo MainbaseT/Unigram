@@ -282,12 +282,11 @@ namespace Telegram.Views.Popups
             {
                 var photo = new ProfilePicture
                 {
-                    Width = 28,
-                    Height = 28,
+                    Size = 28,
                     Margin = new Thickness(0, -4, 8, 0),
                 };
 
-                photo.SetMessageSender(_clientService, sender, 28);
+                photo.Source = ProfilePictureSource.MessageSender(_clientService, sender);
 
                 var title = new TextBlock
                 {

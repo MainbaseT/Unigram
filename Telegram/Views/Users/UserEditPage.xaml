@@ -39,8 +39,7 @@
                               Margin="0,0,12,0"
                               Grid.RowSpan="2">
                             <controls:ProfilePicture x:Name="Photo"
-                                                     Height="96"
-                                                     Width="96" />
+                                                     Size="96" />
                         </Grid>
 
                         <TextBox x:Name="FirstName"
@@ -256,8 +255,7 @@
                     </controls:SettingsButton>
 
                     <controls:ProfilePicture x:Name="ResetPhotoPhoto"
-                                             Width="28"
-                                             Height="28"
+                                             Size="28"
                                              HorizontalAlignment="Left"
                                              Margin="16,0,0,-44"
                                              Canvas.ZIndex="1" />

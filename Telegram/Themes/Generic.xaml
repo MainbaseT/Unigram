@@ -2001,8 +2001,7 @@
                                    Grid.ColumnSpan="2" />
 
                         <local:ProfilePicture x:Name="Photo"
-                                              Width="28"
-                                              Height="28" />
+                                              Size="28" />
 
                         <TextBlock x:Name="Title"
                                    Foreground="{TemplateBinding Background}"
@@ -4957,7 +4956,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:ProfilePicture">
+    <Style TargetType="local:ProfilePicture2">
         <Setter Property="IsTabStop"
                 Value="False" />
         <Setter Property="UseSystemFocusVisuals"
@@ -4966,7 +4965,7 @@
                 Value="-3" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:ProfilePicture">
+                <ControlTemplate TargetType="local:ProfilePicture2">
                     <Border x:Name="LayoutRoot"
                             Control.IsTemplateFocusTarget="True">
                         <Border.Background>
@@ -4990,14 +4989,18 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:MessageProfilePicture">
+    <Style TargetType="local:ProfilePicture">
         <Setter Property="IsTabStop"
                 Value="False" />
         <Setter Property="UseSystemFocusVisuals"
                 Value="{StaticResource UseSystemFocusVisuals}" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:MessageProfilePicture">
+                <ControlTemplate TargetType="local:ProfilePicture">
                     <Border x:Name="LayoutRoot">
                         <TextBlock x:Name="Initials"
                                    AutomationProperties.AccessibilityView="Raw"

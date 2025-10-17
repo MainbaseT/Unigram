@@ -99,7 +99,7 @@ namespace Telegram.Views
             _buttonText = buttonText;
 
             TitleText.Text = botUser.FullName();
-            Photo.SetUser(clientService, botUser, 24);
+            Photo.Source = ProfilePictureSource.User(clientService, botUser);
 
             View.Navigate(url);
 
@@ -195,7 +195,7 @@ namespace Telegram.Views
             _gameMessageId = gameMessageId;
 
             TitleText.Text = title;
-            Photo.SetUser(clientService, botUser, 24);
+            Photo.Source = ProfilePictureSource.User(clientService, botUser);
 
             View.Navigate(url);
 

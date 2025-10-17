@@ -241,7 +241,7 @@ namespace Telegram.Controls.Chats
                     username.Text = string.Empty;
                 }
 
-                photo.SetUser(ViewModel.ClientService, user, 32);
+                photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
             }
 
             args.Handled = true;

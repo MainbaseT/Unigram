@@ -36,8 +36,6 @@ namespace Telegram.Views.Stars.Popups
 
         private readonly string _transactionId;
 
-        private long _thumbnailToken;
-
         private long _media1Token;
         private long _media2Token;
 
@@ -55,7 +53,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var user = clientService.GetUser(premiumPurchase.UserId);
 
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
                 From.Header = Strings.Gift2To;
@@ -71,7 +69,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var user = clientService.GetUser(upgradedGiftSale.UserId);
 
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
                 From.Header = Strings.Gift2To;
@@ -89,7 +87,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var user = clientService.GetUser(upgradedGiftPurchase.UserId);
 
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -105,7 +103,7 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (transaction.Type is StarTransactionTypeGiftTransfer giftTransfer)
             {
-                FromPhoto.SetMessageSender(clientService, giftTransfer.OwnerId, 24);
+                FromPhoto.Source = ProfilePictureSource.MessageSender(clientService, giftTransfer.OwnerId);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = clientService.GetTitle(giftTransfer.OwnerId);
                 From.Header = Strings.StarsTransactionRecipient;
@@ -165,7 +163,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var botUser = clientService.GetUser(botInvoicePurchase.UserId);
 
-                FromPhoto.SetUser(clientService, botUser, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, botUser);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = botUser.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -176,12 +174,11 @@ namespace Telegram.Views.Stars.Popups
                 var small = botInvoicePurchase.ProductInfo.Photo?.GetSmall();
                 if (small != null)
                 {
-                    UpdateManager.Subscribe(this, _clientService, small.Photo, ref _thumbnailToken, UpdateFile, true);
-                    UpdateThumbnail(small.Photo);
+                    Photo.Source = new ProfilePictureSourcePhoto(_clientService, botUser.Id, small.Photo, botInvoicePurchase.ProductInfo.Photo.Minithumbnail);
                 }
                 else
                 {
-                    Photo.SetUser(clientService, botUser, 96);
+                    Photo.Source = ProfilePictureSource.User(clientService, botUser);
                 }
 
                 MediaPreview.Visibility = Visibility.Collapsed;
@@ -191,7 +188,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var botUser = clientService.GetUser(botPaidMediaPurchase.UserId);
 
-                FromPhoto.SetUser(clientService, botUser, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, botUser);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = botUser.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -203,7 +200,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var botUser = clientService.GetUser(botInvoiceSale.UserId);
 
-                FromPhoto.SetUser(clientService, botUser, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, botUser);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = botUser.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -214,12 +211,11 @@ namespace Telegram.Views.Stars.Popups
                 var small = botInvoiceSale.ProductInfo.Photo?.GetSmall();
                 if (small != null)
                 {
-                    UpdateManager.Subscribe(this, _clientService, small.Photo, ref _thumbnailToken, UpdateFile, true);
-                    UpdateThumbnail(small.Photo);
+                    Photo.Source = new ProfilePictureSourcePhoto(_clientService, botUser.Id, small.Photo, botInvoiceSale.ProductInfo.Photo.Minithumbnail);
                 }
                 else
                 {
-                    Photo.SetUser(clientService, botUser, 96);
+                    Photo.Source = ProfilePictureSource.User(clientService, botUser);
                 }
 
                 MediaPreview.Visibility = Visibility.Collapsed;
@@ -229,7 +225,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var botUser = clientService.GetUser(botPaidMediaSale.UserId);
 
-                FromPhoto.SetUser(clientService, botUser, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, botUser);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = botUser.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -241,7 +237,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var user = clientService.GetUser(giftSale.UserId);
 
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -265,7 +261,7 @@ namespace Telegram.Views.Stars.Popups
                 var user = clientService.GetUser(userDeposit.UserId);
                 if (user != null)
                 {
-                    FromPhoto.SetUser(clientService, user, 24);
+                    FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                     FromTitle.Text = user.FullName();
                 }
                 else
@@ -291,12 +287,12 @@ namespace Telegram.Views.Stars.Popups
             {
                 if (clientService.TryGetUser(giftPurchase.OwnerId, out User user))
                 {
-                    FromPhoto.SetUser(clientService, user, 24);
+                    FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                     FromTitle.Text = user.FullName();
                 }
                 else if (clientService.TryGetChat(giftPurchase.OwnerId, out Chat chat))
                 {
-                    FromPhoto.SetChat(clientService, chat, 24);
+                    FromPhoto.Source = ProfilePictureSource.Chat(clientService, chat);
                     FromTitle.Text = chat.Title;
                 }
 
@@ -320,7 +316,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var chat = clientService.GetChat(channelPaidMediaPurchase.ChatId);
 
-                FromPhoto.SetChat(clientService, chat, 24);
+                FromPhoto.Source = ProfilePictureSource.Chat(clientService, chat);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = chat.Title;
                 From.Header = Strings.StarsTransactionRecipient;
@@ -334,7 +330,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var chat = clientService.GetChat(channelPaidReactionSend.ChatId);
 
-                FromPhoto.SetChat(clientService, chat, 24);
+                FromPhoto.Source = ProfilePictureSource.Chat(clientService, chat);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = chat.Title;
                 From.Header = Strings.StarsTransactionRecipient;
@@ -342,7 +338,7 @@ namespace Telegram.Views.Stars.Popups
                 Subtitle.Visibility = Visibility.Collapsed;
 
                 Title.Text = Strings.StarsReactionsSent;
-                Photo.SetChat(clientService, chat, 96);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -350,7 +346,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var chat = clientService.GetChat(channelSubscriptionPurchase.ChatId);
 
-                FromPhoto.SetChat(clientService, chat, 24);
+                FromPhoto.Source = ProfilePictureSource.Chat(clientService, chat);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = chat.Title;
                 From.Header = Strings.StarsTransactionRecipient;
@@ -358,7 +354,7 @@ namespace Telegram.Views.Stars.Popups
                 Subtitle.Visibility = Visibility.Collapsed;
 
                 Title.Text = Strings.StarsTransactionSubscriptionMonthly;
-                Photo.SetChat(clientService, chat, 96);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -366,7 +362,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var user = clientService.GetUser(channelPaidMediaSale.UserId);
 
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -380,7 +376,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var user = clientService.GetUser(channelPaidReactionReceive.UserId);
 
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -388,7 +384,7 @@ namespace Telegram.Views.Stars.Popups
                 Subtitle.Visibility = Visibility.Collapsed;
 
                 Title.Text = Strings.StarsReactionsSent;
-                Photo.SetUser(clientService, user, 96);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -396,7 +392,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var user = clientService.GetUser(channelSubscriptionSale.UserId);
 
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -404,7 +400,7 @@ namespace Telegram.Views.Stars.Popups
                 Subtitle.Visibility = Visibility.Collapsed;
 
                 Title.Text = Strings.StarsTransactionSubscriptionMonthly;
-                Photo.SetUser(clientService, user, 96);
+                Photo.Source = ProfilePictureSource.User(clientService, user);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -412,7 +408,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 var chat = clientService.GetChat(giveawayDeposit.ChatId);
 
-                FromPhoto.SetChat(clientService, chat, 24);
+                FromPhoto.Source = ProfilePictureSource.Chat(clientService, chat);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = chat.Title;
                 From.Header = Strings.StarsTransactionRecipient;
@@ -420,7 +416,7 @@ namespace Telegram.Views.Stars.Popups
                 Subtitle.Visibility = Visibility.Collapsed;
 
                 Title.Text = Strings.StarsGiveawayPrizeReceived;
-                Photo.SetChat(clientService, chat, 96);
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
@@ -481,7 +477,7 @@ namespace Telegram.Views.Stars.Popups
 
             if (clientService.TryGetUser(receipt.SellerBotUserId, out User user))
             {
-                FromPhoto.SetUser(clientService, user, 24);
+                FromPhoto.Source = ProfilePictureSource.User(clientService, user);
                 FromPhoto.Visibility = Visibility.Visible;
                 FromTitle.Text = user.FullName();
                 From.Header = Strings.StarsTransactionRecipient;
@@ -492,12 +488,11 @@ namespace Telegram.Views.Stars.Popups
                 var small = receipt.ProductInfo.Photo?.GetSmall();
                 if (small != null)
                 {
-                    UpdateManager.Subscribe(this, _clientService, small.Photo, ref _thumbnailToken, UpdateFile, true);
-                    UpdateThumbnail(small.Photo);
+                    Photo.Source = new ProfilePictureSourcePhoto(_clientService, user.Id, small.Photo, receipt.ProductInfo.Photo.Minithumbnail);
                 }
                 else
                 {
-                    Photo.SetUser(clientService, user, 96);
+                    Photo.Source = ProfilePictureSource.User(clientService, user);
                 }
             }
             else
@@ -537,23 +532,6 @@ namespace Telegram.Views.Stars.Popups
             MessageHelper.OpenUrl(null, null, Strings.StarsTOSLink);
         }
 
-        private void UpdateFile(object target, File file)
-        {
-            UpdateThumbnail(file);
-        }
-
-        private void UpdateThumbnail(File file)
-        {
-            if (file.Local.IsDownloadingCompleted)
-            {
-                Photo.Source = UriEx.ToBitmap(file.Local.Path);
-            }
-            else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive)
-            {
-                _clientService.DownloadFile(file.Id, 1);
-            }
-        }
-
         private void UpdatePaidMedia(IClientService clientService, IList<PaidMedia> paidMedia, User fallbackUser, Chat fallbackChat)
         {
             if (paidMedia.Count > 0)
@@ -577,13 +555,13 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (fallbackUser != null)
             {
-                Photo.SetUser(clientService, fallbackUser, 96);
+                Photo.Source = ProfilePictureSource.User(clientService, fallbackUser);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }
             else if (fallbackChat != null)
             {
-                Photo.SetChat(clientService, fallbackChat, 96);
+                Photo.Source = ProfilePictureSource.Chat(clientService, fallbackChat);
 
                 MediaPreview.Visibility = Visibility.Collapsed;
             }

@@ -73,7 +73,7 @@ namespace Telegram.Views.Premium.Popups
             _receiverId = new MessageSenderUser(user.Id);
             clientService.TryGetChatFromUser(user.Id, out _chat);
 
-            Photo.SetUser(clientService, user, 96);
+            Photo.Source = ProfilePictureSource.User(clientService, user);
 
             if (user.Id != clientService.Options.MyId)
             {
@@ -112,7 +112,7 @@ namespace Telegram.Views.Premium.Popups
             _receiverId = chat.ToMessageSender();
             _chat = chat;
 
-            Photo.SetChat(clientService, chat, 96);
+            Photo.Source = ProfilePictureSource.Chat(clientService, chat);
 
             PremiumTitle.Visibility = Visibility.Collapsed;
             PremiumInfo.Visibility = Visibility.Collapsed;

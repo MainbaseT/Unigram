@@ -260,7 +260,6 @@ namespace Telegram.Controls.Cells
                 {
                     TitleLabel.Text = Strings.MyNotes;
                     Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.MyNotesFilled, 5);
-                    Photo.Shape = ProfilePictureShape.Ellipse;
                     Identity.ClearStatus();
                     BotVerified.Visibility = Visibility.Collapsed;
                 }
@@ -268,7 +267,6 @@ namespace Telegram.Controls.Cells
                 {
                     TitleLabel.Text = Strings.AnonymousForward;
                     Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.AuthorHiddenFilled, 5);
-                    Photo.Shape = ProfilePictureShape.Ellipse;
                     Identity.ClearStatus();
                     BotVerified.Visibility = Visibility.Collapsed;
                 }
@@ -803,10 +801,10 @@ namespace Telegram.Controls.Cells
             }
 
             Segments.SetChat(_clientService, chat, 48);
-            Photo.SetChat(_clientService, chat, 48);
+            Photo.Source = ProfilePictureSource.Chat(_clientService, chat);
 
-            SelectionOutline.RadiusX = Photo.Shape == ProfilePictureShape.Superellipse ? 12 : 24;
-            SelectionOutline.RadiusY = Photo.Shape == ProfilePictureShape.Superellipse ? 12 : 24;
+            SelectionOutline.RadiusX = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 12 : 24;
+            SelectionOutline.RadiusY = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 12 : 24;
         }
 
         public void UpdateChatEmojiStatus(Chat chat)

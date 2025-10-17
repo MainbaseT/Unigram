@@ -41,11 +41,11 @@ namespace Telegram.Views.Create
 
         #region Binding
 
-        private object ConvertPhoto(string title, BitmapImage preview)
+        private ProfilePictureSource ConvertPhoto(string title, BitmapImage preview)
         {
             if (preview != null)
             {
-                return preview;
+                return new ProfilePictureSourceBitmap(preview);
             }
             else if (string.IsNullOrWhiteSpace(title))
             {

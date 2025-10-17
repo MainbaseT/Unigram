@@ -42,8 +42,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <controls:ProfilePicture x:Name="UsedThemePhoto"
-                                     Width="20"
-                                     Height="20"
+                                     Size="20"
                                      Margin="2" />
             <TextBlock Text="&#xEADB;"
                        FontFamily="{StaticResource SymbolThemeFontFamily}"

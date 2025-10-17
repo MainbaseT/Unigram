@@ -147,7 +147,7 @@ namespace Telegram.Controls.Messages.Content
 
             if (show && message.ClientService.TryGetUser(task.CompletedByUserId, out User user))
             {
-                Photo.SetUser(message.ClientService, user, 20);
+                Photo.Source = ProfilePictureSource.User(message.ClientService, user);
                 UserText.Text = user.FullName();
             }
 

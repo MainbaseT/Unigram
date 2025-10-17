@@ -227,8 +227,7 @@
                                                     Height="120"
                                                     Margin="0,10,0,12">
                         <controls:ProfilePicture x:Name="Photo"
-                                                 Width="120"
-                                                 Height="120" />
+                                                 Size="120" />
                     </controls:ActiveStoriesSegments>
 
                     <controls:FormattedTextBlock x:Name="Text"
@@ -1053,8 +1052,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <controls:ProfilePicture x:Name="Photo"
-                                             Width="16"
-                                             Height="16"
+                                             Size="16"
                                              Margin="4,0,4,0"
                                              VerticalAlignment="Center" />
                     <controls:IdentityIcon x:Name="TypeIcon"
@@ -1223,8 +1221,7 @@
                                                 AutomationProperties.Name="{CustomResource AccDescrProfilePicture}"
                                                 Grid.Column="1">
                     <controls:ProfilePicture x:Name="Photo"
-                                             Width="36"
-                                             Height="36" />
+                                             Size="36" />
                 </controls:ActiveStoriesSegments>
 
                 <controls:CustomEmojiIcon x:Name="Icon"
@@ -1503,8 +1500,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <controls:ProfilePicture x:Name="ForumTopicHeaderPhoto"
-                                                         Width="16"
-                                                         Height="16"
+                                                         Size="16"
                                                          Margin="4,0,4,0"
                                                          VerticalAlignment="Center" />
                                 <controls:IdentityIcon x:Name="ForumTopicHeaderTypeIcon"
@@ -1631,10 +1627,10 @@
                                          Width="30"
                                          Height="30"
                                          Margin="0,0,0,8">
-                            <controls:MessageProfilePicture x:Name="StickyPhotoAbove"
-                                                            Size="30"
-                                                            Shape="Ellipse"
-                                                            IsCachingEnabled="True" />
+                            <controls:ProfilePicture x:Name="StickyPhotoAbove"
+                                                     Size="30"
+                                                     Shape="Ellipse"
+                                                     IsCachingEnabled="True" />
                         </HyperlinkButton>
                         <HyperlinkButton x:Name="StickyPhotoRootBelow"
                                          Click="StickyPhotoBelow_Click"
@@ -1646,10 +1642,10 @@
                                          Width="30"
                                          Height="30"
                                          Margin="0,0,0,8">
-                            <controls:MessageProfilePicture x:Name="StickyPhotoBelow"
-                                                            Size="30"
-                                                            Shape="Ellipse"
-                                                            IsCachingEnabled="True" />
+                            <controls:ProfilePicture x:Name="StickyPhotoBelow"
+                                                     Size="30"
+                                                     Shape="Ellipse"
+                                                     IsCachingEnabled="True" />
                         </HyperlinkButton>
                     </Grid>
                 </Grid>
@@ -1916,8 +1912,7 @@
                                              Margin="8,8,0,8"
                                              Grid.Row="1">
                                 <controls:ProfilePicture x:Name="PhotoAlias"
-                                                         Width="32"
-                                                         Height="32" />
+                                                         Size="32" />
                             </HyperlinkButton>
 
                             <Border x:Name="TextFieldPanel"

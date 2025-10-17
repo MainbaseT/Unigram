@@ -46,7 +46,7 @@ namespace Telegram.Controls.Chats
             {
                 ShowHide(true);
 
-                Photo.SetUser(ViewModel.ClientService, user, 36);
+                Photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
                 Title.Text = user.FullName();
                 Subtitle.Text = manageBar.IsBotPaused
                     ? Strings.BizBotStatusStopped

@@ -271,7 +271,7 @@ namespace Telegram.Controls.Views
             var photo = grid.Children[0] as ProfilePicture;
             var title = content.Children[1] as TextBlock;
 
-            photo.SetChat(ViewModel.ClientService, chat, 48);
+            photo.Source = ProfilePictureSource.Chat(ViewModel.ClientService, chat);
             title.Text = ViewModel.ClientService.GetTitle(chat, true);
 
             var badge = grid.Children[1] as BadgeControl;

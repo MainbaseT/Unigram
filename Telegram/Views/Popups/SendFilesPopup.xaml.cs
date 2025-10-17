@@ -430,7 +430,7 @@ namespace Telegram.Views.Popups
                     username.Text = string.Empty;
                 }
 
-                photo.SetUser(ViewModel.ClientService, user, 32);
+                photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
             }
             else if (args.Item is Sticker sticker)
             {

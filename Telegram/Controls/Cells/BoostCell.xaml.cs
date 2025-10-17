@@ -54,7 +54,7 @@ namespace Telegram.Controls.Cells
                 {
                     case ChatBoostSourcePremium:
                     case ChatBoostSourceGiftCode:
-                        Photo.SetUser(clientService, user, 36);
+                        Photo.Source = ProfilePictureSource.User(clientService, user);
                         break;
                     case ChatBoostSourceGiveaway giveaway:
                         if (giveaway.IsUnclaimed)
@@ -67,7 +67,7 @@ namespace Telegram.Controls.Cells
                         }
                         else
                         {
-                            Photo.SetUser(clientService, user, 36);
+                            Photo.Source = ProfilePictureSource.User(clientService, user);
                         }
                         break;
                 }

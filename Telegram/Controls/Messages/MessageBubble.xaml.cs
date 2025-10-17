@@ -165,7 +165,7 @@ namespace Telegram.Controls.Messages
         private MessageFooter Footer;
 
         // Lazy loaded
-        private MessageProfilePicture Photo;
+        private ProfilePicture Photo;
         private HyperlinkButton PhotoRoot;
 
         private Border BackgroundPanel;
@@ -750,7 +750,7 @@ namespace Telegram.Controls.Messages
                             PhotoRoot = GetTemplateChild(nameof(PhotoRoot)) as HyperlinkButton;
                             PhotoRoot.Click += Photo_Click;
 
-                            Photo = GetTemplateChild(nameof(Photo)) as MessageProfilePicture;
+                            Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
                         }
 
                         _photoId = message.Id;
@@ -1524,14 +1524,7 @@ namespace Telegram.Controls.Messages
 
         private void RecentRepliers_RecentUserHeadChanged(ProfilePicture sender, MessageSender messageSender)
         {
-            if (_message.ClientService.TryGetUser(messageSender, out User user))
-            {
-                sender.SetUser(_message.ClientService, user, 24);
-            }
-            else if (_message.ClientService.TryGetChat(messageSender, out Chat chat))
-            {
-                sender.SetChat(_message.ClientService, chat, 24);
-            }
+            sender.Source = ProfilePictureSource.MessageSender(_message.ClientService, messageSender);
         }
 
         public void UpdateMessageReactions(MessageViewModel message, bool animate)
@@ -3100,7 +3093,7 @@ namespace Telegram.Controls.Messages
                 PhotoRoot = GetTemplateChild(nameof(PhotoRoot)) as HyperlinkButton;
                 PhotoRoot.Click += Photo_Click;
 
-                Photo = GetTemplateChild(nameof(Photo)) as MessageProfilePicture;
+                Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
             }
 
             PhotoRoot.Visibility = Visibility.Visible;

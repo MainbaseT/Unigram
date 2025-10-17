@@ -658,11 +658,11 @@ namespace Telegram.Controls
 
                 if (chat.Id == ViewModel.ClientService.Options.MyId && !ViewModel.IsSavedMessages && ViewModel.ClientService.TryGetUser(chat, out User user))
                 {
-                    Photo.SetUser(ViewModel.ClientService, user, 140);
+                    Photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
                 }
                 else
                 {
-                    Photo.SetChat(ViewModel.ClientService, chat, 140);
+                    Photo.Source = ProfilePictureSource.Chat(ViewModel.ClientService, chat);
                 }
             }
         }

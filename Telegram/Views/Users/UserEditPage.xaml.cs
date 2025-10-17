@@ -30,7 +30,7 @@ namespace Telegram.Views.Users
 
         public void UpdateUser(Chat chat, User user, UserFullInfo fullInfo, bool secret, bool accessToken)
         {
-            Photo.SetUser(ViewModel.ClientService, user, 96);
+            Photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
 
             if (user.Type is UserTypeBot userTypeBot && userTypeBot.CanBeEdited)
             {
@@ -94,15 +94,7 @@ namespace Telegram.Views.Users
             {
                 if (fullInfo.PersonalPhoto != null)
                 {
-                    if (fullInfo.Photo != null)
-                    {
-                        ResetPhotoPhoto.SetChatPhoto(ViewModel.ClientService, fullInfo.Photo, 28);
-                    }
-                    else
-                    {
-                        ResetPhotoPhoto.Source = ProfilePictureSourceText.GetUser(ViewModel.ClientService, user);
-                    }
-
+                    ResetPhotoPhoto.Source = ProfilePictureSource.ChatPhoto(ViewModel.ClientService, user, fullInfo.Photo, false);
                     ResetPhotoPhoto.Visibility = Visibility.Visible;
                     ResetPhoto.Visibility = Visibility.Visible;
                 }

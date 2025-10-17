@@ -135,7 +135,7 @@ namespace Telegram.Controls.Messages
             if (message.ClientService.TryGetForumTopic(message.ChatId, message.TopicId, out ForumTopic topic))
             {
                 title.Text = topic.Info.Name;
-                photo.Clear();
+                photo.Source = null;
 
                 if (topic.Info.IsGeneral || topic.Info.Icon.CustomEmojiId != 0)
                 {
@@ -157,7 +157,7 @@ namespace Telegram.Controls.Messages
             else if (message.ClientService.TryGetDirectMessagesChatTopic(message.ChatId, message.TopicId, out DirectMessagesChatTopic directMessagesChatTopic))
             {
                 title.Text = message.ClientService.GetTitle(directMessagesChatTopic.SenderId);
-                photo.SetMessageSender(message.ClientService, directMessagesChatTopic.SenderId, 16);
+                photo.Source = ProfilePictureSource.MessageSender(message.ClientService, directMessagesChatTopic.SenderId);
 
                 typeIcon.ClearStatus();
                 iconRoot.Visibility = Visibility.Collapsed;
@@ -189,7 +189,7 @@ namespace Telegram.Controls.Messages
                 if (message.ClientService.TryGetForumTopic(message.ChatId, message.TopicId, out ForumTopic topic))
                 {
                     title.Text = topic.Info.Name;
-                    photo.Clear();
+                    photo.Source = null;
 
                     if (topic.Info.IsGeneral || topic.Info.Icon.CustomEmojiId != 0)
                     {
@@ -211,7 +211,7 @@ namespace Telegram.Controls.Messages
                 else if (message.ClientService.TryGetDirectMessagesChatTopic(message.ChatId, message.TopicId, out DirectMessagesChatTopic directMessagesChatTopic))
                 {
                     title.Text = message.ClientService.GetTitle(directMessagesChatTopic.SenderId);
-                    photo.SetMessageSender(message.ClientService, directMessagesChatTopic.SenderId, 16);
+                    photo.Source = ProfilePictureSource.MessageSender(message.ClientService, directMessagesChatTopic.SenderId);
 
                     typeIcon.ClearStatus();
                     iconRoot.Visibility = Visibility.Collapsed;
@@ -471,7 +471,7 @@ namespace Telegram.Controls.Messages
                 view.Visibility = Visibility.Visible;
 
                 segments.SetChat(null, null, 120);
-                photo.SetChatPhoto(message.ClientService, chatChangePhoto.Photo, 120);
+                photo.Source = ProfilePictureSource.ChatPhoto(message.ClientService, message.Chat, chatChangePhoto.Photo, true);
 
                 if (view.Child is TextBlock label)
                 {
@@ -530,8 +530,9 @@ namespace Telegram.Controls.Messages
                 segments.Visibility = Visibility.Visible;
                 view.Visibility = Visibility.Visible;
 
+                // TODO: Here it should probably be the user, but it's not critical
                 segments.SetChat(null, null, 120);
-                photo.SetChatPhoto(message.ClientService, suggestProfilePhoto.Photo, 120);
+                photo.Source = ProfilePictureSource.ChatPhoto(message.ClientService, message.Chat, suggestProfilePhoto.Photo, true);
 
                 if (view.Child is TextBlock label)
                 {
@@ -571,11 +572,11 @@ namespace Telegram.Controls.Messages
 
                     if (story.Story == null)
                     {
-                        photo.SetChat(message.ClientService, message.Chat, 120);
+                        photo.Source = ProfilePictureSource.Chat(message.ClientService, message.Chat);
                     }
                     else
                     {
-                        photo.SetStory(message.ClientService, story.Story, 120);
+                        photo.Source = ProfilePictureSource.Story(message.ClientService, story.Story);
                     }
 
                     if (view.Child is TextBlock label)
