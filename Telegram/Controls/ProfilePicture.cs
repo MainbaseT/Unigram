@@ -1,5 +1,5 @@
-﻿//
-// Copyright (c) Fela Ameghino 2015-2025
+//
+// Copyright Fela Ameghino 2015-2025
 //
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
@@ -8,10 +8,16 @@ using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Telegram.Common;
+using Telegram.Controls.Media;
+using Telegram.Converters;
 using Telegram.Navigation;
+using Telegram.Services;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -20,19 +26,15 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
 {
-    // This is an extended version of ProfilePicture optimized for chat history.
-    // The logic kind of matches the one from AnimatedImage, but simplified as this all run on a single thread.
-    // Different MessageProfilePictures can be bound to the same MessageProfilePicturePresenter
-    // to reduce the amount of loaded textures and workload in general. This also guarantees the control
-    // to be immediately ready as soon as its loaded (if the presenter exists) without the delays caused by
-    // opening the photo file, decoding it and loading it into a texture.
-    // The new implementation tries to get rid of some non-great design from the original implementation,
-    // by replacing Set* methods with a Source property that accepts ProfilePictureSource objects.
-    // The long term plan is to replace ProfilePicture with this implementation.
-    // TODO: support profile photo shapes:
-    // These will be passed by MessageProfilePicturePresenter to MessageProfilePicture.Invalidate
-    // + ProfilePictureSourceTexture(ImageBrush Texture, ProfilePictureShape Shape);
-    // * ProfilePictureSourceText(..., ProfilePictureShape Shape);
+    public enum ProfilePictureShape
+    {
+        None,
+        Ellipse,
+        Superellipse,
+        Tail,
+        Auto
+    }
+
     public class ProfilePicture : ControlEx
     {
         private Border LayoutRoot;
@@ -48,7 +50,7 @@ namespace Telegram.Controls
 
         private bool _templateApplied;
 
-        private MessageProfilePicturePresenter _presenter;
+        private ProfilePicturePresenter _presenter;
 
         public ProfilePicture()
         {
@@ -113,20 +115,20 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    var presentation = new MessageProfilePicturePresentation(source, Size);
+                    var presentation = new ProfilePicturePresentation(source, Size);
 
                     if (_presenter == null || _presenter.Presentation != presentation)
                     {
                         if (IsCachingEnabled || (_presenter != null && !_presenter.IsCachingEnabled))
                         {
                             _presenter?.Unload(this);
-                            _presenter = MessageProfilePictureLoader.Current.GetOrCreate(presentation, true);
+                            _presenter = ProfilePictureLoader.Current.GetOrCreate(presentation, true);
                         }
                         else
                         {
                             if (_presenter == null || _presenter.IsCachingEnabled)
                             {
-                                _presenter = MessageProfilePictureLoader.Current.GetOrCreate(presentation, false);
+                                _presenter = ProfilePictureLoader.Current.GetOrCreate(presentation, false);
                             }
                             else
                             {
@@ -382,9 +384,9 @@ namespace Telegram.Controls
             }
         }
 
-        private record MessageProfilePicturePresentation(ProfilePictureSource Source, int Size);
+        private record ProfilePicturePresentation(ProfilePictureSource Source, int Size);
 
-        private class MessageProfilePicturePresenter
+        private class ProfilePicturePresenter
         {
             public enum State
             {
@@ -392,8 +394,8 @@ namespace Telegram.Controls
                 Update
             }
 
-            private readonly MessageProfilePictureLoader _loader;
-            private MessageProfilePicturePresentation _presentation;
+            private readonly ProfilePictureLoader _loader;
+            private ProfilePicturePresentation _presentation;
 
             private readonly ImageBrush _texture;
             private readonly ThumbnailController _controller;
@@ -407,7 +409,7 @@ namespace Telegram.Controls
 
             private object _source;
 
-            public MessageProfilePicturePresenter(MessageProfilePictureLoader loader, MessageProfilePicturePresentation presentation)
+            public ProfilePicturePresenter(ProfilePictureLoader loader, ProfilePicturePresentation presentation)
             {
                 _loader = loader;
                 _presentation = presentation;
@@ -425,7 +427,7 @@ namespace Telegram.Controls
                 IsCachingEnabled = true;
             }
 
-            public MessageProfilePicturePresenter(DispatcherQueue dispatcherQueue, MessageProfilePicturePresentation presentation)
+            public ProfilePicturePresenter(DispatcherQueue dispatcherQueue, ProfilePicturePresentation presentation)
             {
                 _presentation = presentation;
 
@@ -444,7 +446,7 @@ namespace Telegram.Controls
 
             public bool IsCachingEnabled { get; }
 
-            public MessageProfilePicturePresentation Presentation
+            public ProfilePicturePresentation Presentation
             {
                 get => _presentation;
                 set
@@ -551,23 +553,23 @@ namespace Telegram.Controls
             }
         }
 
-        private class MessageProfilePictureLoader
+        private class ProfilePictureLoader
         {
             [ThreadStatic]
-            private static MessageProfilePictureLoader _current;
-            public static MessageProfilePictureLoader Current => _current ??= new();
+            private static ProfilePictureLoader _current;
+            public static ProfilePictureLoader Current => _current ??= new();
 
-            private readonly Dictionary<MessageProfilePicturePresentation, MessageProfilePicturePresenter> _presenters = new();
+            private readonly Dictionary<ProfilePicturePresentation, ProfilePicturePresenter> _presenters = new();
             private readonly DispatcherQueue _dispatcherQueue;
 
-            private MessageProfilePictureLoader()
+            private ProfilePictureLoader()
             {
                 _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             }
 
             public DispatcherQueue DispatcherQueue => _dispatcherQueue;
 
-            public MessageProfilePicturePresenter GetOrCreate(MessageProfilePicturePresentation presentation, bool isCachingEnabled)
+            public ProfilePicturePresenter GetOrCreate(ProfilePicturePresentation presentation, bool isCachingEnabled)
             {
                 if (isCachingEnabled)
                 {
@@ -576,18 +578,360 @@ namespace Telegram.Controls
                         return presenter;
                     }
 
-                    presenter = new MessageProfilePicturePresenter(this, presentation);
+                    presenter = new ProfilePicturePresenter(this, presentation);
                     _presenters.Add(presentation, presenter);
 
                     return presenter;
                 }
 
-                return new MessageProfilePicturePresenter(_dispatcherQueue, presentation);
+                return new ProfilePicturePresenter(_dispatcherQueue, presentation);
             }
 
-            public void Unload(MessageProfilePicturePresenter presenter)
+            public void Unload(ProfilePicturePresenter presenter)
             {
                 _presenters.Remove(presenter.Presentation);
+            }
+        }
+    }
+
+    public abstract record ProfilePictureSource(ProfilePictureShape Shape)
+    {
+        public static ProfilePictureSource Message(MessageViewModel message)
+        {
+            if (message.IsSaved || message.IsVerificationCode)
+            {
+                if (message.ForwardInfo?.Origin is MessageOriginUser fromUser && message.ClientService.TryGetUser(fromUser.SenderUserId, out User fromUserUser))
+                {
+                    return ProfilePictureSource.User(message.ClientService, fromUserUser);
+                }
+                else if (message.ForwardInfo?.Origin is MessageOriginChat fromChat && message.ClientService.TryGetChat(fromChat.SenderChatId, out Chat fromChatChat))
+                {
+                    return ProfilePictureSource.Chat(message.ClientService, fromChatChat);
+                }
+                else if (message.ForwardInfo?.Origin is MessageOriginChannel fromChannel && message.ClientService.TryGetChat(fromChannel.ChatId, out Chat fromChannelChat))
+                {
+                    return ProfilePictureSource.Chat(message.ClientService, fromChannelChat);
+                }
+                else if (message.ForwardInfo?.Origin is MessageOriginHiddenUser fromHiddenUser)
+                {
+                    return ProfilePictureSourceText.GetNameForUser(fromHiddenUser.SenderName, long.MinValue);
+                }
+                else if (message.ImportInfo != null)
+                {
+                    return ProfilePictureSourceText.GetNameForUser(message.ImportInfo.SenderName, long.MinValue);
+                }
+            }
+            else if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
+            {
+                return ProfilePictureSource.User(message.ClientService, senderUser);
+            }
+            else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
+            {
+                return ProfilePictureSource.Chat(message.ClientService, senderChat);
+            }
+
+            return null;
+        }
+
+        public static ProfilePictureSource MessageSender(IClientService clientService, MessageSender sender)
+        {
+            if (clientService.TryGetUser(sender, out User user))
+            {
+                return ProfilePictureSource.User(clientService, user);
+            }
+            else if (clientService.TryGetChat(sender, out Chat chat))
+            {
+                return ProfilePictureSource.Chat(clientService, chat);
+            }
+
+            return null;
+        }
+
+        public static ProfilePictureSource User(IClientService clientService, User user)
+        {
+            ProfilePictureSourceText text;
+            if (user.Type is UserTypeDeleted)
+            {
+                text = ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
+            }
+            else
+            {
+                text = ProfilePictureSourceText.GetUser(clientService, user);
+            }
+
+            var photo = user.ProfilePhoto;
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, user.Id, photo.Small, photo.Minithumbnail, text, ProfilePictureShape.Ellipse);
+            }
+
+            return text;
+        }
+
+        public static ProfilePictureSource ChatPhoto(IClientService clientService, User user, ChatPhoto chatPhoto, bool big)
+        {
+            ProfilePictureSourceText text;
+            if (user.Type is UserTypeDeleted)
+            {
+                text = ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
+            }
+            else
+            {
+                text = ProfilePictureSourceText.GetUser(clientService, user);
+            }
+
+            var photo = big ? chatPhoto?.GetBig() : chatPhoto?.GetSmall();
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, user.Id, photo.Photo, chatPhoto.Minithumbnail, text, ProfilePictureShape.Ellipse);
+            }
+
+            return text;
+        }
+
+        public static ProfilePictureSource ChatPhoto(IClientService clientService, Chat chat, ChatPhoto chatPhoto, bool big)
+        {
+            ProfilePictureSourceText text;
+            text = ProfilePictureSourceText.GetChat(clientService, chat);
+
+            var photo = big ? chatPhoto?.GetBig() : chatPhoto?.GetSmall();
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, chat.Id, photo.Photo, chatPhoto.Minithumbnail, text, ProfilePictureShape.Ellipse);
+            }
+
+            return text;
+        }
+
+        public static ProfilePictureSource Chat(IClientService clientService, Chat chat)
+        {
+            if (chat.Id == clientService.Options.MyId)
+            {
+                return ProfilePictureSourceText.GetGlyph(Icons.BookmarkFilled, 5);
+            }
+            else if (chat.Id == clientService.Options.RepliesBotChatId)
+            {
+                return ProfilePictureSourceText.GetGlyph(Icons.ArrowReplyFilled, 5);
+            }
+
+            var shape = ProfilePictureShape.Ellipse;
+            if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                if (supergroup.IsForum)
+                {
+                    shape = ProfilePictureShape.Superellipse;
+                }
+                else if (supergroup.IsDirectMessagesGroup)
+                {
+                    shape = ProfilePictureShape.Tail;
+                }
+            }
+
+            ProfilePictureSourceText text;
+            if (supergroup == null && clientService.TryGetUser(chat, out User user))
+            {
+                if (user.Type is UserTypeDeleted)
+                {
+                    text = ProfilePictureSourceText.GetGlyph(Icons.GhostFilled, long.MinValue);
+                }
+                else
+                {
+                    text = ProfilePictureSourceText.GetUser(clientService, user);
+                }
+            }
+            else
+            {
+                text = ProfilePictureSourceText.GetChat(clientService, chat, shape);
+            }
+
+            var photo = chat.Photo;
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, chat.Id, photo.Small, photo.Minithumbnail, text, shape);
+            }
+
+            return text;
+        }
+
+        public static ProfilePictureSource Chat(IClientService clientService, ChatInviteLinkInfo chat)
+        {
+            ProfilePictureSourceText text;
+            text = ProfilePictureSourceText.GetChat(clientService, chat);
+
+            var photo = chat.Photo;
+            if (photo != null)
+            {
+                return new ProfilePictureSourcePhoto(clientService, chat.ChatId, photo.Small, photo.Minithumbnail, text);
+            }
+
+            return text;
+        }
+
+        public static ProfilePictureSource Story(IClientService clientService, Story story)
+        {
+            if (story.Content is StoryContentPhoto photo)
+            {
+                var file = photo.Photo.GetSmall()?.Photo;
+                if (file != null)
+                {
+                    return new ProfilePictureSourcePhoto(clientService, photo.Photo.Sizes[0].Photo.Id, file, photo.Photo.Minithumbnail);
+                }
+            }
+            else if (story.Content is StoryContentVideo video)
+            {
+                var file = video.Video.Thumbnail?.File;
+                if (file != null)
+                {
+                    return new ProfilePictureSourcePhoto(clientService, video.Video.Video.Id, file, video.Video.Minithumbnail);
+                }
+            }
+
+            if (story.PosterId != null)
+            {
+                return ProfilePictureSource.MessageSender(clientService, story.PosterId);
+            }
+
+            if (clientService.TryGetChat(story.PosterChatId, out Chat chat))
+            {
+                return ProfilePictureSource.Chat(clientService, chat);
+            }
+
+            return null;
+        }
+    }
+
+    public record ProfilePictureSourceBitmap(ImageSource Bitmap, ProfilePictureShape Shape = ProfilePictureShape.Ellipse)
+        : ProfilePictureSource(Shape);
+
+    public record ProfilePictureSourcePhoto(IClientService ClientService, long Id, File Photo, Minithumbnail Minithumbnail, ProfilePictureSourceText Text = null, ProfilePictureShape Shape = ProfilePictureShape.Ellipse)
+        : ProfilePictureSource(Shape);
+
+    public record ProfilePictureSourceText(string Initials, bool IsGlyph, Color TopColor, Color BottomColor, ProfilePictureShape Shape = ProfilePictureShape.Ellipse)
+        : ProfilePictureSource(Shape)
+    {
+        private static readonly Color[] _colorsTop = new Color[7]
+        {
+            Color.FromArgb(0xFF, 0xEF, 0x8E, 0x67), // orange
+            Color.FromArgb(0xFF, 0xF7, 0xCE, 0x79), // yellow
+            Color.FromArgb(0xFF, 0x8C, 0xAF, 0xF9), // violet
+            Color.FromArgb(0xFF, 0xAC, 0xDC, 0x89), // green
+            Color.FromArgb(0xFF, 0x81, 0xE9, 0xD6), // teal
+            Color.FromArgb(0xFF, 0x8A, 0xD3, 0xF9), // blue
+            Color.FromArgb(0xFF, 0xFF, 0xAF, 0xC7), // rose
+        };
+
+        private static readonly Color[] _colors = new Color[7]
+        {
+            Color.FromArgb(0xFF, 0xEC, 0x5F, 0x6D), // orange
+            Color.FromArgb(0xFF, 0xF2, 0xAC, 0x6A), // yellow
+            Color.FromArgb(0xFF, 0x65, 0x60, 0xF6), // violet
+            Color.FromArgb(0xFF, 0x75, 0xC8, 0x73), // green
+            Color.FromArgb(0xFF, 0x62, 0xC6, 0xB7), // teal
+            Color.FromArgb(0xFF, 0x51, 0x9D, 0xEA), // blue
+            Color.FromArgb(0xFF, 0xF2, 0x74, 0x9A), // rose
+        };
+
+        private static readonly Color _disabledTop = Color.FromArgb(0xFF, 0xA6, 0xAB, 0xB7);
+        private static readonly Color _disabled = Color.FromArgb(0xFF, 0x86, 0x89, 0x92);
+
+        public static Color GetColor(long i)
+        {
+            if (i == -1)
+            {
+                return _disabled;
+            }
+
+            return _colors[Math.Abs(i % _colors.Length)];
+        }
+
+        public static SolidColorBrush GetBrush(long i, double opacity = 1)
+        {
+            return new SolidColorBrush(_colors[Math.Abs(i % _colors.Length)])
+            {
+                Opacity = opacity
+            };
+        }
+
+        public static CompositionBrush GetBrush(Compositor compositor, long i)
+        {
+            return compositor.CreateColorBrush(_colors[Math.Abs(i % _colors.Length)]);
+        }
+
+        public static ProfilePictureSourceText GetChat(IClientService clientService, Chat chat, ProfilePictureShape shape = ProfilePictureShape.None)
+        {
+            if (shape == ProfilePictureShape.None)
+            {
+                shape = ProfilePictureShape.Ellipse;
+
+                if (clientService.TryGetSupergroup(chat, out Supergroup supergroup))
+                {
+                    if (supergroup.IsForum)
+                    {
+                        shape = ProfilePictureShape.Superellipse;
+                    }
+                    else if (supergroup.IsDirectMessagesGroup)
+                    {
+                        shape = ProfilePictureShape.Tail;
+                    }
+                }
+            }
+
+            return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(chat.Title), false, clientService.GetAccentColor(chat.AccentColorId), shape);
+        }
+
+        public static ProfilePictureSourceText GetChat(IClientService clientService, ChatInviteLinkInfo chat)
+        {
+            return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(chat.Title), false, clientService.GetAccentColor(chat.AccentColorId));
+        }
+
+        public static ProfilePictureSourceText GetUser(IClientService clientService, User user)
+        {
+            return ProfilePictureSourceText.FromNameColor(InitialNameStringConverter.Convert(user.FirstName, user.LastName), false, clientService.GetAccentColor(user.AccentColorId));
+        }
+
+        public static ProfilePictureSourceText GetNameForUser(string firstName, string lastName, long id = 5, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
+        {
+            return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(firstName, lastName), false, id);
+        }
+
+        public static ProfilePictureSourceText GetNameForUser(string name, long id = 5, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
+        {
+            return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(name), false, id);
+        }
+
+        public static ProfilePictureSourceText GetNameForChat(string title, long id = 5, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
+        {
+            return ProfilePictureSourceText.FromId(InitialNameStringConverter.Convert(title), false, id);
+        }
+
+        public static ProfilePictureSourceText GetGlyph(string glyph, long id = 5, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
+        {
+            return ProfilePictureSourceText.FromId(glyph, true, id);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ProfilePictureSourceText FromNameColor(string initials, bool isGlyph, NameColor color, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
+        {
+            if (color == null)
+            {
+                return new ProfilePictureSourceText(initials, isGlyph, _disabledTop, _disabled, shape);
+            }
+            else
+            {
+                return new ProfilePictureSourceText(initials, isGlyph, _colorsTop[Math.Abs(color.BuiltInAccentColorId % _colors.Length)], _colors[Math.Abs(color.BuiltInAccentColorId % _colors.Length)], shape);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ProfilePictureSourceText FromId(string initials, bool isGlyph, long id, ProfilePictureShape shape = ProfilePictureShape.Ellipse)
+        {
+            if (id == long.MinValue)
+            {
+                return new ProfilePictureSourceText(initials, isGlyph, _disabledTop, _disabled, shape);
+            }
+            else
+            {
+                return new ProfilePictureSourceText(initials, isGlyph, _colorsTop[Math.Abs(id % _colors.Length)], _colors[Math.Abs(id % _colors.Length)], shape);
             }
         }
     }

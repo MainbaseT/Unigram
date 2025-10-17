@@ -4956,39 +4956,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:ProfilePicture2">
-        <Setter Property="IsTabStop"
-                Value="False" />
-        <Setter Property="UseSystemFocusVisuals"
-                Value="{StaticResource UseSystemFocusVisuals}" />
-        <Setter Property="FocusVisualMargin"
-                Value="-3" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="local:ProfilePicture2">
-                    <Border x:Name="LayoutRoot"
-                            Control.IsTemplateFocusTarget="True">
-                        <Border.Background>
-                            <ImageBrush x:Name="Texture"
-                                        Stretch="UniformToFill"
-                                        AlignmentX="Center"
-                                        AlignmentY="Center" />
-                        </Border.Background>
-                        <TextBlock x:Name="Initials"
-                                   AutomationProperties.AccessibilityView="Raw"
-                                   Visibility="Collapsed"
-                                   TextAlignment="Center"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Margin="0,1,0,2"
-                                   Foreground="#FFFFFF"
-                                   FontFamily="{StaticResource EmojiThemeFontFamilyWithRounded}" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style TargetType="local:ProfilePicture">
         <Setter Property="IsTabStop"
                 Value="False" />
