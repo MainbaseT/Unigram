@@ -282,6 +282,12 @@ namespace Telegram.ViewModels.Settings
         {
             Name = Strings.UserColorTabName;
             Type = typeof(SettingsProfileColorNameTabPage);
+
+            if (clientService.TryGetUser(clientService.Options.MyId, out User user))
+            {
+                SelectedAccentColor = clientService.GetAccentColor(user.AccentColorId);
+                SelectedCustomEmojiId = user.BackgroundCustomEmojiId;
+            }
         }
 
         public override object SelectedItemView
@@ -386,6 +392,12 @@ namespace Telegram.ViewModels.Settings
         {
             Name = Strings.UserColorTabProfile;
             Type = typeof(SettingsProfileColorProfileTabPage);
+
+            if (clientService.TryGetUser(clientService.Options.MyId, out User user))
+            {
+                SelectedAccentColor = clientService.GetProfileColor(user.ProfileAccentColorId);
+                SelectedCustomEmojiId = user.ProfileBackgroundCustomEmojiId;
+            }
         }
 
         public override object SelectedItemView
