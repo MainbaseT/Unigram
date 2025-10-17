@@ -162,12 +162,12 @@ namespace winrt::Telegram::Native::Composition::implementation
 		return S_OK;
 	}
 
-	winrt::Telegram::Native::Composition::DirectRectangleClip2 CompositionDevice::CreateRectangleClip2(UIElement element)
+	winrt::Telegram::Native::Composition::DirectRectangleClip2 CompositionDevice::CreateRectangleClip2(UIElement const& element)
 	{
 		return CreateRectangleClip2(winrt::Windows::UI::Xaml::Hosting::ElementCompositionPreview::GetElementVisual(element));
 	}
 
-	winrt::Telegram::Native::Composition::DirectRectangleClip2 CompositionDevice::CreateRectangleClip2(Visual visual)
+	winrt::Telegram::Native::Composition::DirectRectangleClip2 CompositionDevice::CreateRectangleClip2(Visual const& visual)
 	{
 		HRESULT hr;
 		auto compositor = visual.Compositor();
@@ -184,7 +184,7 @@ namespace winrt::Telegram::Native::Composition::implementation
 	}
 
 
-	void CompositionDevice::SetClip(Visual visual, winrt::Telegram::Native::Composition::DirectRectangleClip2 clip)
+	void CompositionDevice::SetClip(Visual const& visual, winrt::Telegram::Native::Composition::DirectRectangleClip2 const& clip)
 	{
 		HRESULT hr;
 

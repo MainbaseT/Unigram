@@ -38,9 +38,9 @@ namespace winrt::Telegram::Native::Composition::implementation
 
         HRESULT CreateCubicBezierAnimation(Compositor compositor, float from, float to, double duration, IDCompositionAnimation** slideAnimation);
 
-        static winrt::Telegram::Native::Composition::DirectRectangleClip2 CreateRectangleClip2(UIElement element);
-        static winrt::Telegram::Native::Composition::DirectRectangleClip2 CreateRectangleClip2(Visual visual);
-        static void SetClip(Visual visual, winrt::Telegram::Native::Composition::DirectRectangleClip2 clip);
+        static winrt::Telegram::Native::Composition::DirectRectangleClip2 CreateRectangleClip2(UIElement const& element);
+        static winrt::Telegram::Native::Composition::DirectRectangleClip2 CreateRectangleClip2(Visual const& visual);
+        static void SetClip(Visual const& visual, winrt::Telegram::Native::Composition::DirectRectangleClip2 const& clip);
 
         static LayerVisual GetElementLayerVisual(UIElement const& element);
 
