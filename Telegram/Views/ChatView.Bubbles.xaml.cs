@@ -307,7 +307,7 @@ namespace Telegram.Views
                         {
                             var reference = ElementComposition.GetElementVisual(container);
                             _dateHeaderTranslation.SetReferenceParameter("reference", reference);
-                            
+
                             _dateHeader.StartAnimation("Translation.Y", _dateHeaderTranslation);
                             _dateHeaderTracked = container;
                         }
@@ -373,12 +373,10 @@ namespace Telegram.Views
                     SetContentOpacity(1);
                 }
 
-                bool AnimateStickyPhoto(HyperlinkButton stickyPhotoRoot, ProfilePicture stickyPhoto, ref SelectorItem tracked, ref MessageViewModel item, bool below)
+                bool AnimateStickyPhoto(Visual visual, ProfilePicture stickyPhoto, ref SelectorItem tracked, ref MessageViewModel item, bool below)
                 {
                     if (message.HasSenderPhoto && container.ContentTemplateRoot is MessageSelector selector && selector.ContentTemplateRoot is MessageBubble bubble)
                     {
-                        var visual = ElementComposition.GetElementVisual(stickyPhotoRoot);
-
                         const string topExp = "(reference.Offset.Y + scroll.Translation.Y) - (messages.Size.Y - props.Padding)";
                         const string bottomExp = $"(reference.Offset.Y + child.Size.Y + scroll.Translation.Y) - (messages.Size.Y - props.Padding)";
 
@@ -432,12 +430,10 @@ namespace Telegram.Views
                         bubble.ShowHidePhoto(false);
 
                         stickyPhoto.Source = ProfilePictureSource.Message(message);
-                        stickyPhotoRoot.Visibility = Visibility.Visible;
                         return true;
                     }
                     else
                     {
-                        stickyPhotoRoot.Visibility = Visibility.Collapsed;
                         return false;
                     }
                 }
@@ -446,11 +442,11 @@ namespace Telegram.Views
 
                 if (bottom + childHeight >= 0 && bottom + childHeight <= childHeight)
                 {
-                    stickyAbove = AnimateStickyPhoto(StickyPhotoRootAbove, StickyPhotoAbove, ref _stickyPhotoAboveTracked, ref _stickyPhotoAboveMessage, false);
+                    stickyAbove = AnimateStickyPhoto(_stickyPhotoAboveVisual, StickyPhotoAbove, ref _stickyPhotoAboveTracked, ref _stickyPhotoAboveMessage, false);
                 }
                 else if (bottom + childHeight >= childHeight)
                 {
-                    stickyBelow = AnimateStickyPhoto(StickyPhotoRootBelow, StickyPhotoBelow, ref _stickyPhotoBelowTracked, ref _stickyPhotoBelowMessage, true);
+                    stickyBelow = AnimateStickyPhoto(_stickyPhotoBelowVisual, StickyPhotoBelow, ref _stickyPhotoBelowTracked, ref _stickyPhotoBelowMessage, true);
 
                     // We found the message after the last visible message, we can break the loop
                     break;
@@ -537,16 +533,26 @@ namespace Telegram.Views
 
             if (!stickyAbove)
             {
+                StickyPhotoRootAbove.Visibility = Visibility.Collapsed;
+                _stickyPhotoAboveVisual.Properties.InsertVector3("Translation", Vector3.Zero);
                 _stickyPhotoAboveTracked = null;
                 _stickyPhotoAboveMessage = null;
-                StickyPhotoRootAbove.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                StickyPhotoRootAbove.Visibility = Visibility.Visible;
             }
 
             if (!stickyBelow)
             {
+                StickyPhotoRootBelow.Visibility = Visibility.Collapsed;
+                _stickyPhotoBelowVisual.Properties.InsertVector3("Translation", Vector3.Zero);
                 _stickyPhotoBelowTracked = null;
                 _stickyPhotoBelowMessage = null;
-                StickyPhotoRootBelow.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                StickyPhotoRootBelow.Visibility = Visibility.Visible;
             }
 
             // TODO: do not hide if above corresponding message

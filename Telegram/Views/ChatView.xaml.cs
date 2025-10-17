@@ -96,8 +96,10 @@ namespace Telegram.Views
         private ExpressionAnimation _forumTopicHeaderScale;
 
         // Optimize by holding these in two structs
+        private Visual _stickyPhotoAboveVisual;
         private MessageViewModel _stickyPhotoAboveMessage;
         private SelectorItem _stickyPhotoAboveTracked;
+        private Visual _stickyPhotoBelowVisual;
         private MessageViewModel _stickyPhotoBelowMessage;
         private SelectorItem _stickyPhotoBelowTracked;
         private ExpressionAnimation _stickyPhotoExpression;
@@ -198,6 +200,9 @@ namespace Telegram.Views
 
             _forumTopicHeaderPanel = ElementComposition.GetElementVisual(ForumTopicHeaderPanel);
             _forumTopicHeader = ElementComposition.GetElementVisual(ForumTopicHeader);
+
+            _stickyPhotoAboveVisual = ElementComposition.GetElementVisual(StickyPhotoRootAbove);
+            _stickyPhotoBelowVisual = ElementComposition.GetElementVisual(StickyPhotoRootBelow);
 
             _messagesVisual = ElementComposition.GetElementVisual(Messages);
             _messagesPaddingSet = BootStrapper.Current.Compositor.CreatePropertySet();
