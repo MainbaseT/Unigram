@@ -5599,7 +5599,7 @@ namespace Telegram.Views
             {
                 return string.Format(Strings.TypeMessageForStars.ReplaceStar(Icons.Premium), supergroup.PaidMessageStarCount.ToString("N0"));
             }
-            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetForumTopic(chat.Id, chat.LastMessage.TopicId, out ForumTopic forumTopic))
+            else if (supergroup.IsForum && ViewModel.Type == DialogType.History && ViewModel.ClientService.TryGetForumTopic(chat.Id, chat.LastMessage?.TopicId, out ForumTopic forumTopic))
             {
                 forumTopicId = forumTopic.Info.ForumTopicId;
                 return string.Format(Strings.TypeMessageIn, forumTopic.Info.Name);

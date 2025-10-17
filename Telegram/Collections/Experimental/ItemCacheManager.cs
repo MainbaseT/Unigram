@@ -92,7 +92,7 @@ namespace Telegram.Collections
         public void Stop()
         {
             _stopped = true;
-            _cancelTokenSource.Cancel();
+            _cancelTokenSource?.Cancel();
             _timer.Stop();
         }
 

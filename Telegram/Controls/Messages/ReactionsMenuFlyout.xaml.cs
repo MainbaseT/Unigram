@@ -905,7 +905,7 @@ namespace Telegram.Controls.Messages
 
         private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key is VirtualKey.Tab)
+            if (e.Key is VirtualKey.Tab && _presenter != null)
             {
                 e.Handled = true;
                 _presenter.Focus(FocusState.Keyboard);
@@ -924,7 +924,7 @@ namespace Telegram.Controls.Messages
                     return;
                 }
             }
-            else if (e.Key is VirtualKey.Up or VirtualKey.Down)
+            else if (e.Key is VirtualKey.Up or VirtualKey.Down && _flyout != null)
             {
                 e.Handled = true;
 
