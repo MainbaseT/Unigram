@@ -162,7 +162,8 @@
                                          Grid.RowSpan="3">
                             <controls:MessageProfilePicture x:Name="Photo"
                                                             Size="30"
-                                                            Shape="Ellipse" />
+                                                            Shape="Ellipse"
+                                                            IsCachingEnabled="True" />
                         </HyperlinkButton>
 
                         <Rectangle x:Name="ShadowCaster"

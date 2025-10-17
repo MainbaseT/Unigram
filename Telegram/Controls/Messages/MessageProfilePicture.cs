@@ -117,8 +117,23 @@ namespace Telegram.Controls
 
                     if (_presenter == null || _presenter.Presentation != presentation)
                     {
-                        _presenter?.Unload(this);
-                        _presenter = MessageProfilePictureLoader.Current.GetOrCreate(presentation);
+                        if (IsCachingEnabled || (_presenter != null && !_presenter.IsCachingEnabled))
+                        {
+                            _presenter?.Unload(this);
+                            _presenter = MessageProfilePictureLoader.Current.GetOrCreate(presentation, true);
+                        }
+                        else
+                        {
+                            if (_presenter == null || _presenter.IsCachingEnabled)
+                            {
+                                _presenter = MessageProfilePictureLoader.Current.GetOrCreate(presentation, false);
+                            }
+                            else
+                            {
+                                _presenter.Presentation = presentation;
+                            }
+                        }
+
                         _presenter.Load(this);
                     }
                 }
@@ -196,6 +211,20 @@ namespace Telegram.Controls
                 }
 
                 return _shape;
+            }
+        }
+
+        private bool _isCachingEnabled;
+        public bool IsCachingEnabled
+        {
+            get => _isCachingEnabled;
+            set
+            {
+                if (_isCachingEnabled != value)
+                {
+                    _isCachingEnabled = value;
+                    Load();
+                }
             }
         }
 
@@ -353,7 +382,7 @@ namespace Telegram.Controls
             }
 
             private readonly MessageProfilePictureLoader _loader;
-            private readonly MessageProfilePicturePresentation _presentation;
+            private MessageProfilePicturePresentation _presentation;
 
             private readonly ImageBrush _texture;
             private readonly ThumbnailController _controller;
@@ -382,14 +411,51 @@ namespace Telegram.Controls
                 _controller = new ThumbnailController(_texture);
 
                 _dispatcherQueue = loader.DispatcherQueue;
+                IsCachingEnabled = true;
             }
 
-            public MessageProfilePicturePresentation Presentation => _presentation;
+            public MessageProfilePicturePresenter(DispatcherQueue dispatcherQueue, MessageProfilePicturePresentation presentation)
+            {
+                _presentation = presentation;
+
+                _texture = new ImageBrush
+                {
+                    Stretch = Stretch.UniformToFill,
+                    AlignmentX = AlignmentX.Center,
+                    AlignmentY = AlignmentY.Center
+                };
+
+                _controller = new ThumbnailController(_texture);
+
+                _dispatcherQueue = dispatcherQueue;
+                IsCachingEnabled = false;
+            }
+
+            public bool IsCachingEnabled { get; }
+
+            public MessageProfilePicturePresentation Presentation
+            {
+                get => _presentation;
+                set
+                {
+                    if (_loader == null)
+                    {
+                        _presentation = value;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }
+            }
 
             public void Load(MessageProfilePicture picture)
             {
-                _pictures.Add(picture);
-                picture.Invalidate(_source);
+                if (IsCachingEnabled)
+                {
+                    _pictures.Add(picture);
+                    picture.Invalidate(_source);
+                }
 
                 Load(State.Download);
             }
@@ -464,15 +530,18 @@ namespace Telegram.Controls
 
             public void Unload(MessageProfilePicture picture)
             {
-                _pictures.Remove(picture);
-                picture.Invalidate(null);
-
-                if (_pictures.Empty())
+                if (IsCachingEnabled)
                 {
-                    UpdateManager.Unsubscribe(this, ref _fileToken);
+                    _pictures.Remove(picture);
+                    picture.Invalidate(null);
 
-                    _controller.Recycle();
-                    _loader.Unload(this);
+                    if (_pictures.Empty())
+                    {
+                        UpdateManager.Unsubscribe(this, ref _fileToken);
+
+                        _controller.Recycle();
+                        _loader.Unload(this);
+                    }
                 }
             }
         }
@@ -493,17 +562,22 @@ namespace Telegram.Controls
 
             public DispatcherQueue DispatcherQueue => _dispatcherQueue;
 
-            public MessageProfilePicturePresenter GetOrCreate(MessageProfilePicturePresentation presentation)
+            public MessageProfilePicturePresenter GetOrCreate(MessageProfilePicturePresentation presentation, bool isCachingEnabled)
             {
-                if (_presenters.TryGetValue(presentation, out var presenter))
+                if (isCachingEnabled)
                 {
+                    if (_presenters.TryGetValue(presentation, out var presenter))
+                    {
+                        return presenter;
+                    }
+
+                    presenter = new MessageProfilePicturePresenter(this, presentation);
+                    _presenters.Add(presentation, presenter);
+
                     return presenter;
                 }
 
-                presenter = new MessageProfilePicturePresenter(this, presentation);
-                _presenters.Add(presentation, presenter);
-
-                return presenter;
+                return new MessageProfilePicturePresenter(_dispatcherQueue, presentation);
             }
 
             public void Unload(MessageProfilePicturePresenter presenter)
