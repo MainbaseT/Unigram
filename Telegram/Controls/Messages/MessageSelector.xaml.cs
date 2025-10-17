@@ -67,9 +67,6 @@ namespace Telegram.Controls.Messages
             {
                 _hasInitialLoadedEventFired = true;
 
-                _hitTest = ElementComposition.GetElementVisual(this);
-                _visual = ElementComposition.GetElementVisual(RootGrid);
-
                 _compositor = _hitTest.Compositor;
                 _container ??= _compositor.CreateContainerVisual();
 
@@ -183,6 +180,8 @@ namespace Telegram.Controls.Messages
 
             Header = GetTemplateChild(nameof(Header)) as Border;
 
+            _hitTest = ElementComposition.GetElementVisual(this);
+            _visual = ElementComposition.GetElementVisual(Presenter);
             _templateApplied = true;
 
             if (_message?.Delegate != null)
@@ -488,6 +487,8 @@ namespace Telegram.Controls.Messages
         }
 
         #region Moved from ChatHistoryViewItem
+
+        public Visual ContentVisual => _visual;
 
         private Visual _hitTest;
         private Visual _visual;

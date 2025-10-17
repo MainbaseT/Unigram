@@ -375,7 +375,7 @@ namespace Telegram.Views
 
                 bool AnimateStickyPhoto(HyperlinkButton stickyPhotoRoot, ProfilePicture stickyPhoto, ref SelectorItem tracked, ref MessageViewModel item, bool below)
                 {
-                    if (message.HasSenderPhoto && container.ContentTemplateRoot is MessageSelector { ContentTemplateRoot: MessageBubble bubble })
+                    if (message.HasSenderPhoto && container.ContentTemplateRoot is MessageSelector selector && selector.ContentTemplateRoot is MessageBubble bubble)
                     {
                         var visual = ElementComposition.GetElementVisual(stickyPhotoRoot);
 
@@ -409,11 +409,11 @@ namespace Telegram.Views
                             {
                                 var reference = ElementComposition.GetElementVisual(container);
 
-                                _stickyPhotoExpression.Expression = exp;
+                                _stickyPhotoExpression.Expression = $"Vector3(child.Offset.X + child.Translation.X, {exp}, 0)";
                                 _stickyPhotoExpression.SetReferenceParameter("reference", reference);
-                                _stickyPhotoExpression.SetReferenceParameter("child", ElementComposition.GetElementVisual(container.ContentTemplateRoot));
+                                _stickyPhotoExpression.SetReferenceParameter("child", selector.ContentVisual);
 
-                                visual.StartAnimation("Translation.Y", _stickyPhotoExpression);
+                                visual.StartAnimation("Translation", _stickyPhotoExpression);
                                 tracked = container;
                             }
                         }
