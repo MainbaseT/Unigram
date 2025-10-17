@@ -4,16 +4,21 @@
 #include "Media/AsyncMediaPlayer.g.cpp"
 #endif
 
+#include <winrt/Windows.Foundation.Collections.h>
+
 namespace winrt::Telegram::Native::Media::implementation
 {
-    AsyncMediaPlayer::AsyncMediaPlayer(AsyncMediaPlayerOptions options, winrt::Windows::Foundation::Collections::IVector<hstring> args)
+    AsyncMediaPlayer::AsyncMediaPlayer(AsyncMediaPlayerOptions  const& options, AsyncMediaPlayerSwapChain const& context)
         : m_options(options)
+        , m_context(context)
         , m_dispatcherQueue(DispatcherQueue::GetForCurrentThread())
         , m_stateChangedEventArgs(AsyncMediaPlayerState::NothingSpecial)
         , m_bufferingEventArgs(0.0f)
         , m_positionChangedEventArgs(0.0)
         , m_durationChangedEventArgs(0.0)
     {
+        auto args = options.Arguments();
+
         std::vector<std::string> argsStorage;
         argsStorage.reserve(args.Size());
 
@@ -22,10 +27,13 @@ namespace winrt::Telegram::Native::Media::implementation
             argsStorage.push_back(winrt::to_string(opt));
         }
 
-        if (options.CreateSwapChain)
+        if (options.CreateSwapChain() && !m_context)
         {
             m_context = AsyncMediaPlayerSwapChain(true);
+        }
 
+        if (m_context)
+        {
             for (const auto& opt : m_context.SwapChainOptions())
             {
                 argsStorage.push_back(winrt::to_string(opt));
@@ -35,9 +43,20 @@ namespace winrt::Telegram::Native::Media::implementation
         argsStorage.push_back("--aout=winstore");
         argsStorage.push_back("--volume-save");
 
-        if (options.Debug)
+        if (options.Debug())
         {
             argsStorage.push_back("--verbose=3");
+        }
+
+        auto mode = options.Mode();
+        if ((mode & AsyncMediaPlayerMode::Audio) == AsyncMediaPlayerMode::None)
+        {
+            argsStorage.push_back("--no-audio");
+        }
+
+        if ((mode & AsyncMediaPlayerMode::Video) == AsyncMediaPlayerMode::None)
+        {
+            argsStorage.push_back("--no-video");
         }
 
         // Generating plugins cache requires a breakpoint in bank.c#504
@@ -55,7 +74,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         m_instance = libvlc_new(argv.size(), argv.data());
 
-        if (options.Debug)
+        if (options.Debug())
         {
             libvlc_log_set(m_instance, &LogCallback, this);
         }
@@ -63,9 +82,9 @@ namespace winrt::Telegram::Native::Media::implementation
         m_player = libvlc_media_player_new(m_instance);
         m_events = new EventContext(m_player, get_weak());
 
-        libvlc_audio_set_volume(m_player, static_cast<int>(options.Volume * 100));
-        libvlc_audio_set_mute(m_player, options.Mute);
-        libvlc_media_player_set_rate(m_player, options.Rate);
+        libvlc_audio_set_volume(m_player, static_cast<int>(options.Volume() * 100));
+        libvlc_audio_set_mute(m_player, options.Mute());
+        libvlc_media_player_set_rate(m_player, options.Rate());
 
         m_defaultAudioRenderDeviceChanged = MediaDevice::DefaultAudioRenderDeviceChanged({ this, &AsyncMediaPlayer::OnDefaultAudioRenderDeviceChanged });
     }
@@ -438,14 +457,14 @@ namespace winrt::Telegram::Native::Media::implementation
 
         libvlc_media_player_set_pause(m_player, true);
 
-        if (m_options.Debug)
+        if (m_options.Debug())
         {
             libvlc_log_unset(m_instance);
         }
 
         if (m_context)
         {
-            m_context.Destroy();
+            m_context.Detach();
         }
 
         if (m_stream)
@@ -457,7 +476,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         {
             std::lock_guard<std::mutex> lock(work_lock_);
-            CleanupManager::Close(m_instance, m_player, m_events, std::move(*work_thread_));
+            CleanupManager::Close(m_instance, m_player, m_events, m_context, std::move(*work_thread_));
         }
 
         m_player = nullptr;
@@ -574,22 +593,25 @@ namespace winrt::Telegram::Native::Media::implementation
 
     void AsyncMediaPlayer::HandleLog(int level, const libvlc_log_t* ctx, const char* fmt, va_list args)
     {
-        int byteLength = vsnprintf(nullptr, 0, fmt, args) + 1;
-        if (byteLength <= 1)
-            return;
+        if (m_log)
+        {
+            int byteLength = vsnprintf(nullptr, 0, fmt, args) + 1;
+            if (byteLength <= 1)
+                return;
 
-        char* buffer = new char[byteLength];
-        vsprintf_s(buffer, byteLength, fmt, args);
-        hstring message = winrt::to_hstring(std::string(buffer, byteLength - 1));
-        delete[] buffer;
+            char* buffer = new char[byteLength];
+            vsprintf_s(buffer, byteLength, fmt, args);
+            hstring message = winrt::to_hstring(std::string(buffer, byteLength - 1));
+            delete[] buffer;
 
-        const char* module;
-        const char* file;
-        unsigned int line = 0;
-        libvlc_log_get_context(ctx, &module, &file, &line);
+            const char* module;
+            const char* file;
+            unsigned int line = 0;
+            libvlc_log_get_context(ctx, &module, &file, &line);
 
-        // TODO:
-        m_log(*this, AsyncMediaPlayerLogEventArgs((AsyncMediaPlayerLogLevel)level, message, winrt::to_hstring(module), winrt::to_hstring(file), line));
+            // TODO:
+            m_log(*this, AsyncMediaPlayerLogEventArgs((AsyncMediaPlayerLogLevel)level, message, winrt::to_hstring(module), winrt::to_hstring(file), line));
+        }
     }
 
     void AsyncMediaPlayer::HandleEvent(const libvlc_event_t* event)

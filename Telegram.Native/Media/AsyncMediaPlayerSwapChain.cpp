@@ -19,6 +19,8 @@ namespace winrt::Telegram::Native::Media::implementation
         {
             Create(false);
         }
+
+        m_suspending = Application::Current().Suspending({ this, &AsyncMediaPlayerSwapChain::OnSuspending });
     }
 
     AsyncMediaPlayerSwapChain::~AsyncMediaPlayerSwapChain()
@@ -26,7 +28,7 @@ namespace winrt::Telegram::Native::Media::implementation
         Destroy();
     }
 
-    void AsyncMediaPlayerSwapChain::Trim()
+    void AsyncMediaPlayerSwapChain::OnSuspending(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&)
     {
         // When the app is suspended, UWP apps should call Trim so that the DirectX data is cleaned.
         if (m_device3)
@@ -196,6 +198,11 @@ namespace winrt::Telegram::Native::Media::implementation
 
     void AsyncMediaPlayerSwapChain::Destroy()
     {
+        if (m_suspending)
+        {
+            Application::Current().Suspending(m_suspending);
+        }
+
         if (m_swapChain2)
         {
             m_swapChain2 = nullptr;
@@ -206,8 +213,11 @@ namespace winrt::Telegram::Native::Media::implementation
             m_device3 = nullptr;
         }
 
-        OnAttach(m_panel, nullptr, false);
-        m_panel = nullptr;
+        {
+            std::lock_guard<std::mutex> lock(m_panelLock);
+            OnAttach(m_panel, nullptr, false);
+            m_panel = nullptr;
+        }
 
         if (m_swapChain)
         {
@@ -282,10 +292,20 @@ namespace winrt::Telegram::Native::Media::implementation
         }
     }
 
+    void AsyncMediaPlayerSwapChain::Detach()
+    {
+        std::lock_guard<std::mutex> lock(m_panelLock);
+        if (m_panel != nullptr)
+        {
+            OnDetach(m_panel, m_compositionScaleChangedToken, m_sizeChangedToken);
+            m_panel = nullptr;
+        }
+    }
+
     void AsyncMediaPlayerSwapChain::OnDetach(SwapChainPanel const& oldPanel, winrt::event_token& scaleToken, winrt::event_token& sizeToken)
     {
         auto panelNative = oldPanel.as<ISwapChainPanelNative>();
-        panelNative->SetSwapChain(nullptr);
+        panelNative->SetSwapChain(NULL);
 
         if (scaleToken.value != 0)
         {

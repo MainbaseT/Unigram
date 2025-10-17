@@ -5,19 +5,11 @@ import "Media/AsyncMediaPlayerStreamSelectedEventArgs.idl";
 import "Media/AsyncMediaPlayerBufferingEventArgs.idl";
 import "Media/AsyncMediaPlayerLogEventArgs.idl";
 import "Media/AsyncMediaPlayerSwapChain.idl";
+import "Media/AsyncMediaPlayerOptions.idl";
 import "VideoAnimation.idl";
 
 namespace Telegram.Native.Media
 {
-    struct AsyncMediaPlayerOptions
-    {
-        Boolean Debug;
-        Boolean CreateSwapChain;
-        Boolean Mute;
-        Double Volume;
-        Double Rate;
-    };
-
     interface IAsyncMediaPlayerSource requires Telegram.Native.IVideoAnimationSource
     {
         void Open();
@@ -32,7 +24,8 @@ namespace Telegram.Native.Media
     [default_interface]
     runtimeclass AsyncMediaPlayer
     {
-        AsyncMediaPlayer(AsyncMediaPlayerOptions options, Windows.Foundation.Collections.IVector<String> args);
+        AsyncMediaPlayer(AsyncMediaPlayerOptions options);
+        AsyncMediaPlayer(AsyncMediaPlayerOptions options, AsyncMediaPlayerSwapChain context);
 
         AsyncMediaPlayerSwapChain Context{ get; };
 

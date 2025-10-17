@@ -362,6 +362,7 @@
     <ClInclude Include="Media\AsyncMediaPlayerBufferingEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerDurationChangedEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerLogEventArgs.h" />
+    <ClInclude Include="Media\AsyncMediaPlayerOptions.h" />
     <ClInclude Include="Media\AsyncMediaPlayerPositionChangedEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerStateChangedEventArgs.h" />
     <ClInclude Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.h" />
@@ -1027,6 +1028,7 @@
     <ClCompile Include="Media\AsyncMediaPlayerBufferingEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerDurationChangedEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerLogEventArgs.cpp" />
+    <ClCompile Include="Media\AsyncMediaPlayerOptions.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerPositionChangedEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerStateChangedEventArgs.cpp" />
     <ClCompile Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.cpp" />
@@ -1160,6 +1162,7 @@
     <Midl Include="Media\AsyncMediaPlayerBufferingEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerDurationChangedEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerLogEventArgs.idl" />
+    <Midl Include="Media\AsyncMediaPlayerOptions.idl" />
     <Midl Include="Media\AsyncMediaPlayerPositionChangedEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerStateChangedEventArgs.idl" />
     <Midl Include="Media\AsyncMediaPlayerStreamSelectedEventArgs.idl" />

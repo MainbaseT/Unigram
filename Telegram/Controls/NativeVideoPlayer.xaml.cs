@@ -198,7 +198,7 @@ namespace Telegram.Controls
                 Debug = SettingsService.Current.VerbosityLevel >= 4,
             };
 
-            _core = new AsyncMediaPlayer(options, e.SwapChainOptions);
+            _core = new AsyncMediaPlayer(options, e.SwapChain);
             _core.VideoOut += OnVout;
             _core.Stopped += OnStopped;
             _core.PositionChanged += OnTimeChanged;

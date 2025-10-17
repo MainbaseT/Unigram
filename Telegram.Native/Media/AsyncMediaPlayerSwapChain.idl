@@ -8,7 +8,6 @@ namespace Telegram.Native.Media
 
         Boolean IsLoaded{ get; };
 
-        void Trim();
         void Clear();
 
         Windows.Foundation.Collections.IVector<String> SwapChainOptions{ get; };
@@ -19,6 +18,8 @@ namespace Telegram.Native.Media
 
         void Attach(Windows.UI.Xaml.Controls.SwapChainPanel panel);
         void Attach(Windows.UI.Xaml.Controls.SwapChainPanel panel, Boolean subscribe);
+
+        void Detach();
         void Detach(Windows.UI.Xaml.Controls.SwapChainPanel panel);
 
         void UpdateSize();

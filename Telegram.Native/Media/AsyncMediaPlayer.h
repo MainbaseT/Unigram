@@ -113,7 +113,7 @@ namespace winrt::Telegram::Native::Media::implementation
 {
     struct AsyncMediaPlayer : AsyncMediaPlayerT<AsyncMediaPlayer>
     {
-        AsyncMediaPlayer(AsyncMediaPlayerOptions options, winrt::Windows::Foundation::Collections::IVector<hstring> args);
+        AsyncMediaPlayer(AsyncMediaPlayerOptions const& options, AsyncMediaPlayerSwapChain const& context = nullptr);
         ~AsyncMediaPlayer();
 
         AsyncMediaPlayerSwapChain Context();
@@ -266,9 +266,9 @@ namespace winrt::Telegram::Native::Media::implementation
         class CleanupManager
         {
         public:
-            static void Close(libvlc_instance_t* instance, libvlc_media_player_t* player, EventContext* events, std::thread workerThread)
+            static void Close(libvlc_instance_t* instance, libvlc_media_player_t* player, EventContext* events, AsyncMediaPlayerSwapChain const& swapChain, std::thread workerThread)
             {
-                post_to_threadpool([instance, player, events, workerThread = std::move(workerThread)]() mutable {
+                post_to_threadpool([instance, player, events, swapChain, workerThread = std::move(workerThread)]() mutable {
                     if (player)
                     {
                         libvlc_media_player_stop(player);
@@ -284,6 +284,10 @@ namespace winrt::Telegram::Native::Media::implementation
                     if (instance)
                     {
                         libvlc_release(instance);
+                    }
+                    if (swapChain)
+                    {
+                        swapChain.Destroy();
                     }
                     if (workerThread.joinable())
                     {

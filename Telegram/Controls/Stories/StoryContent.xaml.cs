@@ -743,7 +743,7 @@ namespace Telegram.Controls.Stories
                     if (Video.IsConnected)
                     {
                         _mediaStream = video;
-                        Video_Initialized(Video, new LibVLCSharp.Platforms.Windows.VideoViewInitializedEventArgs(Video.SwapChainOptions));
+                        Video_Initialized(Video, new LibVLCSharp.Platforms.Windows.VideoViewInitializedEventArgs(Video.SwapChain));
                     }
                     else
                     {
@@ -1237,7 +1237,7 @@ namespace Telegram.Controls.Stories
                 Debug = SettingsService.Current.VerbosityLevel >= 4,
             };
 
-            _player = new AsyncMediaPlayer(options, e.SwapChainOptions);
+            _player = new AsyncMediaPlayer(options, e.SwapChain);
             _player.VideoOut += OnVout;
             _player.Buffering += OnBuffering;
             _player.EndReached += OnEndReached;

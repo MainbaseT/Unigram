@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Telegram.Common;
 using Telegram.Converters;
 using Telegram.Native.Media;
 using Telegram.Streams;
@@ -949,7 +948,7 @@ namespace Telegram.Services
                     Debug = SettingsService.Current.VerbosityLevel >= 4,
                 };
 
-                _player = new AsyncMediaPlayer(options, Array.Empty<string>());
+                _player = new AsyncMediaPlayer(options);
                 //_mediaPlayer.SystemMediaTransportControls.AutoRepeatMode = _settingsService.Playback.RepeatMode;
                 //_mediaPlayer.SystemMediaTransportControls.ButtonPressed += Transport_ButtonPressed;
                 //_mediaPlayer.PlaybackSession.PlaybackStateChanged += OnPlaybackStateChanged;

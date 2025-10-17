@@ -17,15 +17,12 @@ namespace LibVLCSharp.Platforms.Windows
         /// Initializes a new instance of <see cref="VideoViewInitializedEventArgs"/> class
         /// </summary>
         /// <param name="swapChainOptions">swap chain parameters</param>
-        public VideoViewInitializedEventArgs(IList<string> swapChainOptions) : base()
+        public VideoViewInitializedEventArgs(AsyncMediaPlayerSwapChain swapChain)
         {
-            SwapChainOptions = swapChainOptions;
+            SwapChain = swapChain;
         }
 
-        /// <summary>
-        /// Gets the swap chain parameters
-        /// </summary>
-        public IList<string> SwapChainOptions { get; }
+        public AsyncMediaPlayerSwapChain SwapChain { get; }
     }
 
     /// <summary>
@@ -38,6 +35,7 @@ namespace LibVLCSharp.Platforms.Windows
 
         private AsyncMediaPlayerSwapChain _context = new(false);
         private SwapChainPanel _panel;
+        private bool _initialized;
 
         /// <summary>
         /// The constructor
@@ -56,26 +54,24 @@ namespace LibVLCSharp.Platforms.Windows
 
         private void OnConnected(object sender, RoutedEventArgs e)
         {
-            Application.Current.Suspending += OnSuspending;
             IsUnloadedExpected = false;
         }
 
         private void OnDisconnected(object sender, RoutedEventArgs e)
         {
-            Application.Current.Suspending -= OnSuspending;
-
             if (IsUnloadedExpected)
             {
                 return;
             }
 
-            _context.Destroy();
-        }
-
-        private void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            // TODO: Move to AsyncMediaPlayerSwapChain
-            _context.Trim();
+            if (_initialized)
+            {
+                _context.Detach(_panel);
+            }
+            else
+            {
+                _context.Destroy();
+            }
         }
 
         /// <summary>
@@ -102,7 +98,14 @@ namespace LibVLCSharp.Platforms.Windows
         {
             if (IsDisconnected && !IsUnloadedExpected)
             {
-                _context.Destroy();
+                if (_initialized)
+                {
+                    _context.Detach(_panel);
+                }
+                else
+                {
+                    _context.Destroy();
+                }
             }
             else if (_context.IsLoaded)
             {
@@ -110,7 +113,8 @@ namespace LibVLCSharp.Platforms.Windows
             }
             else if (_context.Create(false))
             {
-                Initialized?.Invoke(this, new VideoViewInitializedEventArgs(SwapChainOptions));
+                _initialized = true;
+                Initialized?.Invoke(this, new VideoViewInitializedEventArgs(_context));
             }
         }
 
@@ -127,21 +131,6 @@ namespace LibVLCSharp.Platforms.Windows
             _context.Clear();
         }
 
-        /// <summary>
-        /// Gets the swapchain parameters to pass to the <see cref="LibVLC"/> constructor.
-        /// If you don't pass them to the <see cref="LibVLC"/> constructor, the video won't
-        /// be displayed in your application.
-        /// Calling this property will throw an <see cref="InvalidOperationException"/> if the VideoView is not yet full Loaded.
-        /// </summary>
-        /// <returns>The list of arguments to be given to the <see cref="LibVLC"/> constructor.</returns>
-        public IList<string> SwapChainOptions => _context.SwapChainOptions;
+        public AsyncMediaPlayerSwapChain SwapChain => _context;
     }
-
-#if WINUI
-    [Guid("63aad0b8-7c24-40ff-85a8-640d944cc325")]
-    internal class ISwapChainPanelNative : SharpDX.DXGI.ISwapChainPanelNative
-    {
-        public ISwapChainPanelNative(IntPtr nativePtr) : base(nativePtr) { }
-    }
-#endif
 }

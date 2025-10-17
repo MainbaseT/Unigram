@@ -39,7 +39,6 @@ namespace winrt::Telegram::Native::Media::implementation
 
         bool IsLoaded() const noexcept { return m_loaded; }
 
-        void Trim();
         void Clear();
 
         IVector<hstring> SwapChainOptions() const;
@@ -49,6 +48,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         void Attach(SwapChainPanel const& panel, bool subscribe = false);
         void Detach(SwapChainPanel const& panel);
+        void Detach();
 
         void UpdateSize();
         void UpdateScale();
@@ -63,6 +63,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         void OnCompositionScaleChanged(SwapChainPanel const& sender, winrt::Windows::Foundation::IInspectable const& args);
         void OnSizeChanged(winrt::Windows::Foundation::IInspectable const& sender, SizeChangedEventArgs const& args);
+        void OnSuspending(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&);
 
         void BeginOnUIThread(UIElement element, DispatchedHandler handler);
 
@@ -80,6 +81,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         winrt::event_token m_compositionScaleChangedToken{};
         winrt::event_token m_sizeChangedToken{};
+        winrt::event_token m_suspending{};
 
         // Private data GUIDs for LibVLC
         static constexpr GUID SWAPCHAIN_WIDTH_GUID = {

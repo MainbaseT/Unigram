@@ -6003,18 +6003,6 @@ public static class AsyncMediaPlayerSwapChain_stub
             throw new RuntimeException(ex);
         }
     }
-    public static void Trim_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender)
-    {
-        try
-        {
-            sender.Trim();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static void UpdateScale_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender)
     {
         try
