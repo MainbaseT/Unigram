@@ -1532,7 +1532,7 @@ namespace winrt::Telegram::Native::implementation
                     auto surface = CreateDrawingSurface(imageSize);
                     if (surface)
                     {
-                        auto nineGrid = winrt::make_self<MessageBubbleNineGrid>(get_strong(), m_compositor, xamlRoot, surface, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
+                        auto nineGrid = winrt::make_self<MessageBubbleNineGrid>(get_strong(), xamlRoot, surface, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
                         m_nineGridCache[key] = nineGrid;
                         return nineGrid->Effect();
                     }

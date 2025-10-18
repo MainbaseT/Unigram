@@ -13,9 +13,10 @@ using namespace winrt::Windows::Graphics::DirectX;
 
 namespace winrt::Telegram::Native::implementation
 {
-    MessageBubbleNineGrid::MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, Compositor compositor, XamlRoot xamlRoot, CompositionDrawingSurface surface, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
-        : m_context(context)
-        , m_compositor(compositor)
+    MessageBubbleNineGrid::MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, XamlRoot xamlRoot, CompositionDrawingSurface surface, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
+        : m_compositionDevice(context->m_compositionDevice)
+        , m_d2dFactory(context->m_d2dFactory)
+        , m_compositor(context->m_compositor)
         , m_xamlRoot(xamlRoot)
         , m_surface(surface.as<abi::ICompositionDrawingSurfaceInterop>())
         , m_topLeftRadius(topLeftRadius)
@@ -23,10 +24,10 @@ namespace winrt::Telegram::Native::implementation
         , m_bottomRightRadius(bottomRightRadius)
         , m_bottomLeftRadius(bottomLeftRadius)
         , m_rasterizationScale(xamlRoot.RasterizationScale())
-        , m_brush(compositor.CreateNineGridBrush())
+        , m_brush(m_compositor.CreateNineGridBrush())
         , m_effect(context->m_alphaMaskFactory.CreateBrush())
     {
-        auto surfaceBrush = compositor.CreateSurfaceBrush();
+        auto surfaceBrush = m_compositor.CreateSurfaceBrush();
         surfaceBrush.Surface(surface);
         surfaceBrush.Stretch(CompositionStretch::Fill);
 
@@ -38,13 +39,13 @@ namespace winrt::Telegram::Native::implementation
         Invalidate(m_rasterizationScale);
 
         m_xamlRootChanged = m_xamlRoot.Changed({ this, &MessageBubbleNineGrid::OnXamlRootChanged });
-        m_renderingDeviceReplaced = m_context->m_compositionDevice.RenderingDeviceReplaced({ this, &MessageBubbleNineGrid::OnRenderingDeviceReplaced });
+        m_renderingDeviceReplaced = m_compositionDevice.RenderingDeviceReplaced({ this, &MessageBubbleNineGrid::OnRenderingDeviceReplaced });
     }
 
     MessageBubbleNineGrid::~MessageBubbleNineGrid()
     {
         m_xamlRoot.Changed(m_xamlRootChanged);
-        m_context->m_compositionDevice.RenderingDeviceReplaced(m_renderingDeviceReplaced);
+        m_compositionDevice.RenderingDeviceReplaced(m_renderingDeviceReplaced);
     }
 
     void MessageBubbleNineGrid::OnXamlRootChanged(XamlRoot const& sender, XamlRootChangedEventArgs const& args)
@@ -94,7 +95,7 @@ namespace winrt::Telegram::Native::implementation
 
         CleanupIfFailed(result, d2dContext->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 1), blackBrush.put()));
 
-        CleanupIfFailed(result, m_context->m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
+        CleanupIfFailed(result, m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
         CleanupIfFailed(result, d2dPathGeometry->Open(d2dGeometrySink.put()));
 
         d2dGeometrySink->BeginFigure({ m_topLeftRadius * r, 0 }, D2D1_FIGURE_BEGIN_FILLED);
