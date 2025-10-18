@@ -30,7 +30,7 @@ using Windows.UI.Xaml.Controls;
 namespace Telegram.Controls
 {
     [TemplatePart(Name = "Canvas", Type = typeof(CanvasControl))]
-    public partial class DiceView : Control, IPlayerView
+    public partial class DiceView : Control, IPlayerView, IAnimation
     {
         private CanvasControl Canvas;
         private CanvasBitmap[] _bitmaps;
@@ -72,7 +72,7 @@ namespace Telegram.Controls
 
         private SizeInt32 _frameSize = new SizeInt32 { Width = 256, Height = 256 };
 
-        private readonly LoopThread _thread;
+        private static readonly AnimationScheduler _scheduler = new();
         private readonly CompositionVSync _vsync;
         private readonly object _subscribeLock = new object();
         private bool _subscribed;
@@ -88,7 +88,6 @@ namespace Telegram.Controls
         public DiceView(bool fullFps)
         {
             _limitFps = !fullFps;
-            _thread = fullFps ? LoopThread.Chats : LoopThreadPool.Stickers.Get();
             _vsync = new CompositionVSync(fullFps ? 60 : 30);
 
             DefaultStyleKey = typeof(DiceView);
@@ -179,7 +178,9 @@ namespace Telegram.Controls
             _animations = null;
         }
 
-        private void OnTick(object sender, EventArgs args)
+        public double FrameRate => _limitFps ? 30 : 60;
+
+        public void RenderNextFrame()
         {
             try
             {
@@ -190,7 +191,7 @@ namespace Telegram.Controls
                 lock (_subscribeLock)
                 {
                     _unsubscribe = true;
-                    _thread.Tick -= OnTick;
+                    _scheduler.Unsubscribe(this);
                 }
             }
         }
@@ -315,7 +316,7 @@ namespace Telegram.Controls
                         {
                             _subscribed = false;
                             _unsubscribe = true;
-                            _thread.Tick -= OnTick;
+                            _scheduler.Unsubscribe(this);
                         }
                     }
                 }
@@ -567,12 +568,12 @@ namespace Telegram.Controls
                 }
 
                 _subscribed = subscribe;
-                _thread.Tick -= OnTick;
+                _scheduler.Unsubscribe(this);
                 _vsync.Rendering -= OnInvalidate;
 
                 if (subscribe)
                 {
-                    _thread.Tick += OnTick;
+                    _scheduler.Subscribe(this);
                     _vsync.Rendering += OnInvalidate;
                 }
             }

@@ -207,6 +207,7 @@
     <Compile Include="Collections\ReaderWriterDictionary.cs" />
     <Compile Include="Collections\SearchEmojiCollection.cs" />
     <Compile Include="Collections\SynchronizedList.cs" />
+    <Compile Include="Common\AnimationScheduler.cs" />
     <Compile Include="Common\AutomaticDragHelper.cs" />
     <Compile Include="Common\BezierPoint.cs" />
     <Compile Include="Common\DebouncedPropertyWithToken.cs" />
@@ -716,8 +717,6 @@
     <Compile Include="Common\DisposableMutex.cs" />
     <Compile Include="Common\EventDebouncer.cs" />
     <Compile Include="Common\ImageHelper.cs" />
-    <Compile Include="Common\LoopThread.cs" />
-    <Compile Include="Common\LoopThreadPool.cs" />
     <Compile Include="Common\MenuFlyoutHelper.cs" />
     <Compile Include="Td\Api\PremiumLimitTypeConnectedAccounts.cs" />
     <Compile Include="Common\Scrim.cs" />

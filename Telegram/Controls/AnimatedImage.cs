@@ -886,7 +886,7 @@ namespace Telegram.Controls
         public bool IsOutlineAnimated { get; set; } = false;
     }
 
-    public partial class AnimatedImagePresenter
+    public partial class AnimatedImagePresenter : IAnimation
     {
         private bool _ticking;
         private bool _rendering;
@@ -907,7 +907,7 @@ namespace Telegram.Controls
 
         private int _loopCount;
 
-        private LoopThread _timer;
+        private static readonly AnimationScheduler _scheduler = new();
         private bool _timerSubscribed;
         private bool _renderingSubscribed;
 
@@ -1118,12 +1118,11 @@ namespace Telegram.Controls
                     if (!_timerSubscribed && _ticking)
                     {
                         _timerSubscribed = true;
-                        _timer ??= LoopThreadPool.Rent(_task.Interval);
-                        _timer.Tick += OnTick;
+                        _scheduler.Subscribe(this);
                     }
                     else
                     {
-                        OnTick(null);
+                        RenderNextFrame();
                     }
                 }
             }
@@ -1179,6 +1178,7 @@ namespace Telegram.Controls
                 if (_loaded > 0)
                 {
                     _task = task;
+                    FrameRate = task.FrameRate;
 
                     _rendering = true;
 
@@ -1191,12 +1191,11 @@ namespace Telegram.Controls
                     if (!_timerSubscribed && _ticking)
                     {
                         _timerSubscribed = true;
-                        _timer ??= LoopThreadPool.Rent(_task.Interval);
-                        _timer.Tick += OnTick;
+                        _scheduler.Subscribe(this);
                     }
                     else
                     {
-                        OnTick(null);
+                        RenderNextFrame();
                     }
                 }
                 else if (tracker == 0)
@@ -1317,8 +1316,7 @@ namespace Telegram.Controls
                         if (!_timerSubscribed)
                         {
                             _timerSubscribed = true;
-                            _timer ??= LoopThreadPool.Rent(_task.Interval);
-                            _timer.Tick += OnTick;
+                            _scheduler.Subscribe(this);
                         }
 
                         return true;
@@ -1340,17 +1338,9 @@ namespace Telegram.Controls
 
         #endregion
 
-        private void OnTick(object sender, EventArgs e)
-        {
-            //Logger.Debug();
+        public double FrameRate { get; private set; }
 
-            lock (_lock)
-            {
-                OnTick(sender as LoopThread);
-            }
-        }
-
-        private void OnTick(LoopThread sender)
+        public void RenderNextFrame()
         {
             if (_loaded > 0 && !_disposing && !_disposed)
             {
@@ -1360,14 +1350,13 @@ namespace Telegram.Controls
             if (!_ticking)
             {
                 //Logger.Debug("-=");
+                if (_timerSubscribed)
+                {
+                    _scheduler.Unsubscribe(this);
+                }
 
                 _rendering = false;
                 _timerSubscribed = false;
-
-                if (sender != null)
-                {
-                    sender.Tick -= OnTick;
-                }
 
                 if (_disposing)
                 {
@@ -1438,10 +1427,8 @@ namespace Telegram.Controls
             //Debug.Assert(_images.Count == 0);
 
             //_dispatcherQueue.TryEnqueue(UnregisterEvents);
-            LoopThreadPool.Release(_timer);
 
             _task = null;
-            _timer = null;
             _disposing = false;
             _disposed = true;
 
@@ -1589,6 +1576,7 @@ namespace Telegram.Controls
             var interval = TimeSpan.FromMilliseconds(Math.Floor(1000 / frameRate));
 
             Interval = interval;
+            FrameRate = frameRate;
         }
 
         private int _index;
@@ -1659,6 +1647,7 @@ namespace Telegram.Controls
             var interval = TimeSpan.FromMilliseconds(Math.Floor(1000 / frameRate));
 
             Interval = interval;
+            FrameRate = frameRate;
         }
 
         private int _index;
@@ -1709,6 +1698,7 @@ namespace Telegram.Controls
             PixelHeight = pixelHeight;
 
             Interval = TimeSpan.FromMilliseconds(1000d / 30);
+            FrameRate = 30;
         }
 
         public override AnimatedImageTaskState NextFrame(IBuffer frame, out double position)
@@ -1733,6 +1723,7 @@ namespace Telegram.Controls
             PixelHeight = animation.PixelHeight;
 
             Interval = TimeSpan.FromMilliseconds(Math.Floor(1000d / 30));
+            FrameRate = 30;
         }
 
         public override AnimatedImageTaskState NextFrame(IBuffer frame, out double position)
@@ -1759,6 +1750,8 @@ namespace Telegram.Controls
         public int Rotation { get; init; }
 
         public TimeSpan Interval { get; init; }
+
+        public double FrameRate { get; init; }
 
         public abstract AnimatedImageTaskState NextFrame(IBuffer frame, out double position);
 
