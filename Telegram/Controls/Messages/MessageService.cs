@@ -78,7 +78,7 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            if (e.Type is TextEntityTypeMention && e.Data is string username)
+            if (e.Type is TextEntityTypeMention && e.Text is string username)
             {
                 message.Delegate.OpenUsername(username);
             }
@@ -90,7 +90,7 @@ namespace Telegram.Controls.Messages
             {
                 message.Delegate.OpenUrl(textUrl.Url, true, new OpenUrlSourceChat(message.ChatId, message.SenderId));
             }
-            else if (e.Type is TextEntityTypeUrl && e.Data is string url)
+            else if (e.Type is TextEntityTypeUrl && e.Text is string url)
             {
                 message.Delegate.OpenUrl(url, false, new OpenUrlSourceChat(message.ChatId, message.SenderId));
             }

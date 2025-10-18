@@ -6,6 +6,7 @@
 //
 using System.Text.RegularExpressions;
 using Telegram.Controls;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td;

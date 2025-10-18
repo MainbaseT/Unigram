@@ -2070,27 +2070,27 @@ namespace Telegram.Controls.Messages
             {
                 OpenUrl(textUrl.Url, true);
             }
-            else if (e.Type is TextEntityTypeUrl && e.Data is string url)
+            else if (e.Type is TextEntityTypeUrl && e.Text is string url)
             {
                 OpenUrl(url, false);
             }
-            if (e.Type is TextEntityTypeBotCommand && e.Data is string command)
+            if (e.Type is TextEntityTypeBotCommand && e.Text is string command)
             {
                 message.Delegate.SendBotCommand(command);
             }
             else if (e.Type is TextEntityTypeEmailAddress)
             {
-                message.Delegate.OpenUrl("mailto:" + e.Data, false);
+                message.Delegate.OpenUrl("mailto:" + e.Text, false);
             }
             else if (e.Type is TextEntityTypePhoneNumber)
             {
-                message.Delegate.OpenUrl("tel:" + e.Data, false);
+                message.Delegate.OpenUrl("tel:" + e.Text, false);
             }
-            else if (e.Type is TextEntityTypeHashtag or TextEntityTypeCashtag && e.Data is string hashtag)
+            else if (e.Type is TextEntityTypeHashtag or TextEntityTypeCashtag && e.Text is string hashtag)
             {
                 message.Delegate.OpenHashtag(hashtag);
             }
-            else if (e.Type is TextEntityTypeMention && e.Data is string username)
+            else if (e.Type is TextEntityTypeMention && e.Text is string username)
             {
                 message.Delegate.OpenUsername(username);
             }
@@ -2098,7 +2098,7 @@ namespace Telegram.Controls.Messages
             {
                 message.Delegate.OpenUser(mentionName.UserId);
             }
-            else if (e.Type is TextEntityTypeBankCardNumber && e.Data is string cardNumber)
+            else if (e.Type is TextEntityTypeBankCardNumber && e.Text is string cardNumber)
             {
                 message.Delegate.OpenBankCardNumber(cardNumber);
             }

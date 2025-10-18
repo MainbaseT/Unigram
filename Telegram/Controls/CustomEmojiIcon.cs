@@ -52,7 +52,7 @@ namespace Telegram.Controls
 
                         if (entity.Offset > previous)
                         {
-                            NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, entity.Offset - previous, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, false);
+                            NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, entity.Offset - previous, FlowDirection.LeftToRight, TextStyle.None, null, 0, false);
                         }
 
                         var player = new CustomEmojiIcon();
@@ -82,11 +82,11 @@ namespace Telegram.Controls
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
                         if (previous == 0)
                         {
-                            NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, true);
+                            NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, TextStyle.None, null, 0, true);
                         }
 
                         direct.AddToCollection(inlines, direct.GetXamlDirectObject(inline));
-                        NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, true);
+                        NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, TextStyle.None, null, 0, true);
 
                         previous = entity.Offset + entity.Length;
                     }
@@ -94,7 +94,7 @@ namespace Telegram.Controls
 
                 if (clean.Text.Length > previous)
                 {
-                    NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, clean.Text.Length - previous, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, false);
+                    NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, clean.Text.Length - previous, FlowDirection.LeftToRight, TextStyle.None, null, 0, false);
                 }
             }
         }
@@ -123,7 +123,7 @@ namespace Telegram.Controls
 
                         if (entity.Offset > previous)
                         {
-                            NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, entity.Offset - previous, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, false);
+                            NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, entity.Offset - previous, FlowDirection.LeftToRight, TextStyle.None, null, 0, false);
                         }
 
                         var player = new CustomEmojiIcon();
@@ -163,11 +163,11 @@ namespace Telegram.Controls
                         // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
                         if (previous == 0)
                         {
-                            NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, true);
+                            NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, TextStyle.None, null, 0, true);
                         }
 
                         direct.AddToCollection(inlines, direct.GetXamlDirectObject(inline));
-                        NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, true);
+                        NativeUtils.AddRunToCollection(direct, inlines, Icons.ZWNJ, FlowDirection.LeftToRight, TextStyle.None, null, 0, true);
 
                         previous = entity.Offset + entity.Length;
                     }
@@ -175,7 +175,7 @@ namespace Telegram.Controls
 
                 if (clean.Text.Length > previous)
                 {
-                    NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, clean.Text.Length - previous, FlowDirection.LeftToRight, false, TextDecorations.None, null, 0, false);
+                    NativeUtils.AddRunToCollection(direct, inlines, clean.Text, previous, clean.Text.Length - previous, FlowDirection.LeftToRight, TextStyle.None, null, 0, false);
                 }
             }
         }

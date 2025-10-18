@@ -1500,23 +1500,23 @@ namespace Telegram.Controls.Stories
 
         private void Caption_TextEntityClick(object sender, TextEntityClickEventArgs e)
         {
-            if (e.Type is TextEntityTypeBotCommand && e.Data is string command)
+            if (e.Type is TextEntityTypeBotCommand && e.Text is string command)
             {
                 ViewModel.Delegate.SendBotCommand(command);
             }
             else if (e.Type is TextEntityTypeEmailAddress)
             {
-                ViewModel.Delegate.OpenUrl("mailto:" + e.Data, false);
+                ViewModel.Delegate.OpenUrl("mailto:" + e.Text, false);
             }
             else if (e.Type is TextEntityTypePhoneNumber)
             {
-                ViewModel.Delegate.OpenUrl("tel:" + e.Data, false);
+                ViewModel.Delegate.OpenUrl("tel:" + e.Text, false);
             }
-            else if (e.Type is TextEntityTypeHashtag or TextEntityTypeCashtag && e.Data is string hashtag)
+            else if (e.Type is TextEntityTypeHashtag or TextEntityTypeCashtag && e.Text is string hashtag)
             {
                 ViewModel.Delegate.OpenHashtag(hashtag);
             }
-            else if (e.Type is TextEntityTypeMention && e.Data is string username)
+            else if (e.Type is TextEntityTypeMention && e.Text is string username)
             {
                 ViewModel.Delegate.OpenUsername(username);
             }
@@ -1528,11 +1528,11 @@ namespace Telegram.Controls.Stories
             {
                 ViewModel.Delegate.OpenUrl(textUrl.Url, true);
             }
-            else if (e.Type is TextEntityTypeUrl && e.Data is string url)
+            else if (e.Type is TextEntityTypeUrl && e.Text is string url)
             {
                 ViewModel.Delegate.OpenUrl(url, false);
             }
-            else if (e.Type is TextEntityTypeBankCardNumber && e.Data is string cardNumber)
+            else if (e.Type is TextEntityTypeBankCardNumber && e.Text is string cardNumber)
             {
                 ViewModel.Delegate.OpenBankCardNumber(cardNumber);
             }

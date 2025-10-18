@@ -13,6 +13,7 @@ using System.Text;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td;

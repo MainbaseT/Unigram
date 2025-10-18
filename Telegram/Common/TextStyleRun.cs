@@ -534,21 +534,6 @@ namespace Telegram.Common
         #endregion
     }
 
-    [Flags]
-    public enum TextStyle
-    {
-        Bold = 1,
-        Italic = 2,
-        Monospace = 4,
-        Strikethrough = 8,
-        Underline = 16,
-        Spoiler = 32,
-        Mention = 64,
-        Url = 128,
-        Emoji = 256,
-        Quote = 512,
-    }
-
     public partial class StyledText
     {
         public StyledText(string text, IList<TextEntity> entities, IList<StyledParagraph> paragraphs)
