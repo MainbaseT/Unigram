@@ -47,6 +47,7 @@ namespace Telegram.Controls
         private int _fontSize;
         private bool _glyph;
         private bool _tail;
+        private bool _invalidated;
 
         private bool _templateApplied;
 
@@ -142,8 +143,15 @@ namespace Telegram.Controls
             }
             else if (source == null)
             {
-                _presenter?.Unload(this);
-                _presenter = null;
+                if (_presenter != null)
+                {
+                    _presenter.Unload(this);
+                    _presenter = null;
+                }
+                else if (_invalidated)
+                {
+                    Invalidate(null);
+                }
             }
         }
 
@@ -239,11 +247,13 @@ namespace Telegram.Controls
 
             if (newValue is ImageBrush texture)
             {
+                _invalidated = true;
                 LayoutRoot.Background = texture;
                 Initials.Visibility = Visibility.Collapsed;
             }
             else if (newValue is ProfilePictureSourceText text)
             {
+                _invalidated = true;
                 Gradient.GradientStops[0].Color = text.TopColor;
                 Gradient.GradientStops[1].Color = text.BottomColor;
 
@@ -262,6 +272,7 @@ namespace Telegram.Controls
             }
             else if (newValue is ProfilePictureSourceBitmap bitmap)
             {
+                _invalidated = true;
                 LayoutRoot.Background = new ImageBrush
                 {
                     ImageSource = bitmap.Bitmap,
@@ -273,6 +284,7 @@ namespace Telegram.Controls
             }
             else
             {
+                _invalidated = false;
                 LayoutRoot.Background = null;
                 Initials.Visibility = Visibility.Collapsed;
             }
