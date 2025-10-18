@@ -92,7 +92,7 @@ namespace winrt::Telegram::Native::implementation
         return true;
     }
 
-    winrt::Telegram::Native::CachedVideoAnimation CachedVideoAnimation::LoadFromFile(IVideoAnimationSource file, int32_t width, int32_t height, bool fit, bool createCache)
+    winrt::Telegram::Native::CachedVideoAnimation CachedVideoAnimation::LoadFromFile(IVideoAnimationSource file, int32_t width, int32_t height, bool fit, bool createCache, bool limitFps)
     {
         auto info = winrt::make_self<CachedVideoAnimation>();
         file.SeekCallback(0);
@@ -143,7 +143,7 @@ namespace winrt::Telegram::Native::implementation
 
                 if (createCache)
                 {
-                    if (!info->Load(file, width, height, fit))
+                    if (!info->Load(file, width, height, fit, limitFps))
                     {
                         return nullptr;
                     }
@@ -166,7 +166,7 @@ namespace winrt::Telegram::Native::implementation
         }
         else
         {
-            if (!info->Load(file, width, height, fit))
+            if (!info->Load(file, width, height, fit, limitFps))
             {
                 return nullptr;
             }
@@ -175,9 +175,9 @@ namespace winrt::Telegram::Native::implementation
         return info.as<winrt::Telegram::Native::CachedVideoAnimation>();
     }
 
-    bool CachedVideoAnimation::Load(IVideoAnimationSource file, int32_t width, int32_t height, bool fit)
+    bool CachedVideoAnimation::Load(IVideoAnimationSource file, int32_t width, int32_t height, bool fit, bool limitFps)
     {
-        m_animation = VideoAnimation::LoadFromFile(file, false, false, false).as<VideoAnimation>();
+        m_animation = VideoAnimation::LoadFromFile(file, false, limitFps, false).as<VideoAnimation>();
         if (m_animation == nullptr)
         {
             return false;
@@ -191,7 +191,7 @@ namespace winrt::Telegram::Native::implementation
             return false;
         }
 
-        //if (width > 0 && height > 0 && (width <= pixelWidth || height <= pixelHeight))
+        if (width > 0 && height > 0)
         {
             double ratioX = (double)width / pixelWidth;
             double ratioY = (double)height / pixelHeight;

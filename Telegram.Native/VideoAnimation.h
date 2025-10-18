@@ -49,6 +49,72 @@ namespace winrt::Telegram::Native::implementation
         PARAM_NUM_COUNT = 11,
     };
 
+    class FrameDropper
+    {
+    private:
+        double source_fps;
+        double target_fps;
+        double effective_fps;
+        int preferred_divisor;
+        bool use_clean_division;
+        int64_t frame_count = 0;
+        int64_t frames_displayed = 0;
+
+    public:
+        FrameDropper(double src_fps, double tgt_fps = 30.0, double tolerance = 0.9)
+            : source_fps(src_fps)
+            , target_fps(tgt_fps)
+        {
+            if (source_fps <= target_fps)
+            {
+                preferred_divisor = 1;
+                effective_fps = source_fps;
+                use_clean_division = true;
+                return;
+            }
+
+            preferred_divisor = (int)std::round(source_fps / target_fps);
+            effective_fps = source_fps / preferred_divisor;
+
+            if (effective_fps < target_fps * tolerance)
+            {
+                use_clean_division = false;
+            }
+            else
+            {
+                use_clean_division = true;
+            }
+        }
+
+        double frame_rate()
+        {
+            return effective_fps;
+        }
+
+        bool should_display_frame()
+        {
+            if (use_clean_division)
+            {
+                // Clean modulo-based dropping
+                frame_count++;
+                return (frame_count % preferred_divisor) == 0;
+            }
+            else
+            {
+                // Fractional dropping for better frame rate
+                frame_count++;
+                int64_t expected = (frame_count * target_fps) / source_fps;
+
+                if (frames_displayed < expected)
+                {
+                    frames_displayed++;
+                    return true;
+                }
+                return false;
+            }
+        }
+    };
+
     struct VideoAnimation : VideoAnimationT<VideoAnimation>
     {
     public:
@@ -220,8 +286,7 @@ namespace winrt::Telegram::Native::implementation
         HANDLE fd = INVALID_HANDLE_VALUE;
         //int64_t last_seek_p = 0;
 
-        bool limitFps;
-        double prevFrame = -1;
+        FrameDropper dropper{ 0 };
 
         int32_t pixelWidth = 0;
         int32_t pixelHeight = 0;

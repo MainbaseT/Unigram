@@ -48,6 +48,7 @@
                                                 IsCachingEnabled="False"
                                                 ResizeMode="Fill"
                                                 FrameSize="0,0"
+                                                LimitFps="True"
                                                 DecodeFrameType="Logical"
                                                 Stretch="UniformToFill"
                                                 Ready="Player_Ready" />

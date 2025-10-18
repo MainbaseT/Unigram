@@ -301,16 +301,18 @@ namespace winrt::Telegram::Native::implementation
             info->pixelHeight = info->video_dec_ctx->height;
             info->rotation = get_stream_rotation(info->video_stream);
 
+            double framerate;
             if (info->video_stream->codecpar->codec_id == AV_CODEC_ID_H264)
             {
-                info->framerate = av_q2d(info->video_stream->avg_frame_rate);
+                framerate = av_q2d(info->video_stream->avg_frame_rate);
             }
             else
             {
-                info->framerate = av_q2d(info->video_stream->r_frame_rate);
+                framerate = av_q2d(info->video_stream->r_frame_rate);
             }
 
-            info->limitFps = limitFps && info->framerate > 30;
+            info->dropper = FrameDropper(framerate, limitFps ? 30.0 : 60.0);
+            info->framerate = info->dropper.frame_rate();
         }
         else
         {
@@ -589,7 +591,6 @@ namespace winrt::Telegram::Native::implementation
                     if (has_decoded_frames && !preview)
                     {
                         completed = true;
-                        prevFrame = -1;
 
                         // Seek back to beginning for loop playback
                         ret = avformat_seek_file(fmt_ctx, video_stream_idx, 0, 0, 0, 0);
@@ -666,13 +667,10 @@ namespace winrt::Telegram::Native::implementation
 
                     if (pts != AV_NOPTS_VALUE)
                     {
-                        double nextFrame = pts * av_q2d(video_stream->time_base);
-
-                        // Optional: Frame rate limiting (uncommented if needed)
-                        // if (nextFrame >= prevFrame + 1.0 / 30 || framerate < 60)
+                        if (dropper.should_display_frame())
                         {
+                            double nextFrame = pts * av_q2d(video_stream->time_base);
                             seconds = clamp(nextFrame, 0.0, duration);
-                            prevFrame = nextFrame;
 
                             // Decode and render the frame
                             int decode_result = decode_frame(pixels, width, height);
@@ -699,7 +697,6 @@ namespace winrt::Telegram::Native::implementation
                     if (has_decoded_frames && !preview)
                     {
                         completed = true;
-                        prevFrame = -1;
 
                         // Reset for loop playback
                         ret = avformat_seek_file(fmt_ctx, video_stream_idx, 0, 0, 0, 0);

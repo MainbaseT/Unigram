@@ -2016,7 +2016,7 @@ namespace Telegram.Controls
                     && !double.IsNaN(animation.FrameRate);
             }
 
-            var animation = CachedVideoAnimation.LoadFromFile(work.Presentation.Source, work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.ResizeMode == AnimatedImageResizeMode.Fit, work.Presentation.IsCachingEnabled);
+            var animation = CachedVideoAnimation.LoadFromFile(work.Presentation.Source, work.Presentation.PixelWidth, work.Presentation.PixelHeight, work.Presentation.ResizeMode == AnimatedImageResizeMode.Fit, work.Presentation.IsCachingEnabled, work.Presentation.LimitFps);
             if (animation != null)
             {
                 if (IsValid(animation))
