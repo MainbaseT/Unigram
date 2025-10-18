@@ -95,9 +95,6 @@ namespace Telegram.ViewModels
         public bool IsFirst { get; set; } = true;
         public bool IsLast { get; set; } = true;
 
-        // Used only by animated emojis
-        public Sticker Interaction { get; set; }
-
         // Used only in recent actions
         public ChatEvent Event { get; set; }
 
