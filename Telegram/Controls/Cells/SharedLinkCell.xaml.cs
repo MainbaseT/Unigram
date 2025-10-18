@@ -261,7 +261,7 @@ namespace Telegram.Controls.Cells
                     textBlock.Blocks.Add(paragraph);
                     textBlock.ContextRequested += Paragraph_ContextRequested;
 
-                    MessageHelper.SetEntityData(hyperlink, link);
+                    MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, link));
 
                     Extensions.SetToolTip(hyperlink, link);
                     SetRow(textBlock, i);

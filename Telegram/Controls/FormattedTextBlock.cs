@@ -38,7 +38,7 @@ namespace Telegram.Controls
 {
     public partial class TextEntityClickEventArgs : HandledEventArgs
     {
-        public TextEntityClickEventArgs(TextEntityType type, string text)
+        public TextEntityClickEventArgs(TextEntityType type, string text = null)
         {
             Type = type;
             Text = text;
@@ -643,10 +643,11 @@ namespace Telegram.Controls
                             if (entity.Type is TextEntityTypeCode)
                             {
                                 var hyperlink = new Hyperlink();
-                                hyperlink.Click += (s, args) => Entity_Click(entity.Type, data);
+                                hyperlink.Click += Entity_Click;
                                 hyperlink.UnderlineStyle = UnderlineStyle.None;
 
-                                BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, new Binding
+                                MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(entity.Type, data));
+                                BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, _foregroundBinding ??= new Binding
                                 {
                                     Path = new PropertyPath("Foreground"),
                                     Source = this
@@ -703,10 +704,12 @@ namespace Telegram.Controls
                             if (_ignoreSpoilers is false && entity.HasFlag(Native.TextStyle.Spoiler))
                             {
                                 var hyperlink = new Hyperlink();
-                                hyperlink.Click += (s, args) => Entity_Click(new TextEntityTypeSpoiler(), null);
+                                hyperlink.Click += Entity_Click;
                                 hyperlink.Foreground = null;
                                 hyperlink.UnderlineStyle = UnderlineStyle.None;
                                 hyperlink.FontFamily = BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily;
+
+                                MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(new TextEntityTypeSpoiler()));
 
                                 _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
 
@@ -721,12 +724,9 @@ namespace Telegram.Controls
                                 if (entity.Type is TextEntityTypeMentionName or TextEntityTypeTextUrl)
                                 {
                                     var hyperlink = new Hyperlink();
-                                    object data;
                                     if (entity.Type is TextEntityTypeTextUrl textUrl)
                                     {
-                                        data = textUrl.Url;
-                                        MessageHelper.SetEntityData(hyperlink, textUrl.Url);
-                                        MessageHelper.SetEntityType(hyperlink, entity.Type);
+                                        MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(entity.Type, textUrl.Url));
 
                                         _links.Add(hyperlink);
 
@@ -735,17 +735,17 @@ namespace Telegram.Controls
                                             ToolTipService.SetToolTip(hyperlink, textUrl.Url);
                                         }
                                     }
-                                    else if (entity.Type is TextEntityTypeMentionName mentionName)
+                                    else
                                     {
-                                        data = mentionName.UserId;
+                                        MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(entity.Type));
                                     }
 
-                                    hyperlink.Click += (s, args) => Entity_Click(entity.Type, null);
+                                    hyperlink.Click += Entity_Click;
                                     hyperlink.UnderlineStyle = HyperlinkStyle;
                                     hyperlink.FontWeight = HyperlinkFontWeight;
                                     hyperlink.UnderlineStyle = UnderlineStyle.None;
 
-                                    BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, new Binding
+                                    BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, _hyperlinkBinding ??= new Binding
                                     {
                                         Path = new PropertyPath("HyperlinkForeground"),
                                         Source = this
@@ -757,33 +757,22 @@ namespace Telegram.Controls
                                 else
                                 {
                                     var hyperlink = new Hyperlink();
-                                    //var original = entities.FirstOrDefault(x => x.Offset <= entity.Offset && x.Offset + x.Length >= entity.End);
-
                                     var data = text.Substring(entity.Offset, entity.Length);
 
-                                    //if (original != null)
-                                    //{
-                                    //    data = text.Substring(original.Offset, original.Length);
-                                    //}
-
-                                    hyperlink.Click += (s, args) => Entity_Click(entity.Type, data);
+                                    hyperlink.Click += Entity_Click;
                                     hyperlink.UnderlineStyle = HyperlinkStyle;
                                     hyperlink.FontWeight = HyperlinkFontWeight;
                                     hyperlink.UnderlineStyle = entity.Type is TextEntityTypeUrl
                                         ? UnderlineStyle.Single
                                         : UnderlineStyle.None;
 
-                                    BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, new Binding
+                                    BindingOperations.SetBinding(hyperlink, Hyperlink.ForegroundProperty, _hyperlinkBinding ??= new Binding
                                     {
                                         Path = new PropertyPath("HyperlinkForeground"),
                                         Source = this
                                     });
 
-                                    //if (entity.Type is TextEntityTypeUrl || entity.Type is TextEntityTypeEmailAddress || entity.Type is TextEntityTypeBankCardNumber)
-                                    {
-                                        MessageHelper.SetEntityData(hyperlink, data);
-                                        MessageHelper.SetEntityType(hyperlink, entity.Type);
-                                    }
+                                    MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(entity.Type, data));
 
                                     parent = direct.GetXamlDirectObject(hyperlink);
                                     parentInlines = direct.GetXamlDirectObjectProperty(parent, XamlPropertyIndex.Span_Inlines);
@@ -832,7 +821,7 @@ namespace Telegram.Controls
                                     Child = block
                                 };
 
-                                BindingOperations.SetBinding(block, global::Windows.UI.Xaml.Controls.TextBlock.ForegroundProperty, new Binding
+                                BindingOperations.SetBinding(block, global::Windows.UI.Xaml.Controls.TextBlock.ForegroundProperty, _emojiBinding ??= new Binding
                                 {
                                     Path = new PropertyPath("IconForeground"),
                                     Source = this
@@ -1020,6 +1009,10 @@ namespace Telegram.Controls
                 TextBlock.LayoutUpdated += OnLayoutUpdated;
             }
         }
+
+        private Binding _foregroundBinding;
+        private Binding _hyperlinkBinding;
+        private Binding _emojiBinding;
 
         private HashSet<CustomEmojiIcon> _effectiveViewportChanged;
 
@@ -1520,9 +1513,15 @@ namespace Telegram.Controls
 
         #endregion
 
-        private void Entity_Click(TextEntityType type, string text)
+        private void Entity_Click(Hyperlink hyperlink, HyperlinkClickEventArgs e)
         {
-            var args = new TextEntityClickEventArgs(type, text);
+            var args = MessageHelper.GetHyperlinkInfo(hyperlink);
+            if (args == null)
+            {
+                return;
+            }
+
+            args.Handled = false;
             TextEntityClick?.Invoke(this, args);
 
             if (args.Handled)
@@ -1530,15 +1529,15 @@ namespace Telegram.Controls
                 return;
             }
 
-            if (type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode && text is string code)
+            if (args.Type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode && args.Text is string code)
             {
                 MessageHelper.CopyText(XamlRoot, code);
             }
-            else if (type is TextEntityTypeSpoiler)
+            else if (args.Type is TextEntityTypeSpoiler)
             {
                 IgnoreSpoilers = true;
             }
-            
+
             // TODO: handle more cases internally
         }
 

@@ -1683,7 +1683,7 @@ namespace Telegram.Controls
 
                     if (entity.Type is TextEntityTypeUrl)
                     {
-                        MessageHelper.SetEntityData(hyperlink, data);
+                        MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, data));
                     }
                 }
                 else if (entity.Type is TextEntityTypeTextUrl or TextEntityTypeMentionName)
@@ -1693,7 +1693,7 @@ namespace Telegram.Controls
                     if (entity.Type is TextEntityTypeTextUrl textUrl)
                     {
                         data = textUrl.Url;
-                        MessageHelper.SetEntityData(hyperlink, textUrl.Url);
+                        MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, textUrl.Url));
                         Extensions.SetToolTip(hyperlink, textUrl.Url);
                     }
                     else if (entity.Type is TextEntityTypeMentionName mentionName)

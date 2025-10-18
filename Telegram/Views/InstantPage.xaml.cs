@@ -1523,7 +1523,7 @@ namespace Telegram.Views
                             span.Inlines.Add(hyperlink);
                             hyperlink.Click += (s, args) => Hyperlink_Click(anchorLinkText);
                             Extensions.SetToolTip(hyperlink, anchorLinkText.Url);
-                            MessageHelper.SetEntityData(hyperlink, anchorLinkText.Url);
+                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, anchorLinkText.Url));
                             MessageHelper.SetEntityAction(hyperlink, () => Hyperlink_Click(anchorLinkText));
 
                             return true;
@@ -1551,7 +1551,7 @@ namespace Telegram.Views
                             span.Inlines.Add(hyperlink);
                             hyperlink.Click += (s, args) => Hyperlink_Click(urlText);
                             Extensions.SetToolTip(hyperlink, urlText.Url);
-                            MessageHelper.SetEntityData(hyperlink, urlText.Url);
+                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, urlText.Url));
                             MessageHelper.SetEntityAction(hyperlink, () => Hyperlink_Click(urlText));
                             return true;
                         }
@@ -1573,7 +1573,7 @@ namespace Telegram.Views
                             span.Inlines.Add(hyperlink);
                             //hyperlink.Click += (s, args) => Hyperlink_Click(reference);
                             Extensions.SetToolTip(hyperlink, reference.Url);
-                            MessageHelper.SetEntityData(hyperlink, reference.Url);
+                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, reference.Url));
                             //MessageHelper.SetEntityAction(hyperlink, () => Hyperlink_Click(reference));
 
                             return true;

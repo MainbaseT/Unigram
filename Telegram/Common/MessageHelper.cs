@@ -1674,14 +1674,13 @@ namespace Telegram.Common
 
         public static void Hyperlink_ContextRequested(MenuFlyout flyout, ITranslateService service, Hyperlink hyperlink)
         {
-            var link = GetEntityData(hyperlink);
-            if (link == null)
+            var info = GetHyperlinkInfo(hyperlink);
+            if (info == null)
             {
                 return;
             }
 
-            var type = GetEntityType(hyperlink);
-            if (type is null or TextEntityTypeUrl or TextEntityTypeTextUrl)
+            if (info.Type is null or TextEntityTypeUrl or TextEntityTypeTextUrl)
             {
                 var action = GetEntityAction(hyperlink);
                 if (action != null)
@@ -1690,35 +1689,35 @@ namespace Telegram.Common
                 }
                 else
                 {
-                    flyout.CreateFlyoutItem(() => LinkOpen_Click(hyperlink.XamlRoot, link), Strings.Open, Icons.OpenIn);
+                    flyout.CreateFlyoutItem(() => LinkOpen_Click(hyperlink.XamlRoot, info.Text), Strings.Open, Icons.OpenIn);
                 }
 
-                flyout.CreateFlyoutItem(() => LinkCopy_Click(hyperlink.XamlRoot, link), Strings.CopyLink, Icons.Copy);
+                flyout.CreateFlyoutItem(() => LinkCopy_Click(hyperlink.XamlRoot, info.Text), Strings.CopyLink, Icons.Copy);
             }
-            else if (type is TextEntityTypePhoneNumber)
+            else if (info.Type is TextEntityTypePhoneNumber)
             {
-                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, link), Strings.CopyNumber, Icons.Copy);
+                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, info.Text), Strings.CopyNumber, Icons.Copy);
                 flyout.CreateFlyoutSeparator();
 
-                CreateProfileFlyoutItem(flyout, service.ClientService, hyperlink, new SearchUserByPhoneNumber(link, false));
+                CreateProfileFlyoutItem(flyout, service.ClientService, hyperlink, new SearchUserByPhoneNumber(info.Text, false));
             }
-            else if (type is TextEntityTypeMention)
+            else if (info.Type is TextEntityTypeMention)
             {
-                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, link), Strings.CopyUsername, Icons.Copy);
+                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, info.Text), Strings.CopyUsername, Icons.Copy);
                 flyout.CreateFlyoutSeparator();
 
-                CreateProfileFlyoutItem(flyout, service.ClientService, hyperlink, new SearchPublicChat(link));
+                CreateProfileFlyoutItem(flyout, service.ClientService, hyperlink, new SearchPublicChat(info.Text));
             }
             else
             {
-                var text = type switch
+                var text = info.Type switch
                 {
                     TextEntityTypeHashtag or TextEntityTypeCashtag => Strings.CopyHashtag,
                     TextEntityTypeEmailAddress => Strings.CopyMail,
                     _ => Strings.Copy
                 };
 
-                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, link), text, Icons.Copy);
+                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, info.Text), text, Icons.Copy);
             }
         }
 
@@ -1860,39 +1859,18 @@ namespace Telegram.Common
 
 
 
-        public static string GetEntityData(DependencyObject obj)
+        public static TextEntityClickEventArgs GetHyperlinkInfo(DependencyObject obj)
         {
-            return (string)obj.GetValue(EntityDataProperty);
+            return (TextEntityClickEventArgs)obj.GetValue(HyperlinkInfoProperty);
         }
 
-        public static void SetEntityData(DependencyObject obj, string value)
+        public static void SetHyperlinkInfo(DependencyObject obj, TextEntityClickEventArgs value)
         {
-            obj.SetValue(EntityDataProperty, value);
+            obj.SetValue(HyperlinkInfoProperty, value);
         }
 
-        public static readonly DependencyProperty EntityDataProperty =
-            DependencyProperty.RegisterAttached("EntityData", typeof(string), typeof(MessageHelper), new PropertyMetadata(null));
-
-
-
-
-
-        public static TextEntityType GetEntityType(DependencyObject obj)
-        {
-            return (TextEntityType)obj.GetValue(EntityTypeProperty);
-        }
-
-        public static void SetEntityType(DependencyObject obj, TextEntityType value)
-        {
-            obj.SetValue(EntityTypeProperty, value);
-        }
-
-        public static readonly DependencyProperty EntityTypeProperty =
-            DependencyProperty.RegisterAttached("EntityType", typeof(TextEntityType), typeof(MessageHelper), new PropertyMetadata(null));
-
-
-
-
+        public static readonly DependencyProperty HyperlinkInfoProperty =
+            DependencyProperty.RegisterAttached("HyperlinkInfo", typeof(TextEntityClickEventArgs), typeof(MessageHelper), new PropertyMetadata(null));
 
         #endregion
     }
