@@ -167,9 +167,9 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            if (message.Content is MessageVoiceNote voiceNoteMessage)
+            if (message.Content is MessageVideoNote videoNoteMessage)
             {
-                Subtitle.Text = videoNote.GetDuration() + (voiceNoteMessage.IsListened ? string.Empty : " ●");
+                Subtitle.Text = videoNote.GetDuration() + (videoNoteMessage.IsViewed ? string.Empty : " ●");
                 //Progress.UpdateValue(message.IsOutgoing || voiceNoteMessage.IsListened ? 0 : voiceNote.Duration, voiceNote.Duration, PlaybackState.None);
             }
             else
