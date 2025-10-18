@@ -54,9 +54,6 @@ namespace Telegram.Views.Host
             MasterDetail.Initialize(navigationService as NavigationService, null, new StandaloneViewModel(_clientService, settingsService, aggregator), false);
             MasterDetail.NavigationService.FrameFacade.Navigating += OnNavigating;
 
-            TypeResolver.Current.Playback.SourceChanged += OnPlaybackSourceChanged;
-            ShowHideBanner(TypeResolver.Current.Playback);
-
             OnNavigating(null, new NavigatingEventArgs(null, null, null, null)
             {
                 SourcePageType = MasterDetail.NavigationService.CurrentPageType
@@ -120,6 +117,9 @@ namespace Telegram.Views.Host
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             InitializeTitleBar();
+
+            ShowHideBanner(TypeResolver.Current.Playback);
+            TypeResolver.Current.Playback.SourceChanged += OnPlaybackSourceChanged;
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -128,6 +128,7 @@ namespace Telegram.Views.Host
             MasterDetail.Dispose();
 
             UnloadTitleBar();
+            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackSourceChanged;
         }
 
         private void InitializeTitleBar()
