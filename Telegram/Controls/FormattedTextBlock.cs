@@ -312,6 +312,12 @@ namespace Telegram.Controls
             _links.Clear();
             _spoilers.Clear();
             _codeBlocks.Clear();
+
+            if (_effectiveViewportChanged != null)
+            {
+                _effectiveViewportChanged = null;
+                TextBlock.EffectiveViewportChanged -= OnEffectiveViewportChanged;
+            }
         }
 
         public bool IgnoreSpoilers
@@ -842,7 +848,16 @@ namespace Telegram.Controls
                                 player.Style = EmojiStyle;
                                 player.IsHitTestVisible = false;
                                 player.IsEnabled = false;
+                                player.IsViewportAware = false;
                                 player.Emoji = data;
+
+                                if (_effectiveViewportChanged == null)
+                                {
+                                    _effectiveViewportChanged = new();
+                                    TextBlock.EffectiveViewportChanged += OnEffectiveViewportChanged;
+                                }
+
+                                _effectiveViewportChanged.Add(player);
 
                                 BindingOperations.SetBinding(player, AnimatedImage.ReplacementColorProperty, new Binding
                                 {
@@ -1003,6 +1018,34 @@ namespace Telegram.Controls
             {
                 _layoutUpdated = true;
                 TextBlock.LayoutUpdated += OnLayoutUpdated;
+            }
+        }
+
+        private HashSet<CustomEmojiIcon> _effectiveViewportChanged;
+
+        private void OnEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+        {
+            if (_effectiveViewportChanged == null)
+            {
+                TextBlock.EffectiveViewportChanged -= OnEffectiveViewportChanged;
+                return;
+            }
+
+            var viewport = new Rect(0, 0, args.EffectiveViewport.Width, args.EffectiveViewport.Height);
+
+            foreach (var child in _effectiveViewportChanged)
+            {
+                double childRelativeToViewportX = -args.EffectiveViewport.X + child.ActualOffset.X;
+                double childRelativeToViewportY = -args.EffectiveViewport.Y + child.ActualOffset.Y;
+
+                Rect childBoundsRelativeToViewport = new Rect(
+                    childRelativeToViewportX,
+                    childRelativeToViewportY,
+                    child.ActualSize.X,
+                    child.ActualSize.Y
+                );
+
+                child.ViewportChanged(viewport.IntersectsWith(childBoundsRelativeToViewport));
             }
         }
 
