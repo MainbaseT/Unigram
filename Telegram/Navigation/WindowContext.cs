@@ -99,8 +99,6 @@ namespace Telegram.Navigation
             window.CoreWindow.ResizeStarted += OnResizeStarted;
             window.CoreWindow.ResizeCompleted += OnResizeCompleted;
 
-            window.CoreWindow.DispatcherQueue.ShutdownCompleted += OnShutdownCompleted;
-
             #region Legacy code
 
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 500));
@@ -127,26 +125,6 @@ namespace Telegram.Navigation
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)
         {
             Logger.Debug(sender.VisibleBounds);
-        }
-
-        private void OnShutdownCompleted(Windows.System.DispatcherQueue sender, object args)
-        {
-            sender.ShutdownCompleted -= OnShutdownCompleted;
-            Current = null;
-
-            Theme.Current = null;
-
-            ThemeIncoming.Release();
-            ThemeOutgoing.Release();
-
-            AnimatedImageLoader.Release();
-            ChatRecordButton.Recorder.Release();
-
-            // TODO: needed? From some tests, this prevented the whole Window root from being garbage collected
-            if (SynchronizationContext.Current is SecondaryViewSynchronizationContextDecorator decorator)
-            {
-                SynchronizationContext.SetSynchronizationContext(decorator.Context);
-            }
         }
 
         public async Task ConsolidateAsync()
@@ -176,18 +154,38 @@ namespace Telegram.Navigation
         {
             _consolidated = true;
             _inputListener.Release();
+            sender.VisibleBoundsChanged -= OnVisibleBoundsChanged;
             sender.Consolidated -= OnConsolidated;
+
+            Current = null;
+
+            Theme.Current = null;
+
+            ThemeIncoming.Release();
+            ThemeOutgoing.Release();
+
+            PlaceholderHelper.Release();
+            AnimatedImageLoader.Release();
+            ProfilePicture.Loader.Release();
+            ChatRecordButton.Recorder.Release();
 
             // TODO: since we can't call Close directly,
             // Closed event will be never fired.
-            //OnClosed(null, null);
+            OnClosed(null, null);
             ClearTitleBar(sender);
+
+            // TODO: needed? From some tests, this prevented the whole Window root from being garbage collected
+            if (SynchronizationContext.Current is SecondaryViewSynchronizationContextDecorator decorator)
+            {
+                SynchronizationContext.SetSynchronizationContext(decorator.Context);
+            }
         }
 
         private void OnClosed(object sender, CoreWindowEventArgs e)
         {
             lock (_allLock)
             {
+                _mapping.Remove(_xamlRoot);
                 All.Remove(this);
             }
 
@@ -241,7 +239,13 @@ namespace Telegram.Navigation
 
             lock (_allLock)
             {
-                _mapping[sender.UIContext] = this;
+                if (_xamlRoot != null)
+                {
+                    _mapping.Remove(_xamlRoot);
+                }
+
+                _xamlRoot = sender.XamlRoot;
+                _mapping[sender.XamlRoot] = this;
             }
         }
 
@@ -794,14 +798,15 @@ namespace Telegram.Navigation
             return Task.WhenAll(tasks);
         }
 
-        private static readonly Dictionary<UIContext, WindowContext> _mapping = new();
+        private static readonly Dictionary<XamlRoot, WindowContext> _mapping = new();
+        private XamlRoot _xamlRoot;
 
         public static WindowContext ForXamlRoot(XamlRoot xamlRoot)
         {
             WindowContext context;
             lock (_allLock)
             {
-                _mapping.TryGetValue(xamlRoot.UIContext, out context);
+                _mapping.TryGetValue(xamlRoot, out context);
             }
 
             return context;
@@ -812,7 +817,7 @@ namespace Telegram.Navigation
             WindowContext context;
             lock (_allLock)
             {
-                _mapping.TryGetValue(element.UIContext, out context);
+                _mapping.TryGetValue(element.XamlRoot, out context);
             }
 
             return context;

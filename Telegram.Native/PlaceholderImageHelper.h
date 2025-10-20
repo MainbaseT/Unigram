@@ -266,6 +266,17 @@ namespace winrt::Telegram::Native::implementation
     {
     public:
         PlaceholderImageHelper(Window window);
+        ~PlaceholderImageHelper()
+        {
+            Close();
+        }
+
+        // Explicit dispose is needed because otherwise XamlRoot may get deleted before deconstructor is invoked
+        void Close()
+        {
+            m_nineGridCache.clear();
+            m_deviceLostHelper.StopWatchingCurrentDevice();
+        }
 
         HRESULT HandleDeviceLost()
         {
@@ -275,6 +286,11 @@ namespace winrt::Telegram::Native::implementation
             }
 
             return S_OK;
+        }
+
+        CompositionGraphicsDevice Device()
+        {
+            return m_compositionDevice;
         }
 
         //static winrt::Telegram::Native::PlaceholderImageHelper Background()

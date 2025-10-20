@@ -123,13 +123,13 @@ namespace Telegram.Controls
                         if (IsCachingEnabled || (_presenter != null && !_presenter.IsCachingEnabled))
                         {
                             _presenter?.Unload(this);
-                            _presenter = ProfilePictureLoader.Current.GetOrCreate(presentation, true);
+                            _presenter = Loader.Current.GetOrCreate(presentation, true);
                         }
                         else
                         {
                             if (_presenter == null || _presenter.IsCachingEnabled)
                             {
-                                _presenter = ProfilePictureLoader.Current.GetOrCreate(presentation, false);
+                                _presenter = Loader.Current.GetOrCreate(presentation, false);
                             }
                             else
                             {
@@ -396,9 +396,9 @@ namespace Telegram.Controls
             }
         }
 
-        private record ProfilePicturePresentation(ProfilePictureSource Source, int Size);
+        public record ProfilePicturePresentation(ProfilePictureSource Source, int Size);
 
-        private class ProfilePicturePresenter
+        public class ProfilePicturePresenter
         {
             public enum State
             {
@@ -406,7 +406,7 @@ namespace Telegram.Controls
                 Update
             }
 
-            private readonly ProfilePictureLoader _loader;
+            private readonly Loader _loader;
             private ProfilePicturePresentation _presentation;
 
             private readonly ImageBrush _texture;
@@ -421,7 +421,7 @@ namespace Telegram.Controls
 
             private object _source;
 
-            public ProfilePicturePresenter(ProfilePictureLoader loader, ProfilePicturePresentation presentation)
+            public ProfilePicturePresenter(Loader loader, ProfilePicturePresentation presentation)
             {
                 _loader = loader;
                 _presentation = presentation;
@@ -565,16 +565,21 @@ namespace Telegram.Controls
             }
         }
 
-        private class ProfilePictureLoader
+        public class Loader
         {
             [ThreadStatic]
-            private static ProfilePictureLoader _current;
-            public static ProfilePictureLoader Current => _current ??= new();
+            private static Loader _current;
+            public static Loader Current => _current ??= new();
+
+            public static void Release()
+            {
+                _current = null;
+            }
 
             private readonly Dictionary<ProfilePicturePresentation, ProfilePicturePresenter> _presenters = new();
             private readonly DispatcherQueue _dispatcherQueue;
 
-            private ProfilePictureLoader()
+            private Loader()
             {
                 _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             }

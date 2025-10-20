@@ -15,10 +15,12 @@ namespace Telegram.Native
     };
 
     [default_interface]
-    runtimeclass PlaceholderImageHelper
+    runtimeclass PlaceholderImageHelper : Windows.Foundation.IClosable
     {
         PlaceholderImageHelper(Windows.UI.Xaml.Window window);
         void HandleDeviceLost();
+
+        Windows.UI.Composition.CompositionGraphicsDevice Device{ get; };
 
         static void WriteBytes(Windows.Foundation.Collections.IVector<byte> hash, Windows.Storage.Streams.IRandomAccessStream randomAccessStream);
         static Windows.Storage.Streams.IBuffer DrawWebP(String fileName, Int32 maxWidth, out Int32 pixelWidth, out Int32 pixelHeight);

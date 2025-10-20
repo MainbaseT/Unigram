@@ -45,6 +45,12 @@ namespace Telegram.Common
             }
         }
 
+        public static void Release()
+        {
+            _foreground?.Dispose();
+            _foreground = null;
+        }
+
         private static PlaceholderImageHelper _background;
         private static readonly object _backgroundLock = new();
 
