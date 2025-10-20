@@ -491,7 +491,8 @@ public:
             return result;
         }
 
-        if (m_bitmapSize.width != width ||
+        if (m_shader == nullptr ||
+            m_bitmapSize.width != width ||
             m_bitmapSize.height != height)
         {
             ReleaseShader();
