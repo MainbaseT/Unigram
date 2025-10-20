@@ -84,7 +84,7 @@ namespace Telegram.Common
                 return;
             }
 
-            _ = Task.Run(() =>
+            ThreadPool.UnsafeQueueUserWorkItem(state =>
             {
                 while (taskQueue.TryPop(out Action nextTaskAction))
                 {
@@ -93,7 +93,7 @@ namespace Telegram.Common
                 }
 
                 Interlocked.Exchange(ref _concurrentCount, 0);
-            });
+            }, null);
         }
     }
 
@@ -111,7 +111,7 @@ namespace Telegram.Common
                 return;
             }
 
-            _ = Task.Run(() =>
+            ThreadPool.UnsafeQueueUserWorkItem(state =>
             {
                 while (taskQueue.TryDequeue(out Action nextTaskAction))
                 {
@@ -119,7 +119,7 @@ namespace Telegram.Common
                 }
 
                 Interlocked.Exchange(ref _concurrentCount, 0);
-            });
+            }, null);
         }
     }
 }
