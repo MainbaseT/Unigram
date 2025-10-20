@@ -2096,7 +2096,7 @@ namespace Telegram.Views.Calls
             }
             else
             {
-                var sink = new VoipVideoOutputSink(cell.Visual, mirrored);
+                var sink = new VoipVideoOutputSink(PlaceholderHelper.Foreground.Device, cell.Visual, mirrored);
                 reference = new VoipVideoOutputReference(sink, cell.Visual.Brush as CompositionSurfaceBrush);
 
                 _sinks[endpointId] = reference;
