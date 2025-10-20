@@ -4797,6 +4797,18 @@ public static class CanvasGeometry_stub
             throw new RuntimeException(ex);
         }
     }
+    public static bool FillContainsPoint_stub(this Microsoft.Graphics.Canvas.Geometry.CanvasGeometry sender, System.Numerics.Vector2 point)
+    {
+        try
+        {
+            return sender.FillContainsPoint(point);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
     public static Microsoft.Graphics.Canvas.Geometry.CanvasGeometry Transform_stub(this Microsoft.Graphics.Canvas.Geometry.CanvasGeometry sender, System.Numerics.Matrix3x2 transform)
     {
         try
