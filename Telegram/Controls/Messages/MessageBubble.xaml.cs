@@ -697,12 +697,12 @@ namespace Telegram.Controls.Messages
                 }
                 else
                 {
-                    if (bottomRight == 0)
+                    if (bottomRight == 0 && topRight != 0)
                     {
                         bottomRight = 15;
                     }
 
-                    if (bottomLeft == 0)
+                    if (bottomLeft == 0 && topLeft != 0)
                     {
                         bottomLeft = 15;
                     }
