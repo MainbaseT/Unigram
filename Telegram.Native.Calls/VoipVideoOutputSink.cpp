@@ -6,8 +6,8 @@
 
 namespace winrt::Telegram::Native::Calls::implementation
 {
-    VoipVideoOutputSink::VoipVideoOutputSink(SpriteVisual visual, bool mirrored)
-        : m_sink(std::make_shared<VoipVideoOutput>(visual, mirrored))
+    VoipVideoOutputSink::VoipVideoOutputSink(CompositionGraphicsDevice device, SpriteVisual visual, bool mirrored)
+        : m_sink(std::make_shared<VoipVideoOutput>(device, visual, mirrored))
     {
     }
 
