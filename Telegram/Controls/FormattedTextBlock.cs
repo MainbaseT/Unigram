@@ -8,6 +8,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Telegram.Common;
@@ -76,6 +77,7 @@ namespace Telegram.Controls
         private bool _ignoreSpoilers = false;
 
         private AnimatedImage _spoilerPresenter;
+        private CanvasGeometry _spoilerGeometry;
 
         private Span _spanForInlines;
 
@@ -257,6 +259,78 @@ namespace Telegram.Controls
             }
         }
 
+        private bool _textSelectionDisabled;
+
+        protected override void OnPointerMoved(PointerRoutedEventArgs e)
+        {
+            base.OnPointerMoved(e);
+
+            if (_spanForInlines == null && _spoilerGeometry != null && _spoilerPresenter != null)
+            {
+                var point = e.GetCurrentPoint(_spoilerPresenter);
+                var position = point.Position.ToVector2();
+
+                if (IsPointerWithinSpoiler(position))
+                {
+                    if (!_textSelectionDisabled)
+                    {
+                        _textSelectionDisabled = true;
+                        TextBlock.IsHitTestVisible = false;
+                        Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Hand, 0);
+                    }
+
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            if (_spanForInlines == null && _textSelectionDisabled)
+            {
+                _textSelectionDisabled = false;
+                TextBlock.IsHitTestVisible = true;
+                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            }
+        }
+
+        protected override void OnPointerExited(PointerRoutedEventArgs e)
+        {
+            if (_spanForInlines == null && _textSelectionDisabled)
+            {
+                _textSelectionDisabled = false;
+                TextBlock.IsHitTestVisible = true;
+                Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            }
+
+            base.OnPointerExited(e);
+        }
+
+        protected override void OnTapped(TappedRoutedEventArgs e)
+        {
+            if (_spanForInlines == null && _spoilerGeometry != null && _spoilerPresenter != null)
+            {
+                var point = e.GetPosition(_spoilerPresenter);
+                var position = point.ToVector2();
+
+                if (IsPointerWithinSpoiler(position))
+                {
+                    IgnoreSpoilers = true;
+                    e.Handled = true;
+                }
+            }
+
+            base.OnTapped(e);
+        }
+
+        private bool IsPointerWithinSpoiler(Vector2 position)
+        {
+            if (position.X >= 0 && position.Y >= 0 && position.X <= _spoilerPresenter.ActualSize.X && position.Y <= _spoilerPresenter.ActualSize.Y)
+            {
+                return _spoilerGeometry.FillContainsPoint(position);
+            }
+
+            return false;
+        }
+
         private void ExpandSelection()
         {
             if (TextBlock.SelectionStart != null && TextBlock.SelectionEnd != null)
@@ -353,6 +427,7 @@ namespace Telegram.Controls
 
                     Below.Children.Remove(_spoilerPresenter);
                     _spoilerPresenter = null;
+                    _spoilerGeometry = null;
                 }
             }
         }
@@ -429,6 +504,7 @@ namespace Telegram.Controls
 
                     Below.Children.Remove(_spoilerPresenter);
                     _spoilerPresenter = null;
+                    _spoilerGeometry = null;
                 }
             }
             else if (_isHighlighted)
@@ -443,6 +519,7 @@ namespace Telegram.Controls
 
                 Below.Children.Remove(_spoilerPresenter);
                 _spoilerPresenter = null;
+                _spoilerGeometry = null;
                 _spoiler = null;
             }
         }
@@ -982,25 +1059,17 @@ namespace Telegram.Controls
                         {
                             if (_ignoreSpoilers is false && entity.HasFlag(Native.TextStyle.Spoiler))
                             {
-                                var hyperlink = new Hyperlink();
-                                hyperlink.Click += Entity_Click;
-                                hyperlink.Foreground = null;
-                                hyperlink.UnderlineStyle = UnderlineStyle.None;
-                                hyperlink.FontFamily = BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily;
-
-                                MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(new TextEntityTypeSpoiler()));
+                                var hyperlink = GetOrCreateSpan(direct);
+                                direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_Foreground, null);
+                                direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_FontFamily, BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily);
 
                                 _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
 
                                 spoiler ??= new TextHighlighter();
                                 spoiler.Ranges.Add(new TextRange { StartIndex = offset, Length = entity.Length });
 
-                                parent = direct.GetXamlDirectObject(hyperlink);
+                                parent = hyperlink;
                                 parentInlines = direct.GetXamlDirectObjectProperty(parent, XamlPropertyIndex.Span_Inlines);
-
-                                // We don't want to recycle hyperlinks used for spoilers because properties vary too much
-                                // TODO: don't use hyperlinks for spoilers, track click on spoiler effect.
-                                _activeHyperlinks?.Add(hyperlink);
                             }
                             else if ((entity.HasFlag(Native.TextStyle.Mention) || entity.HasFlag(Native.TextStyle.Url)))
                             {
@@ -1084,7 +1153,7 @@ namespace Telegram.Controls
 
                         // Consumes local inlines instead of paragraph's
                         // TODO: still use a InlineUIContainer for emojis in spoilers to avoid text resizes
-                        if (entity.Type is TextEntityTypeCustomEmoji customEmoji && ((_ignoreSpoilers && entity.HasFlag(Native.TextStyle.Spoiler)) || !entity.HasFlag(Native.TextStyle.Spoiler)))
+                        if (entity.Type is TextEntityTypeCustomEmoji customEmoji /*&& ((_ignoreSpoilers && entity.HasFlag(Native.TextStyle.Spoiler)) || !entity.HasFlag(Native.TextStyle.Spoiler))*/)
                         {
                             var data = text.Substring(entity.Offset, entity.Length);
 
@@ -1117,7 +1186,6 @@ namespace Telegram.Controls
                             {
                                 var player = GetOrCreateEmoji(out inline);
                                 player.LoopCount = 0;
-                                player.Source = new CustomEmojiFileSource(clientService, customEmoji.CustomEmojiId);
                                 player.HorizontalAlignment = HorizontalAlignment.Left;
                                 player.FlowDirection = FlowDirection.LeftToRight;
                                 player.Style = EmojiStyle;
@@ -1125,6 +1193,15 @@ namespace Telegram.Controls
                                 player.IsEnabled = false;
                                 player.IsViewportAware = false;
                                 player.Emoji = data;
+
+                                if ((_ignoreSpoilers && entity.HasFlag(Native.TextStyle.Spoiler)) || !entity.HasFlag(Native.TextStyle.Spoiler))
+                                {
+                                    player.Source = new CustomEmojiFileSource(clientService, customEmoji.CustomEmojiId);
+                                }
+                                else
+                                {
+                                    player.Source = null;
+                                }
 
                                 if (_effectiveViewportChanged == null)
                                 {
@@ -1416,6 +1493,7 @@ namespace Telegram.Controls
                 {
                     Below.Children.Remove(_spoilerPresenter);
                     _spoilerPresenter = null;
+                    _spoilerGeometry = null;
                 }
 
                 return;
@@ -1562,6 +1640,7 @@ namespace Telegram.Controls
                 {
                     Below.Children.Remove(_spoilerPresenter);
                     _spoilerPresenter = null;
+                    _spoilerGeometry = null;
                 }
 
                 return;
@@ -1583,7 +1662,7 @@ namespace Telegram.Controls
                     }
                 }
 
-                result = CanvasGeometry.CreatePath(builder);
+                _spoilerGeometry = CanvasGeometry.CreatePath(builder);
             }
 
             Color foreground = Colors.Black;
@@ -1618,7 +1697,7 @@ namespace Telegram.Controls
             Canvas.SetTop(_spoilerPresenter, minY);
 
             var visual = ElementComposition.GetElementVisual(_spoilerPresenter);
-            var geometry = visual.Compositor.CreatePathGeometry(new CompositionPath(result));
+            var geometry = visual.Compositor.CreatePathGeometry(new CompositionPath(_spoilerGeometry));
             visual.Clip = visual.Compositor.CreateGeometricClip(geometry);
         }
 
