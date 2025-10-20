@@ -4287,6 +4287,18 @@ public static class XamlDirect_stub
             throw new RuntimeException(ex);
         }
     }
+    public static void ClearProperty_stub(this Windows.UI.Xaml.Core.Direct.XamlDirect sender, Windows.UI.Xaml.Core.Direct.IXamlDirectObject xamlDirectObject, Windows.UI.Xaml.Core.Direct.XamlPropertyIndex propertyIndex)
+    {
+        try
+        {
+            sender.ClearProperty(xamlDirectObject, propertyIndex);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
     public static Windows.UI.Xaml.Core.Direct.IXamlDirectObject CreateInstance_stub(this Windows.UI.Xaml.Core.Direct.XamlDirect sender, Windows.UI.Xaml.Core.Direct.XamlTypeIndex typeIndex)
     {
         try
@@ -6408,11 +6420,11 @@ public static class CachedVideoAnimation_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Telegram.Native.CachedVideoAnimation LoadFromFile_stub(Telegram.Native.IVideoAnimationSource file, int width, int height, bool fit, bool precache)
+    public static Telegram.Native.CachedVideoAnimation LoadFromFile_stub(Telegram.Native.IVideoAnimationSource file, int width, int height, bool fit, bool precache, bool limitFps)
     {
         try
         {
-            return Telegram.Native.CachedVideoAnimation.LoadFromFile(file, width, height, fit, precache);
+            return Telegram.Native.CachedVideoAnimation.LoadFromFile(file, width, height, fit, precache, limitFps);
         }
         catch (Exception ex)
         {
@@ -6504,11 +6516,11 @@ public static class LokiRng_stub
 }
 public static class NativeUtils_stub
 {
-    public static Windows.UI.Xaml.Core.Direct.IXamlDirectObject AddRunToCollection_stub(Windows.UI.Xaml.Core.Direct.XamlDirect direct, Windows.UI.Xaml.Core.Direct.IXamlDirectObject inlines, string text, int offset, int length, Windows.UI.Xaml.FlowDirection direction, bool italic, Windows.UI.Text.TextDecorations decorations, Windows.UI.Xaml.Media.FontFamily fontFamily, double fontSize, bool transparent)
+    public static Windows.UI.Xaml.Core.Direct.IXamlDirectObject AddRunToCollection_stub(Windows.UI.Xaml.Core.Direct.XamlDirect direct, Windows.UI.Xaml.Core.Direct.IXamlDirectObject inlines, string text, int offset, int length, Windows.UI.Xaml.FlowDirection direction, Telegram.Native.TextStyle style, Windows.UI.Xaml.Media.FontFamily fontFamily, double fontSize, bool transparent)
     {
         try
         {
-            return Telegram.Native.NativeUtils.AddRunToCollection(direct, inlines, text, offset, length, direction, italic, decorations, fontFamily, fontSize, transparent);
+            return Telegram.Native.NativeUtils.AddRunToCollection(direct, inlines, text, offset, length, direction, style, fontFamily, fontSize, transparent);
         }
         catch (Exception ex)
         {
@@ -6516,11 +6528,11 @@ public static class NativeUtils_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.UI.Xaml.Core.Direct.IXamlDirectObject AddRunToCollection_stub(Windows.UI.Xaml.Core.Direct.XamlDirect direct, Windows.UI.Xaml.Core.Direct.IXamlDirectObject inlines, string text, Windows.UI.Xaml.FlowDirection direction, bool italic, Windows.UI.Text.TextDecorations decorations, Windows.UI.Xaml.Media.FontFamily fontFamily, double fontSize, bool transparent)
+    public static Windows.UI.Xaml.Core.Direct.IXamlDirectObject AddRunToCollection_stub(Windows.UI.Xaml.Core.Direct.XamlDirect direct, Windows.UI.Xaml.Core.Direct.IXamlDirectObject inlines, string text, Windows.UI.Xaml.FlowDirection direction, Telegram.Native.TextStyle style, Windows.UI.Xaml.Media.FontFamily fontFamily, double fontSize, bool transparent)
     {
         try
         {
-            return Telegram.Native.NativeUtils.AddRunToCollection(direct, inlines, text, direction, italic, decorations, fontFamily, fontSize, transparent);
+            return Telegram.Native.NativeUtils.AddRunToCollection(direct, inlines, text, direction, style, fontFamily, fontSize, transparent);
         }
         catch (Exception ex)
         {
@@ -6743,6 +6755,18 @@ public static class PlaceholderImageHelper_stub
         try
         {
             return sender.ContentEnd(text, entities, fontSize, width);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void Dispose_stub(this Telegram.Native.PlaceholderImageHelper sender)
+    {
+        try
+        {
+            sender.Dispose();
         }
         catch (Exception ex)
         {
