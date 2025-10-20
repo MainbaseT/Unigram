@@ -58,8 +58,7 @@
                           Margin="-70">
                         <Border x:Name="Blob" />
                         <controls:ProfilePicture x:Name="Photo"
-                                                 Size="280"
-                                                 Shape="None" />
+                                                 Size="280" />
                     </Grid>
                 </Grid>
             </Border>
