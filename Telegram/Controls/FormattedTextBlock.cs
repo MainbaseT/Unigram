@@ -1548,15 +1548,25 @@ namespace Telegram.Controls
                 }
             }
 
-            //maxX = Math.Min(maxX, TextBlock.ActualWidth);
-            //maxY = Math.Min(maxY, TextBlock.ActualHeight);
-
             if (current.Count > 0)
             {
                 shapes.Add(current);
             }
 
-            CanvasGeometry result;
+            maxX = Math.Min(maxX, TextBlock.ActualWidth);
+            maxY = Math.Min(maxY, TextBlock.ActualHeight);
+
+            if (maxX - minY <= 0 || maxY - minY <= 0)
+            {
+                if (_spoilerPresenter != null)
+                {
+                    Below.Children.Remove(_spoilerPresenter);
+                    _spoilerPresenter = null;
+                }
+
+                return;
+            }
+
             using (var builder = new CanvasPathBuilder(null))
             {
                 for (int j = 0; j < shapes.Count; j++)
