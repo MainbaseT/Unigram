@@ -1238,6 +1238,33 @@ namespace Telegram
             return new FormattedText(message, sub ?? Array.Empty<TextEntity>());
         }
 
+        public static (string Text, IList<TextEntity> Entities) Substring(this string text, IList<TextEntity> entities, int startIndex, int length)
+        {
+            if (text.Length < length)
+            {
+                return (text, entities);
+            }
+
+            var message = text.Substring(startIndex, Math.Min(text.Length - startIndex, length));
+            IList<TextEntity> sub = null;
+
+            foreach (var entity in entities)
+            {
+                if (TextStyleRun.GetRelativeRange(entity.Offset, entity.Length, startIndex, length, out int newOffset, out int newLength))
+                {
+                    sub ??= new List<TextEntity>();
+                    sub.Add(new TextEntity
+                    {
+                        Offset = newOffset,
+                        Length = newLength,
+                        Type = entity.Type
+                    });
+                }
+            }
+
+            return (message, sub ?? Array.Empty<TextEntity>());
+        }
+
         public static bool Intersect(this TextEntity x, TextEntity y)
         {
             return TextStyleRun.GetRelativeRange(x.Offset, x.Length, y.Offset, y.Length, out _, out _);

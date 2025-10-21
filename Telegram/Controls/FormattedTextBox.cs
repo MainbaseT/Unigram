@@ -1371,6 +1371,11 @@ namespace Telegram.Controls
                 BeginUndoGroup();
                 Document.BatchDisplayUpdates();
 
+                if (IsLongerThanMaxLength(text.Length, out int exceeding))
+                {
+                    (text, entities) = text.Substring(entities, 0, exceeding);
+                }
+
                 SetTextImpl(text, entities, updateSelection);
             }
             catch
