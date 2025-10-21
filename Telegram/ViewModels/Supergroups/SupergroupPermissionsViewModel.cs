@@ -481,9 +481,10 @@ namespace Telegram.ViewModels.Supergroups
                 }
             }
 
-            if (fullInfo.UnrestrictBoostCount != _unrestrictBoostCount && supergroup.CanRestrictMembers())
+            var unrestrictBootCounts = _unrestrictBoosters ? _unrestrictBoostCount : 0;
+            if (fullInfo.UnrestrictBoostCount != unrestrictBootCounts && supergroup.CanRestrictMembers())
             {
-                var unrestrictBoostCount = await ClientService.SendAsync(new SetSupergroupUnrestrictBoostCount(supergroup.Id, _unrestrictBoostCount));
+                var unrestrictBoostCount = await ClientService.SendAsync(new SetSupergroupUnrestrictBoostCount(supergroup.Id, unrestrictBootCounts));
                 if (unrestrictBoostCount is Error)
                 {
                     return;
