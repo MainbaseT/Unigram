@@ -1648,7 +1648,7 @@ namespace Telegram.Controls
             maxX = Math.Min(maxX, TextBlock.ActualWidth);
             maxY = Math.Min(maxY, TextBlock.ActualHeight);
 
-            if (maxX - minY <= 0 || maxY - minY <= 0)
+            if (maxX - minX <= 0 || maxY - minY <= 0)
             {
                 if (_spoilerPresenter != null)
                 {
