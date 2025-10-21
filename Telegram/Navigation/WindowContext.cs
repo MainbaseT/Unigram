@@ -185,7 +185,11 @@ namespace Telegram.Navigation
         {
             lock (_allLock)
             {
-                _mapping.Remove(_xamlRoot);
+                if (_xamlRoot != null)
+                {
+                    _mapping.Remove(_xamlRoot);
+                }
+
                 All.Remove(this);
             }
 
