@@ -264,6 +264,10 @@ namespace Telegram
             {
                 return new VLCException(error.Message + Environment.NewLine + error.StackTrace, error.StackTrace);
             }
+            else if (error.StackTrace.Contains("Telegram.Native.Calls.dll"))
+            {
+                return new VoipException(error.Message + Environment.NewLine + error.StackTrace, error.StackTrace);
+            }
 
             return new NativeException(error.Message + Environment.NewLine + error.StackTrace, error.StackTrace);
         }
@@ -428,6 +432,14 @@ namespace Telegram
     public partial class VLCException : Exception
     {
         public VLCException(string message, string stackTrace)
+            : base(message + "\n" + stackTrace)
+        {
+        }
+    }
+
+    public partial class VoipException : Exception
+    {
+        public VoipException(string message, string stackTrace)
             : base(message + "\n" + stackTrace)
         {
         }
