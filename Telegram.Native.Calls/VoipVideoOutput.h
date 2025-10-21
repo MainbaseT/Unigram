@@ -336,10 +336,10 @@ public:
     void enqueue(F&& func)
     {
         {
-            std::lock_guard<std::mutex> lock(mutex_);
-            commands_.emplace(std::forward<F>(func));
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_commands.emplace(std::forward<F>(func));
         }
-        cv_.notify_one();
+        m_cv.notify_one();
     }
 
     void shutdown()
