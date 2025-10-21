@@ -301,12 +301,14 @@ namespace winrt::Telegram::Native::implementation
             info->pixelHeight = info->video_dec_ctx->height;
             info->rotation = get_stream_rotation(info->video_stream);
 
-            double framerate;
-            if (info->video_stream->codecpar->codec_id == AV_CODEC_ID_H264)
+            double framerate = 0.0;
+            if (info->video_stream->avg_frame_rate.num &&
+                info->video_stream->avg_frame_rate.den)
             {
                 framerate = av_q2d(info->video_stream->avg_frame_rate);
             }
-            else
+            else if (info->video_stream->r_frame_rate.num &&
+                info->video_stream->r_frame_rate.den)
             {
                 framerate = av_q2d(info->video_stream->r_frame_rate);
             }
