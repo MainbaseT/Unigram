@@ -4007,14 +4007,9 @@ namespace Telegram.Views
         private bool MessageReport_Loaded(MessageViewModel message)
         {
             var chat = ViewModel.Chat;
-            if (chat == null || !chat.CanBeReported || message.Event != null || message.IsService)
+            if (chat == null || !chat.CanBeReported || message.Event != null || message.IsService || message.IsOutgoing)
             {
                 return false;
-            }
-
-            if (message.SenderId is MessageSenderUser senderUser)
-            {
-                return senderUser.UserId != ViewModel.ClientService.Options.MyId;
             }
 
             return true;
