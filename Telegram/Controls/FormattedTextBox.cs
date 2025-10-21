@@ -403,6 +403,12 @@ namespace Telegram.Controls
                 return;
             }
 
+            if (IsReadOnly)
+            {
+                flyout.Hide();
+                return;
+            }
+
             flyout.Items.Clear();
 
             var selection = Document.Selection;
@@ -1278,7 +1284,7 @@ namespace Telegram.Controls
             var range = Document.GetRange(0, 2);
             var empty = range.StoryLength <= 1;
 
-            if (empty && !_wasEmpty)
+            if (empty && !_wasEmpty && !IsReadOnly)
             {
                 try
                 {
@@ -1597,6 +1603,12 @@ namespace Telegram.Controls
 
         private bool IsLongerThanMaxLength(int length, out int exceeding)
         {
+            if (IsReadOnly)
+            {
+                exceeding = length;
+                return true;
+            }
+
             if (MaxLength > 0)
             {
                 Document.GetText(TextGetOptions.NoHidden, out string value);
