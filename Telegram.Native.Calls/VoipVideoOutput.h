@@ -38,6 +38,7 @@
 #include <d2d1effecthelpers.h>
 #include <vector>
 #include <fstream>
+#include <queue>
 
 #include "FrameReceivedEventArgs.h"
 #include "../Telegram.Native/Helpers/COMHelper.h"
@@ -255,7 +256,196 @@ private:
     }
 };
 
-struct VoipVideoOutput : public rtc::VideoSinkInterface<webrtc::VideoFrame>
+class CompositionRenderQueue
+{
+private:
+    struct RenderCommand
+    {
+        std::function<void()> execute;
+
+        RenderCommand() = default;
+        RenderCommand(std::function<void()>&& f) : execute(std::move(f)) {}
+    };
+
+    std::queue<RenderCommand> m_commands;
+    std::mutex m_mutex;
+    std::condition_variable m_cv;
+    std::atomic<bool> m_running;
+    std::thread m_render_thread;
+
+    void render_loop()
+    {
+        SetThreadDescription(GetCurrentThread(), L"CompositionRenderThread");
+
+        std::vector<RenderCommand> batch;
+        batch.reserve(32);
+
+        while (m_running.load(std::memory_order_acquire))
+        {
+            {
+                std::unique_lock<std::mutex> lock(m_mutex);
+
+                // Wait for commands with timeout to check m_running flag
+                m_cv.wait_for(lock, std::chrono::milliseconds(10),
+                    [this]() { return !m_commands.empty() || !m_running.load(std::memory_order_relaxed); });
+
+                if (!m_running.load(std::memory_order_relaxed) && m_commands.empty())
+                {
+                    break;
+                }
+
+                while (!m_commands.empty())
+                {
+                    batch.push_back(std::move(m_commands.front()));
+                    m_commands.pop();
+                }
+            }
+
+            for (auto& cmd : batch)
+            {
+                if (cmd.execute)
+                {
+                    try
+                    {
+                        cmd.execute();
+                    }
+                    catch (...)
+                    {
+                        // Meh
+                    }
+                }
+            }
+
+            batch.clear();
+        }
+    }
+
+public:
+    CompositionRenderQueue()
+        : m_running(true)
+    {
+        m_render_thread = std::thread(&CompositionRenderQueue::render_loop, this);
+    }
+
+    ~CompositionRenderQueue()
+    {
+        shutdown();
+    }
+
+    template<typename F>
+    void enqueue(F&& func)
+    {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            commands_.emplace(std::forward<F>(func));
+        }
+        cv_.notify_one();
+    }
+
+    void shutdown()
+    {
+        if (m_running.exchange(false, std::memory_order_release))
+        {
+            m_cv.notify_all();
+            if (m_render_thread.joinable())
+            {
+                m_render_thread.join();
+            }
+        }
+    }
+};
+
+class RenderQueueManager
+{
+private:
+    struct DeviceHash
+    {
+        size_t operator()(CompositionGraphicsDevice const& device) const
+        {
+            return std::hash<void*>{}(winrt::get_abi(device));
+        }
+    };
+
+    struct DeviceEqual
+    {
+        bool operator()(CompositionGraphicsDevice const& a,
+            CompositionGraphicsDevice const& b) const
+        {
+            return winrt::get_abi(a) == winrt::get_abi(b);
+        }
+    };
+
+    std::unordered_map<
+        CompositionGraphicsDevice,
+        std::weak_ptr<CompositionRenderQueue>,
+        DeviceHash,
+        DeviceEqual> m_queues;
+    std::mutex m_mutex;
+
+public:
+    std::shared_ptr<CompositionRenderQueue> get_queue(CompositionGraphicsDevice const& device)
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        auto it = m_queues.find(device);
+        if (it != m_queues.end())
+        {
+            // Try to lock weak_ptr
+            if (auto queue = it->second.lock())
+            {
+                return queue;
+            }
+
+            // Expired, remove it
+            m_queues.erase(it);
+        }
+
+        auto queue = std::make_shared<CompositionRenderQueue>();
+        m_queues[device] = queue;
+
+        return queue;
+    }
+
+    void cleanup()
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        for (auto it = m_queues.begin(); it != m_queues.end(); )
+        {
+            if (it->second.expired())
+            {
+                it = m_queues.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+
+    void shutdown_all()
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        for (auto& [device, weak_queue] : m_queues)
+        {
+            if (auto queue = weak_queue.lock())
+            {
+                queue->shutdown();
+            }
+        }
+
+        m_queues.clear();
+    }
+
+    static RenderQueueManager& instance()
+    {
+        static RenderQueueManager instance;
+        return instance;
+    }
+};
+
+struct VoipVideoOutput : public std::enable_shared_from_this<VoipVideoOutput>, rtc::VideoSinkInterface<webrtc::VideoFrame>
 {
     std::atomic<bool> m_disposed{ false };
     std::atomic<bool> m_deviceLost{ false };
@@ -277,6 +467,7 @@ struct VoipVideoOutput : public rtc::VideoSinkInterface<webrtc::VideoFrame>
     winrt::com_ptr<ID2D1Bitmap1> m_bitmapY{ nullptr };
     winrt::com_ptr<ID2D1Bitmap1> m_bitmapU{ nullptr };
     winrt::com_ptr<ID2D1Bitmap1> m_bitmapV{ nullptr };
+    std::shared_ptr<CompositionRenderQueue> m_queue;
 
     winrt::com_ptr<winrt::Telegram::Native::Calls::implementation::FrameReceivedEventArgs> m_frameReceivedArgs;
     winrt::event<winrt::Windows::Foundation::TypedEventHandler<
@@ -311,8 +502,9 @@ private:
     }
 
 public:
-    VoipVideoOutput(CompositionGraphicsDevice device, SpriteVisual visual, bool mirrored)
+    VoipVideoOutput(CompositionGraphicsDevice const& device, SpriteVisual const& visual, bool mirrored)
         : m_compositionDevice(device)
+        , m_queue(RenderQueueManager::instance().get_queue(device))
     {
         m_frameReceivedArgs = winrt::make_self<winrt::Telegram::Native::Calls::implementation::FrameReceivedEventArgs>(0, 0);
         m_mirrored = mirrored;
@@ -574,7 +766,16 @@ public:
             return;
         }
 
-        RenderFrame(frame);
+        const auto weak = weak_from_this();
+        m_queue->enqueue([weak, frame]() {
+            auto strong = weak.lock();
+            if (!strong)
+            {
+                return;
+            }
+
+            strong->RenderFrame(frame);
+            });
     }
 };
 
