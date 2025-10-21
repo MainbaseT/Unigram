@@ -20,7 +20,7 @@ namespace winrt::Telegram::Native::Media::implementation
             Create(false);
         }
 
-        m_suspending = Application::Current().Suspending({ this, &AsyncMediaPlayerSwapChain::OnSuspending });
+        //m_suspending = Application::Current().Suspending({ this, &AsyncMediaPlayerSwapChain::OnSuspending });
     }
 
     AsyncMediaPlayerSwapChain::~AsyncMediaPlayerSwapChain()
@@ -28,14 +28,14 @@ namespace winrt::Telegram::Native::Media::implementation
         Destroy();
     }
 
-    void AsyncMediaPlayerSwapChain::OnSuspending(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&)
-    {
-        // When the app is suspended, UWP apps should call Trim so that the DirectX data is cleaned.
-        if (m_device3)
-        {
-            m_device3->Trim();
-        }
-    }
+    //void AsyncMediaPlayerSwapChain::OnSuspending(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&)
+    //{
+    //    // When the app is suspended, UWP apps should call Trim so that the DirectX data is cleaned.
+    //    if (m_device3)
+    //    {
+    //        m_device3->Trim();
+    //    }
+    //}
 
     void AsyncMediaPlayerSwapChain::Clear()
     {
@@ -198,10 +198,10 @@ namespace winrt::Telegram::Native::Media::implementation
 
     void AsyncMediaPlayerSwapChain::Destroy()
     {
-        if (m_suspending)
-        {
-            Application::Current().Suspending(m_suspending);
-        }
+        //if (m_suspending)
+        //{
+        //    Application::Current().Suspending(m_suspending);
+        //}
 
         if (m_swapChain2)
         {
