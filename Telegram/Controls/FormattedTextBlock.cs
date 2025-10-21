@@ -796,10 +796,7 @@ namespace Telegram.Controls
             }
             foreach (var run in _activeRuns)
             {
-                if (_pools.Runs.Count < 500)
-                {
-                    _pools.Runs.Enqueue(run);
-                }
+                _pools.Runs.Enqueue(run);
             }
             foreach (var emoji in _activeEmojis)
             {
