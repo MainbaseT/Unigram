@@ -979,7 +979,7 @@ namespace Telegram.Controls
         public void Load(AnimatedImage canvas)
         {
             _images.Add(canvas);
-            _workerQueue.Run(PrepareImpl);
+            _workerQueue.Run(LoadedImpl);
 
             if (_dirty)
             {
@@ -995,7 +995,7 @@ namespace Telegram.Controls
             canvas.Invalidate(null);
         }
 
-        private void PrepareImpl()
+        private void LoadedImpl()
         {
             lock (_lock)
             {
@@ -1357,25 +1357,28 @@ namespace Telegram.Controls
 
         public void RenderNextFrame()
         {
-            if (_loaded > 0 && !_disposing && !_disposed)
+            lock (_lock)
             {
-                NextFrame();
-            }
-
-            if (!_ticking)
-            {
-                //Logger.Debug("-=");
-                if (_timerSubscribed)
+                if (_loaded > 0 && !_disposing && !_disposed)
                 {
-                    _scheduler.Unsubscribe(this);
+                    NextFrame();
                 }
 
-                _rendering = false;
-                _timerSubscribed = false;
-
-                if (_disposing)
+                if (!_ticking)
                 {
-                    Dispose();
+                    //Logger.Debug("-=");
+                    if (_timerSubscribed)
+                    {
+                        _scheduler.Unsubscribe(this);
+                    }
+
+                    _rendering = false;
+                    _timerSubscribed = false;
+
+                    if (_disposing)
+                    {
+                        Dispose();
+                    }
                 }
             }
         }
