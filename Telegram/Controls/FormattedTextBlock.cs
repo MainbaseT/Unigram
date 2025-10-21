@@ -1396,21 +1396,18 @@ namespace Telegram.Controls
                 return;
             }
 
-            var viewport = new Rect(0, 0, args.EffectiveViewport.Width, args.EffectiveViewport.Height);
+            double viewportRight = args.EffectiveViewport.X + args.EffectiveViewport.Width;
+            double viewportBottom = args.EffectiveViewport.Y + args.EffectiveViewport.Height;
 
             foreach (var child in _effectiveViewportChanged)
             {
-                double childRelativeToViewportX = -args.EffectiveViewport.X + child.ActualOffset.X;
-                double childRelativeToViewportY = -args.EffectiveViewport.Y + child.ActualOffset.Y;
+                bool intersects =
+                    child.ActualOffset.X + child.ActualSize.X > args.EffectiveViewport.X &&
+                    child.ActualOffset.X < viewportRight &&
+                    child.ActualOffset.Y + child.ActualSize.Y > args.EffectiveViewport.Y &&
+                    child.ActualOffset.Y < viewportBottom;
 
-                Rect childBoundsRelativeToViewport = new Rect(
-                    childRelativeToViewportX,
-                    childRelativeToViewportY,
-                    child.ActualSize.X,
-                    child.ActualSize.Y
-                );
-
-                child.ViewportChanged(viewport.IntersectsWith(childBoundsRelativeToViewport));
+                child.ViewportChanged(intersects);
             }
         }
 
