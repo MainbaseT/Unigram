@@ -99,6 +99,8 @@ namespace Telegram.Navigation
             window.CoreWindow.ResizeStarted += OnResizeStarted;
             window.CoreWindow.ResizeCompleted += OnResizeCompleted;
 
+            window.CoreWindow.DispatcherQueue.ShutdownCompleted += OnShutdownCompleted;
+
             #region Legacy code
 
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 500));
@@ -157,18 +159,6 @@ namespace Telegram.Navigation
             sender.VisibleBoundsChanged -= OnVisibleBoundsChanged;
             sender.Consolidated -= OnConsolidated;
 
-            Current = null;
-
-            Theme.Current = null;
-
-            ThemeIncoming.Release();
-            ThemeOutgoing.Release();
-
-            PlaceholderHelper.Release();
-            AnimatedImageLoader.Release();
-            ProfilePicture.Loader.Release();
-            ChatRecordButton.Recorder.Release();
-
             // TODO: since we can't call Close directly,
             // Closed event will be never fired.
             OnClosed(null, null);
@@ -202,6 +192,28 @@ namespace Telegram.Navigation
             _window.Closed -= OnClosed;
             _window.CoreWindow.ResizeStarted -= OnResizeStarted;
             _window.CoreWindow.ResizeCompleted -= OnResizeCompleted;
+        }
+
+        private void OnShutdownCompleted(DispatcherQueue sender, object args)
+        {
+            sender.ShutdownCompleted -= OnShutdownCompleted;
+            Current = null;
+
+            Theme.Current = null;
+
+            ThemeIncoming.Release();
+            ThemeOutgoing.Release();
+
+            PlaceholderHelper.Release();
+            AnimatedImageLoader.Release();
+            ProfilePicture.Loader.Release();
+            ChatRecordButton.Recorder.Release();
+
+            // TODO: needed? From some tests, this prevented the whole Window root from being garbage collected
+            if (SynchronizationContext.Current is SecondaryViewSynchronizationContextDecorator decorator)
+            {
+                SynchronizationContext.SetSynchronizationContext(decorator.Context);
+            }
         }
 
         public bool IsInMainView { get; }

@@ -105,7 +105,7 @@ namespace Telegram.Controls
                 host.PopupClosed();
             }
 
-            WindowContext.Current.UpdateTitleBar();
+            window.UpdateTitleBar();
         }
 
         public async Task<ContentDialogResult> ShowAsync(XamlRoot xamlRoot)
