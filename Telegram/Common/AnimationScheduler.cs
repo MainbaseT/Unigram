@@ -26,12 +26,32 @@ namespace Telegram.Common
     {
         private class AnimationBatch
         {
-            public double FrameRate { get; set; }
-            public double Interval => 1000.0 / FrameRate;
-            public List<IAnimation> Animations { get; } = new List<IAnimation>();
+            public double FrameRate { get; init; }
+            public double Interval { get; init; }
+            public double MaxExecution { get; init; }
+            public int MaxLength { get; init; }
+
+            public List<IAnimation> Animations { get; init; } = new List<IAnimation>();
             public Timer Timer { get; set; }
             public Stopwatch ExecutionTimer { get; } = new Stopwatch();
             public long LastTickTime { get; set; }
+
+            public AnimationBatch(double frameRate)
+            {
+                FrameRate = frameRate;
+                Interval = 1000.0 / frameRate;
+                MaxExecution = 1000.0 / frameRate * 0.8; // 0.75?
+                MaxLength = GetBatchSize(frameRate);
+            }
+
+            private static int GetBatchSize(double size)
+            {
+                // Maybe needs some more tuning.
+                const double a = 400.0;
+                const double b = 0.8;
+                int batch = (int)Math.Round(a * Math.Pow(size, -b));
+                return Math.Clamp(batch, 1, 50);
+            }
 
             public IEnumerator<IAnimation> GetEnumerator()
             {
@@ -100,12 +120,10 @@ namespace Telegram.Common
         private readonly ConcurrentDictionary<IAnimation, byte> _allAnimations = new();
         private readonly ConcurrentDictionary<double, List<AnimationBatch>> _batchesByFps = new();
         private readonly object _batchLock = new();
-        private readonly int _maxBatchExecutionMs;
         private bool _disposed;
 
-        public AnimationScheduler(int maxBatchExecutionMs = 12)
+        public AnimationScheduler()
         {
-            _maxBatchExecutionMs = maxBatchExecutionMs;
         }
 
         public void Subscribe(IAnimation animation)
@@ -158,11 +176,11 @@ namespace Telegram.Common
 
             // Try to find a batch with room
             // TODO: too small batches?
-            var targetBatch = batches.FirstOrDefault(b => b.Animations.Count < 10);
+            var targetBatch = batches.FirstOrDefault(b => b.Animations.Count < b.MaxLength);
 
             if (targetBatch == null)
             {
-                targetBatch = new AnimationBatch { FrameRate = fps };
+                targetBatch = new AnimationBatch(fps);
                 batches.Add(targetBatch);
 
                 var interval = (int)Math.Max(1, targetBatch.Interval);
@@ -222,7 +240,7 @@ namespace Telegram.Common
                 }
 
                 // Check if we're exceeding our time budget
-                if (batch.ExecutionTimer.ElapsedMilliseconds > _maxBatchExecutionMs)
+                if (batch.ExecutionTimer.ElapsedMilliseconds > batch.MaxExecution)
                 {
                     // Mark for rebalancing
                     ThreadPool.QueueUserWorkItem(_ => RebalanceBatch(batch));
@@ -254,7 +272,7 @@ namespace Telegram.Common
                 }
 
                 // Create new batch
-                var newBatch = new AnimationBatch { FrameRate = fps };
+                var newBatch = new AnimationBatch(fps);
                 newBatch.Animations.AddRange(animationsToMove);
 
                 var batches = _batchesByFps[fps];
