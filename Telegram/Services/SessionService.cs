@@ -100,6 +100,10 @@ namespace Telegram.Services
                 if (!value)
                 {
                     ClientService.Options.Online = value;
+
+                    // TODO: consider restarting the instance to free some memory if:
+                    // No secondary windows are open, no calls are in progress, no audio is being played.
+                    //ClientService.Close(true);
                 }
             }
         }
