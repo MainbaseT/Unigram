@@ -34,7 +34,6 @@ namespace Telegram.Common
             public List<IAnimation> Animations { get; init; } = new List<IAnimation>();
             public Timer Timer { get; set; }
             public Stopwatch ExecutionTimer { get; } = new Stopwatch();
-            public long LastTickTime { get; set; }
 
             public AnimationBatch(double frameRate)
             {
@@ -51,69 +50,6 @@ namespace Telegram.Common
                 const double b = 0.8;
                 int batch = (int)Math.Round(a * Math.Pow(size, -b));
                 return Math.Clamp(batch, 1, 50);
-            }
-
-            public IEnumerator<IAnimation> GetEnumerator()
-            {
-                return new AnimationEnumerator(Animations);
-            }
-
-            struct AnimationEnumerator : IEnumerator<IAnimation>
-            {
-                private readonly ICollection<IAnimation> _source;
-                private readonly IAnimation[] _buffer;
-                private readonly int _count;
-                private int _index;
-                private bool _disposed;
-
-                public AnimationEnumerator(ICollection<IAnimation> source)
-                {
-                    _source = source;
-                    _count = source.Count;
-                    _buffer = ArrayPool<IAnimation>.Shared.Rent(_count);
-                    source.CopyTo(_buffer, 0);
-                    _index = -1;
-                    _disposed = false;
-                }
-
-                public IAnimation Current
-                {
-                    get
-                    {
-                        if (_index < 0 || _index >= _count)
-                        {
-                            throw new InvalidOperationException();
-                        }
-
-                        return _buffer[_index];
-                    }
-                }
-
-                object IEnumerator.Current => Current;
-
-                public bool MoveNext()
-                {
-                    if (_index < _count - 1)
-                    {
-                        _index++;
-                        return true;
-                    }
-                    return false;
-                }
-
-                public void Reset()
-                {
-                    _index = -1;
-                }
-
-                public void Dispose()
-                {
-                    if (!_disposed && _buffer != null)
-                    {
-                        ArrayPool<IAnimation>.Shared.Return(_buffer);
-                        _disposed = true;
-                    }
-                }
             }
         }
 
@@ -185,12 +121,11 @@ namespace Telegram.Common
 
                 var interval = (int)Math.Max(1, targetBatch.Interval);
                 targetBatch.Timer = new Timer(
-                    _ => ExecuteBatch(targetBatch),
-                    null,
+                    ExecuteBatch,
+                    targetBatch,
                     interval,
                     interval
                 );
-                targetBatch.LastTickTime = Stopwatch.GetTimestamp();
             }
 
             targetBatch.Animations.Add(animation);
@@ -221,14 +156,23 @@ namespace Telegram.Common
             }
         }
 
-        private void ExecuteBatch(AnimationBatch batch)
+        private void ExecuteBatch(object state)
         {
-            if (_disposed) return;
+            if (_disposed || state is not AnimationBatch batch) return;
 
             batch.ExecutionTimer.Restart();
 
-            foreach (var animation in batch)
+            var animations = ArrayPool<IAnimation>.Shared.Rent(batch.Animations.Count);
+            batch.Animations.CopyTo(animations, 0);
+
+            foreach (var animation in animations)
             {
+                // Pooled arrays can be larger than needed
+                if (animation == null)
+                {
+                    break;
+                }
+
                 try
                 {
                     animation.RenderNextFrame();
@@ -236,44 +180,51 @@ namespace Telegram.Common
                 catch (Exception ex)
                 {
                     // Log exception but don't let one animation crash the batch
-                    Debug.WriteLine($"Animation threw exception: {ex.Message}");
+                    Logger.Info($"Animation threw exception: {ex.Message}");
                 }
 
                 // Check if we're exceeding our time budget
                 if (batch.ExecutionTimer.ElapsedMilliseconds > batch.MaxExecution)
                 {
                     // Mark for rebalancing
-                    ThreadPool.QueueUserWorkItem(_ => RebalanceBatch(batch));
+                    ThreadPool.QueueUserWorkItem(RebalanceBatch, batch);
                     break;
                 }
             }
 
+            ArrayPool<IAnimation>.Shared.Return(animations, true);
             batch.ExecutionTimer.Stop();
         }
 
-        private void RebalanceBatch(AnimationBatch overloadedBatch)
+        private void RebalanceBatch(object state)
         {
             lock (_batchLock)
             {
                 // If batch is now small enough, no need to rebalance
-                if (overloadedBatch.Animations.Count <= 2) return;
+                if (state is not AnimationBatch overloadedBatch || overloadedBatch.Animations.Count <= 2) return;
 
                 var fps = overloadedBatch.FrameRate;
-                var animations = overloadedBatch.Animations.ToList();
 
                 // Split roughly in half
-                var splitPoint = animations.Count / 2;
-                var animationsToMove = animations.Skip(splitPoint).ToList();
+                var splitPoint = overloadedBatch.Animations.Count / 2;
 
-                // Remove from current batch
-                foreach (var anim in animationsToMove)
+                var newBatch = new AnimationBatch(fps);
+                var animations = ArrayPool<IAnimation>.Shared.Rent(splitPoint);
+                overloadedBatch.Animations.CopyTo(0, animations, 0, splitPoint);
+
+                foreach (var anim in animations)
                 {
+                    // Pooled arrays can be larger than needed
+                    if (anim == null)
+                    {
+                        break;
+                    }
+
+                    newBatch.Animations.Add(anim);
                     overloadedBatch.Animations.Remove(anim);
                 }
 
-                // Create new batch
-                var newBatch = new AnimationBatch(fps);
-                newBatch.Animations.AddRange(animationsToMove);
+                ArrayPool<IAnimation>.Shared.Return(animations);
 
                 var batches = _batchesByFps[fps];
                 batches.Add(newBatch);
@@ -281,14 +232,13 @@ namespace Telegram.Common
                 // Start timer for new batch
                 var intervalMs = (int)Math.Max(1, newBatch.Interval);
                 newBatch.Timer = new Timer(
-                    _ => ExecuteBatch(newBatch),
-                    null,
+                    ExecuteBatch,
+                    newBatch,
                     intervalMs,
                     intervalMs
                 );
-                newBatch.LastTickTime = Stopwatch.GetTimestamp();
 
-                Debug.WriteLine($"Rebalanced {fps}fps batch: split into {overloadedBatch.Animations.Count} and {newBatch.Animations.Count} animations");
+                Logger.Info($"Rebalanced {fps}fps batch: split into {overloadedBatch.Animations.Count} and {newBatch.Animations.Count} animations");
             }
         }
 
