@@ -597,7 +597,7 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_FontWeight, FontWeights.Normal);
+                    direct.ClearProperty(run, XamlPropertyIndex.TextElement_FontWeight);
                 }
 
                 if ((style & TextStyle.Italic) != TextStyle.None)
@@ -606,7 +606,7 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    direct.SetEnumProperty(run, XamlPropertyIndex.TextElement_FontStyle, (uint)FontStyle.Normal);
+                    direct.ClearProperty(run, XamlPropertyIndex.TextElement_FontStyle);
                 }
 
                 var decorations = TextDecorations.None;
@@ -619,7 +619,14 @@ namespace Telegram.Controls
                     decorations |= TextDecorations.Strikethrough;
                 }
 
-                direct.SetEnumProperty(run, XamlPropertyIndex.TextElement_TextDecorations, (uint)decorations);
+                if (decorations != TextDecorations.None)
+                {
+                    direct.SetEnumProperty(run, XamlPropertyIndex.TextElement_TextDecorations, (uint)decorations);
+                }
+                else
+                {
+                    direct.ClearProperty(run, XamlPropertyIndex.TextElement_TextDecorations);
+                }
 
                 if (fontFamily != null)
                 {
@@ -673,7 +680,7 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_FontWeight, FontWeights.Normal);
+                    direct.ClearProperty(run, XamlPropertyIndex.TextElement_FontWeight);
                 }
 
                 if ((style & TextStyle.Italic) != TextStyle.None)
@@ -682,7 +689,7 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    direct.SetEnumProperty(run, XamlPropertyIndex.TextElement_FontStyle, (uint)FontStyle.Normal);
+                    direct.ClearProperty(run, XamlPropertyIndex.TextElement_FontStyle);
                 }
 
                 var decorations = TextDecorations.None;
@@ -695,7 +702,14 @@ namespace Telegram.Controls
                     decorations |= TextDecorations.Strikethrough;
                 }
 
-                direct.SetEnumProperty(run, XamlPropertyIndex.TextElement_TextDecorations, (uint)decorations);
+                if (decorations != TextDecorations.None)
+                {
+                    direct.SetEnumProperty(run, XamlPropertyIndex.TextElement_TextDecorations, (uint)decorations);
+                }
+                else
+                {
+                    direct.ClearProperty(run, XamlPropertyIndex.TextElement_TextDecorations);
+                }
 
                 if (fontFamily != null)
                 {
