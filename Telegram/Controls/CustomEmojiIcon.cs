@@ -16,6 +16,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Core.Direct;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Telegram.Controls
 {
@@ -24,6 +25,8 @@ namespace Telegram.Controls
         public CustomEmojiIcon()
         {
             DefaultStyleKey = typeof(CustomEmojiIcon);
+            FrameSize = new Size(20, 20);
+            DecodeFrameType = DecodePixelType.Logical;
         }
 
         public string Emoji { get; set; }

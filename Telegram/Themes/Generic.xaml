@@ -1914,10 +1914,6 @@
                 Value="False" />
         <Setter Property="LoopCount"
                 Value="3" />
-        <Setter Property="FrameSize"
-                Value="20,20" />
-        <Setter Property="DecodeFrameType"
-                Value="Logical" />
         <Setter Property="IsCachingEnabled"
                 Value="True" />
         <Setter Property="Width"

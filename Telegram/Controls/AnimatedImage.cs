@@ -358,40 +358,55 @@ namespace Telegram.Controls
 
         #region FrameSize
 
+        private Size _frameSize = new(256, 256);
         public Size FrameSize
         {
-            get => (Size)GetValue(FrameSizeProperty);
-            set => SetValue(FrameSizeProperty, value);
+            get => _frameSize;
+            set
+            {
+                if (_frameSize != value)
+                {
+                    _frameSize = value;
+                    Load();
+                }
+            }
         }
-
-        public static readonly DependencyProperty FrameSizeProperty =
-            DependencyProperty.Register("FrameSize", typeof(Size), typeof(AnimatedImage), new PropertyMetadata(new Size(256, 256), OnPropertyChanged));
 
         #endregion
 
         #region DecodeFrameType
 
+        private DecodePixelType _decodeFrameType = DecodePixelType.Physical;
         public DecodePixelType DecodeFrameType
         {
-            get { return (DecodePixelType)GetValue(DecodeFrameTypeProperty); }
-            set { SetValue(DecodeFrameTypeProperty, value); }
+            get => _decodeFrameType;
+            set
+            {
+                if (_decodeFrameType != value)
+                {
+                    _decodeFrameType = value;
+                    Load();
+                }
+            }
         }
-
-        public static readonly DependencyProperty DecodeFrameTypeProperty =
-            DependencyProperty.Register("DecodeFrameType", typeof(DecodePixelType), typeof(AnimatedImage), new PropertyMetadata(DecodePixelType.Physical, OnPropertyChanged));
 
         #endregion
 
         #region ResizeMode
 
+        private AnimatedImageResizeMode _resizeMode = AnimatedImageResizeMode.None;
         public AnimatedImageResizeMode ResizeMode
         {
-            get { return (AnimatedImageResizeMode)GetValue(ResizeModeProperty); }
-            set { SetValue(ResizeModeProperty, value); }
+            get => _resizeMode;
+            set
+            {
+                if (_resizeMode != value)
+                {
+                    _resizeMode = value;
+                    Load();
+                }
+            }
         }
-
-        public static readonly DependencyProperty ResizeModeProperty =
-            DependencyProperty.Register("ResizeMode", typeof(AnimatedImageResizeMode), typeof(AnimatedImage), new PropertyMetadata(AnimatedImageResizeMode.None, OnPropertyChanged));
 
         #endregion
 
