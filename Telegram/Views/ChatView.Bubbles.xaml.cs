@@ -632,9 +632,6 @@ namespace Telegram.Views
                 return;
             }
 
-            _viewMessagesFirstVisibleId = firstVisibleId;
-            _viewMessagesLastVisibleId = lastVisibleId;
-
             if (ViewModel.Thread != null)
             {
                 var message = ViewModel.Thread.Messages.LastOrDefault();
