@@ -120,12 +120,7 @@ namespace Telegram.Common
                 batches.Add(targetBatch);
 
                 var interval = (int)Math.Max(1, targetBatch.Interval);
-                targetBatch.Timer = new Timer(
-                    ExecuteBatch,
-                    targetBatch,
-                    interval,
-                    interval
-                );
+                targetBatch.Timer = new Timer(ExecuteBatch, targetBatch, 0, interval);
             }
 
             targetBatch.Animations.Add(animation);
@@ -230,13 +225,8 @@ namespace Telegram.Common
                 batches.Add(newBatch);
 
                 // Start timer for new batch
-                var intervalMs = (int)Math.Max(1, newBatch.Interval);
-                newBatch.Timer = new Timer(
-                    ExecuteBatch,
-                    newBatch,
-                    intervalMs,
-                    intervalMs
-                );
+                var interval = (int)Math.Max(1, newBatch.Interval);
+                newBatch.Timer = new Timer(ExecuteBatch, newBatch, interval, interval);
 
                 Logger.Info($"Rebalanced {fps}fps batch: split into {overloadedBatch.Animations.Count} and {newBatch.Animations.Count} animations");
             }
