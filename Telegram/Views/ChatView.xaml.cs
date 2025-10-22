@@ -59,6 +59,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace Telegram.Views
 {
@@ -821,12 +822,7 @@ namespace Telegram.Views
                     continue;
                 }
 
-                if (content is MessageSelector selector)
-                {
-                    content = selector.Content as MessageBubble;
-                }
-
-                if (content is MessageBubble bubble)
+                if (content is MessageSelector { Content: MessageBubble bubble })
                 {
                     bubble.UpdateAttach(message);
                     bubble.UpdateMessageHeader(message);
@@ -6845,23 +6841,18 @@ namespace Telegram.Views
         {
             if (_messageIdToSelector.TryGetValue(message.Id, out ChatHistoryViewItem selector))
             {
-                var next = new Vector2(0, 0);
+                var first = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
+
+                var next = new Vector2(0, first ? 6 : 0);
                 var prev = selector.ActualSize;
 
-                var diff = next.Y - prev.Y;
-
                 var panel = Messages.ItemsPanelRoot as ItemsStackPanel;
-                if (panel == null || prev.Y == next.Y || Math.Abs(diff) <= 2)
+                if (panel == null)
                 {
                     return;
                 }
 
                 var index = Messages.IndexFromContainer(selector);
-                //if (index < panel.LastVisibleIndex)
-                //{
-                //    return;
-                //}
-
                 AnimateSizeChanged(panel, selector, index, prev, next);
             }
         }

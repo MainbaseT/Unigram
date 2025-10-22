@@ -1286,7 +1286,7 @@ namespace Telegram.Views
             var diff = next.Y - prev.Y;
 
             var panel = Messages.ItemsPanelRoot as ItemsStackPanel;
-            if (panel == null || prev.Y == next.Y || Math.Abs(diff) <= 2)
+            if (panel == null || prev.Y == next.Y || Math.Abs(diff) == 6)
             {
                 return;
             }
