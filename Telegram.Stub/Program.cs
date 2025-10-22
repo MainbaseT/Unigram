@@ -31,9 +31,10 @@ namespace Telegram.Stub
         [STAThread]
         static void Main(string[] args)
         {
+            AddLoopbackExemption();
+
             if (args.Contains("/LoopbackExempt"))
             {
-                AddLoopbackExemption();
                 return;
             }
 
