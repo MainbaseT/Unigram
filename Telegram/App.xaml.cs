@@ -267,6 +267,8 @@ namespace Telegram
                 {
                     return;
                 }
+
+                await NotifyIcon.AddLoopbackExemptionAsync();
             }
 
             if (SettingsService.Current.IsTrayVisible)

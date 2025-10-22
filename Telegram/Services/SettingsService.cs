@@ -458,7 +458,7 @@ namespace Telegram.Services
         private static bool? _useSystemProxy;
         public bool UseSystemProxy
         {
-            get => _useSystemProxy ??= GetValueOrDefault(_own, "UseSystemProxy", false);
+            get => _useSystemProxy ??= GetValueOrDefault(_own, "UseSystemProxy", true);
             set => AddOrUpdateValue(ref _useSystemProxy, _own, "UseSystemProxy", value);
         }
 

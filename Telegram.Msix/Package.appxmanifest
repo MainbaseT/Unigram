@@ -76,7 +76,12 @@
         <uap:Extension Category="windows.appService">
           <uap:AppService Name="org.telegram.bridge" />
         </uap:Extension>
-        <desktop:Extension Category="windows.fullTrustProcess" Executable="Telegram.Stub\Telegram.Stub.exe" />
+        <desktop:Extension Category="windows.fullTrustProcess" Executable="Telegram.Stub\Telegram.Stub.exe">
+          <desktop:FullTrustProcess>
+            <desktop:ParameterGroup GroupId="SystemTrayGroup" Parameters="/SystemTray"/>
+            <desktop:ParameterGroup GroupId="LoopbackExemptGroup" Parameters="/LoopbackExempt"/>
+          </desktop:FullTrustProcess>
+        </desktop:Extension>
       </Extensions>
     </Application>
   </Applications>
