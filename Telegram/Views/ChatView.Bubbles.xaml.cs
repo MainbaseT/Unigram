@@ -627,7 +627,7 @@ namespace Telegram.Views
             _viewVisibleMessagesPrev.Clear();
 
             // Pinned banner
-            if (firstVisibleId == 0 || lastVisibleId == 0 || firstVisibleId == _viewMessagesFirstVisibleId || lastVisibleId == _viewMessagesLastVisibleId)
+            if (firstVisibleId == 0 || lastVisibleId == 0)
             {
                 return;
             }
@@ -649,6 +649,15 @@ namespace Telegram.Views
             }
             else if (ViewModel.PinnedMessages.Count > 0)
             {
+                // TODO: Find a way to reuse this for topics too
+                if (firstVisibleId == _viewMessagesFirstVisibleId || lastVisibleId == _viewMessagesLastVisibleId)
+                {
+                    return;
+                }
+
+                _viewMessagesFirstVisibleId = firstVisibleId;
+                _viewMessagesLastVisibleId = lastVisibleId;
+
                 var currentPinned = ViewModel.PinnedMessages.GetVisible(lastVisibleId, Messages.HasBeenScrolled);
                 if (currentPinned != null)
                 {
