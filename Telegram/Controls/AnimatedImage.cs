@@ -1315,16 +1315,8 @@ namespace Telegram.Controls
 
         public double FrameRate { get; private set; }
 
-        private bool _logged;
-
         public void RenderNextFrame()
         {
-            if (!_logged)
-            {
-                _logged = true;
-                Logger.Info(_loaded + " && " + _disposing + " && " + _disposed + " " + GetHashCode());
-            }
-
             if (_loaded > 0 && !_disposing && !_disposed)
             {
                 NextFrame();
