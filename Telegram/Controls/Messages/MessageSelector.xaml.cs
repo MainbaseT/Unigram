@@ -14,6 +14,7 @@ using Telegram.Composition;
 using Telegram.Controls.Chats;
 using Telegram.Controls.Messages.Content;
 using Telegram.Controls.Messages.Service;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -48,9 +49,6 @@ namespace Telegram.Controls.Messages
         {
             DefaultStyleKey = typeof(MessageSelector);
 
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
-
             AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
         }
 
@@ -61,7 +59,7 @@ namespace Telegram.Controls.Messages
             Content = child;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             if (!_hasInitialLoadedEventFired && RootGrid != null && (SettingsService.Current.SwipeToReply || SettingsService.Current.SwipeToShare))
             {
@@ -92,7 +90,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             if (_trackerOwner != null)
             {
@@ -723,7 +721,7 @@ namespace Telegram.Controls.Messages
 
             if (IsDisconnected)
             {
-                OnUnloaded(null, null);
+                OnUnloaded();
             }
             else
             {

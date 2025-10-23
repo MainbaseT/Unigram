@@ -31,7 +31,7 @@ namespace Telegram.Controls.Chats
         ServiceNewThread,
     }
 
-    public partial class ChatHistoryViewItem : ListViewItemEx
+    public partial class ChatHistoryViewItem : ListViewItem
     {
         private readonly ChatHistoryView _owner;
         private ChatHistoryViewItemType _typeName;

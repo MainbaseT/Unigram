@@ -9,6 +9,7 @@ using System;
 using System.Numerics;
 using Telegram.Composition;
 using Telegram.Controls.Media;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -31,9 +32,6 @@ namespace Telegram.Controls.Cells
         public ChatShareCell()
         {
             InitializeComponent();
-
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
 
             _selectionPhoto = ElementComposition.GetElementVisual(Photo);
             _selectionOutline = ElementComposition.GetElementVisual(SelectionOutline);
@@ -78,13 +76,13 @@ namespace Telegram.Controls.Cells
             set => TitleLabel.Text = value;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             _strokeBrush?.Register();
             _selectionStrokeBrush?.Register();
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             _strokeBrush?.Unregister();
             _selectionStrokeBrush?.Unregister();

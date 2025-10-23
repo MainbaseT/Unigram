@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Telegram.Controls;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -26,13 +27,10 @@ namespace Telegram.Views.Popups
         public ZoomableMediaPopup()
         {
             InitializeComponent();
-
-            // TODO: WinUI - These handlers are no longer needed and can be removed
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        // TODO: WinUI - These handlers are no longer needed and can be removed
+        protected override void OnLoaded()
         {
             _applicationView = ApplicationView.GetForCurrentView();
             _applicationView.VisibleBoundsChanged += OnVisibleBoundsChanged;
@@ -40,7 +38,8 @@ namespace Telegram.Views.Popups
             OnVisibleBoundsChanged(_applicationView, null);
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        // TODO: WinUI - These handlers are no longer needed and can be removed
+        protected override void OnUnloaded()
         {
             _lastItem = null;
 

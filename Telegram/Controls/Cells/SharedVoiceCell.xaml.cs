@@ -8,6 +8,7 @@ using System;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -31,7 +32,7 @@ namespace Telegram.Controls.Cells
             InitializeComponent();
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
             TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;

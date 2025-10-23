@@ -11,4 +11,40 @@ namespace Telegram.Native.Controls
         overridable void OnLoaded();
         overridable void OnUnloaded();
     }
+
+    [default_interface]
+    unsealed runtimeclass GridEx : Windows.UI.Xaml.Controls.Grid
+    {
+        GridEx();
+
+        Boolean IsConnected{ get; };
+        Boolean IsDisconnected{ get; };
+
+        overridable void OnLoaded();
+        overridable void OnUnloaded();
+    }
+
+    [default_interface]
+    unsealed runtimeclass HyperlinkButtonEx : Windows.UI.Xaml.Controls.HyperlinkButton
+    {
+        HyperlinkButtonEx();
+
+        Boolean IsConnected{ get; };
+        Boolean IsDisconnected{ get; };
+
+        overridable void OnLoaded();
+        overridable void OnUnloaded();
+    }
+
+    [default_interface]
+    unsealed runtimeclass ToggleButtonEx : Windows.UI.Xaml.Controls.Primitives.ToggleButton
+    {
+        ToggleButtonEx();
+
+        Boolean IsConnected{ get; };
+        Boolean IsDisconnected{ get; };
+
+        overridable void OnLoaded();
+        overridable void OnUnloaded();
+    }
 }

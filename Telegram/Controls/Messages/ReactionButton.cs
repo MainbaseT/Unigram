@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls.Views;
 using Telegram.Converters;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
@@ -243,7 +244,7 @@ namespace Telegram.Controls.Messages
 
         private void OnLoopCompleted()
         {
-            if (Icon?.Source is ReactionFileSource reaction && Icon.Source.IsAnimated && this.IsConnected())
+            if (Icon?.Source is ReactionFileSource reaction && Icon.Source.IsAnimated && IsConnected)
             {
                 Icon.Source = reaction.Clone(false);
             }
@@ -521,7 +522,7 @@ namespace Telegram.Controls.Messages
                 if (response is EmojiReaction reaction && reaction.AroundAnimation != null)
                 {
                     var around = await _message.ClientService.DownloadFileAsync(reaction.AroundAnimation.StickerValue, 32);
-                    if (around.Local.IsDownloadingCompleted && this.IsConnected())
+                    if (around.Local.IsDownloadingCompleted && IsConnected)
                     {
                         _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Animate(around, true));
                     }
@@ -536,7 +537,7 @@ namespace Telegram.Controls.Messages
                     var next = random.Next(0, stickers.StickersValue.Count);
 
                     var around = await _message.ClientService.DownloadFileAsync(stickers.StickersValue[next].StickerValue, 32);
-                    if (around.Local.IsDownloadingCompleted && this.IsConnected())
+                    if (around.Local.IsDownloadingCompleted && IsConnected)
                     {
                         _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Animate(around, true));
                     }
@@ -548,7 +549,7 @@ namespace Telegram.Controls.Messages
                 var next = random.Next(1, 6);
 
                 var around = TdExtensions.GetLocalFile($"Assets\\Animations\\PaidReactionAround{next}.tgs");
-                if (around.Local.IsDownloadingCompleted && this.IsConnected())
+                if (around.Local.IsDownloadingCompleted && IsConnected)
                 {
                     _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Animate(around, false));
                 }

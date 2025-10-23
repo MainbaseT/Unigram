@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Composition;
 using Telegram.Controls.Media;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Windows.Graphics.Imaging;
@@ -68,11 +69,9 @@ namespace Telegram.Controls.Chats
             };
 
             _blobVisual = new CompositionBlobVisual(Blob, 160, 160, 4);
-
-            Disconnected += OnUnloaded;
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnDisconnectVisualChildren()
         {
             _blobVisual.StopAnimating();
         }

@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Telegram.Common;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
@@ -67,7 +68,7 @@ namespace Telegram.Controls.Chats
             }
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             _handler.UnloadItems();
             _zoomer.Release();

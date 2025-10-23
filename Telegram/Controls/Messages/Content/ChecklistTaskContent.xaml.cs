@@ -9,6 +9,7 @@ using System.Numerics;
 using Telegram.Assets.Icons;
 using Telegram.Common;
 using Telegram.Composition;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -31,9 +32,6 @@ namespace Telegram.Controls.Messages.Content
         public ChecklistTaskContent()
         {
             DefaultStyleKey = typeof(ChecklistTaskContent);
-
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
         }
 
         #region InitializeComponent
@@ -87,12 +85,12 @@ namespace Telegram.Controls.Messages.Content
 
         #endregion
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             _selectionStrokeBrush?.Register();
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             _selectionStrokeBrush?.Unregister();
         }

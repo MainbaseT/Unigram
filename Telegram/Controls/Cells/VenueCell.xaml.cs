@@ -8,6 +8,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Numerics;
 using Telegram.Common;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Windows.UI;
@@ -26,9 +27,6 @@ namespace Telegram.Controls.Cells
         {
             InitializeComponent();
 
-            Connected += OnLoaded;
-            Connected += OnUnloaded;
-
             _selectionPhoto = ElementComposition.GetElementVisual(Photo);
             _selectionOutline = ElementComposition.GetElementVisual(SelectionOutline);
             _selectionPhoto.CenterPoint = new Vector3(20);
@@ -36,7 +34,7 @@ namespace Telegram.Controls.Cells
             _selectionOutline.Opacity = 0;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             if (_selectionStrokeToken == 0 && _stroke != null)
             {
@@ -45,7 +43,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             SelectionStroke?.UnregisterColorChangedCallback(ref _selectionStrokeToken);
         }

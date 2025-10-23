@@ -7,6 +7,7 @@
 using System;
 using Telegram.Common;
 using Telegram.Converters;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -29,7 +30,7 @@ namespace Telegram.Controls.Cells
             InitializeComponent();
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             var message = _item;
             if (message == null)
@@ -40,7 +41,7 @@ namespace Telegram.Controls.Cells
             UpdateItem(message);
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
             TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
