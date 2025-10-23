@@ -822,7 +822,7 @@ namespace Telegram.Controls
 
         protected override void OnUnloaded()
         {
-            if (_pools == null)
+            if (_pools == null || _fastRun != null)
             {
                 return;
             }
