@@ -16,6 +16,7 @@ using System.Numerics;
 using System.Threading;
 using Telegram.Common;
 using Telegram.Native;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -51,7 +52,7 @@ namespace Telegram.Controls
         Fill
     }
 
-    public partial class AnimatedImage : ControlEx, IPlayerView
+    public partial class AnimatedImage : AnimatedImageBase, IPlayerView
     {
         enum PlayingState
         {
@@ -77,14 +78,9 @@ namespace Telegram.Controls
         public AnimatedImage()
         {
             DefaultStyleKey = typeof(AnimatedImage);
-
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
-
-            SizeChanged += OnSizeChanged;
         }
 
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        protected override void OnSizeChanged(SizeChangedEventArgs e)
         {
             if (ResizeMode != AnimatedImageResizeMode.None)
             {
@@ -120,11 +116,11 @@ namespace Telegram.Controls
             return new SuppressEventsDisposable(this);
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             Load();
 
-            XamlRoot.Changed += OnRasterizationScaleChanged;
+            base.OnLoaded();
             ReplacementColor?.RegisterColorChangedCallback(OnReplacementColorChanged, ref _replacementColorToken);
 
             if (Source != null)
@@ -137,16 +133,16 @@ namespace Telegram.Controls
                 if (IsViewportAware && !_effectiveViewportRegistered)
                 {
                     _effectiveViewportRegistered = true;
-                    EffectiveViewportChanged += OnEffectiveViewportChanged;
+                    RegisterViewportChanged();
                 }
             }
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             Unload();
 
-            XamlRoot.Changed -= OnRasterizationScaleChanged;
+            base.OnUnloaded();
             ReplacementColor?.UnregisterColorChangedCallback(ref _replacementColorToken);
 
             if (Source != null)
@@ -157,7 +153,7 @@ namespace Telegram.Controls
             if (_effectiveViewportRegistered)
             {
                 _effectiveViewportRegistered = false;
-                EffectiveViewportChanged -= OnEffectiveViewportChanged;
+                UnregisterViewportChanged();
             }
         }
 
@@ -220,33 +216,35 @@ namespace Telegram.Controls
         {
             if (newValue && IsConnected && Source != null)
             {
-                _effectiveViewportRegistered = true;
-                EffectiveViewportChanged += OnEffectiveViewportChanged;
+                if (!_effectiveViewportRegistered)
+                {
+                    _effectiveViewportRegistered = true;
+                    RegisterViewportChanged();
+                }
             }
             else if (_effectiveViewportRegistered)
             {
                 _effectiveViewportRegistered = false;
-                EffectiveViewportChanged -= OnEffectiveViewportChanged;
+                UnregisterViewportChanged();
+            }
+        }
+
+        protected override void OnViewportChanged(bool visible)
+        {
+            if (visible)
+            {
+                Play();
+            }
+            else
+            {
+                Pause();
             }
         }
 
         private bool _withinViewport;
-        private bool _effectiveViewportRegistered;
 
-        private void OnEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
-        {
-            var within = args.BringIntoViewDistanceX < sender.ActualWidth && args.BringIntoViewDistanceY < sender.ActualHeight;
-            if (within && !_withinViewport)
-            {
-                _withinViewport = true;
-                Play();
-            }
-            else if (_withinViewport && !within)
-            {
-                _withinViewport = false;
-                Pause();
-            }
-        }
+        // TODO: a bit redunant now as it's already tracked internally
+        private bool _effectiveViewportRegistered;
 
         public void ViewportChanged(bool within)
         {
@@ -476,7 +474,7 @@ namespace Telegram.Controls
                 if (IsViewportAware && !_effectiveViewportRegistered)
                 {
                     _effectiveViewportRegistered = true;
-                    EffectiveViewportChanged += OnEffectiveViewportChanged;
+                    RegisterViewportChanged();
                 }
             }
         }
@@ -716,11 +714,11 @@ namespace Telegram.Controls
             base.OnApplyTemplate();
         }
 
-        private void OnRasterizationScaleChanged(XamlRoot sender, XamlRootChangedEventArgs args)
+        protected override void OnRasterizationScaleChanged(double rasterizationScale)
         {
-            if (_rasterizationScale != sender.RasterizationScale && DecodeFrameType == DecodePixelType.Logical)
+            if (_rasterizationScale != rasterizationScale && DecodeFrameType == DecodePixelType.Logical)
             {
-                _rasterizationScale = sender.RasterizationScale;
+                _rasterizationScale = rasterizationScale;
                 Load();
             }
         }

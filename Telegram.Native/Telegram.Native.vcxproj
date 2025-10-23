@@ -304,6 +304,10 @@
     <ClInclude Include="..\Libraries\libwebp\src\webp\mux.h" />
     <ClInclude Include="..\Libraries\libwebp\src\webp\mux_types.h" />
     <ClInclude Include="..\Libraries\libwebp\src\webp\types.h" />
+    <ClInclude Include="Controls\AnimatedImageBase.h">
+      <DependentUpon>Controls\AnimatedImageBase.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="AnimationEffects.h">
       <DependentUpon>AnimationEffects.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -338,6 +342,7 @@
       <DependentUpon>ChatBackgroundPattern.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="Controls\FrameworkElementEx.h" />
     <ClInclude Include="Helpers\BlurHelper.h" />
     <ClInclude Include="Helpers\COMHelper.h" />
     <ClInclude Include="Helpers\DebugHelper.h" />
@@ -982,6 +987,10 @@
     <ClCompile Include="..\Libraries\libwebp\src\utils\utils.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Controls\AnimatedImageBase.cpp">
+      <DependentUpon>Controls\AnimatedImageBase.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="AnimationEffects.cpp">
       <DependentUpon>AnimationEffects.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -1125,6 +1134,9 @@
     <None Include="Telegram.Native.def" />
   </ItemGroup>
   <ItemGroup>
+    <Midl Include="Controls\AnimatedImageBase.idl">
+      <SubType>Designer</SubType>
+    </Midl>
     <Midl Include="AnimationEffects.idl">
       <SubType>Designer</SubType>
     </Midl>

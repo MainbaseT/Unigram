@@ -94,6 +94,9 @@
     <Filter Include="Media">
       <UniqueIdentifier>{fbafba8b-41cb-4c9e-8146-d54d4dac9573}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{14a28a5e-dd0f-4312-b94f-d38d569960a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -1091,6 +1094,9 @@
     <ClInclude Include="Media\AsyncMediaPlayerOptions.h">
       <Filter>Media</Filter>
     </ClInclude>
+    <ClInclude Include="Controls\FrameworkElementEx.h">
+      <Filter>Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Telegram.Native.def" />
@@ -1175,6 +1181,9 @@
     <Midl Include="MessageBubbleNineGrid.idl" />
     <Midl Include="Media\AsyncMediaPlayerOptions.idl">
       <Filter>Media</Filter>
+    </Midl>
+    <Midl Include="Controls\AnimatedImageBase.idl">
+      <Filter>Controls</Filter>
     </Midl>
   </ItemGroup>
 </Project>
