@@ -1711,6 +1711,21 @@ public static class CompositionGraphicsDevice_stub
         }
     }
 }
+public static class CompositionNineGridBrush_stub
+{
+    public static void SetInsets_stub(this Windows.UI.Composition.CompositionNineGridBrush sender, float left, float top, float right, float bottom)
+    {
+        try
+        {
+            sender.SetInsets(left, top, right, bottom);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+}
 public static class CompositionObject_stub
 {
     public static void Dispose_stub(this Windows.UI.Composition.CompositionObject sender)
@@ -2118,6 +2133,18 @@ public static class Compositor_stub
             throw new RuntimeException(ex);
         }
     }
+    public static Windows.UI.Composition.LayerVisual CreateLayerVisual_stub(this Windows.UI.Composition.Compositor sender)
+    {
+        try
+        {
+            return sender.CreateLayerVisual();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
     public static Windows.UI.Composition.LinearEasingFunction CreateLinearEasingFunction_stub(this Windows.UI.Composition.Compositor sender)
     {
         try
@@ -2159,6 +2186,18 @@ public static class Compositor_stub
         try
         {
             return sender.CreateMaskBrush();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static Windows.UI.Composition.CompositionNineGridBrush CreateNineGridBrush_stub(this Windows.UI.Composition.Compositor sender)
+    {
+        try
+        {
+            return sender.CreateNineGridBrush();
         }
         catch (Exception ex)
         {
@@ -2741,6 +2780,33 @@ public static class WebView2_stub
         try
         {
             sender.Close();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+}
+public static class AnimatedImageBase_stub
+{
+    public static void RegisterViewportChanged_stub(this Telegram.Native.Controls.AnimatedImageBase sender)
+    {
+        try
+        {
+            sender.RegisterViewportChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void UnregisterViewportChanged_stub(this Telegram.Native.Controls.AnimatedImageBase sender)
+    {
+        try
+        {
+            sender.UnregisterViewportChanged();
         }
         catch (Exception ex)
         {
