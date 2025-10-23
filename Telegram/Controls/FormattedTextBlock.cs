@@ -14,6 +14,7 @@ using System.Threading;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Native;
+using Telegram.Native.Controls;
 using Telegram.Native.Highlight;
 using Telegram.Navigation;
 using Telegram.Services;
@@ -62,7 +63,7 @@ namespace Telegram.Controls
     public record FormattedParagraph(Paragraph Paragraph, StyledParagraph Styled);
 
     [ContentProperty(Name = "Blocks")]
-    public partial class FormattedTextBlock : Control
+    public partial class FormattedTextBlock : ControlEx
     {
         private IClientService _clientService;
         private StyledText _text;
@@ -108,6 +109,7 @@ namespace Telegram.Controls
         private RichTextBlock TextBlock;
 
         private bool _templateApplied;
+        private bool _templateExecuted;
 
         public FormattedTextBlock()
         {
@@ -212,6 +214,8 @@ namespace Telegram.Controls
 
             if (_clientService != null && _text != null)
             {
+                _templateExecuted = true;
+
                 SetText(_clientService, _text, _fontSize);
 
                 if (_query != null || _spoiler != null)
@@ -811,6 +815,51 @@ namespace Telegram.Controls
             _activeSpans.Clear();
             _activeHyperlinks.Clear();
             _activeParagraphs.Clear();
+        }
+
+        protected override void OnLoaded()
+        {
+            // Don't reapply the text if it was just applied by OnApplyTemplate
+            if (_templateExecuted || _pools == null)
+            {
+                return;
+            }
+
+            _templateExecuted = false;
+
+            if (_clientService != null && _text != null)
+            {
+                SetText(_clientService, _text, _fontSize);
+
+                if (_query != null || _spoiler != null)
+                {
+                    SetQuery(_query, true);
+                }
+            }
+        }
+
+        protected override void OnUnloaded()
+        {
+            if (_pools == null)
+            {
+                return;
+            }
+
+            var direct = XamlDirect.GetDefault();
+
+            if (_spanForInlines == null)
+            {
+                var directBlock = direct.GetXamlDirectObject(TextBlock);
+                var blocks = direct.GetXamlDirectObjectProperty(directBlock, XamlPropertyIndex.RichTextBlock_Blocks);
+
+                direct.ClearCollection(blocks);
+            }
+            else
+            {
+                _spanForInlines.Inlines.Clear();
+            }
+
+            Recycle(direct);
         }
 
         public void SetText(IClientService clientService, StyledText styled, double fontSize = 0)
