@@ -283,9 +283,9 @@ namespace Telegram.Views
                     }
                 }
 
-                if (message.Content is MessageHeaderDate && minDate && i >= panel.FirstVisibleIndex)
+                if (message.Content is MessageHeaderDate && minDate && top + container.ActualSize.Y >= 0)
                 {
-                    var height = DateHeader.ActualSize.Y + 8;
+                    var height = container.ActualSize.Y;
                     var offset = (float)top + height;
 
                     minDate = false;
@@ -318,9 +318,9 @@ namespace Telegram.Views
                         _dateHeaderTracked = null;
                     }
                 }
-                else if (message.Content is MessageHeaderMessageTopic && minMessageTopic && i >= panel.FirstVisibleIndex)
+                else if (message.Content is MessageHeaderMessageTopic && minMessageTopic && top + container.ActualSize.Y >= 0)
                 {
-                    var height = ForumTopicHeader.ActualSize.Y + 8;
+                    var height = container.ActualSize.Y;
                     var offset = (float)top + height;
 
                     if (offset > height)
