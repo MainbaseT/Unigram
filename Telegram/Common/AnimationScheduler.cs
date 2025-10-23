@@ -157,8 +157,10 @@ namespace Telegram.Common
 
             batch.ExecutionTimer.Restart();
 
-            var animations = ArrayPool<IAnimation>.Shared.Rent(batch.Animations.Count);
-            batch.Animations.CopyTo(animations, 0);
+            // TODO: the collection can change in between Rent and CopyTo
+            var count = batch.Animations.Count;
+            var animations = ArrayPool<IAnimation>.Shared.Rent(count);
+            batch.Animations.CopyTo(0, animations, 0, count);
 
             foreach (var animation in animations)
             {
