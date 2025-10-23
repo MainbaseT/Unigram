@@ -1389,9 +1389,6 @@
                 <RowDefinition x:Name="KeyboardPlaceholder"
                                Height="Auto" />
             </Grid.RowDefinitions>
-            <Border x:Name="ShadowReceiver"
-                    Grid.RowSpan="5" />
-
             <Grid Padding="0,0,0,8"
                   VerticalAlignment="Bottom"
                   Grid.RowSpan="4">
@@ -1750,6 +1747,7 @@
                                          VerticalAlignment="Bottom" />
 
                 <Grid x:Name="InlinePanel"
+                      SizeChanged="InlinePanel_SizeChanged"
                       VerticalAlignment="Bottom"
                       Visibility="{x:Bind ViewModel.Search, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}"
                       Margin="12,0,12,-12"

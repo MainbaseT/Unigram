@@ -59,7 +59,6 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
 
 namespace Telegram.Views
 {
@@ -250,16 +249,9 @@ namespace Telegram.Views
             if (ApiInfo.CanCreateThemeShadow && PowerSavingPolicy.AreMaterialsEnabled)
             {
                 _shadow = new ThemeShadow();
-                _shadow.Receivers.Add(ShadowReceiver);
 
                 ShadowCaster.Shadow = _shadow;
                 ShadowCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
-
-                InlineShadow.Shadow = _shadow;
-                InlineShadow.Translation = new Vector3(0, 0, 64);
-
-                InlinePanel.Shadow = _shadow;
-                InlinePanel.Translation = new Vector3(0, 0, Constants.BubbleElevation);
             }
         }
 
@@ -5903,26 +5895,16 @@ namespace Telegram.Views
             animClip2.InsertKeyFrame(1, show ? -44 + 48 : -44);
             animClip2.Duration = Constants.FastAnimation;
 
-            var animClip3 = textArea.Compositor.CreateScalarKeyFrameAnimation();
-            animClip3.InsertKeyFrame(0, show ? 48 : 0);
-            animClip3.InsertKeyFrame(1, show ? 0 : 48);
-            animClip3.Duration = Constants.FastAnimation;
-
-            var anim1 = textArea.Compositor.CreateScalarKeyFrameAnimation();
-            anim1.InsertKeyFrame(0, show ? 48 : 0);
-            anim1.InsertKeyFrame(1, show ? 0 : 48);
-            anim1.Duration = Constants.FastAnimation;
-
-            rect.StartAnimation("Offset.Y", animClip3);
+            rect.StartAnimation("Offset.Y", animClip);
 
             if (!sendout)
             {
                 messages.Clip.StartAnimation("TopInset", animClip2);
-                messagesRoot.StartAnimation("Translation.Y", anim1);
+                messagesRoot.StartAnimation("Translation.Y", animClip);
             }
 
             composer.Clip.StartAnimation("BottomInset", animClip);
-            composer.StartAnimation("Offset.Y", anim1);
+            composer.StartAnimation("Offset.Y", animClip);
 
             batch.End();
         }
@@ -7792,6 +7774,28 @@ namespace Telegram.Views
             if (_stickyPhotoBelowMessage != null)
             {
                 ProfilePhoto_ContextRequested(_stickyPhotoBelowMessage, StickyPhotoBelow, args);
+            }
+        }
+
+        private void InlinePanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Theme shadow for the inline panel must be added/removed manually when "visibility" changes
+            // Otherwise it's going to generate GPU artifacts on text box size changes.
+            if (e.NewSize.Height > _textAreaRadius)
+            {
+                InlineShadow.Shadow = _shadow;
+                InlineShadow.Translation = new Vector3(0, 0, 64);
+
+                InlinePanel.Shadow = _shadow;
+                InlinePanel.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+            }
+            else
+            {
+                InlineShadow.Shadow = null;
+                InlineShadow.Translation = Vector3.Zero;
+
+                InlinePanel.Shadow = null;
+                InlinePanel.Translation = Vector3.Zero;
             }
         }
     }
