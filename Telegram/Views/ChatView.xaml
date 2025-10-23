@@ -1750,44 +1750,48 @@
                       SizeChanged="InlinePanel_SizeChanged"
                       VerticalAlignment="Bottom"
                       Visibility="{x:Bind ViewModel.Search, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}"
-                      Margin="12,0,12,-12"
-                      CornerRadius="8,8,0,0">
-                    <controls:InlineBotResultsView x:Name="ListInline"
-                                                   x:Load="{x:Bind ViewModel.IsInlineBotResultsVisible, Mode=OneWay}"
-                                                   Loaded="InlineBotResults_Loaded"
-                                                   ItemClick="InlineBotResults_ItemClick"
-                                                   VerticalAlignment="Bottom" />
-                    <controls:OrientableListView x:Name="ListAutocomplete"
-                                                 Visibility="Collapsed"
-                                                 Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
-                                                 ItemTemplateSelector="{StaticResource AutocompleteTemplate}"
-                                                 ChoosingItemContainer="Autocomplete_ChoosingItemContainer"
-                                                 ContainerContentChanging="Autocomplete_ContainerContentChanging"
-                                                 AllowFocusOnInteraction="False"
-                                                 IsItemClickEnabled="True"
-                                                 ItemClick="Autocomplete_ItemClick"
-                                                 VerticalAlignment="Bottom"
-                                                 Style="{StaticResource ZoomableListViewStyle}"
-                                                 Padding="0,0,0,12">
-                        <GridView.ItemContainerStyle>
-                            <Style TargetType="GridViewItem"
-                                   BasedOn="{StaticResource ZoomableListViewItemStyle}">
-                                <Setter Property="MinWidth"
-                                        Value="0" />
-                                <Setter Property="Padding"
-                                        Value="0" />
-                            </Style>
-                        </GridView.ItemContainerStyle>
-                        <GridView.ItemContainerTransitions>
-                            <TransitionCollection />
-                        </GridView.ItemContainerTransitions>
-                    </controls:OrientableListView>
-                    <Rectangle x:Name="InlineShadow"
-                               VerticalAlignment="Bottom"
-                               Margin="0,0,0,-24"
-                               Height="48"
-                               RadiusX="24"
-                               RadiusY="24" />
+                      Margin="12,0,12,-12">
+                    <!-- TODO: the nesting is terrible but it's due to XAML bug with Shadow and Translation -->
+                    <Border x:Name="InlineCaster" />
+                    <Grid x:Name="InlineGrid">
+                        <Border x:Name="InlineBackground"
+                                Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
+                                Visibility="Collapsed" />
+                        <controls:InlineBotResultsView x:Name="ListInline"
+                                                       x:Load="False"
+                                                       ItemClick="InlineBotResults_ItemClick"
+                                                       VerticalAlignment="Bottom" />
+                        <controls:OrientableListView x:Name="ListAutocomplete"
+                                                     Visibility="Collapsed"
+                                                     ItemTemplateSelector="{StaticResource AutocompleteTemplate}"
+                                                     ChoosingItemContainer="Autocomplete_ChoosingItemContainer"
+                                                     ContainerContentChanging="Autocomplete_ContainerContentChanging"
+                                                     AllowFocusOnInteraction="False"
+                                                     IsItemClickEnabled="True"
+                                                     ItemClick="Autocomplete_ItemClick"
+                                                     VerticalAlignment="Bottom"
+                                                     Style="{StaticResource ZoomableListViewStyle}"
+                                                     Padding="0,0,0,12">
+                            <GridView.ItemContainerStyle>
+                                <Style TargetType="GridViewItem"
+                                       BasedOn="{StaticResource ZoomableListViewItemStyle}">
+                                    <Setter Property="MinWidth"
+                                            Value="0" />
+                                    <Setter Property="Padding"
+                                            Value="0" />
+                                </Style>
+                            </GridView.ItemContainerStyle>
+                            <GridView.ItemContainerTransitions>
+                                <TransitionCollection />
+                            </GridView.ItemContainerTransitions>
+                        </controls:OrientableListView>
+                        <Rectangle x:Name="InlineShadow"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,0,-24"
+                                   Height="48"
+                                   RadiusX="24"
+                                   RadiusY="24" />
+                    </Grid>
                 </Grid>
             </Grid>
 

@@ -912,6 +912,18 @@ namespace Telegram.Views
             {
                 Sponsored.UpdateSponsoredMessage(ViewModel.ClientService, ViewModel.Chat, ViewModel.SponsoredMessage);
             }
+            else if (e.PropertyName.Equals(nameof(ViewModel.IsInlineBotResultsVisible)))
+            {
+                if (ViewModel.IsInlineBotResultsVisible)
+                {
+                    FindName(nameof(ListInline));
+                    InlineBotResults_Loaded(null, null);
+                }
+                else
+                {
+                    UnloadObject(ListInline);
+                }
+            }
         }
 
         private void Segments_Click(object sender, RoutedEventArgs e)
@@ -5792,7 +5804,6 @@ namespace Telegram.Views
         private bool _composerHeaderCollapsed = true;
         //private bool _botMenuButtonCollapsed = true;
         //private bool _aliasButtonCollapsed = true;
-        private bool _autocompleteCollapsed = true;
 
         private void ShowHideComposerHeader(bool show, bool sendout = false)
         {
@@ -6076,52 +6087,6 @@ namespace Telegram.Views
             batch.End();
         }
 
-        private async void ShowHideAutocomplete(bool show)
-        {
-            if (_autocompleteCollapsed != show)
-            {
-                return;
-            }
-
-            _autocompleteCollapsed = !show;
-            ListAutocomplete.Visibility = Visibility.Visible;
-
-            var source = ListAutocomplete.ItemsSource;
-
-            var list = ElementComposition.GetElementVisual(ListAutocomplete);
-            list.StopAnimation("Translation");
-
-            if (show)
-            {
-                await ListAutocomplete.UpdateLayoutAsync();
-            }
-
-            var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-            batch.Completed += (s, args) =>
-            {
-                list.Properties.InsertVector3("Translation", Vector3.Zero);
-
-                if (show)
-                {
-                    _autocompleteCollapsed = false;
-                }
-                else if (ListAutocomplete.ItemsSource == source)
-                {
-                    ListAutocomplete.ItemsSource = null;
-                    ListAutocomplete.Visibility = Visibility.Collapsed;
-                }
-            };
-
-            var offset = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
-            offset.InsertKeyFrame(show ? 0 : 1, new Vector3(0, ListAutocomplete.ActualSize.Y, 0));
-            offset.InsertKeyFrame(show ? 1 : 0, new Vector3());
-            offset.Duration = Constants.FastAnimation;
-
-            list.StartAnimation("Translation", offset);
-
-            batch.End();
-        }
-
         private double _textAreaRadius = double.NaN;
 
         private void UpdateTextAreaRadius(bool force = true)
@@ -6157,7 +6122,7 @@ namespace Telegram.Views
                 ManagePanel.CornerRadius =
                 ButtonAction.CornerRadius = new CornerRadius(radius);
 
-            ListAutocomplete.CornerRadius = InlinePanel.CornerRadius = new CornerRadius(radius, radius, 0, 0);
+            ListAutocomplete.CornerRadius = InlineCaster.CornerRadius = new CornerRadius(radius, radius, 0, 0);
             ListAutocomplete.Padding = new Thickness(0, 0, 0, radius);
 
             ListInline?.UpdateCornerRadius(radius);
@@ -6213,20 +6178,12 @@ namespace Telegram.Views
             {
                 ListAutocomplete.ItemsSource = collection;
                 ListAutocomplete.Orientation = collection.Orientation;
-                ShowHideAutocomplete(true);
+                ListAutocomplete.Visibility = Visibility.Visible;
             }
             else
             {
-                ShowHideAutocomplete(false);
-
-                //var diff = (float)ListAutocomplete.ActualHeight;
-                //var visual = ElementComposition.GetElementVisual(ListAutocomplete);
-
-                //var anim = BootStrapper.Current.Compositor.CreateSpringVector3Animation();
-                //anim.InitialValue = new Vector3();
-                //anim.FinalValue = new Vector3(0, diff, 0);
-
-                //visual.StartAnimation("Offset", anim);
+                ListAutocomplete.Visibility = Visibility.Collapsed;
+                ListAutocomplete.ItemsSource = null;
             }
         }
 
@@ -7777,26 +7734,96 @@ namespace Telegram.Views
             }
         }
 
+        private bool _inlinePanelCollapsed = true;
+        private int _inlinePanelTracker;
+
         private void InlinePanel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // Theme shadow for the inline panel must be added/removed manually when "visibility" changes
-            // Otherwise it's going to generate GPU artifacts on text box size changes.
-            if (e.NewSize.Height > _textAreaRadius)
-            {
-                InlineShadow.Shadow = _shadow;
-                InlineShadow.Translation = new Vector3(0, 0, 64);
+            var show = e.NewSize.Height > _textAreaRadius;
+            var tracker = ++_inlinePanelTracker;
 
-                InlinePanel.Shadow = _shadow;
-                InlinePanel.Translation = new Vector3(0, 0, Constants.BubbleElevation);
-            }
-            else
-            {
-                InlineShadow.Shadow = null;
-                InlineShadow.Translation = Vector3.Zero;
+            var prev = e.PreviousSize.ToVector2();
+            var next = e.NewSize.ToVector2();
 
-                InlinePanel.Shadow = null;
-                InlinePanel.Translation = Vector3.Zero;
+            ElementCompositionPreview.SetIsTranslationEnabled(InlinePanel, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(InlineShadow, true);
+
+            var visual = ElementComposition.GetElementVisual(InlinePanel);
+            var caster = ElementComposition.GetElementVisual(InlineShadow);
+            var grid = ElementComposition.GetElementVisual(InlineGrid);
+            var background = ElementComposition.GetElementVisual(InlineBackground);
+
+            var rectangle = visual.Compositor.CreateRoundedRectangleGeometry();
+            rectangle.CornerRadius = new Vector2((float)_textAreaRadius);
+
+            grid.Clip = visual.Compositor.CreateGeometricClip(rectangle);
+
+            var batch = visual.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+
+            if (_inlinePanelCollapsed == show)
+            {
+                InlineBackground.Visibility = Visibility.Visible;
+
+                batch.Completed += (s, args) =>
+                {
+                    if (_inlinePanelTracker != tracker)
+                    {
+                        return;
+                    }
+
+                    // Theme shadow for the inline panel must be added/removed manually when "visibility" changes
+                    // Otherwise it's going to generate GPU artifacts on text box size changes.
+                    if (show)
+                    {
+                        InlineShadow.Shadow = _shadow;
+                        InlineShadow.Translation = new Vector3(0, 0, 64);
+
+                        InlineCaster.Shadow = _shadow;
+                        InlineCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+
+                        InlineBackground.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        InlineShadow.Shadow = null;
+                        InlineShadow.Translation = Vector3.Zero;
+
+                        InlineCaster.Shadow = null;
+                        InlineCaster.Translation = Vector3.Zero;
+
+                        InlineBackground.Visibility = Visibility.Collapsed;
+                    }
+                };
             }
+
+            _inlinePanelCollapsed = !show;
+
+            var translation = visual.Compositor.CreateScalarKeyFrameAnimation();
+            translation.InsertKeyFrame(0, next.Y - prev.Y);
+            translation.InsertKeyFrame(1, 0);
+            translation.Duration = Constants.FastAnimation;
+
+            var translation2 = visual.Compositor.CreateScalarKeyFrameAnimation();
+            translation2.InsertKeyFrame(0, prev.Y - next.Y);
+            translation2.InsertKeyFrame(1, 0);
+            translation2.Duration = Constants.FastAnimation;
+
+            var scale = visual.Compositor.CreateScalarKeyFrameAnimation();
+            scale.InsertKeyFrame(0, prev.Y / next.Y);
+            scale.InsertKeyFrame(1, 1);
+            scale.Duration = Constants.FastAnimation;
+
+            var size = visual.Compositor.CreateVector2KeyFrameAnimation();
+            size.InsertKeyFrame(0, new Vector2(prev.X, prev.Y + rectangle.CornerRadius.Y));
+            size.InsertKeyFrame(1, new Vector2(next.X, next.Y + rectangle.CornerRadius.Y));
+            size.Duration = Constants.FastAnimation;
+
+            visual.StartAnimation("Translation.Y", translation);
+            caster.StartAnimation("Translation.Y", translation2);
+            background.StartAnimation("Scale.Y", scale);
+            rectangle.StartAnimation("Size", size);
+
+            batch.End();
         }
     }
 

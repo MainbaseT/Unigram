@@ -19,6 +19,7 @@ using Telegram.Common;
 using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
@@ -123,9 +124,19 @@ namespace Telegram.Controls.Chats
 
             if (collection != null)
             {
-                if (recycle && ViewModel.Autocomplete is AutocompleteCollection autocomplete)
+                if (ViewModel.Autocomplete is AutocompleteCollection autocomplete)
                 {
-                    autocomplete.Update(collection);
+                    if (autocomplete.Source != collection)
+                    {
+                        if (recycle)
+                        {
+                            autocomplete.Update(collection);
+                        }
+                        else
+                        {
+                            ViewModel.Autocomplete = new AutocompleteCollection(collection);
+                        }
+                    }
                 }
                 else
                 {
@@ -452,6 +463,8 @@ namespace Telegram.Controls.Chats
                     var members = chat.Type is ChatTypePrivate or ChatTypeSecret or ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false };
 
                     autocomplete = new UsernameCollection(ViewModel.ClientService, ViewModel.Chat.Id, ViewModel.TopicId, result, index == 0, members, false);
+                    recycle = prev is UsernameCollection;
+
                     return true;
                 }
                 else if (entity == AutocompleteEntity.Hashtag)
@@ -463,6 +476,8 @@ namespace Telegram.Controls.Chats
                     }
 
                     autocomplete = new SearchHashtagsCollection(ViewModel.ClientService, result);
+                    recycle = prev is SearchHashtagsCollection;
+
                     return true;
                 }
                 else if (entity == AutocompleteEntity.Sticker)
@@ -514,6 +529,8 @@ namespace Telegram.Controls.Chats
                     }
 
                     autocomplete = GetCommands(result);
+                    recycle = prev is AutocompleteList;
+
                     return true;
                 }
             }
@@ -694,7 +711,7 @@ namespace Telegram.Controls.Chats
                             foreach (var id in chats.ChatIds)
                             {
                                 var user = _clientService.GetUser(_clientService.GetChat(id));
-                                if (user != null && user.HasActiveUsername(_query, out _))
+                                if (user != null && (user.HasActiveUsername(_query, out _) || ClientEx.SearchByPrefix(user.FullName(), _query)))
                                 {
                                     Add(user);
                                     count++;
@@ -1189,6 +1206,10 @@ namespace Telegram.Controls.Chats
             else if (oldItem is Sticker oldSticker && newItem is Sticker newSticker)
             {
                 return oldSticker.Id == newSticker.Id && oldSticker.SetId == newSticker.SetId;
+            }
+            else if (oldItem is User oldUser && newItem is User newUser)
+            {
+                return oldUser.Id == newUser.Id;
             }
 
             return false;
