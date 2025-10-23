@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Numerics;
 using Telegram.Composition;
+using Telegram.Native.Controls;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -32,18 +33,15 @@ namespace Telegram.Controls
         public ProgressRingIndeterminate()
         {
             DefaultStyleKey = typeof(ProgressRingIndeterminate);
-
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             _fillBrush?.Register();
             _strokeBrush?.Register();
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             _fillBrush?.Unregister();
             _strokeBrush?.Unregister();

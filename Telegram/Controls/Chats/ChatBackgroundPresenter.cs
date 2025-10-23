@@ -11,6 +11,7 @@ using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Native;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
@@ -61,8 +62,6 @@ namespace Telegram.Controls.Chats
         public ChatBackgroundPresenter()
         {
             DefaultStyleKey = typeof(ChatBackgroundPresenter);
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
 
             _freeformTimer = new DispatcherTimer();
             _freeformTimer.Interval = TimeSpan.FromMilliseconds(500 / 30d);
@@ -91,12 +90,12 @@ namespace Telegram.Controls.Chats
             Negative.Margin = new Thickness(-BorderThickness.Left * 2, -BorderThickness.Top * 2, 0, 0);
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             XamlRoot.Changed += OnRasterizationScaleChanged;
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             XamlRoot.Changed -= OnRasterizationScaleChanged;
 

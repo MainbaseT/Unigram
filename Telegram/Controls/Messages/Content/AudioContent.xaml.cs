@@ -7,6 +7,7 @@
 using System;
 using Telegram.Common;
 using Telegram.Converters;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -32,7 +33,6 @@ namespace Telegram.Controls.Messages.Content
             _message = message;
 
             DefaultStyleKey = typeof(AudioContent);
-            Disconnected += OnUnloaded;
         }
 
         public AudioContent()
@@ -81,7 +81,7 @@ namespace Telegram.Controls.Messages.Content
 
         #endregion
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
             TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;

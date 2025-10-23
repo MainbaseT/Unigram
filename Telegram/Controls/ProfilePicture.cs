@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -56,9 +57,6 @@ namespace Telegram.Controls
         public ProfilePicture()
         {
             DefaultStyleKey = typeof(ProfilePicture);
-
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
         }
 
         protected override void OnApplyTemplate()
@@ -92,12 +90,12 @@ namespace Telegram.Controls
             return finalSize;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             Load();
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             Unload();
         }

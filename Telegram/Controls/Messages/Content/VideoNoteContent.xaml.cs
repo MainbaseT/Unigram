@@ -8,6 +8,7 @@ using System;
 using System.Threading;
 using Telegram.Collections;
 using Telegram.Common;
+using Telegram.Native.Controls;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -38,11 +39,9 @@ namespace Telegram.Controls.Messages.Content
             _message = message;
 
             DefaultStyleKey = typeof(VideoNoteContent);
-
-            Disconnected += OnUnloaded;
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
             TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;

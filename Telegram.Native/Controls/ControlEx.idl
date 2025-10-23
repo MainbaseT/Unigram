@@ -1,0 +1,14 @@
+namespace Telegram.Native.Controls
+{
+    [default_interface]
+    unsealed runtimeclass ControlEx : Windows.UI.Xaml.Controls.Control
+    {
+        ControlEx();
+
+        Boolean IsConnected{ get; };
+        Boolean IsDisconnected{ get; };
+
+        overridable void OnLoaded();
+        overridable void OnUnloaded();
+    }
+}

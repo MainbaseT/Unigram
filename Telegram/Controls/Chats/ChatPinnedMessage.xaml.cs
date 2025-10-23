@@ -12,6 +12,7 @@ using Telegram.Common;
 using Telegram.Composition;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -499,18 +500,15 @@ namespace Telegram.Controls.Chats
             _maskPath = mask;
 
             ElementCompositionPreview.SetElementChildVisual(this, visual);
-
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             _strokeBrush?.Register();
             _fillBrush?.Register();
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             _strokeBrush?.Unregister();
             _fillBrush?.Unregister();

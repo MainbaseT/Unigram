@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Controls.Messages.Content
 {
-    public sealed partial class ChecklistContent : ControlEx, IContent, IDiffEqualityComparer<ChecklistTask>
+    public sealed partial class ChecklistContent : Control, IContent, IDiffEqualityComparer<ChecklistTask>
     {
         private MessageViewModel _message;
         public MessageViewModel Message => _message;

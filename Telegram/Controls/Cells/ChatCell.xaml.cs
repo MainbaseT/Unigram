@@ -36,7 +36,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
@@ -52,7 +51,7 @@ namespace Telegram.Controls.Cells
         Read
     }
 
-    public sealed partial class ChatCell : ControlEx, IMultipleElement
+    public sealed partial class ChatCell : ControlEx2, IMultipleElement
     {
         private bool _selected;
 
@@ -86,20 +85,17 @@ namespace Telegram.Controls.Cells
         public ChatCell()
         {
             DefaultStyleKey = typeof(ChatCell);
-
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
         }
 
         public event EventHandler<Chat> StoryClick;
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             _strokeBrush?.Register();
             _selectionStrokeBrush?.Register();
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             _strokeBrush?.Unregister();
             _selectionStrokeBrush?.Unregister();

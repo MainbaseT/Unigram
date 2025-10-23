@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.Numerics;
 using Telegram.Common;
+using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -46,9 +47,6 @@ namespace Telegram.Controls.Chats
             _compositor = BootStrapper.Current.Compositor;
 
             this.CreateInsetClip();
-
-            Connected += OnLoaded;
-            Disconnected += OnUnloaded;
         }
 
         protected override void OnApplyTemplate()
@@ -65,12 +63,12 @@ namespace Telegram.Controls.Chats
             base.OnApplyTemplate();
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             _aggregator?.Subscribe<UpdateDefaultBackground>(this, Handle);
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             _aggregator?.Unsubscribe(this);
         }

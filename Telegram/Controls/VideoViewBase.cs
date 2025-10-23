@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Telegram.Controls;
+using Telegram.Native.Controls;
 using Telegram.Native.Media;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
@@ -43,21 +44,18 @@ namespace LibVLCSharp.Platforms.Windows
         public VideoView()
         {
             DefaultStyleKey = typeof(VideoView);
-
-            Connected += OnConnected;
-            Disconnected += OnDisconnected;
         }
 
         public event EventHandler<VideoViewInitializedEventArgs> Initialized;
 
         public bool IsUnloadedExpected { get; set; }
 
-        private void OnConnected(object sender, RoutedEventArgs e)
+        protected override void OnLoaded()
         {
             IsUnloadedExpected = false;
         }
 
-        private void OnDisconnected(object sender, RoutedEventArgs e)
+        protected override void OnUnloaded()
         {
             if (IsUnloadedExpected)
             {
