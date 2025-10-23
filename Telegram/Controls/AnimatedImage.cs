@@ -1165,7 +1165,6 @@ namespace Telegram.Controls
                 Volatile.Write(ref _task, task);
                 FrameRate = task.FrameRate;
 
-                _targetIntervalTicks = Stopwatch.Frequency / task.FrameRate;
                 _rendering = true;
 
                 CreateResources();
@@ -1428,30 +1427,22 @@ namespace Telegram.Controls
             _loader.Remove(_presentation);
         }
 
-        private double _targetIntervalTicks;
-        private long _lastTick;
-
-        private bool _invalidated;
+        //private double _targetIntervalTicks;
+        //private long _lastTick;
 
         public bool Invalidate()
         {
-            if (!_invalidated)
-            {
-                _invalidated = true;
-                Logger.Info(_rendering + " " + GetHashCode());
-            }
-
-            //Logger.Debug();
-
             if (_images.Count > 0)
             {
-                long now = Stopwatch.GetTimestamp();
+                DrawFrame();
 
-                if (_lastTick == 0 || now - _lastTick >= _targetIntervalTicks || !_rendering)
-                {
-                    _lastTick = now;
-                    DrawFrame();
-                }
+                //long now = Stopwatch.GetTimestamp();
+
+                //if (_lastTick == 0 || now - _lastTick >= _targetIntervalTicks || !_rendering)
+                //{
+                //    _lastTick = now;
+                //    DrawFrame();
+                //}
             }
 
             if (!_rendering && _renderingSubscribed)
