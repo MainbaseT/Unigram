@@ -164,29 +164,6 @@ namespace Telegram.Controls
 
         public event EventHandler<TextEntityClickEventArgs> TextEntityClick;
 
-        private ContextMenuOpeningEventHandler _contextMenuOpening;
-        public event ContextMenuOpeningEventHandler ContextMenuOpening
-        {
-            add
-            {
-                if (TextBlock != null)
-                {
-                    TextBlock.ContextMenuOpening += value;
-                }
-
-                _contextMenuOpening += value;
-            }
-            remove
-            {
-                if (TextBlock != null)
-                {
-                    TextBlock.ContextMenuOpening -= value;
-                }
-
-                _contextMenuOpening -= value;
-            }
-        }
-
         protected override void OnApplyTemplate()
         {
             Below = GetTemplateChild(nameof(Below)) as Canvas;
@@ -194,7 +171,7 @@ namespace Telegram.Controls
             TextBlock = GetTemplateChild(nameof(TextBlock)) as RichTextBlock;
             TextBlock.LostFocus += OnLostFocus;
             TextBlock.SizeChanged += OnSizeChanged;
-            TextBlock.ContextMenuOpening += _contextMenuOpening;
+            TextBlock.ContextMenuOpening += OnContextMenuOpening;
 
             for (int i = 0; i < _blocks?.Count; i++)
             {
@@ -223,6 +200,11 @@ namespace Telegram.Controls
                     SetQuery(_query, true);
                 }
             }
+        }
+
+        private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            e.Handled = true;
         }
 
         public double LastAvailableWidth { get; private set; }

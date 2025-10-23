@@ -225,7 +225,6 @@ namespace Telegram.Controls.Messages
             //ContentPanel.CanDrag = true;
             //ContentPanel.DragStarting += OnDragStarting;
             ContentPanel.SizeChanged += OnSizeChanged;
-            Message.ContextMenuOpening += Message_ContextMenuOpening;
             Message.TextEntityClick += Message_TextEntityClick;
 
             _layerVisual = CompositionDevice.GetElementLayerVisual(ContentPanel);
@@ -3614,11 +3613,6 @@ namespace Telegram.Controls.Messages
             {
                 return base.MeasureOverride(new Size(Math.Max(minWidth, width) + additional, availableSize.Height));
             }
-        }
-
-        private void Message_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            e.Handled = true;
         }
 
         private static bool IsFullMedia(MessageContent content, bool width = false)
