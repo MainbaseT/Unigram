@@ -4476,7 +4476,7 @@ namespace Telegram.Views
                 }
                 else
                 {
-                    TextField.SetText(null, null);
+                    TextField.ClearText();
                     ViewModel.SendMessage(insert);
                 }
 
@@ -4488,14 +4488,14 @@ namespace Telegram.Views
             }
             else if (e.ClickedItem is Sticker sticker)
             {
-                TextField.SetText(null, null);
+                TextField.ClearText();
                 ViewModel.SendSticker(sticker, SchedulingState.Auto, null, result);
 
                 ButtonStickers.Collapse();
             }
             else if (e.ClickedItem is QuickReplyShortcut shortcut)
             {
-                TextField.SetText(null, null);
+                TextField.ClearText();
                 ViewModel.ClientService.Send(new SendQuickReplyShortcutMessages(ViewModel.Chat.Id, shortcut.Id, 0));
             }
         }
