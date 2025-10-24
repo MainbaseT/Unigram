@@ -940,10 +940,11 @@ namespace Telegram.Services
         {
             if (_player == null)
             {
+                // TODO: currently music player doesn't have a toggle for mute/unmute
                 var options = new AsyncMediaPlayerOptions
                 {
                     CreateSwapChain = true,
-                    Mute = SettingsService.Current.VolumeMuted,
+                    Mute = false, //SettingsService.Current.VolumeMuted,
                     Volume = SettingsService.Current.VolumeLevel,
                     Debug = SettingsService.Current.VerbosityLevel >= 4,
                 };
