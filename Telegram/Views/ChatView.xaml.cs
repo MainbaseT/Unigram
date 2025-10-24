@@ -448,6 +448,7 @@ namespace Telegram.Views
         }
 
         private readonly SynchronizedList<MessageViewModel> _messages = new();
+        private readonly IndexShiftTracker _messagesShift = new();
 
         private void OnMessageSliceLoaded(object sender, EventArgs e)
         {
@@ -607,10 +608,29 @@ namespace Telegram.Views
 
             if (args.Action == NotifyCollectionChangedAction.Remove && panel.FirstCacheIndex < args.OldStartingIndex && panel.LastCacheIndex >= args.OldStartingIndex)
             {
-                UpdateDeleteMessages(args.OldItems[0] as MessageViewModel);
+                //UpdateDeleteMessages(args.OldItems[0] as MessageViewModel);
+                var message = args.OldItems[0] as MessageViewModel;
+
+                var index = _messagesShift.Translate(args.OldStartingIndex);
+                if (index >= panel.FirstVisibleIndex && index <= panel.LastVisibleIndex && _messageIdToSelector.TryGetValue(message.Id, out ChatHistoryViewItem selector))
+                {
+                    var direction = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView ? -1 : 1;
+                    var edge = (index == panel.LastVisibleIndex && direction == 1) || (index == panel.FirstVisibleIndex && direction == -1);
+
+                    var first = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
+                    var height = first ? selector.ActualSize.Y - 6 : selector.ActualSize.Y;
+
+                    _messagesShift.RegisterRemove(index, args.OldStartingIndex, height, edge && !Messages.VisualContains(selector));
+                }
+                else
+                {
+                    _messagesShift.RegisterRemove(args.OldStartingIndex);
+                }
             }
             else if (args.Action == NotifyCollectionChangedAction.Add)
             {
+                _messagesShift.RegisterInsert(args.NewStartingIndex);
+
                 var message = args.NewItems[0] as MessageViewModel;
                 if (message.IsInitial)
                 {
@@ -796,6 +816,10 @@ namespace Telegram.Views
                     _backgroundControl ??= FindBackgroundControl();
                     _backgroundControl?.UpdateBackground();
                 }
+            }
+            else
+            {
+                _messagesShift.Invalidate();
             }
         }
 

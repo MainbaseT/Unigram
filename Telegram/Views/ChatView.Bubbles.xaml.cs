@@ -60,6 +60,23 @@ namespace Telegram.Views
 
         private void ItemsPanelRoot_LayoutUpdated(object sender, object e)
         {
+            if (_messagesShift.HasRanges())
+            {
+                var panel = Messages.ItemsPanelRoot as ItemsStackPanel;
+                var reverse = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView;
+
+                var ranges = _messagesShift.GetRanges(reverse);
+                var diff = 0f;
+
+                foreach (var range in ranges)
+                {
+                    diff -= range.Height;
+                    AnimateSizeChanged(panel, range, diff);
+                }
+            }
+
+            _messagesShift.Clear();
+
             if (_viewChanged)
             {
                 _viewChanged = false;
@@ -1334,7 +1351,7 @@ namespace Telegram.Views
             if (index >= panel.FirstVisibleIndex && index <= panel.LastVisibleIndex)
             {
                 var direction = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView ? -1 : 1;
-                var edge = (index == panel.LastVisibleIndex && direction == 1) || index == panel.FirstVisibleIndex && direction == -1;
+                var edge = (index == panel.LastVisibleIndex && direction == 1) || (index == panel.FirstVisibleIndex && direction == -1);
 
                 if (edge && !Messages.VisualContains(selector))
                 {
@@ -1346,6 +1363,49 @@ namespace Telegram.Views
 
                 var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
                 var anim = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
+                anim.InsertKeyFrame(0, diff * direction);
+                anim.InsertKeyFrame(1, 0);
+                //anim.Duration = TimeSpan.FromSeconds(5);
+
+                for (int i = first; i <= last; i++)
+                {
+                    var container = Messages.ContainerFromIndex(i) as SelectorItem;
+                    if (container == null)
+                    {
+                        continue;
+                    }
+
+                    var child = VisualTreeHelper.GetChild(container, 0) as UIElement;
+                    if (child != null)
+                    {
+                        var visual = ElementComposition.GetElementVisual(child);
+                        visual.StartAnimation("Offset.Y", anim);
+                    }
+                }
+
+                batch.End();
+            }
+        }
+
+        private void AnimateSizeChanged(ItemsStackPanel panel, IndexShiftTracker.Range range, float diff)
+        {
+            var direction = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView ? -1 : 1;
+
+            if (range.Anchor)
+            {
+                direction *= -1;
+            }
+
+            var first = direction == 1 ? panel.FirstCacheIndex : range.Index;
+            var last = direction == 1 ? range.Index - 1 : panel.LastCacheIndex;
+
+            var firstVisible = first >= panel.FirstVisibleIndex && first <= panel.LastVisibleIndex;
+            var lastVisible = last >= panel.FirstVisibleIndex && last <= panel.LastVisibleIndex;
+
+            if (firstVisible || lastVisible)
+            {
+                var batch = Window.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+                var anim = Window.Current.Compositor.CreateScalarKeyFrameAnimation();
                 anim.InsertKeyFrame(0, diff * direction);
                 anim.InsertKeyFrame(1, 0);
                 //anim.Duration = TimeSpan.FromSeconds(5);
