@@ -123,7 +123,10 @@ namespace Telegram.Common
                 targetBatch.Timer = new Timer(ExecuteBatch, targetBatch, 0, interval);
             }
 
-            targetBatch.Animations.Add(animation);
+            lock (targetBatch.Animations)
+            {
+                targetBatch.Animations.Add(animation);
+            }
         }
 
         private void RemoveAnimationFromBatches(IAnimation animation)
@@ -134,7 +137,10 @@ namespace Telegram.Common
                 for (int i = 0; i < batches.Count; i++)
                 {
                     AnimationBatch batch = batches[i];
-                    batch.Animations.Remove(animation);
+                    lock (batch.Animations)
+                    {
+                        batch.Animations.Remove(animation);
+                    }
 
                     if (batch.Animations.Count == 0)
                     {
@@ -157,10 +163,15 @@ namespace Telegram.Common
 
             batch.ExecutionTimer.Restart();
 
-            // TODO: the collection can change in between Rent and CopyTo
-            var count = batch.Animations.Count;
-            var animations = ArrayPool<IAnimation>.Shared.Rent(count);
-            batch.Animations.CopyTo(0, animations, 0, count);
+            IAnimation[] animations = null;
+            int count = 0;
+
+            lock (batch.Animations)
+            {
+                count = batch.Animations.Count;
+                animations = ArrayPool<IAnimation>.Shared.Rent(count);
+                batch.Animations.CopyTo(0, animations, 0, count);
+            }
 
             foreach (var animation in animations)
             {
@@ -201,27 +212,19 @@ namespace Telegram.Common
                 if (state is not AnimationBatch overloadedBatch || overloadedBatch.Animations.Count <= 2) return;
 
                 var fps = overloadedBatch.FrameRate;
-
-                // Split roughly in half
-                var splitPoint = overloadedBatch.Animations.Count / 2;
-
                 var newBatch = new AnimationBatch(fps);
-                var animations = ArrayPool<IAnimation>.Shared.Rent(splitPoint);
-                overloadedBatch.Animations.CopyTo(0, animations, 0, splitPoint);
 
-                foreach (var anim in animations)
+                lock (overloadedBatch.Animations)
                 {
-                    // Pooled arrays can be larger than needed
-                    if (anim == null)
+                    // Split roughly in half
+                    var splitPoint = overloadedBatch.Animations.Count / 2;
+
+                    for (int i = 0; i < splitPoint; i++)
                     {
-                        break;
+                        newBatch.Animations.Add(overloadedBatch.Animations[i]);
+                        overloadedBatch.Animations.RemoveAt(i);
                     }
-
-                    newBatch.Animations.Add(anim);
-                    overloadedBatch.Animations.Remove(anim);
                 }
-
-                ArrayPool<IAnimation>.Shared.Return(animations);
 
                 var batches = _batchesByFps[fps];
                 batches.Add(newBatch);
