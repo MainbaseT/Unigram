@@ -481,7 +481,7 @@ namespace Telegram.ViewModels
             }
 
             var rule = await GetPrimaryRuleAsync();
-            var popup = new SettingsBirthdatePopup(null, rule);
+            var popup = new SettingsBirthdatePopup(date: null, rule);
 
             var confirm = await ShowPopupAsync(popup);
             if (confirm == ContentDialogResult.Primary)
