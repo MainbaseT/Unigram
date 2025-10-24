@@ -6105,6 +6105,8 @@ namespace Telegram.Views
             ShadowCaster.RadiusX = InlineShadow.RadiusX = radius;
             ShadowCaster.RadiusY = InlineShadow.RadiusY = radius;
 
+            InlineShadow.Height = radius * 2;
+
             ButtonAttach.CornerRadius = new CornerRadius(_sideMenuCollapsed == SideButton.None ? max : 4, 4, 4, _sideMenuCollapsed == SideButton.None ? min : 4);
             ButtonFeedback.CornerRadius = new CornerRadius(min, 4, 4, min);
             ButtonGift.CornerRadius = new CornerRadius(4, min, min, 4);
