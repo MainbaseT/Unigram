@@ -508,10 +508,6 @@ namespace Telegram.Controls.Messages.Content
                     _message.ClientService.Send(new CancelPreliminaryUploadFile(file.Id));
                 }
             }
-            else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && !file.Local.IsDownloadingCompleted)
-            {
-                _message.Delegate.PlayMessage(_message);
-            }
             else if (_message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
                 if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)

@@ -464,11 +464,6 @@ namespace Telegram.Controls.Messages.Content
                     _message.ClientService.Send(new CancelPreliminaryUploadFile(file.Id));
                 }
             }
-            // This branch could be likely removed with some tuning
-            else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && !file.Local.IsDownloadingCompleted)
-            {
-                _message.ClientService.DownloadFile(file.Id, 30);
-            }
             else if (_message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
                 if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
@@ -479,6 +474,11 @@ namespace Telegram.Controls.Messages.Content
                 {
                     TypeResolver.Current.Playback.Pause();
                 }
+            }
+            // This branch could be likely removed with some tuning
+            else if (file.Local.CanBeDownloaded && !file.Local.IsDownloadingActive && !file.Local.IsDownloadingCompleted)
+            {
+                _message.ClientService.DownloadFile(file.Id, 30);
             }
             else
             {
