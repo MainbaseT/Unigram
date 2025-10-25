@@ -84,7 +84,7 @@ namespace Telegram.Entities
                 {
                     if (editState.Rotation is ImageRotation.Clockwise90Degrees or ImageRotation.Clockwise270Degrees)
                     {
-                        return editState.Rectangle.Height * Height;
+                        return editState.Rectangle.Width * Height;
                     }
 
                     return editState.Rectangle.Width * Width;
@@ -102,10 +102,10 @@ namespace Telegram.Entities
                 {
                     if (editState.Rotation is ImageRotation.Clockwise90Degrees or ImageRotation.Clockwise270Degrees)
                     {
-                        return editState.Rectangle.Height * Height;
+                        return editState.Rectangle.Height * Width;
                     }
 
-                    return editState.Rectangle.Width * Width;
+                    return editState.Rectangle.Height * Height;
                 }
 
                 return Height;
