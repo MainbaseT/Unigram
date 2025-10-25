@@ -320,6 +320,7 @@ namespace winrt::Telegram::Native::Media::implementation
         void HandleLog(int level, const libvlc_log_t* ctx, const char* fmt, va_list args);
 
         void HandleEvent(const libvlc_event_t* event);
+        void TryEnqueue(DispatcherQueueHandler const& callback) const;
 
         void GetVideoTrackInfo(int32_t trackId, int32_t& width, int32_t& height);
 

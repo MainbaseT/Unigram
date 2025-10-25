@@ -622,7 +622,7 @@ namespace winrt::Telegram::Native::Media::implementation
         {
             auto trackId = event->u.media_player_es_changed.i_id;
             auto trackType = event->u.media_player_es_changed.i_type;
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }, trackId, trackType]() {
+            TryEnqueue([weakThis{ get_weak() }, trackId, trackType]() {
                 if (auto strongThis = weakThis.get())
                 {
                     int width = 0;
@@ -639,7 +639,7 @@ namespace winrt::Telegram::Native::Media::implementation
         }
         break;
         case libvlc_MediaPlayerVout:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_videoOut(*strongThis, nullptr);
@@ -649,7 +649,7 @@ namespace winrt::Telegram::Native::Media::implementation
         case libvlc_MediaPlayerBuffering:
         {
             auto cache = event->u.media_player_buffering.new_cache;
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }, cache]() {
+            TryEnqueue([weakThis{ get_weak() }, cache]() {
                 if (auto strongThis = weakThis.get())
                 {
                     //strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Buffering);
@@ -662,7 +662,7 @@ namespace winrt::Telegram::Native::Media::implementation
         }
         break;
         case libvlc_MediaPlayerEndReached:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Ended);
@@ -676,7 +676,7 @@ namespace winrt::Telegram::Native::Media::implementation
         case libvlc_MediaPlayerTimeChanged:
         {
             auto position = std::clamp(event->u.media_player_time_changed.new_time / 1000.0, 0.0, 922337203685.0);
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }, position]() {
+            TryEnqueue([weakThis{ get_weak() }, position]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_positionChangedEventArgs.Position(position);
@@ -688,7 +688,7 @@ namespace winrt::Telegram::Native::Media::implementation
         case libvlc_MediaPlayerLengthChanged:
         {
             auto duration = std::clamp(event->u.media_player_length_changed.new_length / 1000.0, 0.0, 922337203685.0);
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }, duration]() {
+            TryEnqueue([weakThis{ get_weak() }, duration]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_durationChangedEventArgs.Duration(duration);
@@ -698,7 +698,7 @@ namespace winrt::Telegram::Native::Media::implementation
         }
         break;
         case libvlc_MediaPlayerPlaying:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Playing);
@@ -709,7 +709,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 });
             break;
         case libvlc_MediaPlayerPaused:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Paused);
@@ -720,7 +720,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 });
             break;
         case libvlc_MediaPlayerStopped:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Stopped);
@@ -731,7 +731,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 });
             break;
         case libvlc_MediaPlayerAudioVolume:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_volumeChanged(*strongThis, nullptr);
@@ -739,7 +739,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 });
             break;
         case libvlc_MediaPlayerEncounteredError:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Error);
@@ -749,7 +749,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 });
             break;
         case libvlc_MediaPlayerNothingSpecial:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::NothingSpecial);
@@ -758,7 +758,7 @@ namespace winrt::Telegram::Native::Media::implementation
                 });
             break;
         case libvlc_MediaPlayerOpening:
-            m_dispatcherQueue.TryEnqueue([weakThis{ get_weak() }]() {
+            TryEnqueue([weakThis{ get_weak() }]() {
                 if (auto strongThis = weakThis.get())
                 {
                     strongThis->m_stateChangedEventArgs.State(AsyncMediaPlayerState::Opening);
@@ -766,6 +766,18 @@ namespace winrt::Telegram::Native::Media::implementation
                 }
                 });
             break;
+        }
+    }
+
+    void AsyncMediaPlayer::TryEnqueue(DispatcherQueueHandler const& callback) const
+    {
+        try
+        {
+            m_dispatcherQueue.TryEnqueue(callback);
+        }
+        catch (...)
+        {
+            // Likely Window teardown
         }
     }
 
