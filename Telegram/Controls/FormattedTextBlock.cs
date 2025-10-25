@@ -191,8 +191,6 @@ namespace Telegram.Controls
 
             if (_clientService != null && _text != null)
             {
-                _templateExecuted = true;
-
                 SetText(_clientService, _text, _fontSize);
 
                 if (_query != null || _spoiler != null)
@@ -807,8 +805,6 @@ namespace Telegram.Controls
                 return;
             }
 
-            _templateExecuted = false;
-
             if (_clientService != null && _text != null)
             {
                 SetText(_clientService, _text, _fontSize);
@@ -822,6 +818,8 @@ namespace Telegram.Controls
 
         protected override void OnUnloaded()
         {
+            _templateExecuted = false;
+
             if (_pools == null || (_fastRun != null && _text?.IsPlain is true))
             {
                 return;
@@ -858,6 +856,8 @@ namespace Telegram.Controls
             {
                 return;
             }
+
+            _templateExecuted = true;
 
             var autoFontSize = fontSize;
             var xamlFontSize = TextBlock.FontSize;
