@@ -1064,7 +1064,7 @@ namespace Telegram.Controls
                             {
                                 direct.SetObjectProperty(paragraph, XamlPropertyIndex.TextElement_FontFamily, GetMonospaceFontFamily());
 
-                                GetOrCreateRun(direct, inlines, data, direction, Native.TextStyle.None, null, 0, false);
+                                var placeholder = GetOrCreateRun(direct, inlines, data, direction, Native.TextStyle.None, null, 0, false);
                                 offset += data.Length;
 
                                 preformatted = true;
@@ -1079,7 +1079,7 @@ namespace Telegram.Controls
                                 if (entity.Type is TextEntityTypePreCode preCode && preCode.Language.Length > 0)
                                 {
                                     _codeBlocks.Add(new FormattedParagraph(temp, part));
-                                    ProcessCodeBlock(direct, inlines, data, preCode.Language);
+                                    ProcessCodeBlock(direct, inlines, placeholder, data, preCode.Language);
                                 }
                                 else
                                 {
@@ -1781,14 +1781,25 @@ namespace Telegram.Controls
 
         #region PreCode
 
-        private async void ProcessCodeBlock(XamlDirect direct, IXamlDirectObject inlines, string text, string language)
+        private async void ProcessCodeBlock(XamlDirect direct, IXamlDirectObject inlines, IXamlDirectObject placeholder, string text, string language)
         {
             try
             {
                 var tokens = await SyntaxToken.TokenizeAsync(language.ToLowerInvariant(), text);
 
-                direct.ClearCollection(inlines);
-                ProcessCodeBlock(direct, inlines, tokens.Children);
+                // We need to manually recycle the Run or we'll lose track of it
+                if (_pools != null)
+                {
+                    _pools.Runs.Enqueue(placeholder);
+                    _activeRuns.Remove(placeholder);
+                }
+
+                // Only apply if text block is still loaded
+                if (_templateExecuted)
+                {
+                    direct.ClearCollection(inlines);
+                    ProcessCodeBlock(direct, inlines, tokens.Children);
+                }
             }
             catch
             {
