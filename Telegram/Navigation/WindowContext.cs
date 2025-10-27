@@ -743,20 +743,21 @@ namespace Telegram.Navigation
             //return (InputKeyboardSource.GetKeyStateForCurrentThread(key) & Windows.UI.Core.CoreVirtualKeyStates.Down) != 0;
 
             var modifiers = VirtualKeyModifiers.None;
+            var coreWindow = Window.Current.CoreWindow;
 
-            if ((Window.Current.CoreWindow.GetAsyncKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) != 0)
+            if ((coreWindow.GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) != 0)
             {
-                modifiers |= Windows.System.VirtualKeyModifiers.Control;
+                modifiers |= VirtualKeyModifiers.Control;
             }
 
-            if ((Window.Current.CoreWindow.GetAsyncKeyState(VirtualKey.Menu) & CoreVirtualKeyStates.Down) != 0)
+            if ((coreWindow.GetKeyState(VirtualKey.Menu) & CoreVirtualKeyStates.Down) != 0)
             {
-                modifiers |= Windows.System.VirtualKeyModifiers.Menu;
+                modifiers |= VirtualKeyModifiers.Menu;
             }
 
-            if ((Window.Current.CoreWindow.GetAsyncKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) != 0)
+            if ((coreWindow.GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) != 0)
             {
-                modifiers |= Windows.System.VirtualKeyModifiers.Shift;
+                modifiers |= VirtualKeyModifiers.Shift;
             }
 
             return modifiers;

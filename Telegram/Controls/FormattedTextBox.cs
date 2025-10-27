@@ -101,20 +101,6 @@ namespace Telegram.Controls
             ContextFlyout.Closing += OnContextFlyoutClosing;
 
             DisabledFormattingAccelerators = DisabledFormattingAccelerators.All;
-            KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
-
-            CreateKeyboardAccelerator(VirtualKey.B);
-            CreateKeyboardAccelerator(VirtualKey.I);
-            CreateKeyboardAccelerator(VirtualKey.U);
-            CreateKeyboardAccelerator(VirtualKey.X, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
-            CreateKeyboardAccelerator(VirtualKey.M, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
-            CreateKeyboardAccelerator(VirtualKey.P, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
-            CreateKeyboardAccelerator(VirtualKey.K);
-            CreateKeyboardAccelerator(VirtualKey.N, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
-            CreateKeyboardAccelerator(190, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
-
-            // Used for special characters
-            CreateKeyboardAccelerator(VirtualKey.X, VirtualKeyModifiers.Menu);
 
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
@@ -287,90 +273,144 @@ namespace Telegram.Controls
             //    Height = double.NaN;
             //}
 
-            if (e.Key is VirtualKey.Back or VirtualKey.Delete && IsReplaceEmojiEnabled)
+            var modifiers = WindowContext.KeyModifiers();
+
+            switch (e.Key)
             {
-                BeginUndoGroup();
+                case VirtualKey.Back or VirtualKey.Delete when IsReplaceEmojiEnabled:
+                    BeginUndoGroup();
 
-                base.OnKeyDown(e);
+                    base.OnKeyDown(e);
 
-                if (Document.Selection.Expand(TextRangeUnit.Hidden) != 0 && Emoticon.Data.ContainsKey(Document.Selection.Text))
-                {
-                    Document.Selection.CharacterFormat.Hidden = FormatEffect.Off;
-                    Document.Selection.Collapse(e.Key is VirtualKey.Delete);
-                }
-
-                EndUndoGroup();
-                return;
-            }
-            else if (e.Key == VirtualKey.Enter && CanAccept())
-            {
-                var modifiers = WindowContext.KeyModifiers();
-                var send = SettingsService.Current.IsSendByEnterEnabled
-                    ? modifiers == VirtualKeyModifiers.None
-                    : modifiers == VirtualKeyModifiers.Control;
-
-                AcceptsReturn = !send;
-                e.Handled = send;
-
-                // If handwriting panel is open, the app would crash on send.
-                // Still, someone should fill a ticket to Microsoft about this.
-                if (send && HandwritingView.IsOpen)
-                {
-                    void handler(object s, RoutedEventArgs args)
+                    if (Document.Selection.Expand(TextRangeUnit.Hidden) != 0 && Emoticon.Data.ContainsKey(Document.Selection.Text))
                     {
-                        OnAccept();
-                        HandwritingView.Unloaded -= handler;
+                        Document.Selection.CharacterFormat.Hidden = FormatEffect.Off;
+                        Document.Selection.Collapse(e.Key is VirtualKey.Delete);
                     }
 
-                    HandwritingView.Unloaded += handler;
-                    HandwritingView.TryClose();
-                }
-                else if (send)
-                {
-                    OnAccept();
-                }
-                else if (modifiers != VirtualKeyModifiers.Shift)
-                {
-                    // If enter is pressed without shift modifier, text editor is going to insert a hard paragraph (\r)
-                    // We work around this here
-                    Document.Selection.SetText(TextSetOptions.None, "\v");
-                    Document.Selection.SetRange(Document.Selection.StartPosition + 1, Document.Selection.StartPosition + 1);
-
-                    e.Handled = true;
-                }
-            }
-            else if (e.Key == VirtualKey.Enter)
-            {
-                AcceptsReturn = true;
-            }
-            else if (e.Key == VirtualKey.Z)
-            {
-                var modifiers = WindowContext.KeyModifiers();
-                if (modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift))
-                {
-                    if (Document.CanRedo())
+                    EndUndoGroup();
+                    return;
+                case VirtualKey.Enter when CanAccept():
                     {
-                        Document.Redo();
+                        var send = SettingsService.Current.IsSendByEnterEnabled
+                            ? modifiers == VirtualKeyModifiers.None
+                            : modifiers == VirtualKeyModifiers.Control;
+
+                        AcceptsReturn = !send;
+                        e.Handled = send;
+
+                        // If handwriting panel is open, the app would crash on send.
+                        // Still, someone should fill a ticket to Microsoft about this.
+                        if (send && HandwritingView.IsOpen)
+                        {
+                            void handler(object s, RoutedEventArgs args)
+                            {
+                                OnAccept();
+                                HandwritingView.Unloaded -= handler;
+                            }
+
+                            HandwritingView.Unloaded += handler;
+                            HandwritingView.TryClose();
+                        }
+                        else if (send)
+                        {
+                            OnAccept();
+                        }
+                        else if (modifiers != VirtualKeyModifiers.Shift)
+                        {
+                            // If enter is pressed without shift modifier, text editor is going to insert a hard paragraph (\r)
+                            // We work around this here
+                            Document.Selection.SetText(TextSetOptions.None, "\v");
+                            Document.Selection.SetRange(Document.Selection.StartPosition + 1, Document.Selection.StartPosition + 1);
+
+                            e.Handled = true;
+                        }
+
+                        break;
                     }
 
+                case VirtualKey.Enter:
+                    AcceptsReturn = true;
+                    break;
+                case VirtualKey.Z when modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift):
+                    {
+                        if (Document.CanRedo())
+                        {
+                            Document.Redo();
+                        }
+
+                        e.Handled = true;
+                        break;
+                    }
+
+                // A => Toggle upper case
+                // L => Toggle bullet lists
+                // ; => Decrease font size
+                // . => Increase font size
+                case VirtualKey.A or VirtualKey.L when modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift):
+                case (VirtualKey)188 /*or (VirtualKey)190*/ when modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift):
+                    {
+                        return;
+                    }
+
+                // E => Align center
+                // L => Align left
+                // R => Align right
+                // J => Justify text
+                // Q => ???
+                case VirtualKey.E or VirtualKey.L or VirtualKey.R or VirtualKey.J or VirtualKey.Q when modifiers == VirtualKeyModifiers.Control:
+                    {
+                        return;
+                    }
+
+                case VirtualKey.B when modifiers == VirtualKeyModifiers.Control && Math.Abs(Document.Selection.Length) > 0:
+                    ToggleBold();
                     e.Handled = true;
-                }
-            }
-            else if (e.Key is VirtualKey.A or VirtualKey.L || (int)e.Key is 188 or 190)
-            {
-                var modifiers = WindowContext.KeyModifiers();
-                if (modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift))
-                {
-                    return;
-                }
-            }
-            else if (e.Key is VirtualKey.E or VirtualKey.L or VirtualKey.R or VirtualKey.J or VirtualKey.Q)
-            {
-                var modifiers = WindowContext.KeyModifiers();
-                if (modifiers == VirtualKeyModifiers.Control)
-                {
-                    return;
-                }
+                    break;
+                case VirtualKey.I when modifiers == VirtualKeyModifiers.Control && Math.Abs(Document.Selection.Length) > 0:
+                    ToggleItalic();
+                    e.Handled = true;
+                    break;
+                case VirtualKey.U when modifiers == VirtualKeyModifiers.Control && Math.Abs(Document.Selection.Length) > 0:
+                    ToggleUnderline();
+                    e.Handled = true;
+                    break;
+                case VirtualKey.X when modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && Math.Abs(Document.Selection.Length) > 0:
+                    ToggleStrikethrough();
+                    e.Handled = true;
+                    break;
+                case VirtualKey.M when modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && Math.Abs(Document.Selection.Length) > 0:
+                    ToggleMonospace();
+                    e.Handled = true;
+                    break;
+                case VirtualKey.P when modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && Math.Abs(Document.Selection.Length) > 0:
+                    ToggleSpoiler();
+                    e.Handled = true;
+                    break;
+                case VirtualKey.K when modifiers == VirtualKeyModifiers.Control:
+                    CreateLink();
+                    e.Handled = true;
+                    break;
+                case VirtualKey.N when modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && Math.Abs(Document.Selection.Length) > 0:
+                    ToggleRegular();
+                    e.Handled = true;
+                    break;
+                case (VirtualKey)190:
+                    ToggleQuote();
+                    e.Handled = true;
+                    break;
+                case VirtualKey.X when modifiers == VirtualKeyModifiers.Menu && Math.Abs(Document.Selection.Length) == 4:
+                    {
+                        Document.Selection.GetText(TextGetOptions.NoHidden, out string hex);
+
+                        if (int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result))
+                        {
+                            Document.Selection.SetText(TextSetOptions.None, new string((char)result, 1));
+                        }
+
+                        e.Handled = true;
+                        break;
+                    }
             }
 
             if (!e.Handled)
@@ -857,79 +897,6 @@ namespace Telegram.Controls
             Document.Selection.Expand(TextRangeUnit.Paragraph);
         }
 
-        private void CreateKeyboardAccelerator(VirtualKey key, VirtualKeyModifiers modifiers = VirtualKeyModifiers.Control)
-        {
-            var accelerator = new KeyboardAccelerator { Modifiers = modifiers, Key = key, ScopeOwner = this };
-            accelerator.Invoked += FlyoutAccelerator_Invoked;
-
-            KeyboardAccelerators.Add(accelerator);
-        }
-
-        private void CreateKeyboardAccelerator(int key, VirtualKeyModifiers modifiers = VirtualKeyModifiers.Control)
-        {
-            var accelerator = new KeyboardAccelerator { Modifiers = modifiers, Key = (VirtualKey)key, ScopeOwner = this };
-            accelerator.Invoked += FlyoutAccelerator_Invoked;
-
-            KeyboardAccelerators.Add(accelerator);
-        }
-
-        private void FlyoutAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            args.Handled = true;
-
-            var selection = Document.Selection;
-            var format = Document.Selection.CharacterFormat;
-
-            var length = Math.Abs(selection.Length) > 0;
-
-            if (sender.Key == VirtualKey.B && sender.Modifiers == VirtualKeyModifiers.Control && length)
-            {
-                ToggleBold();
-            }
-            else if (sender.Key == VirtualKey.I && sender.Modifiers == VirtualKeyModifiers.Control && length)
-            {
-                ToggleItalic();
-            }
-            else if (sender.Key == VirtualKey.U && sender.Modifiers == VirtualKeyModifiers.Control && length)
-            {
-                ToggleUnderline();
-            }
-            else if (sender.Key == VirtualKey.X && sender.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && length)
-            {
-                ToggleStrikethrough();
-            }
-            else if (sender.Key == (VirtualKey)190 && sender.Modifiers == (VirtualKeyModifiers.Control | Windows.System.VirtualKeyModifiers.Shift) && length)
-            {
-                ToggleQuote();
-            }
-            else if (sender.Key == VirtualKey.M && sender.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && length && format.Name != "Consolas")
-            {
-                ToggleMonospace();
-            }
-            else if (sender.Key == VirtualKey.P && sender.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && length && format.ForegroundColor != Colors.Gray)
-            {
-                ToggleSpoiler();
-            }
-            else if (sender.Key == VirtualKey.K && sender.Modifiers == VirtualKeyModifiers.Control)
-            {
-                CreateLink();
-            }
-            else if (sender.Key == VirtualKey.N && sender.Modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && length /*&& !IsDefault(format)*/)
-            {
-                ToggleRegular();
-            }
-            else if (sender.Key == VirtualKey.X && sender.Modifiers == VirtualKeyModifiers.Menu && Math.Abs(Document.Selection.Length) == 4)
-            {
-                args.Handled = true;
-
-                Document.Selection.GetText(TextGetOptions.NoHidden, out string hex);
-
-                if (int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result))
-                {
-                    Document.Selection.SetText(TextSetOptions.None, new string((char)result, 1));
-                }
-            }
-        }
 
         #endregion
 
