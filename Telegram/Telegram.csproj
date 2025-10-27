@@ -30,7 +30,7 @@
     <GenerateTestArtifacts>False</GenerateTestArtifacts>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>11.0</LangVersion>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <ProjectPriIndexName>Telegram</ProjectPriIndexName>
     <PackageCertificateThumbprint>
@@ -221,6 +221,7 @@
     <Compile Include="Common\MediaHttpServer.cs" />
     <Compile Include="Common\SliderHelper.cs" />
     <Compile Include="Common\ThemeShadowEx.cs" />
+    <Compile Include="Common\NormalizingStringBuilder.cs" />
     <Compile Include="Common\VideoPreloader.cs" />
     <Compile Include="Common\WebAppStorage.cs" />
     <Compile Include="Composition\CompositionPropertySetColorSource.cs" />

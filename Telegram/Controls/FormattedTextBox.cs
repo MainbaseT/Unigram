@@ -132,7 +132,7 @@ namespace Telegram.Controls
 
             if (Document.Selection.Length != 0)
             {
-                MessageHelper.CopyText(null, GetFormattedText(Document.Selection, false, false));
+                MessageHelper.CopyText(null, GetFormattedText(false, false, Document.Selection));
             }
         }
 
@@ -142,7 +142,7 @@ namespace Telegram.Controls
 
             if (Document.Selection.Length != 0)
             {
-                MessageHelper.CopyText(null, GetFormattedText(Document.Selection, true, false));
+                MessageHelper.CopyText(null, GetFormattedText(true, false, Document.Selection));
             }
         }
 
@@ -947,7 +947,7 @@ namespace Telegram.Controls
             }
         }
 
-        public FormattedText GetFormattedText(bool clear = false, bool parseMarkdown = true)
+        public FormattedText GetFormattedText(bool clear = false, bool parseMarkdown = true, ITextRange selection = null)
         {
             OnGettingFormattedText();
 
@@ -958,27 +958,81 @@ namespace Telegram.Controls
 
             _updateLocked = true;
 
-            Document.BatchDisplayUpdates();
-            Document.GetText(TextGetOptions.None, out string value);
-
-            value = value.TrimEnd('\v', '\r');
-
-            var builder = new StringBuilder(value);
-
-            List<TextStyleRun> runs = null;
-            TextStyleRun last = null;
-            TextEntityType type = default;
-
-            var hidden = 0;
-            var flags = default(TextStyle);
+            if (clear)
+            {
+                Document.BatchDisplayUpdates();
+            }
 
             // TODO: reimplement using the same logic as UpdateFormat
 
-            for (int i = 0; i < value.Length; i++)
-            {
-                flags = default;
+            List<TextStyleRun> runs = null;
 
-                var range = Document.GetRange(i, i + 1);
+            ITextRange range;
+            int storyLength;
+            int hidden;
+
+            if (selection != null)
+            {
+                range = selection.GetClone();
+                storyLength = range.EndPosition;
+                hidden = range.StartPosition;
+            }
+            else
+            {
+                range = Document.GetRange(0, TextConstants.MaxUnitCount);
+                storyLength = range.StoryLength;
+                hidden = 0;
+            }
+
+            // TODO: would be cool to use stackalloc here but it would probably need some refactoring:
+            // stackalloc length shouldn't exceed 1024. We can't have a if (storyLength < 1024) because compiler won't allow this.
+            //var builder = new NormalizingStringBuilder(stackalloc char[range.StoryLength]);
+            var builder = new NormalizingStringBuilder(storyLength);
+
+            // We need to do this because TextRangeUnit.CharacterFormat still breask every space/new line.
+            if (AreTheSame(range.CharacterFormat, Document.GetDefaultCharacterFormat()))
+            {
+                builder.Append(range.Text);
+            }
+            else
+            {
+                range.Collapse(true);
+            }
+
+            while (range.EndPosition < storyLength - 1)
+            {
+                var startPos = range.StartPosition;
+                var shouldBreak = false;
+
+                // Move to next format boundary
+                if (range.MoveEnd(TextRangeUnit.CharacterFormat, 1) <= 0)
+                {
+                    break;
+                }
+
+                // Check if we actually moved (prevent infinite loop)
+                if (range.StartPosition == startPos && range.EndPosition == startPos)
+                {
+                    range.MoveEnd(TextRangeUnit.Character, 1);
+                    if (range.EndPosition == startPos)
+                    {
+                        break; // Can't move at all
+                    }
+                }
+
+                // This happens when selection is not null
+                if (range.EndPosition > storyLength)
+                {
+                    range.SetRange(range.StartPosition, storyLength);
+                    shouldBreak = true;
+                }
+
+                var flags = default(TextStyle);
+                var type = default(TextEntityType);
+
+                var start = 0;
+                var end = 0;
+
                 if (range.ParagraphFormat.SpaceAfter != 0 && range.Character != '\r')
                 {
                     flags = TextStyle.Quote;
@@ -993,11 +1047,58 @@ namespace Telegram.Controls
                     if (range.CharacterFormat.Hidden == FormatEffect.On)
                     {
                         range.Expand(TextRangeUnit.Hidden);
-                        builder.Remove(i - hidden, range.Length);
+                        var rangeLength = Math.Abs(range.Length);
 
-                        hidden += range.Length;
-                        i += range.Length - 1;
-                        continue;
+                        if (IsCustomEmoji(range, out string emoji, out long customEmojiId))
+                        {
+                            hidden += rangeLength;
+                            range.SetRange(range.EndPosition, range.EndPosition + 1);
+
+                            if (range.Text == "\uEA4F")
+                            {
+                                var startPosition = Math.Min(range.StartPosition, range.EndPosition);
+                                var endPosition = Math.Max(range.StartPosition, range.EndPosition);
+                                var length = emoji.Length - (endPosition - startPosition);
+
+                                start = startPosition - hidden;
+                                end = endPosition + length - hidden;
+
+                                flags |= TextStyle.Emoji;
+                                type = new TextEntityTypeCustomEmoji(customEmojiId);
+
+                                builder.Append(emoji);
+
+                                hidden -= length;
+                            }
+                        }
+                        else
+                        {
+                            range.Expand(TextRangeUnit.Link);
+
+                            if (range.Link.Length > 0 && TryGetEntityType(range.Link, out type))
+                            {
+                                var startPosition = Math.Min(range.StartPosition, range.EndPosition);
+                                var endPosition = Math.Max(range.StartPosition, range.EndPosition);
+
+                                start = startPosition - hidden;
+                                end = endPosition - hidden - rangeLength;
+
+                                flags |= TextStyle.Url;
+                                flags &= ~TextStyle.Underline;
+
+                                range.GetText(TextGetOptions.NoHidden, out string noHidden);
+                                builder.Append(noHidden);
+                            }
+
+                            hidden += rangeLength;
+                        }
+                    }
+                    else
+                    {
+                        start = Math.Min(range.StartPosition, range.EndPosition) - hidden;
+                        end = Math.Max(range.StartPosition, range.EndPosition) - hidden;
+
+                        builder.Append(range.Text);
                     }
 
                     if (range.CharacterFormat.Weight == FontWeights.SemiBold.Weight)
@@ -1020,246 +1121,46 @@ namespace Telegram.Controls
                     {
                         flags |= TextStyle.Spoiler;
                     }
-
-                    if (range.Link.Length > 0 && TryGetEntityType(range.Link, out type))
-                    {
-                        flags |= TextStyle.Url;
-                        flags &= ~TextStyle.Underline;
-                    }
-                    else
-                    {
-                        type = null;
-                    }
                 }
 
-                if (last != null && last.Flags == flags)
+                if (flags != 0)
                 {
-                    last.End = i - hidden + 1;
+                    runs ??= new();
+                    runs.Add(new TextStyleRun { Start = start, End = end, Flags = flags, Type = type });
                 }
-                else
+
+                if (shouldBreak)
                 {
-                    if (last != null)
-                    {
-                        last.End = i - hidden;
-                        runs ??= new();
-                        runs.Add(last);
-                        last = null;
-                    }
-
-                    if (flags != 0)
-                    {
-                        last = new TextStyleRun { Start = i - hidden, End = i - hidden + 1, Flags = flags, Type = type };
-                        type = null;
-                    }
+                    break;
                 }
 
-                if (range.Text == "\uEA4F")
-                {
-                    range.Move(TextRangeUnit.Hidden, -1);
-                    range.Expand(TextRangeUnit.Hidden);
-
-                    if (IsCustomEmoji(range, out string emoji, out long customEmojiId))
-                    {
-                        runs ??= new();
-                        runs.Add(new TextStyleRun { Start = i - hidden, End = i - hidden + emoji.Length, Flags = TextStyle.Emoji, Type = new TextEntityTypeCustomEmoji(customEmojiId) });
-                        type = null;
-
-                        builder.Remove(i - hidden, 1);
-                        builder.Insert(i - hidden, emoji);
-
-                        hidden -= (emoji.Length - 1);
-                    }
-                }
-            }
-
-            if (last != null)
-            {
-                last.End = value.Length - hidden;
-                runs ??= new();
-                runs.Add(last);
+                range.Collapse(false);
             }
 
             if (clear)
             {
-                Document.Clear();
-                SelectionFlyout.Hide();
-            }
+                if (selection != null)
+                {
+                    selection.SetText(TextSetOptions.None, string.Empty);
+                }
+                else
+                {
+                    Document.Clear();
+                }
 
-            Document.ApplyDisplayUpdates();
+                SelectionFlyout.Hide();
+                Document.ApplyDisplayUpdates();
+            }
 
             _updateLocked = false;
 
             var text = builder.ToString();
             var entities = TextStyleRun.GetEntities(text, runs);
-
-            text = text.Replace('\v', '\n').Replace('\r', '\n');
 
             if (parseMarkdown)
             {
                 return ClientEx.ParseMarkdown(text, entities);
             }
-
-            return new FormattedText(text, entities);
-        }
-
-        public FormattedText GetFormattedText(ITextRange selection, bool clear = false, bool parseMarkdown = true)
-        {
-            OnGettingFormattedText();
-
-            if (IsEmpty)
-            {
-                return new FormattedText(string.Empty, Array.Empty<TextEntity>());
-            }
-
-            _updateLocked = true;
-
-            Document.BatchDisplayUpdates();
-            selection.GetText(TextGetOptions.None, out string value);
-
-            value = value.TrimEnd('\v', '\r');
-
-            var builder = new StringBuilder(value);
-
-            List<TextStyleRun> runs = null;
-            TextStyleRun last = null;
-            TextEntityType type = default;
-
-            var hidden = 0;
-            var flags = default(TextStyle);
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                flags = default;
-
-                var range = Document.GetRange(selection.StartPosition + i, selection.StartPosition + i + 1);
-                if (range.ParagraphFormat.SpaceAfter != 0)
-                {
-                    flags = TextStyle.Quote;
-                }
-
-                if (range.Text == "\uEA4F")
-                {
-                    range.Move(TextRangeUnit.Hidden, -1);
-                    range.Expand(TextRangeUnit.Hidden);
-
-                    if (IsCustomEmoji(range, out string emoji, out long customEmojiId))
-                    {
-                        if (last != null)
-                        {
-                            runs ??= new();
-                            runs.Add(last);
-                            last = null;
-                        }
-
-                        runs ??= new();
-                        runs.Add(new TextStyleRun { Start = i - hidden, End = i - hidden + emoji.Length, Flags = TextStyle.Emoji, Type = new TextEntityTypeCustomEmoji(customEmojiId) });
-                        type = null;
-
-                        builder.Remove(i - hidden, 1);
-                        builder.Insert(i - hidden, emoji);
-
-                        hidden -= emoji.Length - 1;
-                    }
-                }
-                else if (string.Equals(range.CharacterFormat.Name, "Consolas", StringComparison.OrdinalIgnoreCase))
-                {
-                    flags |= TextStyle.Monospace;
-                }
-                else
-                {
-                    if (range.CharacterFormat.Hidden == FormatEffect.On)
-                    {
-                        builder.Remove(i - hidden, 1);
-
-                        hidden++;
-                        continue;
-                    }
-
-                    if (range.CharacterFormat.Weight == FontWeights.SemiBold.Weight)
-                    {
-                        flags |= TextStyle.Bold;
-                    }
-                    if (range.CharacterFormat.Italic == FormatEffect.On)
-                    {
-                        flags |= TextStyle.Italic;
-                    }
-                    if (range.CharacterFormat.Strikethrough == FormatEffect.On)
-                    {
-                        flags |= TextStyle.Strikethrough;
-                    }
-                    if (range.CharacterFormat.Underline == UnderlineType.Single)
-                    {
-                        flags |= TextStyle.Underline;
-                    }
-                    if (range.CharacterFormat.BackgroundColor == Colors.Gray)
-                    {
-                        flags |= TextStyle.Spoiler;
-                    }
-
-                    if (range.Link.Length > 0 && TryGetEntityType(range.Link, out type))
-                    {
-                        flags |= TextStyle.Url;
-                        flags &= ~TextStyle.Underline;
-                    }
-                    else
-                    {
-                        type = null;
-                    }
-                }
-
-                if (last != null && last.Flags == flags)
-                {
-                    last.End++;
-                }
-                else
-                {
-                    if (last != null)
-                    {
-                        runs ??= new();
-                        runs.Add(last);
-                        last = null;
-                    }
-
-                    if (flags != 0)
-                    {
-                        last = new TextStyleRun { Start = i - hidden, End = i - hidden + 1, Flags = flags, Type = type };
-                        type = null;
-                    }
-                }
-            }
-
-            if (last != null)
-            {
-                runs ??= new();
-                runs.Add(last);
-            }
-
-            if (clear)
-            {
-                selection.SetText(TextSetOptions.None, string.Empty);
-                SelectionFlyout.Hide();
-            }
-
-            Document.ApplyDisplayUpdates();
-
-            _updateLocked = false;
-
-            var text = builder.ToString();
-            var entities = TextStyleRun.GetEntities(text, runs);
-
-            text = text.Replace('\v', '\n').Replace('\r', '\n');
-
-
-            if (parseMarkdown)
-            {
-                var formattedText = ClientEx.ParseMarkdown(text, entities);
-                text = formattedText.Text;
-                entities = formattedText.Entities;
-            }
-
-            // TODO: check if entities are allowed
-            //var allowedEntities = AllowedEntities;
-            //(allowedEntities & FormattedTextEntity.Quote) != 0
 
             return new FormattedText(text, entities);
         }
@@ -1406,6 +1307,7 @@ namespace Telegram.Controls
 
                 if (updateSelection)
                 {
+                    Document.Selection.CharacterFormat = Document.GetDefaultCharacterFormat();
                     Document.Selection.SetText(TextSetOptions.None, text);
                 }
                 else
@@ -1872,8 +1774,8 @@ namespace Telegram.Controls
                 {
                     //ContentElement.Padding = new Thickness(48, range.ParagraphFormat.SpaceAfter == 0 ? 13 : 7, 0, 15);
                     ContentElement.Padding = new Thickness(0, 13, 0, 15);
-                    ContentElement.Margin = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : 0, 0, 0);
-                    Blocks.Padding = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : 0, 0, 0);
+                    //ContentElement.Margin = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : 0, 0, 0);
+                    //Blocks.Padding = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : 0, 0, 0);
                 }
 
                 if (range.ParagraphFormat.SpaceAfter != 0)
