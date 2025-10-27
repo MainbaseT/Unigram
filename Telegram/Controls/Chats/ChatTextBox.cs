@@ -156,11 +156,7 @@ namespace Telegram.Controls.Chats
                 try
                 {
                     var clone = Document.Selection.GetClone();
-                    if (clone.EndPosition > Document.Selection.EndPosition && AreTheSame(clone.CharacterFormat, Document.Selection.CharacterFormat))
-                    {
-
-                    }
-                    else
+                    if (!AreTheSame(clone.CharacterFormat, Document.Selection.CharacterFormat))
                     {
                         Document.Selection.CharacterFormat = Document.GetDefaultCharacterFormat();
                     }
