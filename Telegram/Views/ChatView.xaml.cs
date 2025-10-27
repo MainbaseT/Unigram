@@ -694,10 +694,10 @@ namespace Telegram.Views
                         Canvas.SetZIndex(InlinePanel, 0);
                         Canvas.SetZIndex(Separator, 0);
 
-                        if (messages.Clip is InsetClip messagesClip)
-                        {
-                            messagesClip.BottomInset = -8 - SettingsService.Current.Appearance.CornerRadius;
-                        }
+                        //if (messages.Clip is InsetClip messagesClip)
+                        //{
+                        //    messagesClip.BottomInset = -8 - SettingsService.Current.Appearance.CornerRadius;
+                        //}
                     };
 
                     _collectionChanging++;
@@ -705,10 +705,10 @@ namespace Telegram.Views
                     Canvas.SetZIndex(InlinePanel, -2);
                     Canvas.SetZIndex(Separator, -3);
 
-                    if (messages.Clip is InsetClip messagesClip)
-                    {
-                        messagesClip.BottomInset = -96;
-                    }
+                    //if (messages.Clip is InsetClip messagesClip)
+                    //{
+                    //    messagesClip.BottomInset = -96;
+                    //}
 
                     var head = TextArea.ActualSize.Y - 48;
                     diff = owner.ActualSize.Y > 40
@@ -2219,11 +2219,11 @@ namespace Telegram.Views
             {
                 messagesClip.LeftInset = -72;
                 messagesClip.TopInset = -44 + value;
-                messagesClip.BottomInset = -96;
+                messagesClip.BottomInset = int.MinValue;
             }
             else
             {
-                messages.Clip = textArea.Compositor.CreateInsetClip(-72, -44 + value, 0, -96);
+                messages.Clip = textArea.Compositor.CreateInsetClip(-72, -44 + value, 0, int.MinValue);
             }
 
             var batch = composer.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
@@ -5873,11 +5873,11 @@ namespace Telegram.Views
             {
                 messagesClip.LeftInset = -72;
                 messagesClip.TopInset = -44 + value;
-                messagesClip.BottomInset = -96;
+                messagesClip.BottomInset = int.MinValue;
             }
             else
             {
-                messages.Clip = textArea.Compositor.CreateInsetClip(-72, -44 + value, 0, -96);
+                messages.Clip = textArea.Compositor.CreateInsetClip(-72, -44 + value, 0, int.MinValue);
             }
 
             composer.Clip = textArea.Compositor.CreateInsetClip(0, 0, 0, value);
@@ -6190,11 +6190,11 @@ namespace Telegram.Views
             {
                 messagesClip.LeftInset = -72;
                 messagesClip.TopInset = -44;
-                messagesClip.BottomInset = -8 - radius;
+                messagesClip.BottomInset = int.MinValue;
             }
             else
             {
-                messages.Clip = messages.Compositor.CreateInsetClip(-72, -44, 0, -8 - radius);
+                messages.Clip = messages.Compositor.CreateInsetClip(-72, -44, 0, int.MinValue);
             }
         }
 
@@ -7196,26 +7196,26 @@ namespace Telegram.Views
                 if (animate)
                 {
                     var visual = ElementComposition.GetElementVisual(MessagesRoot);
-                    visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, 0);
+                    visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, int.MinValue);
 
                     var offset = visual.Compositor.CreateScalarKeyFrameAnimation();
                     offset.InsertKeyFrame(0, diff);
                     offset.InsertKeyFrame(1, 0);
                     offset.Duration = Constants.FastAnimation;
 
-                    var clip = visual.Compositor.CreateScalarKeyFrameAnimation();
-                    clip.InsertKeyFrame(0, -32);
-                    clip.InsertKeyFrame(1, -32 + padding);
-                    clip.Duration = Constants.FastAnimation;
+                    //var clip = visual.Compositor.CreateScalarKeyFrameAnimation();
+                    //clip.InsertKeyFrame(0, -32);
+                    //clip.InsertKeyFrame(1, -32 + padding);
+                    //clip.Duration = Constants.FastAnimation;
 
                     visual.StartAnimation("Translation.Y", offset);
-                    visual.Clip.StartAnimation("BottomInset", clip);
+                    //visual.Clip.StartAnimation("BottomInset", clip);
                 }
                 else
                 {
                     ElementCompositionPreview.SetIsTranslationEnabled(MessagesRoot, true);
                     var visual = ElementComposition.GetElementVisual(MessagesRoot);
-                    visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, -32 + padding);
+                    visual.Clip = visual.Compositor.CreateInsetClip(0, -padding, 0, int.MinValue);
                     visual.Properties.InsertVector3("Translation", Vector3.Zero);
                 }
             }

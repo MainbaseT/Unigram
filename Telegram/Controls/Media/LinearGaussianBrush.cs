@@ -21,7 +21,7 @@ namespace Telegram.Controls.Media
             var blurEffect = new GaussianBlurEffect
             {
                 Name = "Blur",
-                BlurAmount = 30,
+                BlurAmount = 20,
                 BorderMode = EffectBorderMode.Hard,
                 Source = new CompositionEffectSourceParameter("Backdrop")
             };

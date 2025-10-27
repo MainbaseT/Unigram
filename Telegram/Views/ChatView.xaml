@@ -9,6 +9,7 @@
                         xmlns:chats="using:Telegram.Controls.Chats"
                         xmlns:messages="using:Telegram.Controls.Messages"
                         xmlns:local="using:Telegram.Views"
+                        xmlns:media="using:Telegram.Controls.Media"
                         xmlns:views="using:Telegram.Controls.Views"
                         xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                         mc:Ignorable="d"
@@ -1794,6 +1795,17 @@
                     </Grid>
                 </Grid>
             </Grid>
+
+            <Border IsHitTestVisible="False"
+                    Height="64"
+                    Margin="0,-8,0,0"
+                    VerticalAlignment="Bottom"
+                    Grid.Row="3"
+                    Grid.RowSpan="2">
+                <Border.Background>
+                    <media:LinearGaussianBrush />
+                </Border.Background>
+            </Border>
 
             <ScrollViewer x:Name="ReplyMarkupPanel"
                           MaxHeight="260"
