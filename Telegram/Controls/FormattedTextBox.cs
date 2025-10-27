@@ -62,6 +62,8 @@ namespace Telegram.Controls
 
         private int _selectionIndex;
 
+        private ITextRange _reusableRange;
+
         public CustomEmojiCanvas CustomEmoji { get; set; }
         private Grid Blocks;
         private ScrollViewer ContentElement;
@@ -958,7 +960,16 @@ namespace Telegram.Controls
             }
             else
             {
-                range = Document.GetRange(0, TextConstants.MaxUnitCount);
+                if (_reusableRange == null)
+                {
+                    _reusableRange = Document.GetRange(0, TextConstants.MaxUnitCount);
+                }
+                else
+                {
+                    _reusableRange.SetRange(0, TextConstants.MaxUnitCount);
+                }
+
+                range = _reusableRange;
                 storyLength = range.StoryLength;
                 hidden = 0;
             }
@@ -1617,7 +1628,16 @@ namespace Telegram.Controls
                 return;
             }
 
-            var range = Document.GetRange(0, 0);
+            if (_reusableRange == null)
+            {
+                _reusableRange = Document.GetRange(0, 0);
+            }
+            else
+            {
+                _reusableRange.SetRange(0, 0);
+            }
+
+            var range = _reusableRange;
             var lastPosition = -1;
 
             var firstCall = true;
@@ -1689,7 +1709,16 @@ namespace Telegram.Controls
 
         private void UpdateFormat()
         {
-            var range = Document.GetRange(0, 0);
+            if (_reusableRange == null)
+            {
+                _reusableRange = Document.GetRange(0, 0);
+            }
+            else
+            {
+                _reusableRange.SetRange(0, 0);
+            }
+
+            var range = _reusableRange;
             var lastPosition = -1;
 
             do
@@ -1735,7 +1764,16 @@ namespace Telegram.Controls
                 return;
             }
 
-            var range = Document.GetRange(0, 0);
+            if (_reusableRange == null)
+            {
+                _reusableRange = Document.GetRange(0, 0);
+            }
+            else
+            {
+                _reusableRange.SetRange(0, 0);
+            }
+
+            var range = _reusableRange;
             var lastPosition = -1;
 
             var rects = 0;
