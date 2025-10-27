@@ -69,19 +69,7 @@ namespace Telegram.Common
             var runs = new List<TextStyleRun>();
             var entitiesCopy = new List<TextEntity>(entities);
 
-            entitiesCopy.Sort((x, y) =>
-            {
-                if (x.Offset > y.Offset)
-                {
-                    return 1;
-                }
-                else if (y.Offset > x.Offset)
-                {
-                    return -1;
-                }
-
-                return 0;
-            });
+            entitiesCopy.Sort((x, y) => x.Offset.CompareTo(y.Offset));
 
             for (int a = 0, N = entitiesCopy.Count; a < N; a++)
             {
@@ -95,55 +83,25 @@ namespace Telegram.Common
                     entity.Length = text.Length - entity.Offset;
                 }
 
-                var newRun = new TextStyleRun();
-                newRun.Start = entity.Offset;
-                newRun.End = newRun.Start + entity.Length;
+                var newRun = new TextStyleRun
+                {
+                    Start = entity.Offset,
+                    End = entity.Offset + entity.Length
+                };
 
-                if (entity.Type is TextEntityTypeStrikethrough)
+                (newRun.Flags, newRun.Type) = entity.Type switch
                 {
-                    newRun.Flags = TextStyle.Strikethrough;
-                }
-                else if (entity.Type is TextEntityTypeUnderline)
-                {
-                    newRun.Flags = TextStyle.Underline;
-                }
-                else if (entity.Type is TextEntityTypeSpoiler)
-                {
-                    newRun.Flags = TextStyle.Spoiler;
-                    newRun.Type = entity.Type;
-                }
-                else if (entity.Type is TextEntityTypeBold)
-                {
-                    newRun.Flags = TextStyle.Bold;
-                }
-                else if (entity.Type is TextEntityTypeItalic)
-                {
-                    newRun.Flags = TextStyle.Italic;
-                }
-                else if (entity.Type is TextEntityTypeBlockQuote or TextEntityTypeExpandableBlockQuote)
-                {
-                    newRun.Flags = TextStyle.Quote;
-                }
-                else if (entity.Type is TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode)
-                {
-                    newRun.Flags = TextStyle.Monospace;
-                    newRun.Type = entity.Type;
-                }
-                else if (entity.Type is TextEntityTypeMentionName)
-                {
-                    newRun.Flags = TextStyle.Mention;
-                    newRun.Type = entity.Type;
-                }
-                else if (entity.Type is TextEntityTypeCustomEmoji)
-                {
-                    newRun.Flags = TextStyle.Emoji;
-                    newRun.Type = entity.Type;
-                }
-                else
-                {
-                    newRun.Flags = TextStyle.Url;
-                    newRun.Type = entity.Type;
-                }
+                    TextEntityTypeStrikethrough => (TextStyle.Strikethrough, null),
+                    TextEntityTypeUnderline => (TextStyle.Underline, null),
+                    TextEntityTypeSpoiler => (TextStyle.Spoiler, entity.Type),
+                    TextEntityTypeBold => (TextStyle.Bold, null),
+                    TextEntityTypeItalic => (TextStyle.Italic, null),
+                    TextEntityTypeBlockQuote or TextEntityTypeExpandableBlockQuote => (TextStyle.Quote, null),
+                    TextEntityTypeCode or TextEntityTypePre or TextEntityTypePreCode => (TextStyle.Monospace, entity.Type),
+                    TextEntityTypeMentionName => (TextStyle.Mention, entity.Type),
+                    TextEntityTypeCustomEmoji => (TextStyle.Emoji, entity.Type),
+                    _ => (TextStyle.Url, entity.Type)
+                };
 
                 for (int b = 0, N2 = runs.Count; b < N2; b++)
                 {
@@ -180,9 +138,7 @@ namespace Telegram.Common
                             runs.Insert(b, r);
                         }
 
-                        int temp = newRun.Start;
-                        newRun.Start = run.End;
-                        run.End = temp;
+                        (newRun.Start, run.End) = (run.End, newRun.Start);
                     }
                     else
                     {
@@ -225,22 +181,11 @@ namespace Telegram.Common
                 }
             }
 
-            runs.Sort((x, y) =>
-            {
-                if (x.Offset > y.Offset)
-                {
-                    return 1;
-                }
-                else if (y.Offset > x.Offset)
-                {
-                    return -1;
-                }
-
-                return 0;
-            });
-
+            runs.Sort((x, y) => x.Offset.CompareTo(y.Offset));
             return runs;
         }
+
+        private static readonly char[] _lineBreakChars = new[] { '\n', '\r', '\v' };
 
         public static IList<TextEntity> GetEntities(string text, IList<TextStyleRun> runs)
         {
@@ -259,8 +204,13 @@ namespace Telegram.Common
                 }
                 else if (run.HasFlag(TextStyle.Monospace))
                 {
-                    var part = text.Substring(run.Offset, run.Length);
-                    if (part.Contains('\v') || part.Contains('\r'))
+                    static bool Contains(string text, int offset, int length)
+                    {
+                        var indexOf = text.IndexOfAny(_lineBreakChars, offset, length);
+                        return indexOf != -1;
+                    }
+
+                    if (Contains(text, run.Offset, run.Length))
                     {
                         CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypePre());
                     }
