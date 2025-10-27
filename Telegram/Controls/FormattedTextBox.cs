@@ -95,6 +95,8 @@ namespace Telegram.Controls
                 ShowMode = FlyoutShowMode.TransientWithDismissOnPointerMoveAway,
                 FlyoutPresenterStyle = BootStrapper.Current.Resources["CommandFlyoutPresenterStyle"] as Style,
             };
+            SelectionFlyout.Opening += OnSelectionFlyoutOpening;
+            SelectionFlyout.Closing += OnSelectionFlyoutClosing;
 
             ContextFlyout = new MenuFlyout();
             ContextFlyout.Opening += OnContextFlyoutOpening;
@@ -434,6 +436,16 @@ namespace Telegram.Controls
         public event TypedEventHandler<FormattedTextBox, EventArgs> Accept;
 
         #region Context menu
+
+        private void OnSelectionFlyoutOpening(object sender, object e)
+        {
+            _selectionFlyout.Register();
+        }
+
+        private void OnSelectionFlyoutClosing(FlyoutBase sender, FlyoutBaseClosingEventArgs args)
+        {
+            _selectionFlyout.Unregister();
+        }
 
         private void OnContextFlyoutOpening(object sender, object e)
         {
