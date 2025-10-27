@@ -1513,7 +1513,7 @@ namespace Telegram.Controls
                 if (value.Length + length > MaxLength)
                 {
                     exceeding = MaxLength - value.Length;
-                    return true;
+                    return exceeding > 0;
                 }
             }
 
@@ -1835,8 +1835,11 @@ namespace Telegram.Controls
 
         private void ContentElement_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            Blocks.Height = ContentElement.ExtentHeight;
-            Blocks.Margin = new Thickness(0, -6, 0, Math.Min(0, ActualHeight - ContentElement.ExtentHeight));
+            if (Blocks != null)
+            {
+                Blocks.Height = ContentElement.ExtentHeight;
+                Blocks.Margin = new Thickness(0, -6, 0, Math.Min(0, ActualHeight - ContentElement.ExtentHeight));
+            }
         }
 
         private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs e)
