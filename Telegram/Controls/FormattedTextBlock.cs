@@ -1845,8 +1845,8 @@ namespace Telegram.Controls
                     }
                     else
                     {
-                        direct.SetObjectProperty(span, XamlPropertyIndex.TextElement_FontWeight, FontWeights.Normal);
-                        direct.SetEnumProperty(span, XamlPropertyIndex.TextElement_FontStyle, (uint)FontStyle.Normal);
+                        direct.ClearProperty(span, XamlPropertyIndex.TextElement_FontWeight);
+                        direct.ClearProperty(span, XamlPropertyIndex.TextElement_FontStyle);
                     }
 
                     ProcessCodeBlock(direct, collection, syntax.Children);
