@@ -29,29 +29,42 @@ namespace Telegram.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Append(string? text)
+        public void Append(ReadOnlySpan<char> span)
         {
-            if (text is null)
-                return;
+            int lastPos = 0;
 
-            for (int i = 0; i < text.Length; i++)
+            while (true)
             {
-                char c = text[i];
-                if (c == '\r' || c == '\v')
-                    _vsb.Append('\n');
-                else
-                    _vsb.Append(c);
+                // Find the next \r or \v
+                int nextIndex = span.Slice(lastPos).IndexOfAny('\r', '\v');
+                if (nextIndex == -1)
+                {
+                    // Append the remaining chunk
+                    _vsb.Append(span.Slice(lastPos));
+                    break;
+                }
+
+                nextIndex += lastPos; // adjust index relative to original span
+
+                // Append chunk before newline
+                if (nextIndex > lastPos)
+                    _vsb.Append(span.Slice(lastPos, nextIndex - lastPos));
+
+                // Append normalized newline
+                _vsb.Append('\n');
+
+                lastPos = nextIndex + 1; // move past the newline
             }
         }
 
         public override string ToString()
         {
-            // Trim trailing \n, \r, or \v — though at this point only \n remains
+            // Trim trailing \n
             int len = _vsb.Length;
             while (len > 0)
             {
                 char c = _vsb[len - 1];
-                if (c == '\n' || c == '\r' || c == '\v')
+                if (c == '\n')
                     len--;
                 else
                     break;

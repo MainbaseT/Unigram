@@ -959,7 +959,7 @@ namespace Telegram.Controls
             // We need to do this because TextRangeUnit.CharacterFormat still breask every space/new line.
             if (AreTheSame(range.CharacterFormat, Document.GetDefaultCharacterFormat()))
             {
-                builder.Append(range.Text);
+                builder.Append(range.Text.AsSpan());
             }
             else
             {
@@ -1033,7 +1033,7 @@ namespace Telegram.Controls
                                 flags |= TextStyle.Emoji;
                                 type = new TextEntityTypeCustomEmoji(customEmojiId);
 
-                                builder.Append(emoji);
+                                builder.Append(emoji.AsSpan());
 
                                 hidden -= length;
                             }
@@ -1054,7 +1054,7 @@ namespace Telegram.Controls
                                 flags &= ~TextStyle.Underline;
 
                                 range.GetText(TextGetOptions.NoHidden, out string noHidden);
-                                builder.Append(noHidden);
+                                builder.Append(noHidden.AsSpan());
                             }
 
                             hidden += rangeLength;
@@ -1065,7 +1065,7 @@ namespace Telegram.Controls
                         start = Math.Min(range.StartPosition, range.EndPosition) - hidden;
                         end = Math.Max(range.StartPosition, range.EndPosition) - hidden;
 
-                        builder.Append(range.Text);
+                        builder.Append(range.Text.AsSpan());
                     }
 
                     if (range.CharacterFormat.Weight == FontWeights.SemiBold.Weight)
