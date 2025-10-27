@@ -756,24 +756,24 @@ namespace Telegram.Controls
             return document.AllCaps == format.AllCaps &&
                 document.BackgroundColor == format.BackgroundColor &&
                 document.Bold == format.Bold &&
-                document.FontStretch == format.FontStretch &&
-                document.FontStyle == format.FontStyle &&
-                document.ForegroundColor == format.ForegroundColor &&
+                //document.FontStretch == format.FontStretch &&
+                //document.FontStyle == format.FontStyle &&
+                //document.ForegroundColor == format.ForegroundColor &&
                 document.Hidden == format.Hidden &&
                 document.Italic == format.Italic &&
-                document.Kerning == format.Kerning &&
+                //document.Kerning == format.Kerning &&
                 //document.LanguageTag == format.LanguageTag &&
-                document.LinkType == format.LinkType &&
+                //document.LinkType == format.LinkType &&
                 document.Name == format.Name &&
-                document.Outline == format.Outline &&
-                document.Position == format.Position &&
-                document.ProtectedText == format.ProtectedText &&
+                //document.Outline == format.Outline &&
+                //document.Position == format.Position &&
+                //document.ProtectedText == format.ProtectedText &&
                 document.Size == format.Size &&
-                document.SmallCaps == format.SmallCaps &&
-                document.Spacing == format.Spacing &&
+                //document.SmallCaps == format.SmallCaps &&
+                //document.Spacing == format.Spacing &&
                 document.Strikethrough == format.Strikethrough &&
-                document.Subscript == format.Subscript &&
-                document.Superscript == format.Superscript &&
+                //document.Subscript == format.Subscript &&
+                //document.Superscript == format.Superscript &&
                 //document.TextScript == format.TextScript &&
                 document.Underline == format.Underline &&
                 document.Weight == format.Weight;
