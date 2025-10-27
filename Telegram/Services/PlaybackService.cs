@@ -374,7 +374,7 @@ namespace Telegram.Services
 
         public TimeSpan Duration => _positionChanged.Duration;
 
-        public bool IsPlaying { get; private set; }
+        public bool IsPlaying => PlaybackState == PlaybackState.Playing;
 
         private PlaybackState _playbackState;
         public PlaybackState PlaybackState
@@ -878,7 +878,7 @@ namespace Telegram.Services
                         _player = null;
                     }
 
-                    IsPlaying = false;
+                    //IsPlaying = false;
                 }
                 else
                 {
@@ -897,7 +897,7 @@ namespace Telegram.Services
 
         private void OnStateChanged(AsyncMediaPlayer sender, AsyncMediaPlayerStateChangedEventArgs args)
         {
-            IsPlaying = args.State == AsyncMediaPlayerState.Playing;
+            //IsPlaying = args.State == AsyncMediaPlayerState.Playing;
 
             if (args.State == AsyncMediaPlayerState.Ended)
             {
