@@ -395,6 +395,7 @@ namespace Telegram.Controls.Media
         public const string SpeakerMuteFilled = "\uEA30";
         public const string SpeakerOff = "\uE74F";
         public const string SendFilled = "\uE919";
+        public const string SendFilled32 = "\uEAE8";
 
         public const string MoreHorizontal = "\uE712";
         public const string MoreHorizontalFilled = "\uEA59";

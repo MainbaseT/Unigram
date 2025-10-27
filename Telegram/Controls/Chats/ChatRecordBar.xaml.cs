@@ -232,6 +232,7 @@ namespace Telegram.Controls.Chats
             ChatRecordGlyph.Text = ControlledButton.Mode == ChatRecordMode.Video
                 ? Icons.VideoNoteFilled24
                 : Icons.MicOnFilled24;
+            ChatRecordGlyph.FontSize = 24;
 
             var slideWidth = SlidePanel.ActualSize.X;
             var elapsedWidth = ElapsedPanel.ActualSize.X;
@@ -598,6 +599,8 @@ namespace Telegram.Controls.Chats
 
                 ElementCompositionPreview.SetElementChildVisual(WaveformBackground, visual);
                 ChatRecordGlyph.Foreground = new SolidColorBrush(Theme.Accent);
+                ChatRecordGlyph.Text = Icons.SendFilled32;
+                ChatRecordGlyph.FontSize = 32;
 
                 ShowHideDelete(true);
             }
@@ -643,6 +646,8 @@ namespace Telegram.Controls.Chats
 
                 ElementCompositionPreview.SetElementChildVisual(WaveformBackground, visual);
                 ChatRecordGlyph.Foreground = new SolidColorBrush(Colors.White);
+                ChatRecordGlyph.Text = Icons.SendFilled;
+                ChatRecordGlyph.FontSize = 24;
 
                 ShowHideDelete(false);
             }
