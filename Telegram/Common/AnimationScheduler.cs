@@ -6,12 +6,12 @@
 //
 using System;
 using System.Buffers;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Telegram.Collections;
 
 namespace Telegram.Common
 {
@@ -29,9 +29,8 @@ namespace Telegram.Common
             public double FrameRate { get; init; }
             public double Interval { get; init; }
             public double MaxExecution { get; init; }
-            public int MaxLength { get; init; }
 
-            public List<IAnimation> Animations { get; init; } = new List<IAnimation>();
+            public LockFreeArrayList<IAnimation> Animations { get; init; }
             public Timer Timer { get; set; }
             public Stopwatch ExecutionTimer { get; } = new Stopwatch();
 
@@ -40,7 +39,15 @@ namespace Telegram.Common
                 FrameRate = frameRate;
                 Interval = 1000.0 / frameRate;
                 MaxExecution = 1000.0 / frameRate * 0.8; // 0.75?
-                MaxLength = GetBatchSize(frameRate);
+                Animations = new LockFreeArrayList<IAnimation>(GetBatchSize(frameRate));
+            }
+
+            private AnimationBatch(double frameRate, double interval, double maxExecution, LockFreeArrayList<IAnimation> animations)
+            {
+                FrameRate = frameRate;
+                Interval = interval;
+                MaxExecution = maxExecution;
+                Animations = animations;
             }
 
             private static int GetBatchSize(double size)
@@ -50,6 +57,11 @@ namespace Telegram.Common
                 const double b = 0.8;
                 int batch = (int)Math.Round(a * Math.Pow(size, -b));
                 return Math.Clamp(batch, 1, 50);
+            }
+
+            public AnimationBatch SplitHalf()
+            {
+                return new AnimationBatch(FrameRate, Interval, MaxExecution, Animations.SplitHalf());
             }
         }
 
@@ -112,7 +124,7 @@ namespace Telegram.Common
 
             // Try to find a batch with room
             // TODO: too small batches?
-            var targetBatch = batches.FirstOrDefault(b => b.Animations.Count < b.MaxLength);
+            var targetBatch = batches.FirstOrDefault(b => b.Animations.Count < b.Animations.Capacity);
 
             if (targetBatch == null)
             {
@@ -123,10 +135,7 @@ namespace Telegram.Common
                 targetBatch.Timer = new Timer(ExecuteBatch, targetBatch, 0, interval);
             }
 
-            lock (targetBatch.Animations)
-            {
-                targetBatch.Animations.Add(animation);
-            }
+            targetBatch.Animations.Add(animation);
         }
 
         private void RemoveAnimationFromBatches(IAnimation animation)
@@ -137,10 +146,7 @@ namespace Telegram.Common
                 for (int i = 0; i < batches.Count; i++)
                 {
                     AnimationBatch batch = batches[i];
-                    lock (batch.Animations)
-                    {
-                        batch.Animations.Remove(animation);
-                    }
+                    batch.Animations.Remove(animation);
 
                     if (batch.Animations.Count == 0)
                     {
@@ -163,44 +169,32 @@ namespace Telegram.Common
 
             batch.ExecutionTimer.Restart();
 
-            IAnimation[] animations = null;
-            int count = 0;
-
-            lock (batch.Animations)
+            if (batch.Animations.TrySnapshot(out var animations, out int length))
             {
-                count = batch.Animations.Count;
-                animations = ArrayPool<IAnimation>.Shared.Rent(count);
-                batch.Animations.CopyTo(0, animations, 0, count);
+                for (int i = 0; i < length; i++)
+                {
+                    try
+                    {
+                        animations[i].RenderNextFrame();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log exception but don't let one animation crash the batch
+                        Logger.Info($"Animation threw exception: {ex.Message}");
+                    }
+
+                    // Check if we're exceeding our time budget
+                    if (batch.ExecutionTimer.ElapsedMilliseconds > batch.MaxExecution)
+                    {
+                        // Mark for rebalancing
+                        ThreadPool.QueueUserWorkItem(RebalanceBatch, batch);
+                        break;
+                    }
+                }
+
+                ArrayPool<IAnimation>.Shared.Return(animations, true);
             }
 
-            foreach (var animation in animations)
-            {
-                // Pooled arrays can be larger than needed
-                if (animation == null)
-                {
-                    break;
-                }
-
-                try
-                {
-                    animation.RenderNextFrame();
-                }
-                catch (Exception ex)
-                {
-                    // Log exception but don't let one animation crash the batch
-                    Logger.Info($"Animation threw exception: {ex.Message}");
-                }
-
-                // Check if we're exceeding our time budget
-                if (batch.ExecutionTimer.ElapsedMilliseconds > batch.MaxExecution)
-                {
-                    // Mark for rebalancing
-                    ThreadPool.QueueUserWorkItem(RebalanceBatch, batch);
-                    break;
-                }
-            }
-
-            ArrayPool<IAnimation>.Shared.Return(animations, true);
             batch.ExecutionTimer.Stop();
         }
 
@@ -212,19 +206,7 @@ namespace Telegram.Common
                 if (state is not AnimationBatch overloadedBatch || overloadedBatch.Animations.Count <= 2) return;
 
                 var fps = overloadedBatch.FrameRate;
-                var newBatch = new AnimationBatch(fps);
-
-                lock (overloadedBatch.Animations)
-                {
-                    // Split roughly in half
-                    var splitPoint = overloadedBatch.Animations.Count / 2;
-
-                    for (int i = 0; i < splitPoint; i++)
-                    {
-                        newBatch.Animations.Add(overloadedBatch.Animations[i]);
-                        overloadedBatch.Animations.RemoveAt(i);
-                    }
-                }
+                var newBatch = overloadedBatch.SplitHalf();
 
                 var batches = _batchesByFps[fps];
                 batches.Add(newBatch);

@@ -205,6 +205,7 @@
     <Compile Include="Collections\IncrementalCollectionView.cs" />
     <Compile Include="Collections\IndexShiftTracker.cs" />
     <Compile Include="Collections\ListWithTotalCount.cs" />
+    <Compile Include="Collections\LockFreeArrayList.cs" />
     <Compile Include="Collections\ReaderWriterDictionary.cs" />
     <Compile Include="Collections\SearchEmojiCollection.cs" />
     <Compile Include="Collections\SynchronizedList.cs" />
