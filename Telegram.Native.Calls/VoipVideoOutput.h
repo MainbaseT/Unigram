@@ -256,7 +256,7 @@ private:
     }
 };
 
-class CompositionRenderQueue
+class CompositionRenderQueue : public std::enable_shared_from_this<CompositionRenderQueue>
 {
 private:
     struct RenderCommand
@@ -264,40 +264,44 @@ private:
         std::function<void()> execute;
 
         RenderCommand() = default;
-        RenderCommand(std::function<void()>&& f) : execute(std::move(f)) {}
+        RenderCommand(std::function<void()>&& f) : execute(std::move(f)) {} // explicit?
     };
 
     std::queue<RenderCommand> m_commands;
     std::mutex m_mutex;
     std::condition_variable m_cv;
-    std::atomic<bool> m_running;
-    std::thread m_render_thread;
+    std::atomic<bool> m_running{ false };
 
-    void render_loop()
+    static void render_loop(std::weak_ptr<CompositionRenderQueue> weak_self)
     {
         SetThreadDescription(GetCurrentThread(), L"CompositionRenderThread");
 
         std::vector<RenderCommand> batch;
         batch.reserve(32);
 
-        while (m_running.load(std::memory_order_acquire))
+        while (auto self = weak_self.lock())
         {
+            if (!self->m_running.load(std::memory_order_acquire))
             {
-                std::unique_lock<std::mutex> lock(m_mutex);
+                break;
+            }
+
+            {
+                std::unique_lock<std::mutex> lock(self->m_mutex);
 
                 // Wait for commands with timeout to check m_running flag
-                m_cv.wait_for(lock, std::chrono::milliseconds(10),
-                    [this]() { return !m_commands.empty() || !m_running.load(std::memory_order_relaxed); });
+                self->m_cv.wait_for(lock, std::chrono::milliseconds(10),
+                    [&] { return !self->m_commands.empty() || !self->m_running.load(std::memory_order_acquire); });
 
-                if (!m_running.load(std::memory_order_relaxed) && m_commands.empty())
+                if (!self->m_running.load(std::memory_order_acquire))
                 {
                     break;
                 }
 
-                while (!m_commands.empty())
+                while (!self->m_commands.empty())
                 {
-                    batch.push_back(std::move(m_commands.front()));
-                    m_commands.pop();
+                    batch.push_back(std::move(self->m_commands.front()));
+                    self->m_commands.pop();
                 }
             }
 
@@ -320,16 +324,28 @@ private:
         }
     }
 
-public:
-    CompositionRenderQueue()
-        : m_running(true)
-    {
-        m_render_thread = std::thread(&CompositionRenderQueue::render_loop, this);
-    }
+    CompositionRenderQueue() = default;
 
+public:
     ~CompositionRenderQueue()
     {
         shutdown();
+    }
+
+    void start_thread()
+    {
+        m_running.store(true, std::memory_order_release);
+        std::thread([weak_self{ weak_from_this() }]()
+            {
+                render_loop(weak_self);
+            }).detach();
+    }
+
+    static std::shared_ptr<CompositionRenderQueue> Create()
+    {
+        auto instance = std::shared_ptr<CompositionRenderQueue>(new CompositionRenderQueue());
+        instance->start_thread();
+        return instance;
     }
 
     template<typename F>
@@ -344,13 +360,9 @@ public:
 
     void shutdown()
     {
-        if (m_running.exchange(false, std::memory_order_release))
+        if (m_running.exchange(false, std::memory_order_acq_rel))
         {
             m_cv.notify_all();
-            if (m_render_thread.joinable())
-            {
-                m_render_thread.join();
-            }
         }
     }
 };
@@ -400,7 +412,7 @@ public:
             m_queues.erase(it);
         }
 
-        auto queue = std::make_shared<CompositionRenderQueue>();
+        auto queue = CompositionRenderQueue::Create();
         m_queues[device] = queue;
 
         return queue;
@@ -768,13 +780,10 @@ public:
 
         const auto weak = weak_from_this();
         m_queue->enqueue([weak, frame]() {
-            auto strong = weak.lock();
-            if (!strong)
+            if (auto strong = weak.lock())
             {
-                return;
+                strong->RenderFrame(frame);
             }
-
-            strong->RenderFrame(frame);
             });
     }
 };
