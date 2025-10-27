@@ -399,7 +399,7 @@ namespace Telegram.Controls
                     ToggleRegular();
                     e.Handled = true;
                     break;
-                case (VirtualKey)190:
+                case (VirtualKey)190 when modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift) && Math.Abs(Document.Selection.Length) > 0:
                     ToggleQuote();
                     e.Handled = true;
                     break;
