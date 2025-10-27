@@ -1017,6 +1017,8 @@ namespace winrt::Telegram::Native::implementation
 
     void PlaceholderImageHelper::OnDirect3DDeviceLost(DeviceLostHelper const* /* sender */, DeviceLostEventArgs const& args)
     {
+        std::lock_guard const guard(m_criticalSection);
+
         CreateDeviceResources();
     }
 

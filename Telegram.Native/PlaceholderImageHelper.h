@@ -280,6 +280,8 @@ namespace winrt::Telegram::Native::implementation
 
         HRESULT HandleDeviceLost()
         {
+            std::lock_guard const guard(m_criticalSection);
+
             if (FAILED(m_d3dDevice->GetDeviceRemovedReason()))
             {
                 return CreateDeviceResources();
