@@ -962,12 +962,16 @@ namespace Telegram.Controls
             {
                 if (_reusableRange == null)
                 {
-                    _reusableRange = Document.GetRange(0, TextConstants.MaxUnitCount);
+                    _reusableRange = Document.GetRange(0, 0);
                 }
                 else
                 {
-                    _reusableRange.SetRange(0, TextConstants.MaxUnitCount);
+                    _reusableRange.SetRange(0, 0);
                 }
+
+                // We need to get one character less not to include the trailing \r
+                // otherwise default character format comparison will fail
+                _reusableRange.SetRange(0, _reusableRange.StoryLength - 1);
 
                 range = _reusableRange;
                 storyLength = range.StoryLength;
@@ -1083,13 +1087,6 @@ namespace Telegram.Controls
                             hidden += rangeLength;
                         }
                     }
-                    else
-                    {
-                        start = Math.Min(range.StartPosition, range.EndPosition) - hidden;
-                        end = Math.Max(range.StartPosition, range.EndPosition) - hidden;
-
-                        builder.Append(range.Text.AsSpan());
-                    }
 
                     if (range.CharacterFormat.Weight == FontWeights.SemiBold.Weight)
                     {
@@ -1111,6 +1108,14 @@ namespace Telegram.Controls
                     {
                         flags |= TextStyle.Spoiler;
                     }
+                }
+
+                if (start == -1)
+                {
+                    start = Math.Min(range.StartPosition, range.EndPosition) - hidden;
+                    end = Math.Max(range.StartPosition, range.EndPosition) - hidden;
+
+                    builder.Append(range.Text.AsSpan());
                 }
 
                 if (flags != 0)

@@ -270,6 +270,11 @@ namespace Telegram.Common
             var last = entities.LastOrDefault(x => x.Length + x.Offset == offset && AreTheSame(x.Type, type));
             if (last != null)
             {
+                if (type is TextEntityTypePre)
+                {
+                    last.Type = type;
+                }
+
                 last.Length += length;
             }
             else
@@ -287,6 +292,10 @@ namespace Telegram.Common
             else if (x is TextEntityTypeMentionName xMentionName && y is TextEntityTypeMentionName yMentionName)
             {
                 return Equals(xMentionName.UserId, yMentionName.UserId);
+            }
+            else if (x is TextEntityTypePre or TextEntityTypeCode && y is TextEntityTypeCode or TextEntityTypePre)
+            {
+                return true;
             }
 
             return x.GetType() == y.GetType();
