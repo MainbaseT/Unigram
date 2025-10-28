@@ -192,6 +192,69 @@ namespace Telegram.Controls
             Height = double.NaN;
         }
 
+        private Size _footerSize = new Size(96, 48);
+        public Size FooterSize
+        {
+            get => _footerSize;
+            set
+            {
+                if (_footerSize != value)
+                {
+                    _footerSize = value;
+                    UpdatePadding();
+                }
+            }
+        }
+
+        // Experiment: change bottom padding depending on text position to allow wrapping around send and other buttons
+        private void UpdatePadding()
+        {
+            if (_reusableRange == null)
+            {
+                _reusableRange = Document.GetRange(TextConstants.MaxUnitCount, TextConstants.MaxUnitCount);
+            }
+            else
+            {
+                _reusableRange.SetRange(TextConstants.MaxUnitCount, TextConstants.MaxUnitCount);
+            }
+
+            var range = _reusableRange;
+            range.GetRect(PointOptions.ClientCoordinates | PointOptions.AllowOffClient, out Rect rect, out _);
+
+            double scaleFactor = 1.0;  // Assuming a 1.0 scale factor when no XamlRoot is available at the moment.
+            {
+                scaleFactor = XamlRoot.RasterizationScale;
+            }
+
+            static double LayoutRound(double value, double scaleFactor)
+            {
+                return Math.Round(value * scaleFactor) / scaleFactor;
+            }
+
+            if (Padding.Left + rect.Right > ActualWidth - FooterSize.Width)
+            {
+                ContentElement.Padding = new Thickness(0, 13, 0, FooterSize.Height);
+            }
+            else if (rect.Y > 0)
+            {
+                range.Expand(TextRangeUnit.Line);
+
+                var expand = range.Expand(TextRangeUnit.Paragraph);
+                if (expand > 0)
+                {
+                    ContentElement.Padding = new Thickness(0, 13, 0, LayoutRound(48 - rect.Height, scaleFactor));
+                }
+                else
+                {
+                    ContentElement.Padding = new Thickness(0, 13, 0, 15);
+                }
+            }
+            else
+            {
+                ContentElement.Padding = new Thickness(0, 13, 0, 15);
+            }
+        }
+
         protected override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
