@@ -729,7 +729,7 @@ namespace Telegram.Navigation
         public static bool IsKeyDown(VirtualKey key)
         {
             //return (InputKeyboardSource.GetKeyStateForCurrentThread(key) & Windows.UI.Core.CoreVirtualKeyStates.Down) != 0;
-            return (Window.Current.CoreWindow.GetKeyState(key) & CoreVirtualKeyStates.Down) != 0;
+            return (Window.Current.CoreWindow.GetAsyncKeyState(key) & CoreVirtualKeyStates.Down) != 0;
         }
 
         public static bool IsKeyDownAsync(VirtualKey key)
@@ -745,17 +745,17 @@ namespace Telegram.Navigation
             var modifiers = VirtualKeyModifiers.None;
             var coreWindow = Window.Current.CoreWindow;
 
-            if ((coreWindow.GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) != 0)
+            if ((coreWindow.GetAsyncKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) != 0)
             {
                 modifiers |= VirtualKeyModifiers.Control;
             }
 
-            if ((coreWindow.GetKeyState(VirtualKey.Menu) & CoreVirtualKeyStates.Down) != 0)
+            if ((coreWindow.GetAsyncKeyState(VirtualKey.Menu) & CoreVirtualKeyStates.Down) != 0)
             {
                 modifiers |= VirtualKeyModifiers.Menu;
             }
 
-            if ((coreWindow.GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) != 0)
+            if ((coreWindow.GetAsyncKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) != 0)
             {
                 modifiers |= VirtualKeyModifiers.Shift;
             }
