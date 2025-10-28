@@ -1024,8 +1024,8 @@ namespace Telegram.Controls
                 var flags = default(TextStyle);
                 var type = default(TextEntityType);
 
-                var start = 0;
-                var end = 0;
+                var start = -1;
+                var end = -1;
 
                 if (range.ParagraphFormat.SpaceAfter != 0 && range.Character != '\r')
                 {
