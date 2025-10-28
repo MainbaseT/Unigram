@@ -3990,18 +3990,6 @@ public static class CoreWindow_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.UI.Core.CoreVirtualKeyStates GetKeyState_stub(this Windows.UI.Core.CoreWindow sender, Windows.System.VirtualKey virtualKey)
-    {
-        try
-        {
-            return sender.GetKeyState(virtualKey);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
 }
 public static class SystemNavigationManager_stub
 {
