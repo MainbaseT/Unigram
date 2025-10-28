@@ -549,6 +549,9 @@ namespace Telegram.Views
 
                 Messages.Margin = new Thickness(0);
 
+                ShadowCaster.Visibility = Visibility.Collapsed;
+                LinearCaster.Visibility = Visibility.Collapsed;
+
                 var background = new Border
                 {
                     Style = Resources["HeaderBackgroundStyle"] as Style

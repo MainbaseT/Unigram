@@ -1796,7 +1796,8 @@
                 </Grid>
             </Grid>
 
-            <Border IsHitTestVisible="False"
+            <Border x:Name="LinearCaster"
+                    IsHitTestVisible="False"
                     Height="64"
                     Margin="0,-8,0,0"
                     VerticalAlignment="Bottom"
