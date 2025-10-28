@@ -1082,9 +1082,17 @@ namespace Telegram.Controls
 
                                 range.GetText(TextGetOptions.NoHidden, out string noHidden);
                                 builder.Append(noHidden.AsSpan());
-                            }
 
-                            hidden += rangeLength;
+                                hidden += rangeLength;
+                            }
+                            else
+                            {
+                                // Pure hidden text (emoji alt text)
+                                hidden += rangeLength;
+
+                                range.Collapse(false);
+                                continue;
+                            }
                         }
                     }
 
