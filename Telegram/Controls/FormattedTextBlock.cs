@@ -109,7 +109,7 @@ namespace Telegram.Controls
         private RichTextBlock TextBlock;
 
         private bool _templateApplied;
-        private bool _templateExecuted;
+        private int _templateExecuted;
 
         public FormattedTextBlock()
         {
@@ -800,7 +800,7 @@ namespace Telegram.Controls
         protected override void OnLoaded()
         {
             // Don't reapply the text if it was just applied by OnApplyTemplate
-            if (_templateExecuted || _pools == null)
+            if (_templateExecuted > 0 || _pools == null)
             {
                 return;
             }
@@ -818,7 +818,7 @@ namespace Telegram.Controls
 
         protected override void OnUnloaded()
         {
-            _templateExecuted = false;
+            _templateExecuted = 0;
 
             if (_pools == null || (_fastRun != null && _text?.IsPlain is true))
             {
@@ -857,7 +857,7 @@ namespace Telegram.Controls
                 return;
             }
 
-            _templateExecuted = true;
+            var execution = ++_templateExecuted;
 
             var autoFontSize = fontSize;
             var xamlFontSize = TextBlock.FontSize;
@@ -1079,7 +1079,7 @@ namespace Telegram.Controls
                                 if (entity.Type is TextEntityTypePreCode preCode && preCode.Language.Length > 0)
                                 {
                                     _codeBlocks.Add(new FormattedParagraph(temp, part));
-                                    ProcessCodeBlock(direct, inlines, placeholder, data, preCode.Language);
+                                    ProcessCodeBlock(direct, inlines, placeholder, data, preCode.Language, execution);
                                 }
                                 else
                                 {
@@ -1751,52 +1751,24 @@ namespace Telegram.Controls
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Run CreateRun(string text, ref int offset, FlowDirection direction, FontWeight? fontWeight = null, FontFamily fontFamily = null, double fontSize = 0)
-        {
-            var direct = XamlDirect.GetDefault();
-            var run = direct.CreateInstance(XamlTypeIndex.Run);
-            direct.SetStringProperty(run, XamlPropertyIndex.Run_Text, text);
-            direct.SetEnumProperty(run, XamlPropertyIndex.Run_FlowDirection, (uint)direction);
-
-            offset += text.Length;
-
-            if (fontWeight != null)
-            {
-                direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_FontWeight, fontWeight.Value);
-            }
-
-            if (fontFamily != null)
-            {
-                direct.SetObjectProperty(run, XamlPropertyIndex.TextElement_FontFamily, fontFamily);
-            }
-
-            if (fontSize > 0)
-            {
-                direct.SetDoubleProperty(run, XamlPropertyIndex.TextElement_FontSize, fontSize);
-            }
-
-            return direct.GetObject(run) as Run;
-        }
-
         #region PreCode
 
-        private async void ProcessCodeBlock(XamlDirect direct, IXamlDirectObject inlines, IXamlDirectObject placeholder, string text, string language)
+        private async void ProcessCodeBlock(XamlDirect direct, IXamlDirectObject inlines, IXamlDirectObject placeholder, string text, string language, int execution)
         {
             try
             {
                 var tokens = await SyntaxToken.TokenizeAsync(language.ToLowerInvariant(), text);
 
-                // We need to manually recycle the Run or we'll lose track of it
-                if (_pools != null)
-                {
-                    _pools.Runs.Enqueue(placeholder);
-                    _activeRuns.Remove(placeholder);
-                }
-
                 // Only apply if text block is still loaded
-                if (_templateExecuted)
+                if (_templateExecuted == execution)
                 {
+                    // We need to manually recycle the Run or we'll lose track of it
+                    if (_pools != null && !_activeRuns.Contains(placeholder))
+                    {
+                        _pools.Runs.Enqueue(placeholder);
+                        _activeRuns.Remove(placeholder);
+                    }
+
                     direct.ClearCollection(inlines);
                     ProcessCodeBlock(direct, inlines, tokens.Children);
                 }
