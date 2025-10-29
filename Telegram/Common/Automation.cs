@@ -11,6 +11,7 @@ using Telegram.Converters;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.ViewModels.Delegates;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
@@ -394,7 +395,7 @@ namespace Telegram.Common
         {
             if (message.Content.IsService() && clientService.TryGetChat(message.ChatId, out Chat chat))
             {
-                return MessageService.GetText(new MessageViewModel(clientService, null, chat, null, null, message)) + ", ";
+                return MessageService.GetText(new MessageViewModel(clientService, null as IMessageDelegate, chat, null, null, message)) + ", ";
             }
 
             if (message.Content is MessageAlbum album)

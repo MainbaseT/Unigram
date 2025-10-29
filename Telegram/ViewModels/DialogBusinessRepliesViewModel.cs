@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Rg.DiffUtils;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Services;
@@ -15,7 +16,7 @@ namespace Telegram.ViewModels
 {
     public partial class QuickReplyMessageViewModel : MessageViewModel
     {
-        public QuickReplyMessageViewModel(IClientService clientService, IMessageDelegate delegato, Chat chat, Message message, bool processText = false)
+        public QuickReplyMessageViewModel(IClientService clientService, WeakReference delegato, Chat chat, Message message, bool processText = false)
             : base(clientService, delegato, chat, null, null, message, processText)
         {
         }
@@ -59,7 +60,7 @@ namespace Telegram.ViewModels
             var replied = update.Messages.OrderBy(x => x.Id).Select(x =>
             {
                 var message = new Message(x.Id, new MessageSenderUser(ClientService.Options.MyId), ClientService.Options.MyId, x.SendingState, null, true, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, null, null, 0, 0, x.ViaBotUserId, 0, 0, 0, string.Empty, x.MediaAlbumId, 0, null, x.Content, x.ReplyMarkup);
-                var model = new QuickReplyMessageViewModel(ClientService, _messageDelegate, _chat, message, true)
+                var model = new QuickReplyMessageViewModel(ClientService, _messageDelegateWeak, _chat, message, true)
                 {
                     CanBeEdited = x.CanBeEdited
                 };

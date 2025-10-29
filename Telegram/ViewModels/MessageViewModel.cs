@@ -15,7 +15,7 @@ namespace Telegram.ViewModels
 {
     public partial class PinnedMessageViewModel : MessageViewModel
     {
-        public PinnedMessageViewModel(IClientService clientService, IMessageDelegate delegato, Chat chat, Message message, int index)
+        public PinnedMessageViewModel(IClientService clientService, WeakReference delegato, Chat chat, Message message, int index)
             : base(clientService, delegato, chat, null, null, message, true)
         {
             Index = index;
@@ -43,6 +43,20 @@ namespace Telegram.ViewModels
             : base(clientService, message, chat)
         {
             _delegate = new WeakReference(delegato);
+
+            _forumTopic = forumTopic;
+            _directMessagesChatTopic = directMessagesChatTopic;
+
+            if (processText)
+            {
+                SetText(message.Content?.GetCaption());
+            }
+        }
+
+        public MessageViewModel(IClientService clientService, WeakReference delegato, Chat chat, ForumTopic forumTopic, DirectMessagesChatTopic directMessagesChatTopic, Message message, bool processText = false)
+            : base(clientService, message, chat)
+        {
+            _delegate = delegato;
 
             _forumTopic = forumTopic;
             _directMessagesChatTopic = directMessagesChatTopic;

@@ -110,6 +110,7 @@ namespace Telegram.ViewModels
         protected readonly DisposableMutex _loadMoreLock = new();
 
         protected readonly IMessageDelegate _messageDelegate;
+        protected readonly WeakReference _messageDelegateWeak;
 
         protected readonly ILocationService _locationService;
         protected readonly INotificationsService _notificationsService;
@@ -142,6 +143,7 @@ namespace Telegram.ViewModels
             _translateService = translateService;
 
             _messageDelegate = new DialogMessageDelegate(this);
+            _messageDelegateWeak = new WeakReference(_messageDelegate);
 
             Mentions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadMention());
             Reactions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadReaction());
@@ -1864,7 +1866,7 @@ namespace Telegram.ViewModels
                 return null;
             }
 
-            var model = new MessageViewModel(ClientService, _messageDelegate, _chat, _forumTopic, _directMessagesChatTopic, message, true);
+            var model = new MessageViewModel(ClientService, _messageDelegateWeak, _chat, _forumTopic, _directMessagesChatTopic, message, true);
 
             if (forLanguageStatistics)
             {
@@ -1881,7 +1883,7 @@ namespace Telegram.ViewModels
                 return null;
             }
 
-            return new PinnedMessageViewModel(ClientService, _messageDelegate, _chat, message, index);
+            return new PinnedMessageViewModel(ClientService, _messageDelegateWeak, _chat, message, index);
         }
 
         protected void ProcessMessages(Chat chat, IList<MessageViewModel> messages, bool returnAlbumRoot = false)
