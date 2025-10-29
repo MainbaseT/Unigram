@@ -1625,6 +1625,9 @@ namespace Telegram.Controls.Messages
 
             Panel.ForceNewLine = message?.GeneratedContent is MessageBigEmoji;
 
+            // IsVisuallyOutgoing here can't be used
+            var outgoing = (message.IsOutgoing && !message.IsChannelPost && message.SenderId is MessageSenderUser) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
+
             var aboveMedia = message.ShowCaptionAboveMedia();
             var factCheck = message.FactCheck == null ? 0 : 1;
 
@@ -1659,7 +1662,7 @@ namespace Telegram.Controls.Messages
 
                 var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
 
-                if (isFirst && !message.IsVisuallyOutgoing && !message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+                if (isFirst && !outgoing && !message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
                 {
                     top = 4;
                 }
