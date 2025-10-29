@@ -90,7 +90,7 @@ namespace Telegram.Services.Factories
             return new InputMessageVideo(generated, thumbnail, null, 0, Array.Empty<int>(), duration, videoWidth, videoHeight, true, caption, captionAboveMedia, ttl, spoiler);
         }
 
-        public static async Task<InputMessageContent> CreateVideoNoteAsync(StorageVideo video, VideoGeneration generation)
+        public static async Task<InputMessageContent> CreateVideoNoteAsync(StorageVideo video, VideoGeneration generation, MessageSelfDestructType selfDestructType)
         {
             var duration = video.TotalSeconds;
             var videoWidth = video.Width;
@@ -101,7 +101,7 @@ namespace Telegram.Services.Factories
             var thumbnail = await video.ToVideoThumbnailAsync(generation, ConversionType.TranscodeThumbnail, serialized);
 
             // TODO: 172 selfDestructType
-            return new InputMessageVideoNote(generated, thumbnail, duration, (int)generation.Width, null);
+            return new InputMessageVideoNote(generated, thumbnail, duration, (int)generation.Width, selfDestructType);
         }
 
         public static async Task<Object> CreateDocumentAsync(StorageMedia media, FormattedText caption, bool forceDocument)

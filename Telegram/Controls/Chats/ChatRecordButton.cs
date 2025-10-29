@@ -678,6 +678,12 @@ namespace Telegram.Controls.Chats
 
         public event EventHandler<float> QuantumProcessed;
 
+        public bool IsViewOnce
+        {
+            get => _recorder.IsViewOnce;
+            set => _recorder.IsViewOnce = value;
+        }
+
         public partial class Recorder
         {
             public event EventHandler RecordingFailed;
@@ -712,6 +718,8 @@ namespace Telegram.Controls.Chats
             {
                 _current = null;
             }
+
+            public bool IsViewOnce { get; set; }
 
             public async void Start(ChatRecordMode mode, Chat chat)
             {
@@ -1138,6 +1146,12 @@ namespace Telegram.Controls.Chats
 
             private async void Send(ComposeViewModel viewModel, ChatRecordMode mode, Chat chat, StorageFile file, bool mirroring, int duration)
             {
+                var selfDestructType = IsViewOnce
+                        ? new MessageSelfDestructTypeImmediately()
+                        : null;
+
+                IsViewOnce = false;
+
                 if (mode == ChatRecordMode.Video)
                 {
                     var props = await file.Properties.GetVideoPropertiesAsync();
@@ -1177,7 +1191,7 @@ namespace Telegram.Controls.Chats
 
                     try
                     {
-                        _dispatcherQueue.TryEnqueue(() => _ = viewModel.SendVideoNoteAsync(video as StorageVideo, generation));
+                        _dispatcherQueue.TryEnqueue(() => _ = viewModel.SendVideoNoteAsync(video as StorageVideo, generation, selfDestructType));
                     }
                     catch { }
                 }
@@ -1185,7 +1199,7 @@ namespace Telegram.Controls.Chats
                 {
                     try
                     {
-                        _dispatcherQueue.TryEnqueue(() => _ = viewModel.SendVoiceNoteAsync(file, duration, null));
+                        _dispatcherQueue.TryEnqueue(() => _ = viewModel.SendVoiceNoteAsync(file, duration, null, selfDestructType));
                     }
                     catch { }
                 }

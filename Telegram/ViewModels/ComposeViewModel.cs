@@ -567,7 +567,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public async Task SendVideoNoteAsync(StorageVideo video, VideoGeneration generation)
+        public async Task SendVideoNoteAsync(StorageVideo video, VideoGeneration generation, MessageSelfDestructType selfDestructType)
         {
             var options = await PickMessageSendOptionsAsync();
             if (options == null)
@@ -575,7 +575,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var factory = await MessageFactory.CreateVideoNoteAsync(video, generation);
+            var factory = await MessageFactory.CreateVideoNoteAsync(video, generation, selfDestructType);
             if (factory is InputMessageContent input)
             {
                 var reply = GetReply(true);
@@ -584,7 +584,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public async Task SendVoiceNoteAsync(StorageFile file, int duration, FormattedText caption)
+        public async Task SendVoiceNoteAsync(StorageFile file, int duration, FormattedText caption, MessageSelfDestructType selfDestructType)
         {
             var options = await PickMessageSendOptionsAsync();
             if (options == null)
@@ -594,7 +594,7 @@ namespace Telegram.ViewModels
 
             // TODO: 172 selfDestructType
             var reply = GetReply(true);
-            var input = new InputMessageVoiceNote(await file.ToGeneratedAsync(ConversionType.Opus), duration, Array.Empty<byte>(), caption, null);
+            var input = new InputMessageVoiceNote(await file.ToGeneratedAsync(ConversionType.Opus), duration, Array.Empty<byte>(), caption, selfDestructType);
 
             await SendMessageAsync(reply, input, options);
         }

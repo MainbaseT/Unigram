@@ -14940,6 +14940,12 @@ If you didn&apos;t request any codes — don&apos;t worry! Most likely, someone
   <data name="Videos_other" xml:space="preserve">
     <value>{0} videos</value>
   </data>
+  <data name="VideoSetOnceHint" xml:space="preserve">
+    <value>Tap to set this message to **Play Once**.</value>
+  </data>
+  <data name="VideoSetOnceHintEnabled" xml:space="preserve">
+    <value>The recipient will be able to play it only once.</value>
+  </data>
   <data name="ViewAction" xml:space="preserve">
     <value>View</value>
   </data>
@@ -15039,6 +15045,12 @@ Anonymously</value>
   </data>
   <data name="VoiceMessagesRestrictedByPrivacy" xml:space="preserve">
     <value>**{0}** doesn&apos;t accept voice messages.</value>
+  </data>
+  <data name="VoiceSetOnceHint" xml:space="preserve">
+    <value>Tap to set this message to **Play Once**.</value>
+  </data>
+  <data name="VoiceSetOnceHintEnabled" xml:space="preserve">
+    <value>The recipient will be able to listen only once.</value>
   </data>
   <data name="VoipBusy" xml:space="preserve">
     <value>Line busy</value>

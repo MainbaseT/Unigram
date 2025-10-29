@@ -154,30 +154,58 @@
                       HorizontalAlignment="Left"
                       VerticalAlignment="Bottom"
                       Margin="-20,0,0,-20">
-                    <Grid x:Name="PauseRoot"
-                          Visibility="Collapsed"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Top"
-                          Margin="0,-8,0,0">
-                        <Ellipse x:Name="ArrowShadow"
-                                 Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                                 Width="36"
-                                 Height="36" />
-                        <Border Background="{ThemeResource PageSubHeaderBackgroundBrush}"
-                                CornerRadius="18"
-                                Height="36"
-                                Width="36">
-                            <controls:AnimatedGlyphToggleButton x:Name="PauseButton"
-                                                                Click="Pause_Click"
-                                                                Width="44"
-                                                                Height="44"
-                                                                Glyph="&#xE769;"
-                                                                CheckedGlyph="&#xE720;"
-                                                                CornerRadius="22"
-                                                                IsOneWay="False"
-                                                                Margin="-4" />
-                        </Border>
-                    </Grid>
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                Margin="0,-52,0,0">
+                        <Grid x:Name="ViewOnceRoot"
+                              Visibility="Collapsed"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Top"
+                              Margin="0,0,0,8">
+                            <Ellipse x:Name="ViewOnceCaster"
+                                     Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                                     Width="36"
+                                     Height="36" />
+                            <Border Background="{ThemeResource PageSubHeaderBackgroundBrush}"
+                                    CornerRadius="18"
+                                    Height="36"
+                                    Width="36">
+                                <controls:AnimatedGlyphToggleButton x:Name="ViewOnceButton"
+                                                                    Click="ViewOnce_Click"
+                                                                    Width="44"
+                                                                    Height="44"
+                                                                    Glyph="&#xE918;"
+                                                                    CheckedGlyph="&#xEAE9;"
+                                                                    CornerRadius="22"
+                                                                    IsOneWay="False"
+                                                                    Margin="-4" />
+                            </Border>
+                        </Grid>
+
+                        <Grid x:Name="PauseRoot"
+                              Visibility="Collapsed"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Top">
+                            <Ellipse x:Name="PauseCaster"
+                                     Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                                     Width="36"
+                                     Height="36" />
+                            <Border Background="{ThemeResource PageSubHeaderBackgroundBrush}"
+                                    CornerRadius="18"
+                                    Height="36"
+                                    Width="36">
+                                <controls:AnimatedGlyphToggleButton x:Name="PauseButton"
+                                                                    Click="Pause_Click"
+                                                                    Width="44"
+                                                                    Height="44"
+                                                                    Glyph="&#xE769;"
+                                                                    CheckedGlyph="&#xE720;"
+                                                                    CornerRadius="22"
+                                                                    IsOneWay="False"
+                                                                    Margin="-4" />
+                            </Border>
+                        </Grid>
+                    </StackPanel>
 
                     <Border x:Name="Blob" />
                     <Grid CornerRadius="40"

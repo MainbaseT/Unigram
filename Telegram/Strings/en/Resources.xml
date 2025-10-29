@@ -13018,4 +13018,9 @@
 
     <string name="GiftLocked">Gift Locked</string>
 
+    <string name="VoiceSetOnceHint">Tap to set this message to **Play Once**.</string>
+    <string name="VoiceSetOnceHintEnabled">The recipient will be able to listen only once.</string>
+    <string name="VideoSetOnceHint">Tap to set this message to **Play Once**.</string>
+    <string name="VideoSetOnceHintEnabled">The recipient will be able to play it only once.</string>
+
 </resources>

@@ -4,6 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -13,6 +14,7 @@ using Telegram.Composition;
 using Telegram.Controls.Media;
 using Telegram.Native.Controls;
 using Telegram.Navigation;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
@@ -47,8 +49,11 @@ namespace Telegram.Controls.Chats
         {
             InitializeComponent();
 
-            var visual = VisualUtilities.DropShadow(ArrowShadow, 2);
-            visual.Offset = new Vector3(0, 1, 0);
+            ViewOnceCaster.Shadow = new ThemeShadow();
+            ViewOnceCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+
+            PauseCaster.Shadow = new ThemeShadow();
+            PauseCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
 
             ElementCompositionPreview.SetIsTranslationEnabled(Ellipse, true);
 
@@ -353,6 +358,12 @@ namespace Telegram.Controls.Chats
             //    return;
             //}
 
+            if (_viewOnceToast != null)
+            {
+                _viewOnceToast.IsOpen = false;
+                _viewOnceToast = null;
+            }
+
             _blobVisual.StopAnimating();
 
             await SaveLastFrameAsync();
@@ -382,6 +393,7 @@ namespace Telegram.Controls.Chats
 
                 Visibility = Visibility.Collapsed;
                 ButtonCancelRecording.Visibility = Visibility.Collapsed;
+                ViewOnceRoot.Visibility = Visibility.Collapsed;
                 PauseRoot.Visibility = Visibility.Collapsed;
                 PauseButton.IsChecked = false;
                 ElapsedLabel.Text = "0:00,0";
@@ -420,6 +432,18 @@ namespace Telegram.Controls.Chats
 
             _slideVisual.StartAnimation("Offset.X", slideAnimation);
             _recordVisual.StartAnimation("Opacity", visibleAnimation);
+
+            if (ViewOnceRoot.Visibility == Visibility.Visible)
+            {
+                var viewOnce = ElementComposition.GetElementVisual(ViewOnceRoot);
+                viewOnce.CenterPoint = new Vector3(18);
+
+                var scale = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
+                scale.InsertKeyFrame(0, Vector3.One);
+                scale.InsertKeyFrame(1, Vector3.Zero);
+
+                viewOnce.StartAnimation("Scale", scale);
+            }
 
             if (PauseRoot.Visibility == Visibility.Visible)
             {
@@ -462,7 +486,20 @@ namespace Telegram.Controls.Chats
             _slideVisual.Opacity = 0;
             _slideVisual.Offset = point;
 
+            ViewOnceRoot.Visibility = Visibility.Visible;
             PauseRoot.Visibility = Visibility.Visible;
+
+            var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            batch.Completed += (s, args) =>
+            {
+                if (SettingsService.Current.ToolTip.Increment("NotesViewOnce"))
+                {
+                    _viewOnceToast = ToastPopup.Show(ViewOnceRoot, ControlledButton.Mode == ChatRecordMode.Voice ? Strings.VoiceSetOnceHint : Strings.VideoSetOnceHint, TeachingTipPlacementMode.Right, dismissAfter: TimeSpan.FromSeconds(3));
+                }
+            };
+
+            var viewOnce = ElementComposition.GetElementVisual(ViewOnceRoot);
+            viewOnce.CenterPoint = new Vector3(18);
 
             var pause = ElementComposition.GetElementVisual(PauseRoot);
             pause.CenterPoint = new Vector3(18);
@@ -472,6 +509,9 @@ namespace Telegram.Controls.Chats
             scale.InsertKeyFrame(1, Vector3.One);
 
             pause.StartAnimation("Scale", scale);
+            viewOnce.StartAnimation("Scale", scale);
+
+            batch.End();
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -547,6 +587,23 @@ namespace Telegram.Controls.Chats
             _rootVisual.Size = e.NewSize.ToVector2();
         }
 
+        private ToastPopup _viewOnceToast;
+
+        private void ViewOnce_Click(object sender, RoutedEventArgs e)
+        {
+            ControlledButton.IsViewOnce = ViewOnceButton.IsChecked is true;
+
+            if (ControlledButton.IsViewOnce)
+            {
+                _viewOnceToast = ToastPopup.Show(ViewOnceRoot, ControlledButton.Mode == ChatRecordMode.Voice ? Strings.VoiceSetOnceHintEnabled : Strings.VideoSetOnceHintEnabled, TeachingTipPlacementMode.Right, dismissAfter: TimeSpan.FromSeconds(3));
+            }
+            else if (_viewOnceToast != null)
+            {
+                _viewOnceToast.IsOpen = false;
+                _viewOnceToast = null;
+            }
+        }
+
         public void Pause()
         {
             Pause_Click(null, null);
@@ -588,14 +645,17 @@ namespace Telegram.Controls.Chats
                 ellipse.StartAnimation("Size.X", width);
                 ellipse.StartAnimation("Offset.X", offset);
 
-                var root = ElementComposition.GetElementVisual(PauseRoot);
+                var viewOnce = ElementComposition.GetElementVisual(ViewOnceRoot);
+                var pause = ElementComposition.GetElementVisual(PauseRoot);
+                ElementCompositionPreview.SetIsTranslationEnabled(ViewOnceRoot, true);
                 ElementCompositionPreview.SetIsTranslationEnabled(PauseRoot, true);
 
                 var translate = compositor.CreateScalarKeyFrameAnimation();
                 translate.InsertKeyFrame(0, 0);
                 translate.InsertKeyFrame(1, 20);
 
-                root.StartAnimation("Translation.Y", translate);
+                viewOnce.StartAnimation("Translation.Y", translate);
+                pause.StartAnimation("Translation.Y", translate);
 
                 ElementCompositionPreview.SetElementChildVisual(WaveformBackground, visual);
                 ChatRecordGlyph.Foreground = new SolidColorBrush(Theme.Accent);
@@ -635,14 +695,17 @@ namespace Telegram.Controls.Chats
                 ellipse.StartAnimation("Size.X", width);
                 ellipse.StartAnimation("Offset.X", offset);
 
-                var root = ElementComposition.GetElementVisual(PauseRoot);
+                var viewOnce = ElementComposition.GetElementVisual(ViewOnceRoot);
+                var pause = ElementComposition.GetElementVisual(PauseRoot);
+                ElementCompositionPreview.SetIsTranslationEnabled(ViewOnceRoot, true);
                 ElementCompositionPreview.SetIsTranslationEnabled(PauseRoot, true);
 
                 var translate = compositor.CreateScalarKeyFrameAnimation();
                 translate.InsertKeyFrame(1, 0);
                 translate.InsertKeyFrame(0, 20);
 
-                root.StartAnimation("Translation.Y", translate);
+                viewOnce.StartAnimation("Translation.Y", translate);
+                pause.StartAnimation("Translation.Y", translate);
 
                 ElementCompositionPreview.SetElementChildVisual(WaveformBackground, visual);
                 ChatRecordGlyph.Foreground = new SolidColorBrush(Colors.White);
