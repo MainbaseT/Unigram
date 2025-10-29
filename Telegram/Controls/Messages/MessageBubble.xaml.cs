@@ -551,8 +551,8 @@ namespace Telegram.Controls.Messages
             var bottomOutgoing = false;
             var bottomIncoming = false;
 
-            var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
-            var isLast = message.Delegate.IsSavedMessagesTab ? message.IsFirst : message.IsLast;
+            var isFirst = message.Delegate?.IsSavedMessagesTab ?? false ? message.IsLast : message.IsFirst;
+            var isLast = message.Delegate?.IsSavedMessagesTab ?? false ? message.IsFirst : message.IsLast;
 
             if (message.IsVisuallyOutgoing)
             {
@@ -762,7 +762,7 @@ namespace Telegram.Controls.Messages
         {
             if (message.HasSenderPhoto)
             {
-                var isLast = message.Delegate.IsSavedMessagesTab ? message.IsFirst : message.IsLast;
+                var isLast = message.Delegate?.IsSavedMessagesTab ?? false ? message.IsFirst : message.IsLast;
                 if (isLast)
                 {
                     if (message.Id != _photoId || PhotoRoot == null || PhotoRoot.Visibility == Visibility.Collapsed)
@@ -1002,7 +1002,7 @@ namespace Telegram.Controls.Messages
             var header = false;
             var forward = false;
 
-            var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
+            var isFirst = message.Delegate?.IsSavedMessagesTab ?? false ? message.IsLast : message.IsFirst;
 
             if (!light && isFirst && (message.IsSaved || message.IsVerificationCode) && !outgoing)
             {
@@ -1660,7 +1660,7 @@ namespace Telegram.Controls.Messages
                 var top = 0;
                 var bottom = 0;
 
-                var isFirst = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
+                var isFirst = message.Delegate?.IsSavedMessagesTab ?? false ? message.IsLast : message.IsFirst;
 
                 if (isFirst && !outgoing && !message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
                 {
@@ -1869,7 +1869,7 @@ namespace Telegram.Controls.Messages
             var result = false;
             var textz = message.TranslatedText switch
             {
-                MessageTranslateResultText translated => message.Delegate.IsTranslating
+                MessageTranslateResultText translated => message.Delegate?.IsTranslating ?? false
                     ? translated.Text
                     : message.Text,
                 _ => message.Text
@@ -2797,7 +2797,7 @@ namespace Telegram.Controls.Messages
         private void Thread_Click(object sender, RoutedEventArgs e)
         {
             var message = _message;
-            if (message == null)
+            if (message?.Delegate == null)
             {
                 return;
             }
@@ -2808,7 +2808,7 @@ namespace Telegram.Controls.Messages
         private void Reply_Click(object sender, RoutedEventArgs e)
         {
             var message = _message;
-            if (message == null)
+            if (message?.Delegate == null)
             {
                 return;
             }
