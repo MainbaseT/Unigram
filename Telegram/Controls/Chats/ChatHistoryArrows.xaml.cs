@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Chats
 {
@@ -20,14 +21,20 @@ namespace Telegram.Controls.Chats
         {
             InitializeComponent();
 
-            var visual = VisualUtilities.DropShadow(ArrowShadow, 2);
-            visual.Offset = new Vector3(0, 1, 0);
+            if (ApiInfo.CanCreateThemeShadow)
+            {
+                var shadow = new ThemeShadow();
+                var translation = new Vector3(0, 0, Constants.BubbleElevation);
 
-            visual = VisualUtilities.DropShadow(ArrowMentionsShadow, 2);
-            visual.Offset = new Vector3(0, 1, 0);
+                ArrowShadow.Shadow = shadow;
+                ArrowShadow.Translation = translation;
 
-            visual = VisualUtilities.DropShadow(ArrowReactionsShadow, 2);
-            visual.Offset = new Vector3(0, 1, 0);
+                ArrowMentionsShadow.Shadow = shadow;
+                ArrowMentionsShadow.Translation = translation;
+
+                ArrowReactionsShadow.Shadow = shadow;
+                ArrowReactionsShadow.Translation = translation;
+            }
 
             var reactions = ElementComposition.GetElementVisual(ReactionsPanel);
             var mentions = ElementComposition.GetElementVisual(MentionsPanel);

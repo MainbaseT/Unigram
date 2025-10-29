@@ -49,11 +49,17 @@ namespace Telegram.Controls.Chats
         {
             InitializeComponent();
 
-            ViewOnceCaster.Shadow = new ThemeShadow();
-            ViewOnceCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+            if (ApiInfo.CanCreateThemeShadow)
+            {
+                var shadow = new ThemeShadow();
+                var translation = new Vector3(0, 0, Constants.BubbleElevation);
 
-            PauseCaster.Shadow = new ThemeShadow();
-            PauseCaster.Translation = new Vector3(0, 0, Constants.BubbleElevation);
+                ViewOnceCaster.Shadow = shadow;
+                ViewOnceCaster.Translation = translation;
+
+                PauseCaster.Shadow = shadow;
+                PauseCaster.Translation = translation;
+            }
 
             ElementCompositionPreview.SetIsTranslationEnabled(Ellipse, true);
 
