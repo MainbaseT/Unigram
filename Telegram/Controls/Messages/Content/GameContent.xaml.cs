@@ -91,35 +91,39 @@ namespace Telegram.Controls.Messages.Content
 
             if (giftColors != null)
             {
-                HeaderBrush =
-                    BorderBrush = new SolidColorBrush(giftColors.LightThemeColors[0].ToColor());
+                Background =
+                    HeaderBrush = new SolidColorBrush(giftColors.LightThemeAccentColor.ToColor());
+
+                BorderBrush = new SolidColorBrush(giftColors.LightThemeColors[0].ToColor());
 
                 AccentDash.Stripe1 = giftColors.LightThemeColors.Count > 1
-                    ? new SolidColorBrush(giftColors.LightThemeColors[1].ToColor())
-                    : null;
+                    ? giftColors.LightThemeColors[1].ToColor()
+                    : default;
                 AccentDash.Stripe2 = giftColors.LightThemeColors.Count > 2
-                    ? new SolidColorBrush(giftColors.LightThemeColors[2].ToColor())
-                    : null;
+                    ? giftColors.LightThemeColors[2].ToColor()
+                    : default;
             }
             else if (accent != null)
             {
-                HeaderBrush =
+                Background =
+                    HeaderBrush =
                     BorderBrush = new SolidColorBrush(accent.LightThemeColors[0]);
 
                 AccentDash.Stripe1 = accent.LightThemeColors.Count > 1
-                    ? new SolidColorBrush(accent.LightThemeColors[1])
-                    : null;
+                    ? accent.LightThemeColors[1]
+                    : default;
                 AccentDash.Stripe2 = accent.LightThemeColors.Count > 2
-                    ? new SolidColorBrush(accent.LightThemeColors[2])
-                    : null;
+                    ? accent.LightThemeColors[2]
+                    : default;
             }
             else
             {
+                ClearValue(BackgroundProperty);
                 ClearValue(HeaderBrushProperty);
                 ClearValue(BorderBrushProperty);
 
-                AccentDash.Stripe1 = null;
-                AccentDash.Stripe2 = null;
+                AccentDash.Stripe1 = default;
+                AccentDash.Stripe2 = default;
             }
         }
 

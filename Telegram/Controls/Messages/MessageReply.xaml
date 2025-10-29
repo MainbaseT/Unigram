@@ -59,6 +59,8 @@
                 Value="{ThemeResource MessageSubtleForegroundBrush}" />
         <Setter Property="BorderBrush"
                 Value="{ThemeResource MessageHeaderBorderBrush}" />
+        <Setter Property="Background"
+                Value="{ThemeResource MessageHeaderBorderBrush}" />
         <Setter Property="HorizontalContentAlignment"
                 Value="Stretch" />
         <Setter Property="VerticalContentAlignment"
@@ -110,7 +112,7 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Rectangle x:Name="BackgroundOverlay"
-                                   Fill="{TemplateBinding BorderBrush}"
+                                   Fill="{TemplateBinding Background}"
                                    Opacity="0.1"
                                    Grid.ColumnSpan="3" />
                         <Rectangle x:Name="Pill"
@@ -123,7 +125,7 @@
                                                    Grid.Column="2"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Stretch"
-                                                   BorderBrush="{TemplateBinding BorderBrush}"
+                                                   BorderBrush="{TemplateBinding Background}"
                                                    IsTabStop="False"
                                                    Margin="0,-3,7,0" />
 
@@ -183,7 +185,7 @@
                                    Text="&#xEA01;"
                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
                                    FontSize="16"
-                                   Foreground="{TemplateBinding BorderBrush}"
+                                   Foreground="{TemplateBinding Background}"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top"
                                    Margin="4"

@@ -68,7 +68,7 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Rectangle x:Name="BackgroundOverlay"
-                                   Fill="{TemplateBinding BorderBrush}"
+                                   Fill="{TemplateBinding Background}"
                                    Opacity="0.1"
                                    Grid.ColumnSpan="2" />
                         <Rectangle Fill="{TemplateBinding BorderBrush}"
@@ -80,7 +80,7 @@
                                                       Grid.Column="2"
                                                       HorizontalAlignment="Right"
                                                       VerticalAlignment="Stretch"
-                                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                                      BorderBrush="{TemplateBinding Background}"
                                                       IsTabStop="False"
                                                       Margin="0,-3,7,0" />
 
@@ -149,7 +149,7 @@
                                   Grid.Row="4"
                                   Grid.ColumnSpan="2">
                                 <Rectangle VerticalAlignment="Top"
-                                           Fill="{TemplateBinding BorderBrush}"
+                                           Fill="{TemplateBinding Background}"
                                            Height="1"
                                            Opacity="0.2"
                                            Grid.Row="3"

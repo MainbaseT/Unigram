@@ -38,7 +38,7 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Rectangle x:Name="BackgroundOverlay"
-                                   Fill="{TemplateBinding BorderBrush}"
+                                   Fill="{TemplateBinding Background}"
                                    Opacity="0.1"
                                    Grid.ColumnSpan="2" />
                         <Rectangle Fill="{TemplateBinding BorderBrush}"
