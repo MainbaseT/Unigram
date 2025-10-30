@@ -60,8 +60,6 @@ namespace Telegram.Controls
         public readonly Queue<InlineUIContainer> Emoji = new();
     }
 
-    public record FormattedParagraph(Paragraph Paragraph, StyledParagraph Styled);
-
     [ContentProperty(Name = "Blocks")]
     public partial class FormattedTextBlock : ControlEx
     {
@@ -84,7 +82,7 @@ namespace Telegram.Controls
 
         private ulong _expandSelectionDeadline;
 
-        private readonly List<FormattedParagraph> _codeBlocks = new();
+        private readonly List<int> _codeBlocks = new();
         private readonly List<Hyperlink> _links = new();
         private readonly List<TextStyleSpoiler> _spoilers = new();
 
@@ -841,6 +839,7 @@ namespace Telegram.Controls
 
             _fastRun = null;
             Recycle(direct);
+            ClearEntities();
         }
 
         public void SetText(IClientService clientService, StyledText styled, double fontSize = 0)
@@ -980,7 +979,7 @@ namespace Telegram.Controls
                     direct.SetDoubleProperty(paragraph, XamlPropertyIndex.TextElement_FontSize, Theme.Current.CaptionFontSize);
                     partFontSize = Theme.Current.CaptionFontSize;
 
-                    _codeBlocks.Add(new FormattedParagraph(temp, part));
+                    _codeBlocks.Add(i);
 
                     if (false && quote.IsExpandable)
                     {
@@ -1078,13 +1077,10 @@ namespace Telegram.Controls
 
                                 if (entity.Type is TextEntityTypePreCode preCode && preCode.Language.Length > 0)
                                 {
-                                    _codeBlocks.Add(new FormattedParagraph(temp, part));
                                     ProcessCodeBlock(direct, inlines, placeholder, data, preCode.Language, execution);
                                 }
-                                else
-                                {
-                                    _codeBlocks.Add(new FormattedParagraph(temp, part));
-                                }
+
+                                _codeBlocks.Add(i);
                             }
                         }
                         else
@@ -1478,8 +1474,14 @@ namespace Telegram.Controls
 
             foreach (var block in _codeBlocks)
             {
-                var paragraph = block.Paragraph;
-                var styled = block.Styled;
+                StyledParagraph styled = _text.Paragraphs[block];
+                Paragraph paragraph = TextBlock.Blocks[block] as Paragraph;
+
+                if (paragraph == null)
+                {
+                    // TODO: figure out why this happens
+                    continue;
+                }
 
                 var partial = _text.Text.Substring(styled.Offset, styled.Length);
                 var entities = styled.Entities ?? Array.Empty<TextEntity>();
@@ -1517,11 +1519,6 @@ namespace Telegram.Controls
 
                     Below.Children.Add(rect);
                 }
-            }
-
-            if (_spoilerPresenter != null)
-            {
-                Below.Children.Add(_spoilerPresenter);
             }
         }
 
@@ -1563,6 +1560,12 @@ namespace Telegram.Controls
                 {
                     StyledParagraph styled = _text.Paragraphs[hyperlink.ParagraphIndex];
                     Paragraph paragraph = TextBlock.Blocks[hyperlink.ParagraphIndex] as Paragraph;
+
+                    if (paragraph == null)
+                    {
+                        // TODO: figure out why this happens
+                        continue;
+                    }
 
                     if (hyperlink.ParagraphIndex == 0)
                     {
