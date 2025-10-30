@@ -63,15 +63,17 @@ namespace Telegram.Views
             if (_messagesShift.HasRanges())
             {
                 var panel = Messages.ItemsPanelRoot as ItemsStackPanel;
-                var reverse = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView;
-
-                var ranges = _messagesShift.GetRanges(reverse);
-                var diff = 0f;
-
-                foreach (var range in ranges)
+                if (panel != null)
                 {
-                    diff -= range.Height;
-                    AnimateSizeChanged(panel, range, diff);
+                    var reverse = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView;
+                    var ranges = _messagesShift.GetRanges(reverse);
+                    var diff = 0f;
+
+                    foreach (var range in ranges)
+                    {
+                        diff -= range.Height;
+                        AnimateSizeChanged(panel, range, diff);
+                    }
                 }
             }
 
