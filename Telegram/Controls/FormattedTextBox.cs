@@ -1037,7 +1037,7 @@ namespace Telegram.Controls
                 _reusableRange.SetRange(0, _reusableRange.StoryLength - 1);
 
                 range = _reusableRange;
-                storyLength = range.StoryLength;
+                storyLength = range.StoryLength - 1;
                 hidden = 0;
             }
 
@@ -1056,7 +1056,7 @@ namespace Telegram.Controls
                 range.Collapse(true);
             }
 
-            while (range.EndPosition < storyLength - 1)
+            while (range.EndPosition < storyLength)
             {
                 var startPos = range.StartPosition;
                 var shouldBreak = false;

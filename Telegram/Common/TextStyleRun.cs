@@ -198,6 +198,18 @@ namespace Telegram.Common
 
             foreach (var run in runs)
             {
+                if (run.End > text.Length)
+                {
+                    if (run.Start < text.Length)
+                    {
+                        run.End = text.Length;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
                 if (run.HasFlag(TextStyle.Emoji))
                 {
                     Create(run.Offset, run.Length, results, run.Type);
