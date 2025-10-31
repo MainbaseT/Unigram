@@ -98,7 +98,7 @@ namespace Telegram.Controls.Gallery
 
         protected override void OnPointerExited(PointerRoutedEventArgs e)
         {
-            if (IsLoaded && !SafeArea.Contains(e))
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse && IsLoaded && !SafeArea.Contains(e))
             {
                 _inactivityTimer.Stop();
                 ShowHideTransport(false);
