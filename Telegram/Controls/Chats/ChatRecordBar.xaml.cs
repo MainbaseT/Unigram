@@ -400,6 +400,7 @@ namespace Telegram.Controls.Chats
                 Visibility = Visibility.Collapsed;
                 ButtonCancelRecording.Visibility = Visibility.Collapsed;
                 ViewOnceRoot.Visibility = Visibility.Collapsed;
+                ViewOnceButton.IsChecked = false;
                 PauseRoot.Visibility = Visibility.Collapsed;
                 PauseButton.IsChecked = false;
                 ElapsedLabel.Text = "0:00,0";
