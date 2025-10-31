@@ -68,8 +68,9 @@ namespace Telegram.Views.Popups
             else if (item is PollResultViewModel option)
             {
                 var content = args.Element as Grid;
-                var header = content.Children[0] as RichTextBlock;
-                var footer = content.Children[1] as TextBlock;
+                var panel = content.Children[0] as Grid;
+                var header = panel.Children[0] as RichTextBlock;
+                var footer = panel.Children[1] as TextBlock;
 
                 var paragraph = header.Blocks[0] as Paragraph;
                 var span = paragraph.Inlines[0] as Span;
