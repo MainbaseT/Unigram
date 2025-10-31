@@ -621,7 +621,9 @@ namespace Telegram.Views
                     var edge = (index == panel.LastVisibleIndex && direction == 1) || (index == panel.FirstVisibleIndex && direction == -1);
 
                     var first = message.Delegate.IsSavedMessagesTab ? message.IsLast : message.IsFirst;
-                    var height = first ? selector.ActualSize.Y - 6 : selector.ActualSize.Y;
+                    var last = message.Delegate.IsSavedMessagesTab ? message.IsFirst : message.IsLast;
+
+                    var height = first && !last ? selector.ActualSize.Y - 6 : selector.ActualSize.Y;
 
                     _messagesShift.RegisterRemove(index, args.OldStartingIndex, height, edge && !Messages.VisualContains(selector));
                 }
