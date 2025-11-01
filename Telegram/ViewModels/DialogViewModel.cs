@@ -1936,7 +1936,11 @@ namespace Telegram.ViewModels
                     message.GeneratedContentUnread = true;
                 }
 
-                if (message.Content is MessageStory story)
+                if (message.Content is MessagePaidMedia paidMedia)
+                {
+                    message.Content = new MessagePaidAlbum(paidMedia);
+                }
+                else if (message.Content is MessageStory story)
                 {
                     message.Content = new MessageAsyncStory
                     {
@@ -1994,11 +1998,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (message.Content is MessagePaidMedia paidMedia)
-            {
-                message.Content = new MessagePaidAlbum(paidMedia);
-            }
-            else if (message.Content is MessageText text && text.LinkPreview == null)
+            if (message.Content is MessageText text && text.LinkPreview == null)
             {
                 if (text.Text.Entities.Count == 0 && Emoji.TryCountEmojis(text.Text.Text, out int count, 3))
                 {
