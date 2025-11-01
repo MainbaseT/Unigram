@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
+using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Controls.Messages
@@ -45,6 +46,19 @@ namespace Telegram.Controls.Messages
                         Children.Add(player);
                     }
 
+                    if (positions[i].FontSize == 9) // 12 * 0.75
+                    {
+                        player.Width = 16;
+                        player.Height = 16;
+                        player.FrameSize = new Size(16, 16);
+                    }
+                    else
+                    {
+                        player.Width = 20;
+                        player.Height = 20;
+                        player.FrameSize = new Size(20, 20);
+                    }
+                    
                     player.Source = new CustomEmojiFileSource(clientService, positions[i].CustomEmojiId);
 
                     SetTop(player, positions[i].Y);
@@ -117,5 +131,7 @@ namespace Telegram.Controls.Messages
         public int X { get; set; }
 
         public int Y { get; set; }
+
+        public float FontSize { get; set; }
     }
 }

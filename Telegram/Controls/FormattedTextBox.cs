@@ -1739,14 +1739,15 @@ namespace Telegram.Controls
                         emoji ??= new();
                         emoji.Add(customEmojiId);
 
-                        range.GetRect(PointOptions.None, out Rect rect, out _);
+                        range.GetPoint(HorizontalCharacterAlignment.Left, VerticalCharacterAlignment.Baseline, PointOptions.ClientCoordinates | PointOptions.AllowOffClient, out Point point);
 
                         positions ??= new();
                         positions.Add(new EmojiPosition
                         {
                             CustomEmojiId = customEmojiId,
-                            X = (int)rect.X + 2,
-                            Y = (int)rect.Y + (range.CharacterFormat.Size == 9 ? -5 : 3)
+                            X = (int)point.X + 2,
+                            Y = (int)point.Y - 10,
+                            FontSize = follow.CharacterFormat.Size
                         });
                     }
                 }

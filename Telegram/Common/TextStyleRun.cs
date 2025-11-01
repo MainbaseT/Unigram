@@ -210,11 +210,7 @@ namespace Telegram.Common
                     }
                 }
 
-                if (run.HasFlag(TextStyle.Emoji))
-                {
-                    Create(run.Offset, run.Length, results, run.Type);
-                }
-                else if (run.HasFlag(TextStyle.Monospace))
+                if (run.HasFlag(TextStyle.Monospace))
                 {
                     static bool Contains(string text, int offset, int length)
                     {
