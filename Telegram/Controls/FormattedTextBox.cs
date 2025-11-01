@@ -778,13 +778,10 @@ namespace Telegram.Controls
 
                 range.SetRange(start, end);
 
-                if (range.CharacterFormat.Size != 10.5f)
-                {
-                    InsertBlockquote(range, true, false);
-                }
-
                 range.CharacterFormat = Document.GetDefaultCharacterFormat();
-                //range.ParagraphFormat = Document.GetDefaultParagraphFormat();
+                range.ParagraphFormat.SpaceAfter = 0;
+                range.ParagraphFormat.SpaceBefore = 0;
+                range.ParagraphFormat.SetIndents(0, 0, 0);
 
                 range.GetText(TextGetOptions.NoHidden, out string text);
                 range.SetText(TextSetOptions.Unlink, text);
@@ -1256,7 +1253,9 @@ namespace Telegram.Controls
                 try
                 {
                     Document.Selection.CharacterFormat = Document.GetDefaultCharacterFormat();
-                    Document.Selection.ParagraphFormat = Document.GetDefaultParagraphFormat();
+                    Document.Selection.ParagraphFormat.SpaceAfter = 0;
+                    Document.Selection.ParagraphFormat.SpaceBefore = 0;
+                    Document.Selection.ParagraphFormat.SetIndents(0, 0, 0);
                 }
                 catch
                 {
@@ -1671,7 +1670,9 @@ namespace Telegram.Controls
             else
             {
                 range.CharacterFormat.Size = 14 * magic;
-                range.ParagraphFormat = Document.GetDefaultParagraphFormat();
+                range.ParagraphFormat.SpaceAfter = 0;
+                range.ParagraphFormat.SpaceBefore = 0;
+                range.ParagraphFormat.SetIndents(0, 0, 0);
             }
 
             MergeParagraphs(range);
@@ -1821,14 +1822,17 @@ namespace Telegram.Controls
                     }
                 }
 
-                if (range.ParagraphFormat.SpaceAfter != 0 && range.CharacterFormat.Size != 9)
+                if (range.ParagraphFormat.SpaceAfter == 6 && range.CharacterFormat.Size != 9)
                 {
                     range.CharacterFormat.Size = 9;
                 }
-                else if (range.ParagraphFormat.SpaceAfter == 0 && range.CharacterFormat.Size != 10.5f)
+                else if (range.ParagraphFormat.SpaceAfter != 6 && range.CharacterFormat.Size != 10.5f)
                 {
                     range.CharacterFormat.Size = 10.5f;
                 }
+
+                range.Collapse(false);
+
             } while (range.MoveStart(TextRangeUnit.CharacterFormat, 1) > 0);
 
             //EndUndoGroup();
@@ -1863,14 +1867,6 @@ namespace Telegram.Controls
                 }
 
                 lastPosition = range.StartPosition;
-
-                if (range.StartPosition == 0)
-                {
-                    //ContentElement.Padding = new Thickness(48, range.ParagraphFormat.SpaceAfter == 0 ? 13 : 7, 0, 15);
-                    ContentElement.Padding = new Thickness(0, 13, 0, 15);
-                    //ContentElement.Margin = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : 0, 0, 0);
-                    //Blocks.Padding = new Thickness(0, range.ParagraphFormat.SpaceAfter == 0 ? 0 : 0, 0, 0);
-                }
 
                 if (range.ParagraphFormat.SpaceAfter != 0)
                 {
@@ -1915,7 +1911,7 @@ namespace Telegram.Controls
             if (Blocks != null)
             {
                 Blocks.Height = ContentElement.ExtentHeight;
-                Blocks.Margin = new Thickness(0, -6, 0, Math.Min(0, ActualHeight - ContentElement.ExtentHeight));
+                Blocks.Margin = new Thickness(0, 0, 0, Math.Min(0, ActualHeight - ContentElement.ExtentHeight));
             }
         }
 
@@ -1935,8 +1931,10 @@ namespace Telegram.Controls
 
                     range.SetText(TextSetOptions.None, "\r");
                     range.SetRange(range.StartPosition + direction, range.StartPosition + direction);
-                    range.ParagraphFormat = Document.GetDefaultParagraphFormat();
                     range.CharacterFormat = Document.GetDefaultCharacterFormat();
+                    range.ParagraphFormat.SpaceAfter = 0;
+                    range.ParagraphFormat.SpaceBefore = 0;
+                    range.ParagraphFormat.SetIndents(0, 0, 0);
                     Document.Selection.SetRange(range.StartPosition + direction, range.StartPosition + direction);
 
                     EndUndoGroup();
