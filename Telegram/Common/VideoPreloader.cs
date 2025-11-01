@@ -13,11 +13,12 @@ using System.Threading;
 using Telegram.Native.Media;
 using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Streams;
 using Telegram.Td.Api;
 
 namespace Telegram.Common
 {
-    public record VideoPresentation(int SessionId, int FileId, int Duration);
+    public record VideoPresentation(IClientService ClientService, File File, int Duration);
 
     public partial class VideoPreloader
     {
@@ -60,7 +61,7 @@ namespace Telegram.Common
                 return;
             }
 
-            var presentation = new VideoPresentation(clientService.SessionId, file.Id, duration);
+            var presentation = new VideoPresentation(clientService, file, duration);
 
             _presenters[token] = presentation;
             _workQueue.Push(new WorkItem(token, presentation));
@@ -106,8 +107,6 @@ namespace Telegram.Common
 
         private void LoadCachedVideo(WorkItem work)
         {
-            var token = 0L;
-
             var options = new AsyncMediaPlayerOptions
             {
                 Mode = AsyncMediaPlayerMode.Video
@@ -122,12 +121,11 @@ namespace Telegram.Common
                     player.Close();
 
                     _presenters.TryRemove(work.Token, out _);
-                    MediaHttpServer.Stop(ref token);
                 }
             }
 
             player.Buffering += handler;
-            player.Play(MediaHttpServer.Start(work.Presentation, ref token));
+            player.Play(new RemoteFileSource(work.Presentation.ClientService, work.Presentation.File, work.Presentation.Duration));
         }
 
         record WorkItem(long Token, VideoPresentation Presentation);

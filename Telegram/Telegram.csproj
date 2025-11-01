@@ -215,11 +215,9 @@
     <Compile Include="Common\DebouncedPropertyWithToken.cs" />
     <Compile Include="Common\FeatureTokenGenerator.cs" />
     <Compile Include="Collections\HashSetDictionary.cs" />
-    <Compile Include="Common\HttpServer.cs" />
     <Compile Include="Common\MediaDeviceTracker.cs" />
     <Compile Include="Common\MediaDeviceList.cs" />
     <Compile Include="Common\MediaDevicePermissions.cs" />
-    <Compile Include="Common\MediaHttpServer.cs" />
     <Compile Include="Common\SliderHelper.cs" />
     <Compile Include="Common\ThemeShadowEx.cs" />
     <Compile Include="Common\NormalizingStringBuilder.cs" />

@@ -77,7 +77,6 @@ namespace Telegram
             }
 
             WatchDog.Initialize();
-            MediaHttpServer.Start();
             TypeResolver.Current.Configure();
 
             RequestedTheme = SettingsService.Current.Appearance.GetCalculatedApplicationTheme();
