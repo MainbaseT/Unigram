@@ -1111,19 +1111,23 @@ namespace Telegram.Views
 
         private FrameworkElement ProcessVideo(PageBlockVideo block)
         {
-            var galleryItem = new GalleryVideo(ViewModel.ClientService, block.Video, block.Caption.ToFormattedText());
-            ViewModel.Gallery.Items.Add(galleryItem);
-
-            var message = CreateMessage(new MessageVideo(block.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, false, false));
             var element = new StackPanel { Style = Resources["BlockVideoStyle"] as Style };
 
-            var content = new VideoContent(message);
-            content.Tag = galleryItem;
-            content.HorizontalAlignment = HorizontalAlignment.Center;
-            content.ClearValue(MaxWidthProperty);
-            content.ClearValue(MaxHeightProperty);
+            if (block.Video != null)
+            {
+                var galleryItem = new GalleryVideo(ViewModel.ClientService, block.Video, block.Caption.ToFormattedText());
+                ViewModel.Gallery.Items.Add(galleryItem);
 
-            element.Children.Add(content);
+                var message = CreateMessage(new MessageVideo(block.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, false, false));
+
+                var content = new VideoContent(message);
+                content.Tag = galleryItem;
+                content.HorizontalAlignment = HorizontalAlignment.Center;
+                content.ClearValue(MaxWidthProperty);
+                content.ClearValue(MaxHeightProperty);
+
+                element.Children.Add(content);
+            }
 
             var caption = ProcessCaption(block.Caption);
             if (caption != null)
