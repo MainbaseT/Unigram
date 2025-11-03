@@ -38,6 +38,8 @@
                 Value="{ThemeResource MessageHeaderForegroundBrush}" />
         <Setter Property="BorderBrush"
                 Value="{ThemeResource MessageHeaderBorderBrush}" />
+        <Setter Property="Background"
+                Value="{ThemeResource MessageHeaderBorderBrush}" />
         <Setter Property="Margin"
                 Value="0,8,0,6" />
         <Setter Property="IsTabStop"
