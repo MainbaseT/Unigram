@@ -4,7 +4,12 @@
 #include "Media/AsyncMediaPlayer.g.cpp"
 #endif
 
+#include <string>
+#include <format>
+
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Telegram.Td.h>
+#include <winrt/Telegram.Td.Api.h>
 
 namespace winrt::Telegram::Native::Media::implementation
 {
@@ -593,25 +598,25 @@ namespace winrt::Telegram::Native::Media::implementation
 
     void AsyncMediaPlayer::HandleLog(int level, const libvlc_log_t* ctx, const char* fmt, va_list args)
     {
-        if (m_log)
-        {
-            int byteLength = vsnprintf(nullptr, 0, fmt, args) + 1;
-            if (byteLength <= 1)
-                return;
+        int byteLength = vsnprintf(nullptr, 0, fmt, args) + 1;
+        if (byteLength <= 1)
+            return;
 
-            char* buffer = new char[byteLength];
-            vsprintf_s(buffer, byteLength, fmt, args);
-            hstring message = winrt::to_hstring(std::string(buffer, byteLength - 1));
-            delete[] buffer;
+        char* buffer = new char[byteLength];
+        vsprintf_s(buffer, byteLength, fmt, args);
+        std::string message(buffer, byteLength - 1);
+        delete[] buffer;
 
-            const char* module;
-            const char* file;
-            unsigned int line = 0;
-            libvlc_log_get_context(ctx, &module, &file, &line);
+        const char* module;
+        const char* file;
+        unsigned int line = 0;
+        libvlc_log_get_context(ctx, &module, &file, &line);
 
-            // TODO:
-            m_log(*this, AsyncMediaPlayerLogEventArgs((AsyncMediaPlayerLogLevel)level, message, winrt::to_hstring(module), winrt::to_hstring(file), line));
-        }
+        std::stringstream ss;
+        ss << "[AsyncMediaPlayer.cpp][" << file << ":" << line << "]["  << message;
+        winrt::Telegram::Td::Client::Execute(winrt::Telegram::Td::Api::AddLogMessage(2, winrt::to_hstring(ss.str())));
+
+        m_log(*this, AsyncMediaPlayerLogEventArgs((AsyncMediaPlayerLogLevel)level, winrt::to_hstring(message), winrt::to_hstring(module), winrt::to_hstring(file), line));
     }
 
     void AsyncMediaPlayer::HandleEvent(const libvlc_event_t* event)
