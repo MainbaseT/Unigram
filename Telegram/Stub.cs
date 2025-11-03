@@ -5946,18 +5946,6 @@ public static class AsyncMediaPlayer_stub
             throw new RuntimeException(ex);
         }
     }
-    public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, System.Uri uri)
-    {
-        try
-        {
-            sender.Play(uri);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static void Play_stub(this Telegram.Native.Media.AsyncMediaPlayer sender, Telegram.Native.Media.IAsyncMediaPlayerSource stream)
     {
         try
@@ -6435,11 +6423,11 @@ public static class BufferSurface_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.Storage.Streams.IBuffer Create_stub(uint size)
+    public static Windows.Storage.Streams.IBuffer Create_stub(byte[] data)
     {
         try
         {
-            return Telegram.Native.BufferSurface.Create(size);
+            return Telegram.Native.BufferSurface.Create(data);
         }
         catch (Exception ex)
         {
@@ -6447,11 +6435,11 @@ public static class BufferSurface_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.Storage.Streams.IBuffer Create_stub(byte[] data)
+    public static Windows.Storage.Streams.IBuffer Create_stub(uint size)
     {
         try
         {
-            return Telegram.Native.BufferSurface.Create(data);
+            return Telegram.Native.BufferSurface.Create(size);
         }
         catch (Exception ex)
         {
@@ -6515,33 +6503,6 @@ public static class CachedVideoAnimation_stub
         try
         {
             sender.Seek(seconds);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-}
-public static class FileStreamFromApp_stub
-{
-    public static int Read_stub(this Telegram.Native.FileStreamFromApp sender, Windows.Storage.Streams.IBuffer buffer, uint length)
-    {
-        try
-        {
-            return sender.Read(buffer, length);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static bool Seek_stub(this Telegram.Native.FileStreamFromApp sender, long offset)
-    {
-        try
-        {
-            return sender.Seek(offset);
         }
         catch (Exception ex)
         {
@@ -8532,18 +8493,6 @@ public static class ITextDocument_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.UI.Text.ITextParagraphFormat GetDefaultParagraphFormat_stub(this Windows.UI.Text.ITextDocument sender)
-    {
-        try
-        {
-            return sender.GetDefaultParagraphFormat();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static Windows.UI.Text.ITextRange GetRange_stub(this Windows.UI.Text.ITextDocument sender, int startPosition, int endPosition)
     {
         try
@@ -8735,6 +8684,18 @@ public static class ITextRange_stub
         try
         {
             return sender.GetClone();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(Environment.StackTrace, ex);
+            throw new RuntimeException(ex);
+        }
+    }
+    public static void GetPoint_stub(this Windows.UI.Text.ITextRange sender, Windows.UI.Text.HorizontalCharacterAlignment horizontalAlign, Windows.UI.Text.VerticalCharacterAlignment verticalAlign, Windows.UI.Text.PointOptions options, out Windows.Foundation.Point point)
+    {
+        try
+        {
+            sender.GetPoint(horizontalAlign, verticalAlign, options, out point);
         }
         catch (Exception ex)
         {
