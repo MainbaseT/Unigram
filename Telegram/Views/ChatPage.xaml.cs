@@ -7,9 +7,11 @@
 using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
+using Telegram.Services;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Windows.UI.Composition;
+using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views
 {
@@ -41,6 +43,25 @@ namespace Telegram.Views
         public void Search()
         {
             View.Search();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (PowerSavingPolicy.AreSmoothTransitionsEnabled && SettingsService.Current.Diagnostics.ConnectedAnimationsDebug)
+            {
+                View.AnimateEntrance();
+            }
+        }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            if (PowerSavingPolicy.AreSmoothTransitionsEnabled && SettingsService.Current.Diagnostics.ConnectedAnimationsDebug && e.SourcePageType == typeof(ProfilePage) && ViewModel.NavigationService.TryGetChatFromParameter(e.Parameter, out ChatMessageTopic nextTopic))
+            {
+                if (ViewModel.Chat.Id == nextTopic.ChatId && ViewModel.TopicId.AreTheSame(nextTopic.MessageTopic))
+                {
+                    View.PrepareExit();
+                }
+            }
         }
 
         public void Deactivate(bool navigation)

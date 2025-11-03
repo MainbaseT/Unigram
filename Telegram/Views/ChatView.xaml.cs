@@ -59,6 +59,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace Telegram.Views
 {
@@ -568,6 +569,33 @@ namespace Telegram.Views
 
                 Messages.Template = SavedMessagesTabTemplate;
             }
+        }
+
+        public void AnimateEntrance()
+        {
+            var service = ConnectedAnimationService.GetForCurrentView();
+
+            void Start(string key, UIElement element)
+            {
+                var animation = service.GetAnimation(key);
+                if (animation != null)
+                {
+                    animation.Configuration = new BasicConnectedAnimationConfiguration();
+                    animation.TryStart(element);
+                }
+            }
+
+            Start("Photo", Photo);
+            Start("Title", TitleRoot);
+            Start("Subtitle", Subtitle);
+        }
+
+        public void PrepareExit()
+        {
+            var service = ConnectedAnimationService.GetForCurrentView();
+            service.PrepareToAnimate("Photo", Photo);
+            service.PrepareToAnimate("Title", TitleRoot);
+            service.PrepareToAnimate("Subtitle", Subtitle);
         }
 
         public double HeaderHeight

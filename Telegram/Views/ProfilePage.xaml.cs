@@ -18,6 +18,7 @@ using Telegram.Controls.Media;
 using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
+using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -144,6 +145,11 @@ namespace Telegram.Views
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            if (PowerSavingPolicy.AreSmoothTransitionsEnabled && SettingsService.Current.Diagnostics.ConnectedAnimationsDebug)
+            {
+                ProfileHeader.AnimateEntrance();
+            }
+
             ViewModel.PropertyChanged += OnPropertyChanged;
 
             if (ViewModel.SelectedItem is ProfileTabItem tab)
@@ -216,6 +222,17 @@ namespace Telegram.Views
             {
                 tabPage.ScrollingHost.UnregisterPropertyChangedCallback(ItemsControl.ItemsSourceProperty, ref _itemsSourceToken);
                 tabPage.ScrollingHost.UnregisterPropertyChangedCallback(ListViewBase.SelectionModeProperty, ref _selectionModeToken);
+            }
+        }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            if (PowerSavingPolicy.AreSmoothTransitionsEnabled && SettingsService.Current.Diagnostics.ConnectedAnimationsDebug && e.SourcePageType == typeof(ChatPage) && ViewModel.NavigationService.TryGetChatFromParameter(e.Parameter, out ChatMessageTopic nextTopic))
+            {
+                if (ViewModel.Chat.Id == nextTopic.ChatId && ViewModel.Topic.AreTheSame(nextTopic.MessageTopic))
+                {
+                    ProfileHeader.PrepareExit();
+                }
             }
         }
 

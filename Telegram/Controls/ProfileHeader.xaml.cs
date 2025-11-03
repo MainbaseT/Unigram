@@ -36,6 +36,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace Telegram.Controls
 {
@@ -48,7 +49,7 @@ namespace Telegram.Controls
             InitializeComponent();
             DescriptionLabel.AddHandler(ContextRequestedEvent, new TypedEventHandler<UIElement, ContextRequestedEventArgs>(About_ContextRequested), true);
 
-            HeaderRoot.CreateInsetClip();
+            //HeaderRoot.CreateInsetClip();
 
             ActualThemeChanged += OnActualThemeChanged;
             SizeChanged += OnSizeChanged;
@@ -69,6 +70,33 @@ namespace Telegram.Controls
                 Properties.InsertScalar("RemovedHeight", HeaderRoot.ActualSize.Y - 48);
                 HeaderRoot.Margin = new Thickness(0, -HeaderRoot.ActualHeight + 48, 0, 0);
             }
+        }
+
+        public void AnimateEntrance()
+        {
+            var service = ConnectedAnimationService.GetForCurrentView();
+
+            void Start(UIElement element, string key)
+            {
+                var animation = service.GetAnimation(key);
+                if (animation != null)
+                {
+                    animation.Configuration = new BasicConnectedAnimationConfiguration();
+                    animation.TryStart(element);
+                }
+            }
+
+            Start(HeaderPhoto, "Photo");
+            Start(TitleRoot, "Title");
+            Start(SubtitleRoot, "Subtitle");
+        }
+
+        public void PrepareExit()
+        {
+            var service = ConnectedAnimationService.GetForCurrentView();
+            service.PrepareToAnimate("Photo", HeaderPhoto);
+            service.PrepareToAnimate("Title", TitleRoot);
+            service.PrepareToAnimate("Subtitle", SubtitleRoot);
         }
 
         public CompositionPropertySet Properties { get; }

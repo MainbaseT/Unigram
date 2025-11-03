@@ -190,6 +190,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _videoPreloadDebug, "VideoPreloadDebug", value);
         }
 
+        private bool? _connectedAnimationsDebug;
+        public bool ConnectedAnimationsDebug
+        {
+            get => _connectedAnimationsDebug ??= GetValueOrDefault("ConnectedAnimationsDebug", ApiInfo.IsPackagedRelease);
+            set => AddOrUpdateValue(ref _connectedAnimationsDebug, "ConnectedAnimationsDebug", value);
+        }
+
         public bool IsLastErrorDiskFull { get; set; }
     }
 }
