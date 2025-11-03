@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Telegram.Common;
 using Telegram.Controls.Media;
@@ -1674,9 +1673,6 @@ namespace Telegram.Controls
                 shapes.Add(current);
             }
 
-            maxX = Math.Min(maxX, TextBlock.ActualWidth);
-            maxY = Math.Min(maxY, TextBlock.ActualHeight);
-
             if (maxX - minX <= 0 || maxY - minY <= 0)
             {
                 if (_spoilerPresenter != null)
@@ -1727,8 +1723,6 @@ namespace Telegram.Controls
                     Width = maxX - minX,
                     Height = maxY - minY
                 };
-
-                Below.Children.Add(_spoilerPresenter);
             }
             else
             {
@@ -1738,6 +1732,8 @@ namespace Telegram.Controls
 
             Canvas.SetLeft(_spoilerPresenter, minX);
             Canvas.SetTop(_spoilerPresenter, minY);
+
+            Below.Children.Add(_spoilerPresenter);
 
             var visual = ElementComposition.GetElementVisual(_spoilerPresenter);
             var geometry = visual.Compositor.CreatePathGeometry(new CompositionPath(_spoilerGeometry));

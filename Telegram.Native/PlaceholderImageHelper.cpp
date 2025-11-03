@@ -1230,8 +1230,8 @@ namespace winrt::Telegram::Native::implementation
         }
         else
         {
-            //DWRITE_TRIMMING trimming = { DWRITE_TRIMMING_GRANULARITY_CHARACTER, '.', 3};
-            //ReturnIfFailed(result, textFormat->SetTrimming(&trimming, nullptr));
+            DWRITE_TRIMMING trimming = { DWRITE_TRIMMING_GRANULARITY_CHARACTER, '.', 3 };
+            ReturnDefaultIfFailed(result, textFormat->SetTrimming(&trimming, nullptr));
             ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP));
         }
 
@@ -1300,6 +1300,11 @@ namespace winrt::Telegram::Native::implementation
 
         for (int i = 0; i < actualTestsCount; i++)
         {
+            if (ranges[i].isTrimmed)
+            {
+                continue;
+            }
+
             float left = ranges[i].left;
             float top = ranges[i].top;
             float right = ranges[i].left + ranges[i].width;
