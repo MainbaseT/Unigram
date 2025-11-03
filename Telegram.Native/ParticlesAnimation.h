@@ -8,9 +8,9 @@ using namespace winrt::Windows::UI::Xaml::Media::Imaging;
 
 namespace winrt::Telegram::Native::implementation
 {
-    struct Particle
+    struct Particle2
     {
-        Particle(float x, float y, float radius, double opacity, bool adding)
+        Particle2(float x, float y, float radius, double opacity, bool adding)
             : X(x)
             , Y(y)
             , Radius(radius)
@@ -23,6 +23,26 @@ namespace winrt::Telegram::Native::implementation
         float Radius;
         double Opacity;
         bool Adding;
+    };
+
+    struct Particle
+    {
+        float mx,
+            my,
+            md,
+            cnt,
+            fps,
+            lsec,
+            t,
+            x,
+            y,
+            dx,
+            dy,
+            s;
+
+        float X, Y;
+        float Radius;
+        double Opacity;
     };
 
     struct Point
@@ -92,6 +112,11 @@ namespace winrt::Telegram::Native::implementation
 
         std::vector<Point> NextPoints(int count, float width, float height, float noiseFactor = 0.1f);
         Point NextPoint(float width, float height, float noiseFactor = 0.1f);
+
+        void ResetPoint(Particle& particle);
+        void UpdatePoint(Particle& particle);
+        Point GenerateVector(int count);
+        float random(float x, float y);
 
         int32_t m_width;
         int32_t m_height;

@@ -992,6 +992,9 @@ namespace winrt::Telegram::Native::implementation
 
     void ParticlesAnimation::RenderSync(IBuffer bitmap)
     {
+        const float fps = 30;
+        const float lsec = 1.2f;
+
         auto add = 0.04;
         auto pixels = (int32_t*)bitmap.data();
 
@@ -1000,12 +1003,6 @@ namespace winrt::Telegram::Native::implementation
         for (int i = 0, length = m_particles.size(); i < length; ++i)
         {
             auto dot = &m_particles[i];
-            auto addOpacity = dot->Adding ? add : -add;
-
-            dot->Opacity += addOpacity;
-            // if(dot.mOpacity <= 0) dot.mOpacity = dot.opacity;
-
-            // const easedOpacity = easing(dot.mOpacity);
             auto easedOpacity = (byte)(std::clamp(dot->Opacity, 0., 1.) * m_foreground.A);
             auto color = premultiply_color(m_foreground.R, m_foreground.G, m_foreground.B, easedOpacity);
 
@@ -1018,15 +1015,12 @@ namespace winrt::Telegram::Native::implementation
                 draw_circle_scaled(pixels, m_width, m_height, dot, color, m_scalePercent, m_rasterizationScale);
             }
 
-            if (dot->Opacity <= 0)
+            if (++dot->t >= fps * lsec)
             {
-                dot->Adding = true;
-                m_particles[i] = GenerateParticle(dot->Adding, NextPoint(m_width, m_height));
+                dot->t = 0;
+                ResetPoint(*dot);
             }
-            else if (dot->Opacity >= 1)
-            {
-                dot->Adding = false;
-            }
+            UpdatePoint(*dot);
         }
     }
 
@@ -1166,12 +1160,33 @@ namespace winrt::Telegram::Native::implementation
         count *= m_type == ParticlesType::Text ? 4 : m_type == ParticlesType::Premium ? 0.5 : 1;
         count = min(/*!liteMode.isAvailable('chat_spoilers') ? 400 :*/ IS_MOBILE ? 1000 : 2200, count);
 
-        auto particles = NextPoints(count, m_width, m_height);
         m_particles.reserve(count);
 
-        for (const auto& particle : particles)
+        auto el_w = m_width;
+        auto el_h = m_height;
+        const float max_d = 5;
+        const float fps = 30;
+        const float lsec = 1.2f;
+
+        const auto threshold = m_type == ParticlesType::Status || m_type == ParticlesType::Premium ? .2f : .8f;
+        const auto small = m_type == ParticlesType::Premium ? 2 : 0.5f;
+        const auto large = m_type == ParticlesType::Premium ? 3 : 1.0f;
+
+        for (int i = 0; i < count; i++)
         {
-            m_particles.emplace_back(GenerateParticle(-1, particle));
+            Particle point;
+            point.mx = el_w;
+            point.my = el_h;
+            point.md = max_d;
+            point.cnt = count;
+            point.fps = fps;
+            point.lsec = lsec;
+            point.t = random(0, fps * lsec);
+            point.Radius = (NextDouble() >= threshold ? large : small);
+            ResetPoint(point);
+            UpdatePoint(point);
+
+            m_particles.emplace_back(point);
         }
     }
 
@@ -1195,5 +1210,53 @@ namespace winrt::Telegram::Native::implementation
             radius,
             opacity,
             adding);
+    }
+
+    void ParticlesAnimation::ResetPoint(Particle& particle)
+    {
+        auto v = GenerateVector(particle.cnt);
+        particle.x = random(particle.md, particle.mx - particle.md);
+        particle.y = random(particle.md, particle.my - particle.md);
+        particle.dx = v.X;
+        particle.dy = v.Y;
+        particle.s = random(60, 80) * particle.my / 3600;
+    }
+
+    void ParticlesAnimation::UpdatePoint(Particle& particle)
+    {
+        float t = particle.t;
+        float d = particle.fps * particle.lsec / 3;
+        float k = 360 / particle.lsec / particle.fps;
+        particle.X = particle.x + k * t * particle.dx;
+        particle.Y = particle.y + k * t * particle.dy;
+        particle.Opacity = (t < d ? (t / d) : (t < d * 2 ? 1 : (d * 3 - t) / d)) * 0.95;
+    }
+
+    Point ParticlesAnimation::GenerateVector(int count)
+    {
+        float speedMax = 8;
+        float speedMin = 4;
+        float lifetime = 600;
+        float value = random(0, 2 * count + 2);
+        float negative = (value < count + 1);
+        float mod = (negative ? value : (value - count - 1));
+        float speed = speedMin + (((speedMax - speedMin) * mod) / count);
+        float max = std::ceilf(speedMax * lifetime);
+        float k = speed / lifetime;
+        float x = (random(0, 2 * max + 1) - max) / max;
+        float y = std::sqrtf(1 - x * x) * (negative ? -1 : 1);
+        return {
+            k * x,
+            k * y,
+        };
+    }
+
+    float ParticlesAnimation::random(float x, float y)
+    {
+        static std::random_device rd;  // Will be used to obtain a seed for the random number engine
+        static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+        static std::uniform_real_distribution<> dis(0.0f, 1.0f);
+
+        return x + std::floorf(dis(gen) * (y + 1 - x));
     }
 }
