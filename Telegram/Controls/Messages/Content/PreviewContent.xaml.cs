@@ -69,7 +69,7 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            LayoutRoot.Constraint = message;
+            LayoutRoot.Constraint = _paidMedia;
 
             Particles.Source = new ParticlesImageSource();
 
