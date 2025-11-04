@@ -568,6 +568,9 @@ namespace Telegram.Views
                 ClipperOuter.Visibility = Visibility.Collapsed;
 
                 Messages.Template = SavedMessagesTabTemplate;
+
+                ShadowCaster.Visibility = Visibility.Collapsed;
+                LinearCaster.Visibility = Visibility.Collapsed;
             }
         }
 
