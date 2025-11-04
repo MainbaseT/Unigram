@@ -305,6 +305,10 @@ namespace Telegram.Common
             {
                 return true;
             }
+            else if (x is TextEntityTypeCustomEmoji && y is TextEntityTypeCustomEmoji)
+            {
+                return false;
+            }
 
             return x.GetType() == y.GetType();
         }
