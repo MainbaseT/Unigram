@@ -585,7 +585,7 @@ namespace Telegram.Views
                 }
             }
 
-            Start("Photo", Photo);
+            Start("Photo", PhotoRoot);
             Start("Title", TitleRoot);
             Start("Subtitle", Subtitle);
         }
@@ -593,7 +593,7 @@ namespace Telegram.Views
         public void PrepareExit()
         {
             var service = ConnectedAnimationService.GetForCurrentView();
-            service.PrepareToAnimate("Photo", Photo);
+            service.PrepareToAnimate("Photo", PhotoRoot);
             service.PrepareToAnimate("Title", TitleRoot);
             service.PrepareToAnimate("Subtitle", Subtitle);
         }
