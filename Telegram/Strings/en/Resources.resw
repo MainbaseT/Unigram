@@ -14045,6 +14045,9 @@ Please try again in {0}.</value>
   <data name="TopicCreated" xml:space="preserve">
     <value>Topic created</value>
   </data>
+  <data name="TopicHidden2" xml:space="preserve">
+    <value>un1 hid the general topic</value>
+  </data>
   <data name="TopicProfileStatus" xml:space="preserve">
     <value>In {0}</value>
   </data>
@@ -14062,6 +14065,9 @@ Please try again in {0}.</value>
   </data>
   <data name="TopicsEnabled" xml:space="preserve">
     <value>Enabled</value>
+  </data>
+  <data name="TopicShown2" xml:space="preserve">
+    <value>un1 unhid the general topic</value>
   </data>
   <data name="TopicsInfo" xml:space="preserve">
     <value>The group chat will be divided into topics created by admins and users.</value>

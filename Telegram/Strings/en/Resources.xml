@@ -13023,4 +13023,7 @@
     <string name="VideoSetOnceHint">Tap to set this message to **Play Once**.</string>
     <string name="VideoSetOnceHintEnabled">The recipient will be able to play it only once.</string>
 
+    <string name="TopicHidden2">un1 hid the general topic</string>
+    <string name="TopicShown2">un1 unhid the general topic</string>
+
 </resources>

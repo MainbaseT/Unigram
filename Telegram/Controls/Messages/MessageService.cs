@@ -662,6 +662,7 @@ namespace Telegram.Controls.Messages
                 MessageForumTopicCreated forumTopicCreated => UpdateForumTopicCreated(message, forumTopicCreated, history),
                 MessageForumTopicEdited forumTopicEdited => UpdateForumTopicEdited(message, forumTopicEdited, history),
                 MessageForumTopicIsClosedToggled forumTopicIsClosedToggled => UpdateForumTopicIsClosedToggled(message, forumTopicIsClosedToggled, history),
+                MessageForumTopicIsHiddenToggled forumTopicIsHiddenToggled => UpdateForumTopicIsHiddenToggled(message, forumTopicIsHiddenToggled, history),
                 MessageGameScore gameScore => UpdateGameScore(message, gameScore, history),
                 MessageGift gift => UpdateGift(message, gift, history),
                 MessageGiftedPremium giftedPremium => UpdateGiftedPremium(message, giftedPremium, history),
@@ -1836,6 +1837,13 @@ namespace Telegram.Controls.Messages
                 ? Strings.TopicClosed2
                 : Strings.TopicRestarted2, "un1");
             return ReplaceWithLink(content, message.GetSender());
+        }
+
+        private static FormattedText UpdateForumTopicIsHiddenToggled(MessageWithOwner message, MessageForumTopicIsHiddenToggled forumTopicIsHiddenToggled, bool history)
+        {
+            return ReplaceWithLink(forumTopicIsHiddenToggled.IsHidden
+                ? Strings.TopicHidden2
+                : Strings.TopicShown2, message.GetSender());
         }
 
         private static FormattedText UpdateGameScore(MessageWithOwner message, MessageGameScore gameScore, bool history)
