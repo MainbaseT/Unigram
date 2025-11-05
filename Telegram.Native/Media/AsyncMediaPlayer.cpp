@@ -802,8 +802,17 @@ namespace winrt::Telegram::Native::Media::implementation
                         auto* video = tracks[i]->video;
                         if (video)
                         {
-                            width = video->i_width;
-                            height = video->i_height;
+                            // TODO: Original C# code used right_top and left_top, but it was likely a bug
+                            if (video->i_orientation == libvlc_video_orient_left_bottom || video->i_orientation == libvlc_video_orient_right_top)
+                            {
+                                width = video->i_height;
+                                height = video->i_width;
+                            }
+                            else
+                            {
+                                width = video->i_width;
+                                height = video->i_height;
+                            }
                         }
                         break;
                     }
