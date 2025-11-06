@@ -6,8 +6,6 @@
 //
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-using Microsoft.AppCenter.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -89,10 +87,6 @@ namespace Telegram
         private static readonly string _reports;
         private static readonly string _crashLog;
 
-        private static readonly string _crashLogOld;
-        private static readonly string _reportsOld;
-
-        private static string _lastSessionErrorReportIdOld;
         private static string _lastSessionErrorReportId;
         private static bool _lastSessionTerminatedUnexpectedly;
 
@@ -108,9 +102,7 @@ namespace Telegram
             _launchTime = MonotonicUnixTime.Now;
 
             _crashLog = Path.Combine(ApplicationData.Current.LocalFolder.Path, "crash.id");
-            _crashLogOld = Path.Combine(ApplicationData.Current.LocalFolder.Path, "crash.log");
             _reports = Path.Combine(ApplicationData.Current.LocalFolder.Path, "ErrorReports");
-            _reportsOld = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Reports");
         }
 
         public static bool HasCrashedInLastSession { get; private set; }
@@ -140,51 +132,7 @@ namespace Telegram
             //    args.SetObserved();
             //};
 
-            //Crashes.UnhandledExceptionOccurring += (s, args) =>
-            //{
-            //    args.Frames = NativeUtils.GetStowedException()
-            //        .Select(x => new NativeStackFrame(x.NativeIP, x.NativeImageBase))
-            //        .ToList();
-            //};
-
-            Crashes.CreatingErrorReport += (s, args) =>
-            {
-                Track(args.ReportId, args.Exception);
-            };
-
-            Crashes.SentErrorReport += (s, args) =>
-            {
-                if (File.Exists(GetErrorReportPathOld(args.Report.Id)))
-                {
-                    try
-                    {
-                        File.Delete(GetErrorReportPathOld(args.Report.Id));
-                    }
-                    catch
-                    {
-                        // Somehow AppCenter messes up and the file might still be open
-                    }
-                }
-            };
-
-            Crashes.ShouldProcessErrorReport = report =>
-            {
-                return report.Id == _lastSessionErrorReportIdOld;
-            };
-
-            Crashes.GetErrorAttachments = report =>
-            {
-                var path = GetErrorReportPathOld(report.Id);
-                if (path.Length > 0 && File.Exists(path))
-                {
-                    var data = File.ReadAllText(path);
-                    return new[] { ErrorAttachmentLog.AttachmentWithText(data, "crash.txt") };
-                }
-
-                return Array.Empty<ErrorAttachmentLog>();
-            };
-
-            AppCenter.Start(Constants.AppCenterId, typeof(Analytics), typeof(Crashes));
+            AppCenter.Start(Constants.AppCenterId, typeof(Analytics));
             Analytics.TrackEvent("Windows",
                 new Dictionary<string, string>
                 {
@@ -238,9 +186,6 @@ namespace Telegram
         public static void TrackError(Exception ex)
         {
             ProcessException(ex);
-
-            var report = WatchDog.BuildReport(ex.HResult);
-            Microsoft.AppCenter.Crashes.Crashes.TrackError(ex, attachments: Microsoft.AppCenter.Crashes.ErrorAttachmentLog.AttachmentWithText(report, "crash.txt"));
         }
 
         private static void LoadReports()
@@ -385,34 +330,11 @@ namespace Telegram
 
                 File.Delete(_crashLog);
             }
-
-            if (File.Exists(_crashLogOld))
-            {
-                _lastSessionTerminatedUnexpectedly = true;
-
-                var data = File.ReadAllText(_crashLogOld);
-
-                if (Guid.TryParse(data, out Guid guid))
-                {
-                    _lastSessionErrorReportIdOld = guid.ToString();
-                }
-
-                File.Delete(_crashLogOld);
-            }
         }
 
         public static void FatalErrorCallback(FatalError error)
         {
             ProcessException(error);
-
-            var exception = ToException(error);
-            var frames = error.Frames
-                .Select(x => new NativeStackFrame(x.NativeIP, x.NativeImageBase))
-                .ToList();
-
-            //error.Type = exception.GetType().ToString();
-
-            Crashes.TrackCrash(exception, frames);
         }
 
         private static Exception ToException(FatalError error)
@@ -441,16 +363,8 @@ namespace Telegram
             // state if it was running but then crashed, or because the user closed it earlier.
 
             HasCrashedInLastSession =
-                _lastSessionErrorReportIdOld != null
+                _lastSessionErrorReportId != null
                 && previousExecutionState == ApplicationExecutionState.NotRunning;
-        }
-
-        private static void Track(string reportId, Exception exception)
-        {
-            var report = BuildReport(exception.HResult);
-
-            File.WriteAllText(_crashLogOld, reportId);
-            File.WriteAllText(GetErrorReportPathOld(reportId), report);
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -555,17 +469,10 @@ namespace Telegram
 
             info += $"Active call(s): {WindowContext.All.Count(x => x.IsCallInProgress)}\n";
 
-            info += $"HRESULT: 0x{hresult:X4}\n" + "\n";
-            info += Environment.StackTrace + "\n\n";
+            info += $"HRESULT: 0x{hresult:X4}\n\n";
 
             var dump = Logger.Dump();
             return info + dump;
-        }
-
-        private static string GetErrorReportPathOld(string reportId)
-        {
-            Directory.CreateDirectory(_reportsOld);
-            return Path.Combine(_reportsOld, reportId + ".appcenter");
         }
 
         private static string GetErrorReportPath(string reportId)
@@ -579,11 +486,6 @@ namespace Telegram
             if (File.Exists(_crashLog))
             {
                 File.Delete(_crashLog);
-            }
-
-            if (File.Exists(_crashLogOld))
-            {
-                File.Delete(_crashLogOld);
             }
         }
     }
