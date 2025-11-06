@@ -11,6 +11,7 @@ namespace winrt::Telegram::Native::implementation
             , m_message(message)
             , m_stackTrace(stackTrace)
             , m_frames(frames)
+            , m_innerException(nullptr)
         {
 
         }
@@ -35,11 +36,23 @@ namespace winrt::Telegram::Native::implementation
             return m_frames;
         }
 
+        winrt::Windows::Foundation::IInspectable InnerException()
+        {
+            return m_innerException;
+        }
+
+        void InnerException(winrt::Windows::Foundation::IInspectable value)
+        {
+            m_innerException = value;
+        }
+
     private:
         hstring m_type;
         hstring m_message;
         hstring m_stackTrace;
         winrt::Windows::Foundation::Collections::IVector<FatalErrorFrame> m_frames;
+
+        winrt::Windows::Foundation::IInspectable m_innerException;
     };
 }
 

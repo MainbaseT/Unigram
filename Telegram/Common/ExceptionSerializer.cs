@@ -29,7 +29,19 @@ namespace Telegram.Common
         public static string Serialize(System.Exception exception, string id, string userId, string logs)
         {
             var hashBuilder = new StringBuilder();
-            var error = CreateModelExceptionAndBinaries(exception, hashBuilder);
+            var binaries = new Dictionary<long, ExceptionBinary>();
+            var modelException = ProcessException(exception, null, binaries, hashBuilder);
+
+            var error = new ErrorExceptionAndBinaries
+            {
+                Binaries = binaries.Count > 0 ? binaries.Values.ToList() : null,
+                Exception = modelException
+            };
+
+            foreach (var binary in binaries.Values.OrderBy(x => x.Name))
+            {
+                hashBuilder.Append(binary.Name.ToLowerInvariant());
+            }
 
             return Serialize(error, id, userId, logs, hashBuilder);
         }
@@ -37,7 +49,19 @@ namespace Telegram.Common
         public static string Serialize(FatalError exception, string id, string userId, string logs)
         {
             var hashBuilder = new StringBuilder();
-            var error = CreateModelExceptionAndBinaries(exception, hashBuilder);
+            var binaries = new Dictionary<long, ExceptionBinary>();
+            var modelException = ProcessException(exception, binaries, hashBuilder);
+
+            var error = new ErrorExceptionAndBinaries
+            {
+                Binaries = binaries.Count > 0 ? binaries.Values.ToList() : null,
+                Exception = modelException
+            };
+
+            foreach (var binary in binaries.Values.OrderBy(x => x.Name))
+            {
+                hashBuilder.Append(binary.Name.ToLowerInvariant());
+            }
 
             return Serialize(error, id, userId, logs, hashBuilder);
         }
@@ -62,33 +86,12 @@ namespace Telegram.Common
             };
 
             hashBuilder.Append(report.ApplicationVersion);
+            hashBuilder.Append(report.Type.ToLowerInvariant());
+            hashBuilder.Append(report.Message.ToLowerInvariant());
+
             report.GroupHash = ComputeHash(hashBuilder.ToString());
 
             return JsonSerializer.Serialize(report, ErrorJsonContext.Default.ErrorReport);
-        }
-
-        private static ErrorExceptionAndBinaries CreateModelExceptionAndBinaries(System.Exception exception, StringBuilder hashBuilder)
-        {
-            var binaries = new Dictionary<long, ExceptionBinary>();
-            var modelException = ProcessException(exception, null, binaries, hashBuilder);
-
-            return new ErrorExceptionAndBinaries
-            {
-                Binaries = binaries.Count > 0 ? binaries.Values.ToList() : null,
-                Exception = modelException
-            };
-        }
-
-        private static ErrorExceptionAndBinaries CreateModelExceptionAndBinaries(FatalError exception, StringBuilder hashBuilder)
-        {
-            var binaries = new Dictionary<long, ExceptionBinary>();
-            var modelException = ProcessException(exception, binaries, hashBuilder);
-
-            return new ErrorExceptionAndBinaries
-            {
-                Binaries = binaries.Count > 0 ? binaries.Values.ToList() : null,
-                Exception = modelException
-            };
         }
 
         private static string ComputeHash(string input)
@@ -143,14 +146,13 @@ namespace Telegram.Common
                 foreach (var frame in frames)
                 {
                     // Get stack frame address.
+                    var nativeIP = frame.GetNativeIP().ToInt64();
                     var crashFrame = new ExceptionStackFrame
                     {
-                        Address = string.Format(CultureInfo.InvariantCulture, AddressFormat, frame.GetNativeIP().ToInt64()),
+                        Address = string.Format(CultureInfo.InvariantCulture, AddressFormat, nativeIP),
                     };
-                    if (modelException.Frames == null)
-                    {
-                        modelException.Frames = new List<ExceptionStackFrame>();
-                    }
+
+                    modelException.Frames ??= new();
                     modelException.Frames.Add(crashFrame);
 
                     // Process binary.
@@ -164,11 +166,8 @@ namespace Telegram.Common
                     {
                         if (_builtinBinaries.Contains(binary.Name))
                         {
-                            hashBuilder.Append(crashFrame.Address);
-                        }
-                        else
-                        {
-                            hashBuilder.Append(binary.Name);
+                            hashBuilder.Append(binary.Name.ToLowerInvariant());
+                            hashBuilder.Append(nativeIP - nativeImageBase);
                         }
                     }
 
@@ -206,17 +205,22 @@ namespace Telegram.Common
                 StackTrace = exception.StackTrace.Replace("\r\n", "\n")
             };
 
+            if (exception.InnerException is Exception innerException)
+            {
+                modelException.InnerExceptions ??= new List<ExceptionModel>();
+                ProcessException(innerException, modelException, seenBinaries, hashBuilder);
+            }
+
             foreach (var frame in exception.Frames)
             {
                 // Get stack frame address.
+                var nativeIP = frame.NativeIP;
                 var crashFrame = new ExceptionStackFrame
                 {
                     Address = string.Format(CultureInfo.InvariantCulture, AddressFormat, frame.NativeIP),
                 };
-                if (modelException.Frames == null)
-                {
-                    modelException.Frames = new List<ExceptionStackFrame>();
-                }
+
+                modelException.Frames ??= new();
                 modelException.Frames.Add(crashFrame);
 
                 // Process binary.
@@ -230,11 +234,8 @@ namespace Telegram.Common
                 {
                     if (_builtinBinaries.Contains(binary.Name))
                     {
-                        hashBuilder.Append(crashFrame.Address);
-                    }
-                    else
-                    {
-                        hashBuilder.Append(binary.Name);
+                        hashBuilder.Append(binary.Name.ToLowerInvariant());
+                        hashBuilder.Append(nativeIP - nativeImageBase);
                     }
                 }
 
@@ -318,11 +319,67 @@ namespace Telegram.Common
 
         private static string[] _builtinBinaries = new[]
         {
+            "avcodec-61",
+            "avformat-61",
+            "avutil-59",
+            "clrcompression",
+            "dav1d",
+            "jpeg62",
+            "libaudio_format_plugin",
+            "libavcodec_plugin",
+            "libcache_block_plugin",
+            "libcache_read_plugin",
+            "libcrypto-3-x64",
+            "libd3d11va_plugin",
+            "libdav1d_plugin",
+            "libdirect3d11_plugin",
+            "libes_plugin",
+            "libfaad_plugin",
+            "libflac_plugin",
+            "libflacsys_plugin",
+            "libfloat_mixer_plugin",
+            "libhttp_plugin",
+            "libhttps_plugin",
+            "libimem_plugin",
+            "libmemory_keystore_plugin",
+            "libmp4_plugin",
+            "libmpg123_plugin",
+            "libogg_plugin",
+            "libopus_plugin",
+            "libpacketizer_flac_plugin",
+            "libpacketizer_h264_plugin",
+            "libpacketizer_mpegaudio_plugin",
+            "libpacketizer_mpegvideo_plugin",
+            "libps_plugin",
+            "librecord_plugin",
+            "libsamplerate_plugin",
+            "libscaletempo_plugin",
+            "libskiptags_plugin",
+            "libssl-3-x64",
+            "libswscale_plugin",
+            "libtdummy_plugin",
+            "libtrivial_channel_mixer_plugin",
+            "libugly_resampler_plugin",
+            "libvlc",
+            "libvlccore",
+            "libwasapi_plugin",
+            "libwinstore_plugin",
+            "libyuv",
+            "libyuvp_plugin",
+            "lz4",
+            "Microsoft.Graphics.Canvas",
+            "Microsoft.Web.WebView2.Core",
+            "ogg",
+            "opus",
+            "RLottie",
+            "swresample-5",
+            "swscale-8",
             "Telegram",
-            "Telegram.Native",
             "Telegram.Native.Calls",
+            "Telegram.Native",
             "Telegram.Td",
-            "SharedLibrary"
+            "WebView2Loader",
+            "zlib1",
         };
 
         private static string TranslateMessage(string message)

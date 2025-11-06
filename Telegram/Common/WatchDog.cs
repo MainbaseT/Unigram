@@ -152,8 +152,10 @@ namespace Telegram
             }
             catch (Exception ex)
             {
-                ProcessException(new FatalError(ex.GetType().Name, ex.Message, ex.StackTrace, frames));
-                ProcessException(ex);
+                var fatal = new FatalError(ex.GetType().Name, ex.Message, ex.StackTrace, frames);
+                fatal.InnerException = ex.InnerException;
+
+                ProcessException(fatal);
             }
         }
 

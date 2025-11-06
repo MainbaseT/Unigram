@@ -13,6 +13,8 @@ namespace Telegram.Native
         String Type{ get; };
         String Message{ get; };
         String StackTrace { get; };
-        Windows.Foundation.Collections.IVector<FatalErrorFrame> Frames { get; };
+        Windows.Foundation.Collections.IVector<FatalErrorFrame> Frames{ get; };
+
+        IInspectable InnerException;
     }
 }
