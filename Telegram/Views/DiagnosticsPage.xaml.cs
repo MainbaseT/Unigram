@@ -8,6 +8,7 @@ using System;
 using Telegram.Common;
 using Telegram.Converters;
 using Telegram.Native;
+using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -53,6 +54,11 @@ namespace Telegram.Views
         private void Logger_Click(object sender, RoutedEventArgs e)
         {
             Client.Execute(new AddLogMessage(0, "This should produce a stack trace"));
+        }
+
+        private void Anonymous_Click(object sender, RoutedEventArgs e)
+        {
+            MessageHelper.CopyText(XamlRoot, SettingsService.Current.AnonymousUserId);
         }
     }
 }
