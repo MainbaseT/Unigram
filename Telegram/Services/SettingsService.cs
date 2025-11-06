@@ -709,6 +709,28 @@ namespace Telegram.Services
             set => AddOrUpdateValue(ref _useLessData, "UseLessData", (int)value);
         }
 
+        private static string _anonymousUserId;
+        public string AnonymousUserId
+        {
+            get
+            {
+                if (_anonymousUserId != null)
+                {
+                    return _anonymousUserId;
+                }
+
+                var value = GetValueOrDefault<string>("AnonymousUserId", null);
+                if (value == null)
+                {
+                    value = Guid.NewGuid().ToString();
+                    AddOrUpdateValue("AnonymousUserId", value);
+                }
+
+                return _anonymousUserId = value;
+            }
+            set => AddOrUpdateValue(ref _anonymousUserId, "AnonymousUserId", value);
+        }
+
         public void SetChatPinnedMessage(long chatId, long messageId)
         {
             var container = _own.CreateContainer("PinnedMessages", ApplicationDataCreateDisposition.Always);

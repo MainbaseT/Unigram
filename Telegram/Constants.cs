@@ -18,6 +18,8 @@ namespace Telegram
 
         public static readonly string AppChannel;
 
+        public static readonly string AppReportsId;
+
         public static readonly string AppCenterId;
 
         public static readonly ushort BuildNumber;

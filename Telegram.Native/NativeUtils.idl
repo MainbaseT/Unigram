@@ -72,7 +72,7 @@ namespace Telegram.Native
 
         static void SetFatalErrorCallback(FatalErrorCallback action);
         static Windows.Foundation.Collections.IVector<FatalErrorFrame> GetStowedException();
-        static FatalError GetBackTrace(UInt64 code);
+        static FatalError GetBackTrace(String type, String message);
 
         static String GetLogMessage(Int64 format, Int64 args);
 

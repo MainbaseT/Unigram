@@ -56,10 +56,10 @@ namespace Telegram
         {
             Log(LogLevel.Error, Environment.StackTrace, member, filePath, line);
 
-#if !DEBUG
-            var report = WatchDog.BuildReport(exception);
-            Microsoft.AppCenter.Crashes.Crashes.TrackError(exception, attachments: Microsoft.AppCenter.Crashes.ErrorAttachmentLog.AttachmentWithText(report, "crash.txt"));
-#endif
+            if (Constants.RELEASE)
+            {
+                WatchDog.TrackError(exception);
+            }
         }
 
         public static void Info(object message = null, [CallerMemberName] string member = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int line = 0)

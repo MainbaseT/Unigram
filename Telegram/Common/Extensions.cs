@@ -1774,11 +1774,14 @@ namespace Telegram.Common
         private static readonly double startUnixTime = (DateTime.UtcNow -
             new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
 
-        public static long Now()
+        public static long Now
         {
-            long ticks = Stopwatch.GetTimestamp();
-            double elapsedSeconds = (double)(ticks - startTicks) / Stopwatch.Frequency;
-            return (long)(startUnixTime + elapsedSeconds);
+            get
+            {
+                long ticks = Stopwatch.GetTimestamp();
+                double elapsedSeconds = (double)(ticks - startTicks) / Stopwatch.Frequency;
+                return (long)(startUnixTime + elapsedSeconds);
+            }
         }
     }
 }

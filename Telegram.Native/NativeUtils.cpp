@@ -13,6 +13,7 @@
 
 #include <roerrorapi.h>
 
+#include <winrt/Telegram.Td.h>
 #include <winrt/Windows.Data.Xml.Dom.h>
 #include <winrt/Windows.UI.Notifications.h>
 #include <winrt/Windows.ApplicationModel.Core.h>
@@ -25,6 +26,7 @@ BOOL
     _Out_ LPWSTR pwszKLID
     );
 
+using namespace winrt::Telegram::Td;
 using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::UI::Notifications;
 using namespace winrt::Windows::ApplicationModel::Core;
@@ -36,7 +38,115 @@ namespace winrt::Telegram::Native::implementation
 
     void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback)
     {
+        Client::SetLogMessageCallback(0, &NativeUtils::LogMessageCallback);
         Callback = callback;
+    }
+
+    inline bool Contains(const hstring& message, std::wstring_view text)
+    {
+        return std::wstring_view{ message }.find(text) != std::wstring_view::npos;
+    }
+
+    inline bool Contains(const std::wstring& message, std::wstring_view text)
+    {
+        return message.find(text) != std::wstring::npos;
+    }
+
+    inline bool IsDatabaseBrokenError(const hstring& message)
+    {
+        return Contains(message, L"Wrong key or database is corrupted")
+            || Contains(message, L"SQL logic error or missing database")
+            || Contains(message, L"database disk image is malformed")
+            || Contains(message, L"file is encrypted or is not a database")
+            || Contains(message, L"unsupported file format")
+            || Contains(message, L"attempt to write a readonly database for database")
+            || Contains(message, L"Can't open database");
+    }
+
+    inline bool IsDiskFullError(const hstring& message)
+    {
+        return Contains(message, L"There is not enough space on the disk")
+            || Contains(message, L": 112 :")
+            || Contains(message, L"database or disk is full")
+            || Contains(message, L"out of memory for database");
+    }
+
+    inline bool IsDiskError(const hstring& message)
+    {
+        return Contains(message, L"I/O error")
+            || Contains(message, L"Structure needs cleaning");
+    }
+
+    inline bool IsBinlogError(const hstring& message)
+    {
+        return Contains(message, L"Failed to rename binlog")
+            || Contains(message, L"Can't rename")
+            || Contains(message, L"Failed to unlink old binlog")
+            || Contains(message, L"td.binlog")
+            || Contains(message, L": 8 :")
+            || Contains(message, L": 1392 :");
+    }
+
+    inline bool IsOutOfMemoryError(const hstring& message)
+    {
+        return Contains(message, L"zlib deflate init failed")
+            || Contains(message, L"zlib inflate init failed")
+            || Contains(message, L": 1450 :");
+    }
+
+    void NativeUtils::LogMessageCallback(int verbosityLevel, hstring message)
+    {
+        if (NativeUtils::Callback)
+        {
+            if (IsDatabaseBrokenError(message))
+            {
+                return;
+            }
+            else if (IsDiskFullError(message))
+            {
+                return;
+            }
+            else if (IsDiskError(message))
+            {
+                return;
+            }
+            else if (IsBinlogError(message))
+            {
+                return;
+            }
+            else if (IsOutOfMemoryError(message))
+            {
+                return;
+            }
+
+            int bracketCount = 0;
+            std::wstring str = message.c_str();
+            size_t start = std::string::npos, end = std::string::npos;
+
+            for (size_t i = 0; i < str.length(); ++i)
+            {
+                if (str[i] == '[')
+                {
+                    bracketCount++;
+                    if (bracketCount == 3)
+                    {
+                        start = i;
+                    }
+                }
+                if (str[i] == ']' && bracketCount == 3)
+                {
+                    end = i;
+                    break;
+                }
+            }
+
+            if (start != std::string::npos && end != std::string::npos)
+            {
+                str.erase(start, end - start + 1);
+            }
+
+            NativeUtils::Callback(NativeUtils::GetBackTrace(L"TdException", hstring(str)));
+        }
     }
 
     IXamlDirectObject NativeUtils::AddRunToCollection(XamlDirect direct, IXamlDirectObject inlines, hstring text, FlowDirection direction, TextStyle style, FontFamily fontFamily, double fontSize, bool transparent)
@@ -223,7 +333,7 @@ namespace winrt::Telegram::Native::implementation
     }
 
     // From http://davidpritchard.org/archives/907
-    winrt::Telegram::Native::FatalError NativeUtils::GetBackTrace(DWORD code)
+    winrt::Telegram::Native::FatalError NativeUtils::GetBackTrace(hstring type, hstring message)
     {
         constexpr uint32_t TRACE_MAX_STACK_FRAMES = 99;
         void* stack[TRACE_MAX_STACK_FRAMES];
@@ -233,14 +343,6 @@ namespace winrt::Telegram::Native::implementation
         auto frames = winrt::single_threaded_vector<FatalErrorFrame>();
 
         std::wstring trace;
-        std::wstring description;
-
-        if (code != 0)
-        {
-            const wchar_t* message = GetExceptionMessage(code);
-            description += wstrprintf(L"Unhandled exception: %s\n", message);
-        }
-
         bool skipping = false;
 
         for (int i = 0; i < numFrames; ++i)
@@ -270,7 +372,23 @@ namespace winrt::Telegram::Native::implementation
             }
         }
 
-        auto error = winrt::make_self<FatalError>(code, hstring(description), hstring(trace), frames);
+        if (type.empty())
+        {
+            if (Contains(trace, L"libvlc.dll") || Contains(trace, L"libvlccore.dll"))
+            {
+                type = L"VLCException";
+            }
+            else if (Contains(trace, L"Telegram.Native.Calls.dll"))
+            {
+                type = L"VoipException";
+            }
+            else
+            {
+                type = L"NativeException";
+            }
+        }
+
+        auto error = winrt::make_self<FatalError>(type, message, hstring(trace), frames);
         return error.as<winrt::Telegram::Native::FatalError>();
     }
 
@@ -737,6 +855,13 @@ namespace winrt::Telegram::Native::implementation
 
     void NativeUtils::Crash()
     {
+        std::thread([]() {
+            int x = 1;
+            int y = 0;
+            int z = x / y;
+            }).detach();
+        return;
+
         int32_t* ciao = nullptr;
         *ciao = 42;
     }

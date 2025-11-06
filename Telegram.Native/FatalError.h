@@ -6,8 +6,8 @@ namespace winrt::Telegram::Native::implementation
 {
     struct FatalError : FatalErrorT<FatalError>
     {
-        FatalError(int32_t resultCode, hstring message, hstring stackTrace, winrt::Windows::Foundation::Collections::IVector<FatalErrorFrame> frames)
-            : m_resultCode(resultCode)
+        FatalError(hstring type, hstring message, hstring stackTrace, winrt::Windows::Foundation::Collections::IVector<FatalErrorFrame> frames)
+            : m_type(type)
             , m_message(message)
             , m_stackTrace(stackTrace)
             , m_frames(frames)
@@ -15,9 +15,9 @@ namespace winrt::Telegram::Native::implementation
 
         }
 
-        int32_t ResultCode()
+        hstring Type()
         {
-            return m_resultCode;
+            return m_type;
         }
 
         hstring Message()
@@ -36,7 +36,7 @@ namespace winrt::Telegram::Native::implementation
         }
 
     private:
-        int32_t m_resultCode;
+        hstring m_type;
         hstring m_message;
         hstring m_stackTrace;
         winrt::Windows::Foundation::Collections::IVector<FatalErrorFrame> m_frames;

@@ -12,18 +12,23 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text.Json;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Converters;
 using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
-using Telegram.Td;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.System;
 using Windows.System.Profile;
@@ -78,36 +83,56 @@ namespace Telegram
     {
         private static readonly bool _disabled = Constants.DEBUG;
 
-        private static readonly string _crashLog;
-        private static readonly string _reports;
+        private static readonly Channel<string> _channel;
+        private static readonly Task _channelTask;
 
+        private static readonly string _reports;
+        private static readonly string _crashLog;
+
+        private static readonly string _crashLogOld;
+        private static readonly string _reportsOld;
+
+        private static string _lastSessionErrorReportIdOld;
         private static string _lastSessionErrorReportId;
         private static bool _lastSessionTerminatedUnexpectedly;
 
-        private static DateTime _launchTime;
+        private static readonly string _userId;
+        private static readonly long _launchTime;
 
         static WatchDog()
         {
-            _crashLog = Path.Combine(ApplicationData.Current.LocalFolder.Path, "crash.log");
-            _reports = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Reports");
+            _channel = Channel.CreateUnbounded<string>();
+            _channelTask = Task.Run(HandleReportsAsync);
+
+            _userId = SettingsService.Current.AnonymousUserId;
+            _launchTime = MonotonicUnixTime.Now;
+
+            _crashLog = Path.Combine(ApplicationData.Current.LocalFolder.Path, "crash.id");
+            _crashLogOld = Path.Combine(ApplicationData.Current.LocalFolder.Path, "crash.log");
+            _reports = Path.Combine(ApplicationData.Current.LocalFolder.Path, "ErrorReports");
+            _reportsOld = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Reports");
         }
 
         public static bool HasCrashedInLastSession { get; private set; }
 
+        public static long LaunchTime => _launchTime;
+
+        public static string UserId => _userId;
+
         public static void Initialize()
         {
             NativeUtils.SetFatalErrorCallback(FatalErrorCallback);
-            Client.SetLogMessageCallback(0, FatalErrorCallback);
+            CoreApplication.UnhandledErrorDetected += OnUnhandledExceptionDetected;
 
             BootStrapper.Current.UnhandledException += OnUnhandledException;
+
+            Read();
+            LoadReports();
 
             if (_disabled)
             {
                 return;
             }
-
-            _launchTime = DateTime.UtcNow;
-            Read();
 
             //TaskScheduler.UnobservedTaskException += (s, args) =>
             //{
@@ -129,11 +154,11 @@ namespace Telegram
 
             Crashes.SentErrorReport += (s, args) =>
             {
-                if (File.Exists(GetErrorReportPath(args.Report.Id)))
+                if (File.Exists(GetErrorReportPathOld(args.Report.Id)))
                 {
                     try
                     {
-                        File.Delete(GetErrorReportPath(args.Report.Id));
+                        File.Delete(GetErrorReportPathOld(args.Report.Id));
                     }
                     catch
                     {
@@ -144,12 +169,12 @@ namespace Telegram
 
             Crashes.ShouldProcessErrorReport = report =>
             {
-                return report.Id == _lastSessionErrorReportId;
+                return report.Id == _lastSessionErrorReportIdOld;
             };
 
             Crashes.GetErrorAttachments = report =>
             {
-                var path = GetErrorReportPath(report.Id);
+                var path = GetErrorReportPathOld(report.Id);
                 if (path.Length > 0 && File.Exists(path))
                 {
                     var data = File.ReadAllText(path);
@@ -167,6 +192,125 @@ namespace Telegram
                     { "Architecture", Package.Current.Id.Architecture.ToString() },
                     { "Processor", OSArchitecture().ToString() }
                 });
+        }
+
+        private static void OnUnhandledExceptionDetected(object sender, UnhandledErrorDetectedEventArgs e)
+        {
+            var frames = NativeUtils.GetStowedException();
+
+            try
+            {
+                e.UnhandledError.Propagate();
+            }
+            catch (Exception ex)
+            {
+                ProcessException(new FatalError(ex.GetType().Name, ex.Message, ex.StackTrace, frames));
+                ProcessException(ex);
+            }
+        }
+
+        private static void ProcessException(Exception ex)
+        {
+            var reportId = Guid.NewGuid().ToString();
+            var report = ExceptionSerializer.Serialize(ex, reportId, _userId, BuildReport(ex.HResult));
+
+            var reportPath = GetErrorReportPath(reportId);
+
+            File.WriteAllText(_crashLog, reportId);
+            File.WriteAllText(reportPath, report);
+
+            _channel.Writer.TryWrite(reportPath);
+        }
+
+        private static void ProcessException(FatalError ex)
+        {
+            var reportId = Guid.NewGuid().ToString();
+            var report = ExceptionSerializer.Serialize(ex, reportId, _userId, BuildReport(0));
+
+            var reportPath = GetErrorReportPath(reportId);
+
+            File.WriteAllText(_crashLog, reportId);
+            File.WriteAllText(reportPath, report);
+
+            _channel.Writer.TryWrite(reportPath);
+        }
+
+        public static void TrackError(Exception ex)
+        {
+            ProcessException(ex);
+
+            var report = WatchDog.BuildReport(ex.HResult);
+            Microsoft.AppCenter.Crashes.Crashes.TrackError(ex, attachments: Microsoft.AppCenter.Crashes.ErrorAttachmentLog.AttachmentWithText(report, "crash.txt"));
+        }
+
+        private static void LoadReports()
+        {
+            try
+            {
+                Directory.CreateDirectory(_reports);
+
+                var reports = Directory.GetFiles(_reports);
+
+                foreach (var report in reports)
+                {
+                    _channel.Writer.TryWrite(report);
+                }
+            }
+            catch
+            {
+                // If this fails for any reason we don't want the app to crash
+            }
+        }
+
+        private static async Task HandleReportsAsync()
+        {
+            await foreach (var item in _channel.Reader.ReadAllAsync())
+            {
+                await HandleReportAsync(item);
+            }
+        }
+
+        private static async Task HandleReportAsync(string reportPath)
+        {
+            var report = File.ReadAllText(reportPath);
+            var reportId = Path.GetFileNameWithoutExtension(reportPath);
+
+            if (reportId == _lastSessionErrorReportId)
+            {
+                var model = JsonSerializer.Deserialize(report, ErrorJsonContext.Default.ErrorReport);
+                model.Flags = 1 << 0;
+                report = JsonSerializer.Serialize(model, ErrorJsonContext.Default.ErrorReport);
+            }
+
+            using var client = new HttpClient();
+            using var request = new HttpRequestMessage(HttpMethod.Post, "https://integrations.telegram.org/ugram_crash_logs/storeCrashLog");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Constants.AppReportsId);
+            request.Content = new StringContent(report);
+
+            using var response = await client.SendAsync(request);
+
+            var statusCode = (int)response.StatusCode;
+            if (statusCode is 200 or 403 or 429)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (File.Exists(reportPath))
+                {
+                    try
+                    {
+                        File.Delete(reportPath);
+                    }
+                    catch
+                    {
+                        // You never know...
+                    }
+                }
+            }
+            else
+            {
+                // Otherwise we retry to send the report
+                _channel.Writer.TryWrite(reportPath);
+            }
         }
 
         [HandleProcessCorruptedStateExceptions, SecurityCritical]
@@ -241,14 +385,32 @@ namespace Telegram
 
                 File.Delete(_crashLog);
             }
+
+            if (File.Exists(_crashLogOld))
+            {
+                _lastSessionTerminatedUnexpectedly = true;
+
+                var data = File.ReadAllText(_crashLogOld);
+
+                if (Guid.TryParse(data, out Guid guid))
+                {
+                    _lastSessionErrorReportIdOld = guid.ToString();
+                }
+
+                File.Delete(_crashLogOld);
+            }
         }
 
         public static void FatalErrorCallback(FatalError error)
         {
+            ProcessException(error);
+
             var exception = ToException(error);
             var frames = error.Frames
                 .Select(x => new NativeStackFrame(x.NativeIP, x.NativeImageBase))
                 .ToList();
+
+            //error.Type = exception.GetType().ToString();
 
             Crashes.TrackCrash(exception, frames);
         }
@@ -262,28 +424,14 @@ namespace Telegram
 
             if (error.StackTrace.Contains("libvlc.dll") || error.StackTrace.Contains("libvlccore.dll"))
             {
-                return new VLCException(error.Message + Environment.NewLine + error.StackTrace, error.StackTrace);
+                return new VLCException(error.Message, error.StackTrace);
             }
             else if (error.StackTrace.Contains("Telegram.Native.Calls.dll"))
             {
-                return new VoipException(error.Message + Environment.NewLine + error.StackTrace, error.StackTrace);
+                return new VoipException(error.Message, error.StackTrace);
             }
 
-            return new NativeException(error.Message + Environment.NewLine + error.StackTrace, error.StackTrace);
-        }
-
-        private static void FatalErrorCallback(int verbosityLevel, string message)
-        {
-            if (verbosityLevel != 0)
-            {
-                return;
-            }
-
-            var exception = TdException.FromMessage(message);
-            if (exception.IsUnhandled)
-            {
-                Crashes.TrackCrash(exception);
-            }
+            return new NativeException(error.Message, error.StackTrace);
         }
 
         public static void Launch(ApplicationExecutionState previousExecutionState)
@@ -293,16 +441,16 @@ namespace Telegram
             // state if it was running but then crashed, or because the user closed it earlier.
 
             HasCrashedInLastSession =
-                _lastSessionErrorReportId != null
+                _lastSessionErrorReportIdOld != null
                 && previousExecutionState == ApplicationExecutionState.NotRunning;
         }
 
         private static void Track(string reportId, Exception exception)
         {
-            var report = BuildReport(exception);
+            var report = BuildReport(exception.HResult);
 
-            File.WriteAllText(_crashLog, reportId);
-            File.WriteAllText(GetErrorReportPath(reportId), report);
+            File.WriteAllText(_crashLogOld, reportId);
+            File.WriteAllText(GetErrorReportPathOld(reportId), report);
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -358,13 +506,13 @@ namespace Telegram
             Logger.Debug(string.Format("Usage: {0}, available: {1}, total: {2}", memoryUsage, memoryUsageAvailable, memoryUsageTotal));
         }
 
-        public static unsafe string BuildReport(Exception exception)
+        public static unsafe string BuildReport(int hresult)
         {
             var version = VersionLabel.GetVersion();
             var language = LocaleService.Current.Id;
 
-            var next = DateTime.UtcNow - _launchTime;
-            var diff = next.ToDuration();
+            var next = MonotonicUnixTime.Now - _launchTime;
+            var diff = TimeSpan.FromSeconds(next).ToDuration();
 
             var count = SettingsService.Current.Diagnostics.UpdateCount;
 
@@ -407,17 +555,23 @@ namespace Telegram
 
             info += $"Active call(s): {WindowContext.All.Count(x => x.IsCallInProgress)}\n";
 
-            info += $"HRESULT: 0x{exception.HResult:X4}\n" + "\n";
+            info += $"HRESULT: 0x{hresult:X4}\n" + "\n";
             info += Environment.StackTrace + "\n\n";
 
             var dump = Logger.Dump();
             return info + dump;
         }
 
+        private static string GetErrorReportPathOld(string reportId)
+        {
+            Directory.CreateDirectory(_reportsOld);
+            return Path.Combine(_reportsOld, reportId + ".appcenter");
+        }
+
         private static string GetErrorReportPath(string reportId)
         {
             Directory.CreateDirectory(_reports);
-            return Path.Combine(ApplicationData.Current.LocalFolder.Path, _reports, reportId + ".appcenter");
+            return Path.Combine(_reports, reportId + ".json");
         }
 
         public static void Suspend()
@@ -425,6 +579,11 @@ namespace Telegram
             if (File.Exists(_crashLog))
             {
                 File.Delete(_crashLog);
+            }
+
+            if (File.Exists(_crashLogOld))
+            {
+                File.Delete(_crashLogOld);
             }
         }
     }

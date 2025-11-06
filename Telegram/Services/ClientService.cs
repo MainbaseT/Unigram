@@ -1379,7 +1379,7 @@ namespace Telegram.Services
 
         private long _unixTimeDifference;
 
-        public long UnixTime => _unixTimeDifference + MonotonicUnixTime.Now();
+        public long UnixTime => _unixTimeDifference + MonotonicUnixTime.Now;
 
         public StarAmount OwnedStarCount
         {
@@ -3425,7 +3425,7 @@ namespace Telegram.Services
 
                         if (updateOption.Name == OptionsService.R.UnixTime && updateOption.Value is OptionValueInteger unixTime)
                         {
-                            _unixTimeDifference = MonotonicUnixTime.Now() - unixTime.Value;
+                            _unixTimeDifference = MonotonicUnixTime.Now - unixTime.Value;
                         }
                         else if (updateOption.Name == OptionsService.R.MyId && updateOption.Value is OptionValueInteger myId)
                         {

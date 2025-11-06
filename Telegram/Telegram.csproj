@@ -213,6 +213,7 @@
     <Compile Include="Common\AutomaticDragHelper.cs" />
     <Compile Include="Common\BezierPoint.cs" />
     <Compile Include="Common\DebouncedPropertyWithToken.cs" />
+    <Compile Include="Common\ExceptionSerializer.cs" />
     <Compile Include="Common\FeatureTokenGenerator.cs" />
     <Compile Include="Collections\HashSetDictionary.cs" />
     <Compile Include="Common\MediaDeviceTracker.cs" />
@@ -725,7 +726,6 @@
     <Compile Include="Common\SoundEffects.cs" />
     <Compile Include="Common\UpdateManager.cs" />
     <Compile Include="Common\SunDate.cs" />
-    <Compile Include="Td\TdException.cs" />
     <Compile Include="Common\TextStyleRun.cs" />
     <Compile Include="Common\ThemeColorizer.cs" />
     <Compile Include="Common\InactivityHelper.cs" />
@@ -4217,6 +4217,12 @@
     </PackageReference>
     <PackageReference Include="System.Memory">
       <Version>4.6.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>9.0.10</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Channels">
+      <Version>9.0.10</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.6.1</Version>
