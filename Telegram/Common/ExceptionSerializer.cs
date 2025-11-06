@@ -28,31 +28,22 @@ namespace Telegram.Common
 
         public static string Serialize(System.Exception exception, string id, string userId, string logs)
         {
-            var error = CreateModelExceptionAndBinaries(exception);
-            var report = new ErrorReport
-            {
-                Id = id,
-                UserId = userId,
-                ApplicationVersion = _service.ApplicationVersion2,
-                ApplicationArchitecture = Package.Current.Id.Architecture.ToString(),
-                SystemVersion = _service.SystemVersion2,
-                DeviceModel = _service.DeviceModel,
-                Type = error.Exception.Type,
-                Message = error.Exception.Message,
-                ExitPoint = error.Exception.StackTrace,
-                StackTrace = error,
-                LogTail = logs,
-                GroupHash = error.Hash,
-                Time = MonotonicUnixTime.Now,
-                LaunchTime = WatchDog.LaunchTime
-            };
+            var hashBuilder = new StringBuilder();
+            var error = CreateModelExceptionAndBinaries(exception, hashBuilder);
 
-            return JsonSerializer.Serialize(report, ErrorJsonContext.Default.ErrorReport);
+            return Serialize(error, id, userId, logs, hashBuilder);
         }
 
         public static string Serialize(FatalError exception, string id, string userId, string logs)
         {
-            var error = CreateModelExceptionAndBinaries(exception);
+            var hashBuilder = new StringBuilder();
+            var error = CreateModelExceptionAndBinaries(exception, hashBuilder);
+
+            return Serialize(error, id, userId, logs, hashBuilder);
+        }
+
+        private static string Serialize(ErrorExceptionAndBinaries error, string id, string userId, string logs, StringBuilder hashBuilder)
+        {
             var report = new ErrorReport
             {
                 Id = id,
@@ -66,39 +57,37 @@ namespace Telegram.Common
                 ExitPoint = error.Exception.StackTrace,
                 StackTrace = error,
                 LogTail = logs,
-                GroupHash = error.Hash,
                 Time = MonotonicUnixTime.Now,
                 LaunchTime = WatchDog.LaunchTime
             };
 
+            hashBuilder.Append(report.ApplicationVersion);
+            report.GroupHash = ComputeHash(hashBuilder.ToString());
+
             return JsonSerializer.Serialize(report, ErrorJsonContext.Default.ErrorReport);
         }
 
-        public static ErrorExceptionAndBinaries CreateModelExceptionAndBinaries(System.Exception exception)
+        private static ErrorExceptionAndBinaries CreateModelExceptionAndBinaries(System.Exception exception, StringBuilder hashBuilder)
         {
             var binaries = new Dictionary<long, ExceptionBinary>();
-            var hashBuilder = new StringBuilder();
             var modelException = ProcessException(exception, null, binaries, hashBuilder);
 
             return new ErrorExceptionAndBinaries
             {
                 Binaries = binaries.Count > 0 ? binaries.Values.ToList() : null,
-                Exception = modelException,
-                Hash = ComputeHash(hashBuilder.ToString())
+                Exception = modelException
             };
         }
 
-        public static ErrorExceptionAndBinaries CreateModelExceptionAndBinaries(FatalError exception)
+        private static ErrorExceptionAndBinaries CreateModelExceptionAndBinaries(FatalError exception, StringBuilder hashBuilder)
         {
             var binaries = new Dictionary<long, ExceptionBinary>();
-            var hashBuilder = new StringBuilder();
             var modelException = ProcessException(exception, binaries, hashBuilder);
 
             return new ErrorExceptionAndBinaries
             {
                 Binaries = binaries.Count > 0 ? binaries.Values.ToList() : null,
-                Exception = modelException,
-                Hash = ComputeHash(hashBuilder.ToString())
+                Exception = modelException
             };
         }
 
@@ -179,7 +168,7 @@ namespace Telegram.Common
                         }
                         else
                         {
-                            hashBuilder.Append(binary.StartAddress);
+                            hashBuilder.Append(binary.Name);
                         }
                     }
 
@@ -245,7 +234,7 @@ namespace Telegram.Common
                     }
                     else
                     {
-                        hashBuilder.Append(binary.StartAddress);
+                        hashBuilder.Append(binary.Name);
                     }
                 }
 
@@ -657,9 +646,6 @@ namespace Telegram.Common
 
         [JsonPropertyName("exception")]
         public ExceptionModel Exception { get; set; }
-
-        [JsonIgnore]
-        public string Hash { get; set; }
     }
 
     public partial class ExceptionModel
