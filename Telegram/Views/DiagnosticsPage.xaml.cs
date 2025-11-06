@@ -8,6 +8,8 @@ using System;
 using Telegram.Common;
 using Telegram.Converters;
 using Telegram.Native;
+using Telegram.Td;
+using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
@@ -38,31 +40,19 @@ namespace Telegram.Views
 
         #endregion
 
+        private void Exception_Click(object sender, RoutedEventArgs e)
+        {
+            ElementCompositionPreview.GetElementVisual(null);
+        }
+
         private void Crash_Click(object sender, RoutedEventArgs e)
         {
             NativeUtils.Crash();
-            return;
-
-            ElementCompositionPreview.GetElementVisual(null);
-            return;
-
-            if (sender is FrameworkElement element)
-            {
-                element.SizeChanged += (s, args) =>
-                {
-                    element.Height++;
-                };
-
-                element.Height = element.ActualHeight + 1;
-            }
         }
 
-        private void Bridge_Click(object sender, RoutedEventArgs e)
+        private void Logger_Click(object sender, RoutedEventArgs e)
         {
-            ElementCompositionPreview.GetElementVisual(null);
-            return;
-
-            NotifyIcon.Debug("Message received");
+            Client.Execute(new AddLogMessage(0, "This should produce a stack trace"));
         }
     }
 }
