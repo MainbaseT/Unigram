@@ -2014,6 +2014,8 @@
     </Style>
 
     <Style TargetType="chats:ChatBackgroundControl">
+        <Setter Property="IsTabStop"
+                Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="chats:ChatBackgroundControl">
