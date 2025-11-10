@@ -362,14 +362,7 @@ namespace Telegram.Navigation.Services
             Navigated?.Invoke(this, e);
             OverlayWindow.Current?.TryHide(ContentDialogResult.None);
 
-            try
-            {
-                await NavigateToAsync(e.NavigationMode, parameter, FrameFacade.Frame.Content);
-            }
-            catch (Exception ex)
-            {
-                Logger.Exception(ex);
-            }
+            await NavigateToAsync(e.NavigationMode, parameter, FrameFacade.Frame.Content);
         }
 
         public async void Resume()
@@ -701,11 +694,6 @@ namespace Telegram.Navigation.Services
             {
                 IsNavigating = true;
                 return FrameFacade.Navigate(page, parameter, infoOverride, navigationStackEnabled);
-            }
-            catch (Exception ex)
-            {
-                Logger.Exception(ex);
-                return false;
             }
             finally
             {
