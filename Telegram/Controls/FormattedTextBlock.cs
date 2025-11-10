@@ -1591,7 +1591,7 @@ namespace Telegram.Controls
 
                     var point = new Windows.Foundation.Point(paragraph.Margin.Left + position.X, relative.Y + position.Y + inset);
 
-                    for (int i = 0; i < rectangles.Count; i++)
+                    for (int i = 0; i < rectangles?.Count; i++)
                     {
                         var rect = rectangles[i];
                         rect = new Rect(rect.X, rect.Y, rect.Width, rect.Height);
@@ -1644,7 +1644,7 @@ namespace Telegram.Controls
                     var rectangles = PlaceholderHelper.Foreground.RangeMetrics(partial, xoffset, xlength, entities, size, width - relative.X, styled.Direction == TextDirectionality.RightToLeft, false);
                     var point = new Windows.Foundation.Point(relative.X + position.X, relative.Y + position.Y + inset);
 
-                    for (int i = 0; i < rectangles.Count; i++)
+                    for (int i = 0; i < rectangles?.Count; i++)
                     {
                         var rect = rectangles[i];
                         rect = new Rect(rect.X, rect.Y, rect.Width, rect.Height);
