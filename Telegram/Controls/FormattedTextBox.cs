@@ -1043,12 +1043,13 @@ namespace Telegram.Controls
             //var builder = new NormalizingStringBuilder(stackalloc char[range.StoryLength]);
             var builder = new NormalizingStringBuilder(storyLength);
 
-            // We need to do this because TextRangeUnit.CharacterFormat still breask every space/new line.
-            if (AreTheSame(range.CharacterFormat, Document.GetDefaultCharacterFormat()))
-            {
-                builder.Append(range.Text.AsSpan());
-            }
-            else
+            // We need to do this because TextRangeUnit.CharacterFormat still breaks every space/new line.
+            // TODO: unfortunately this doesn't seem to work when the range contains mixed font families (eg, monospace)
+            //if (AreTheSame(range.CharacterFormat, Document.GetDefaultCharacterFormat()))
+            //{
+            //    builder.Append(range.Text.AsSpan());
+            //}
+            //else
             {
                 range.Collapse(true);
             }

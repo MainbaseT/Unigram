@@ -214,8 +214,10 @@ namespace Telegram.Common
                 {
                     static bool Contains(string text, int offset, int length)
                     {
-                        var indexOf = text.IndexOfAny(_lineBreakChars, offset, length);
-                        return indexOf != -1;
+                        var starts = offset == 0 || _lineBreakChars.Contains(text[offset - 1]);
+                        var ends = offset + length == text.Length || _lineBreakChars.Contains(text[offset + length]);
+
+                        return starts && ends;
                     }
 
                     if (Contains(text, run.Offset, run.Length))
