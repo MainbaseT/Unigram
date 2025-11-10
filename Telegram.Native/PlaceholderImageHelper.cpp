@@ -1302,7 +1302,7 @@ namespace winrt::Telegram::Native::implementation
         {
             if (ranges[i].isTrimmed)
             {
-                continue;
+                break;
             }
 
             float left = ranges[i].left;
