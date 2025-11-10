@@ -1038,10 +1038,9 @@ namespace Telegram.Controls
                 hidden = 0;
             }
 
-            // TODO: would be cool to use stackalloc here but it would probably need some refactoring:
-            // stackalloc length shouldn't exceed 1024. We can't have a if (storyLength < 1024) because compiler won't allow this.
-            //var builder = new NormalizingStringBuilder(stackalloc char[range.StoryLength]);
-            var builder = new NormalizingStringBuilder(storyLength);
+            var builder = storyLength <= 1024
+                ? new ValueStringBuilder(stackalloc char[range.StoryLength])
+                : new ValueStringBuilder(range.StoryLength);
 
             // We need to do this because TextRangeUnit.CharacterFormat still breaks every space/new line.
             // TODO: unfortunately this doesn't seem to work when the range contains mixed font families (eg, monospace)
