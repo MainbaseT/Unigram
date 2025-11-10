@@ -3073,7 +3073,14 @@ namespace Telegram.Views
                 }
                 else if (MessageReply_Loaded(message, properties))
                 {
-                    flyout.CreateFlyoutItem(ViewModel.ReplyToMessage, message, properties.CanBeReplied ? Strings.Reply : Strings.ReplyToAnotherChat, Icons.ArrowReply);
+                    if (properties.CanBeReplied)
+                    {
+                        flyout.CreateFlyoutItem(ViewModel.ReplyToMessage, message, Strings.Reply, Icons.ArrowReply);
+                    }
+                    else
+                    {
+                        flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, message, Strings.ReplyToAnotherChat, Icons.ArrowReply);
+                    }
                 }
 
                 if (MessageEdit_Loaded(message, properties))
