@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Navigation;
 using Telegram.Td.Api;
@@ -116,7 +117,7 @@ namespace Telegram.Controls
 
         public void Update(int index, bool v)
         {
-            if (_items == null)
+            if (_items == null || _items.Empty())
             {
                 return;
             }
