@@ -2,6 +2,8 @@
 
 #include "NativeUtils.g.h"
 
+#include "DebugUtils.h"
+
 #include <iostream>  
 #include <iomanip>
 #include <sstream>
@@ -61,7 +63,7 @@ namespace winrt::Telegram::Native::implementation
 
         static void SetFatalErrorCallback(FatalErrorCallback action);
         static void LogMessageCallback(int verbosityLevel, hstring message);
-        static IVector<winrt::Telegram::Native::FatalErrorFrame> GetStowedException();
+        static winrt::Telegram::Native::FatalError GetStowedException();
         static winrt::Telegram::Native::FatalError GetBackTrace(hstring type, hstring message);
 
         static hstring GetLogMessage(int64_t format, int64_t args);
@@ -71,6 +73,8 @@ namespace winrt::Telegram::Native::implementation
         static FatalErrorCallback Callback;
 
     private:
+        static winrt::Telegram::Native::FatalError GetStowedException2(STOWED_EXCEPTION_INFORMATION_V2* stowed);
+
         static uint64_t GetDirectorySizeInternal(const std::wstring& path, const std::wstring& filter, uint64_t size);
         static void CleanDirectoryInternal(const std::wstring& path, int days);
         static bool IsBrowsePath(const std::wstring& path);

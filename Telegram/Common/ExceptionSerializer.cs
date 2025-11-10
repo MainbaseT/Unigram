@@ -50,7 +50,7 @@ namespace Telegram.Common
         {
             var hashBuilder = new StringBuilder();
             var binaries = new Dictionary<long, ExceptionBinary>();
-            var modelException = ProcessException(exception, binaries, hashBuilder);
+            var modelException = ProcessException(exception, null, binaries, hashBuilder);
 
             var error = new ErrorExceptionAndBinaries
             {
@@ -196,19 +196,19 @@ namespace Telegram.Common
             return modelException;
         }
 
-        private static ExceptionModel ProcessException(FatalError exception, Dictionary<long, ExceptionBinary> seenBinaries, StringBuilder hashBuilder)
+        private static ExceptionModel ProcessException(FatalError exception, ExceptionModel outerException, Dictionary<long, ExceptionBinary> seenBinaries, StringBuilder hashBuilder)
         {
             var modelException = new ExceptionModel
             {
                 Type = exception.Type,
-                Message = exception.Message.Replace("\r\n", "\n"),
-                StackTrace = exception.StackTrace.Replace("\r\n", "\n")
+                Message = TranslateMessage(exception.Message.Replace("\r\n", "\n")),
+                StackTrace = exception.StackTrace?.Replace("\r\n", "\n")
             };
 
-            if (exception.InnerException is Exception innerException)
+            if (exception.InnerException != null)
             {
                 modelException.InnerExceptions ??= new List<ExceptionModel>();
-                ProcessException(innerException, modelException, seenBinaries, hashBuilder);
+                ProcessException(exception.InnerException, modelException, seenBinaries, hashBuilder);
             }
 
             foreach (var frame in exception.Frames)
@@ -255,6 +255,7 @@ namespace Telegram.Common
                 }
             }
 
+            outerException?.InnerExceptions.Add(modelException);
             return modelException;
         }
 

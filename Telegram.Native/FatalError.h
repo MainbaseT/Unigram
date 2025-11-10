@@ -21,9 +21,19 @@ namespace winrt::Telegram::Native::implementation
             return m_type;
         }
 
+        void Type(hstring value)
+        {
+            m_type = value;
+        }
+
         hstring Message()
         {
             return m_message;
+        }
+
+        void Message(hstring value)
+        {
+            m_message = value;
         }
 
         hstring StackTrace()
@@ -31,17 +41,22 @@ namespace winrt::Telegram::Native::implementation
             return m_stackTrace;
         }
 
+        void StackTrace(hstring value)
+        {
+            m_stackTrace = value;
+        }
+
         winrt::Windows::Foundation::Collections::IVector<FatalErrorFrame> Frames()
         {
             return m_frames;
         }
 
-        winrt::Windows::Foundation::IInspectable InnerException()
+        winrt::Telegram::Native::FatalError InnerException()
         {
             return m_innerException;
         }
 
-        void InnerException(winrt::Windows::Foundation::IInspectable value)
+        void InnerException(winrt::Telegram::Native::FatalError value)
         {
             m_innerException = value;
         }
@@ -52,7 +67,7 @@ namespace winrt::Telegram::Native::implementation
         hstring m_stackTrace;
         winrt::Windows::Foundation::Collections::IVector<FatalErrorFrame> m_frames;
 
-        winrt::Windows::Foundation::IInspectable m_innerException;
+        winrt::Telegram::Native::FatalError m_innerException;
     };
 }
 

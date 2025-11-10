@@ -144,7 +144,7 @@ namespace Telegram
 
         private static void OnUnhandledExceptionDetected(object sender, UnhandledErrorDetectedEventArgs e)
         {
-            var frames = NativeUtils.GetStowedException();
+            var stowed = NativeUtils.GetStowedException();
 
             try
             {
@@ -152,10 +152,18 @@ namespace Telegram
             }
             catch (Exception ex)
             {
-                var fatal = new FatalError(ex.GetType().Name, ex.Message, ex.StackTrace, frames);
-                fatal.InnerException = ex.InnerException;
+                if (stowed != null)
+                {
+                    stowed.Type = ex.GetType().Name;
+                    stowed.Message = ex.Message;
+                    stowed.StackTrace = ex.StackTrace;
 
-                ProcessException(fatal);
+                    ProcessException(stowed);
+                }
+                else
+                {
+                    ProcessException(ex);
+                }
             }
         }
 

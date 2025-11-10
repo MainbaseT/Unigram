@@ -7,7 +7,6 @@
 #include "Helpers/COMHelper.h"
 #include "Helpers/LibraryHelper.h"
 #include "InternalsRT/CoreWindowHelpers.h"
-#include "DebugUtils.h"
 
 #include "FatalError.h"
 
@@ -252,7 +251,7 @@ namespace winrt::Telegram::Native::implementation
         return run;
     }
 
-    winrt::Windows::Foundation::Collections::IVector<winrt::Telegram::Native::FatalErrorFrame> NativeUtils::GetStowedException()
+    winrt::Telegram::Native::FatalError NativeUtils::GetStowedException()
     {
         HRESULT result;
 
@@ -277,6 +276,14 @@ namespace winrt::Telegram::Native::implementation
             return nullptr;
         }
 
+        // TODO: Currently unused, we still propagate the managed exception and we get details from there
+        // Would be fine to use this method, but strings are a little messed up:
+        // "description" contains the exception message
+        // "restrictedDescription" contains the exception message + stack trace
+        //HRESULT error;
+        //BSTR description, restrictedDescription, capabilitySid;
+        //info->GetErrorDetails(&description, &error, &restrictedDescription, &capabilitySid);
+
         CleanupIfFailed(result, info->QueryInterface(context.put()));
 
         if (context == nullptr)
@@ -285,6 +292,16 @@ namespace winrt::Telegram::Native::implementation
         }
 
         CleanupIfFailed(result, context->GetContext(&stowed));
+
+        return GetStowedException2(stowed);
+
+    Cleanup:
+        return nullptr;
+    }
+
+    winrt::Telegram::Native::FatalError NativeUtils::GetStowedException2(STOWED_EXCEPTION_INFORMATION_V2* stowed)
+    {
+        HRESULT result;
 
         if (stowed != nullptr && stowed->ExceptionForm == 1 && stowed->Header.Signature == 'SE02')
         {
@@ -324,7 +341,12 @@ namespace winrt::Telegram::Native::implementation
 
             if (frames.Size())
             {
-                return frames;
+                auto error = winrt::Telegram::Native::FatalError(L"", L"", L"", frames);
+
+                if (stowed->NestedExceptionType == STOWED_EXCEPTION_NESTED_TYPE_STOWED)
+                {
+                    error.InnerException(GetStowedException2((STOWED_EXCEPTION_INFORMATION_V2*)stowed->NestedException));
+                }
             }
         }
 
@@ -381,6 +403,10 @@ namespace winrt::Telegram::Native::implementation
             else if (Contains(trace, L"Telegram.Native.Calls.dll"))
             {
                 type = L"VoipException";
+            }
+            else if (Contains(trace, L"Telegram.Td.dll"))
+            {
+                type = L"TdException";
             }
             else
             {
