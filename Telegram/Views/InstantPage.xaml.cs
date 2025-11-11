@@ -256,8 +256,9 @@ namespace Telegram.Views
             var longitude = map.Location.Longitude.ToString(CultureInfo.InvariantCulture);
 
             var image = new ImageView();
-            image.Source = new BitmapImage(new Uri(string.Format("https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/{0},{1}/{2}?mapSize={3},{4}&key=FgqXCsfOQmAn9NRf4YJ2~61a_LaBcS6soQpuLCjgo3g~Ah_T2wZTc8WqNe9a_yzjeoa5X00x4VJeeKH48wAO1zWJMtWg6qN-u4Zn9cmrOPcL", latitude, longitude, map.Zoom, map.Width, map.Height)));
             image.Constraint = map;
+            image.XamlRoot = ViewModel.XamlRoot;
+            image.SetSource(ViewModel.ClientService, map.Location, map.Width, map.Height, 0);
 
             var caption = ProcessCaption(map.Caption);
             if (caption != null)

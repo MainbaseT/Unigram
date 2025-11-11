@@ -26,7 +26,7 @@ namespace Telegram.Controls.Cells
         {
             File file = null;
             Minithumbnail minithumbnail = null;
-            Uri uri = null;
+            Location location = null;
 
             if (result is InlineQueryResultAnimation animation2)
             {
@@ -78,16 +78,13 @@ namespace Telegram.Controls.Cells
                 Title.Text = game.Game.Title;
                 Description.Text = game.Game.Description;
             }
-            else if (result is InlineQueryResultLocation location)
+            else if (result is InlineQueryResultLocation resultLocation)
             {
-                var latitude = location.Location.Latitude.ToString(CultureInfo.InvariantCulture);
-                var longitude = location.Location.Longitude.ToString(CultureInfo.InvariantCulture);
-
-                uri = new Uri(string.Format("https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/{0},{1}/{2}?mapSize={3}&key=FgqXCsfOQmAn9NRf4YJ2~61a_LaBcS6soQpuLCjgo3g~Ah_T2wZTc8WqNe9a_yzjeoa5X00x4VJeeKH48wAO1zWJMtWg6qN-u4Zn9cmrOPcL", latitude, longitude, 15, "96,96"));
-                file = location.Thumbnail?.File;
+                location = resultLocation.Location;
+                file = resultLocation.Thumbnail?.File;
                 minithumbnail = null;
-                Title.Text = location.Title;
-                Description.Text = $"{location.Location.Latitude};{location.Location.Longitude}";
+                Title.Text = resultLocation.Title;
+                Description.Text = $"{resultLocation.Location.Latitude};{resultLocation.Location.Longitude}";
             }
             else if (result is InlineQueryResultPhoto photo)
             {
@@ -98,13 +95,9 @@ namespace Telegram.Controls.Cells
             }
             else if (result is InlineQueryResultVenue venue)
             {
-                var latitude = venue.Venue.Location.Latitude.ToString(CultureInfo.InvariantCulture);
-                var longitude = venue.Venue.Location.Longitude.ToString(CultureInfo.InvariantCulture);
-
-                uri = new Uri(string.Format("https://dev.virtualearth.net/REST/v1/Imagery/Map/Road/{0},{1}/{2}?mapSize={3}&key=FgqXCsfOQmAn9NRf4YJ2~61a_LaBcS6soQpuLCjgo3g~Ah_T2wZTc8WqNe9a_yzjeoa5X00x4VJeeKH48wAO1zWJMtWg6qN-u4Zn9cmrOPcL", latitude, longitude, 15, "96,96"));
+                location = venue.Venue.Location;
                 file = venue.Thumbnail?.File;
                 minithumbnail = null;
-
                 Title.Text = venue.Venue.Title;
                 Description.Text = venue.Venue.Address;
             }
@@ -121,17 +114,23 @@ namespace Telegram.Controls.Cells
                 Description.Text = voiceNote.VoiceNote.GetDuration();
             }
 
-            if (file != null)
+            if (location != null)
+            {
+                Image.SetSource(clientService, location, 48, 48, 0);
+                Image.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                Photo.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+            else if (file != null)
             {
                 Photo.Source = new ProfilePictureSourcePhoto(clientService, result.GetHashCode(), file, minithumbnail);
-            }
-            else if (uri != null)
-            {
-                Photo.Source = new ProfilePictureSourceBitmap(new BitmapImage(uri));
+                Photo.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                Image.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
             else
             {
                 Photo.Source = ProfilePictureSourceText.GetNameForChat(Title.Text, Title.Text.GetHashCode());
+                Photo.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                Image.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
         }
     }

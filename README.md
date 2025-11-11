@@ -48,8 +48,6 @@ In order to be able to use Unigram in Windows 10 N, you will need Media Feature 
 
 ## Privacy policy
 In order to guarantee a great user experience, Unigram uses some third party services:
-- [**Microsoft Bing Maps**](https://www.microsoft.com/en-us/maps/product)  
-  Used to generate map previews when receiving and sharing locations.
 - [**Microsoft AppCenter**](https://learn.microsoft.com/en-us/appcenter/gdpr/)  
   Used to collect anonymous crash data and usage statistics, fundamental to monitor app health and to fix issues.  
   Anonymised data is stored for 28 days.

@@ -485,6 +485,13 @@ namespace Telegram.Controls
             var scaledWidth = (int)(width * XamlRoot.RasterizationScale);
             var scaledHeight = (int)(height * XamlRoot.RasterizationScale);
 
+            if (scaledWidth > 1024 || scaledHeight > 1024)
+            {
+                var scaledSize = ImageHelper.ScaleMin(width * XamlRoot.RasterizationScale, height * XamlRoot.RasterizationScale, 1024);
+                scaledWidth = (int)scaledSize.Width;
+                scaledHeight = (int)scaledSize.Height;
+            }
+
             var response = await clientService.SendAsync(new GetMapThumbnailFile(location, 15, scaledWidth, scaledHeight, 1, chatId));
             if (response is File file && _latitude == location.Latitude && _longitude == location.Longitude)
             {

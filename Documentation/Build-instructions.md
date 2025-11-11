@@ -26,7 +26,6 @@ namespace Telegram
             AppChannel = "Telegram channel username used for in-app updates";
 
             AppCenterId = "AppCenter ID used for crash data";
-            BingMapsApiKey = "Bing Maps API key used for map previews";
         }
     }
 }
