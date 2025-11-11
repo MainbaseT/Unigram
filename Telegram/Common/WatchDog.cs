@@ -4,8 +4,6 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,12 +22,10 @@ using Telegram.Converters;
 using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.System;
-using Windows.System.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -131,15 +127,6 @@ namespace Telegram
             //    Crashes.TrackCrash(args.Exception);
             //    args.SetObserved();
             //};
-
-            AppCenter.Start(Constants.AppCenterId, typeof(Analytics));
-            Analytics.TrackEvent("Windows",
-                new Dictionary<string, string>
-                {
-                    { "DeviceFamily", AnalyticsInfo.VersionInfo.DeviceFamily },
-                    { "Architecture", Package.Current.Id.Architecture.ToString() },
-                    { "Processor", OSArchitecture().ToString() }
-                });
         }
 
         private static void OnUnhandledExceptionDetected(object sender, UnhandledErrorDetectedEventArgs e)
@@ -322,7 +309,7 @@ namespace Telegram
                 return;
             }
 
-            Analytics.TrackEvent(name, properties?.ToDictionary(x => x.Key, y => y.Value.ToString()));
+            // TODO: Not implemented
         }
 
         private static void Read()

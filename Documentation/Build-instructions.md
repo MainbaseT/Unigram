@@ -24,8 +24,6 @@ namespace Telegram
             ApiHash = "your_api_hash";
             
             AppChannel = "Telegram channel username used for in-app updates";
-
-            AppCenterId = "AppCenter ID used for crash data";
         }
     }
 }
