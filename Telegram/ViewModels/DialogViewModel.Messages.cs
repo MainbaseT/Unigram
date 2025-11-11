@@ -5,12 +5,12 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
@@ -2281,13 +2281,13 @@ namespace Telegram.ViewModels
 
                 conversion.CropRectangle = rectangle;
 
-                var serialized = JsonConvert.SerializeObject(conversion);
+                var serialized = JsonSerializer.Serialize(conversion, GenerationJsonContext.Default.VideoGeneration);
                 var generated = await media.File.ToGeneratedAsync(ConversionType.Transcode, serialized);
                 var response = await ClientService.SendAsync(new SetProfilePhoto(new InputChatPhotoAnimation(generated, 0), false));
             }
             else if (file is StoragePhoto photo)
             {
-                var serialized = JsonConvert.SerializeObject(photo.EditState);
+                var serialized = JsonSerializer.Serialize(photo.EditState, GenerationJsonContext.Default.ImageGeneration);
                 var generated = await photo.File.ToGeneratedAsync(ConversionType.Compress, serialized);
                 var response = await ClientService.SendAsync(new SetProfilePhoto(new InputChatPhotoStatic(generated), false));
             }

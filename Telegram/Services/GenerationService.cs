@@ -4,11 +4,13 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Entities;
@@ -244,7 +246,7 @@ namespace Telegram.Services
 
                 if (args.Length > 3)
                 {
-                    var generation = JsonConvert.DeserializeObject<ImageGeneration>(args[2]);
+                    var generation = JsonSerializer.Deserialize(args[2], GenerationJsonContext.Default.ImageGeneration);
                     var rectangle = generation.Rectangle;
 
                     await ImageHelper.CropAsync(file, temp, rectangle, maxSize, generation.MinimumSize, rotation: generation.Rotation, flip: generation.Flip, bestQuality: true);
@@ -308,7 +310,7 @@ namespace Telegram.Services
 
                 if (args.Length > 3)
                 {
-                    var rect = JsonConvert.DeserializeObject<Rect>(args[2]);
+                    var rect = JsonSerializer.Deserialize(args[2], GenerationJsonContext.Default.Rect);
                     await ImageHelper.CropAsync(file, temp, rect, 90);
                 }
                 else
@@ -364,7 +366,7 @@ namespace Telegram.Services
         {
             try
             {
-                var generation = JsonConvert.DeserializeObject<VideoGeneration>(args[2]);
+                var generation = JsonSerializer.Deserialize(args[2], GenerationJsonContext.Default.VideoGeneration);
                 if (generation.Mute || generation.Transcode)
                 {
                     var file = await StorageApplicationPermissions.FutureAccessList.GetFileAsync(args[0]);
@@ -476,7 +478,7 @@ namespace Telegram.Services
                 var file = await StorageApplicationPermissions.FutureAccessList.GetFileAsync(args[0]);
                 var temp = await StorageFile.GetFileFromPathAsync(update.DestinationPath);
 
-                var generation = JsonConvert.DeserializeObject<VideoGeneration>(args[2]);
+                var generation = JsonSerializer.Deserialize(args[2], GenerationJsonContext.Default.VideoGeneration);
 
                 if (args.Length > 3)
                 {
@@ -574,6 +576,53 @@ namespace Telegram.Services
             }
 
             //StorageApplicationPermissions.FutureAccessList.Remove(args[0]);
+        }
+    }
+
+    [JsonSourceGenerationOptions(IgnoreReadOnlyProperties = true, Converters = new[] { typeof(Vector2Converter) })]
+    [JsonSerializable(typeof(ImageGeneration))]
+    [JsonSerializable(typeof(VideoGeneration))]
+    public partial class GenerationJsonContext : JsonSerializerContext
+    {
+    }
+
+    public class Vector2Converter : JsonConverter<Vector2>
+    {
+        public override Vector2 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            float x = 0, y = 0;
+
+            if (reader.TokenType != JsonTokenType.StartObject)
+                throw new JsonException();
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                    return new Vector2(x, y);
+
+                if (reader.TokenType == JsonTokenType.PropertyName)
+                {
+                    string propName = reader.GetString()!;
+                    reader.Read();
+
+                    switch (propName)
+                    {
+                        case "X": x = reader.GetSingle(); break;
+                        case "Y": y = reader.GetSingle(); break;
+                        default: reader.Skip(); break;
+                    }
+                }
+            }
+
+            throw new JsonException();
+        }
+
+        public override void Write(Utf8JsonWriter writer, Vector2 value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("X", value.X);
+            writer.WriteNumber("Y", value.Y);
+            writer.WriteEndObject();
         }
     }
 }

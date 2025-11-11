@@ -4,8 +4,8 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using Newtonsoft.Json;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Entities;
@@ -35,7 +35,7 @@ namespace Telegram.Services.Factories
                 conversionType = ConversionType.HighQuality;
             }
 
-            var serialized = generation != null ? JsonConvert.SerializeObject(generation) : null;
+            var serialized = generation != null ? JsonSerializer.Serialize(generation, GenerationJsonContext.Default.ImageGeneration) : null;
             var generated = await file.ToGeneratedAsync(conversionType, serialized);
             var thumbnail = default(InputThumbnail);
 
@@ -74,7 +74,7 @@ namespace Telegram.Services.Factories
                 videoHeight = (int)generation.CropRectangle.Height;
             }
 
-            var serialized = JsonConvert.SerializeObject(generation);
+            var serialized = JsonSerializer.Serialize(generation, GenerationJsonContext.Default.VideoGeneration);
             var generated = await video.File.ToGeneratedAsync(ConversionType.Transcode, serialized);
             var thumbnail = await video.ToVideoThumbnailAsync(generation, ConversionType.TranscodeThumbnail, serialized);
 
@@ -96,7 +96,7 @@ namespace Telegram.Services.Factories
             var videoWidth = video.Width;
             var videoHeight = video.Height;
 
-            var serialized = JsonConvert.SerializeObject(generation);
+            var serialized = JsonSerializer.Serialize(generation, GenerationJsonContext.Default.VideoGeneration);
             var generated = await video.File.ToGeneratedAsync(ConversionType.Transcode, serialized);
             var thumbnail = await video.ToVideoThumbnailAsync(generation, ConversionType.TranscodeThumbnail, serialized);
 

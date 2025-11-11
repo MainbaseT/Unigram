@@ -27,5 +27,4 @@ namespace Telegram.Entities
         public Size OutputSize { get; set; }
         public Rect CropRectangle { get; set; }
     }
-
 }
