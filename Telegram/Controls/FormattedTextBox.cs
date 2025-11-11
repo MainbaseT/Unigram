@@ -1039,8 +1039,8 @@ namespace Telegram.Controls
             }
 
             var builder = storyLength <= 1024
-                ? new ValueStringBuilder(stackalloc char[range.StoryLength])
-                : new ValueStringBuilder(range.StoryLength);
+                ? new NormalizingStringBuilder(stackalloc char[range.StoryLength])
+                : new NormalizingStringBuilder(range.StoryLength);
 
             // We need to do this because TextRangeUnit.CharacterFormat still breaks every space/new line.
             // TODO: unfortunately this doesn't seem to work when the range contains mixed font families (eg, monospace)
