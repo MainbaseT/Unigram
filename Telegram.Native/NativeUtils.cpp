@@ -347,6 +347,8 @@ namespace winrt::Telegram::Native::implementation
                 {
                     error.InnerException(GetStowedException2((STOWED_EXCEPTION_INFORMATION_V2*)stowed->NestedException));
                 }
+
+                return error;
             }
         }
 
