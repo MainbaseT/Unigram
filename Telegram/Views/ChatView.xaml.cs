@@ -466,11 +466,32 @@ namespace Telegram.Views
 
                 _messages.UpdateSource(viewModel.Items, viewModel.IsSavedMessagesTab);
                 viewModel.MessageSliceLoaded -= OnMessageSliceLoaded;
+
+                if (!viewModel.HasProtectedContent)
+                {
+                    VisualUtilities.QueueCallbackForCompositionRendered(EnableScreenCapture);
+                }
             }
 
             _updateThemeTask?.TrySetResult(true);
 
             Bindings.Update();
+        }
+
+        public void DisableScreenCapture()
+        {
+            if (ViewModel.HasProtectedContent)
+            {
+                ViewModel.NavigationService.Window.DisableScreenCapture(GetHashCode());
+            }
+        }
+
+        public void EnableScreenCapture()
+        {
+            if (!ViewModel.HasProtectedContent)
+            {
+                ViewModel.NavigationService.Window.EnableScreenCapture(GetHashCode());
+            }
         }
 
         public void Activate(DialogViewModel viewModel)
@@ -1037,6 +1058,8 @@ namespace Telegram.Views
             Bindings.StopTracking();
 
             UnloadVisibleMessages();
+
+            ViewModel.NavigationService.Window.EnableScreenCapture(GetHashCode());
 
             ViewModel.NavigationService.Window.Activated -= Window_Activated;
             ViewModel.NavigationService.Window.VisibilityChanged -= Window_VisibilityChanged;

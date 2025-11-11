@@ -277,6 +277,8 @@ namespace Telegram.ViewModels
 
         public bool IsDirectMessagesGroup { get; private set; }
 
+        public bool HasProtectedContent => Chat?.Type is ChatTypeSecret || (Chat?.HasProtectedContent ?? false);
+
         protected Chat _chat;
         public override Chat Chat
         {
@@ -2305,9 +2307,9 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (chat.Type is ChatTypeSecret || chat.HasProtectedContent)
+            if (HasProtectedContent)
             {
-                NavigationService.Window.DisableScreenCapture(GetHashCode());
+                Delegate?.DisableScreenCapture();
             }
 
             Chat = chat;
@@ -2600,8 +2602,6 @@ namespace Telegram.ViewModels
 
         protected override void OnNavigatedFrom(NavigationState suspensionState, bool suspending)
         {
-            NavigationService.Window.EnableScreenCapture(GetHashCode());
-
             var chat = _chat;
             if (chat == null)
             {

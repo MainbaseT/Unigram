@@ -54,6 +54,8 @@ namespace Telegram.ViewModels.Delegates
         void ViewVisibleMessages();
 
 
+        void DisableScreenCapture();
+
         void HideStickers();
 
         void ChangeTheme();
