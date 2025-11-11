@@ -6,10 +6,10 @@
 //
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Entities;
@@ -119,7 +119,7 @@ namespace Telegram.Views.Tabbed
             {
                 try
                 {
-                    await Navigation.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.navigateToHistoryEntry", JsonConvert.SerializeObject(new NavigateToHistoryEntryParameters(entry.Id)));
+                    await Navigation.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.navigateToHistoryEntry", JsonSerializer.Serialize(new NavigateToHistoryEntryParameters(entry.Id), NavigationJsonContext.Default.NavigateToHistoryEntryParameters));
                 }
                 catch
                 {
@@ -133,7 +133,7 @@ namespace Telegram.Views.Tabbed
             try
             {
                 var response = await Navigation.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.getNavigationHistory", "{}");
-                var history = JsonConvert.DeserializeObject<NavigationHistory>(response);
+                var history = JsonSerializer.Deserialize(response, NavigationJsonContext.Default.NavigationHistory);
                 var entries = new List<HistoryEntry>(history.Entries);
 
                 static string GetFaviconForUri(Uri uri)

@@ -4,7 +4,7 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Telegram.Entities
 {
@@ -15,7 +15,7 @@ namespace Telegram.Entities
             EntryId = entryId;
         }
 
-        [JsonProperty("entryId")]
+        [JsonPropertyName("entryId")]
         public int EntryId { get; init; }
     }
 }

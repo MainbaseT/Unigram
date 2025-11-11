@@ -4,29 +4,36 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Telegram.Entities
 {
+    [JsonSerializable(typeof(NavigationHistory))]
+    [JsonSerializable(typeof(NavigateToHistoryEntryParameters))]
+    public partial class NavigationJsonContext : JsonSerializerContext
+    {
+
+    }
+
     public record NavigationHistory
     {
-        [JsonProperty("currentIndex")]
+        [JsonPropertyName("currentIndex")]
         public int CurrentIndex { get; init; }
 
-        [JsonProperty("entries")]
+        [JsonPropertyName("entries")]
         public IReadOnlyList<HistoryEntry> Entries { get; init; }
     }
 
     public record HistoryEntry
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public int Id { get; init; }
 
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title { get; init; }
 
-        [JsonProperty("url")]
+        [JsonPropertyName("url")]
         public string Url { get; init; }
 
         [JsonIgnore]
