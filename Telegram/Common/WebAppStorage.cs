@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Telegram.Services;
 using Telegram.Views;
@@ -277,32 +277,32 @@ namespace Telegram.Common
             }
         }
 
-        private async Task<JObject> GetJsonAsync()
+        private async Task<Dictionary<string, string>> GetJsonAsync()
         {
             var file = await GetFileAsync();
-            if (file == null) return new JObject();
+            if (file == null) return new Dictionary<string, string>();
 
             try
             {
                 var properties = await file.GetBasicPropertiesAsync();
                 if (properties.Size > MAX_STORAGE_SIZE)
-                    return new JObject();
+                    return new Dictionary<string, string>();
 
                 var bytes = await GetBytesAsync(file);
                 var json = Encoding.UTF8.GetString(bytes);
-                return JObject.Parse(json);
+                return JsonSerializer.Deserialize(json, WebAppStorageConfigJsonContext.Default.DictionaryStringString);
             }
             catch
             {
-                return new JObject();
+                return new Dictionary<string, string>();
             }
         }
 
-        private async Task SetJsonAsync(JObject obj)
+        private async Task SetJsonAsync(Dictionary<string, string> obj)
         {
             try
             {
-                var json = obj.ToString(Formatting.None);
+                var json = JsonSerializer.Serialize(obj, WebAppStorageConfigJsonContext.Default.DictionaryStringString);
                 var bytes = Encoding.UTF8.GetBytes(json);
 
                 if (bytes.Length > MAX_STORAGE_SIZE)
@@ -369,10 +369,11 @@ namespace Telegram.Common
         public async Task<(string Value, bool CanRestore)> GetKeyAsync(string key)
         {
             var thisJson = await GetJsonAsync();
-            var value = thisJson.GetValue(key)?.ToString();
             var canRestore = false;
 
-            if (Secured && value == null && !thisJson.HasValues)
+            thisJson.TryGetValue(key, out string value);
+
+            if (Secured && value == null && thisJson.Count == 0)
             {
                 var activeUsers = GetActiveUsers();
                 var config = await ReadConfigAsync();
@@ -403,7 +404,7 @@ namespace Telegram.Common
         public async Task<List<WebAppStorageConfig>> GetStoragesWithKeyAsync(string key)
         {
             var thisJson = await GetJsonAsync();
-            if (thisJson.HasValues)
+            if (thisJson.Count > 0)
                 throw new InvalidOperationException("STORAGE_NOT_EMPTY");
 
             var result = new List<WebAppStorageConfig>();
@@ -434,7 +435,7 @@ namespace Telegram.Common
         public async Task RestoreFromAsync(string id)
         {
             var thisJson = await GetJsonAsync();
-            if (thisJson.HasValues)
+            if (thisJson.Count > 0)
                 throw new InvalidOperationException("STORAGE_NOT_EMPTY");
 
             var config = await ReadConfigAsync();
@@ -451,16 +452,16 @@ namespace Telegram.Common
 
         public async Task ClearAsync()
         {
-            await SetJsonAsync(new JObject());
+            await SetJsonAsync(new Dictionary<string, string>());
         }
 
-        private async Task<JObject> GetJsonFromFileAsync(StorageFile file)
+        private async Task<Dictionary<string, string>> GetJsonFromFileAsync(StorageFile file)
         {
             try
             {
                 var bytes = await GetBytesAsync(file);
                 var json = Encoding.UTF8.GetString(bytes);
-                return JObject.Parse(json);
+                return JsonSerializer.Deserialize(json, WebAppStorageConfigJsonContext.Default.DictionaryStringString);
             }
             catch
             {
@@ -493,21 +494,9 @@ namespace Telegram.Common
 
                 var bytes = await GetRawBytesAsync(file);
                 var json = Encoding.UTF8.GetString(bytes);
-                var obj = JObject.Parse(json);
+                var obj = JsonSerializer.Deserialize(json, WebAppStorageConfigJsonContext.Default.DictionaryStringWebAppStorageConfig);
 
-                foreach (var kvp in obj)
-                {
-                    var configJson = (JObject)kvp.Value;
-                    var storageConfig = new WebAppStorageConfig
-                    {
-                        StorageId = kvp.Key,
-                        UserId = configJson["user_id"].Value<long>(),
-                        UserName = configJson["user_name"].Value<string>(),
-                        CreatedAt = configJson["created_at"].Value<long>(),
-                        EditedAt = configJson["edited_at"].Value<long>()
-                    };
-                    config[kvp.Key] = storageConfig;
-                }
+                config = obj;
             }
             catch { }
 
@@ -518,18 +507,7 @@ namespace Telegram.Common
         {
             try
             {
-                var obj = new JObject();
-                foreach (var kvp in config)
-                {
-                    var configJson = new JObject
-                    {
-                        ["user_id"] = kvp.Value.UserId,
-                        ["user_name"] = kvp.Value.UserName,
-                        ["created_at"] = kvp.Value.CreatedAt,
-                        ["edited_at"] = kvp.Value.EditedAt
-                    };
-                    obj[kvp.Key] = configJson;
-                }
+                var obj = JsonSerializer.Serialize(config, WebAppStorageConfigJsonContext.Default.DictionaryStringWebAppStorageConfig);
 
                 var file = await GetConfigFileAsync();
                 if (file != null)
@@ -565,12 +543,29 @@ namespace Telegram.Common
         }
     }
 
+    [JsonSerializable(typeof(WebAppStorageConfig))]
+    [JsonSerializable(typeof(Dictionary<string, WebAppStorageConfig>))]
+    [JsonSerializable(typeof(Dictionary<string, string>))]
+    public partial class WebAppStorageConfigJsonContext : JsonSerializerContext
+    {
+
+    }
+
     public class WebAppStorageConfig
     {
+        [JsonIgnore]
         public string StorageId { get; set; }
+
+        [JsonPropertyName("user_id")]
         public long UserId { get; set; }
+
+        [JsonPropertyName("user_name")]
         public string UserName { get; set; }
+
+        [JsonPropertyName("created_at")]
         public long CreatedAt { get; set; }
+
+        [JsonPropertyName("edited_at")]
         public long EditedAt { get; set; }
     }
 }
