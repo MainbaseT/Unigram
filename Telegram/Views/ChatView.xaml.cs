@@ -4563,7 +4563,15 @@ namespace Telegram.Views
             else if (e.ClickedItem is QuickReplyShortcut shortcut)
             {
                 TextField.ClearText();
-                ViewModel.ClientService.Send(new SendQuickReplyShortcutMessages(ViewModel.Chat.Id, shortcut.Id, 0));
+
+                if (ViewModel.IsPremium)
+                {
+                    ViewModel.ClientService.Send(new SendQuickReplyShortcutMessages(ViewModel.Chat.Id, shortcut.Id, 0));
+                }
+                else
+                {
+                    ViewModel.NavigationService.ShowPromo(new PremiumFeatureBusiness());
+                }
             }
         }
 
