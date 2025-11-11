@@ -408,6 +408,10 @@ namespace Telegram.Controls.Messages.Content
             {
                 return true;
             }
+            else if (content is MessageSponsored { Content: MessagePhoto })
+            {
+                return true;
+            }
 
             return false;
         }
@@ -471,6 +475,10 @@ namespace Telegram.Controls.Messages.Content
             else if (content is MessageInvoice invoice && invoice.PaidMedia is PaidMediaPhoto paidMediaPhoto)
             {
                 return paidMediaPhoto.Photo;
+            }
+            else if (content is MessageSponsored { Content: MessagePhoto sponsored })
+            {
+                return sponsored.Photo;
             }
 
             return null;

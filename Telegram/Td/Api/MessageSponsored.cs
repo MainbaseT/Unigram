@@ -11,8 +11,13 @@ namespace Telegram.Td.Api
         public MessageSponsored(SponsoredMessage message)
         {
             AdditionalInfo = message.AdditionalInfo;
+            BackgroundCustomEmojiId = message.BackgroundCustomEmojiId;
+            AccentColorId = message.AccentColorId;
+            ButtonText = message.ButtonText;
+            Title = message.Title;
             Sponsor = message.Sponsor;
             Content = message.Content;
+            CanBeReported = message.CanBeReported;
             IsRecommended = message.IsRecommended;
             MessageId = message.MessageId;
         }
@@ -24,14 +29,40 @@ namespace Telegram.Td.Api
         public string AdditionalInfo { get; set; }
 
         /// <summary>
+        /// Identifier of a custom emoji to be shown on the message background; 0 if none.
+        /// </summary>
+        public long BackgroundCustomEmojiId { get; set; }
+
+        /// <summary>
+        /// Identifier of the accent color for title, button text and message background.
+        /// </summary>
+        public int AccentColorId { get; set; }
+
+        /// <summary>
+        /// Text for the message action button.
+        /// </summary>
+        public string ButtonText { get; set; }
+
+        /// <summary>
+        /// Title of the sponsored message.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
         /// Information about the sponsor of the message.
         /// </summary>
         public AdvertisementSponsor Sponsor { get; set; }
 
         /// <summary>
-        /// Content of the message. Currently, can be only of the type messageText.
+        /// Content of the message. Currently, can be only of the types messageText, messageAnimation,
+        /// messagePhoto, or messageVideo. Video messages can be viewed fullscreen.
         /// </summary>
         public MessageContent Content { get; set; }
+
+        /// <summary>
+        /// True, if the message can be reported to Telegram moderators through reportChatSponsoredMessage.
+        /// </summary>
+        public bool CanBeReported { get; set; }
 
         /// <summary>
         /// True, if the message needs to be labeled as "recommended" instead of "sponsored".

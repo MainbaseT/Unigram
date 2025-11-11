@@ -2112,6 +2112,7 @@ namespace Telegram
                 case MessageVideo:
                 case MessageVideoNote:
                 case MessageVoiceNote:
+                case MessageSponsored:
                     return false;
                 case MessageAsyncStory asyncStory:
                     return asyncStory.ViaMention;

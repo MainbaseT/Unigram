@@ -264,6 +264,10 @@ namespace Telegram.Controls.Messages.Content
             {
                 return text.LinkPreview.Type is LinkPreviewTypeAnimation;
             }
+            else if (content is MessageSponsored { Content: MessageAnimation })
+            {
+                return true;
+            }
 
             return false;
         }
@@ -292,6 +296,10 @@ namespace Telegram.Controls.Messages.Content
             else if (content is MessageText text && text.LinkPreview?.Type is LinkPreviewTypeAnimation previewAnimation)
             {
                 return previewAnimation.Animation;
+            }
+            else if (content is MessageSponsored { Content: MessageAnimation sponsored })
+            {
+                return sponsored.Animation;
             }
 
             return null;

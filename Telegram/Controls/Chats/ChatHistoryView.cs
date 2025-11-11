@@ -12,6 +12,7 @@ using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls.Messages;
 using Telegram.Navigation;
+using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Windows.Devices.Input;
@@ -52,6 +53,8 @@ namespace Telegram.Controls.Chats
         private readonly DisposableMutex _loadMoreLock = new();
         private readonly SemaphoreSlim _loadMoreSemaphore = new(2, 2);
 
+        private readonly DispatcherTimer _scrollTracker = new();
+
         private TaskCompletionSource<bool> _waitItemsPanelRoot = new();
 
         public PanelScrollingDirection ScrollingDirection { get; private set; }
@@ -62,6 +65,10 @@ namespace Telegram.Controls.Chats
 
             _recognizer = new GestureRecognizer();
             _recognizer.GestureSettings = GestureSettings.DoubleTap;
+
+            _scrollTracker = new();
+            _scrollTracker.Interval = TimeSpan.FromMilliseconds(33);
+            _scrollTracker.Tick += OnTick;
 
             Connected += OnLoaded;
             Disconnected += OnUnloaded;
@@ -151,6 +158,7 @@ namespace Telegram.Controls.Chats
             ScrollingHost.ViewChanging += OnViewChanging;
             ScrollingHost.ViewChanged += OnViewChanged;
             ScrollingHost.DirectManipulationStarted += OnDirectManipulationStarted;
+            ScrollingHost.DirectManipulationCompleted += OnDirectManipulationCompleted;
             ScrollingHost.AddHandler(PointerWheelChangedEvent, new PointerEventHandler(OnPointerWheelChanged), true);
 
             ScrollingPropertySet = ElementCompositionPreview.GetScrollViewerManipulationPropertySet(ScrollingHost);
@@ -161,7 +169,58 @@ namespace Telegram.Controls.Chats
         private void OnDirectManipulationStarted(object sender, object e)
         {
             HasBeenScrolled = true;
+
+            // TODO: only start timer if close to bottom
+            if (ViewModel.PendingSponsoredMessage != null)
+            {
+                _scrollTracker.Start();
+            }
         }
+
+        private void OnDirectManipulationCompleted(object sender, object e)
+        {
+            _scrollTracker.Stop();
+        }
+
+        private void OnTick(object sender, object e)
+        {
+            var message = ViewModel.PendingSponsoredMessage;
+            if (message == null)
+            {
+                _scrollTracker.Stop();
+                return;
+            }
+
+            var offset = GetOverscrollOffset();
+            if (offset < -1)
+            {
+                _scrollTracker.Stop();
+                SetScrollingMode(ItemsUpdatingScrollMode.KeepItemsInView, true);
+
+                ViewModel.PendingSponsoredMessage = null;
+                ViewModel.InsertMessageInOrder(ViewModel.CreateMessage(new Message(message.MessageId, null, ViewModel.ChatId, null, null, false, false, false, false, false, true, false, false, false, 0, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageSponsored(message), null)));
+            }
+        }
+
+        private float GetOverscrollOffset()
+        {
+            if (ScrollingHost.VerticalOffset < ScrollingHost.ScrollableHeight || ViewModel.IsNewestSliceLoaded is not true)
+            {
+                return 1;
+            }
+
+            var itemsPanel = ItemsPanelRoot;
+            if (itemsPanel != null)
+            {
+                var transform = itemsPanel.TransformToVisual(this);
+                var point = transform.TransformVector2();
+
+                return point.Y + itemsPanel.ActualSize.Y - ActualSize.Y;
+            }
+
+            return 1;
+        }
+
 
         private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {

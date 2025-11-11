@@ -370,6 +370,9 @@
     <Compile Include="AI\RecognizedTextSelection.cs" />
     <Compile Include="AI\RecognizedTextSelectionManager.cs" />
     <Compile Include="Common\ThumbnailController.cs" />
+    <Compile Include="Controls\Messages\Content\SponsoredContent.xaml.cs">
+      <DependentUpon>SponsoredContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PremiumProgressBar.cs" />
     <Compile Include="Controls\ProgressRingIndeterminate.cs" />
     <Compile Include="Controls\SlidePanel.cs" />
@@ -2876,6 +2879,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Messages\Content\VoiceNoteContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Messages\Content\SponsoredContent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

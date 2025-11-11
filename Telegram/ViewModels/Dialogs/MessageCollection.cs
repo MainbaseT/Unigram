@@ -189,7 +189,7 @@ namespace Telegram.ViewModels
                 _last = Math.Max(item.Id, _last);
             }
 
-            if (_suppressOperations || item.Content is MessageHeaderNewThread)
+            if (_suppressOperations || item.Content is MessageHeaderNewThread or MessageSponsored)
             {
                 base.InsertItem(index, item);
             }
@@ -380,7 +380,7 @@ namespace Telegram.ViewModels
 
             _messages.Remove(item.Id);
 
-            if (_suppressOperations || item.Content is MessageHeaderNewThread)
+            if (_suppressOperations || item.Content is MessageHeaderNewThread or MessageSponsored)
             {
                 base.RemoveItem(index);
                 return;
@@ -419,7 +419,7 @@ namespace Telegram.ViewModels
         {
             if (item != null && next != null && item.Content is not MessageHeaderDate && next.Content is not MessageHeaderDate)
             {
-                if (item.Content is MessageHeaderNewThread || next.Content is MessageHeaderNewThread)
+                if (item.Content is MessageHeaderNewThread or MessageSponsored || next.Content is MessageHeaderNewThread or MessageSponsored)
                 {
                     return null;
                 }
@@ -442,7 +442,7 @@ namespace Telegram.ViewModels
 
             if (item != null && next != null && item.Content is not MessageHeaderMessageTopic && next.Content is not MessageHeaderMessageTopic)
             {
-                if (item.Content is MessageHeaderNewThread || next.Content is MessageHeaderNewThread)
+                if (item.Content is MessageHeaderNewThread or MessageSponsored || next.Content is MessageHeaderNewThread or MessageSponsored)
                 {
                     return null;
                 }

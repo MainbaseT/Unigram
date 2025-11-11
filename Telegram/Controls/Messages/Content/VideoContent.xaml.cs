@@ -531,6 +531,10 @@ namespace Telegram.Controls.Messages.Content
             {
                 return true;
             }
+            else if (content is MessageSponsored { Content: MessageVideo })
+            {
+                return true;
+            }
 
             return false;
         }
@@ -586,6 +590,11 @@ namespace Telegram.Controls.Messages.Content
             {
                 cover = paidMedia.Cover;
                 return paidMedia.Video;
+            }
+            else if (content is MessageSponsored { Content: MessageVideo sponsored })
+            {
+                cover = sponsored.Cover;
+                return sponsored.Video;
             }
 
             return null;

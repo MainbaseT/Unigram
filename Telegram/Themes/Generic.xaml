@@ -37,6 +37,7 @@
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/PollOptionContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/GiveawayContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/PreviewContent.xaml" />
+        <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/SponsoredContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/StickerContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/StickerSetContent.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/Content/VenueContent.xaml" />

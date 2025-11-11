@@ -1452,7 +1452,7 @@ namespace Telegram.ViewModels
             _ = LoadMessageSliceAsync(null, message.Id, VerticalAlignment.Top);
         }
 
-        private void InsertMessageInOrder(MessageViewModel message, long oldMessageId = 0, bool force = false)
+        public void InsertMessageInOrder(MessageViewModel message, long oldMessageId = 0, bool force = false)
         {
             var newIndex = NextIndexOf(message, oldMessageId, out int oldIndex);
             if (newIndex != -1)

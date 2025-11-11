@@ -1102,7 +1102,7 @@ namespace Telegram.Controls.Messages
                     Identity.SetStatus(message.ClientService, senderChat);
                 }
             }
-            else if (!light && message.IsChannelPost && chat.Type is ChatTypeSupergroup && string.IsNullOrEmpty(message.ForwardInfo?.PublicServiceAnnouncementType))
+            else if (!light && message.IsChannelPost && message.Content is not MessageSponsored && chat.Type is ChatTypeSupergroup && string.IsNullOrEmpty(message.ForwardInfo?.PublicServiceAnnouncementType))
             {
                 LoadHeaderLabel();
                 header = true;
@@ -1845,6 +1845,7 @@ namespace Telegram.Controls.Messages
                     Constraint = message
                 },
                 MessageAnimatedEmoji => new StickerContent(message),
+                MessageSponsored => new SponsoredContent(message),
                 MessageUnsupported => new UnsupportedContent(message),
                 _ => null
             };

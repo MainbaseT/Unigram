@@ -507,6 +507,13 @@ namespace Telegram.ViewModels
             set => Set(ref _sponsoredMessage, value);
         }
 
+        private SponsoredMessage _pendingSponsoredMessage;
+        public SponsoredMessage PendingSponsoredMessage
+        {
+            get => _pendingSponsoredMessage;
+            set => Set(ref _pendingSponsoredMessage, value);
+        }
+
         private SavedMessagesTags _savedMessagesTags;
         public SavedMessagesTags SavedMessagesTags
         {
@@ -1714,31 +1721,29 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (chat.Type is ChatTypePrivate && ClientService.TryGetUser(chat, out User user))
+            if (chat.Type is ChatTypeSupergroup { IsChannel: true })
             {
-                if (user.Type is not UserTypeBot)
+                var response = await ClientService.SendAsync(new GetChatSponsoredMessages(chat.Id));
+                if (response is SponsoredMessages sponsored && sponsored.Messages.Count > 0)
                 {
-                    return;
+                    PendingSponsoredMessage = sponsored.Messages[0];
+
+                    //for (int i = 1; i < sponsored.Messages.Count; i++)
+                    //{
+                    //    var message = sponsored.Messages[i];
+                    //    var test = CreateMessage(new Message(message.MessageId, null, chat.Id, null, null, false, false, false, false, false, true, false, false, false, 0, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageSponsored(message), null));
+                    //    InsertMessageInOrder(test);
+                    //}
                 }
             }
-            // Currently only bot ads are supported
-            //else if (chat.Type is ChatTypeSupergroup supergroup)
-            //{
-            //    if (supergroup.IsChannel is false)
-            //    {
-            //        return;
-            //    }
-            //}
-            else
+            else if (chat.Type is ChatTypePrivate && ClientService.TryGetUser(chat, out User user) && user.Type is UserTypeBot)
             {
-                return;
-            }
-
-            var response = await ClientService.SendAsync(new GetChatSponsoredMessages(chat.Id));
-            if (response is SponsoredMessages sponsored && sponsored.Messages.Count > 0)
-            {
-                SponsoredMessage = sponsored.Messages[0];
-                //Items.Add(CreateMessage(new Message(0, new MessageSenderChat(sponsored.SponsorChatId), sponsored.SponsorChatId, null, null, false, false, false, false, false, false, false, false, false, false, false, false, true, false, 0, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, string.Empty, sponsored.Content, null)));
+                var response = await ClientService.SendAsync(new GetChatSponsoredMessages(chat.Id));
+                if (response is SponsoredMessages sponsored && sponsored.Messages.Count > 0)
+                {
+                    SponsoredMessage = sponsored.Messages[0];
+                    //Items.Add(CreateMessage(new Message(0, new MessageSenderChat(sponsored.SponsorChatId), sponsored.SponsorChatId, null, null, false, false, false, false, false, false, false, false, false, false, false, false, true, false, 0, 0, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, string.Empty, sponsored.Content, null)));
+                }
             }
         }
 
