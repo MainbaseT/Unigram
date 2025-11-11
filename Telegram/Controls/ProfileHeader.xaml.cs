@@ -207,6 +207,7 @@ namespace Telegram.Controls
             }
 
             _backgroundCollapsed = !show;
+            HeaderPhotoRoot.IsHitTestVisible = !show;
             Buttons.IsHitTestVisible = !show;
             UserFirstAudioRoot.IsHitTestVisible = !show;
 
