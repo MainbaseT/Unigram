@@ -1514,6 +1514,91 @@ namespace winrt::Telegram::Native::implementation
         return S_OK;
     }
 
+    inline static HRESULT GetTextFromLocalizedStrings(UINT32 stringIndex, winrt::com_ptr<IDWriteLocalizedStrings> const& localizedStrings, hstring* nameIfFound)
+    {
+        HRESULT result;
+
+        UINT32 attributeLength;
+        ReturnIfFailed(result, localizedStrings->GetStringLength(stringIndex, &attributeLength));
+
+        std::wstring buffer(attributeLength + 1, L'\0');
+        ReturnIfFailed(result, localizedStrings->GetString(stringIndex, buffer.data(), attributeLength + 1));
+
+        buffer.resize(attributeLength);
+        *nameIfFound = hstring(buffer);
+
+        return S_OK;
+    }
+
+    inline static HRESULT TryGetLocalizedName(wchar_t const* locale, winrt::com_ptr<IDWriteLocalizedStrings> const& familyNames, hstring* nameIfFound)
+    {
+        HRESULT result;
+
+        UINT32 index;
+        BOOL found;
+        ReturnIfFailed(result, familyNames->FindLocaleName(locale, &index, &found));
+        if (found)
+        {
+            ReturnIfFailed(result, GetTextFromLocalizedStrings(index, familyNames, nameIfFound));
+            return S_OK;
+        }
+
+        return E_FAIL;
+    }
+
+
+    inline static HRESULT TryGetLocalizedNameUsingLocaleList(IVector<hstring> const& localeList, winrt::com_ptr<IDWriteLocalizedStrings> const& familyNames, hstring* nameIfFound)
+    {
+        for (auto const& locale : localeList)
+        {
+            HRESULT result = TryGetLocalizedName(locale.c_str(), familyNames, nameIfFound);
+
+            if (SUCCEEDED(result))
+            {
+                return S_OK;
+            }
+        }
+
+        return E_FAIL;
+    }
+
+    IVector<hstring> PlaceholderImageHelper::GetSystemFontFamilies(IVector<hstring> localeNames)
+    {
+        auto families = winrt::single_threaded_vector<hstring>();
+
+        HRESULT result;
+        UINT32 count = m_systemCollection->GetFontFamilyCount();
+
+        for (UINT32 i = 0; i < count; i++)
+        {
+            winrt::com_ptr<IDWriteFontFamily> fontFamily;
+            ContinueIfFailed(result, m_systemCollection->GetFontFamily(i, fontFamily.put()));
+
+            winrt::com_ptr<IDWriteLocalizedStrings> familyNames;
+            ContinueIfFailed(result, fontFamily->GetFamilyNames(familyNames.put()));
+
+            hstring name;
+            result = TryGetLocalizedNameUsingLocaleList(localeNames, familyNames, &name);
+            
+            if (FAILED(result))
+            {
+                result = TryGetLocalizedName(L"en-us", familyNames, &name);
+            }
+
+            if (FAILED(result))
+            {
+                result = GetTextFromLocalizedStrings(0, familyNames, &name);
+            }
+
+            if (SUCCEEDED(result))
+            {
+                families.Append(name);
+            }
+        }
+
+        return families;
+    }
+
     CompositionEffectBrush PlaceholderImageHelper::GetTail(int topLeftRadius, int topRightRadius, int bottomRightRadius, int bottomLeftRadius)
     {
         // Pack 4 radius values into one int

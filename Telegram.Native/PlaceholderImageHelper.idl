@@ -26,6 +26,8 @@ namespace Telegram.Native
         static Windows.Storage.Streams.IBuffer DrawWebP(String fileName, Int32 maxWidth, out Int32 pixelWidth, out Int32 pixelHeight);
         static Boolean IsWebP(String fileName, out Int32 pixelWidth, out Int32 pixelHeight);
 
+        Windows.Foundation.Collections.IVector<String> GetSystemFontFamilies(Windows.Foundation.Collections.IVector<String> localeNames);
+
         Windows.UI.Composition.CompositionEffectBrush GetTail(Single topLeftRadius, Single topRightRadius, Single bottomRightRadius, Single bottomLeftRadius);
         Windows.UI.Composition.CompositionPath GetOutline(Windows.Foundation.Collections.IVector<Telegram.Td.Api.ClosedVectorPath> contours);
         Windows.UI.Composition.CompositionPath GetEllipticalClip(Single width, Single height, Single radius, Single x, Single y);

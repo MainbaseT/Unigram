@@ -325,6 +325,8 @@ namespace winrt::Telegram::Native::implementation
         static IBuffer DrawWebP(hstring fileName, int32_t maxWidth, int32_t& pixelWidth, int32_t& pixelHeight) noexcept;
         static bool IsWebP(hstring fileName, int32_t& pixelWidth, int32_t& pixelHeight) noexcept;
 
+        IVector<hstring> GetSystemFontFamilies(IVector<hstring> localeNames);
+
         CompositionEffectBrush GetTail(int topLeftRadius, int topRightRadius, int bottomRightRadius, int bottomLeftRadius);
         CompositionPath GetOutline(IVector<ClosedVectorPath> contours);
         CompositionPath GetEllipticalClip(float width, float height, float radius, float x, float y);

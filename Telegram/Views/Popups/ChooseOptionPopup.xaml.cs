@@ -81,6 +81,11 @@ namespace Telegram.Views.Popups
         }
 
         public string Text { get; set; }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 
     [GeneratedBindableCustomProperty]
