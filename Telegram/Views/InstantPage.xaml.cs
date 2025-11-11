@@ -241,6 +241,10 @@ namespace Telegram.Views
                     return ProcessRelatedArticles(relatedArticles);
                 case PageBlockMap map:
                     return ProcessMap(map);
+                case PageBlockAudio audio:
+                    return ProcessAudio(audio);
+                case PageBlockVoiceNote voiceNote:
+                    return ProcessVoiceNote(voiceNote);
                 default:
                     return ProcessUnsupported(block);
             }
@@ -1171,9 +1175,58 @@ namespace Telegram.Views
             return element;
         }
 
+        private FrameworkElement ProcessAudio(PageBlockAudio block)
+        {
+            var message = CreateMessage(block.Audio.AudioValue.Id, new MessageAudio(block.Audio, string.Empty.AsFormattedText()));
+            var element = new StackPanel();
+
+            var content = new AudioContent(message);
+            content.HorizontalAlignment = HorizontalAlignment.Left;
+            content.ClearValue(MaxWidthProperty);
+            content.ClearValue(MaxHeightProperty);
+
+            element.Children.Add(content);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(0, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessVoiceNote(PageBlockVoiceNote block)
+        {
+            var message = CreateMessage(block.VoiceNote.Voice.Id, new MessageAudio(new Audio(block.VoiceNote.Duration, string.Empty, string.Empty, string.Empty, string.Empty, null, null, null, block.VoiceNote.Voice), string.Empty.AsFormattedText()));
+            var element = new StackPanel();
+
+            var content = new AudioContent(message);
+            content.HorizontalAlignment = HorizontalAlignment.Left;
+            content.ClearValue(MaxWidthProperty);
+            content.ClearValue(MaxHeightProperty);
+
+            element.Children.Add(content);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(0, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
         private MessageViewModel CreateMessage(MessageContent content)
         {
             return ViewModel.CreateMessage(new Message { Content = content });
+        }
+
+        private MessageViewModel CreateMessage(long id, MessageContent content)
+        {
+            return ViewModel.CreateMessage(new Message { Id = id, Content = content });
         }
 
         private FrameworkElement ProcessEmbed(PageBlockEmbedded block)

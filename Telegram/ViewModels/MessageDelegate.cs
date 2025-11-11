@@ -411,7 +411,10 @@ namespace Telegram.ViewModels
         /// <summary>
         /// Only available when created through DialogViewModel
         /// </summary>
-        public virtual void PlayMessage(MessageViewModel message) { }
+        public virtual void PlayMessage(MessageViewModel message)
+        {
+            TypeResolver.Current.Playback.Play(XamlRoot, message);
+        }
 
         /// <summary>
         /// Only available when created through DialogViewModel
