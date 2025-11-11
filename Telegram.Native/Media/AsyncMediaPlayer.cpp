@@ -483,10 +483,6 @@ namespace winrt::Telegram::Native::Media::implementation
             std::lock_guard<std::mutex> lock(work_lock_);
             CleanupManager::Close(m_instance, m_player, m_events, m_context, std::move(*work_thread_));
         }
-
-        m_player = nullptr;
-        m_instance = nullptr;
-        m_events = nullptr;
     }
 
     AsyncMediaPlayerState AsyncMediaPlayer::State()
@@ -613,7 +609,7 @@ namespace winrt::Telegram::Native::Media::implementation
         libvlc_log_get_context(ctx, &module, &file, &line);
 
         std::stringstream ss;
-        ss << "[AsyncMediaPlayer.cpp][" << file << ":" << line << "]["  << message;
+        ss << "[AsyncMediaPlayer.cpp][" << file << ":" << line << "][" << message;
         winrt::Telegram::Td::Client::Execute(winrt::Telegram::Td::Api::AddLogMessage(2, winrt::to_hstring(ss.str())));
 
         m_log(*this, AsyncMediaPlayerLogEventArgs((AsyncMediaPlayerLogLevel)level, winrt::to_hstring(message), winrt::to_hstring(module), winrt::to_hstring(file), line));

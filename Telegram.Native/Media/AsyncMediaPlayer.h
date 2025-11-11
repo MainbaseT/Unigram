@@ -269,6 +269,12 @@ namespace winrt::Telegram::Native::Media::implementation
             static void Close(libvlc_instance_t* instance, libvlc_media_player_t* player, EventContext* events, AsyncMediaPlayerSwapChain const& swapChain, std::thread workerThread)
             {
                 post_to_threadpool([instance, player, events, swapChain, workerThread = std::move(workerThread)]() mutable {
+                    // First we wait for any pending operation to be completed
+                    if (workerThread.joinable())
+                    {
+                        workerThread.join();
+                    }
+                    // Then we release all objects
                     if (player)
                     {
                         libvlc_media_player_stop(player);
@@ -288,10 +294,6 @@ namespace winrt::Telegram::Native::Media::implementation
                     if (swapChain)
                     {
                         swapChain.Destroy();
-                    }
-                    if (workerThread.joinable())
-                    {
-                        workerThread.join();
                     }
                     });
             }
@@ -404,8 +406,9 @@ namespace winrt::Telegram::Native::Media::implementation
                     work_thread_->join();
                 }
 
+                // We need to pass a strong reference to this as the thread may outlive the instance
                 work_started_ = true;
-                work_thread_ = std::make_unique<std::thread>(&AsyncMediaPlayer::Work, this);
+                work_thread_ = std::make_unique<std::thread>(&AsyncMediaPlayer::Work, get_strong());
             }
         }
 
