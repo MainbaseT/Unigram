@@ -738,12 +738,12 @@ namespace Telegram.Controls.Gallery
 
         private void SkipBackButton_Click(object sender, RoutedEventArgs e)
         {
-            _player.Seek(-10);
+            _player?.Seek(-10);
         }
 
         private void SkipForwardButton_Click(object sender, RoutedEventArgs e)
         {
-            _player.Seek(10);
+            _player?.Seek(10);
         }
 
         public void Unload()
