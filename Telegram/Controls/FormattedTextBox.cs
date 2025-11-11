@@ -1015,7 +1015,7 @@ namespace Telegram.Controls
             if (selection != null)
             {
                 range = selection.GetClone();
-                storyLength = range.EndPosition;
+                storyLength = Math.Min(range.EndPosition, range.StoryLength - 1);
                 hidden = range.StartPosition;
             }
             else
