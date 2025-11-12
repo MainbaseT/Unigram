@@ -1670,6 +1670,14 @@ namespace Telegram
                         PaidMediaVideo video => video.Video.VideoValue,
                         _ => invoice.ProductInfo.Photo?.GetFile()
                     };
+                case MessageSponsored sponsored:
+                    return sponsored.Content switch
+                    {
+                        MessageAnimation sponsoredAnimation => sponsoredAnimation.Animation.AnimationValue,
+                        MessagePhoto sponsoredPhoto => sponsoredPhoto.Photo.GetFile(),
+                        MessageVideo sponsoredVideo => sponsoredVideo.Video.VideoValue,
+                        _ => null
+                    };
             }
 
             return null;
@@ -1730,6 +1738,7 @@ namespace Telegram
 
                     return false;
                 case MessageVideo:
+                case MessageSponsored:
                     // Videos are streamed
                     return true;
                 case MessageInvoice invoice:
@@ -1792,54 +1801,49 @@ namespace Telegram
 
         public static Thumbnail GetThumbnail(this Message message)
         {
-            switch (message.Content)
+            return message.Content switch
             {
-                case MessageAnimation animation:
-                    return animation.Animation.Thumbnail;
-                case MessageAudio audio:
-                    return audio.Audio.AlbumCoverThumbnail;
-                case MessageDocument document:
-                    return document.Document.Thumbnail;
-                case MessageGame game:
-                    return game.Game.Animation?.Thumbnail;
-                case MessageSticker sticker:
-                    return sticker.Sticker.Thumbnail;
-                case MessageAnimatedEmoji animatedEmoji:
-                    return animatedEmoji.AnimatedEmoji.Sticker?.Thumbnail;
-                case MessageText text:
-                    return text.LinkPreview?.GetThumbnail();
-                case MessageVideo video:
-                    return video.Video.Thumbnail;
-                case MessageVideoNote videoNote:
-                    return videoNote.VideoNote.Thumbnail;
-            }
-
-            return null;
+                MessageAnimation animation => animation.Animation.Thumbnail,
+                MessageAudio audio => audio.Audio.AlbumCoverThumbnail,
+                MessageDocument document => document.Document.Thumbnail,
+                MessageGame game => game.Game.Animation?.Thumbnail,
+                MessageSticker sticker => sticker.Sticker.Thumbnail,
+                MessageAnimatedEmoji animatedEmoji => animatedEmoji.AnimatedEmoji.Sticker?.Thumbnail,
+                MessageText text => text.LinkPreview?.GetThumbnail(),
+                MessageVideo video => video.Video.Thumbnail,
+                MessageVideoNote videoNote => videoNote.VideoNote.Thumbnail,
+                MessageSponsored sponsored => sponsored.Content switch
+                {
+                    MessageAnimation sponsoredAnimation => sponsoredAnimation.Animation.Thumbnail,
+                    MessagePhoto sponsoredPhoto => sponsoredPhoto.Photo.GetThumbnail(),
+                    MessageVideo sponsoredVideo => sponsoredVideo.Video.Thumbnail,
+                    _ => null
+                },
+                _ => null,
+            };
         }
 
         public static Minithumbnail GetMinithumbnail(this Message message, bool secret = false)
         {
-            switch (message.Content)
+            return message.Content switch
             {
-                case MessagePhoto photo:
-                    return photo.IsSecret && !secret ? null : photo.Photo.Minithumbnail;
-                case MessageAnimation animation:
-                    return animation.IsSecret && !secret ? null : animation.Animation.Minithumbnail;
-                case MessageAudio audio:
-                    return audio.Audio.AlbumCoverMinithumbnail;
-                case MessageDocument document:
-                    return document.Document.Minithumbnail;
-                case MessageGame game:
-                    return game.Game.Animation?.Minithumbnail;
-                case MessageText text:
-                    return text.LinkPreview?.GetMinithumbnail();
-                case MessageVideo video:
-                    return video.IsSecret && !secret ? null : (video.Cover?.Minithumbnail ?? video.Video.Minithumbnail);
-                case MessageVideoNote videoNote:
-                    return videoNote.IsSecret && !secret ? null : videoNote.VideoNote.Minithumbnail;
-            }
-
-            return null;
+                MessagePhoto photo => photo.IsSecret && !secret ? null : photo.Photo.Minithumbnail,
+                MessageAnimation animation => animation.IsSecret && !secret ? null : animation.Animation.Minithumbnail,
+                MessageAudio audio => audio.Audio.AlbumCoverMinithumbnail,
+                MessageDocument document => document.Document.Minithumbnail,
+                MessageGame game => game.Game.Animation?.Minithumbnail,
+                MessageText text => text.LinkPreview?.GetMinithumbnail(),
+                MessageVideo video => video.IsSecret && !secret ? null : (video.Cover?.Minithumbnail ?? video.Video.Minithumbnail),
+                MessageVideoNote videoNote => videoNote.IsSecret && !secret ? null : videoNote.VideoNote.Minithumbnail,
+                MessageSponsored sponsored => sponsored.Content switch
+                {
+                    MessageAnimation sponsoredAnimation => sponsoredAnimation.Animation.Minithumbnail,
+                    MessagePhoto sponsoredPhoto => sponsoredPhoto.Photo.Minithumbnail,
+                    MessageVideo sponsoredVideo => sponsoredVideo.Video.Minithumbnail,
+                    _ => null
+                },
+                _ => null,
+            };
         }
 
         public static FormattedText GetTranslatableText(this MessageWithOwner message)

@@ -249,6 +249,19 @@ namespace Telegram.Controls.Chats
                     // All the remote procedure calls must be wrapped in a try-catch block
                 }
             }
+            
+            var message = ViewModel.PendingSponsoredMessage;
+            if (message != null && ScrollingHost.VerticalOffset.AlmostEquals(ScrollingHost.ScrollableHeight, 1e-02))
+            {
+                var point = e.GetCurrentPoint(ScrollingHost);
+                if (point.Properties.MouseWheelDelta < 0)
+                {
+                    SetScrollingMode(ItemsUpdatingScrollMode.KeepItemsInView, true);
+
+                    ViewModel.PendingSponsoredMessage = null;
+                    ViewModel.InsertMessageInOrder(ViewModel.CreateMessage(new Message(message.MessageId, null, ViewModel.ChatId, null, null, false, false, false, false, false, true, false, false, false, 0, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageSponsored(message), null)));
+                }
+            }
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)

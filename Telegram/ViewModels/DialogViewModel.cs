@@ -3909,11 +3909,29 @@ namespace Telegram.ViewModels
 
         #endregion
 
-        public void HideSponsoredMessage()
+        public void HideSponsoredMessage(MessageViewModel message = null)
         {
             if (IsPremium)
             {
-                SponsoredMessage = null;
+                if (message != null)
+                {
+                    Items.Remove(message);
+                }
+                else
+                {
+                    for (int i = Items.Count - 1; i >= 0; i--)
+                    {
+                        if (Items[i].Content is MessageSponsored)
+                        {
+                            Items.RemoveAt(i);
+
+                            // TODO: multiple ads
+                            break;
+                        }
+                    }
+                }
+
+                    SponsoredMessage = null;
                 ClientService.Send(new ToggleHasSponsoredMessagesEnabled(false));
 
                 ToastPopup.Show(XamlRoot, Strings.AdHidden, ToastPopupIcon.AntiSpam);

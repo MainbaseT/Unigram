@@ -75,6 +75,8 @@ namespace Telegram.ViewModels.Delegates
 
         void SendBotCommand(string command);
 
+        void HideSponsoredMessage(MessageViewModel message);
+
         string GetAdminTitle(MessageViewModel message);
         bool IsAdministrator(MessageSender memberId);
         void UpdateAdministrators(long chatId);

@@ -104,6 +104,7 @@ namespace Telegram.Controls.Media
         public const string Dismiss = "\uE711";
         public const string DismissFilled = "\uEAE4";
         public const string DismissCircle = "\uEA4E";
+        public const string DismissFilled16 = "\uEAEA";
         public const string DismissFilled24 = "\uEA1F";
         public const string Cancel = "\uE978";
         public const string CancelSmall = "\uE93F";

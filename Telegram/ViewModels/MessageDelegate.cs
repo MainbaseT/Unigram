@@ -262,6 +262,11 @@ namespace Telegram.ViewModels
         /// <summary>
         /// Only available when created through DialogViewModel
         /// </summary>
+        public virtual void HideSponsoredMessage(MessageViewModel message) { }
+
+        /// <summary>
+        /// Only available when created through DialogViewModel
+        /// </summary>
         public virtual void ForwardMessage(MessageViewModel message) { }
 
         /// <summary>
@@ -503,6 +508,8 @@ namespace Telegram.ViewModels
                 _viewModel.Search.SavedMessagesTag = value;
             }
         }
+
+        public override void HideSponsoredMessage(MessageViewModel message) => _viewModel.HideSponsoredMessage(message);
 
         public override void ForwardMessage(MessageViewModel message) => _viewModel.ForwardMessage(message);
 

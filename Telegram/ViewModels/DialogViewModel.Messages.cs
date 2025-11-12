@@ -1160,7 +1160,14 @@ namespace Telegram.ViewModels
 
         public async void ReportMessage(MessageViewModel message)
         {
-            await ReportAsync(new[] { message.Id });
+            if (message.Content is MessageSponsored { CanBeReported: true })
+            {
+                ShowPopup(new ReportAdsPopup(this, ChatId, message.Id, null));
+            }
+            else
+            {
+                await ReportAsync(new[] { message.Id });
+            }
         }
 
         #endregion

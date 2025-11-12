@@ -159,9 +159,11 @@ namespace Telegram.ViewModels.Gallery
                 }
                 else if (_message.Content is MessageText text)
                 {
-                    return text.LinkPreview?.Type is LinkPreviewTypeVideo
-                        || text.LinkPreview?.Type is LinkPreviewTypeAnimation
-                        || text.LinkPreview?.Type is LinkPreviewTypeVideoNote;
+                    return text.LinkPreview?.Type is LinkPreviewTypeVideo or LinkPreviewTypeAnimation or LinkPreviewTypeVideoNote;
+                }
+                else if (_message.Content is MessageSponsored sponsored)
+                {
+                    return sponsored.Content is MessageAnimation or MessageVideo;
                 }
 
                 return false;
@@ -275,6 +277,15 @@ namespace Telegram.ViewModels.Gallery
                         LinkPreviewTypeVideo previewVideo => previewVideo.Video.Duration,
                         LinkPreviewTypeAnimation previewAnimation => previewAnimation.Animation.Duration,
                         LinkPreviewTypeVideoNote previewVideoNote => previewVideoNote.VideoNote.Duration,
+                        _ => 0
+                    };
+                }
+                else if (_message.Content is MessageSponsored sponsored)
+                {
+                    return sponsored.Content switch
+                    {
+                        MessageAnimation sponsoredAnimation => sponsoredAnimation.Animation.Duration,
+                        MessageVideo sponsoredVideo => sponsoredVideo.Video.Duration,
                         _ => 0
                     };
                 }

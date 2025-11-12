@@ -837,16 +837,26 @@ namespace Telegram.Controls.Messages
                 or MessageBigEmoji
                 or MessageAnimatedEmoji;
 
-            var info = message.InteractionInfo?.ReplyInfo;
-            if (info != null && light && message.IsChannelPost && message.InteractionInfo.ReplyInfo != null)
+            if (content is MessageSponsored)
+            {
+                FindAction(message.IsVisuallyOutgoing);
+
+                ActionButton.Glyph = Icons.DismissFilled16;
+                Action.VerticalAlignment = VerticalAlignment.Top;
+                Action.Visibility = Visibility.Visible;
+
+                Automation.SetToolTip(ActionButton, Strings.HideAd);
+            }
+            else if (light && message.IsChannelPost && message.InteractionInfo?.ReplyInfo != null)
             {
                 FindAction(message.IsVisuallyOutgoing);
 
                 ActionButton.Glyph = Icons.ChatEmptyFilled16;
+                Action.VerticalAlignment = VerticalAlignment.Bottom;
                 Action.Visibility = Visibility.Visible;
 
-                Automation.SetToolTip(ActionButton, info.ReplyCount > 0
-                    ? Locale.Declension(Strings.R.Comments, info.ReplyCount)
+                Automation.SetToolTip(ActionButton, message.InteractionInfo.ReplyInfo.ReplyCount > 0
+                    ? Locale.Declension(Strings.R.Comments, message.InteractionInfo.ReplyInfo.ReplyCount)
                     : Strings.LeaveAComment);
             }
             else if (message.ChatId == message.ClientService.Options.RepliesBotChatId)
@@ -856,6 +866,7 @@ namespace Telegram.Controls.Messages
                     FindAction(message.IsVisuallyOutgoing);
 
                     ActionButton.Glyph = light ? Icons.ChatEmptyFilled16 : Icons.ArrowRightFilled16;
+                    Action.VerticalAlignment = VerticalAlignment.Bottom;
                     Action.Visibility = Visibility.Visible;
 
                     Automation.SetToolTip(ActionButton, Strings.ViewInChat);
@@ -876,6 +887,7 @@ namespace Telegram.Controls.Messages
                     FindAction(message.IsVisuallyOutgoing);
 
                     ActionButton.Glyph = Icons.ArrowRightFilled16;
+                    Action.VerticalAlignment = VerticalAlignment.Bottom;
                     Action.Visibility = Visibility.Visible;
 
                     Automation.SetToolTip(ActionButton, Strings.AccDescrOpenChat);
@@ -886,6 +898,7 @@ namespace Telegram.Controls.Messages
                 FindAction(message.IsVisuallyOutgoing);
 
                 ActionButton.Glyph = Icons.ShareFilled;
+                Action.VerticalAlignment = VerticalAlignment.Bottom;
                 Action.Visibility = Visibility.Visible;
 
                 Automation.SetToolTip(ActionButton, Strings.ShareFile);
@@ -935,8 +948,11 @@ namespace Telegram.Controls.Messages
                 or MessageBigEmoji
                 or MessageAnimatedEmoji;
 
-            var info = message.InteractionInfo?.ReplyInfo;
-            if (info != null && light && message.IsChannelPost && message.InteractionInfo.ReplyInfo != null)
+            if (content is MessageSponsored)
+            {
+                message.Delegate.HideSponsoredMessage(message);
+            }
+            else if (light && message.IsChannelPost && message.InteractionInfo?.ReplyInfo != null)
             {
                 message.Delegate.OpenThread(message);
             }

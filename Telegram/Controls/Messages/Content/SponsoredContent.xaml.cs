@@ -18,6 +18,7 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
@@ -54,9 +55,14 @@ namespace Telegram.Controls.Messages.Content
             }
 
             var builder = new StringBuilder();
-            builder.Append(TitleLabel.Text);
-            builder.Prepend(SubtitleLabel.Text, ", ");
-            builder.Prepend(ContentLabel.Text, ", ");
+
+            var peer = FrameworkElementAutomationPeer.FromElement(Label);
+            if (peer == null)
+            {
+                return builder.ToString();
+            }
+
+            builder.Append(peer.GetName());
 
             if (builder.Length > 0)
             {
@@ -77,11 +83,11 @@ namespace Telegram.Controls.Messages.Content
 
         private DashPath AccentDash;
         private MessageReplyPattern Pattern;
-        private RichTextBlock Label;
+        private FormattedTextBlock Label;
         private RichTextBlockOverflow OverflowArea;
         private Run TitleLabel;
         private Run SubtitleLabel;
-        private Run ContentLabel;
+        private Span ContentLabel;
         private Grid MediaPanel;
         private Border Media;
         private Border Overlay;
@@ -94,17 +100,23 @@ namespace Telegram.Controls.Messages.Content
         {
             AccentDash = GetTemplateChild(nameof(AccentDash)) as DashPath;
             Pattern = GetTemplateChild(nameof(Pattern)) as MessageReplyPattern;
-            Label = GetTemplateChild(nameof(Label)) as RichTextBlock;
+            Label = GetTemplateChild(nameof(Label)) as FormattedTextBlock;
             OverflowArea = GetTemplateChild(nameof(OverflowArea)) as RichTextBlockOverflow;
             TitleLabel = GetTemplateChild(nameof(TitleLabel)) as Run;
             SubtitleLabel = GetTemplateChild(nameof(SubtitleLabel)) as Run;
-            ContentLabel = GetTemplateChild(nameof(ContentLabel)) as Run;
+            ContentLabel = GetTemplateChild(nameof(ContentLabel)) as Span;
             MediaPanel = GetTemplateChild(nameof(MediaPanel)) as Grid;
             Media = GetTemplateChild(nameof(Media)) as Border;
             Overlay = GetTemplateChild(nameof(Overlay)) as Border;
             Subtitle = GetTemplateChild(nameof(Subtitle)) as TextBlock;
             ButtonLine = GetTemplateChild(nameof(ButtonLine)) as Grid;
             Button = GetTemplateChild(nameof(Button)) as TextBlock;
+
+            BindingOperations.SetBinding(TitleLabel, Run.ForegroundProperty, new Binding
+            {
+                Path = new PropertyPath("HeaderBrush"),
+                Source = this
+            });
 
             Label.OverflowContentTarget = OverflowArea;
             Click += Button_Click;
@@ -129,7 +141,7 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            UpdateWebPage(sponsored);
+            UpdateWebPage(message, sponsored);
             UpdateInstantView(sponsored);
 
             if (sponsored.Content is MessageAnimation or MessagePhoto or MessageVideo)
@@ -336,7 +348,7 @@ namespace Telegram.Controls.Messages.Content
             }
         }
 
-        private void UpdateWebPage(MessageSponsored sponsored)
+        private void UpdateWebPage(MessageViewModel message, MessageSponsored sponsored)
         {
             var empty = false;
             TitleLabel.Text = Strings.SponsoredMessageAd + "\n";
@@ -344,19 +356,19 @@ namespace Telegram.Controls.Messages.Content
 
             if (sponsored.Content is MessageText text)
             {
-                ContentLabel.Text = text.Text.Text;
+                Label.SetText(message.ClientService, text.Text);
             }
             else if (sponsored.Content is MessageAnimation animation)
             {
-                ContentLabel.Text = animation.Caption.Text;
+                Label.SetText(message.ClientService, animation.Caption);
             }
             else if (sponsored.Content is MessagePhoto photo)
             {
-                ContentLabel.Text = photo.Caption.Text;
+                Label.SetText(message.ClientService, photo.Caption);
             }
             else if (sponsored.Content is MessageVideo video)
             {
-                ContentLabel.Text = video.Caption.Text;
+                Label.SetText(message.ClientService, video.Caption);
             }
 
             Label.Visibility = empty
