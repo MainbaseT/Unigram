@@ -307,10 +307,7 @@ namespace Telegram.Controls
 
         private void OnTextChanged(string newValue, string oldValue)
         {
-            if (TextField != null)
-            {
-                TextField.Text = newValue;
-            }
+            TextField?.Text = newValue;
         }
 
         #endregion

@@ -225,12 +225,9 @@ namespace Telegram.Controls
             get => _interactionSource?.PositionXSourceMode == InteractionSourceMode.EnabledWithInertia;
             set
             {
-                if (_interactionSource != null)
-                {
-                    _interactionSource.PositionXSourceMode = value
-                        ? InteractionSourceMode.EnabledWithInertia
-                        : InteractionSourceMode.Disabled;
-                }
+                _interactionSource?.PositionXSourceMode = value
+                    ? InteractionSourceMode.EnabledWithInertia
+                    : InteractionSourceMode.Disabled;
             }
         }
 

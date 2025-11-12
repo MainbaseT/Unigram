@@ -45,9 +45,9 @@ namespace Telegram.Views.Users
                 {
                     FindName(nameof(BotPanel2));
                 }
-                else if (BotPanel2 != null)
+                else
                 {
-                    BotPanel2.Visibility = Visibility.Collapsed;
+                    BotPanel2?.Visibility = Visibility.Collapsed;
                 }
 
                 LayoutRoot.Footer = string.Empty;
@@ -85,10 +85,7 @@ namespace Telegram.Views.Users
                 return;
             }
 
-            if (NoteField != null)
-            {
-                NoteField.SetText(fullInfo.Note);
-            }
+            NoteField?.SetText(fullInfo.Note);
 
             if (ResetPhoto != null)
             {
@@ -124,9 +121,9 @@ namespace Telegram.Views.Users
             {
                 AffiliateProgram.Badge = fullInfo.BotInfo.AffiliateProgram.Parameters.CommissionPercent();
             }
-            else if (AffiliateProgram != null)
+            else
             {
-                AffiliateProgram.Badge = Strings.AffiliateProgramBotOff;
+                AffiliateProgram?.Badge = Strings.AffiliateProgramBotOff;
             }
         }
 

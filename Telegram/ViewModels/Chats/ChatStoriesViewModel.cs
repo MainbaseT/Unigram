@@ -245,10 +245,7 @@ namespace Telegram.ViewModels.Chats
                 {
                     var viewModel = new StoryAlbumViewModel(this, album);
 
-                    if (story != null)
-                    {
-                        story.AlbumIds.Add(album.Id);
-                    }
+                    story?.AlbumIds.Add(album.Id);
 
                     Albums.Add(viewModel);
                     SelectedAlbum = viewModel;

@@ -1014,10 +1014,7 @@ namespace Telegram.Services.Calls
             get => _manager?.IsNoiseSuppressionEnabled ?? false;
             set
             {
-                if (_manager != null)
-                {
-                    _manager.IsNoiseSuppressionEnabled = value;
-                }
+                _manager?.IsNoiseSuppressionEnabled = value;
 
                 Settings.VoIP.IsNoiseSuppressionEnabled = value;
             }

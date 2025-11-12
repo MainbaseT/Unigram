@@ -315,10 +315,7 @@ namespace Telegram.Controls
             //else
             {
                 var focusable = FocusManager.FindFirstFocusableElement(sender as DependencyObject) as Control;
-                if (focusable != null)
-                {
-                    focusable.Focus(FocusState.Programmatic);
-                }
+                focusable?.Focus(FocusState.Programmatic);
             }
         }
     }

@@ -4773,10 +4773,7 @@ namespace Telegram.Views
 
         private void ContentPanel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (ListInline != null)
-            {
-                ListInline.MaxHeight = Math.Min(320, Math.Max(e.NewSize.Height - 48, 0));
-            }
+            ListInline?.MaxHeight = Math.Min(320, Math.Max(e.NewSize.Height - 48, 0));
 
             ListAutocomplete.MaxHeight = Math.Min(320, Math.Max(e.NewSize.Height - 48, 0));
         }
@@ -7098,9 +7095,9 @@ namespace Telegram.Views
                     ? Visibility.Visible
                     : Visibility.Collapsed;
             }
-            else if (EmptyChatRoot != null)
+            else
             {
-                EmptyChatRoot.Visibility = Visibility.Collapsed;
+                EmptyChatRoot?.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -7807,18 +7804,12 @@ namespace Telegram.Views
 
         private void StickyPhotoAbove_Click(object sender, RoutedEventArgs e)
         {
-            if (_stickyPhotoAboveMessage != null)
-            {
-                _stickyPhotoAboveMessage.Delegate.OpenSender(_stickyPhotoAboveMessage);
-            }
+            _stickyPhotoAboveMessage?.Delegate.OpenSender(_stickyPhotoAboveMessage);
         }
 
         private void StickyPhotoBelow_Click(object sender, RoutedEventArgs e)
         {
-            if (_stickyPhotoBelowMessage != null)
-            {
-                _stickyPhotoBelowMessage.Delegate.OpenSender(_stickyPhotoBelowMessage);
-            }
+            _stickyPhotoBelowMessage?.Delegate.OpenSender(_stickyPhotoBelowMessage);
         }
 
         private void StickyPhotoAbove_ContextRequested(UIElement sender, ContextRequestedEventArgs args)

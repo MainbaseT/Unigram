@@ -498,10 +498,7 @@ namespace Telegram.Controls.Cells
 
                 if (userId == null || result.RestrictsNewChats is false or null)
                 {
-                    if (RestrictsNewChats != null)
-                    {
-                        RestrictsNewChats.Visibility = Visibility.Collapsed;
-                    }
+                    RestrictsNewChats?.Visibility = Visibility.Collapsed;
 
                     if (userId != null)
                     {
@@ -646,10 +643,7 @@ namespace Telegram.Controls.Cells
 
                 if (userId == null || result.RestrictsNewChats is false or null)
                 {
-                    if (RestrictsNewChats != null)
-                    {
-                        RestrictsNewChats.Visibility = Visibility.Collapsed;
-                    }
+                    RestrictsNewChats?.Visibility = Visibility.Collapsed;
                 }
                 else if (userId != null)
                 {
@@ -701,9 +695,9 @@ namespace Telegram.Controls.Cells
 
                     InfoLabel.Text = string.IsNullOrEmpty(creator.CustomTitle) ? Strings.ChannelCreator : creator.CustomTitle;
                 }
-                else if (InfoLabel != null)
+                else
                 {
-                    InfoLabel.Text = string.Empty;
+                    InfoLabel?.Text = string.Empty;
                 }
             }
             else if (args.Phase == 2)

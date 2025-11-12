@@ -334,10 +334,7 @@ namespace Telegram.Controls.Messages
             _figure.AddCubicBezier(new Point(brp2trp1, 1.01976), new Point(brp1trp2, 0), new Point(trp, 0));
             _figure.AddLine(5.53846, 0);
 
-            if (_ellipse != null)
-            {
-                _ellipse.Center = new Point(width - (far - 17), 9 + 3);
-            }
+            _ellipse?.Center = new Point(width - (far - 17), 9 + 3);
 
             _finalWidth = finalSize.Width;
             return finalSize;

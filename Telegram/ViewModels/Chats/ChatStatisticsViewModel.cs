@@ -212,10 +212,7 @@ namespace Telegram.ViewModels.Chats
                         ChartViewData.Create(groupStats.WeekGraph, Strings.TopDaysOfWeekChartTitle, 4)
                     };
 
-                    if (stats[7] != null)
-                    {
-                        stats[7].useWeekFormat = true;
-                    }
+                    stats[7]?.useWeekFormat = true;
 
                     Interactions.Clear();
                     TopInviters.ReplaceWith(groupStats.TopInviters);

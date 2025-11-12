@@ -523,10 +523,7 @@ namespace Telegram.ViewModels
         {
             if (item == null)
             {
-                if (previous != null)
-                {
-                    previous.IsLast = true;
-                }
+                previous?.IsLast = true;
 
                 return;
             }
@@ -551,10 +548,7 @@ namespace Telegram.ViewModels
 
             item.IsFirst = !attach;
 
-            if (previous != null)
-            {
-                previous.IsLast = item.IsFirst /*|| item.IsService()*/;
-            }
+            previous?.IsLast = item.IsFirst /*|| item.IsService()*/;
         }
 
         private bool AreTogether(MessageViewModel message1, MessageViewModel message2)

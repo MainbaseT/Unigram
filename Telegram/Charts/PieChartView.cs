@@ -99,13 +99,10 @@ namespace Telegram.Charts
 
             transitionAlpha = (int)(transitionAlpha * emptyDataAlpha);
             float sc = 0.4f + emptyDataAlpha * 0.6f;
-            if (canvas != null)
-            {
-                canvas.Transform = Matrix3x2.CreateScale(
-                    new Vector2(sc, sc),
-                    new Vector2(chartArea.centerX(), chartArea.centerY())
-                );
-            }
+            canvas?.Transform = Matrix3x2.CreateScale(
+                new Vector2(sc, sc),
+                new Vector2(chartArea.centerX(), chartArea.centerY())
+            );
 
             int radius = (int)((chartArea.Width > chartArea.Height ? chartArea.Height : chartArea.Width) * 0.45f);
             rectF = CreateRect(
@@ -162,13 +159,10 @@ namespace Telegram.Charts
                 if (lines[i].selectionA > 0f)
                 {
                     float ai = INTERPOLATOR.getInterpolation(lines[i].selectionA);
-                    if (canvas != null)
-                    {
-                        canvas.Transform = Matrix3x2.CreateTranslation(
-                            MathF.Cos(MathFEx.ToRadians(textAngle)) * 8 * ai,
-                            MathF.Sin(MathFEx.ToRadians(textAngle)) * 8 * ai
-                        );
-                    }
+                    canvas?.Transform = Matrix3x2.CreateTranslation(
+                        MathF.Cos(MathFEx.ToRadians(textAngle)) * 8 * ai,
+                        MathF.Sin(MathFEx.ToRadians(textAngle)) * 8 * ai
+                    );
                 }
 
                 //lines[i].paint.setStyle(Paint.Style.FILL_AND_STROKE);

@@ -34,9 +34,9 @@ namespace Telegram.Common
                         _timer = new Timer(OnTick, null, 0, 1000);
                     }
                 }
-                else if (_timer != null)
+                else
                 {
-                    _timer.Dispose();
+                    _timer?.Dispose();
                     _timer = null;
                 }
             }

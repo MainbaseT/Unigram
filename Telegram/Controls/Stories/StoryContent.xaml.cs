@@ -1396,10 +1396,7 @@ namespace Telegram.Controls.Stories
         {
             _viewModel.Settings.VolumeMuted = Mute.IsChecked is false;
 
-            if (_player != null)
-            {
-                _player.Mute = _viewModel.Settings.VolumeMuted;
-            }
+            _player?.Mute = _viewModel.Settings.VolumeMuted;
         }
 
         private void Caption_Click(object sender, RoutedEventArgs e)

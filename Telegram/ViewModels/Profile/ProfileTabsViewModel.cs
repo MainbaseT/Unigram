@@ -405,18 +405,12 @@ namespace Telegram.ViewModels.Profile
 
             if (sender is SearchMessagesFilter filter && (target?.DataSource == null || query.Length > 0))
             {
-                if (target != null)
-                {
-                    target.UseDataSource = false;
-                }
+                target?.UseDataSource = false;
 
                 return new MediaCollection(ClientService, Chat.Id, Topic, filter, query);
             }
 
-            if (target != null)
-            {
-                target.UseDataSource = true;
-            }
+            target?.UseDataSource = true;
 
             return null;
         }

@@ -1678,10 +1678,7 @@ namespace Telegram.ViewModels
 
             var confirm = await ShowPopupAsync(text.ToString(), Strings.SuggestedPostAcceptTitle, message.SuggestedPostInfo.SendDate == 0 ? Strings.Next : Strings.SuggestedPostPublish, Strings.Cancel);
 
-            if (disclaimer != null)
-            {
-                disclaimer.IsOpen = false;
-            }
+            disclaimer?.IsOpen = false;
 
             if (confirm != ContentDialogResult.Primary)
             {

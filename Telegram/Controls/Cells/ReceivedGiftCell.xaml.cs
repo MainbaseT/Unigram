@@ -106,10 +106,7 @@ namespace Telegram.Controls.Cells
                     RibbonRoot.Visibility = Visibility.Collapsed;
                 }
 
-                if (ResaleStarCountRoot != null)
-                {
-                    ResaleStarCountRoot.Visibility = Visibility.Collapsed;
-                }
+                ResaleStarCountRoot?.Visibility = Visibility.Collapsed;
             }
             else if (gift.Gift is SentGiftUpgraded upgraded)
             {
@@ -164,10 +161,7 @@ namespace Telegram.Controls.Cells
                     RibbonTop.Color = centerColor.Darken();
                     RibbonBottom.Color = edgeColor.Darken();
 
-                    if (ResaleStarCountRoot != null)
-                    {
-                        ResaleStarCountRoot.Visibility = Visibility.Collapsed;
-                    }
+                    ResaleStarCountRoot?.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -198,10 +192,7 @@ namespace Telegram.Controls.Cells
 
             RibbonRoot.Visibility = Visibility.Collapsed;
 
-            if (ResaleStarCountRoot != null)
-            {
-                ResaleStarCountRoot.Visibility = Visibility.Collapsed;
-            }
+            ResaleStarCountRoot?.Visibility = Visibility.Collapsed;
         }
 
 
@@ -233,10 +224,7 @@ namespace Telegram.Controls.Cells
 
             RibbonRoot.Visibility = Visibility.Collapsed;
 
-            if (ResaleStarCountRoot != null)
-            {
-                ResaleStarCountRoot.Visibility = Visibility.Collapsed;
-            }
+            ResaleStarCountRoot?.Visibility = Visibility.Collapsed;
         }
 
         public void UpdateGift(IClientService clientService, GiftForResale gift)
@@ -340,10 +328,7 @@ namespace Telegram.Controls.Cells
                     }
                     else
                     {
-                        if (PremiumRoot != null)
-                        {
-                            PremiumRoot.Visibility = Visibility.Collapsed;
-                        }
+                        PremiumRoot?.Visibility = Visibility.Collapsed;
 
                         RibbonRoot.Visibility = Visibility.Visible;
                         Ribbon.Text = Strings.Gift2LimitedRibbon;
@@ -354,10 +339,7 @@ namespace Telegram.Controls.Cells
                 }
                 else
                 {
-                    if (PremiumRoot != null)
-                    {
-                        PremiumRoot.Visibility = Visibility.Collapsed;
-                    }
+                    PremiumRoot?.Visibility = Visibility.Collapsed;
 
                     RibbonRoot.Visibility = Visibility.Visible;
                     Ribbon.Text = Strings.Gift2SoldOut;
@@ -368,10 +350,7 @@ namespace Telegram.Controls.Cells
             }
             else if (gift.MinResaleStarCount > 0)
             {
-                if (PremiumRoot != null)
-                {
-                    PremiumRoot.Visibility = Visibility.Collapsed;
-                }
+                PremiumRoot?.Visibility = Visibility.Collapsed;
 
                 StarCount.Text = gift.MinResaleStarCount.ToString("N0");
 
@@ -383,20 +362,14 @@ namespace Telegram.Controls.Cells
             }
             else
             {
-                if (PremiumRoot != null)
-                {
-                    PremiumRoot.Visibility = Visibility.Collapsed;
-                }
+                PremiumRoot?.Visibility = Visibility.Collapsed;
 
                 StarCount.Text = gift.Gift.StarCount.ToString("N0");
 
                 RibbonRoot.Visibility = Visibility.Collapsed;
             }
 
-            if (Hidden != null)
-            {
-                Hidden.Visibility = Visibility.Collapsed;
-            }
+            Hidden?.Visibility = Visibility.Collapsed;
         }
     }
 }

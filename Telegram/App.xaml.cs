@@ -94,10 +94,7 @@ namespace Telegram
                 aggregator?.Publish(new UpdateWindowActivated(active));
 
                 var clientService = TypeResolver.Current.Resolve<IClientService>(navigation.SessionId);
-                if (clientService != null)
-                {
-                    clientService.Options.Online = active;
-                }
+                clientService?.Options.Online = active;
             }
         }
 
@@ -313,12 +310,8 @@ namespace Telegram
         private void ExtendedExecutionSession_Revoked(object sender, ExtendedExecutionRevokedEventArgs args)
         {
             Logger.Warning(args.Reason);
-
-            if (_extendedSession != null)
-            {
-                _extendedSession.Dispose();
-                _extendedSession = null;
-            }
+            _extendedSession?.Dispose();
+            _extendedSession = null;
         }
 
         public override void OnResuming(object s, object e, AppExecutionState previousExecutionState)

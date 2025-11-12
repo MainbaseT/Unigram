@@ -205,10 +205,7 @@ namespace Telegram.Views.Popups
         {
             SearchField.Text = string.Empty;
 
-            if (ContactsPanel != null)
-            {
-                ContactsPanel.Visibility = Visibility.Visible;
-            }
+            ContactsPanel?.Visibility = Visibility.Visible;
 
             ViewModel.Search = null;
         }
@@ -217,10 +214,7 @@ namespace Telegram.Views.Popups
 
         private void ScrollingHeader_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (EmptyState != null)
-            {
-                EmptyState.Margin = new Thickness(0, e.NewSize.Height - 36, 0, 0);
-            }
+            EmptyState?.Margin = new Thickness(0, e.NewSize.Height - 36, 0, 0);
         }
 
         private void EmptyState_Loaded(object sender, RoutedEventArgs e)

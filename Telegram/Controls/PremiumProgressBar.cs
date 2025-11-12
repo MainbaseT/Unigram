@@ -171,10 +171,7 @@ namespace Telegram.Controls
 
         protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
         {
-            if (MaximumLabel != null)
-            {
-                MaximumLabel.Text = "/" + Formatter.ShortRating(Maximum, false);
-            }
+            MaximumLabel?.Text = "/" + Formatter.ShortRating(Maximum, false);
 
             base.OnMaximumChanged(oldMaximum, newMaximum);
         }

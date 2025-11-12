@@ -147,31 +147,19 @@ namespace Telegram.Views.Popups
 
         private void Type_Toggled(object sender, RoutedEventArgs e)
         {
-            if (TypeSocksPanel != null)
-            {
-                TypeSocksPanel.Visibility = TypeSocks.IsChecked == true || TypeHttp.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            }
+            TypeSocksPanel?.Visibility = TypeSocks.IsChecked == true || TypeHttp.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
 
-            if (TypeProtoPanel != null)
-            {
-                TypeProtoPanel.Visibility = TypeProto.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            }
+            TypeProtoPanel?.Visibility = TypeProto.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
 
-            if (TypeHttpPanel != null)
-            {
-                TypeHttpPanel.Visibility = TypeHttp.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            }
+            TypeHttpPanel?.Visibility = TypeHttp.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
 
-            if (FieldPanel != null)
-            {
-                FieldPanel.Text = TypeSocks.IsChecked == true
-                    ? Strings.UseProxyInfo
-                    : TypeProto.IsChecked == true
-                    ? Strings.UseProxyTelegramInfo + Environment.NewLine + Environment.NewLine + Strings.UseProxyTelegramInfo2
-                    : TypeHttp.IsChecked == true
-                    ? Strings.TransparentTcpConnectionInfo + Environment.NewLine + Environment.NewLine + Strings.TransparentTcpConnectionInfo2
-                    : string.Empty;
-            }
+            FieldPanel?.Text = TypeSocks.IsChecked == true
+                ? Strings.UseProxyInfo
+                : TypeProto.IsChecked == true
+                ? Strings.UseProxyTelegramInfo + Environment.NewLine + Environment.NewLine + Strings.UseProxyTelegramInfo2
+                : TypeHttp.IsChecked == true
+                ? Strings.TransparentTcpConnectionInfo + Environment.NewLine + Environment.NewLine + Strings.TransparentTcpConnectionInfo2
+                : string.Empty;
         }
     }
 }

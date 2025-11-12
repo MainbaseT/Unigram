@@ -40,10 +40,7 @@ namespace Telegram.Views.Stories.Popups
         {
             ShowHideSkeleton();
 
-            if (ScrollingHost.ItemsPanelRoot != null)
-            {
-                ScrollingHost.ItemsPanelRoot.MinHeight = ScrollingHost.ActualHeight - 24;
-            }
+            ScrollingHost.ItemsPanelRoot?.MinHeight = ScrollingHost.ActualHeight - 24;
         }
 
         public override void OnNavigatedTo(object parameter)

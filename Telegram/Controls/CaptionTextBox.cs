@@ -212,10 +212,7 @@ namespace Telegram.Controls
 
             void SetAutocomplete(IAutocompleteCollection autocomplete)
             {
-                if (View != null)
-                {
-                    View.Autocomplete = autocomplete;
-                }
+                View?.Autocomplete = autocomplete;
             }
 
             var selection = Document.Selection.GetClone();

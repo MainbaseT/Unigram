@@ -82,10 +82,7 @@ namespace Telegram.Controls
 
             _label = ContentPresenter1;
 
-            if (ProgressBar != null)
-            {
-                ProgressBar.Value = _progress;
-            }
+            ProgressBar?.Value = _progress;
         }
 
         #region ProgressVisibility

@@ -147,10 +147,7 @@ namespace Telegram.Controls
 
         private void OnProgressChanged(double oldValue, double newValue)
         {
-            if (ProgressBar != null)
-            {
-                ProgressBar.Value = newValue;
-            }
+            ProgressBar?.Value = newValue;
 
             if (newValue == 0 && _state != State.Normal)
             {

@@ -71,10 +71,7 @@ namespace Telegram.ViewModels.Settings
                 }
             }
 
-            if (selected != null)
-            {
-                selected.IsChecked = false;
-            }
+            selected?.IsChecked = false;
 
             var already = Items.FirstOrDefault(x => x.Value == value);
             if (already != null)

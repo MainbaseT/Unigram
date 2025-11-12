@@ -98,11 +98,8 @@ namespace Telegram.Controls.Media
 
             m_isConnected = false;
 
-            if (m_brush != null)
-            {
-                m_brush.Dispose();
-                m_brush = null;
-            }
+            m_brush?.Dispose();
+            m_brush = null;
 
             CompositionBrush = null;
 

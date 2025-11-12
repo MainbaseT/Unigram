@@ -274,10 +274,7 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            if (_visual != null)
-            {
-                _visual.Clip = null;
-            }
+            _visual?.Clip = null;
 
             if (!_templateApplied || message == null)
             {

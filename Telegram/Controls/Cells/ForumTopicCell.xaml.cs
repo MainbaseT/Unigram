@@ -741,20 +741,14 @@ namespace Telegram.Controls.Cells
                 }
                 else
                 {
-                    if (DropVisual != null)
-                    {
-                        DropVisual.Visibility = Visibility.Collapsed;
-                    }
+                    DropVisual?.Visibility = Visibility.Collapsed;
 
                     e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.None;
                 }
             }
             catch
             {
-                if (DropVisual != null)
-                {
-                    DropVisual.Visibility = Visibility.Collapsed;
-                }
+                DropVisual?.Visibility = Visibility.Collapsed;
             }
 
             base.OnDragEnter(e);
@@ -762,20 +756,14 @@ namespace Telegram.Controls.Cells
 
         protected override void OnDragLeave(DragEventArgs e)
         {
-            if (DropVisual != null)
-            {
-                DropVisual.Visibility = Visibility.Collapsed;
-            }
+            DropVisual?.Visibility = Visibility.Collapsed;
 
             base.OnDragLeave(e);
         }
 
         protected override void OnDrop(DragEventArgs e)
         {
-            if (DropVisual != null)
-            {
-                DropVisual.Visibility = Visibility.Collapsed;
-            }
+            DropVisual?.Visibility = Visibility.Collapsed;
 
             try
             {
@@ -956,10 +944,7 @@ namespace Telegram.Controls.Cells
         {
             if (read == null)
             {
-                if (_container != null)
-                {
-                    _container.IsVisible = false;
-                }
+                _container?.IsVisible = false;
             }
             else
             {

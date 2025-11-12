@@ -346,12 +346,9 @@ namespace Telegram.Controls
             {
                 sender.IconPresenter ??= sender.GetTemplateChild(nameof(sender.IconPresenter)) as UIElement;
 
-                if (sender.IconPresenter != null)
-                {
-                    sender.IconPresenter.Visibility = string.IsNullOrEmpty((string)e.NewValue)
-                        ? Visibility.Collapsed
-                        : Visibility.Visible;
-                }
+                sender.IconPresenter?.Visibility = string.IsNullOrEmpty((string)e.NewValue)
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
             }
         }
 

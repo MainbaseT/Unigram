@@ -75,10 +75,7 @@ namespace Telegram.Controls.Cells
             TitleLabel.Text = venue.Title;
             AddressLabel.Text = venue.Address;
 
-            if (_ellipse != null)
-            {
-                _ellipse.FillBrush = ProfilePictureSourceText.GetBrush(_ellipse.Compositor, venue.Id.GetHashCode());
-            }
+            _ellipse?.FillBrush = ProfilePictureSourceText.GetBrush(_ellipse.Compositor, venue.Id.GetHashCode());
         }
 
         #region SelectionStroke

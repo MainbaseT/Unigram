@@ -129,10 +129,7 @@ namespace Telegram.Controls.Messages
             var finalWidth = Math.Max(Math.Max(reactionsWidth, footer.DesiredSize.Width), width);
             var finalHeight = text.DesiredSize.Height + media.DesiredSize.Height + reactionsHeight + margin.Height;
 
-            if (Reply != null)
-            {
-                Reply.ContentWidth = finalWidth;
-            }
+            Reply?.ContentWidth = finalWidth;
 
             return new Size(finalWidth, finalHeight);
         }

@@ -172,10 +172,7 @@ namespace Telegram.Controls.Messages
                 Count.Visibility = Visibility.Visible;
                 Count.SetText(Formatter.ShortNumber(interaction.TotalCount), recycled);
 
-                if (RecentChoosers != null)
-                {
-                    RecentChoosers.Visibility = Visibility.Collapsed;
-                }
+                RecentChoosers?.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -194,10 +191,7 @@ namespace Telegram.Controls.Messages
                     destination.ReplaceWith(origin);
                 }
 
-                if (Count != null)
-                {
-                    Count.Visibility = Visibility.Collapsed;
-                }
+                Count?.Visibility = Visibility.Collapsed;
             }
         }
 

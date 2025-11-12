@@ -44,37 +44,25 @@ namespace Telegram.Controls
             if (ComputedIsGlyphVisible is false)
             {
                 GlyphPresenter = GetTemplateChild(nameof(GlyphPresenter)) as UIElement;
-                if (GlyphPresenter != null)
-                {
-                    GlyphPresenter.Visibility = Visibility.Collapsed;
-                }
+                GlyphPresenter?.Visibility = Visibility.Collapsed;
             }
 
             if (ComputedIsDescriptionVisible)
             {
                 DescriptionPresenter = GetTemplateChild(nameof(DescriptionPresenter)) as UIElement;
-                if (DescriptionPresenter != null)
-                {
-                    DescriptionPresenter.Visibility = Visibility.Visible;
-                }
+                DescriptionPresenter?.Visibility = Visibility.Visible;
             }
 
             if (IsChevronVisible)
             {
                 Chevron = GetTemplateChild(nameof(Chevron)) as UIElement;
-                if (Chevron != null)
-                {
-                    Chevron.Visibility = Visibility.Visible;
-                }
+                Chevron?.Visibility = Visibility.Visible;
             }
 
             if (IsPremiumVisible)
             {
                 Premium = GetTemplateChild(nameof(Premium)) as UIElement;
-                if (Premium != null)
-                {
-                    Premium.Visibility = Visibility.Visible;
-                }
+                Premium?.Visibility = Visibility.Visible;
 
                 Grid.SetColumnSpan(ContentPresenter, 1);
             }
@@ -168,12 +156,9 @@ namespace Telegram.Controls
             {
                 sender.DescriptionPresenter ??= sender.GetTemplateChild(nameof(sender.DescriptionPresenter)) as UIElement;
 
-                if (sender.DescriptionPresenter != null)
-                {
-                    sender.DescriptionPresenter.Visibility = sender.ComputedIsDescriptionVisible
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
-                }
+                sender.DescriptionPresenter?.Visibility = sender.ComputedIsDescriptionVisible
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
         }
 
@@ -216,12 +201,9 @@ namespace Telegram.Controls
             {
                 sender.GlyphPresenter ??= sender.GetTemplateChild(nameof(sender.GlyphPresenter)) as UIElement;
 
-                if (sender.GlyphPresenter != null)
-                {
-                    sender.GlyphPresenter.Visibility = sender.ComputedIsGlyphVisible
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
-                }
+                sender.GlyphPresenter?.Visibility = sender.ComputedIsGlyphVisible
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
         }
 
@@ -290,12 +272,9 @@ namespace Telegram.Controls
             {
                 sender.Chevron ??= sender.GetTemplateChild(nameof(sender.Chevron)) as UIElement;
 
-                if (sender.Chevron != null)
-                {
-                    sender.Chevron.Visibility = (bool)e.NewValue
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
-                }
+                sender.Chevron?.Visibility = (bool)e.NewValue
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
         }
 

@@ -485,20 +485,14 @@ namespace Telegram.Views
                 {
                     UnloadObject(UnconfirmedCard);
 
-                    if (SetBirthdateCard != null)
-                    {
-                        SetBirthdateCard.Visibility = Visibility.Visible;
-                    }
+                    SetBirthdateCard?.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     FindName(nameof(UnconfirmedCard));
                     UnconfirmedCard.Update(update.Session);
 
-                    if (SetBirthdateCard != null)
-                    {
-                        SetBirthdateCard.Visibility = Visibility.Collapsed;
-                    }
+                    SetBirthdateCard?.Visibility = Visibility.Collapsed;
                 }
             });
         }
@@ -511,29 +505,17 @@ namespace Telegram.Views
                 {
                     FindName(nameof(FrozenCard));
 
-                    if (SetBirthdateCard != null)
-                    {
-                        SetBirthdateCard.Visibility = Visibility.Collapsed;
-                    }
+                    SetBirthdateCard?.Visibility = Visibility.Collapsed;
 
-                    if (UnconfirmedCard != null)
-                    {
-                        UnconfirmedCard.Visibility = Visibility.Collapsed;
-                    }
+                    UnconfirmedCard?.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
                     UnloadObject(FrozenCard);
 
-                    if (SetBirthdateCard != null)
-                    {
-                        SetBirthdateCard.Visibility = Visibility.Visible;
-                    }
+                    SetBirthdateCard?.Visibility = Visibility.Visible;
 
-                    if (UnconfirmedCard != null)
-                    {
-                        UnconfirmedCard.Visibility = Visibility.Visible;
-                    }
+                    UnconfirmedCard?.Visibility = Visibility.Visible;
                 }
             });
         }
@@ -645,10 +627,7 @@ namespace Telegram.Views
         {
             void UpdatePlaybackHidden(bool hidden)
             {
-                if (Playback != null)
-                {
-                    Playback.IsHidden = hidden;
-                }
+                Playback?.IsHidden = hidden;
             }
 
             this.BeginOnUIThread(() =>
@@ -927,10 +906,7 @@ namespace Telegram.Views
 
             if (index == 0)
             {
-                if (SettingsRoot != null)
-                {
-                    SettingsRoot.Visibility = Visibility.Collapsed;
-                }
+                SettingsRoot?.Visibility = Visibility.Collapsed;
 
                 Show(ChatsRoot, _prevIndex > index, 0);
             }
@@ -2227,10 +2203,7 @@ namespace Telegram.Views
                 }
                 else
                 {
-                    if (SettingsView != null)
-                    {
-                        SettingsView.Visibility = Visibility.Collapsed;
-                    }
+                    SettingsView?.Visibility = Visibility.Collapsed;
 
                     ViewModel.Settings.Search(SearchField.Text);
                 }
@@ -2251,10 +2224,7 @@ namespace Telegram.Views
 
             SearchField.Text = string.Empty;
 
-            if (SettingsView != null)
-            {
-                SettingsView.Visibility = Visibility.Visible;
-            }
+            SettingsView?.Visibility = Visibility.Visible;
 
             ViewModel.Settings.Results.Clear();
         }

@@ -60,10 +60,7 @@ namespace Telegram.Controls
 
         protected void OnValueChanged(int oldValue, int newValue)
         {
-            if (ValueText != null)
-            {
-                ValueText.Text = newValue.ToString($"D{_digits}");
-            }
+            ValueText?.Text = newValue.ToString($"D{_digits}");
 
             ValueChanged?.Invoke(this, new LoopingPickerValueChangedEventArgs(oldValue, newValue));
         }

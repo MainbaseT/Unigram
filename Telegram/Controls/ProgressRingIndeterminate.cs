@@ -509,10 +509,7 @@ namespace Telegram.Controls
 
             public void Dispose()
             {
-                if (_root != null)
-                {
-                    _root.Dispose();
-                }
+                _root?.Dispose();
             }
 
             public TimeSpan Duration => new TimeSpan(c_durationTicks);

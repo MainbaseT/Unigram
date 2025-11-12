@@ -213,11 +213,8 @@ namespace Telegram.Common
                     _connection = null;
                 }
 
-                if (_deferral != null)
-                {
-                    _deferral.Complete();
-                    _deferral = null;
-                }
+                _deferral?.Complete();
+                _deferral = null;
             }
         }
     }

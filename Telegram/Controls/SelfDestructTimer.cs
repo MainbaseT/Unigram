@@ -29,10 +29,7 @@ namespace Telegram.Controls
             {
                 _radius = value;
 
-                if (_ellipse != null)
-                {
-                    _ellipse.Radius = new Vector2((float)value);
-                }
+                _ellipse?.Radius = new Vector2((float)value);
             }
         }
 

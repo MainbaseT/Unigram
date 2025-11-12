@@ -293,12 +293,9 @@ namespace Telegram.Controls.Messages
 
                 _selectionEnabled = value;
 
-                if (_interactionSource != null)
-                {
-                    _interactionSource.PositionXSourceMode = value
-                        ? InteractionSourceMode.Disabled
-                        : InteractionSourceMode.EnabledWithInertia;
-                }
+                _interactionSource?.PositionXSourceMode = value
+                    ? InteractionSourceMode.Disabled
+                    : InteractionSourceMode.EnabledWithInertia;
 
                 IsChecked = _selected = selected;
                 Presenter.IsHitTestVisible = !value || IsAlbum;

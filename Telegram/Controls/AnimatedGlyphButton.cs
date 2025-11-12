@@ -84,10 +84,7 @@ namespace Telegram.Controls
         {
             if (string.IsNullOrEmpty(oldValue) || string.IsNullOrEmpty(newValue))
             {
-                if (_label != null)
-                {
-                    _label.Text = newValue;
-                }
+                _label?.Text = newValue;
 
                 return;
             }

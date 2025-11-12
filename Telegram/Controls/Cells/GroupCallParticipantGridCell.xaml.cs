@@ -259,10 +259,7 @@ namespace Telegram.Controls.Cells
             }
             else
             {
-                if (_pausedVisual != null)
-                {
-                    _pausedVisual.Brush = null;
-                }
+                _pausedVisual?.Brush = null;
 
                 OverlayRoot.Visibility = Visibility.Collapsed;
                 Scrim.Visibility = Visibility.Visible;
@@ -280,10 +277,7 @@ namespace Telegram.Controls.Cells
                 _visual.CenterPoint = new Vector3(_visual.Size / 2, 0);
             }
 
-            if (_pausedVisual != null)
-            {
-                _pausedVisual.Size = finalSize.ToVector2();
-            }
+            _pausedVisual?.Size = finalSize.ToVector2();
 
             return base.ArrangeOverride(finalSize);
         }

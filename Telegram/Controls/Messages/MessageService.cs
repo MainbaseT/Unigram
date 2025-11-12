@@ -3094,10 +3094,7 @@ namespace Telegram.Controls.Messages
         {
             // TODO: Name
             var reactions = GetTemplateChild("Reactions") as ReactionsPanel;
-            if (reactions != null)
-            {
-                reactions.UpdateMessageReactions(message, animate);
-            }
+            reactions?.UpdateMessageReactions(message, animate);
         }
     }
 

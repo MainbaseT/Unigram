@@ -88,11 +88,8 @@ namespace Telegram.Services
 
         public void StopTracking()
         {
-            if (_session != null)
-            {
-                _session.Dispose();
-                _session = null;
-            }
+            _session?.Dispose();
+            _session = null;
         }
 
         private void ExtendedExecutionSession_Revoked(object sender, ExtendedExecutionRevokedEventArgs args)

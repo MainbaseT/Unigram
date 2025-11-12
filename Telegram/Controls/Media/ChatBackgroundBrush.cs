@@ -263,11 +263,8 @@ namespace Telegram.Controls.Media
             _connected = false;
             _tintEffect = null;
 
-            if (CompositionBrush != null)
-            {
-                CompositionBrush.Dispose();
-                CompositionBrush = null;
-            }
+            CompositionBrush?.Dispose();
+            CompositionBrush = null;
 
             if (Pattern != null)
             {

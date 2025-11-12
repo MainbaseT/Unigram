@@ -208,10 +208,7 @@ namespace Telegram.Views
                 result = container.Resolve<TService>();
             }
 
-            if (result != null)
-            {
-                result.Delegate = delegato;
-            }
+            result?.Delegate = delegato;
 
             return result;
         }

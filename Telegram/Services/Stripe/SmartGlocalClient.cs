@@ -91,11 +91,8 @@ namespace Telegram.Services.Stripe
 
         public void Dispose()
         {
-            if (_client != null)
-            {
-                _client.Dispose();
-                _client = null;
-            }
+            _client?.Dispose();
+            _client = null;
         }
     }
 }

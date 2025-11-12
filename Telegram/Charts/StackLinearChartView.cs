@@ -467,11 +467,8 @@ namespace Telegram.Charts
                 clip.Dispose();
                 //canvas.restore();
 
-                if (ovalPath != null)
-                {
-                    ovalPath.Dispose();
-                    ovalPath = null;
-                }
+                ovalPath?.Dispose();
+                ovalPath = null;
             }
         }
 

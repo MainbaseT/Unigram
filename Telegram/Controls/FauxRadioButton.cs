@@ -66,10 +66,7 @@ namespace Telegram.Controls
             {
                 sender.Chevron ??= sender.GetTemplateChild(nameof(sender.Chevron)) as UIElement;
 
-                if (sender.Chevron != null)
-                {
-                    sender.Chevron.Opacity = (bool)e.NewValue ? 1 : 0;
-                }
+                sender.Chevron?.Opacity = (bool)e.NewValue ? 1 : 0;
             }
         }
 

@@ -585,14 +585,11 @@ namespace Telegram.Views.Popups
             var storage = content.DataContext as StorageMedia;
 
             var glyph = content.FindName("Glyph") as AnimatedGlyphButton;
-            if (glyph != null)
-            {
-                glyph.Glyph = storage is StoragePhoto
-                    ? Icons.ImageFilled24
-                    : storage is StorageVideo or StorageAudio
-                    ? Icons.PlayFilled24
-                    : Icons.DocumentFilled24;
-            }
+            glyph?.Glyph = storage is StoragePhoto
+                ? Icons.ImageFilled24
+                : storage is StorageVideo or StorageAudio
+                ? Icons.PlayFilled24
+                : Icons.DocumentFilled24;
         }
 
         private void MediaItem_PointerEntered(object sender, PointerRoutedEventArgs e)
@@ -872,12 +869,9 @@ namespace Telegram.Views.Popups
                     UpdateTemplate(content, content.DataContext as StorageMedia);
 
                     var particles = content.FindName("Particles") as AnimatedImage;
-                    if (particles != null)
-                    {
-                        particles.Source = SendWithSpoiler || StarCount > 0
-                            ? new ParticlesImageSource()
-                            : null;
-                    }
+                    particles?.Source = SendWithSpoiler || StarCount > 0
+                        ? new ParticlesImageSource()
+                        : null;
 
                     var border = content.FindName("BackDrop") as Border;
                     if (border != null)

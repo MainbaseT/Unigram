@@ -156,10 +156,7 @@ namespace Telegram.Controls
                 _topInset = (float)value;
                 _propertySet?.InsertScalar("TopInset", _topInset);
 
-                if (TopScrim != null)
-                {
-                    TopScrim.Height = _topInset;
-                }
+                TopScrim?.Height = _topInset;
             }
         }
 

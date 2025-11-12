@@ -937,10 +937,7 @@ namespace Telegram.Controls.Gallery
             //Apply(Element0, finalSize);
             //Apply(Element1, finalSize);
 
-            if (_layout != null)
-            {
-                _layout.Offset = new Vector3(0, 0, 0);
-            }
+            _layout?.Offset = new Vector3(0, 0, 0);
 
             return base.ArrangeOverride(finalSize);
         }

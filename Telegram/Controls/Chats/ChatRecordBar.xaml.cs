@@ -364,11 +364,8 @@ namespace Telegram.Controls.Chats
             //    return;
             //}
 
-            if (_viewOnceToast != null)
-            {
-                _viewOnceToast.IsOpen = false;
-                _viewOnceToast = null;
-            }
+            _viewOnceToast?.IsOpen = false;
+            _viewOnceToast = null;
 
             _blobVisual.StopAnimating();
 
@@ -604,9 +601,9 @@ namespace Telegram.Controls.Chats
             {
                 _viewOnceToast = ToastPopup.Show(ViewOnceRoot, ControlledButton.Mode == ChatRecordMode.Voice ? Strings.VoiceSetOnceHintEnabled : Strings.VideoSetOnceHintEnabled, TeachingTipPlacementMode.Right, dismissAfter: TimeSpan.FromSeconds(3));
             }
-            else if (_viewOnceToast != null)
+            else
             {
-                _viewOnceToast.IsOpen = false;
+                _viewOnceToast?.IsOpen = false;
                 _viewOnceToast = null;
             }
         }

@@ -161,10 +161,7 @@ namespace Telegram.Controls.Gallery
         {
             PlayAfterScrubbing();
 
-            if (_player != null)
-            {
-                _player.Position = e.NewPosition.TotalSeconds;
-            }
+            _player?.Position = e.NewPosition.TotalSeconds;
         }
 
         private void Slider_PositionCanceled(PlaybackSlider sender, object e)
@@ -401,11 +398,8 @@ namespace Telegram.Controls.Gallery
                 PlaybackButton.Glyph = Icons.PlayFilled24;
                 Automation.SetToolTip(PlaybackButton, Strings.AccActionPlay);
 
-                if (_request != null)
-                {
-                    _request.TryRequestRelease();
-                    _request = null;
-                }
+                _request?.TryRequestRelease();
+                _request = null;
             }
 
             if (Slider.IsScrubbing)
@@ -456,10 +450,7 @@ namespace Telegram.Controls.Gallery
         {
             TimeText.Text = FormatTime(e.NewPosition.TotalSeconds);
 
-            if (_player != null)
-            {
-                _player.Position = e.NewPosition.TotalSeconds;
-            }
+            _player?.Position = e.NewPosition.TotalSeconds;
 
             var closest = _storyboardFrames?.LastOrDefault(x => x.Key <= e.NewPosition.TotalSeconds);
             if (closest == null)
@@ -571,10 +562,7 @@ namespace Telegram.Controls.Gallery
             value = Math.Clamp(value, 0.2, 2.5);
             SettingsService.Current.Playback.VideoSpeed = value;
 
-            if (_player != null)
-            {
-                _player.Rate = value;
-            }
+            _player?.Rate = value;
         }
 
         private void ChangePlaybackSpeed(float amount)
@@ -682,11 +670,8 @@ namespace Telegram.Controls.Gallery
         {
             Visibility = Visibility.Collapsed;
 
-            if (_request != null)
-            {
-                _request.TryRequestRelease();
-                _request = null;
-            }
+            _request?.TryRequestRelease();
+            _request = null;
         }
 
         public new void ProcessKeyboardAccelerators(KeyRoutedEventArgs args)

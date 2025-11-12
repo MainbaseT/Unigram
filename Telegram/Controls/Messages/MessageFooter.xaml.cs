@@ -96,10 +96,7 @@ namespace Telegram.Controls.Messages
 
         private void UpdateLabel()
         {
-            if (Label != null)
-            {
-                Label.Text = _effectGlyph + _pinnedGlyph + _repliesLabel + _viewsLabel + _editedLabel + _authorLabel + _dateLabel;
-            }
+            Label?.Text = _effectGlyph + _pinnedGlyph + _repliesLabel + _viewsLabel + _editedLabel + _authorLabel + _dateLabel;
         }
 
         public void UpdateMessage(MessageViewModel message)

@@ -879,10 +879,7 @@ namespace Telegram.Views.Host
             void SetChecked(RootDestination destination, RootDestination target)
             {
                 var selector = NavigationViewList.ContainerFromItem(_navigationViewItems.FirstOrDefault(x => x is RootDestination y && y == destination)) as Controls.NavigationViewItem;
-                if (selector != null)
-                {
-                    selector.IsChecked = destination == target;
-                }
+                selector?.IsChecked = destination == target;
             }
 
             SetChecked(RootDestination.Chats, value);

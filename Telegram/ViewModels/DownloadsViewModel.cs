@@ -102,10 +102,7 @@ namespace Telegram.ViewModels
                             Items.Source.Insert(next >= 0 ? next : Items.Count, fileDownload);
                         }
 
-                        if (first != null)
-                        {
-                            first.IsFirst = false;
-                        }
+                        first?.IsFirst = false;
 
                         fileDownload.IsFirst = true;
                     }

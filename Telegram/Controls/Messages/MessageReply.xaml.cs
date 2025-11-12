@@ -139,10 +139,7 @@ namespace Telegram.Controls.Messages
 
         private void OnModelChanged(AnimatedImageSource newValue)
         {
-            if (_modelVisual != null)
-            {
-                _modelVisual.IsVisible = newValue == null;
-            }
+            _modelVisual?.IsVisible = newValue == null;
 
             if (newValue != null && _templateApplied && ModelAnimated == null)
             {
@@ -288,10 +285,7 @@ namespace Telegram.Controls.Messages
         {
             _thumbnailController?.Recycle();
 
-            if (ThumbRoot != null)
-            {
-                ThumbRoot.Visibility = Visibility.Collapsed;
-            }
+            ThumbRoot?.Visibility = Visibility.Collapsed;
         }
 
         protected override ImageBrush ShowThumbnail(CornerRadius radius = default)

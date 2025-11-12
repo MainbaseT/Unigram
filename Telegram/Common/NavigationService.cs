@@ -120,10 +120,7 @@ namespace Telegram.Common
             if (service.Content is UIElement element)
             {
                 var mainPage = element.GetParent<MainPage>();
-                if (mainPage != null)
-                {
-                    mainPage.ShowTopicList(chat);
-                }
+                mainPage?.ShowTopicList(chat);
             }
         }
 

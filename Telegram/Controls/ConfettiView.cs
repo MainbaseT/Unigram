@@ -154,10 +154,7 @@ namespace Telegram.Controls
                 }
 
                 //invalidate();
-                if (Canvas != null)
-                {
-                    Canvas.Paused = false;
-                }
+                Canvas?.Paused = false;
             }
         }
 

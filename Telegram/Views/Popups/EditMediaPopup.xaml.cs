@@ -97,10 +97,7 @@ namespace Telegram.Views.Popups
             }
 
             var animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("EditMediaPopup");
-            if (animation != null)
-            {
-                animation.TryStart(Cropper);
-            }
+            animation?.TryStart(Cropper);
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -601,15 +598,9 @@ namespace Telegram.Views.Popups
 
         private void InvalidateToolbar()
         {
-            if (Undo != null)
-            {
-                Undo.IsEnabled = Canvas.CanUndo;
-            }
+            Undo?.IsEnabled = Canvas.CanUndo;
 
-            if (Redo != null)
-            {
-                Redo.IsEnabled = Canvas.CanRedo;
-            }
+            Redo?.IsEnabled = Canvas.CanRedo;
         }
 
         private async void MediaPlayer_PositionChanged(Windows.Media.Playback.MediaPlaybackSession sender, object args)

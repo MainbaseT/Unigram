@@ -89,10 +89,7 @@ namespace Telegram.ViewModels
                 else
                 {
                     var sound = Items.FirstOrDefault(x => x.Id == soundId);
-                    if (sound != null)
-                    {
-                        sound.IsSelected = true;
-                    }
+                    sound?.IsSelected = true;
                 }
             }
         }

@@ -229,10 +229,7 @@ namespace Telegram.Common
         public static void SetVerticalPadding(this ScrollViewer scrollViewer, double top, double bottom)
         {
             var scrollBar = scrollViewer?.GetLastChild<ScrollBar>(x => x.Orientation == Orientation.Vertical);
-            if (scrollBar != null)
-            {
-                scrollBar.Margin = new Thickness(0, top, 0, bottom);
-            }
+            scrollBar?.Margin = new Thickness(0, top, 0, bottom);
         }
 
         public static void ScrollToTop(this ListViewBase listViewBase)

@@ -2572,10 +2572,7 @@ namespace Telegram.Views.Calls
         private void MessagesHost_Loaded(object sender, RoutedEventArgs e)
         {
             var scrollingHost = MessagesHost.GetScrollViewer();
-            if (scrollingHost != null)
-            {
-                scrollingHost.VerticalAnchorRatio = 1.0;
-            }
+            scrollingHost?.VerticalAnchorRatio = 1.0;
 
             AddHandler(PointerPressedEvent, new PointerEventHandler(Test), true);
         }

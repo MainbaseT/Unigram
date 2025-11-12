@@ -32,18 +32,12 @@ namespace Telegram.Views.Profile
 
         private void OnConnected(object sender, RoutedEventArgs e)
         {
-            if (ViewModel != null)
-            {
-                ViewModel.SavedChatsTab.Delegate = this;
-            }
+            ViewModel?.SavedChatsTab.Delegate = this;
         }
 
         private void OnDisconnected(object sender, RoutedEventArgs e)
         {
-            if (ViewModel != null)
-            {
-                ViewModel.SavedChatsTab.Delegate = null;
-            }
+            ViewModel?.SavedChatsTab.Delegate = null;
         }
 
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)

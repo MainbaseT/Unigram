@@ -26,10 +26,7 @@ namespace Telegram.Controls
             }
 
             var content = args.ItemContainer.ContentTemplateRoot;
-            if (content != null)
-            {
-                content.IsHitTestVisible = SelectionMode != ListViewSelectionMode.Multiple;
-            }
+            content?.IsHitTestVisible = SelectionMode != ListViewSelectionMode.Multiple;
         }
 
         private void OnSelectionModeChanged(DependencyObject sender, DependencyProperty dp)
@@ -43,10 +40,7 @@ namespace Telegram.Controls
             foreach (SelectorItem container in panel.Children)
             {
                 var content = container.ContentTemplateRoot;
-                if (content != null)
-                {
-                    content.IsHitTestVisible = SelectionMode != ListViewSelectionMode.Multiple;
-                }
+                content?.IsHitTestVisible = SelectionMode != ListViewSelectionMode.Multiple;
             }
         }
     }

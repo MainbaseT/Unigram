@@ -133,10 +133,7 @@ namespace Telegram.Views.Stars.Popups
 
         private void OnClosed(ContentDialog sender, ContentDialogClosedEventArgs args)
         {
-            if (_balance != null)
-            {
-                _balance.IsOpen = false;
-            }
+            _balance?.IsOpen = false;
         }
 
         private void StarCountSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)

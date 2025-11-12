@@ -166,11 +166,7 @@ namespace Telegram.Controls
             get => _core?.Rate ?? 1;
             set
             {
-                if (_core != null)
-                {
-                    _core.Rate = value;
-                    //OnRateChanged(value);
-                }
+                _core?.Rate = value;
             }
         }
 
@@ -179,11 +175,7 @@ namespace Telegram.Controls
             get => _core?.Mute ?? false;
             set
             {
-                if (_core != null)
-                {
-                    _core.Mute = value;
-                    //OnMuteChanged(value);
-                }
+                _core?.Mute = value;
             }
         }
 

@@ -893,10 +893,7 @@ namespace Telegram.Controls
             get => AdaptivePanel?.AllowCompact ?? true;
             set
             {
-                if (AdaptivePanel != null)
-                {
-                    AdaptivePanel.AllowCompact = value;
-                }
+                AdaptivePanel?.AllowCompact = value;
             }
         }
 

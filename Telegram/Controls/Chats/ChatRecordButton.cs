@@ -378,12 +378,9 @@ namespace Telegram.Controls.Chats
                     RecordingStopped?.Invoke(this, EventArgs.Empty);
 
                     Automation.SetToolTip(this, Mode == ChatRecordMode.Video ? Strings.AccDescrVideoMessage : Strings.AccDescrVoiceMessage);
-
-                    if (_request != null)
-                    {
-                        _request.TryRequestRelease();
-                        _request = null;
-                    }
+                    
+                    _request?.TryRequestRelease();
+                    _request = null;
                 });
             }
 
@@ -555,11 +552,8 @@ namespace Telegram.Controls.Chats
                 catch { }
                 finally
                 {
-                    if (capture != null)
-                    {
-                        capture.Dispose();
-                        capture = null;
-                    }
+                    capture?.Dispose();
+                    capture = null;
                 }
 
                 return false;

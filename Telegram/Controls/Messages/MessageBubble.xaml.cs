@@ -611,10 +611,7 @@ namespace Telegram.Controls.Messages
                     SetCorners(topLeft, topRight, small, small);
                 }
 
-                if (Markup != null)
-                {
-                    Markup.CornerRadius = new Vector2(bottomRight, bottomLeft);
-                }
+                Markup?.CornerRadius = new Vector2(bottomRight, bottomLeft);
             }
             else
             {
@@ -862,9 +859,9 @@ namespace Telegram.Controls.Messages
 
                     Automation.SetToolTip(ActionButton, Strings.ViewInChat);
                 }
-                else if (Action != null)
+                else
                 {
-                    Action.Visibility = Visibility.Collapsed;
+                    Action?.Visibility = Visibility.Collapsed;
                 }
             }
             else if (message.IsSaved)
@@ -892,9 +889,9 @@ namespace Telegram.Controls.Messages
 
                 Automation.SetToolTip(ActionButton, Strings.ShareFile);
             }
-            else if (Action != null)
+            else
             {
-                Action.Visibility = Visibility.Collapsed;
+                Action?.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -1145,19 +1142,16 @@ namespace Telegram.Controls.Messages
 
                     PsaInfo.Visibility = Visibility.Visible;
                 }
-                else if (PsaInfo != null)
+                else
                 {
-                    PsaInfo.Visibility = Visibility.Collapsed;
+                    PsaInfo?.Visibility = Visibility.Collapsed;
                 }
             }
             else
             {
                 ForwardHeader?.UpdateMessage(message, light);
 
-                if (PsaInfo != null)
-                {
-                    PsaInfo.Visibility = Visibility.Collapsed;
-                }
+                PsaInfo?.Visibility = Visibility.Collapsed;
             }
 
             var viaBot = message.ClientService.GetUser(message.ViaBotUserId);
@@ -1230,10 +1224,7 @@ namespace Telegram.Controls.Messages
                 HeaderPanel.Visibility = Visibility.Visible;
                 Header.Visibility = Visibility.Visible;
 
-                if (ForwardHeader != null)
-                {
-                    ForwardHeader.Margin = new Thickness(0, -2, 0, 2);
-                }
+                ForwardHeader?.Margin = new Thickness(0, -2, 0, 2);
             }
             else
             {
@@ -1255,10 +1246,7 @@ namespace Telegram.Controls.Messages
 
                 Header.Visibility = (message.ReplyTo != null && message.ReplyToState != MessageReplyToState.Hidden) || forward ? Visibility.Visible : Visibility.Collapsed;
 
-                if (ForwardHeader != null)
-                {
-                    ForwardHeader.Margin = new Thickness(0, 0, 0, 2);
-                }
+                ForwardHeader?.Margin = new Thickness(0, 0, 0, 2);
             }
         }
 
@@ -1463,10 +1451,7 @@ namespace Telegram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageVideoNote or MessageBigEmoji)
             {
-                if (Thread != null)
-                {
-                    Thread.Visibility = Visibility.Collapsed;
-                }
+                Thread?.Visibility = Visibility.Collapsed;
 
                 return;
             }
@@ -1494,9 +1479,9 @@ namespace Telegram.Controls.Messages
 
                     Thread.Visibility = Visibility.Visible;
                 }
-                else if (Thread != null)
+                else
                 {
-                    Thread.Visibility = Visibility.Collapsed;
+                    Thread?.Visibility = Visibility.Collapsed;
                 }
             }
             else
@@ -2167,10 +2152,7 @@ namespace Telegram.Controls.Messages
                 VisualStateManager.GoToState(this, state, false);
             }
 
-            if (BackgroundPanel != null)
-            {
-                BackgroundPanel.Visibility = Visibility.Collapsed;
-            }
+            BackgroundPanel?.Visibility = Visibility.Collapsed;
         }
 
         private void FooterToMedia()

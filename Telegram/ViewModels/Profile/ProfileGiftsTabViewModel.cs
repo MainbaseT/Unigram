@@ -207,10 +207,7 @@ namespace Telegram.ViewModels.Profile
                 {
                     var viewModel = new GiftCollectionViewModel(this, collection);
 
-                    if (gift != null)
-                    {
-                        gift.CollectionIds.Add(collection.Id);
-                    }
+                    gift?.CollectionIds.Add(collection.Id);
 
                     Collections.Add(viewModel);
                     SelectedCollection = viewModel;

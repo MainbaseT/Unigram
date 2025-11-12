@@ -73,9 +73,9 @@ namespace Telegram.Controls.Cells
             {
                 _windowVisual.Size = e.NewSize.ToVector2();
             }
-            else if (_displayVisual != null)
+            else
             {
-                _displayVisual.Size = e.NewSize.ToVector2();
+                _displayVisual?.Size = e.NewSize.ToVector2();
             }
         }
     }
