@@ -13026,4 +13026,11 @@
     <string name="TopicHidden2">un1 hid the general topic</string>
     <string name="TopicShown2">un1 unhid the general topic</string>
 
+    <string name="AboutRevenueSharingAds">About These Ads</string>
+    <string name="RemoveAds">Remove Ads</string>
+    <string name="SponsoredMessage2">Ad</string>
+    <string name="SponsoredMessage2Recommended">Recommended</string>
+    <string name="SponsoredMessageInfo">What are sponsored\nmessages?</string>
+    <string name="SponsoredMessageAdWhatIsThis">what\'s this?</string>
+
 </resources>

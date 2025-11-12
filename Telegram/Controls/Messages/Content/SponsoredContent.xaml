@@ -99,7 +99,6 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-
                             <controls:FormattedTextBlock x:Name="Label"
                                                          TextAlignment="DetectFromContent"
                                                          IsTextSelectionEnabled="False"

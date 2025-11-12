@@ -11283,6 +11283,9 @@ seamlessly and efficiently.</value>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>
   </data>
+  <data name="RemoveAds" xml:space="preserve">
+    <value>Remove Ads</value>
+  </data>
   <data name="RemovedFromFavorites" xml:space="preserve">
     <value>Sticker was removed from Favorites</value>
   </data>
@@ -12575,8 +12578,21 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SponsoredMessage" xml:space="preserve">
     <value>ad</value>
   </data>
+  <data name="SponsoredMessage2" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="SponsoredMessage2Recommended" xml:space="preserve">
+    <value>Recommended</value>
+  </data>
   <data name="SponsoredMessageAd" xml:space="preserve">
     <value>Ad</value>
+  </data>
+  <data name="SponsoredMessageAdWhatIsThis" xml:space="preserve">
+    <value>what&apos;s this?</value>
+  </data>
+  <data name="SponsoredMessageInfo" xml:space="preserve">
+    <value>What are sponsored
+messages?</value>
   </data>
   <data name="SponsoredMessageSponsor" xml:space="preserve">
     <value>Advertiser Info</value>

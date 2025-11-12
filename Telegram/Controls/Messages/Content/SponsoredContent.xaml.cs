@@ -351,7 +351,7 @@ namespace Telegram.Controls.Messages.Content
         private void UpdateWebPage(MessageViewModel message, MessageSponsored sponsored)
         {
             var empty = false;
-            TitleLabel.Text = Strings.SponsoredMessageAd + "\n";
+            TitleLabel.Text = sponsored.IsRecommended ? Strings.SponsoredMessage2Recommended : Strings.SponsoredMessage2 + "\n";
             SubtitleLabel.Text = sponsored.Title + "\n";
 
             if (sponsored.Content is MessageText text)

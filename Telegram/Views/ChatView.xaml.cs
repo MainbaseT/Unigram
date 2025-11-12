@@ -3024,6 +3024,22 @@ namespace Telegram.Views
                     });
                 }
             }
+            else if (message.Content is MessageSponsored sponsored)
+            {
+                if (sponsored.CanBeReported)
+                {
+                    // TODO: about
+                    flyout.CreateFlyoutItem(() => { }, Strings.AboutRevenueSharingAds, Icons.Info);
+                    flyout.CreateFlyoutItem(ViewModel.ReportMessage, message, Strings.ReportAd, Icons.HandRight);
+                    flyout.CreateFlyoutSeparator();
+                    flyout.CreateFlyoutItem(ViewModel.HideSponsoredMessage, message, Strings.RemoveAds, Icons.DismissCircle);
+                }
+                else
+                {
+                    // TODO: about
+                    flyout.CreateFlyoutItem(() => { }, Strings.SponsoredMessageInfo, Icons.Info);
+                }
+            }
             else
             {
                 // Scheduled
