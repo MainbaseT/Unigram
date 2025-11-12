@@ -7,7 +7,6 @@
 using System.Runtime.CompilerServices;
 using Telegram.Native.Controls;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
 
 namespace Telegram.Controls

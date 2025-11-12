@@ -1,9 +1,10 @@
 //
-// Copyright Fela Ameghino 2015-2025
+// Copyright (c) Fela Ameghino 2015-2025
 //
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -58,7 +59,7 @@ namespace Telegram.Controls.Messages
                         player.Height = 20;
                         player.FrameSize = new Size(20, 20);
                     }
-                    
+
                     player.Source = new CustomEmojiFileSource(clientService, positions[i].CustomEmojiId);
 
                     SetTop(player, positions[i].Y);

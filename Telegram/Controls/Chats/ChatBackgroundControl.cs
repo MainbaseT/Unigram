@@ -1,11 +1,11 @@
 //
-// Copyright Fela Ameghino 2015-2025
+// Copyright (c) Fela Ameghino 2015-2025
 //
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+
 using System;
-using System.Linq;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Native.Controls;
@@ -106,7 +106,7 @@ namespace Telegram.Controls.Chats
             if (forDarkTheme == IsDarkTheme)
             {
                 SyncBackgroundWithChatTheme(ref background, forDarkTheme, out ChatTheme theme, out int dimming);
-                UpdateBackground(theme,background, forDarkTheme, dimming);
+                UpdateBackground(theme, background, forDarkTheme, dimming);
             }
         }
 

@@ -1,9 +1,10 @@
 //
-// Copyright Fela Ameghino 2015-2025
+// Copyright (c) Fela Ameghino 2015-2025
 //
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,7 +24,6 @@ using Telegram.Views;
 using Telegram.Views.Chats;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
-using Telegram.Views.Profile;
 using Telegram.Views.Profile.Popups;
 using Telegram.Views.Stars.Popups;
 using Telegram.Views.Supergroups;
@@ -323,7 +323,7 @@ namespace Telegram.ViewModels
             if (mainTab != null)
             {
                 already = tabs.FirstOrDefault(x => x.Type.GetType() == mainTab.GetType());
-                
+
                 if (already != null)
                 {
                     tabs.Remove(already);
@@ -333,7 +333,7 @@ namespace Telegram.ViewModels
 
             Items.ReplaceWith(tabs);
             SelectedItem = already ?? tabs.FirstOrDefault();
-                
+
             _mainTab = mainTab;
 
             if (already?.Type is not ProfileTabGifts)

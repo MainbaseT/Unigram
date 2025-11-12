@@ -1,9 +1,10 @@
 //
-// Copyright Fela Ameghino 2015-2025
+// Copyright (c) Fela Ameghino 2015-2025
 //
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
+
 using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
@@ -1356,7 +1357,7 @@ namespace Telegram.Views
         private void Navigation_ItemContextRequested(UIElement sender, ContextRequestedEventArgs args)
         {
             var tabItem = Navigation.ItemFromContainer(sender) as ProfileTabItem;
-            if (tabItem.CanSetAsMain && (ViewModel.MyProfile || (ViewModel.Chat.Type is ChatTypeSupergroup{ IsChannel: true } && ViewModel.Chat.CanChangeInfo(ViewModel.ClientService))))
+            if (tabItem.CanSetAsMain && (ViewModel.MyProfile || (ViewModel.Chat.Type is ChatTypeSupergroup { IsChannel: true } && ViewModel.Chat.CanChangeInfo(ViewModel.ClientService))))
             {
                 var flyout = new MenuFlyout();
 
