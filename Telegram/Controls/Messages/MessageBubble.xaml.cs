@@ -3074,7 +3074,7 @@ namespace Telegram.Controls.Messages
                 void layoutUpdated(object o, object e)
                 {
                     presenter.LayoutUpdated -= layoutUpdated;
-                    presenter.Mockup(linkPreview);
+                    presenter.Mockup(clientService, linkPreview);
 
                     if (obj is User user)
                     {

@@ -20,6 +20,7 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
@@ -58,9 +59,14 @@ namespace Telegram.Controls.Messages.Content
             }
 
             var builder = new StringBuilder();
-            builder.Append(TitleLabel.Text);
-            builder.Prepend(SubtitleLabel.Text, ", ");
-            builder.Prepend(ContentLabel.Text, ", ");
+
+            var peer = FrameworkElementAutomationPeer.FromElement(Label);
+            if (peer == null)
+            {
+                return builder.ToString();
+            }
+
+            builder.Append(peer.GetName());
 
             if (builder.Length > 0)
             {
@@ -81,11 +87,11 @@ namespace Telegram.Controls.Messages.Content
 
         private DashPath AccentDash;
         private MessageReplyPattern Pattern;
-        private RichTextBlock Label;
+        private FormattedTextBlock Label;
         private RichTextBlockOverflow OverflowArea;
         private Run TitleLabel;
         private Run SubtitleLabel;
-        private Run ContentLabel;
+        private Span ContentLabel;
         private Grid MediaPanel;
         private Border Media;
         private Border Overlay;
@@ -98,17 +104,23 @@ namespace Telegram.Controls.Messages.Content
         {
             AccentDash = GetTemplateChild(nameof(AccentDash)) as DashPath;
             Pattern = GetTemplateChild(nameof(Pattern)) as MessageReplyPattern;
-            Label = GetTemplateChild(nameof(Label)) as RichTextBlock;
+            Label = GetTemplateChild(nameof(Label)) as FormattedTextBlock;
             OverflowArea = GetTemplateChild(nameof(OverflowArea)) as RichTextBlockOverflow;
             TitleLabel = GetTemplateChild(nameof(TitleLabel)) as Run;
             SubtitleLabel = GetTemplateChild(nameof(SubtitleLabel)) as Run;
-            ContentLabel = GetTemplateChild(nameof(ContentLabel)) as Run;
+            ContentLabel = GetTemplateChild(nameof(ContentLabel)) as Span;
             MediaPanel = GetTemplateChild(nameof(MediaPanel)) as Grid;
             Media = GetTemplateChild(nameof(Media)) as Border;
             Overlay = GetTemplateChild(nameof(Overlay)) as Border;
             Subtitle = GetTemplateChild(nameof(Subtitle)) as TextBlock;
             ButtonLine = GetTemplateChild(nameof(ButtonLine)) as Grid;
             Button = GetTemplateChild(nameof(Button)) as TextBlock;
+
+            BindingOperations.SetBinding(TitleLabel, Run.ForegroundProperty, new Binding
+            {
+                Path = new PropertyPath("HeaderBrush"),
+                Source = this
+            });
 
             Label.OverflowContentTarget = OverflowArea;
             Click += Button_Click;
@@ -142,7 +154,7 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            UpdateWebPage(linkPreview);
+            UpdateWebPage(message.ClientService, linkPreview);
             UpdateInstantView(linkPreview);
 
             if (linkPreview.HasMedia())
@@ -421,9 +433,9 @@ namespace Telegram.Controls.Messages.Content
 
         }
 
-        public void Mockup(LinkPreview linkPreview)
+        public void Mockup(IClientService clientService, LinkPreview linkPreview)
         {
-            UpdateWebPage(linkPreview);
+            UpdateWebPage(clientService, linkPreview);
 
             MediaPanel.Visibility = Visibility.Collapsed;
             OverflowArea.Margin = new Thickness(0);
@@ -484,7 +496,7 @@ namespace Telegram.Controls.Messages.Content
             }
         }
 
-        private void UpdateWebPage(LinkPreview linkPreview)
+        private void UpdateWebPage(IClientService clientService, LinkPreview linkPreview)
         {
             var empty = true;
 
@@ -493,14 +505,14 @@ namespace Telegram.Controls.Messages.Content
                 empty = false;
                 TitleLabel.Text = Strings.AppName;
                 SubtitleLabel.Text = Strings.ChatBackground;
-                ContentLabel.Text = string.Empty;
+                Label.SetText(clientService, string.Empty.AsFormattedText());
             }
             else if (linkPreview.Type is LinkPreviewTypeUpgradedGift upgradedGift)
             {
                 empty = false;
                 TitleLabel.Text = Strings.AppName;
                 SubtitleLabel.Text = Environment.NewLine + upgradedGift.Gift.ToName();
-                ContentLabel.Text = string.Empty;
+                Label.SetText(clientService, string.Empty.AsFormattedText());
             }
             else
             {
@@ -541,17 +553,21 @@ namespace Telegram.Controls.Messages.Content
 
                 if (!string.IsNullOrWhiteSpace(linkPreview.Description?.Text))
                 {
-                    if (TitleLabel.Text.Length > 0 || SubtitleLabel.Text.Length > 0)
+                    if (SubtitleLabel.Text.Length > 0)
                     {
-                        ContentLabel.Text = Environment.NewLine;
+                        SubtitleLabel.Text += Environment.NewLine;
+                    }
+                    else if (TitleLabel.Text.Length > 0)
+                    {
+                        TitleLabel.Text += Environment.NewLine;
                     }
 
                     empty = false;
-                    ContentLabel.Text += linkPreview.Description.Text;
+                    Label.SetText(clientService, linkPreview.Description);
                 }
                 else
                 {
-                    ContentLabel.Text = string.Empty;
+                    Label.SetText(clientService, string.Empty.AsFormattedText());
                 }
             }
 

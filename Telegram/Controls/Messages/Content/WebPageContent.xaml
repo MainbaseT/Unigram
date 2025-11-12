@@ -100,23 +100,20 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <RichTextBlock x:Name="Label"
-                                           TextAlignment="DetectFromContent"
-                                           IsTextSelectionEnabled="False"
-                                           Margin="0,4,0,0"
-                                           MaxLines="3"
-                                           TextTrimming="CharacterEllipsis"
-                                           Style="{StaticResource CaptionRichTextBlockStyle}"
-                                           FontFamily="{ThemeResource EmojiThemeFontFamily}">
+                            <controls:FormattedTextBlock x:Name="Label"
+                                                         TextAlignment="DetectFromContent"
+                                                         IsTextSelectionEnabled="False"
+                                                         Margin="0,4,0,0"
+                                                         MaxLines="3"
+                                                         TextTrimming="CharacterEllipsis"
+                                                         Style="{StaticResource CaptionFormattedTextBlockStyle}"
+                                                         FontFamily="{ThemeResource EmojiThemeFontFamily}">
                                 <Paragraph>
                                     <Run x:Name="TitleLabel"
-                                         Foreground="{Binding HeaderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                         FontWeight="SemiBold" />
-                                    <Run x:Name="SubtitleLabel"
-                                         FontWeight="SemiBold" />
-                                    <Run x:Name="ContentLabel" />
+                                         FontWeight="SemiBold" /><Run x:Name="SubtitleLabel"
+                                                                      FontWeight="SemiBold" /><Span x:Name="ContentLabel" />
                                 </Paragraph>
-                            </RichTextBlock>
+                            </controls:FormattedTextBlock>
 
                             <RichTextBlockOverflow x:Name="OverflowArea"
                                                    MaxLines="6"
