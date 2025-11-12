@@ -84,15 +84,15 @@ namespace Telegram.ViewModels
 
             Tabs = new List<SearchChatsTabItem>
             {
-                new SearchChatsTabItem(Strings.FilterChats, typeof(BlankPage)),
-                new SearchChatsTabItem(Strings.FilterChannels, typeof(BlankPage)),
-                new SearchChatsTabItem(Strings.AppsTab, typeof(BlankPage)),
-                new SearchChatsTabItem(Strings.SearchPosts, typeof(SearchPostsTabPage), isNew: true),
-                new SearchChatsTabItem(Strings.SharedMediaTab2, typeof(ProfileMediaTabPage), Media.Items),
-                new SearchChatsTabItem(Strings.SharedFilesTab2, typeof(ProfileFilesTabPage), Files.Items),
-                new SearchChatsTabItem(Strings.SharedLinksTab2, typeof(ProfileLinksTabPage), Links.Items),
-                new SearchChatsTabItem(Strings.SharedMusicTab2, typeof(ProfileMusicTabPage), Music.Items),
-                new SearchChatsTabItem(Strings.SharedVoiceTab2, typeof(ProfileVoiceTabPage), Voice.Items)
+                new(Strings.FilterChats, typeof(BlankPage)),
+                new(Strings.FilterChannels, typeof(BlankPage)),
+                new(Strings.AppsTab, typeof(BlankPage)),
+                new(Strings.SearchPosts, typeof(SearchPostsTabPage), isNew: true),
+                new(Strings.SharedMediaTab2, typeof(ProfileMediaTabPage), Media.Items),
+                new(Strings.SharedFilesTab2, typeof(ProfileFilesTabPage), Files.Items),
+                new(Strings.SharedLinksTab2, typeof(ProfileLinksTabPage), Links.Items),
+                new(Strings.SharedMusicTab2, typeof(ProfileMusicTabPage), Music.Items),
+                new(Strings.SharedVoiceTab2, typeof(ProfileVoiceTabPage), Voice.Items)
             };
         }
 

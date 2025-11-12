@@ -44,7 +44,7 @@ namespace Telegram.ViewModels.Payments
             set => Set(ref _invoice, value);
         }
 
-        private OrderInfo _info = new OrderInfo { ShippingAddress = new Address() };
+        private OrderInfo _info = new() { ShippingAddress = new Address() };
         public OrderInfo Info
         {
             get => _info;

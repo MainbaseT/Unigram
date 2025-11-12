@@ -57,8 +57,8 @@ namespace Telegram.Collections
 
         public static bool DiffRanges(this ItemIndexRange RangeA, ItemIndexRange RangeB, out ItemIndexRange InBothAandB, out ItemIndexRange[] OnlyInRangeA, out ItemIndexRange[] OnlyInRangeB)
         {
-            List<ItemIndexRange> exA = new List<ItemIndexRange>();
-            List<ItemIndexRange> exB = new List<ItemIndexRange>();
+            List<ItemIndexRange> exA = new();
+            List<ItemIndexRange> exB = new();
             int i, j;
             i = Math.Max(RangeA.FirstIndex, RangeB.FirstIndex);
             j = Math.Min(RangeA.LastIndex, RangeB.LastIndex);

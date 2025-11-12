@@ -227,7 +227,7 @@ namespace Telegram.ViewModels.Folders
 
         public bool HasCustomEmoji => Title?.Entities?.Count > 0;
 
-        public ChatFolderName Name => new ChatFolderName(Title, AnimateCustomEmoji);
+        public ChatFolderName Name => new(Title, AnimateCustomEmoji);
 
         private bool _isShareable;
         public bool IsShareable

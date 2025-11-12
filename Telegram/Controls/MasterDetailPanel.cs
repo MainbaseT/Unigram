@@ -194,8 +194,8 @@ namespace Telegram.Controls
             return result;
         }
 
-        private static readonly CoreCursor _defaultCursor = new CoreCursor(CoreCursorType.Arrow, 1);
-        private static readonly CoreCursor _resizeCursor = new CoreCursor(CoreCursorType.SizeWestEast, 1);
+        private static readonly CoreCursor _defaultCursor = new(CoreCursorType.Arrow, 1);
+        private static readonly CoreCursor _resizeCursor = new(CoreCursorType.SizeWestEast, 1);
 
         private bool _pointerPressed;
         private double _pointerDelta;

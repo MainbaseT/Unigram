@@ -55,8 +55,8 @@ namespace Telegram.ViewModels
 
             Items = new ObservableCollection<RevenueTabItem>
             {
-                new RevenueTabItem(Strings.Statistics, typeof(ChatStatisticsPage)),
-                new RevenueTabItem(Strings.Boosts, typeof(ChatBoostsPage)),
+                new(Strings.Statistics, typeof(ChatStatisticsPage)),
+                new(Strings.Boosts, typeof(ChatBoostsPage)),
             };
         }
 

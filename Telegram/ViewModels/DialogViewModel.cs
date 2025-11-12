@@ -787,7 +787,7 @@ namespace Telegram.ViewModels
 
         protected bool _loadingSlice;
 
-        protected Stack<long> _repliesStack = new Stack<long>();
+        protected Stack<long> _repliesStack = new();
 
         public Stack<long> RepliesStack => _repliesStack;
 

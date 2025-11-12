@@ -29,7 +29,7 @@ namespace Telegram.Controls.Gallery
         private VideoPlayerBase _player;
 
         private static volatile GalleryCompactOverlay _current;
-        private static readonly object _lock = new object();
+        private static readonly object _lock = new();
 
         public GalleryCompactOverlay(AppWindow window, GalleryViewModelBase viewModel, GalleryMedia media, VideoPlayerBase player)
         {

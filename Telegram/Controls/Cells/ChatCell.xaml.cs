@@ -1451,8 +1451,8 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private static readonly Regex _verificationCodes = new Regex("\\b\\d{5,8}\\b", RegexOptions.Compiled);
-        private static readonly Regex _gatewayCodes = new Regex("\\b\\d{4,8}\\b", RegexOptions.Compiled);
+        private static readonly Regex _verificationCodes = new("\\b\\d{5,8}\\b", RegexOptions.Compiled);
+        private static readonly Regex _gatewayCodes = new("\\b\\d{4,8}\\b", RegexOptions.Compiled);
 
         private void UpdateBriefLabel(Chat chat, FormattedText message)
         {

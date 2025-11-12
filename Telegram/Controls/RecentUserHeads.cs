@@ -32,8 +32,8 @@ namespace Telegram.Controls
 
     public partial class RecentUserHeads : Control
     {
-        private readonly RecentUserCollection _items = new RecentUserCollection();
-        private readonly HashSet<UIElement> _toBeRemoved = new HashSet<UIElement>();
+        private readonly RecentUserCollection _items = new();
+        private readonly HashSet<UIElement> _toBeRemoved = new();
 
         private Grid LayoutRoot;
 

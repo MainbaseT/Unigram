@@ -324,7 +324,7 @@ namespace Telegram.Common
 
         public static HSL ToHSL(this Color rgb)
         {
-            HSL hsl = new HSL();
+            HSL hsl = new();
 
             float r = rgb.R / 255.0f;
             float g = rgb.G / 255.0f;

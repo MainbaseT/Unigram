@@ -112,7 +112,7 @@ namespace Telegram.Controls
             batch.End();
         }
 
-        private RectangleF _center = new RectangleF(0, 48, 160, 160);
+        private RectangleF _center = new(0, 48, 160, 160);
         public RectangleF Center
         {
             get => _center;

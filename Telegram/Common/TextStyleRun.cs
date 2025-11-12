@@ -117,7 +117,7 @@ namespace Telegram.Common
 
                         if (newRun.End < run.End)
                         {
-                            TextStyleRun r = new TextStyleRun(newRun);
+                            TextStyleRun r = new(newRun);
                             r.Merge(run);
                             b++;
                             N2++;
@@ -131,7 +131,7 @@ namespace Telegram.Common
                         }
                         else if (newRun.End >= run.End)
                         {
-                            TextStyleRun r = new TextStyleRun(newRun);
+                            TextStyleRun r = new(newRun);
                             r.Merge(run);
                             r.End = run.End;
                             b++;
@@ -154,7 +154,7 @@ namespace Telegram.Common
                         }
                         else if (newRun.End < run.End)
                         {
-                            TextStyleRun r = new TextStyleRun(run);
+                            TextStyleRun r = new(run);
                             r.Merge(newRun);
                             r.End = newRun.End;
                             b++;
@@ -165,7 +165,7 @@ namespace Telegram.Common
                         }
                         else
                         {
-                            TextStyleRun r = new TextStyleRun(newRun);
+                            TextStyleRun r = new(newRun);
                             r.Start = run.End;
                             b++;
                             N2++;

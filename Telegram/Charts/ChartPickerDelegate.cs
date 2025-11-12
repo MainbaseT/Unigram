@@ -32,9 +32,9 @@ namespace Telegram.Charts
         public long startTapTime;
         ValueAnimator moveToAnimator;
 
-        public Rect leftPickerArea = new Rect();
-        public Rect rightPickerArea = new Rect();
-        public Rect middlePickerArea = new Rect();
+        public Rect leftPickerArea = new();
+        public Rect rightPickerArea = new();
+        public Rect middlePickerArea = new();
 
 
         public float pickerStart = 0.7f;

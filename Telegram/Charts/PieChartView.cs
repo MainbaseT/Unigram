@@ -28,7 +28,7 @@ namespace Telegram.Charts
         bool isEmpty;
         int currentSelection = -1;
 
-        Rect rectF = new Rect();
+        Rect rectF = new();
 
         //TextPaint textPaint;
 

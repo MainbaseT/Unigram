@@ -218,7 +218,7 @@ namespace Telegram.Charts.DataView
                 return count.ToString();
             }
 
-            List<string> strings = new List<string>();
+            List<string> strings = new();
             while (count != 0)
             {
                 int mod = count % 1000;
@@ -233,7 +233,7 @@ namespace Telegram.Charts.DataView
                     strings.Add(mod.ToString());
                 }
             }
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
             for (int i = strings.Count - 1; i >= 0; i--)
             {
                 stringBuilder.Append(strings[i]);

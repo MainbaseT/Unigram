@@ -99,7 +99,7 @@ namespace Telegram.Views.Supergroups.Popups
         }
 
         public string SelectedName => NameLabel.Text;
-        public ForumTopicIcon SelectedIcon => new ForumTopicIcon(ForumTopicCell.ServerSupportedColors[_colorIndex % ForumTopicCell.ServerSupportedColors.Length].ToValue(), _customEmojiId);
+        public ForumTopicIcon SelectedIcon => new(ForumTopicCell.ServerSupportedColors[_colorIndex % ForumTopicCell.ServerSupportedColors.Length].ToValue(), _customEmojiId);
 
         private void OnItemClick(object sender, EmojiDrawerItemClickEventArgs e)
         {

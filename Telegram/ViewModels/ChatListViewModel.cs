@@ -32,7 +32,7 @@ namespace Telegram.ViewModels
     {
         private readonly INotificationsService _notificationsService;
 
-        private readonly Dictionary<long, bool> _deletedChats = new Dictionary<long, bool>();
+        private readonly Dictionary<long, bool> _deletedChats = new();
 
         public IChatListDelegate Delegate { get; set; }
 

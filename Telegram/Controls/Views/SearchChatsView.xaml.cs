@@ -113,7 +113,7 @@ namespace Telegram.Controls.Views
 
         #region Recycle
 
-        private readonly Dictionary<string, HashSet<SelectorItem>> _typeToItemHashSetMapping = new Dictionary<string, HashSet<SelectorItem>>
+        private readonly Dictionary<string, HashSet<SelectorItem>> _typeToItemHashSetMapping = new()
         {
             { "HeaderTemplate", new HashSet<SelectorItem>() },
             { "ProfileTemplate", new HashSet<SelectorItem>() },

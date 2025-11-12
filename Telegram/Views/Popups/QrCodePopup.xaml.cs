@@ -41,7 +41,7 @@ namespace Telegram.Views.Popups
         private readonly DispatcherTimer _expiresTimer;
         private int _expiresIn;
 
-        private readonly Dictionary<string, BackgroundFillFreeformGradient> _lightBackgrounds = new Dictionary<string, BackgroundFillFreeformGradient>
+        private readonly Dictionary<string, BackgroundFillFreeformGradient> _lightBackgrounds = new()
         {
             { "\uD83C\uDFE0", new BackgroundFillFreeformGradient( new int[]{ 0x71B654, 0x2C9077, 0x9ABB3E, 0x68B55E }) },
             { "\uD83D\uDC25", new BackgroundFillFreeformGradient( new int[]{ 0x43A371, 0x8ABD4C, 0x9DB139, 0x85B950 }) },
@@ -54,7 +54,7 @@ namespace Telegram.Views.Popups
             { "\uD83C\uDFAE", new BackgroundFillFreeformGradient( new int[]{ 0x19B3D2, 0xDC62F4, 0xE64C73, 0xECA222 }) },
         };
 
-        private readonly Dictionary<string, BackgroundFillFreeformGradient> _darkBackgrounds = new Dictionary<string, BackgroundFillFreeformGradient>
+        private readonly Dictionary<string, BackgroundFillFreeformGradient> _darkBackgrounds = new()
         {
             { "\uD83C\uDFE0", new BackgroundFillFreeformGradient( new int[]{ 0x157FD1, 0x4A6CF2, 0x1876CD, 0x2CA6CE }) },
             { "\uD83D\uDC25", new BackgroundFillFreeformGradient( new int[]{ 0x57A518, 0x1E7650, 0x6D9B17, 0x3FAB55 }) },

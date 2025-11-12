@@ -102,7 +102,7 @@ namespace Telegram.Common
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
 
                 // Convert byte array to hexadecimal string
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 for (int i = 0; i < hashBytes.Length; i++)
                 {
                     sb.Append(hashBytes[i].ToString("x2")); // "x2" for lowercase hex

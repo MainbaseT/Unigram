@@ -14,10 +14,10 @@ namespace Telegram.Charts
 {
     public partial class AnimatorLoopThread
     {
-        public static object DrawLock = new object();
+        public static object DrawLock = new();
 
-        protected readonly List<Animator> _animators = new List<Animator>();
-        protected readonly object _animatorsLock = new object();
+        protected readonly List<Animator> _animators = new();
+        protected readonly object _animatorsLock = new();
 
         private readonly Timer _timer;
         private bool _looping = true;
@@ -74,10 +74,10 @@ namespace Telegram.Charts
 
     public abstract class Animator
     {
-        protected readonly List<AnimatorUpdateListener> _listeners = new List<AnimatorUpdateListener>();
-        protected readonly List<AnimatorUpdateListener> _updateListeners = new List<AnimatorUpdateListener>();
+        protected readonly List<AnimatorUpdateListener> _listeners = new();
+        protected readonly List<AnimatorUpdateListener> _updateListeners = new();
 
-        protected readonly object _listenersLock = new object();
+        protected readonly object _listenersLock = new();
 
         protected readonly Action<Animator, bool> _listener;
 
@@ -125,7 +125,7 @@ namespace Telegram.Charts
 
     public partial class AnimatorSet : Animator
     {
-        private readonly List<Animator> _animators = new List<Animator>();
+        private readonly List<Animator> _animators = new();
 
         public AnimatorSet()
             : base()

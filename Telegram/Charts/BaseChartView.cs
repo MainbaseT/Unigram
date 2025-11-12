@@ -46,7 +46,7 @@ namespace Telegram.Charts
 
         public abstract List<LineViewData> GetLines();
 
-        public static FastOutSlowInInterpolator INTERPOLATOR = new FastOutSlowInInterpolator();
+        public static FastOutSlowInInterpolator INTERPOLATOR = new();
 
         public abstract void OnCheckChanged();
 
@@ -91,7 +91,7 @@ namespace Telegram.Charts
         public int chartEnd;
         public int chartWidth;
         public float chartFullWidth;
-        public Rect chartArea = new Rect();
+        public Rect chartArea = new();
 
         public abstract void Invalidate();
 
@@ -106,10 +106,10 @@ namespace Telegram.Charts
     {
 
         public SharedUiComponents sharedUiComponents;
-        protected List<ChartHorizontalLinesData> horizontalLines = new List<ChartHorizontalLinesData>(10);
-        readonly List<ChartBottomSignatureData> bottomSignatureDate = new List<ChartBottomSignatureData>(25);
+        protected List<ChartHorizontalLinesData> horizontalLines = new(10);
+        readonly List<ChartBottomSignatureData> bottomSignatureDate = new(25);
 
-        public List<L> lines = new List<L>();
+        public List<L> lines = new();
 
         private const int ANIM_DURATION = 400;
         private const float LINE_WIDTH = 1;
@@ -153,18 +153,18 @@ namespace Telegram.Charts
 
         Color emptyPaint;
 
-        protected Paint linePaint = new Paint();
-        protected Paint selectedLinePaint = new Paint();
-        protected Paint signaturePaint = new Paint();
-        protected Paint signaturePaint2 = new Paint();
-        readonly Paint bottomSignaturePaint = new Paint();
-        readonly Paint pickerSelectorPaint = new Paint();
-        readonly Paint unactiveBottomChartPaint = new Paint();
-        protected Paint selectionBackgroundPaint = new Paint();
-        readonly Paint ripplePaint = new Paint();
-        readonly Paint whiteLinePaint = new Paint();
+        protected Paint linePaint = new();
+        protected Paint selectedLinePaint = new();
+        protected Paint signaturePaint = new();
+        protected Paint signaturePaint2 = new();
+        readonly Paint bottomSignaturePaint = new();
+        readonly Paint pickerSelectorPaint = new();
+        readonly Paint unactiveBottomChartPaint = new();
+        protected Paint selectionBackgroundPaint = new();
+        readonly Paint ripplePaint = new();
+        readonly Paint whiteLinePaint = new();
 
-        Rect pickerRect = new Rect();
+        Rect pickerRect = new();
 
         Animator maxValueAnimator;
 
@@ -385,7 +385,7 @@ namespace Telegram.Charts
             return new LegendSignatureView();
         }
 
-        private static readonly Dictionary<string, Color> _colorsLight = new Dictionary<string, Color>
+        private static readonly Dictionary<string, Color> _colorsLight = new()
         {
             { "StatisticChartSignature", ColorEx.FromHex(0x7f252529) },
             { "StatisticChartSignatureAlpha", ColorEx.FromHex(0x7f252529) },
@@ -402,7 +402,7 @@ namespace Telegram.Charts
             { "StatisticChartHighlightColor", ColorEx.FromHex(0x20ececec) },
         };
 
-        private static readonly Dictionary<string, Color> _colorsDark = new Dictionary<string, Color>
+        private static readonly Dictionary<string, Color> _colorsDark = new()
         {
             { "StatisticChartSignature", ColorEx.FromHex(0xB7A3B1C2) },
             { "StatisticChartSignatureAlpha", ColorEx.FromHex(0x8BFFFFFF) },
@@ -1262,7 +1262,7 @@ namespace Telegram.Charts
                 }
                 minMaxUpdateStep = 0;
 
-                AnimatorSet animatorSet = new AnimatorSet();
+                AnimatorSet animatorSet = new();
                 animatorSet.PlayTogether(CreateAnimator(currentMaxHeight, newMaxHeight, heightUpdateListener));
 
                 if (useMinHeight)
@@ -1862,7 +1862,7 @@ namespace Telegram.Charts
                 int stepMin = (int)(step - step * 0.2);
 
 
-                ChartBottomSignatureData data = new ChartBottomSignatureData(step, stepMax, stepMin);
+                ChartBottomSignatureData data = new(step, stepMax, stepMin);
                 data.alpha = 255;
 
                 if (currentBottomSignatures == null)
@@ -2000,7 +2000,7 @@ namespace Telegram.Charts
                 animatedToPickerMaxHeight = max;
                 pickerAnimator?.Cancel();
 
-                AnimatorSet animatorSet = new AnimatorSet();
+                AnimatorSet animatorSet = new();
                 animatorSet.PlayTogether(
                     CreateAnimator(pickerMaxHeight, animatedToPickerMaxHeight, pickerHeightUpdateListener),
                     CreateAnimator(pickerMinHeight, animatedToPickerMinHeight, pickerMinHeightUpdateListener)

@@ -465,7 +465,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        private MvxObservableCollection<Chat> _selectedItems = new MvxObservableCollection<Chat>();
+        private MvxObservableCollection<Chat> _selectedItems = new();
         public MvxObservableCollection<Chat> SelectedItems
         {
             get => _selectedItems;

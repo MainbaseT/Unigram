@@ -71,7 +71,7 @@ namespace Telegram.Services
 
         public NavigationState Values { get; private set; }
 
-        private static readonly ConcurrentDictionary<string, NavigationState> _keys = new ConcurrentDictionary<string, NavigationState>();
+        private static readonly ConcurrentDictionary<string, NavigationState> _keys = new();
 
         private SettingsLegacyService(NavigationState values)
         {

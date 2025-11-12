@@ -193,7 +193,7 @@ namespace Telegram.Controls
             Height = double.NaN;
         }
 
-        private Size _footerSize = new Size(96, 48);
+        private Size _footerSize = new(96, 48);
         public Size FooterSize
         {
             get => _footerSize;

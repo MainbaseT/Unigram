@@ -160,7 +160,7 @@ namespace Telegram.Common
         {
             var recipe = _recipe;
 
-            Vector2 roundedRectSize = new Vector2(
+            Vector2 roundedRectSize = new(
                 // For simplicity we make the content square.
                 Math.Max(
                     // The content must be large enough to accommodate rounded corners on both sides.

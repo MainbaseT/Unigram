@@ -63,7 +63,7 @@ namespace Telegram.Views
 
         public IEventAggregator Aggregator => ViewModel.Aggregator;
 
-        private readonly List<IPlayerView> _animations = new List<IPlayerView>();
+        private readonly List<IPlayerView> _animations = new();
 
         public InstantPage()
         {
@@ -187,7 +187,7 @@ namespace Telegram.Views
         //private Stack<Panel> _containers = new Stack<Panel>();
         private readonly double _padding = 12;
 
-        private readonly Dictionary<string, Border> _anchors = new Dictionary<string, Border>();
+        private readonly Dictionary<string, Border> _anchors = new();
 
         private FrameworkElement ProcessBlock(PageBlock block)
         {

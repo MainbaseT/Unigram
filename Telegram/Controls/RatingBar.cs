@@ -18,7 +18,7 @@ namespace Telegram.Controls
 {
     public partial class RatingBar : Control
     {
-        private readonly Dictionary<int, FontIcon> _unselected = new Dictionary<int, FontIcon>();
+        private readonly Dictionary<int, FontIcon> _unselected = new();
 
         public RatingBar()
         {

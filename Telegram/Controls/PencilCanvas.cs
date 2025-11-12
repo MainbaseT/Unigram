@@ -33,8 +33,8 @@ namespace Telegram.Controls
 
         private List<SmoothPathBuilder> _drawing;
 
-        private List<SmoothPathBuilder> _strokes = new List<SmoothPathBuilder>();
-        private readonly List<SmoothPathBuilder> _history = new List<SmoothPathBuilder>();
+        private List<SmoothPathBuilder> _strokes = new();
+        private readonly List<SmoothPathBuilder> _history = new();
 
         private PencilCanvasMode _mode;
 

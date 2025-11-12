@@ -28,8 +28,8 @@ namespace Telegram.Controls
 {
     public class ImageTextSelection : Control
     {
-        private static readonly CoreCursor _defaultCursor = new CoreCursor(CoreCursorType.Arrow, 1);
-        private static readonly CoreCursor _selectCursor = new CoreCursor(CoreCursorType.IBeam, 1);
+        private static readonly CoreCursor _defaultCursor = new(CoreCursorType.Arrow, 1);
+        private static readonly CoreCursor _selectCursor = new(CoreCursorType.IBeam, 1);
 
         private ulong _expandSelectionDeadline;
 

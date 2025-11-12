@@ -578,7 +578,7 @@ namespace Telegram.ViewModels
             return new BackgroundColor(value, false);
         }
 
-        public static BackgroundColor Empty = new BackgroundColor(0, true);
+        public static BackgroundColor Empty = new(0, true);
 
         public int Value;
 

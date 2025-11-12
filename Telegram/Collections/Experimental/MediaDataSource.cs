@@ -63,7 +63,7 @@ namespace Telegram.Collections
         // Requires async work which is why it needs a factory rather than being part of the constructor
         public static async Task<MediaDataSource> Create(IClientService clientService, long chatId, long savedMessagesTopicId, SearchMessagesFilter filter)
         {
-            MediaDataSource ds = new MediaDataSource(clientService, chatId, savedMessagesTopicId, filter);
+            MediaDataSource ds = new(clientService, chatId, savedMessagesTopicId, filter);
             await ds.UpdateCount(false, false);
             return ds;
         }
@@ -193,7 +193,7 @@ namespace Telegram.Collections
             }
         }
 
-        private SemaphoreSlim _gettingPositions = new SemaphoreSlim(1);
+        private SemaphoreSlim _gettingPositions = new(1);
 
         private async Task<MessagePositionRange> GetPositionAsync(ItemIndexRange batch, bool retry)
         {
@@ -324,7 +324,7 @@ namespace Telegram.Collections
         // Using this callback model abstracts the details of this specific datasource from the cache implementation
         private async Task<ItemCacheRange<MessageWithOwner>> FetchDataCallback(ItemIndexRange batch, CancellationToken ct)
         {
-            List<MessageWithOwner> messages = new List<MessageWithOwner>();
+            List<MessageWithOwner> messages = new();
 
             await _gettingPositions.WaitAsync();
             _gettingPositions.Release();

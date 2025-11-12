@@ -1952,7 +1952,7 @@ namespace Telegram.Controls.Messages
                 var venueText = $"{venue.Venue.Title}\n{venue.Venue.Address}";
                 var venueEntities = new TextEntity[]
                 {
-                    new TextEntity(0, venue.Venue.Title.Length, new TextEntityTypeBold())
+                    new(0, venue.Venue.Title.Length, new TextEntityTypeBold())
                 };
 
                 result = ReplaceEntities(message, venueText, venueEntities);

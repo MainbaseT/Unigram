@@ -223,7 +223,7 @@ namespace Telegram.AI
             if (length < 1e-6f) // avoid division by zero
                 return 0f;
 
-            Vector2 columnDir = new Vector2(vectorAB.X / length, vectorAB.Y / length);
+            Vector2 columnDir = new(vectorAB.X / length, vectorAB.Y / length);
             return vectorAB.X * columnDir.X + vectorAB.Y * columnDir.Y;
         }
 

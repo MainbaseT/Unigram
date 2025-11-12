@@ -219,12 +219,12 @@ namespace Telegram
                 {
                     new List<InlineKeyboardButton>
                     {
-                        new InlineKeyboardButton(Strings.PostSuggestionsInlineDecline, new InlineKeyboardButtonTypeSuggestionDecline(suggestedPostInfo.CanBeDeclined)),
-                        new InlineKeyboardButton(Strings.PostSuggestionsInlineAccept, new InlineKeyboardButtonTypeSuggestionApprove(suggestedPostInfo.CanBeDeclined))
+                        new(Strings.PostSuggestionsInlineDecline, new InlineKeyboardButtonTypeSuggestionDecline(suggestedPostInfo.CanBeDeclined)),
+                        new(Strings.PostSuggestionsInlineAccept, new InlineKeyboardButtonTypeSuggestionApprove(suggestedPostInfo.CanBeDeclined))
                     },
                     new List<InlineKeyboardButton>
                     {
-                        new InlineKeyboardButton(Strings.PostSuggestionsInlineEdit, new InlineKeyboardButtonTypeSuggestionEdit())
+                        new(Strings.PostSuggestionsInlineEdit, new InlineKeyboardButtonTypeSuggestionEdit())
                     }
                 });
             }
@@ -1972,7 +1972,7 @@ namespace Telegram
         {
             if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                return new FormattedText(sticker.Emoji, new TextEntity[] { new TextEntity(0, sticker.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
+                return new FormattedText(sticker.Emoji, new TextEntity[] { new(0, sticker.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
             }
 
             return new FormattedText(sticker.Emoji, Array.Empty<TextEntity>());
@@ -1998,7 +1998,7 @@ namespace Telegram
 
         public static Photo ToPhoto(this ChatPhotoInfo chatPhoto)
         {
-            return new Photo(false, null, new PhotoSize[] { new PhotoSize("t", chatPhoto.Small, 160, 160, Array.Empty<int>()), new PhotoSize("i", chatPhoto.Big, 640, 640, Array.Empty<int>()) });
+            return new Photo(false, null, new PhotoSize[] { new("t", chatPhoto.Small, 160, 160, Array.Empty<int>()), new("i", chatPhoto.Big, 640, 640, Array.Empty<int>()) });
         }
 
         public static Photo ToPhoto(this ChatPhoto chatPhoto)

@@ -165,7 +165,7 @@ namespace Telegram.Collections
         // Also sorts the ranges so they start in index order
         private List<ItemIndexRange> NormalizeRanges(IEnumerable<ItemIndexRange> ranges)
         {
-            List<ItemIndexRange> results = new List<ItemIndexRange>();
+            List<ItemIndexRange> results = new();
             foreach (ItemIndexRange range in ranges)
             {
                 bool handled = false;

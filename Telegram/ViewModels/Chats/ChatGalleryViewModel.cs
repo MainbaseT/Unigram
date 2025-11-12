@@ -19,7 +19,7 @@ namespace Telegram.ViewModels.Chats
 {
     public partial class ChatGalleryViewModel : GalleryViewModelBase
     {
-        private readonly DisposableMutex _loadMoreLock = new DisposableMutex();
+        private readonly DisposableMutex _loadMoreLock = new();
 
         private readonly long _chatId;
         private readonly MessageTopic _topic;

@@ -19,7 +19,7 @@ namespace Telegram.Charts.Data
         public long[] x;
         public float[] xPercentage;
         public string[] daysLookup;
-        public List<Line> lines = new List<Line>();
+        public List<Line> lines = new();
         public int maxValue = 0;
         public int minValue = int.MaxValue;
 
@@ -50,7 +50,7 @@ namespace Telegram.Charts.Data
                 }
                 else
                 {
-                    Line l = new Line();
+                    Line l = new();
                     lines.Add(l);
                     int len = a.Count - 1;
                     l.id = a.GetStringAt(0);
@@ -84,7 +84,7 @@ namespace Telegram.Charts.Data
             JsonObject colors = jsonObject.GetNamedObject("colors");
             JsonObject names = jsonObject.GetNamedObject("names");
 
-            Regex colorPattern = new Regex("(.*)(#.*)", RegexOptions.Compiled);
+            Regex colorPattern = new("(.*)(#.*)", RegexOptions.Compiled);
             for (int i = 0; i < lines.Count; i++)
             {
                 Line line = lines[i];

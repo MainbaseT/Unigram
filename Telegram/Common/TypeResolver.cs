@@ -17,7 +17,7 @@ namespace Telegram.Views
 {
     public partial class TypeResolver
     {
-        private static readonly TypeResolver _instance = new TypeResolver();
+        private static readonly TypeResolver _instance = new();
 
         private readonly ReaderWriterDictionary<int, TypeLocator> _containers = new();
         private readonly ILifetimeService _lifetime;

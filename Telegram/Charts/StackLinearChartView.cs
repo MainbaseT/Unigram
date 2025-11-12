@@ -23,7 +23,7 @@ namespace Telegram.Charts
 
     public abstract class StackLinearChartView<T> : BaseChartView<StackLinearChartData, T> where T : StackLinearViewData
     {
-        private Vector2 mapPoints = new Vector2();
+        private Vector2 mapPoints = new();
 
         public StackLinearChartView()
         {

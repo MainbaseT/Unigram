@@ -95,7 +95,7 @@ namespace Telegram.ViewModels.Settings
             AreCustomThemesAvailable = Custom.Count > 0;
         }
 
-        private readonly Dictionary<TelegramThemeType, Color[]> _defaultAccents = new Dictionary<TelegramThemeType, Color[]>
+        private readonly Dictionary<TelegramThemeType, Color[]> _defaultAccents = new()
         {
             {
                 TelegramThemeType.Tinted, new Color[]

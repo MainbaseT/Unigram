@@ -28,7 +28,7 @@ namespace Telegram.Controls.Chats
         private IEventAggregator _aggregator;
 
         private ChatTheme _oldTheme;
-        private Background _oldBackground = new Background();
+        private Background _oldBackground = new();
         private bool? _oldDark;
         private int? _oldDimming;
 
@@ -280,14 +280,14 @@ namespace Telegram.Controls.Chats
 
         private static readonly Vector2[] _positions = new Vector2[]
         {
-            new Vector2(0.80f, 0.10f),
-            new Vector2(0.60f, 0.20f),
-            new Vector2(0.35f, 0.25f),
-            new Vector2(0.25f, 0.60f),
-            new Vector2(0.20f, 0.90f),
-            new Vector2(0.40f, 0.80f),
-            new Vector2(0.65f, 0.75f),
-            new Vector2(0.75f, 0.40f),
+            new(0.80f, 0.10f),
+            new(0.60f, 0.20f),
+            new(0.35f, 0.25f),
+            new(0.25f, 0.60f),
+            new(0.20f, 0.90f),
+            new(0.40f, 0.80f),
+            new(0.65f, 0.75f),
+            new(0.75f, 0.40f),
         };
 
         private static readonly float[] _curve = new float[]
@@ -384,10 +384,10 @@ namespace Telegram.Controls.Chats
             {
                 stops[i] = new Vector2[]
                 {
-                    new Vector2(prev[0].X + d1x * _curve[i * 2]!, prev[0].Y + d1y * _curve[i * 2]!),
-                    new Vector2(prev[1].X + d2x * _curve[i * 2]!, prev[1].Y + d2y * _curve[i * 2]!),
-                    new Vector2(prev[2].X + d3x * _curve[i * 2]!, prev[2].Y + d3y * _curve[i * 2]!),
-                    new Vector2(prev[3].X + d4x * _curve[i * 2]!, prev[3].Y + d4y * _curve[i * 2]!)
+                    new(prev[0].X + d1x * _curve[i * 2]!, prev[0].Y + d1y * _curve[i * 2]!),
+                    new(prev[1].X + d2x * _curve[i * 2]!, prev[1].Y + d2y * _curve[i * 2]!),
+                    new(prev[2].X + d3x * _curve[i * 2]!, prev[2].Y + d3y * _curve[i * 2]!),
+                    new(prev[3].X + d4x * _curve[i * 2]!, prev[3].Y + d4y * _curve[i * 2]!)
                 };
             }
 

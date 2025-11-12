@@ -158,7 +158,7 @@ namespace Telegram.Collections
                 }
             }
 
-            CacheEntryBlock newBlock = new CacheEntryBlock(index, new T[] { value });
+            CacheEntryBlock newBlock = new(index, new T[] { value });
             _cacheBlocks.Insert(insertBeforeBlock, newBlock);
         }
 
@@ -353,7 +353,7 @@ namespace Telegram.Collections
         /// <returns>A smaller set of merged ranges</returns>
         private ItemIndexRange[] NormalizeRanges(ItemIndexRange[] ranges)
         {
-            List<ItemIndexRange> results = new List<ItemIndexRange>();
+            List<ItemIndexRange> results = new();
             foreach (ItemIndexRange range in ranges)
             {
                 bool handled = false;

@@ -57,10 +57,10 @@ namespace Telegram.Views.Popups
 
             var layers = new GeometryGroup[]
             {
-                new GeometryGroup(),
-                new GeometryGroup(),
-                new GeometryGroup(),
-                new GeometryGroup()
+                new(),
+                new(),
+                new(),
+                new()
             };
 
             int bitPointer = 0;

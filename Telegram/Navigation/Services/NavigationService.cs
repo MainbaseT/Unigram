@@ -150,7 +150,7 @@ namespace Telegram.Navigation.Services
     // DOCS: https://github.com/Windows-XAML/Template10/wiki/Docs-%7C-NavigationService
     public partial class NavigationService : INavigationService
     {
-        private static readonly HashSet<Type> _unallowedTypes = new HashSet<Type>
+        private static readonly HashSet<Type> _unallowedTypes = new()
         {
             typeof(SettingsPasswordPage),
             typeof(SettingsPasscodePage)

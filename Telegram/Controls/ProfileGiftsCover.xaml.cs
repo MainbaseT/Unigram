@@ -110,7 +110,7 @@ namespace Telegram.Controls
 
                 excludeRects = new RectangleF[]
                 {
-                    new RectangleF(titleTransform.X - 4, titleTransform.Y, titleRoot.ActualSize.X + 8, titleRoot.ActualSize.Y),
+                    new(titleTransform.X - 4, titleTransform.Y, titleRoot.ActualSize.X + 8, titleRoot.ActualSize.Y),
                 };
             }
             else

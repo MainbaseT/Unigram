@@ -67,7 +67,7 @@ namespace Telegram.Controls.Chats
 
             _items = new IncrementalCollection<ChatThemeViewModel>(this)
             {
-                new ChatThemeViewModel(viewModel.ClientService, "\u274C", null, null, false)
+                new(viewModel.ClientService, "\u274C", null, null, false)
             };
 
             if (_selectedTheme is ChatThemeGift selectedGift && !selectedGift.GiftTheme.Gift.OwnerId.IsUser(viewModel.ClientService.Options.MyId))

@@ -17,7 +17,7 @@ namespace Telegram.ViewModels.Chats
 {
     public partial class ChatPhotosViewModel : GalleryViewModelBase
     {
-        private readonly DisposableMutex _loadMoreLock = new DisposableMutex();
+        private readonly DisposableMutex _loadMoreLock = new();
         private readonly Chat _chat;
 
         public ChatPhotosViewModel(IClientService clientService, IStorageService storageService, IEventAggregator aggregator, Chat chat, ChatPhoto photo)

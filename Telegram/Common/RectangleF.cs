@@ -11,7 +11,7 @@ namespace Telegram.Common
 {
     public struct RectangleF : IEquatable<RectangleF>
     {
-        public static readonly RectangleF Empty = new RectangleF(0, 0, 0, 0);
+        public static readonly RectangleF Empty = new(0, 0, 0, 0);
 
         private float x;
         private float y;
@@ -103,7 +103,7 @@ namespace Telegram.Common
         /// <summary>
         /// Gets the center point of the rectangle.
         /// </summary>
-        public Vector2 Center => new Vector2(CenterX, CenterY);
+        public Vector2 Center => new(CenterX, CenterY);
 
         /// <summary>
         /// Gets the x-coordinate of the left edge (alias for Left).
@@ -130,7 +130,7 @@ namespace Telegram.Common
         /// </summary>
         public Vector2 Location
         {
-            get => new Vector2(x, y);
+            get => new(x, y);
             set
             {
                 x = value.X;
@@ -143,7 +143,7 @@ namespace Telegram.Common
         /// </summary>
         public Vector2 Size
         {
-            get => new Vector2(width, height);
+            get => new(width, height);
             set
             {
                 width = value.X;

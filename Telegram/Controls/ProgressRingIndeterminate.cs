@@ -512,11 +512,11 @@ namespace Telegram.Controls
                 _root?.Dispose();
             }
 
-            public TimeSpan Duration => new TimeSpan(c_durationTicks);
+            public TimeSpan Duration => new(c_durationTicks);
 
             public Visual RootVisual => _root;
 
-            public Vector2 Size => new Vector2(80, 80);
+            public Vector2 Size => new(80, 80);
         }
 
         #endregion

@@ -23,7 +23,7 @@ namespace Telegram.Common
 
     public partial class AutocompleteEntityFinder
     {
-        private static readonly HashSet<char> _symbols = new HashSet<char> { ':', '#', '@', '/' };
+        private static readonly HashSet<char> _symbols = new() { ':', '#', '@', '/' };
 
         public static AutocompleteEntity Search(ITextRange text, out string result, out int index)
         {

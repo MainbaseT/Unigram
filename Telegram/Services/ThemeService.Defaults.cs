@@ -15,7 +15,7 @@ namespace Telegram.Services
     {
         public static Dictionary<TelegramThemeType, Dictionary<AccentShade, Color>> Accents => _accent;
 
-        protected static readonly Dictionary<TelegramThemeType, Dictionary<AccentShade, Color>> _accent = new Dictionary<TelegramThemeType, Dictionary<AccentShade, Color>>
+        protected static readonly Dictionary<TelegramThemeType, Dictionary<AccentShade, Color>> _accent = new()
         {
             {
                 TelegramThemeType.Tinted, new Dictionary<AccentShade, Color>
@@ -55,7 +55,7 @@ namespace Telegram.Services
             }
         };
 
-        protected static readonly Dictionary<TelegramThemeType, Dictionary<string, Color>> _map = new Dictionary<TelegramThemeType, Dictionary<string, Color>>
+        protected static readonly Dictionary<TelegramThemeType, Dictionary<string, Color>> _map = new()
         {
             {
                 TelegramThemeType.Tinted, new Dictionary<string, Color>
@@ -167,7 +167,7 @@ namespace Telegram.Services
 
     public partial class ThemeService
     {
-        private static readonly Dictionary<string, object> _defaultLight = new Dictionary<string, object>
+        private static readonly Dictionary<string, object> _defaultLight = new()
         {
             { "MessageReactionBackgroundOutgoing", Color.FromArgb(0xFF, 0xD5, 0xF1, 0xC9) },
             { "MessageReactionForegroundOutgoing", Color.FromArgb(0xFF, 0x45, 0xA3, 0x2D) },
@@ -1765,7 +1765,7 @@ namespace Telegram.Services
             { "ToolTipBackgroundBrush", Acrylic.Color(Color.FromArgb(0xFF, 0xFC, 0xFC, 0xFC), Color.FromArgb(0xFF, 0xF9, 0xF9, 0xF9), 0.0, 0.85) },
         };
 
-        private static readonly Dictionary<string, object> _defaultDark = new Dictionary<string, object>
+        private static readonly Dictionary<string, object> _defaultDark = new()
         {
             { "MessageReactionBackgroundOutgoing", Color.FromArgb(0xFF, 0x2B, 0x41, 0x53) },
             { "MessageReactionForegroundOutgoing", Color.FromArgb(0xFF, 0x7A, 0xC3, 0xF4) },

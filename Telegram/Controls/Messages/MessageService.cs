@@ -2176,7 +2176,7 @@ namespace Telegram.Controls.Messages
         {
             string content;
 
-            StringBuilder str = new StringBuilder();
+            StringBuilder str = new();
             for (int a = 0, size = passportDataSent.Types.Count; a < size; a++)
             {
                 var type = passportDataSent.Types[a];
@@ -2761,7 +2761,7 @@ namespace Telegram.Controls.Messages
             return ClientEx.ParseMarkdown(content);
         }
 
-        private readonly static FormattedText _emptyString = new FormattedText(string.Empty, Array.Empty<TextEntity>());
+        private readonly static FormattedText _emptyString = new(string.Empty, Array.Empty<TextEntity>());
 
         private static FormattedText UpdateStory(MessageWithOwner message, MessageStory story, bool history)
         {

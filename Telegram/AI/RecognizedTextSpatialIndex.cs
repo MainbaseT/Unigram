@@ -380,7 +380,7 @@ namespace Telegram.AI
 
             public float Area => (MaxX - MinX) * (MaxY - MinY);
 
-            public Vector2 Center => new Vector2((MinX + MaxX) * 0.5f, (MinY + MaxY) * 0.5f);
+            public Vector2 Center => new((MinX + MaxX) * 0.5f, (MinY + MaxY) * 0.5f);
 
             public AxisAlignedBounds Union(AxisAlignedBounds other)
             {

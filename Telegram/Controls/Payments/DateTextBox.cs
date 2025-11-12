@@ -74,7 +74,7 @@ namespace Telegram.Controls.Payments
                 str = str.Substring(0, actionPosition) + str.Substring(actionPosition + 1);
                 start--;
             }
-            StringBuilder builder = new StringBuilder(str.Length);
+            StringBuilder builder = new(str.Length);
             for (int a = 0; a < str.Length; a++)
             {
                 char ch = str[a];

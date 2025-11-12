@@ -67,7 +67,7 @@ namespace Telegram.Charts.Data
 
             for (int k = 0; k < data.lines.Count; k++)
             {
-                Line line = new Line();
+                Line line = new();
                 line.y = new int[n];
                 line.id = data.lines[k].id;
                 line.name = data.lines[k].name;

@@ -15,7 +15,7 @@ namespace Telegram.Common
 {
     static class FeatureTokenGenerator
     {
-        static readonly Dictionary<string, string> LimitedAccessFeaturesMap = new Dictionary<string, string>()
+        static readonly Dictionary<string, string> LimitedAccessFeaturesMap = new()
         {
             { "com.microsoft.windows.windowdecorations", "425261a8-7f73-4319-8a53-fc13f87e1717" },
             { "com.microsoft.windows.updateorchestrator.1", "20C662033A4007A55375BF00D986C280B41A418F" },

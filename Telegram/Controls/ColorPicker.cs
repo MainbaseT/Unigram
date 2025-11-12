@@ -30,7 +30,7 @@ namespace Telegram.Controls
         private bool _loaded;
         private bool _pressed;
 
-        private HSV _color = new HSV(0, 1, 1);
+        private HSV _color = new(0, 1, 1);
         private double _value = 1;
         private byte _alpha = 255;
         private Color _current;

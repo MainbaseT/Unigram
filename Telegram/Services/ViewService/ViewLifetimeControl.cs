@@ -34,7 +34,7 @@ namespace Telegram.Services
 
         #region Internal tracking fields
 
-        private readonly object syncObject = new object();
+        private readonly object syncObject = new();
 
         // This class uses references counts to make sure the secondary views isn't closed prematurely.
         // Whenever the main view is about to interact with the secondary view, it should take a reference

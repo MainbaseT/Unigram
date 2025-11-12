@@ -18,9 +18,9 @@ namespace Telegram.Charts.DataView
     {
 
         public readonly ChartData.Line line;
-        public readonly Paint bottomLinePaint = new Paint();
-        public readonly Paint paint = new Paint();
-        public readonly Paint selectionPaint = new Paint();
+        public readonly Paint bottomLinePaint = new();
+        public readonly Paint paint = new();
+        public readonly Paint selectionPaint = new();
 
         public CanvasPathBuilder bottomLinePath;
         public CanvasPathBuilder chartPath;
@@ -71,7 +71,7 @@ namespace Telegram.Charts.DataView
             UpdateColors(ElementTheme.Default);
         }
 
-        private static readonly Dictionary<string, Color> _colorsLight = new Dictionary<string, Color>
+        private static readonly Dictionary<string, Color> _colorsLight = new()
         {
             { "StatisticChartLine_blue", ColorEx.FromHex(0xff327FE5) },
             { "StatisticChartLine_green", ColorEx.FromHex(0xff61C752) },
@@ -85,7 +85,7 @@ namespace Telegram.Charts.DataView
 
         };
 
-        private static readonly Dictionary<string, Color> _colorsDark = new Dictionary<string, Color>
+        private static readonly Dictionary<string, Color> _colorsDark = new()
         {
             { "StatisticChartLine_blue", ColorEx.FromHex(0xFF529FFF) },
             { "StatisticChartLine_green", ColorEx.FromHex(0xFF3DC23F) },

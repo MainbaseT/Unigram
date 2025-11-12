@@ -12,7 +12,7 @@ namespace Telegram.Charts.DataView
 {
     public partial class BarViewData : LineViewData
     {
-        public readonly Paint unselectedPaint = new Paint();
+        public readonly Paint unselectedPaint = new();
 
         public Color blendColor;
 

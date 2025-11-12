@@ -42,7 +42,7 @@ namespace Telegram.Controls
         private bool _started;
         private bool _startedFall;
 
-        private readonly Random _random = new Random();
+        private readonly Random _random = new();
 
         public ConfettiView()
         {
@@ -176,7 +176,7 @@ namespace Telegram.Controls
 
         private Particle CreateParticle(bool falling)
         {
-            Particle particle = new Particle(this)
+            Particle particle = new(this)
             {
                 colorType = (byte)NextInt(_colors.Length),
                 type = (byte)NextInt(2),

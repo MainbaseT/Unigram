@@ -18,7 +18,7 @@ namespace Telegram.Streams
     public partial class RemoteFileSource : AnimatedImageSource, IAsyncMediaPlayerSource
     {
         private readonly ManualResetEvent _event;
-        private readonly object _stateLock = new object();
+        private readonly object _stateLock = new();
 
         private readonly IClientService _clientService;
         private readonly File _file;

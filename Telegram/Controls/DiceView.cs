@@ -71,11 +71,11 @@ namespace Telegram.Controls
 
         private readonly bool[] _isLoopingEnabled = new bool[_parts];
 
-        private SizeInt32 _frameSize = new SizeInt32 { Width = 256, Height = 256 };
+        private SizeInt32 _frameSize = new() { Width = 256, Height = 256 };
 
         private static readonly AnimationScheduler _scheduler = new();
         private readonly CompositionVSync _vsync;
-        private readonly object _subscribeLock = new object();
+        private readonly object _subscribeLock = new();
         private bool _subscribed;
         private bool _unsubscribe;
 

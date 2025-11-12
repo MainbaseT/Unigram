@@ -64,7 +64,7 @@ namespace Telegram.Services
 
         private readonly ResourceLoader _loader;
 
-        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _languagePack = new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _languagePack = new();
         private string _languageCode;
         private string _languageBase;
         private string _languagePlural;

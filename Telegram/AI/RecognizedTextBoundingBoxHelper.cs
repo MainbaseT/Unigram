@@ -37,7 +37,7 @@ namespace Telegram.AI
             // Apply offsets based on position relative to center
             Vector2 center = (p1 + p2 + p3 + p4) * 0.25f;
 
-            RecognizedTextBoundingBox inflated = new RecognizedTextBoundingBox();
+            RecognizedTextBoundingBox inflated = new();
 
             // For each point, determine its position relative to center and apply appropriate offsets
             Vector2 newP1 = p1;
@@ -169,10 +169,10 @@ namespace Telegram.AI
                 {
                     minArea = area;
 
-                    Vector2 r1 = new Vector2(minX, minY);
-                    Vector2 r2 = new Vector2(maxX, minY);
-                    Vector2 r3 = new Vector2(maxX, maxY);
-                    Vector2 r4 = new Vector2(minX, maxY);
+                    Vector2 r1 = new(minX, minY);
+                    Vector2 r2 = new(maxX, minY);
+                    Vector2 r3 = new(maxX, maxY);
+                    Vector2 r4 = new(minX, maxY);
 
                     bestRect[0] = RotatePoint(r1, angle);
                     bestRect[1] = RotatePoint(r2, angle);

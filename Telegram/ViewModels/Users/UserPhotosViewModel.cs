@@ -17,7 +17,7 @@ namespace Telegram.ViewModels.Users
 {
     public partial class UserPhotosViewModel : GalleryViewModelBase
     {
-        private readonly DisposableMutex _loadMoreLock = new DisposableMutex();
+        private readonly DisposableMutex _loadMoreLock = new();
         private readonly User _user;
 
         public UserPhotosViewModel(IClientService clientService, IStorageService storageService, IEventAggregator aggregator, User user, UserFullInfo userFull)

@@ -298,8 +298,8 @@ namespace Telegram.Services.Calls
             return response?.DataValue ?? Array.Empty<byte>();
         }
 
-        private readonly Semaphore _encryptMutex = new Semaphore(0, 1);
-        private readonly Semaphore _decryptMutex = new Semaphore(0, 1);
+        private readonly Semaphore _encryptMutex = new(0, 1);
+        private readonly Semaphore _decryptMutex = new(0, 1);
 
         public event TypedEventHandler<VoipGroupCall, VoipGroupCallNetworkStateChangedEventArgs> NetworkStateChanged;
         public event TypedEventHandler<VoipGroupCall, VoipGroupCallJoinedStateChangedEventArgs> JoinedStateChanged;

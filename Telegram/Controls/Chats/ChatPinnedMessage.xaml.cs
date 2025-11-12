@@ -310,7 +310,7 @@ namespace Telegram.Controls.Chats
 
         #region Overrides
 
-        private static readonly CornerRadius _defaultRadius = new CornerRadius(2);
+        private static readonly CornerRadius _defaultRadius = new(2);
 
         protected override void HideThumbnail()
         {
@@ -565,7 +565,7 @@ namespace Telegram.Controls.Chats
 
         #endregion
 
-        private readonly Queue<(int, int, int)> _queue = new Queue<(int, int, int)>();
+        private readonly Queue<(int, int, int)> _queue = new();
         private bool _playing;
 
         private int _nextValue;

@@ -21,7 +21,7 @@ namespace Telegram.Collections
         private readonly IClientService _clientService;
         private readonly string _query;
 
-        private readonly List<long> _users = new List<long>();
+        private readonly List<long> _users = new();
 
         private readonly KeyedList<string, object> _local;
         private readonly KeyedList<string, object> _remote;

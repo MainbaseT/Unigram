@@ -27,9 +27,9 @@ namespace Telegram.Common
         private const int QUANTITY_FEW = 0x0008;
         private const int QUANTITY_MANY = 0x0010;
 
-        private static readonly Dictionary<string, CurrencyNumberFormatter> _currencyCache = new Dictionary<string, CurrencyNumberFormatter>();
+        private static readonly Dictionary<string, CurrencyNumberFormatter> _currencyCache = new();
 
-        private static readonly Dictionary<string, PluralRules> _allRules = new Dictionary<string, PluralRules>();
+        private static readonly Dictionary<string, PluralRules> _allRules = new();
         private static readonly ResourceLoader _loader;
 
         private static PluralRules _currentRules;

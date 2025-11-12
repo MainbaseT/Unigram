@@ -51,7 +51,7 @@ namespace Telegram.Common
         private readonly IPasscodeService _passcodeService;
         private readonly IViewService _viewService;
 
-        private readonly Dictionary<string, AppWindow> _instantWindows = new Dictionary<string, AppWindow>();
+        private readonly Dictionary<string, AppWindow> _instantWindows = new();
 
         public TLNavigationService(IClientService clientService, IViewService viewService, WindowContext window, Frame frame, string id)
             : base(window, frame, clientService.SessionId, id)

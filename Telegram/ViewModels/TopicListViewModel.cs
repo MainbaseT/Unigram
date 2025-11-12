@@ -34,7 +34,7 @@ namespace Telegram.ViewModels
         private readonly bool _chatList;
         private readonly bool _forum;
 
-        private readonly Dictionary<long, bool> _deletedChats = new Dictionary<long, bool>();
+        private readonly Dictionary<long, bool> _deletedChats = new();
 
         public ITopicListDelegate Delegate { get; set; }
 

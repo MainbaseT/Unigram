@@ -43,7 +43,7 @@ namespace Telegram.Services
 
     public partial class LifetimeService : BindableBase, ILifetimeService
     {
-        private readonly Dictionary<int, ISessionService> _sessions = new Dictionary<int, ISessionService>();
+        private readonly Dictionary<int, ISessionService> _sessions = new();
 
         public LifetimeService()
         {

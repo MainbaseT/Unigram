@@ -28,9 +28,9 @@ namespace Telegram.ViewModels.Settings
         {
             Scopes = new MvxObservableCollection<SettingsNotificationsScope>
             {
-                new SettingsNotificationsScope(clientService, new NotificationSettingsScopePrivateChats(), Strings.NotificationsPrivateChats, Icons.Person),
-                new SettingsNotificationsScope(clientService, new NotificationSettingsScopeGroupChats(), Strings.NotificationsGroups, Icons.People),
-                new SettingsNotificationsScope(clientService, new NotificationSettingsScopeChannelChats(), Strings.NotificationsChannels, Icons.Megaphone),
+                new(clientService, new NotificationSettingsScopePrivateChats(), Strings.NotificationsPrivateChats, Icons.Person),
+                new(clientService, new NotificationSettingsScopeGroupChats(), Strings.NotificationsGroups, Icons.People),
+                new(clientService, new NotificationSettingsScopeChannelChats(), Strings.NotificationsChannels, Icons.Megaphone),
             };
 
             foreach (var scope in Scopes)

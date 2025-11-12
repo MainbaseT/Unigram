@@ -842,7 +842,7 @@ namespace Telegram.Views
             }
         }
 
-        private readonly Dictionary<long, WeakReference> _prev = new Dictionary<long, WeakReference>();
+        private readonly Dictionary<long, WeakReference> _prev = new();
 
         public void PlayMessage(MessageViewModel message, FrameworkElement target)
         {

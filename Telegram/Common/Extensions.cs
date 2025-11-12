@@ -1377,7 +1377,7 @@ namespace Telegram.Common
             return Equals(o1.GetType(), o2.GetType());
         }
 
-        public static Regex _pattern = new Regex("[\\-0-9]+", RegexOptions.Compiled);
+        public static Regex _pattern = new("[\\-0-9]+", RegexOptions.Compiled);
         public static int ToInt32(this string value)
         {
             if (value == null)

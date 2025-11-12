@@ -22,7 +22,7 @@ namespace Telegram.Common
             Year
         }
 
-        private static readonly Dictionary<string, DateRangeFormat> _formats = new Dictionary<string, DateRangeFormat>
+        private static readonly Dictionary<string, DateRangeFormat> _formats = new()
         {
             { "dd MMM yyyy", DateRangeFormat.Day },
             { "dd MMM", DateRangeFormat.Day },

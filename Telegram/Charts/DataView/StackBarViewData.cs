@@ -16,7 +16,7 @@ namespace Telegram.Charts.DataView
     public partial class StackBarViewData : LineViewData
     {
 
-        public readonly Paint unselectedPaint = new Paint();
+        public readonly Paint unselectedPaint = new();
         public Color blendColor;
 
         public StackBarViewData(ChartData.Line line)
