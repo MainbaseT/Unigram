@@ -215,6 +215,12 @@ namespace Telegram.Controls
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
+        public event TypedEventHandler<VideoPlayerBase, EventArgs> Failed;
+        protected void OnFailed()
+        {
+            Failed?.Invoke(this, EventArgs.Empty);
+        }
+
         public event TypedEventHandler<VideoPlayerBase, EventArgs> TreeUpdated;
         protected void OnTreeUpdated()
         {

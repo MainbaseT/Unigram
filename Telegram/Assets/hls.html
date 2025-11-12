@@ -79,6 +79,14 @@
 
             hls.on(Hls.Events.ERROR, function (event, data) {
                 console.log(data);
+
+                if (data.fatal) {
+                    postPlayerEvent('playerError', {
+                        'type': data.type
+                    });
+
+                    hls.destroy();
+                }
             });
 
             hls.loadSource('master.m3u8');

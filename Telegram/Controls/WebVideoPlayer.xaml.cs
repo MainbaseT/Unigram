@@ -474,6 +474,10 @@ namespace Telegram.Controls
                     OnPositionChanged(_position = eventData.GetNamedNumber("value", 0));
                     OnBufferedChanged(_buffered = eventData.GetNamedNumber("buffered", 0) / Math.Max(_duration, 1));
                 }
+                else if (eventName == "playerError")
+                {
+                    OnFailed();
+                }
             }
         }
 
