@@ -338,11 +338,11 @@ namespace Telegram.Common
             return new StyledText(text, entities, GetParagraphs(text, entities ?? Array.Empty<TextEntity>()));
         }
 
-        struct Break
+        private readonly struct Break
         {
-            public int Offset;
+            public readonly int Offset;
 
-            public int Length;
+            public readonly int Length;
 
             public Break(int offset, int length)
             {

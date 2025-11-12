@@ -70,10 +70,10 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private bool _photoAllowed;
-        private bool _videoAllowed;
-        private bool _audioAllowed;
-        private bool _documentAllowed;
+        private readonly bool _photoAllowed;
+        private readonly bool _videoAllowed;
+        private readonly bool _audioAllowed;
+        private readonly bool _documentAllowed;
 
         public bool IsMediaAllowed
         {
@@ -96,9 +96,9 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private bool _editing;
+        private readonly bool _editing;
 
-        private bool _ttlAllowed;
+        private readonly bool _ttlAllowed;
         public bool IsTtlAvailable => _ttlAllowed && Items.Count == 1;
 
         public bool HasPaidMediaAllowed { get; set; }

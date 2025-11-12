@@ -625,10 +625,10 @@ namespace Telegram.Charts
             }
             float startPercentage = pickerDelegate.pickerStart;
             float endPercentage = pickerDelegate.pickerEnd;
-            updateCharValues(startPercentage, endPercentage, force);
+            UpdateCharValues(startPercentage, endPercentage, force);
         }
 
-        private void updateCharValues(float startPercentage, float endPercentage, bool force)
+        private void UpdateCharValues(float startPercentage, float endPercentage, bool force)
         {
             if (values == null)
             {
@@ -733,7 +733,7 @@ namespace Telegram.Charts
 
             if (force)
             {
-                updateCharValues(start, end, false);
+                UpdateCharValues(start, end, false);
             }
             else
             {
