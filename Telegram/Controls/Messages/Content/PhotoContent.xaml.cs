@@ -409,7 +409,7 @@ namespace Telegram.Controls.Messages.Content
             {
                 return true;
             }
-            else if (content is MessageSponsored { Content: MessagePhoto })
+            else if (content is MessageSponsored { Content: MessagePhoto } && !primary)
             {
                 return true;
             }

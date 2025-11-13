@@ -532,7 +532,7 @@ namespace Telegram.Controls.Messages.Content
             {
                 return true;
             }
-            else if (content is MessageSponsored { Content: MessageVideo })
+            else if (content is MessageSponsored { Content: MessageVideo } && !primary)
             {
                 return true;
             }

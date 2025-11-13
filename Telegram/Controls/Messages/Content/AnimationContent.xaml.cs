@@ -265,7 +265,7 @@ namespace Telegram.Controls.Messages.Content
             {
                 return text.LinkPreview.Type is LinkPreviewTypeAnimation;
             }
-            else if (content is MessageSponsored { Content: MessageAnimation })
+            else if (content is MessageSponsored { Content: MessageAnimation } && !primary)
             {
                 return true;
             }
