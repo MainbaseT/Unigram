@@ -1220,7 +1220,7 @@ namespace Telegram.Views.Host
                 var items = _navigationViewItems;
                 var index = items.IndexOf(session);
 
-                var compare = items[index > 0 ? index - 1 : index + 1];
+                var compare = items[index > 1 ? index - 1 : index + 1];
                 if (compare is ISessionService)
                 {
                     var sessions = _navigationViewItems.OfType<ISessionService>();
