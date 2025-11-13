@@ -100,7 +100,7 @@ namespace Telegram.Views.Supergroups
 
         private bool MemberRestrict_Loaded(ChatType chatType, ChatMemberStatus status, ChatMember member)
         {
-            if (member.Status is ChatMemberStatusCreator || member.Status is ChatMemberStatusAdministrator admin && !admin.CanBeEdited)
+            if (member.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { CanBeEdited: false })
             {
                 return false;
             }
@@ -115,12 +115,12 @@ namespace Telegram.Views.Supergroups
                 return false;
             }
 
-            return status is ChatMemberStatusCreator || status is ChatMemberStatusAdministrator administrator && administrator.Rights.CanRestrictMembers;
+            return status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanRestrictMembers: true };
         }
 
         private bool MemberRemove_Loaded(ChatType chatType, ChatMemberStatus status, ChatMember member)
         {
-            if (member.Status is ChatMemberStatusCreator || member.Status is ChatMemberStatusAdministrator admin && !admin.CanBeEdited)
+            if (member.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { CanBeEdited: false })
             {
                 return false;
             }
@@ -135,7 +135,7 @@ namespace Telegram.Views.Supergroups
                 return member.InviterUserId == ViewModel.ClientService.Options.MyId;
             }
 
-            return status is ChatMemberStatusCreator || status is ChatMemberStatusAdministrator administrator && administrator.Rights.CanRestrictMembers;
+            return status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanRestrictMembers: true };
         }
 
         #endregion

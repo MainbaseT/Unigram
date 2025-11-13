@@ -397,7 +397,7 @@ namespace Telegram.Controls.Chats
             }
             else if (fill is BackgroundFillFreeformGradient freeformGradient)
             {
-                if (Background is ImageBrush brush && brush.ImageSource is WriteableBitmap bitmap)
+                if (Background is ImageBrush { ImageSource: WriteableBitmap bitmap })
                 {
                     ChatBackgroundFreeform.Update(bitmap, freeformGradient, _freeform.Phase);
                     bitmap.Invalidate();
