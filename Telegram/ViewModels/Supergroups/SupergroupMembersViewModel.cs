@@ -133,7 +133,7 @@ namespace Telegram.ViewModels.Supergroups
             var response = await ClientService.SendAsync(new SetChatMemberStatus(chat.Id, member.MemberId, new ChatMemberStatusBanned()));
             if (response is Error)
             {
-                Members.Source.Insert(index, member);
+                Members.Source.Insert(Math.Min(Members.Source.Count, index), member);
             }
         }
 

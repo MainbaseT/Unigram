@@ -224,7 +224,7 @@ namespace Telegram.Views.Premium.Popups
 
                 if (transferable.Count > 0)
                 {
-                    navigation.Insert(1, new GiftGroup(GiftGroupType.Mine, new ReceivedGiftsCollection(_clientService, transferable, receivedGifts.NextOffset)));
+                    navigation.Insert(Math.Min(navigation.Count, 1), new GiftGroup(GiftGroupType.Mine, new ReceivedGiftsCollection(_clientService, transferable, receivedGifts.NextOffset)));
                 }
             }
         }
