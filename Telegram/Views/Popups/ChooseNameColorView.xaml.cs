@@ -186,10 +186,12 @@ namespace Telegram.Views.Popups
                 return;
             }
 
+            // TODO: restore SelectedAccentColor
+
             SelectedCustomEmojiId = customEmoji.CustomEmojiId;
             SelectedGiftColors = null;
 
-            Message1.UpdateMockup(_clientService, SelectedCustomEmojiId, SelectedAccentColor.Id, null);
+            Message1.UpdateMockup(_clientService, SelectedCustomEmojiId, SelectedAccentColor?.Id ?? 0, null);
 
             if (customEmoji.CustomEmojiId != 0)
             {

@@ -329,10 +329,10 @@ namespace Telegram.Services
             var items = _items;
             var transport = _transport;
 
-            if (items == null || item == null /*|| item?.Stream?.File == null*/)
+            if (items == null || item == null || transport == null /*|| item?.Stream?.File == null*/)
             {
-                transport.IsEnabled = false;
-                transport.DisplayUpdater.ClearAll();
+                transport?.IsEnabled = false;
+                transport?.DisplayUpdater.ClearAll();
                 return;
             }
 

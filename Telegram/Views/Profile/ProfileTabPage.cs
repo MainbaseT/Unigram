@@ -127,7 +127,7 @@ namespace Telegram.Views.Profile
             else
             {
                 var properties = await message.ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id)) as MessageProperties;
-                if (properties == null)
+                if (properties == null || ViewModel == null)
                 {
                     return;
                 }

@@ -78,7 +78,7 @@ namespace Telegram.Views.Profile
             if (e.ClickedItem is MessageWithOwner message)
             {
                 var response = await ViewModel.ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
-                if (response is not MessageProperties properties)
+                if (response is not MessageProperties properties || ViewModel == null)
                 {
                     return;
                 }

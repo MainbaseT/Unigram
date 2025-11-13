@@ -536,7 +536,7 @@ namespace Telegram.Controls.Views
             var viewModel = ViewModel;
             var chat = viewModel?.Chat;
 
-            if (viewModel == null)
+            if (viewModel == null || chat == null)
             {
                 return;
             }
