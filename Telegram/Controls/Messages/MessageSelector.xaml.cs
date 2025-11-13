@@ -49,8 +49,6 @@ namespace Telegram.Controls.Messages
         public MessageSelector()
         {
             DefaultStyleKey = typeof(MessageSelector);
-
-            AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
         }
 
         public MessageSelector(MessageViewModel message, UIElement child)
@@ -211,7 +209,19 @@ namespace Telegram.Controls.Messages
 
         protected override void OnPointerPressed(PointerRoutedEventArgs e)
         {
-            if (e.OriginalSource is Grid { Name: "RootGrid" } || e.OriginalSource is TextBlock { Name: "Label" })
+            if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Mouse)
+            {
+                try
+                {
+                    _interactionSource.TryRedirectForManipulation(e.GetCurrentPoint(this));
+                }
+                catch (Exception)
+                {
+                    // Ignoring the failed redirect to prevent app crashing
+                }
+            }
+
+            if (e.OriginalSource is Grid { Name: "RootGrid" } or TextBlock { Name: "Label" })
             {
                 _owner?.OnPointerPressed(this, e);
             }
@@ -239,7 +249,7 @@ namespace Telegram.Controls.Messages
 
         protected override void OnDoubleTapped(DoubleTappedRoutedEventArgs e)
         {
-            if (e.OriginalSource is Grid { Name: "RootGrid" } || e.OriginalSource is TextBlock { Name: "Label" })
+            if (e.OriginalSource is Grid { Name: "RootGrid" } or TextBlock { Name: "Label" })
             {
                 _owner?.OnDoubleTapped(_message, e);
             }
@@ -303,6 +313,7 @@ namespace Telegram.Controls.Messages
                     : InteractionSourceMode.EnabledWithInertia;
 
                 IsChecked = _selected = selected;
+                IsDoubleTapEnabled = !value;
                 Presenter.IsHitTestVisible = !value || IsAlbum;
 
                 CreateIcon();
@@ -570,21 +581,6 @@ namespace Telegram.Controls.Messages
             //var photoOffsetExp = _visual.Compositor.CreateExpressionAnimation("-tracker.Position.X");
             offsetExp.SetReferenceParameter("tracker", _tracker);
             visual.StartAnimation("Translation.X", offsetExp);
-        }
-
-        private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Mouse)
-            {
-                try
-                {
-                    _interactionSource.TryRedirectForManipulation(e.GetCurrentPoint(this));
-                }
-                catch (Exception)
-                {
-                    // Ignoring the failed redirect to prevent app crashing
-                }
-            }
         }
 
         public async void PrepareForItemOverride(MessageViewModel message, bool canReply)

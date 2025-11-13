@@ -680,16 +680,14 @@ namespace Telegram.Controls.Chats
         private bool _operation;
         private SelectionDirection _direction;
 
-        private bool _raised;
         private bool _pressed;
         private Point _position;
 
         internal void OnDoubleTapped(MessageViewModel message, DoubleTappedRoutedEventArgs e)
         {
             _pressed = false;
-            _raised = true;
 
-            if (message != null)
+            if (message != null && !ViewModel.IsSelectionEnabled)
             {
                 e.Handled = true;
                 ViewModel.DoubleTapped(message, WindowContext.IsKeyDown(VirtualKey.Control));
@@ -698,8 +696,7 @@ namespace Telegram.Controls.Chats
 
         internal void OnPointerPressed(MessageSelector item, PointerRoutedEventArgs e)
         {
-            _pressed = !_raised;
-            _raised = false;
+            _pressed = true;
         }
 
         internal void OnPointerEntered(MessageSelector item, PointerRoutedEventArgs e)
