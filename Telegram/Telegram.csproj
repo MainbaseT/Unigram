@@ -2051,6 +2051,7 @@
     <Compile Include="Views\Users\UserEditPage.xaml.cs">
       <DependentUpon>UserEditPage.xaml</DependentUpon>
     </Compile>
+    <Content Include="Assets\Audio\received.mp3" />
     <Content Include="Assets\Audio\sent.mp3" />
     <Content Include="Assets\Audio\voicechat_join.mp3" />
     <Content Include="Assets\Audio\voicechat_leave.mp3" />

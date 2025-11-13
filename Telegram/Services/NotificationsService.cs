@@ -32,7 +32,7 @@ namespace Telegram.Services
     {
         Task ProcessAsync(Dictionary<string, string> data);
 
-        void PlaySound();
+        void PlaySound(bool sent);
 
         #region Chats related
 
@@ -366,14 +366,14 @@ namespace Telegram.Services
             }
         }
 
-        public void PlaySound()
+        public void PlaySound(bool sent)
         {
             if (!_settings.Notifications.InAppSounds)
             {
                 return;
             }
 
-            Task.Run(() => SoundEffects.Play(SoundEffect.Sent));
+            Task.Run(() => SoundEffects.Play(sent ? SoundEffect.Sent : SoundEffect.Received));
         }
 
         public void Handle(UpdateActiveNotifications update)

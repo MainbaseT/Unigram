@@ -94,6 +94,9 @@ namespace Telegram.Common
                 case SoundEffect.Sent:
                     _ = PlayImpl("ms-appx:///Assets/Audio/sent.mp3");
                     break;
+                case SoundEffect.Received:
+                    _ = PlayImpl("ms-appx:///Assets/Audio/received.mp3");
+                    break;
                 case SoundEffect.VoipIncoming:
                     _ = PlayImpl("ms-appx:///Assets/Audio/voip_incoming.mp3", null, EffectType.Voip);
                     break;
@@ -208,6 +211,7 @@ namespace Telegram.Common
     public enum SoundEffect
     {
         Sent,
+        Received,
         VoipIncoming,
         VoipRingback,
         VoipBusy,
