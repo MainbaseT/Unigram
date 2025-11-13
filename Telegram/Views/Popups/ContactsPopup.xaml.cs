@@ -120,6 +120,7 @@ namespace Telegram.Views.Popups
                 flyout.CreateFlyoutItem(ViewModel.CreateSecretChat, user, Strings.StartEncryptedChat, Icons.Timer);
                 flyout.CreateFlyoutItem(ViewModel.VoiceCall, user, Strings.Call, Icons.Call);
                 flyout.CreateFlyoutItem(ViewModel.VideoCall, user, Strings.VideoCall, Icons.Video);
+                flyout.CreateFlyoutItem(ViewModel.Delete, user, Strings.DeleteContact, Icons.Delete, destructive: true);
                 flyout.ShowAt(sender, args);
             }
         }

@@ -187,6 +187,17 @@ namespace Telegram.ViewModels
             }
         }
 
+        public async void Delete(User user)
+        {
+            var confirm = await ShowPopupAsync(Strings.AreYouSureDeleteContact, Strings.AppName, Strings.OK, Strings.Cancel);
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            ClientService.Send(new RemoveContacts([user.Id]));
+        }
+
         #endregion
 
 
