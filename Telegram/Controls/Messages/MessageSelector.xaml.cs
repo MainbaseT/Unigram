@@ -237,10 +237,14 @@ namespace Telegram.Controls.Messages
             base.OnPointerReleased(e);
         }
 
-        protected override void OnPointerCanceled(PointerRoutedEventArgs e)
+        protected override void OnDoubleTapped(DoubleTappedRoutedEventArgs e)
         {
-            _owner?.OnPointerCanceled(this, e);
-            base.OnPointerCanceled(e);
+            if (e.OriginalSource is Grid { Name: "RootGrid" } || e.OriginalSource is TextBlock { Name: "Label" })
+            {
+                _owner?.OnDoubleTapped(_message, e);
+            }
+
+            base.OnDoubleTapped(e);
         }
 
         public void UpdateMessage(MessageViewModel message, ChatHistoryView owner, bool selectionEnabled)
