@@ -59,6 +59,7 @@ namespace winrt::Telegram::Native::implementation
             || Contains(message, L"file is encrypted or is not a database")
             || Contains(message, L"unsupported file format")
             || Contains(message, L"attempt to write a readonly database for database")
+            || Contains(message, L"file is not a database for database")
             || Contains(message, L"Can't open database");
     }
 
@@ -90,6 +91,7 @@ namespace winrt::Telegram::Native::implementation
     {
         return Contains(message, L"zlib deflate init failed")
             || Contains(message, L"zlib inflate init failed")
+            || Contains(message, L"out of memory")
             || Contains(message, L": 1450 :");
     }
 
