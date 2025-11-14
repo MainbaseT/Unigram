@@ -119,7 +119,7 @@ namespace Telegram.Views.Payments
 
         public async void Close()
         {
-            if (XamlRoot?.Content is RootPage root)
+            if (XamlRoot?.Content is WindowControl { Content: RootPage root })
             {
                 root.PresentContent(null);
                 return;

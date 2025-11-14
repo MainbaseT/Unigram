@@ -20,7 +20,6 @@ using Telegram.Views.Popups;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -215,7 +214,7 @@ namespace Telegram.ViewModels.Settings
             await SetThemeAsync(theme);
 
             //NavigationService.Navigate(typeof(SettingsThemePage), theme.Path);
-            if (Window.Current.Content is Views.Host.RootPage root)
+            if (WindowContext.Current.Content is Views.Host.RootPage root)
             {
                 root.ShowEditor(theme);
             }

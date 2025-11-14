@@ -7,7 +7,6 @@
 
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -44,7 +43,7 @@ namespace Telegram.Views
 {
     public partial record WebAppAgeVerificationCompletedEventArgs(bool Passed, double Age);
 
-    public sealed partial class WebAppPage : UserControlEx, IToastHost, IPopupHost
+    public sealed partial class WebAppPage : UserControlEx, IPopupHost
     {
         private readonly IClientService _clientService;
         private readonly IViewService _viewService;
@@ -81,7 +80,6 @@ namespace Telegram.Views
         // TODO: constructor should take a function and URL should be loaded asynchronously
         public WebAppPage(IClientService clientService, INavigationService navigationService, User botUser, string url, long launchId = 0, AttachmentMenuBot menuBot = null, Chat sourceChat = null, InternalLinkType sourceLink = null, string buttonText = null)
         {
-            RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
 
             _clientService = clientService;
@@ -183,7 +181,6 @@ namespace Telegram.Views
 
         public WebAppPage(IClientService clientService, INavigationService navigationService, User botUser, string url, string title, long gameChatId = 0, long gameMessageId = 0)
         {
-            RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
 
             _clientService = clientService;
@@ -212,23 +209,6 @@ namespace Telegram.Views
         }
 
         #region IToastHost
-
-        public void ToastOpened(TeachingTip toast)
-        {
-            Resources.Remove("TeachingTip");
-            Resources.Add("TeachingTip", toast);
-        }
-
-        public void ToastClosed(TeachingTip toast)
-        {
-            if (Resources.TryGetValue("TeachingTip", out object cached))
-            {
-                if (cached == toast)
-                {
-                    Resources.Remove("TeachingTip");
-                }
-            }
-        }
 
         public void PopupOpened()
         {

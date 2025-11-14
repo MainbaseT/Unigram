@@ -5,7 +5,6 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -53,7 +52,7 @@ namespace Telegram.Views.Calls
         }
     }
 
-    public sealed partial class GroupCallPage : WindowEx, IGroupCallDelegate, IPopupHost, IToastHost
+    public sealed partial class GroupCallPage : WindowEx, IGroupCallDelegate, IPopupHost
     {
         private bool _disposed;
 
@@ -146,23 +145,6 @@ namespace Telegram.Views.Calls
             //ElementCompositionPreview.SetIsTranslationEnabled(PinnedInfo, true);
             //ElementCompositionPreview.SetIsTranslationEnabled(PinnedGlyph, true);
             //ViewportAspect.Constraint = new Size(16, 9);
-        }
-
-        public void ToastOpened(TeachingTip toast)
-        {
-            Resources.Remove("TeachingTip");
-            Resources.Add("TeachingTip", toast);
-        }
-
-        public void ToastClosed(TeachingTip toast)
-        {
-            if (Resources.TryGetValue("TeachingTip", out object cached))
-            {
-                if (cached == toast)
-                {
-                    Resources.Remove("TeachingTip");
-                }
-            }
         }
 
         public void PopupOpened()

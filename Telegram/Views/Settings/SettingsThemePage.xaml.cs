@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.ViewModels.Settings;
 using Windows.UI.Xaml;
@@ -31,7 +32,7 @@ namespace Telegram.Views.Settings
 
         private void Done_Click(object sender, RoutedEventArgs e)
         {
-            if (XamlRoot.Content is Host.RootPage root)
+            if (XamlRoot.Content is WindowControl { Content: Host.RootPage root })
             {
                 root.HideEditor();
             }

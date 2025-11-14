@@ -8,7 +8,6 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using Telegram.Navigation;
-using Telegram.Services;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -35,11 +34,10 @@ namespace Telegram.Views.Host
     //    public event EventHandler IsBackButtonVisibleChanged;
     //}
 
-    public sealed partial class TabbedPage : UserControl, IPopupHost, IToastHost
+    public sealed partial class TabbedPage : UserControl, IPopupHost
     {
         public TabbedPage(TabViewItem newTab, bool forWebApps)
         {
-            RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
 
             Window.Current.SetTitleBar(Footer);
@@ -74,23 +72,6 @@ namespace Telegram.Views.Host
 
                 //newTab.IsClosable = false;
                 //newTab.IsBackButtonVisibleChanged += OnIsBackButtonVisibleChanged;
-            }
-        }
-
-        public void ToastOpened(TeachingTip toast)
-        {
-            Resources.Remove("TeachingTip");
-            Resources.Add("TeachingTip", toast);
-        }
-
-        public void ToastClosed(TeachingTip toast)
-        {
-            if (Resources.TryGetValue("TeachingTip", out object cached))
-            {
-                if (cached == toast)
-                {
-                    Resources.Remove("TeachingTip");
-                }
             }
         }
 

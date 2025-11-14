@@ -5,7 +5,6 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-using Microsoft.UI.Xaml.Controls;
 using System;
 using Telegram.Common;
 using Telegram.Controls;
@@ -32,7 +31,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Views.Calls
 {
-    public sealed partial class LiveStreamPage : WindowEx, IToastHost, IPopupHost
+    public sealed partial class LiveStreamPage : WindowEx, IPopupHost
     {
         private readonly VoipGroupCall _call;
 
@@ -77,23 +76,6 @@ namespace Telegram.Views.Calls
 
             OnAvailableStreamsChanged();
             OnPropertyChanged();
-        }
-
-        public void ToastOpened(TeachingTip toast)
-        {
-            Resources.Remove("TeachingTip");
-            Resources.Add("TeachingTip", toast);
-        }
-
-        public void ToastClosed(TeachingTip toast)
-        {
-            if (Resources.TryGetValue("TeachingTip", out object cached))
-            {
-                if (cached == toast)
-                {
-                    Resources.Remove("TeachingTip");
-                }
-            }
         }
 
         public void PopupOpened()

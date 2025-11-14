@@ -42,7 +42,7 @@ namespace Telegram.Views.Calls
         Remote,
     }
 
-    public sealed partial class VoipPage : WindowEx, IToastHost, IPopupHost
+    public sealed partial class VoipPage : WindowEx, IPopupHost
     {
         private static readonly int[] _pendingGradient = new[] { 0x568FD6, 0x626ED5, 0xA667D5, 0x7664DA };
         private static readonly int[] _readyGradient = new[] { 0xACBD65, 0x459F8D, 0x53A4D1, 0x3E917A };
@@ -138,23 +138,6 @@ namespace Telegram.Views.Calls
 
             Window.Current.SetTitleBar(TitleBar);
             SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += OnCloseRequested;
-        }
-
-        public void ToastOpened(TeachingTip toast)
-        {
-            Resources.Remove("TeachingTip");
-            Resources.Add("TeachingTip", toast);
-        }
-
-        public void ToastClosed(TeachingTip toast)
-        {
-            if (Resources.TryGetValue("TeachingTip", out object cached))
-            {
-                if (cached == toast)
-                {
-                    Resources.Remove("TeachingTip");
-                }
-            }
         }
 
         public void PopupOpened()
@@ -1389,7 +1372,7 @@ namespace Telegram.Views.Calls
         {
             try
             {
-                if (XamlRoot.Content is RootPage root)
+                if (XamlRoot.Content is WindowControl { Content: RootPage root })
                 {
                     root.PresentContent(null);
                     return;

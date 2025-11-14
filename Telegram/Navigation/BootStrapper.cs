@@ -216,7 +216,7 @@ namespace Telegram.Navigation
             Logger.Info();
 
             // sometimes activate requires a frame to be built
-            if (Window.Current.Content == null /*&& e is not ShareTargetActivatedEventArgs*/)
+            if (WindowContext.Current.Content == null /*&& e is not ShareTargetActivatedEventArgs*/)
             {
                 Logger.Info("Calling", member: nameof(InternalActivated));
                 InitializeFrame(e);
@@ -260,7 +260,7 @@ namespace Telegram.Navigation
 
             PrelaunchActivated = e.PrelaunchActivated;
 
-            if (e.PreviousExecutionState != ApplicationExecutionState.Running || Window.Current.Content == null)
+            if (e.PreviousExecutionState != ApplicationExecutionState.Running || WindowContext.Current.Content == null)
             {
                 try
                 {

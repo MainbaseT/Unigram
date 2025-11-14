@@ -167,7 +167,7 @@ namespace Telegram
 
                 if (sessionId != TypeResolver.Current.Lifetime.ActiveItem.Id)
                 {
-                    var root = Window.Current.Content as RootPage;
+                    var root = WindowContext.Current.Content as RootPage;
                     root?.Switch(lifetime.ActiveItem);
                 }
             }

@@ -5,7 +5,6 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-using Microsoft.UI.Xaml.Controls;
 using System;
 using Telegram.Common;
 using Telegram.Controls;
@@ -27,7 +26,7 @@ namespace Telegram.Views.Host
         }
     }
 
-    public sealed partial class StandalonePage : Page, IPopupHost, IToastHost
+    public sealed partial class StandalonePage : Page, IPopupHost
     {
         private readonly IClientService _clientService;
         private readonly INavigationService _navigationService;
@@ -35,7 +34,6 @@ namespace Telegram.Views.Host
 
         public StandalonePage(INavigationService navigationService)
         {
-            RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
 
             _clientService = TypeResolver.Current.Resolve<IClientService>(navigationService.SessionId);
@@ -62,26 +60,6 @@ namespace Telegram.Views.Host
         }
 
         public INavigationService NavigationService => _navigationService;
-
-        public void ToastOpened(TeachingTip toast)
-        {
-            if (_navigationService?.Frame != null)
-            {
-                _navigationService.Frame.Resources.Remove("TeachingTip");
-                _navigationService.Frame.Resources.Add("TeachingTip", toast);
-            }
-        }
-
-        public void ToastClosed(TeachingTip toast)
-        {
-            if (_navigationService?.Frame != null && _navigationService.Frame.Resources.TryGetValue("TeachingTip", out object cached))
-            {
-                if (cached == toast)
-                {
-                    _navigationService.Frame.Resources.Remove("TeachingTip");
-                }
-            }
-        }
 
         public void PopupOpened()
         {

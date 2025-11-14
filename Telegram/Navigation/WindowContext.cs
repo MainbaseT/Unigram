@@ -40,6 +40,42 @@ using WinRT;
 
 namespace Telegram.Navigation
 {
+    public partial class WindowControl : UserControl, IPopupHost, IToastHost
+    {
+        public void PopupOpened()
+        {
+            if (Content is IPopupHost content)
+            {
+                content.PopupOpened();
+            }
+        }
+
+        public void PopupClosed()
+        {
+            if (Content is IPopupHost content)
+            {
+                content.PopupClosed();
+            }
+        }
+
+        public void ToastOpened(TeachingTip toast)
+        {
+            Resources.Remove("TeachingTip");
+            Resources.Add("TeachingTip", toast);
+        }
+
+        public void ToastClosed(TeachingTip toast)
+        {
+            if (Resources.TryGetValue("TeachingTip", out object cached))
+            {
+                if (cached == toast)
+                {
+                    Resources.Remove("TeachingTip");
+                }
+            }
+        }
+    }
+
     public partial class WindowContext
     {
         private readonly ILifetimeService _lifetime;
@@ -93,6 +129,19 @@ namespace Telegram.Navigation
             _lifetime = TypeResolver.Current.Lifetime;
             _inputListener = new InputListener(window);
 
+            _content = new WindowControl
+            {
+                RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme(),
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                VerticalContentAlignment = VerticalAlignment.Stretch
+            };
+
+            _content.Loading += OnLoading;
+            _content.Loaded += OnLoaded;
+
+            BackdropMaterial.SetApplyToRootOrPageBackground(_content, true);
+
+            window.Content = _content;
             window.Activated += OnActivated;
             window.VisibilityChanged += OnVisibilityChanged;
             window.SizeChanged += OnSizeChanged;
@@ -187,6 +236,8 @@ namespace Telegram.Navigation
             NavigationServices.ForEach(x => x.Suspend());
             NavigationServices.Clear();
 
+            _content = null;
+
             _window.Activated -= OnActivated;
             _window.VisibilityChanged -= OnVisibilityChanged;
             _window.SizeChanged -= OnSizeChanged;
@@ -221,9 +272,10 @@ namespace Telegram.Navigation
 
         public bool IsCallInProgress { get; private set; }
 
+        private WindowControl _content;
         public UIElement Content
         {
-            get => _locked != null ? _lockedContent : _window.Content;
+            get => _locked != null ? _lockedContent : _content.Content;
             set
             {
                 if (_locked != null)
@@ -232,18 +284,7 @@ namespace Telegram.Navigation
                 }
                 else
                 {
-                    _window.Content = value;
-                }
-
-                if (value is Control control)
-                {
-                    if (_locked == null)
-                    {
-                        BackdropMaterial.SetApplyToRootOrPageBackground(control, true);
-                    }
-
-                    control.Loading += OnLoading;
-                    control.Loaded += OnLoaded;
+                    _content.Content = value;
                 }
 
                 IsCallInProgress = value is VoipPage or GroupCallPage or LiveStreamPage;
@@ -256,11 +297,6 @@ namespace Telegram.Navigation
 
             lock (_allLock)
             {
-                if (_xamlRoot != null)
-                {
-                    _mapping.Remove(_xamlRoot);
-                }
-
                 _xamlRoot = sender.XamlRoot;
                 _mapping[sender.XamlRoot] = this;
             }
@@ -276,25 +312,15 @@ namespace Telegram.Navigation
             ViewService.OnWindowLoaded();
         }
 
-        public ElementTheme ActualTheme => _window.Content is FrameworkElement element
-            ? element.ActualTheme
-            : SettingsService.Current.Appearance.GetCalculatedElementTheme();
+        public ElementTheme ActualTheme => _content.ActualTheme;
 
         public ElementTheme RequestedTheme
         {
-            get => _window.Content is FrameworkElement element
-                ? element.RequestedTheme
-                : ElementTheme.Default;
-            set
-            {
-                if (_window.Content is FrameworkElement element)
-                {
-                    element.RequestedTheme = value;
-                }
-            }
+            get => _content.RequestedTheme;
+            set => _content.RequestedTheme = value;
         }
 
-        public double RasterizationScale => _window.Content?.XamlRoot?.RasterizationScale ?? 1;
+        public double RasterizationScale => _content.XamlRoot?.RasterizationScale ?? 1;
 
         public CoreWindowActivationMode ActivationMode => _window.CoreWindow.ActivationMode;
 
@@ -402,15 +428,21 @@ namespace Telegram.Navigation
 
         public static INavigationService GetNavigationService(Window window)
         {
-            if (window.Content is RootPage rootPage && rootPage.NavigationService != null)
+            var content = window.Content;
+            if (content is ContentControl contentControl)
+            {
+                content = contentControl.Content as UIElement;
+            }
+
+            if (content is RootPage rootPage && rootPage.NavigationService != null)
             {
                 return rootPage.NavigationService;
             }
-            else if (window.Content is StandalonePage standalonePage && standalonePage.NavigationService != null)
+            else if (content is StandalonePage standalonePage && standalonePage.NavigationService != null)
             {
                 return standalonePage.NavigationService;
             }
-            else if (window.Content is Page { DataContext: ViewModelBase viewModel })
+            else if (content is Page { DataContext: ViewModelBase viewModel })
             {
                 return viewModel.NavigationService;
             }
@@ -459,7 +491,7 @@ namespace Telegram.Navigation
                 return;
             }
 
-            if (_window.Content is IPopupHost popupHost)
+            if (_content.Content is IPopupHost popupHost)
             {
                 popupHost.PopupOpened();
             }
@@ -468,9 +500,9 @@ namespace Telegram.Navigation
 
             // TODO: Transition from splash screen to passcode
             _locked = new PasscodePage(this, biometrics && IsInMainView);
-            _lockedContent = _window.Content;
+            _lockedContent = _content.Content;
 
-            _window.Content = _locked;
+            _content.Content = _locked;
         }
 
         public void Unlock()
@@ -482,19 +514,18 @@ namespace Telegram.Navigation
 
             Logger.Info("Hiding passcode lock");
 
-            _window.Content = _lockedContent;
+            _content.Content = _lockedContent;
 
             _locked = null;
             _lockedContent = null;
 
-            if (_window.Content is IPopupHost popupHost)
+            if (_content.Content is IPopupHost popupHost)
             {
                 popupHost.PopupClosed();
             }
 
-            if (_window.Content is Control control)
+            if (_content.Content is Control control)
             {
-                BackdropMaterial.SetApplyToRootOrPageBackground(control, true);
                 control.Focus(FocusState.Programmatic);
             }
         }

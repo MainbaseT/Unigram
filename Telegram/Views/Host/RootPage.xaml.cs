@@ -52,7 +52,7 @@ namespace Telegram.Views.Host
         void PopupClosed();
     }
 
-    public sealed partial class RootPage : Page, IPopupHost, IToastHost
+    public sealed partial class RootPage : Page, IPopupHost
     {
         private readonly ILifetimeService _lifetime;
         private readonly WindowContext _context;
@@ -66,7 +66,6 @@ namespace Telegram.Views.Host
 
         public RootPage(WindowContext context, NavigationService service)
         {
-            RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme();
             InitializeComponent();
 
             _lifetime = TypeResolver.Current.Lifetime;
@@ -153,26 +152,6 @@ namespace Telegram.Views.Host
             if (_navigationService.Frame.Content is IRootContentPage content)
             {
                 content.PopupClosed();
-            }
-        }
-
-        public void ToastOpened(TeachingTip toast)
-        {
-            if (_navigationService?.Frame != null)
-            {
-                _navigationService.Frame.Resources.Remove("TeachingTip");
-                _navigationService.Frame.Resources.Add("TeachingTip", toast);
-            }
-        }
-
-        public void ToastClosed(TeachingTip toast)
-        {
-            if (_navigationService?.Frame != null && _navigationService.Frame.Resources.TryGetValue("TeachingTip", out object cached))
-            {
-                if (cached == toast)
-                {
-                    _navigationService.Frame.Resources.Remove("TeachingTip");
-                }
             }
         }
 
@@ -1244,16 +1223,13 @@ namespace Telegram.Views.Host
         }
     }
 
-    public interface IRootContentPage
+    public interface IRootContentPage : IPopupHost
     {
         RootPage Root { get; set; }
 
         void NavigationView_ItemClick(RootDestination destination);
 
         void Dispose();
-
-        void PopupOpened();
-        void PopupClosed();
     }
 
     public enum RootDestination

@@ -6,6 +6,7 @@
 //
 
 using Telegram.Controls;
+using Telegram.Navigation;
 using Telegram.ViewModels;
 using Telegram.Views.Host;
 using Windows.UI.Xaml;
@@ -45,7 +46,7 @@ namespace Telegram.Views
         {
             Hide();
 
-            if (XamlRoot.Content is RootPage root)
+            if (XamlRoot.Content is WindowControl { Content: RootPage root })
             {
                 root.Create();
             }

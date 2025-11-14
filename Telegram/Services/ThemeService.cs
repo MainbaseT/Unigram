@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services.Settings;
 using Telegram.Td;
@@ -245,7 +246,7 @@ namespace Telegram.Services
 
             SetTheme(preparing, true);
 
-            if (navigation.XamlRoot.Content is Views.Host.RootPage root)
+            if (navigation.XamlRoot.Content is WindowControl { Content: Views.Host.RootPage root })
             {
                 root.ShowEditor(preparing);
             }

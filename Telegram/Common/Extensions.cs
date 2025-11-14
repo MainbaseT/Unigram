@@ -1353,7 +1353,7 @@ namespace Telegram.Common
 
         public static Point TransformToPointerPosition(this UIElement element)
         {
-            var transform = element.TransformToPoint(Window.Current.Content);
+            var transform = element.TransformToPoint(null);
 
             var bounds = Window.Current.Bounds;
             var point = Window.Current.CoreWindow.PointerPosition;
