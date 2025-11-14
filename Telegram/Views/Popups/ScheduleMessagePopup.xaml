@@ -11,15 +11,22 @@
                        IsDismissButtonVisible="True">
 
     <StackPanel>
+        <TextBlock Text="{CustomResource ScheduleMessageDate}" />
         <CalendarDatePicker x:Name="Date"
-                            Header="{CustomResource ScheduleMessageDate}"
                             DateChanged="Date_DateChanged"
-                            Margin="0,0,0,12"
+                            Margin="0,8,0,12"
                             HorizontalAlignment="Stretch" />
+        <TextBlock Text="{CustomResource ScheduleMessageTime}" />
         <TimePicker x:Name="Time"
-                    Header="{CustomResource ScheduleMessageTime}"
                     TimeChanged="Time_TimeChanged"
                     BorderBrush="{ThemeResource ButtonBorderBrush}"
+                    Margin="0,8,0,12"
                     HorizontalAlignment="Stretch" />
+        <TextBlock Text="{CustomResource MessageScheduledRepeatOption}" />
+        <ComboBox ItemsSource="{x:Bind RepeatOptions}"
+                  SelectedIndex="{x:Bind Repeat, Mode=TwoWay}"
+                  DisplayMemberPath="Text"
+                  HorizontalAlignment="Stretch"
+                  Margin="0,8,0,0" />
     </StackPanel>
 </controls:ContentPopup>

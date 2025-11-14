@@ -13033,4 +13033,22 @@
     <string name="SponsoredMessageInfo">What are sponsored\nmessages?</string>
     <string name="SponsoredMessageAdWhatIsThis">what\'s this?</string>
 
+    <string name="MessageScheduledRepeatYearly">yearly</string>
+    <string name="MessageScheduledRepeatMonthly">monthly</string>
+    <string name="MessageScheduledRepeatMonthlyMany_one">{0}-monthly</string>
+    <string name="MessageScheduledRepeatMonthlyMany_other">{0}-monthly</string>
+    <string name="MessageScheduledRepeatWeekly">weekly</string>
+    <string name="MessageScheduledRepeatBiweekly">biweekly</string>
+    <string name="MessageScheduledRepeatDaily">daily</string>
+    <string name="MessageScheduledRepeatOption">Repeat</string>
+    <string name="MessageScheduledRepeatOptionNever">Never</string>
+    <string name="MessageScheduledRepeatOptionDaily">Daily</string>
+    <string name="MessageScheduledRepeatOptionWeekly">Weekly</string>
+    <string name="MessageScheduledRepeatOptionBiweekly">Biweekly</string>
+    <string name="MessageScheduledRepeatOptionMonthly">Monthly</string>
+    <string name="MessageScheduledRepeatOption3Monthly">Every 3 months</string>
+    <string name="MessageScheduledRepeatOption6Monthly">Every 6 months</string>
+    <string name="MessageScheduledRepeatOptionYearly">Yearly</string>
+    <string name="MessageScheduledRepeatPremium">Subscribe to **Telegram Premium** to schedule repeating messages.</string>
+
 </resources>

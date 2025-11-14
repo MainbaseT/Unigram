@@ -6,6 +6,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Telegram.Common;
 using Telegram.Controls;
@@ -21,12 +22,17 @@ namespace Telegram.Views.Popups
         private bool _reminder;
 
         public ScheduleMessagePopup(User user, bool reminder)
+            : this(user, reminder, DateTime.Now.AddMinutes(10), 0)
+        {
+
+        }
+
+        public ScheduleMessagePopup(User user, bool reminder, DateTime date, int repeat)
         {
             InitializeComponent();
 
             _reminder = reminder;
 
-            var date = DateTime.Now.AddMinutes(10);
             Date.Date = date.Date;
             Time.Time = date.TimeOfDay;
 
@@ -38,6 +44,21 @@ namespace Telegram.Views.Popups
 
             Date.MinDate = DateTime.Today;
             Date.MaxDate = DateTime.Today.AddYears(1);
+
+            int? period = null;
+
+            var max = 2147483647;
+            foreach (var days in _repeatIndexer)
+            {
+                int abs = Math.Abs(repeat - days);
+                if (abs < max)
+                {
+                    max = abs;
+                    period = days;
+                }
+            }
+
+            _repeat = period ?? _repeatIndexer[2];
 
             Title = reminder ? Strings.SetReminder : Strings.ScheduleMessage;
             PrimaryButtonText = Strings.OK;
@@ -86,7 +107,7 @@ namespace Telegram.Views.Popups
             }
             else
             {
-                SchedulingState = new MessageSchedulingStateSendAtDate(GetDateTime(true).ToTimestamp(), 0);
+                SchedulingState = new MessageSchedulingStateSendAtDate(GetDateTime(true).ToTimestamp(), _repeat);
             }
         }
 
@@ -121,5 +142,42 @@ namespace Telegram.Views.Popups
                 PrimaryButtonText = date.ToString(_reminder ? Strings.RemindDayYearAt : Strings.SendDayYearAt);
             }
         }
+
+        private int _repeat;
+        public int Repeat
+        {
+            get => Array.IndexOf(_repeatIndexer, _repeat);
+            set
+            {
+                if (value >= 0 && value < _repeatIndexer.Length && _repeat != _repeatIndexer[value])
+                {
+                    _repeat = _repeatIndexer[value];
+                }
+            }
+        }
+
+        private readonly int[] _repeatIndexer = new[]
+        {
+            0,
+            86400,
+            7 * 86400,
+            14 * 86400,
+            30 * 86400,
+            91 * 86400,
+            182 * 86400,
+            365 * 86400
+        };
+
+        public List<SettingsOptionItem<int>> RepeatOptions { get; } = new()
+        {
+            new SettingsOptionItem<int>(0, Strings.MessageScheduledRepeatOptionNever),
+            new SettingsOptionItem<int>(86400, Strings.MessageScheduledRepeatOptionDaily),
+            new SettingsOptionItem<int>(7 * 86400, Strings.MessageScheduledRepeatOptionWeekly),
+            new SettingsOptionItem<int>(14 * 86400, Strings.MessageScheduledRepeatOptionBiweekly),
+            new SettingsOptionItem<int>(30 * 86400, Strings.MessageScheduledRepeatOptionMonthly),
+            new SettingsOptionItem<int>(91 * 86400, Strings.MessageScheduledRepeatOption3Monthly),
+            new SettingsOptionItem<int>(182 * 86400, Strings.MessageScheduledRepeatOption6Monthly),
+            new SettingsOptionItem<int>(365 * 86400, Strings.MessageScheduledRepeatOptionYearly),
+        };
     }
 }

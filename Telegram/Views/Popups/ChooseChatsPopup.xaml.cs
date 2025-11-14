@@ -1262,15 +1262,7 @@ namespace Telegram.Views.Popups
             var confirm = await popup.ShowAsync(XamlRoot);
             if (confirm == ContentDialogResult.Primary)
             {
-                if (popup.IsUntilOnline)
-                {
-                    ViewModel.SendSchedulingState = new MessageSchedulingStateSendWhenOnline();
-                }
-                else
-                {
-                    ViewModel.SendSchedulingState = new MessageSchedulingStateSendAtDate(popup.Value.ToTimestamp(), 0);
-                }
-
+                ViewModel.SendSchedulingState = popup.SchedulingState;
                 Hide(ContentDialogResult.Primary);
             }
         }

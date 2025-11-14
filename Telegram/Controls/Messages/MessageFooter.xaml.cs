@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Telegram.Common;
 using Telegram.Composition;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
@@ -279,7 +280,26 @@ namespace Telegram.Controls.Messages
         {
             if (message.SchedulingState is MessageSchedulingStateSendAtDate sendAtDate)
             {
-                _dateLabel = Formatter.Time(sendAtDate.SendDate);
+                if (sendAtDate.RepeatPeriod != 0)
+                {
+                    var repeat = sendAtDate.RepeatPeriod switch
+                    {
+                        86400 => Strings.MessageScheduledRepeatDaily,
+                        7 * 86400 => Strings.MessageScheduledRepeatWeekly,
+                        14 * 86400 => Strings.MessageScheduledRepeatBiweekly,
+                        30 * 86400 => Strings.MessageScheduledRepeatMonthly,
+                        91 * 86400 => Locale.Declension(Strings.R.MessageScheduledRepeatMonthlyMany, 3),
+                        182 * 86400 => Locale.Declension(Strings.R.MessageScheduledRepeatMonthlyMany, 6),
+                        365 * 86400 => Strings.MessageScheduledRepeatYearly,
+                        _ => string.Empty
+                    };
+
+                    _dateLabel = string.Format(Strings.formatDateAtTime, repeat, Formatter.Time(sendAtDate.SendDate));
+                }
+                else
+                {
+                    _dateLabel = Formatter.Time(sendAtDate.SendDate);
+                }
             }
             else if (message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed sendWhenVideoProcessed)
             {

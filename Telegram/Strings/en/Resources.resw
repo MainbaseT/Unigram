@@ -8883,6 +8883,57 @@ Minimum length is 5 characters.</value>
   <data name="MessageScheduledOn" xml:space="preserve">
     <value>Scheduled for {0}</value>
   </data>
+  <data name="MessageScheduledRepeatBiweekly" xml:space="preserve">
+    <value>biweekly</value>
+  </data>
+  <data name="MessageScheduledRepeatDaily" xml:space="preserve">
+    <value>daily</value>
+  </data>
+  <data name="MessageScheduledRepeatMonthly" xml:space="preserve">
+    <value>monthly</value>
+  </data>
+  <data name="MessageScheduledRepeatMonthlyMany_one" xml:space="preserve">
+    <value>{0}-monthly</value>
+  </data>
+  <data name="MessageScheduledRepeatMonthlyMany_other" xml:space="preserve">
+    <value>{0}-monthly</value>
+  </data>
+  <data name="MessageScheduledRepeatOption" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="MessageScheduledRepeatOption3Monthly" xml:space="preserve">
+    <value>Every 3 months</value>
+  </data>
+  <data name="MessageScheduledRepeatOption6Monthly" xml:space="preserve">
+    <value>Every 6 months</value>
+  </data>
+  <data name="MessageScheduledRepeatOptionBiweekly" xml:space="preserve">
+    <value>Biweekly</value>
+  </data>
+  <data name="MessageScheduledRepeatOptionDaily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="MessageScheduledRepeatOptionMonthly" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="MessageScheduledRepeatOptionNever" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="MessageScheduledRepeatOptionWeekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="MessageScheduledRepeatOptionYearly" xml:space="preserve">
+    <value>Yearly</value>
+  </data>
+  <data name="MessageScheduledRepeatPremium" xml:space="preserve">
+    <value>Subscribe to **Telegram Premium** to schedule repeating messages.</value>
+  </data>
+  <data name="MessageScheduledRepeatWeekly" xml:space="preserve">
+    <value>weekly</value>
+  </data>
+  <data name="MessageScheduledRepeatYearly" xml:space="preserve">
+    <value>yearly</value>
+  </data>
   <data name="MessageScheduledUntilOnline" xml:space="preserve">
     <value>Scheduled until online</value>
   </data>

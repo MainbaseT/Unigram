@@ -208,6 +208,7 @@ namespace Telegram
             public const string MessageLockedStarsConfirmMessagePay = "MessageLockedStarsConfirmMessagePay";
             public const string MessagePlayed = "MessagePlayed";
             public const string messages = "messages";
+            public const string MessageScheduledRepeatMonthlyMany = "MessageScheduledRepeatMonthlyMany";
             public const string MessageSeen = "MessageSeen";
             public const string Meters = "Meters";
             public const string Minutes = "Minutes";
@@ -13132,6 +13133,81 @@ namespace Telegram
         /// Localized resource similar to "Scheduled for {0}"
         /// </summary>
         public static string MessageScheduledOn => Resource.GetString("MessageScheduledOn");
+        
+        /// <summary>
+        /// Localized resource similar to "biweekly"
+        /// </summary>
+        public static string MessageScheduledRepeatBiweekly => Resource.GetString("MessageScheduledRepeatBiweekly");
+        
+        /// <summary>
+        /// Localized resource similar to "daily"
+        /// </summary>
+        public static string MessageScheduledRepeatDaily => Resource.GetString("MessageScheduledRepeatDaily");
+        
+        /// <summary>
+        /// Localized resource similar to "monthly"
+        /// </summary>
+        public static string MessageScheduledRepeatMonthly => Resource.GetString("MessageScheduledRepeatMonthly");
+        
+        /// <summary>
+        /// Localized resource similar to "Repeat"
+        /// </summary>
+        public static string MessageScheduledRepeatOption => Resource.GetString("MessageScheduledRepeatOption");
+        
+        /// <summary>
+        /// Localized resource similar to "Every 3 months"
+        /// </summary>
+        public static string MessageScheduledRepeatOption3Monthly => Resource.GetString("MessageScheduledRepeatOption3Monthly");
+        
+        /// <summary>
+        /// Localized resource similar to "Every 6 months"
+        /// </summary>
+        public static string MessageScheduledRepeatOption6Monthly => Resource.GetString("MessageScheduledRepeatOption6Monthly");
+        
+        /// <summary>
+        /// Localized resource similar to "Biweekly"
+        /// </summary>
+        public static string MessageScheduledRepeatOptionBiweekly => Resource.GetString("MessageScheduledRepeatOptionBiweekly");
+        
+        /// <summary>
+        /// Localized resource similar to "Daily"
+        /// </summary>
+        public static string MessageScheduledRepeatOptionDaily => Resource.GetString("MessageScheduledRepeatOptionDaily");
+        
+        /// <summary>
+        /// Localized resource similar to "Monthly"
+        /// </summary>
+        public static string MessageScheduledRepeatOptionMonthly => Resource.GetString("MessageScheduledRepeatOptionMonthly");
+        
+        /// <summary>
+        /// Localized resource similar to "Never"
+        /// </summary>
+        public static string MessageScheduledRepeatOptionNever => Resource.GetString("MessageScheduledRepeatOptionNever");
+        
+        /// <summary>
+        /// Localized resource similar to "Weekly"
+        /// </summary>
+        public static string MessageScheduledRepeatOptionWeekly => Resource.GetString("MessageScheduledRepeatOptionWeekly");
+        
+        /// <summary>
+        /// Localized resource similar to "Yearly"
+        /// </summary>
+        public static string MessageScheduledRepeatOptionYearly => Resource.GetString("MessageScheduledRepeatOptionYearly");
+        
+        /// <summary>
+        /// Localized resource similar to "Subscribe to **Telegram Premium** to schedule repeating messages."
+        /// </summary>
+        public static string MessageScheduledRepeatPremium => Resource.GetString("MessageScheduledRepeatPremium");
+        
+        /// <summary>
+        /// Localized resource similar to "weekly"
+        /// </summary>
+        public static string MessageScheduledRepeatWeekly => Resource.GetString("MessageScheduledRepeatWeekly");
+        
+        /// <summary>
+        /// Localized resource similar to "yearly"
+        /// </summary>
+        public static string MessageScheduledRepeatYearly => Resource.GetString("MessageScheduledRepeatYearly");
         
         /// <summary>
         /// Localized resource similar to "Scheduled until online"
