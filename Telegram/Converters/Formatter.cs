@@ -64,6 +64,16 @@ namespace Telegram.Converters
             return Date(date, Strings.chatDate);
         }
 
+        public static string PremiumDuration(int days)
+        {
+            if (days >= 30)
+            {
+                return Locale.Declension(Strings.R.Gift2Months, days / 30);
+            }
+
+            return Locale.Declension(Strings.R.Days, days);
+        }
+
         public static string Distance(float distance, bool away = true)
         {
             var useImperialSystemType = false;

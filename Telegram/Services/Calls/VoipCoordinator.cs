@@ -403,7 +403,7 @@ namespace Telegram.Services
                 if (changed)
                 {
                     var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
-                    aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.Title, groupCall.InviteLink, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsVideoChat, groupCall.IsRtmpStream, true, false, groupCall.IsOwned, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.CanSendMessages, groupCall.CanToggleCanSendMessages, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
+                    aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.Title, groupCall.InviteLink, groupCall.PaidMessageStarCount, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsVideoChat, groupCall.IsLiveStory, groupCall.IsRtmpStream, true, false, groupCall.IsOwned, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.MessageSenderId, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.CanSendMessages, groupCall.CanToggleCanSendMessages, groupCall.CanDeleteMessages, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
                 }
             });
         }
@@ -539,13 +539,13 @@ namespace Telegram.Services
             }
         }
 
-        public void Handle(IClientService clientService, UpdateGroupCallNewMessage update)
+        public void Handle(IClientService clientService, UpdateNewGroupCallMessage update)
         {
             lock (_activeLock)
             {
                 if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCallId && groupCall.ClientService == clientService)
                 {
-                    groupCall.Update(update.SenderId, update.Text);
+                    groupCall.Update(update.Message);
                 }
             }
         }

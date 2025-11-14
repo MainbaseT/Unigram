@@ -57,7 +57,7 @@ namespace Telegram.Services.Calls
 
         private readonly MediaDeviceTracker _devices = new();
 
-        private readonly List<VoipGroupCallMessage> _messages = new();
+        private readonly List<GroupCallMessage> _messages = new();
         private readonly object _messagesLock = new();
 
         private Timer _messagesTimer;
@@ -80,18 +80,21 @@ namespace Telegram.Services.Calls
             CanToggleMuteNewParticipants = groupCall.CanToggleMuteNewParticipants;
             CanSendMessages = groupCall.CanSendMessages;
             CanToggleCanSendMessages = groupCall.CanToggleCanSendMessages;
+            CanDeleteMessages = groupCall.CanDeleteMessages;
             MuteNewParticipants = groupCall.MuteNewParticipants;
             CanEnableVideo2 = groupCall.CanEnableVideo;
             IsMyVideoPaused = groupCall.IsMyVideoPaused;
             IsMyVideoEnabled = groupCall.IsMyVideoEnabled;
             RecentSpeakers = groupCall.RecentSpeakers;
             LoadedAllParticipants = groupCall.LoadedAllParticipants;
+            MessageSenderId = groupCall.MessageSenderId;
             HasHiddenListeners = groupCall.HasHiddenListeners;
             ParticipantCount = groupCall.ParticipantCount;
             CanBeManaged = groupCall.CanBeManaged;
             NeedRejoin = groupCall.NeedRejoin;
             IsJoined = groupCall.IsJoined;
             IsRtmpStream = groupCall.IsRtmpStream;
+            IsLiveStory = groupCall.IsLiveStory;
             IsActive = groupCall.IsActive;
             EnabledStartNotification = groupCall.EnabledStartNotification;
             ScheduledStartDate = groupCall.ScheduledStartDate;
@@ -99,6 +102,7 @@ namespace Telegram.Services.Calls
             IsOwned = groupCall.IsOwned;
             IsVideoChat = groupCall.IsVideoChat;
             InviteLink = groupCall.InviteLink;
+            PaidMessageStarCount = groupCall.PaidMessageStarCount;
             Id = groupCall.Id;
 
             _chat = chat;
@@ -261,7 +265,7 @@ namespace Telegram.Services.Calls
 
         public VoipGroupCallVerificationStateChangedEventArgs VerificationState { get; private set; }
 
-        public IReadOnlyList<VoipGroupCallMessage> Messages
+        public IReadOnlyList<GroupCallMessage> Messages
         {
             get
             {
@@ -662,8 +666,8 @@ namespace Telegram.Services.Calls
         {
             if (IsRtmpStream)
             {
-                var response = await ClientService.SendAsync(new GetVideoChatStreams(Id));
-                if (response is VideoChatStreams streams && streams.Streams.Count > 0)
+                var response = await ClientService.SendAsync(new GetGroupCallStreams(Id));
+                if (response is GroupCallStreams streams && streams.Streams.Count > 0)
                 {
                     args.Deferral(streams.Streams[0].TimeOffset);
 
@@ -692,7 +696,7 @@ namespace Telegram.Services.Calls
 
         private async void OnBroadcastPartRequested(VoipGroupManager sender, BroadcastPartRequestedEventArgs args)
         {
-            var response = await ClientService.SendAsync(new GetVideoChatStreamSegment(Id, args.Time, args.Scale, args.ChannelId, args.VideoQuality));
+            var response = await ClientService.SendAsync(new GetGroupCallStreamSegment(Id, args.Time, args.Scale, args.ChannelId, args.VideoQuality));
             args.Deferral(args.Time, ClientService.UnixTime * 1000, response as Data);
         }
 
@@ -856,7 +860,7 @@ namespace Telegram.Services.Calls
         {
             if (ScheduledStartDate > 0)
             {
-                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, Title, InviteLink, ScheduledStartDate, EnabledStartNotification, IsActive, IsVideoChat, IsRtmpStream, false, false, IsOwned, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, CanSendMessages, CanToggleCanSendMessages, RecordDuration, IsVideoRecorded, Duration))));
+                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, Title, InviteLink, PaidMessageStarCount, ScheduledStartDate, EnabledStartNotification, IsActive, IsVideoChat, IsLiveStory, IsRtmpStream, false, false, IsOwned, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, MessageSenderId, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, CanSendMessages, CanToggleCanSendMessages, CanDeleteMessages, RecordDuration, IsVideoRecorded, Duration))));
             }
             else if (end)
             {
@@ -1143,16 +1147,11 @@ namespace Telegram.Services.Calls
             VerificationStateChanged?.Invoke(this, new VoipGroupCallVerificationStateChangedEventArgs(generation, emojis));
         }
 
-        public void Update(MessageSender senderId, FormattedText text)
+        public void Update(GroupCallMessage message)
         {
-            var message = new VoipGroupCallMessage(senderId, text, DateTime.Now.ToTimestamp());
-
             lock (_messagesLock)
             {
-                if (_messagesTimer == null)
-                {
-                    _messagesTimer = new Timer(OnMessagesTick);
-                }
+                _messagesTimer ??= new Timer(OnMessagesTick);
 
                 _messagesTimer.Change(1000, 1000);
                 _messages.Add(message);
@@ -1166,7 +1165,7 @@ namespace Telegram.Services.Calls
             var now = DateTime.Now.ToTimestamp();
             var deadline = ClientService.Options.GroupCallMessageShowTimeMax;
 
-            var expired = default(List<VoipGroupCallMessage>);
+            var expired = default(List<GroupCallMessage>);
 
             lock (_messagesLock)
             {
@@ -1175,7 +1174,7 @@ namespace Telegram.Services.Calls
                     var message = _messages[i];
                     if (message.Date <= now - deadline)
                     {
-                        expired ??= new List<VoipGroupCallMessage>();
+                        expired ??= new List<GroupCallMessage>();
                         expired.Add(message);
 
                         _messages.Remove(message);
@@ -1200,7 +1199,7 @@ namespace Telegram.Services.Calls
 
         public void SendMessage(FormattedText text)
         {
-            ClientService.Send(new SendGroupCallMessage(Id, text));
+            ClientService.Send(new SendGroupCallMessage(Id, text, 0));
         }
 
         public string GetTitle()
@@ -1256,6 +1255,8 @@ namespace Telegram.Services.Calls
         /// </summary>
         public bool CanToggleCanSendMessages { get; private set; }
 
+        public bool CanDeleteMessages { get; private set; }
+
         /// <summary>
         /// True, if only group call administrators can unmute new participants.
         /// </summary>
@@ -1285,6 +1286,8 @@ namespace Telegram.Services.Calls
         /// True, if all group call participants are loaded.
         /// </summary>
         public bool LoadedAllParticipants { get; private set; }
+
+        public MessageSender MessageSenderId { get; private set; }
 
         /// <summary>
         /// True, if group call participants, which are muted, aren't returned in participant
@@ -1352,10 +1355,14 @@ namespace Telegram.Services.Calls
         /// </summary>
         public bool IsVideoChat { get; private set; }
 
+        public bool IsLiveStory { get; private set; }
+
         /// <summary>
         /// Invite link for the group call; for group calls that aren't bound to a chat.
         /// </summary>
         public string InviteLink { get; private set; }
+
+        public long PaidMessageStarCount { get; private set; }
 
         /// <summary>
         /// Group call identifier.

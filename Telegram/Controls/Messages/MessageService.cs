@@ -393,7 +393,8 @@ namespace Telegram.Controls.Messages
                     subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(Strings.ActionGiftPremiumText));
                 }
 
-                title.Text = Locale.Declension(Strings.R.ActionGiftPremiumTitle2, premiumGiftCode.MonthCount);
+                // TODO: confirm no days here
+                title.Text = Locale.Declension(Strings.R.ActionGiftPremiumTitle2, premiumGiftCode.DayCount / 30);
                 button.Text = Strings.GiftPremiumUseGiftBtn;
                 view.Visibility = Visibility.Visible;
 
@@ -421,7 +422,8 @@ namespace Telegram.Controls.Messages
                     subtitle.SetText(message.ClientService, ClientEx.ParseMarkdown(Strings.ActionGiftPremiumText));
                 }
 
-                title.Text = Locale.Declension(Strings.R.ActionGiftPremiumTitle2, giftedPremium.MonthCount);
+                // TODO: confirm no days here
+                title.Text = Locale.Declension(Strings.R.ActionGiftPremiumTitle2, giftedPremium.DayCount / 30);
                 button.Text = Strings.ActionGiftPremiumView;
                 view.Visibility = Visibility.Visible;
 

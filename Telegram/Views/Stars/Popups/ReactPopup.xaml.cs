@@ -38,7 +38,7 @@ namespace Telegram.Views.Stars.Popups
 
         private List<PaidReactor> _reactors;
         private PaidReactor _self;
-        private int _count;
+        private long _count;
 
         private bool _loaded;
 

@@ -72,7 +72,7 @@ namespace Telegram.Views.Calls
 
         private readonly DispatcherQueue _dispatcherQueue;
 
-        private readonly ObservableCollection<VoipGroupCallMessage> _messages;
+        private readonly ObservableCollection<GroupCallMessage> _messages;
 
         private ParticipantsGridMode _mode = ParticipantsGridMode.Compact;
         private bool _docked = true;
@@ -115,7 +115,7 @@ namespace Telegram.Views.Calls
                 ScrollingHost.ItemsSource = _call.Participants;
             }
 
-            _messages = new ObservableCollection<VoipGroupCallMessage>(_call.Messages);
+            _messages = new ObservableCollection<GroupCallMessage>(_call.Messages);
             MessagesHost.ItemsSource = _messages;
             EmojiPanel.DataContext = EmojiDrawerViewModel.Create(_call.SessionId);
             MessageField.CustomEmoji = CustomEmoji;
@@ -811,7 +811,7 @@ namespace Telegram.Views.Calls
             this.BeginOnUIThread(() => UpdateMessages(args.Message, args.Expired));
         }
 
-        private void UpdateMessages(VoipGroupCallMessage message, bool expired)
+        private void UpdateMessages(GroupCallMessage message, bool expired)
         {
             if (expired)
             {
@@ -2267,7 +2267,7 @@ namespace Telegram.Views.Calls
             {
                 return;
             }
-            else if (args.ItemContainer.ContentTemplateRoot is GroupCallMessageCell content && args.Item is VoipGroupCallMessage message)
+            else if (args.ItemContainer.ContentTemplateRoot is GroupCallMessageCell content && args.Item is GroupCallMessage message)
             {
                 content.Update(_call.ClientService, message);
             }

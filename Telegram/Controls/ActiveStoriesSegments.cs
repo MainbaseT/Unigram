@@ -112,11 +112,11 @@ namespace Telegram.Controls
         {
             if (user.Id != clientService.Options.MyId && clientService.TryGetChatFromUser(user.Id, out Chat chat))
             {
-                UpdateActiveStories(clientService, chat.Id, user.HasActiveStories, user.HasUnreadActiveStories, side);
+                UpdateActiveStories(clientService, chat.Id, user.ActiveStoryState, side);
             }
             else
             {
-                UpdateActiveStories(clientService, 0, false, false, side);
+                UpdateActiveStories(clientService, 0, null, side);
             }
         }
 
@@ -124,15 +124,15 @@ namespace Telegram.Controls
         {
             if (clientService != null && chat?.Type is ChatTypePrivate typePrivate && typePrivate.UserId != clientService.Options.MyId && clientService.TryGetUser(typePrivate.UserId, out User user))
             {
-                UpdateActiveStories(clientService, chat.Id, user.HasActiveStories, user.HasUnreadActiveStories, side);
+                UpdateActiveStories(clientService, chat.Id, user.ActiveStoryState, side);
             }
             else if (clientService != null && chat?.Type is ChatTypeSupergroup typeSupergroup && clientService.TryGetSupergroup(typeSupergroup.SupergroupId, out Supergroup supergroup))
             {
-                UpdateActiveStories(clientService, chat.Id, supergroup.HasActiveStories, supergroup.HasUnreadActiveStories, side);
+                UpdateActiveStories(clientService, chat.Id, supergroup.ActiveStoryState, side);
             }
             else
             {
-                UpdateActiveStories(clientService, 0, false, false, side);
+                UpdateActiveStories(clientService, 0, null, side);
             }
         }
 
@@ -175,9 +175,9 @@ namespace Telegram.Controls
             }
         }
 
-        private void UpdateActiveStories(IClientService clientService, long chatId, bool hasActiveStories, bool hasUnreadActiveStories, int side)
+        private void UpdateActiveStories(IClientService clientService, long chatId, ActiveStoryState activeStoryState, int side)
         {
-            if (chatId == 0 || !hasActiveStories)
+            if (chatId == 0 || activeStoryState == null)
             {
                 if (_hasActiveStories)
                 {
@@ -221,7 +221,7 @@ namespace Telegram.Controls
                 var unreadCount = activeStories.CountUnread(out bool closeFriends);
                 UpdateSegments(side, closeFriends, activeStories.Stories.Count, unreadCount);
             }
-            else if (hasUnreadActiveStories)
+            else if (activeStoryState is ActiveStoryStateUnread)
             {
                 UpdateSegments(side, false, 1, 1);
             }

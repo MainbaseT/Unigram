@@ -106,7 +106,7 @@ namespace Telegram.Controls.Messages.Content
         private long _chatId;
         private long _messageId;
         private int _taskId;
-        private long _completedByUserId;
+        private MessageSender _completedBy;
 
         public void UpdateChecklistTask(MessageViewModel message, Checklist checklist, ChecklistTask task)
         {
@@ -142,19 +142,24 @@ namespace Telegram.Controls.Messages.Content
                 CheckmarkIcon.Visibility = Visibility.Collapsed;
             }
 
-            var show = checklist.CanMarkTasksAsDone && task.CompletedByUserId != 0;
+            var show = checklist.CanMarkTasksAsDone && task.CompletedBy != null;
 
-            if (show && message.ClientService.TryGetUser(task.CompletedByUserId, out User user))
+            if (show && message.ClientService.TryGetUser(task.CompletedBy, out User user))
             {
                 Photo.Source = ProfilePictureSource.User(message.ClientService, user);
                 UserText.Text = user.FullName();
+            }
+            else if (show && message.ClientService.TryGetChat(task.CompletedBy, out Chat chat))
+            {
+                Photo.Source = ProfilePictureSource.Chat(message.ClientService, chat);
+                UserText.Text = chat.Title;
             }
 
             var photo = GetTemplatePhoto(show);
             var text = ElementComposition.GetElementVisual(TextText);
             var userText = ElementComposition.GetElementVisual(UserText);
 
-            if (checklist.CanMarkTasksAsDone && recycled && _completedByUserId != task.CompletedByUserId)
+            if (checklist.CanMarkTasksAsDone && recycled && !_completedBy.AreTheSame(task.CompletedBy))
             {
                 var compositor = photo.Compositor;
 
@@ -203,7 +208,7 @@ namespace Telegram.Controls.Messages.Content
             _chatId = message.ChatId;
             _messageId = message.Id;
             _taskId = task.Id;
-            _completedByUserId = task.CompletedByUserId;
+            _completedBy = task.CompletedBy;
         }
 
         private void CreateIcon()

@@ -1268,7 +1268,7 @@ namespace Telegram.Views.Popups
                 }
                 else
                 {
-                    ViewModel.SendSchedulingState = new MessageSchedulingStateSendAtDate(popup.Value.ToTimestamp());
+                    ViewModel.SendSchedulingState = new MessageSchedulingStateSendAtDate(popup.Value.ToTimestamp(), 0);
                 }
 
                 Hide(ContentDialogResult.Primary);

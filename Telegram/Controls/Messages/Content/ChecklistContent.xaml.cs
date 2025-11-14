@@ -95,7 +95,7 @@ namespace Telegram.Controls.Messages.Content
                 {
                     oldItem.Text = newItem.Text;
                     oldItem.CompletionDate = newItem.CompletionDate;
-                    oldItem.CompletedByUserId = newItem.CompletedByUserId;
+                    oldItem.CompletedBy = newItem.CompletedBy;
                 }
 
                 if (oldItem.CompletionDate != 0)

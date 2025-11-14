@@ -8,7 +8,6 @@ using System;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Services;
-using Telegram.Services.Calls;
 using Telegram.Streams;
 using Telegram.Td;
 using Telegram.Td.Api;
@@ -22,14 +21,14 @@ namespace Telegram.Controls.Cells
 {
     public sealed partial class GroupCallMessageCell : UserControl
     {
-        private VoipGroupCallMessage _message;
+        private GroupCallMessage _message;
 
         public GroupCallMessageCell()
         {
             InitializeComponent();
         }
 
-        public void Update(IClientService clientService, VoipGroupCallMessage message)
+        public void Update(IClientService clientService, GroupCallMessage message)
         {
             _message = message;
 
@@ -67,7 +66,7 @@ namespace Telegram.Controls.Cells
                 : Visibility.Collapsed;
         }
 
-        private async void Animate(IClientService clientService, VoipGroupCallMessage message, string emoji)
+        private async void Animate(IClientService clientService, GroupCallMessage message, string emoji)
         {
             var response = await clientService.SendAsync(new GetEmojiReaction(emoji));
             if (response is EmojiReaction reaction && reaction.AroundAnimation != null)
@@ -82,7 +81,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private async void Animate(IClientService clientService, VoipGroupCallMessage message, long customEmojiId)
+        private async void Animate(IClientService clientService, GroupCallMessage message, long customEmojiId)
         {
             var response = await clientService.SendAsync(new GetCustomEmojiReactionAnimations());
             if (response is Stickers stickers)
@@ -100,7 +99,7 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        private void Animate(VoipGroupCallMessage message, AnimatedImageSource source, File around, bool cache)
+        private void Animate(GroupCallMessage message, AnimatedImageSource source, File around, bool cache)
         {
             if (_message != message)
             {

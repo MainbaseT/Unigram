@@ -174,7 +174,7 @@ namespace Telegram.Views.Premium.Popups
 
             var gifter = clientService.GetUser(giftedPremium.GifterUserId);
             var receiver = clientService.GetUser(giftedPremium.ReceiverUserId);
-            var monthCount = Locale.Declension(Strings.R.Gift2Months, giftedPremium.MonthCount);
+            var monthCount = Formatter.PremiumDuration(giftedPremium.DayCount);
 
             if (giftedPremium.ReceiverUserId == 0)
             {
@@ -252,7 +252,7 @@ namespace Telegram.Views.Premium.Popups
 
             var gifter = clientService.GetMessageSender(giftCode.CreatorId ?? senderId);
             //var receiver = clientService.GetUser(giftedPremium.ReceiverUserId);
-            var monthCount = Locale.Declension(Strings.R.Gift2Months, giftCode.MonthCount);
+            var monthCount = Formatter.PremiumDuration(giftCode.DayCount);
 
             if (gifter == null)
             {

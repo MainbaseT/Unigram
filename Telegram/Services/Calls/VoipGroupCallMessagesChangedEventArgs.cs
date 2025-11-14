@@ -5,7 +5,9 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using Telegram.Td.Api;
+
 namespace Telegram.Services.Calls
 {
-    public record VoipGroupCallMessagesChangedEventArgs(VoipGroupCallMessage Message, bool Expired);
+    public record VoipGroupCallMessagesChangedEventArgs(GroupCallMessage Message, bool Expired);
 }

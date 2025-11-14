@@ -44,7 +44,7 @@ namespace Telegram.Views.Calls.Popups
 
         private async void OnOpened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
-            var response = await _clientService.SendAsync(new GetVideoChatRtmpUrl(_chatId));
+            var response = await _clientService.SendAsync(new GetGroupCallRtmpUrl(_chatId, false));
             if (response is RtmpUrl rtmp)
             {
                 ServerField.Text = rtmp.Url;
@@ -92,7 +92,7 @@ namespace Telegram.Views.Calls.Popups
             {
                 StreamKeyField.Text = string.Empty;
 
-                var response = await _clientService.SendAsync(new ReplaceVideoChatRtmpUrl(_chatId));
+                var response = await _clientService.SendAsync(new ReplaceGroupCallRtmpUrl(_chatId, false));
                 if (response is RtmpUrl rtmp)
                 {
                     ServerField.Text = rtmp.Url;
