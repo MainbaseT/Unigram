@@ -494,6 +494,7 @@ namespace Telegram.Common
                 case "Параметр задан неверно.":
                 case "Parametri ei kelpaa":
                 case "De parameter is onjuist.":
+                case "Felaktig parameter.":
                 case "매개 변수가 틀립니다.":
                 case "参数错误。":
                     return "The parameter is incorrect.";
@@ -560,6 +561,9 @@ namespace Telegram.Common
 
                 case "Zdalne wywołanie procedury nie powiodło się.":
                 case "Сбой при удаленном вызове процедуры.":
+
+                // TODO: sligthly different case for async but we use the same english string
+                case "Сбой при удаленном вызове процедуры. Вызов не произведен.":
                     return "The remote procedure call failed.";
 
                 case "Aucun composant installé n’a été détecté.":
