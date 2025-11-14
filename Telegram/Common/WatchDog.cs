@@ -115,13 +115,13 @@ namespace Telegram
 
             BootStrapper.Current.UnhandledException += OnUnhandledException;
 
-            Read();
-            LoadReports();
-
             if (_disabled)
             {
                 return;
             }
+
+            Read();
+            LoadReports();
 
             //TaskScheduler.UnobservedTaskException += (s, args) =>
             //{
