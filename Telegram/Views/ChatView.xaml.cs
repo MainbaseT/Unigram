@@ -4301,7 +4301,7 @@ namespace Telegram.Views
                 foreach (var item in album.Messages)
                 {
                     var temp = item.GetFile();
-                    if (!temp.Local.IsDownloadingCompleted)
+                    if (temp != null && !temp.Local.IsDownloadingCompleted)
                     {
                         return false;
                     }

@@ -58,7 +58,7 @@ namespace Telegram.ViewModels
 
         private void SetTranslating()
         {
-            if (Settings.Chats.TryGet(Chat.Id, TopicId, ChatSetting.IsTranslating, out bool value))
+            if (Settings.Chats.TryGet(ChatId, TopicId, ChatSetting.IsTranslating, out bool value))
             {
                 Set(ref _isTranslating, value, nameof(IsTranslating));
             }
@@ -68,7 +68,7 @@ namespace Telegram.ViewModels
         {
             if (Set(ref _isTranslating, value, nameof(IsTranslating)))
             {
-                Settings.Chats[Chat.Id, TopicId, ChatSetting.IsTranslating] = value;
+                Settings.Chats[ChatId, TopicId, ChatSetting.IsTranslating] = value;
 
                 UpdateChatIsTranslatable();
                 return true;
