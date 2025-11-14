@@ -183,7 +183,7 @@ namespace Telegram.Views.Popups
                     scrollingHost.ViewChanged += ItemsHost_ViewChanged;
                 }
 
-                scrollingHost?.ChangeView(null, ItemsHost.SelectedIndex * 40, null, e == null);
+                scrollingHost?.TryChangeView(null, ItemsHost.SelectedIndex * 40, null, e == null);
             }
         }
     }

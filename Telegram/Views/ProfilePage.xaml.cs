@@ -94,7 +94,7 @@ namespace Telegram.Views
                     RootGrid.Unsnap();
 
                     ScrollingHost.Loaded -= handler;
-                    ScrollingHost.ChangeView(null, listViewPosition.ScrollPosition, null, true);
+                    ScrollingHost.TryChangeView(null, listViewPosition.ScrollPosition, null, true);
                 }
 
                 ScrollingHost.Loaded += handler;
@@ -1031,7 +1031,7 @@ namespace Telegram.Views
             RootGrid.Unsnap();
 
             Logger.Info(disableAnimation + ", " + ScrollingHost.ScrollableHeight);
-            ScrollingHost.ChangeView(null, ViewModel.IsSavedMessages ? 0 : Math.Round(ProfileHeader.ActualSize.Y - 24), null, disableAnimation);
+            ScrollingHost.TryChangeView(null, ViewModel.IsSavedMessages ? 0 : Math.Round(ProfileHeader.ActualSize.Y - 24), null, disableAnimation);
         }
 
         private int _prevSelectedIndex = -1;
@@ -1246,7 +1246,7 @@ namespace Telegram.Views
                     _hasBeenScrolled = false;
                     RootGrid.Unsnap();
 
-                    ScrollingHost.ChangeView(null, (ViewModel.IsSavedMessages ? ProfileHeader.ActualHeight - 48 + 24 : 0) + (y * panel.ItemHeight), null, false);
+                    ScrollingHost.TryChangeView(null, (ViewModel.IsSavedMessages ? ProfileHeader.ActualHeight - 48 + 24 : 0) + (y * panel.ItemHeight), null, false);
                 }
             }
         }

@@ -847,7 +847,7 @@ namespace Telegram.Views.Host
                 Navigation.IsPaneOpen = false;
 
                 var scroll = NavigationViewList.GetScrollViewer();
-                scroll?.ChangeView(null, 0, null, true);
+                scroll?.TryChangeView(null, 0, null, true);
             }
         }
 

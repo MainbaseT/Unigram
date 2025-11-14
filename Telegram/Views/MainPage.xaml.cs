@@ -884,7 +884,7 @@ namespace Telegram.Views
                 {
                     Logger.Info("ChangeView");
 
-                    scrollViewer.ChangeView(null, 0, null);
+                    scrollViewer.TryChangeView(null, 0, null);
                     args.Handled = true;
                 }
                 else if (ViewModel.Chats.Items.ChatList is ChatListArchive
@@ -2348,7 +2348,7 @@ namespace Telegram.Views
         private void Arrow_Click(object sender, RoutedEventArgs e)
         {
             var scrollViewer = ChatsList.GetScrollViewer();
-            scrollViewer?.ChangeView(null, 0, null);
+            scrollViewer?.TryChangeView(null, 0, null);
         }
 
         private void Proxy_Click(object sender, RoutedEventArgs e)
@@ -2678,7 +2678,7 @@ namespace Telegram.Views
                     Logger.Info("ChangeView");
 
                     var scrollingHost = ChatsList.GetScrollViewer();
-                    scrollingHost?.ChangeView(null, 0, null, true);
+                    scrollingHost?.TryChangeView(null, 0, null, true);
                 }
             });
 
@@ -3817,7 +3817,7 @@ namespace Telegram.Views
             if (e.ClickedItem == ViewModel.SelectedFolder)
             {
                 var scrollViewer = ChatsList.GetScrollViewer();
-                scrollViewer?.ChangeView(null, 0, null);
+                scrollViewer?.TryChangeView(null, 0, null);
             }
         }
     }

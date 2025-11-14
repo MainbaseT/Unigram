@@ -75,7 +75,7 @@ namespace Telegram.Controls.Chats
         public void ScrollToBottom()
         {
             HasBeenScrolled = true;
-            ScrollingHost?.ChangeView(null, ScrollingHost.ScrollableHeight, null);
+            ScrollingHost?.TryChangeView(null, ScrollingHost.ScrollableHeight, null);
         }
 
         public bool IsSuspended => !_raiseViewChanged;

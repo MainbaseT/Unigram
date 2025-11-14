@@ -125,7 +125,7 @@ namespace Telegram.Views
                     void handler(object sender, RoutedEventArgs e)
                     {
                         scrollingHost.Loaded -= handler;
-                        scrollingHost.ChangeView(null, scrollViewerPosition.ScrollPosition, null, true);
+                        scrollingHost.TryChangeView(null, scrollViewerPosition.ScrollPosition, null, true);
                     }
 
                     scrollingHost.Loaded += handler;

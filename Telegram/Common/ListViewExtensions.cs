@@ -156,19 +156,14 @@ namespace Telegram.Common
                     scrollViewer.UpdateLayout();
                 }
             }
-            try
+
+            scrollViewer.ViewChanged += viewChanged;
+            if (scrollViewer.TryChangeView(horizontalOffset, verticalOffset, null, disableAnimation))
             {
-                scrollViewer.ViewChanged += viewChanged;
-                if (scrollViewer.ChangeView(horizontalOffset, verticalOffset, null, disableAnimation))
-                {
-                    await tcs.Task;
-                }
+                await tcs.Task;
             }
-            finally
-            {
-                scrollViewer.ViewChanged -= viewChanged;
-                scrollViewer.LayoutUpdated -= layoutUpdated;
-            }
+            scrollViewer.ViewChanged -= viewChanged;
+            scrollViewer.LayoutUpdated -= layoutUpdated;
         }
 
         public static async Task WaitForViewChangedAsync(this ScrollViewer scrollViewer, bool updateLayout)
@@ -194,16 +189,9 @@ namespace Telegram.Common
                     scrollViewer.UpdateLayout();
                 }
             }
-            try
-            {
-                scrollViewer.ViewChanged += viewChanged;
-                await tcs.Task;
-            }
-            finally
-            {
-                scrollViewer.ViewChanged -= viewChanged;
-                scrollViewer.LayoutUpdated -= layoutUpdated;
-            }
+
+            scrollViewer.ViewChanged += viewChanged;
+            await tcs.Task;
         }
 
         public static ScrollViewer GetScrollViewer(this ListViewBase listViewBase)
@@ -221,7 +209,7 @@ namespace Telegram.Common
             var scrollViewer = listViewBase.GetScrollViewer();
             if (scrollViewer != null)
             {
-                return scrollViewer.ChangeView(horizontalOffset, verticalOffset, zoomFactor, disableAnimation);
+                return scrollViewer.TryChangeView(horizontalOffset, verticalOffset, zoomFactor, disableAnimation);
             }
 
             return false;
@@ -238,11 +226,11 @@ namespace Telegram.Common
             var scrollViewer = GetScrollViewer(listViewBase);
             if (scrollViewer != null && scrollViewer.HorizontalScrollMode != ScrollMode.Disabled)
             {
-                scrollViewer?.ChangeView(0, null, null);
+                scrollViewer?.TryChangeView(0, null, null);
             }
             else
             {
-                scrollViewer?.ChangeView(null, 0, null);
+                scrollViewer?.TryChangeView(null, 0, null);
             }
         }
     }

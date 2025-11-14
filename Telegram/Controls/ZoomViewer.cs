@@ -6,6 +6,7 @@
 //
 
 using System;
+using Telegram.Common;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -102,7 +103,7 @@ namespace Telegram.Controls
                     vertical /= 2;
                 }
 
-                ScrollingHost.ChangeView(horizontal, vertical, factor, disableAnimation);
+                ScrollingHost.TryChangeView(horizontal, vertical, factor, disableAnimation);
             }
         }
 
@@ -141,7 +142,7 @@ namespace Telegram.Controls
                 var diffX = _pointerPosition.X - point.Position.X;
                 var diffY = _pointerPosition.Y - point.Position.Y;
 
-                ScrollingHost.ChangeView(diffX, diffY, null, true);
+                ScrollingHost.TryChangeView(diffX, diffY, null, true);
             }
         }
 

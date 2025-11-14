@@ -1862,7 +1862,7 @@ namespace Telegram.Views.Calls
             if (_mode == ParticipantsGridMode.Compact)
             {
                 var scrollingHost = ScrollingHost.GetScrollViewer();
-                scrollingHost?.ChangeView(null, 0, null, false);
+                scrollingHost?.TryChangeView(null, 0, null, false);
             }
         }
 

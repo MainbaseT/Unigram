@@ -221,7 +221,7 @@ namespace Telegram.Views.Settings.Popups
                     scrollingHost.ViewChanged += DayHost_ViewChanged;
                 }
 
-                scrollingHost?.ChangeView(null, DayHost.SelectedIndex * 40, null, e == null);
+                scrollingHost?.TryChangeView(null, DayHost.SelectedIndex * 40, null, e == null);
 
                 SelectionChanged(false, false);
             }
@@ -240,7 +240,7 @@ namespace Telegram.Views.Settings.Popups
                     scrollingHost.ViewChanged += MonthHost_ViewChanged;
                 }
 
-                scrollingHost?.ChangeView(null, MonthHost.SelectedIndex * 40, null, e == null);
+                scrollingHost?.TryChangeView(null, MonthHost.SelectedIndex * 40, null, e == null);
 
                 SelectionChanged(updateMonth: false);
             }
@@ -259,7 +259,7 @@ namespace Telegram.Views.Settings.Popups
                     scrollingHost.ViewChanged += YearHost_ViewChanged;
                 }
 
-                scrollingHost?.ChangeView(null, YearHost.SelectedIndex * 40, null, e == null);
+                scrollingHost?.TryChangeView(null, YearHost.SelectedIndex * 40, null, e == null);
 
                 SelectionChanged();
             }

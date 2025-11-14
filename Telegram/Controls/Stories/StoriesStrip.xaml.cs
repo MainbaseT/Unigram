@@ -664,11 +664,11 @@ namespace Telegram.Controls.Stories
                 }
                 else if (_scrollViewer.VerticalOffset >= 40)
                 {
-                    _scrollViewer.ChangeView(null, 88, null, false);
+                    _scrollViewer.TryChangeView(null, 88, null, false);
                 }
                 else
                 {
-                    _scrollViewer.ChangeView(null, 0, null, false);
+                    _scrollViewer.TryChangeView(null, 0, null, false);
                 }
 
                 ScrollToTop();
@@ -734,12 +734,12 @@ namespace Telegram.Controls.Stories
             }
             else if (_directManipulation)
             {
-                _scrollViewer.ChangeView(null, _scrollViewer.VerticalOffset - 88, null, true);
+                _scrollViewer.TryChangeView(null, _scrollViewer.VerticalOffset - 88, null, true);
             }
             else
             {
                 _scrollViewer.CancelDirectManipulations();
-                _scrollViewer.ChangeView(null, 0, null, true);
+                _scrollViewer.TryChangeView(null, 0, null, true);
             }
         }
 
@@ -790,7 +790,7 @@ namespace Telegram.Controls.Stories
                 boh.StartAnimation("Translation.Y", translation);
                 batch.End();
 
-                _scrollViewer.ChangeView(null, 0, null, true);
+                _scrollViewer.TryChangeView(null, 0, null, true);
             }
         }
 

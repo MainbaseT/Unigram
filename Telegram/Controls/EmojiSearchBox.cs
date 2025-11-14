@@ -284,7 +284,7 @@ namespace Telegram.Controls
                 ? point.Properties.MouseWheelDelta > 0 ? 50 : -50
                 : point.Properties.MouseWheelDelta < 0 ? 50 : -50;
 
-            ScrollingHost?.ChangeView(ScrollingHost.HorizontalOffset + delta, null, null);
+            ScrollingHost?.TryChangeView(ScrollingHost.HorizontalOffset + delta, null, null);
             base.OnPointerWheelChanged(e);
         }
 

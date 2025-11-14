@@ -768,6 +768,32 @@ namespace Telegram.Common
             }
         }
 
+        public static bool TryChangeView(this ScrollViewer scrollViewer, double? horizontalOffset, double? verticalOffset, float? zoomFactor)
+        {
+            try
+            {
+                return scrollViewer.ChangeView(horizontalOffset, verticalOffset, zoomFactor);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+                return false;
+            }
+        }
+
+        public static bool TryChangeView(this ScrollViewer scrollViewer, double? horizontalOffset, double? verticalOffset, float? zoomFactor, bool disableAnimation)
+        {
+            try
+            {
+                return scrollViewer.ChangeView(horizontalOffset, verticalOffset, zoomFactor, disableAnimation);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+                return false;
+            }
+        }
+
         public static void CreateInsetClip(this UIElement element)
         {
             var visual = ElementComposition.GetElementVisual(element);
