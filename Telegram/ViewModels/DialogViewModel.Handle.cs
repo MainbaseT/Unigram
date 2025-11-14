@@ -33,6 +33,8 @@ namespace Telegram.ViewModels
                 .Subscribe<UpdateForumTopicReadOutbox>(Handle)
                 .Subscribe<UpdateChatReadInbox>(Handle)
                 .Subscribe<UpdateChatDraftMessage>(Handle)
+                .Subscribe<UpdateForumTopicDraftMessage>(Handle)
+                .Subscribe<UpdateDirectMessagesChatDraftMessage>(Handle)
                 .Subscribe<UpdateChatDefaultDisableNotification>(Handle)
                 .Subscribe<UpdateChatMessageSender>(Handle)
                 .Subscribe<UpdateChatActionBar>(Handle)
@@ -541,6 +543,34 @@ namespace Telegram.ViewModels
         public void Handle(UpdateChatDraftMessage update)
         {
             if (update.ChatId == _chat?.Id)
+            {
+                var header = _composerHeader;
+                if (header?.Editing != null || header?.SuggestedPostInfo != null)
+                {
+                    return;
+                }
+
+                BeginOnUIThread(() => ShowDraftMessage(_chat, false));
+            }
+        }
+
+        public void Handle(UpdateForumTopicDraftMessage update)
+        {
+            if (update.ChatId == _chat?.Id && TopicId.IsForum(update.ForumTopicId))
+            {
+                var header = _composerHeader;
+                if (header?.Editing != null || header?.SuggestedPostInfo != null)
+                {
+                    return;
+                }
+
+                BeginOnUIThread(() => ShowDraftMessage(_chat, false));
+            }
+        }
+
+        public void Handle(UpdateDirectMessagesChatDraftMessage update)
+        {
+            if (update.ChatId == _chat?.Id && TopicId.IsDirectMessagesChat(update.TopicId))
             {
                 var header = _composerHeader;
                 if (header?.Editing != null || header?.SuggestedPostInfo != null)

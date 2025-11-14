@@ -38,7 +38,6 @@ namespace Telegram.Services
         {
             if (_topics.TryGetValue(newTopic.Id, out DirectMessagesChatTopic topic))
             {
-                topic.DraftMessage = newTopic.DraftMessage;
                 topic.LastMessage = newTopic.LastMessage;
                 topic.IsMarkedAsUnread = newTopic.IsMarkedAsUnread;
 
@@ -48,6 +47,11 @@ namespace Telegram.Services
                 if (topic.UnreadReactionCount != newTopic.UnreadReactionCount)
                 {
                     _aggregator.Publish(new UpdateDirectMessagesChatTopicUnreadReactionCount(_chatId, topic.Id, topic.UnreadReactionCount = newTopic.UnreadReactionCount));
+                }
+
+                if (topic.DraftMessage?.Date != newTopic.DraftMessage?.Date)
+                {
+                    _aggregator.Publish(new UpdateDirectMessagesChatDraftMessage(_chatId, topic.Id, topic.DraftMessage = newTopic.DraftMessage));
                 }
 
                 if (topic.Order != newTopic.Order)
@@ -304,5 +308,21 @@ namespace Telegram.Td.Api
         public long TopicId { get; set; }
 
         public long UnreadMentionCount { get; set; }
+    }
+
+    public sealed partial class UpdateDirectMessagesChatDraftMessage
+    {
+        public UpdateDirectMessagesChatDraftMessage(long chatId, long topicId, DraftMessage draftMessage)
+        {
+            ChatId = chatId;
+            TopicId = topicId;
+            DraftMessage = draftMessage;
+        }
+
+        public long ChatId { get; set; }
+
+        public long TopicId { get; set; }
+
+        public DraftMessage DraftMessage { get; set; }
     }
 }

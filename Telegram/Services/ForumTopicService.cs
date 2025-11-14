@@ -347,6 +347,8 @@ namespace Telegram.Services
                 return 0;
             }
 
+            // TODO: DraftMessage
+
             var index = _pinnedTopicIds.IndexOf(topic.Info.ForumTopicId);
             if (index != -1)
             {
@@ -380,6 +382,11 @@ namespace Telegram.Services
                 if (topic.UnreadReactionCount != update.UnreadReactionCount)
                 {
                     _aggregator.Publish(new UpdateForumTopicUnreadReactionCount(_chatId, update.ForumTopicId, topic.UnreadReactionCount = update.UnreadReactionCount));
+                }
+
+                if (topic.DraftMessage?.Date != update.DraftMessage?.Date)
+                {
+                    _aggregator.Publish(new UpdateForumTopicDraftMessage(_chatId, update.ForumTopicId, topic.DraftMessage = update.DraftMessage));
                 }
 
                 if (topic.IsPinned != update.IsPinned)
@@ -920,6 +927,22 @@ namespace Telegram.Td.Api
         public int ForumTopicId { get; set; }
 
         public long UnreadMentionCount { get; set; }
+    }
+
+    public sealed partial class UpdateForumTopicDraftMessage
+    {
+        public UpdateForumTopicDraftMessage(long chatId, int forumTopicId, DraftMessage draftMessage)
+        {
+            ChatId = chatId;
+            ForumTopicId = forumTopicId;
+            DraftMessage = draftMessage;
+        }
+
+        public long ChatId { get; set; }
+
+        public int ForumTopicId { get; set; }
+
+        public DraftMessage DraftMessage { get; set; }
     }
 
     public sealed partial class UpdateChatUnreadTopicCount
