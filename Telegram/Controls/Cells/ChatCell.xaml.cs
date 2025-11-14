@@ -1988,12 +1988,12 @@ namespace Telegram.Controls.Cells
             {
                 Logger.Info("Unloaded");
 
-                flyout.Closing -= handler;
+                chatView.Unloaded -= handler;
                 chatView.ViewModel.NavigatedFrom(null, false);
                 chatView.Deactivate(true);
             }
 
-            flyout.Closing += handler;
+            chatView.Unloaded += handler;
 
             var background = new ChatBackgroundControl();
             background.Update(_clientService, null);
