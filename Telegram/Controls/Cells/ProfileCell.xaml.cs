@@ -1124,15 +1124,15 @@ namespace Telegram.Controls.Cells
             }
             else if (args.Phase == 2)
             {
-                if (statistics.ChatId == 0)
+                var chat = clientService.GetChat(statistics.ChatId);
+                if (chat == null)
                 {
                     Photo.Source = null;
                     Photo.Visibility = Visibility.Collapsed;
+                    Identity.ClearStatus(BotVerified);
                 }
                 else
                 {
-                    var chat = clientService.GetChat(statistics.ChatId);
-
                     Photo.Source = ProfilePictureSource.Chat(clientService, chat);
                     Photo.Visibility = Visibility.Visible;
                     Identity.SetStatus(clientService, chat, BotVerified);
