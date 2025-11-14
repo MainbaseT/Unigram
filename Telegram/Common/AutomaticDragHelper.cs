@@ -208,7 +208,14 @@ namespace Telegram.Common
                 {
                     StopCheckingForMouseDrag(spPointer);
 
-                    _ = m_pOwnerNoRef.StartDragAsync(spPointerPoint);
+                    try
+                    {
+                        _ = m_pOwnerNoRef.StartDragAsync(spPointerPoint);
+                    }
+                    catch
+                    {
+                        // All the remote procedure calls must be wrapped in a try-catch block
+                    }
                 }
             }
         }
