@@ -640,8 +640,6 @@ namespace Telegram.ViewModels
 
             private async Task<LoadMoreItemsResult> LoadMoreItemsAsync()
             {
-                Logger.Info(Count);
-
                 var token = _token;
                 var totalCount = 0u;
 
@@ -679,8 +677,6 @@ namespace Telegram.ViewModels
                             _lastOrder = order;
                         }
                     }
-
-                    Logger.Info(string.Format("Received {0} items, added {1}", chats.ChatIds.Count, totalCount));
 
                     IsEmpty = Count == 0;
 

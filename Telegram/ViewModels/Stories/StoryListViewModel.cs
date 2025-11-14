@@ -314,8 +314,6 @@ namespace Telegram.ViewModels.Stories
 
             private async Task<LoadMoreItemsResult> LoadMoreItemsAsync()
             {
-                Logger.Info(Count);
-
                 var token = _token;
                 var totalCount = 0u;
 
@@ -349,8 +347,6 @@ namespace Telegram.ViewModels.Stories
                         }
                     }
 
-                    Logger.Info(string.Format("Received {0} items, added {1}", chats.ChatIds.Count, totalCount));
-
                     IsEmpty = Count == 0;
 
                     _hasMoreItems = chats.TotalCount >= 0;
@@ -381,8 +377,6 @@ namespace Telegram.ViewModels.Stories
 
             public void Handle(UpdateChatActiveStories update)
             {
-                Logger.Info(string.Format("{0}, {1}", update.ActiveStories.ChatId, update.ActiveStories.Order));
-
                 if ((update.ActiveStories.List is StoryListMain && _storyList is StoryListMain) || (update.ActiveStories.List is StoryListArchive && _storyList is StoryListArchive))
                 {
                     _viewModel.BeginOnUIThread(() => UpdateChatOrder(update.ActiveStories, update.ActiveStories.Order));
