@@ -223,7 +223,14 @@ namespace Telegram.Controls.Messages
                 _clip.Geometry = BootStrapper.Current.Compositor.CreatePathGeometry(new CompositionPath(result));
             }
 
-            base.OnPointerEntered(e);
+            try
+            {
+                base.OnPointerEntered(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         #region InitializeComponent

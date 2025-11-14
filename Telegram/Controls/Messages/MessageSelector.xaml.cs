@@ -226,25 +226,56 @@ namespace Telegram.Controls.Messages
                 _owner?.OnPointerPressed(this, e);
             }
 
-            base.OnPointerPressed(e);
+            try
+            {
+                base.OnPointerPressed(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnPointerEntered(PointerRoutedEventArgs e)
         {
             _owner?.OnPointerEntered(this, e);
-            base.OnPointerEntered(e);
+
+            try
+            {
+                base.OnPointerEntered(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnPointerMoved(PointerRoutedEventArgs e)
         {
             _owner?.OnPointerMoved(this, e);
-            base.OnPointerMoved(e);
+
+            try
+            {
+                base.OnPointerMoved(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnPointerReleased(PointerRoutedEventArgs e)
         {
             _owner?.OnPointerReleased(this, e);
-            base.OnPointerReleased(e);
+
+            try
+            {
+                base.OnPointerReleased(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnDoubleTapped(DoubleTappedRoutedEventArgs e)

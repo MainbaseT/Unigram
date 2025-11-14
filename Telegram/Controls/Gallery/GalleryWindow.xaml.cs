@@ -105,7 +105,14 @@ namespace Telegram.Controls.Gallery
                 ShowHideTransport(false);
             }
 
-            base.OnPointerExited(e);
+            try
+            {
+                base.OnPointerExited(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnPointerPressed(PointerRoutedEventArgs e)
@@ -113,13 +120,28 @@ namespace Telegram.Controls.Gallery
             _inactivityTimer.Stop();
             ShowHideTransport(true);
 
-            base.OnPointerPressed(e);
+            try
+            {
+                base.OnPointerPressed(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnPointerMoved(PointerRoutedEventArgs e)
         {
             _inactivityTimer.Stop();
-            base.OnPointerMoved(e);
+
+            try
+            {
+                base.OnPointerMoved(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
 
             var point = e.GetCurrentPoint(this);
             if (ActualWidth - point.Position.X < 1)

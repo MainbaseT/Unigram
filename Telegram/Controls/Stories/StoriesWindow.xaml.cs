@@ -97,7 +97,15 @@ namespace Telegram.Controls.Stories
             Move(direction);
 
             e.Handled = true;
-            base.OnPointerWheelChanged(e);
+
+            try
+            {
+                base.OnPointerWheelChanged(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         private void StoriesWindow_Loaded(object sender, RoutedEventArgs e)

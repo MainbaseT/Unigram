@@ -193,8 +193,6 @@ namespace Telegram.Controls
         {
             _entered = true;
             VisualStateManager.GoToState(this, "PointerOver", true);
-
-            base.OnPointerEntered(e);
         }
 
         protected override void OnPointerPressed(PointerRoutedEventArgs e)
@@ -217,8 +215,6 @@ namespace Telegram.Controls
                     ThumbToolTipPopup.IsOpen = true;
                 }
             }
-
-            base.OnPointerPressed(e);
         }
 
         protected override void OnPointerMoved(PointerRoutedEventArgs e)
@@ -231,8 +227,6 @@ namespace Telegram.Controls
             }
 
             VisualStateManager.GoToState(this, "PointerOver", true);
-
-            base.OnPointerMoved(e);
         }
 
         protected override void OnPointerExited(PointerRoutedEventArgs e)
@@ -247,8 +241,6 @@ namespace Telegram.Controls
                 _entered = false;
                 VisualStateManager.GoToState(this, "Normal", true);
             }
-
-            base.OnPointerExited(e);
         }
 
         protected override void OnPointerCanceled(PointerRoutedEventArgs e)
@@ -265,8 +257,6 @@ namespace Telegram.Controls
             {
                 ThumbToolTipPopup.IsOpen = false;
             }
-
-            base.OnPointerCanceled(e);
         }
 
         protected override void OnPointerCaptureLost(PointerRoutedEventArgs e)
@@ -283,8 +273,6 @@ namespace Telegram.Controls
             {
                 ThumbToolTipPopup.IsOpen = false;
             }
-
-            base.OnPointerCaptureLost(e);
         }
 
         protected override void OnPointerReleased(PointerRoutedEventArgs e)
@@ -302,8 +290,6 @@ namespace Telegram.Controls
             {
                 ThumbToolTipPopup.IsOpen = false;
             }
-
-            base.OnPointerReleased(e);
         }
 
         private void UpdateVisualState(PointerRoutedEventArgs e)

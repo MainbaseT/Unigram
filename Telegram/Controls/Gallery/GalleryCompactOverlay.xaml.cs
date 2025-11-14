@@ -122,13 +122,29 @@ namespace Telegram.Controls.Gallery
         protected override void OnPointerEntered(PointerRoutedEventArgs e)
         {
             ShowHideTransport(true);
-            base.OnPointerEntered(e);
+
+            try
+            {
+                base.OnPointerEntered(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnPointerExited(PointerRoutedEventArgs e)
         {
             ShowHideTransport(false);
-            base.OnPointerExited(e);
+
+            try
+            {
+                base.OnPointerExited(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         private bool _transportCollapsed = true;

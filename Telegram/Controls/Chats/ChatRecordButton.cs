@@ -176,19 +176,43 @@ namespace Telegram.Controls.Chats
         protected override void OnPointerEntered(PointerRoutedEventArgs e)
         {
             _pointerEntered = true;
-            base.OnPointerEntered(e);
+
+            try
+            {
+                base.OnPointerEntered(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnPointerExited(PointerRoutedEventArgs e)
         {
             _pointerEntered = false;
-            base.OnPointerExited(e);
+
+            try
+            {
+                base.OnPointerExited(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnPointerPressed(PointerRoutedEventArgs e)
         {
             Icon.CapturePointer(e.Pointer);
-            base.OnPointerPressed(e);
+
+            try
+            {
+                base.OnPointerPressed(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)

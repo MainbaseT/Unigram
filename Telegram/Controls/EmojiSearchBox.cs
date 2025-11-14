@@ -285,7 +285,15 @@ namespace Telegram.Controls
                 : point.Properties.MouseWheelDelta < 0 ? 50 : -50;
 
             ScrollingHost?.TryChangeView(ScrollingHost.HorizontalOffset + delta, null, null);
-            base.OnPointerWheelChanged(e);
+
+            try
+            {
+                base.OnPointerWheelChanged(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         public event TextChangedEventHandler TextChanged;

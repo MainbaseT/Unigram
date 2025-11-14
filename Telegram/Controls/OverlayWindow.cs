@@ -63,7 +63,14 @@ namespace Telegram.Controls
                 OnBackRequested(new BackRequestedRoutedEventArgs());
             }
 
-            base.OnPointerPressed(e);
+            try
+            {
+                base.OnPointerPressed(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         private void OnVisibleBoundsChanged(ApplicationView sender, object args)

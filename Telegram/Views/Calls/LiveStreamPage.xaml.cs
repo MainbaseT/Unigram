@@ -110,7 +110,14 @@ namespace Telegram.Views.Calls
             _inactivityTimer.Stop();
             ShowHideTransport(true);
 
-            base.OnPointerMoved(e);
+            try
+            {
+                base.OnPointerMoved(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
 
             if (e.OriginalSource is FrameworkElement element)
             {
@@ -132,7 +139,14 @@ namespace Telegram.Views.Calls
                 ShowHideTransport(true);
             }
 
-            base.OnPointerReleased(e);
+            try
+            {
+                base.OnPointerReleased(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         private bool _transportCollapsed = false;

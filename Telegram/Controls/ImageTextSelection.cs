@@ -120,12 +120,10 @@ namespace Telegram.Controls
             var point = e.GetCurrentPoint(this);
             if (!point.Properties.IsLeftButtonPressed || _selection == null)
             {
-                base.OnPointerPressed(e);
                 return;
             }
 
             e.Handled = true;
-            base.OnPointerPressed(e);
 
             _selectionStartPoint = e.GetCurrentPoint(this).Position;
             _selectionPressed = _selection.IsPointWithinText(_selectionStartPoint);
@@ -146,7 +144,6 @@ namespace Telegram.Controls
         protected override void OnPointerMoved(PointerRoutedEventArgs e)
         {
             e.Handled = true;
-            base.OnPointerMoved(e);
 
             if (_selection != null)
             {
@@ -157,7 +154,6 @@ namespace Telegram.Controls
         protected override void OnPointerReleased(PointerRoutedEventArgs e)
         {
             e.Handled = true;
-            base.OnPointerReleased(e);
 
             _selectionPressed = false;
             ReleasePointerCapture(e.Pointer);
@@ -166,7 +162,6 @@ namespace Telegram.Controls
         protected override void OnPointerExited(PointerRoutedEventArgs e)
         {
             e.Handled = true;
-            base.OnPointerExited(e);
 
             if (_selectionPressed)
             {

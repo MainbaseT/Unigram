@@ -245,7 +245,14 @@ namespace Telegram.Controls
 
         protected override void OnPointerMoved(PointerRoutedEventArgs e)
         {
-            base.OnPointerMoved(e);
+            try
+            {
+                base.OnPointerMoved(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
 
             if (_spanForInlines == null && _spoilerGeometry != null && _spoilerPresenter != null)
             {
@@ -283,7 +290,14 @@ namespace Telegram.Controls
                 Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
             }
 
-            base.OnPointerExited(e);
+            try
+            {
+                base.OnPointerExited(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         protected override void OnTapped(TappedRoutedEventArgs e)

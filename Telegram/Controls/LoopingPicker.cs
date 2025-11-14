@@ -116,7 +116,14 @@ namespace Telegram.Controls
                 Focus(FocusState.Keyboard);
             }
 
-            base.OnPointerWheelChanged(e);
+            try
+            {
+                base.OnPointerWheelChanged(e);
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+            }
         }
 
         public void Increase()
