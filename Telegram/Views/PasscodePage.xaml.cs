@@ -116,11 +116,7 @@ namespace Telegram.Views
         private async void OnLoaded(object sender, RoutedEventArgs args)
         {
             _window.Activated += Window_Activated;
-            _window.SizeChanged += Window_SizeChanged;
-
             Field.LosingFocus += Field_LosingFocus;
-
-            UpdateView();
 
             if (_passcodeService.IsBiometricsEnabled && await KeyCredentialManager.IsSupportedAsync())
             {
@@ -140,14 +136,10 @@ namespace Telegram.Views
         private void OnUnloaded(object sender, RoutedEventArgs args)
         {
             _window.Activated -= Window_Activated;
-            _window.SizeChanged -= Window_SizeChanged;
-
             Field.LosingFocus -= Field_LosingFocus;
 
             _retryTimer.Stop();
         }
-
-        #region Bounds
 
         private void Window_Activated(object sender, WindowActivatedEventArgs e)
         {
@@ -158,27 +150,6 @@ namespace Telegram.Views
                 Field.Focus(FocusState.Keyboard);
             }
         }
-
-        private void Window_SizeChanged(object sender, WindowSizeChangedEventArgs e)
-        {
-            UpdateView();
-        }
-
-        private void UpdateView()
-        {
-            var bounds = WindowContext.Current.Bounds;
-
-            Margin = new Thickness();
-            MinWidth = bounds.Width;
-            MinHeight = bounds.Height;
-            MaxWidth = bounds.Width;
-            MaxHeight = bounds.Height;
-
-            LayoutRoot.Width = bounds.Width;
-            LayoutRoot.Height = bounds.Height;
-        }
-
-        #endregion
 
         private void Lock()
         {
