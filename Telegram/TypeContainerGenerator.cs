@@ -157,6 +157,7 @@ namespace Telegram
                 typeof(SettingsPrivacyAllowFindingByPhoneNumberViewModel),
                 typeof(SettingsPrivacyAllowPrivateVoiceAndVideoNoteMessagesViewModel),
                 typeof(SettingsPrivacyShowPhotoViewModel),
+                typeof(SettingsPrivacyShowProfileAudioViewModel),
                 typeof(SettingsPrivacyShowStatusViewModel),
                 typeof(SettingsPrivacyShowBioViewModel),
                 typeof(SettingsPrivacyShowBirthdateViewModel),

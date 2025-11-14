@@ -604,6 +604,11 @@ namespace Telegram.Views
                         _settingsService,
                         _eventAggregator,
                         _profilePhotoService ??= new Telegram.Services.ProfilePhotoService(_clientService));
+                case "Telegram.ViewModels.Settings.Privacy.SettingsPrivacyShowProfileAudioViewModel":
+                    return (T)(object)new Telegram.ViewModels.Settings.Privacy.SettingsPrivacyShowProfileAudioViewModel(
+                        _clientService,
+                        _settingsService,
+                        _eventAggregator);
                 case "Telegram.ViewModels.Settings.Privacy.SettingsPrivacyShowStatusViewModel":
                     return (T)(object)new Telegram.ViewModels.Settings.Privacy.SettingsPrivacyShowStatusViewModel(
                         _clientService,

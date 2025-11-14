@@ -1070,6 +1070,7 @@
     <Compile Include="ViewModels\Folders\ShareFolderViewModel.cs" />
     <Compile Include="Td\Api\MessageId.cs" />
     <Compile Include="Collections\Handlers\SearchResultDiffHandler.cs" />
+    <Compile Include="ViewModels\Settings\Privacy\SettingsPrivacyShowProfileAudioViewModel.cs" />
     <Compile Include="ViewModels\Settings\Privacy\SettingsPrivacyShowBirthdateViewModel.cs" />
     <Compile Include="ViewModels\Settings\Privacy\SettingsPrivacyShowBioViewModel.cs" />
     <Compile Include="ViewModels\Settings\Privacy\SettingsPrivacyNewChatViewModel.cs" />
@@ -1396,6 +1397,9 @@
     </Compile>
     <Compile Include="Views\Profile\ProfileSavedChatsTabPage.xaml.cs">
       <DependentUpon>ProfileSavedChatsTabPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings\Privacy\SettingsPrivacyShowProfileAudioPage.xaml.cs">
+      <DependentUpon>SettingsPrivacyShowProfileAudioPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings\SettingsProfileColorNameTabPage.xaml.cs">
       <DependentUpon>SettingsProfileColorNameTabPage.xaml</DependentUpon>
@@ -3491,6 +3495,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Profile\ProfileSavedChatsTabPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Settings\Privacy\SettingsPrivacyShowProfileAudioPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

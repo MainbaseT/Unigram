@@ -430,6 +430,7 @@ namespace Telegram
                 SettingsPrivacyShowForwardedPage => TypeResolver.Current.Resolve<SettingsPrivacyShowForwardedViewModel>(sessionId),
                 SettingsPrivacyPhonePage => TypeResolver.Current.Resolve<SettingsPrivacyPhoneViewModel>(sessionId),
                 SettingsPrivacyShowPhotoPage privacyShowPhotoPage => TypeResolver.Current.Resolve<SettingsPrivacyShowPhotoViewModel, IUserDelegate>(privacyShowPhotoPage, sessionId),
+                SettingsPrivacyShowProfileAudioPage privacyShowProfileAudioPage => TypeResolver.Current.Resolve<SettingsPrivacyShowProfileAudioViewModel>(sessionId),
                 SettingsPrivacyShowStatusPage => TypeResolver.Current.Resolve<SettingsPrivacyShowStatusViewModel>(sessionId),
                 SettingsPrivacyShowBioPage => TypeResolver.Current.Resolve<SettingsPrivacyShowBioViewModel>(sessionId),
                 SettingsPrivacyShowBirthdatePage => TypeResolver.Current.Resolve<SettingsPrivacyShowBirthdateViewModel>(sessionId),

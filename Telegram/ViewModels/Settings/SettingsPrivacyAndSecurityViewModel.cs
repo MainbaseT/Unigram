@@ -37,6 +37,7 @@ namespace Telegram.ViewModels.Settings
         private readonly SettingsPrivacyShowPhotoViewModel _showPhotoRules;
         private readonly SettingsPrivacyShowStatusViewModel _showStatusRules;
         private readonly SettingsPrivacyShowBioViewModel _showBioRules;
+        private readonly SettingsPrivacyShowProfileAudioViewModel _showProfileAudioRules;
         private readonly SettingsPrivacyShowBirthdateViewModel _showBirthdateRules;
         private readonly SettingsPrivacyAutosaveGiftsViewModel _autosaveGiftsRules;
         private readonly SettingsPrivacyAllowCallsViewModel _allowCallsRules;
@@ -54,6 +55,7 @@ namespace Telegram.ViewModels.Settings
             _showPhotoRules = TypeResolver.Current.Resolve<SettingsPrivacyShowPhotoViewModel>(SessionId);
             _showStatusRules = TypeResolver.Current.Resolve<SettingsPrivacyShowStatusViewModel>(SessionId);
             _showBioRules = TypeResolver.Current.Resolve<SettingsPrivacyShowBioViewModel>(SessionId);
+            _showProfileAudioRules = TypeResolver.Current.Resolve<SettingsPrivacyShowProfileAudioViewModel>(SessionId);
             _showBirthdateRules = TypeResolver.Current.Resolve<SettingsPrivacyShowBirthdateViewModel>(SessionId);
             _autosaveGiftsRules = TypeResolver.Current.Resolve<SettingsPrivacyAutosaveGiftsViewModel>(SessionId);
             _allowCallsRules = TypeResolver.Current.Resolve<SettingsPrivacyAllowCallsViewModel>(SessionId);
@@ -66,6 +68,7 @@ namespace Telegram.ViewModels.Settings
             Children.Add(_showPhoneRules);
             Children.Add(_showStatusRules);
             Children.Add(_showBioRules);
+            Children.Add(_showProfileAudioRules);
             Children.Add(_showBirthdateRules);
             Children.Add(_autosaveGiftsRules);
             Children.Add(_allowCallsRules);
@@ -166,6 +169,7 @@ namespace Telegram.ViewModels.Settings
         public SettingsPrivacyShowPhotoViewModel ShowPhotoRules => _showPhotoRules;
         public SettingsPrivacyShowStatusViewModel ShowStatusRules => _showStatusRules;
         public SettingsPrivacyShowBioViewModel ShowBioRules => _showBioRules;
+        public SettingsPrivacyShowProfileAudioViewModel ShowProfileAudioRules => _showProfileAudioRules;
         public SettingsPrivacyShowBirthdateViewModel ShowBirthdateRules => _showBirthdateRules;
         public SettingsPrivacyAutosaveGiftsViewModel AutosaveGiftsRules => _autosaveGiftsRules;
         public SettingsPrivacyAllowCallsViewModel AllowCallsRules => _allowCallsRules;
@@ -515,6 +519,11 @@ namespace Telegram.ViewModels.Settings
         public void OpenBirthdate()
         {
             NavigationService.Navigate(typeof(SettingsPrivacyShowBirthdatePage));
+        }
+
+        public void OpenProfileAudio()
+        {
+            NavigationService.Navigate(typeof(SettingsPrivacyShowProfileAudioPage));
         }
 
         public void OpenGifts()

@@ -95,6 +95,12 @@
                                              IsChevronVisible="True"
                                              Glyph="&#xEA84;" />
 
+                    <controls:SettingsButton Content="{CustomResource PrivacyMusic}"
+                                             Badge="{x:Bind ViewModel.ShowProfileAudioRules.Badge, Mode=OneWay}"
+                                             Click="{x:Bind ViewModel.OpenProfileAudio}"
+                                             IsChevronVisible="True"
+                                             Glyph="&#xE99D;" />
+
                     <controls:SettingsButton Content="{CustomResource PrivacyForwards}"
                                              Badge="{x:Bind ViewModel.ShowForwardedRules.Badge, Mode=OneWay}"
                                              Click="{x:Bind ViewModel.OpenForwards}"
