@@ -40,7 +40,7 @@ using WinRT;
 
 namespace Telegram.Navigation
 {
-    public partial class WindowControl : UserControl, IPopupHost, IToastHost
+    public partial class WindowControl : Page, IPopupHost, IToastHost
     {
         public void PopupOpened()
         {
