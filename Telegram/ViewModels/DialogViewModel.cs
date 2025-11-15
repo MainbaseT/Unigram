@@ -3809,12 +3809,8 @@ namespace Telegram.ViewModels
                     if (confirm == ContentDialogResult.Primary)
                     {
                         var response = await ClientService.SendAsync(new CreateGroupCall(null));
-                        if (response is GroupCallInfo info)
+                        if (response is GroupCallInfo info && ClientService.TryGetGroupCall(info.GroupCallId, out GroupCall groupCall))
                         {
-                            response = await ClientService.SendAsync(new GetGroupCall(info.GroupCallId));
-
-                            if (response is GroupCall groupCall)
-                            {
                                 var options = await PickMessageSendOptionsAsync();
                                 if (options == null)
                                 {
@@ -3826,7 +3822,6 @@ namespace Telegram.ViewModels
                         }
                     }
                 }
-            }
             else
             {
                 _voipService.JoinGroupCall(NavigationService, chat.Id);

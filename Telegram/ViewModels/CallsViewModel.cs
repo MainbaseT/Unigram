@@ -149,14 +149,9 @@ namespace Telegram.ViewModels
         public async void CreateLink()
         {
             var response = await ClientService.SendAsync(new CreateGroupCall(null));
-            if (response is GroupCallInfo info)
+            if (response is GroupCallInfo info && ClientService.TryGetGroupCall(info.GroupCallId, out GroupCall groupCall))
             {
-                response = await ClientService.SendAsync(new GetGroupCall(info.GroupCallId));
-
-                if (response is GroupCall groupCall)
-                {
-                    NavigationService.ShowPopup(new ShareGroupCallPopup(ClientService, NavigationService, groupCall));
-                }
+                NavigationService.ShowPopup(new ShareGroupCallPopup(ClientService, NavigationService, groupCall));
             }
         }
     }

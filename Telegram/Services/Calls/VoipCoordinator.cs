@@ -348,8 +348,8 @@ namespace Telegram.Services
         {
             alias ??= chat.VideoChat.DefaultParticipantId;
 
-            var response = await clientService.SendAsync(new GetGroupCall(groupCallId));
-            if (response is not GroupCall groupCall)
+            var groupCall = clientService.GetGroupCall(groupCallId);
+            if (groupCall == null)
             {
                 return;
             }

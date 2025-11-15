@@ -235,6 +235,9 @@ namespace Telegram.Services
         bool TryGetSupergroupFull(long id, out SupergroupFullInfo value);
         bool TryGetSupergroupFull(Chat chat, out SupergroupFullInfo value);
 
+        GroupCall GetGroupCall(int id);
+        bool TryGetGroupCall(int id, out GroupCall value);
+
         MessageTag GetSavedMessagesTag(ReactionType reaction);
         bool TryGetSavedMessagesTag(ReactionType reaction, out MessageTag value);
 
@@ -315,6 +318,8 @@ namespace Telegram.Services
 
         private readonly ReaderWriterDictionary<long, Supergroup> _supergroups = new();
         private readonly ReaderWriterDictionary<long, SupergroupFullInfo> _supergroupsFull = new();
+
+        private readonly ReaderWriterDictionary<int, GroupCall> _groupCalls = new();
 
         private readonly ConcurrentDictionary<int, ChatListUnreadCount> _unreadCounts = new();
 
@@ -905,6 +910,8 @@ namespace Telegram.Services
 
             _supergroups.Clear();
             _supergroupsFull.Clear();
+
+            _groupCalls.Clear();
 
             _forums.Clear();
             _directMessagesChats.Clear();
@@ -2536,6 +2543,23 @@ namespace Telegram.Services
 
 
 
+        public GroupCall GetGroupCall(int id)
+        {
+            if (_groupCalls.TryGetValue(id, out GroupCall value))
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        public bool TryGetGroupCall(int id, out GroupCall value)
+        {
+            return _groupCalls.TryGetValue(id, out value);
+        }
+
+
+
         public MessageTag GetSavedMessagesTag(ReactionType reaction)
         {
             lock (_savedMessagesTags)
@@ -3376,6 +3400,9 @@ namespace Telegram.Services
                     break;
                 case UpdateDirectMessagesChatTopic updateDirectMessagesChatTopic:
                     UpdateDirectMessagesChatTopic(updateDirectMessagesChatTopic.Topic.ChatId, manager => manager.UpdateDirectMessagesChatTopic(updateDirectMessagesChatTopic.Topic));
+                    break;
+                case UpdateGroupCall updateGroupCall:
+                    _groupCalls[updateGroupCall.GroupCall.Id] = updateGroupCall.GroupCall;
                     break;
                 case UpdateInstalledStickerSets updateInstalledStickerSets:
                     switch (updateInstalledStickerSets.StickerType)

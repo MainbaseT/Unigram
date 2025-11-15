@@ -458,12 +458,11 @@ namespace Telegram.Services.Calls
                     Id = info.GroupCallId;
                     response = new Text(info.JoinPayload);
 
-                    var groupCall = await ClientService.SendAsync(new GetGroupCall(info.GroupCallId));
-                    if (groupCall is GroupCall call)
+                    if (ClientService.TryGetGroupCall(info.GroupCallId, out GroupCall groupCall))
                     {
-                        _inputGroupCall ??= new InputGroupCallLink(call.InviteLink);
+                        _inputGroupCall ??= new InputGroupCallLink(groupCall.InviteLink);
                         _inputGroupCallTask.TrySetResult(_inputGroupCall);
-                        Update(call, out _);
+                        Update(groupCall, out _);
                     }
 
                     if (_inviteUserIds != null)

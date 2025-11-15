@@ -307,16 +307,12 @@ namespace Telegram.ViewModels
 
         private async void UpdateGroupCall(Chat chat, int groupCallId)
         {
-            if (groupCallId == 0)
+            if (groupCallId == 0 || ClientService.TryGetGroupCall(groupCallId, out GroupCall groupCall))
             {
                 return;
             }
 
-            var response = await ClientService.SendAsync(new GetGroupCall(groupCallId));
-            if (response is GroupCall groupCall)
-            {
-                BeginOnUIThread(() => Delegate?.UpdateGroupCall(chat, groupCall));
-            }
+            BeginOnUIThread(() => Delegate?.UpdateGroupCall(chat, groupCall));
         }
 
 
