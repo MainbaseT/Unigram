@@ -135,6 +135,28 @@
                         </Border>
                     </Grid>
                     <Grid BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                        <controls:FauxCheckBox Click="{x:Bind ViewModel.ChangeAllowFromChannels}"
+                                               IsFaux="True"
+                                               IsChevronVisible="{x:Bind ViewModel.IsPremium, Mode=OneWay}"
+                                               IsChecked="{x:Bind ViewModel.AllowFromChannels, Mode=OneWay}"
+                                               Content="{CustomResource PrivacyGiftsTypeFromChannels}"
+                                               Style="{StaticResource SettingsCheckBoxStyle}" />
+                        <Border x:Name="AllowFromChannelsLock"
+                                x:Load="{x:Bind ViewModel.IsPremium, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}"
+                                Background="{ThemeResource CheckBoxCheckBackgroundFillChecked}"
+                                CornerRadius="{ThemeResource ControlCornerRadius}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Margin="20,12,0,0"
+                                Padding="2"
+                                IsHitTestVisible="False">
+                            <TextBlock Text="&#xE9BE;"
+                                       Foreground="{ThemeResource CheckBoxCheckGlyphForegroundChecked}"
+                                       FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                       FontSize="16" />
+                        </Border>
+                    </Grid>
+                    <Grid BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                         <controls:FauxCheckBox Click="{x:Bind ViewModel.ChangeAllowPremium}"
                                                IsFaux="True"
                                                IsChevronVisible="{x:Bind ViewModel.IsPremium, Mode=OneWay}"

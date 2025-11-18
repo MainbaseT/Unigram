@@ -29,6 +29,7 @@ namespace Telegram.ViewModels.Settings.Privacy
                 AllowLimited = fullInfo.GiftSettings.AcceptedGiftTypes.LimitedGifts;
                 AllowUnlimited = fullInfo.GiftSettings.AcceptedGiftTypes.UnlimitedGifts;
                 AllowUnique = fullInfo.GiftSettings.AcceptedGiftTypes.UpgradedGifts;
+                AllowFromChannels = fullInfo.GiftSettings.AcceptedGiftTypes.GiftsFromChannels;
                 AllowPremium = fullInfo.GiftSettings.AcceptedGiftTypes.PremiumSubscription;
                 ShowIcon = fullInfo.GiftSettings.ShowGiftButton;
             }
@@ -100,6 +101,25 @@ namespace Telegram.ViewModels.Settings.Privacy
             }
         }
 
+        private bool _allowFromChannels;
+        public bool AllowFromChannels
+        {
+            get => _allowFromChannels || !IsPremium;
+            set => Invalidate(ref _allowFromChannels, value);
+        }
+
+        public void ChangeAllowFromChannels()
+        {
+            if (ClientService.IsPremium)
+            {
+                AllowFromChannels = !AllowFromChannels;
+            }
+            else
+            {
+                ShowFeaturePromo();
+            }
+        }
+
         private bool _allowPremium;
         public bool AllowPremium
         {
@@ -157,6 +177,7 @@ namespace Telegram.ViewModels.Settings.Privacy
                     LimitedGifts = AllowLimited,
                     UnlimitedGifts = AllowUnlimited,
                     UpgradedGifts = AllowUnique,
+                    GiftsFromChannels = AllowFromChannels,
                     PremiumSubscription = AllowPremium,
                 },
                 ShowGiftButton = ShowIcon
