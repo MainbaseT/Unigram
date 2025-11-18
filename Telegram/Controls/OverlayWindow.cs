@@ -214,6 +214,16 @@ namespace Telegram.Controls
             Focus(FocusState.Programmatic);
         }
 
+        public void PopupOpened()
+        {
+            UnmaskTitleAndStatusBar(WindowContext.Current);
+        }
+
+        public void PopupClosed()
+        {
+            MaskTitleAndStatusBar(WindowContext.Current);
+        }
+
         private void PopupHost_Opened(object sender, object e)
         {
             MaskTitleAndStatusBar(WindowContext.Current);
