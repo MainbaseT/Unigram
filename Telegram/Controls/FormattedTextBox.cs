@@ -728,8 +728,8 @@ namespace Telegram.Controls
 
             if (string.IsNullOrEmpty(popup.Text))
             {
-                var clipboard = Clipboard.GetContent();
-                if (clipboard.Contains(StandardDataFormats.Text))
+                var clipboard = ClipboardEx.TryGetContent();
+                if (clipboard != null && clipboard.Contains(StandardDataFormats.Text))
                 {
                     var link = await clipboard.GetTextAsync();
                     if (link.IsValidUrl())
@@ -896,9 +896,11 @@ namespace Telegram.Controls
             try
             {
                 var args = new HandledEventArgs(false);
-                var package = Clipboard.GetContent();
-
-                OnPaste(args, package);
+                var package = ClipboardEx.TryGetContent();
+                if (package != null)
+                {
+                    OnPaste(args, package);
+                }
             }
             catch
             {
@@ -911,9 +913,11 @@ namespace Telegram.Controls
             try
             {
                 var args = new HandledEventArgs(false);
-                var package = Clipboard.GetContent();
-
-                OnPaste(args, package);
+                var package = ClipboardEx.TryGetContent();
+                if (package != null)
+                {
+                    OnPaste(args, package);
+                }
 
                 e.Handled = args.Handled;
             }

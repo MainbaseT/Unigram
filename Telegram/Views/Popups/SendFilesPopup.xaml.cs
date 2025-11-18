@@ -677,7 +677,7 @@ namespace Telegram.Views.Popups
 
         private async void OnPaste(object sender, TextControlPasteEventArgs e)
         {
-            var content = Clipboard.GetContent();
+            var content = ClipboardEx.TryGetContent();
             if (content.AvailableFormats.Contains(StandardDataFormats.Text))
             {
                 e.Handled = true;

@@ -1016,8 +1016,8 @@ namespace Telegram.Views
                 return;
             }
 
-            var clipboard = Clipboard.GetContent();
-            if (clipboard.Contains(StandardDataFormats.Text) && _menuBot != null)
+            var clipboard = ClipboardEx.TryGetContent();
+            if (clipboard != null && clipboard.Contains(StandardDataFormats.Text) && _menuBot != null)
             {
                 var text = await clipboard.GetTextAsync();
                 PostEvent("clipboard_text_received", "req_id", requestId, "data", text);

@@ -1720,6 +1720,20 @@ namespace Telegram.Common
                 // All the remote procedure calls must be wrapped in a try-catch block
             }
         }
+
+        public static DataPackageView TryGetContent()
+        {
+            try
+            {
+                return Clipboard.GetContent();
+            }
+            catch
+            {
+                // All the remote procedure calls must be wrapped in a try-catch block
+                return null;
+            }
+        }
+
     }
 
     public static class FocusManagerEx
