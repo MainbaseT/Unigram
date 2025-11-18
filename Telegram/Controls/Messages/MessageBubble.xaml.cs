@@ -1084,7 +1084,7 @@ namespace Telegram.Controls.Messages
                     else
                     {
                         HeaderLink.ClearValue(TextElement.ForegroundProperty);
-                        Identity.Foreground = HeaderLabel.Foreground.WithOpacity(0.6);
+                        Identity.ClearValue(ForegroundProperty);
                     }
 
                     HeaderLinkRun.Text = title;
@@ -1109,7 +1109,7 @@ namespace Telegram.Controls.Messages
                     else
                     {
                         HeaderLink.ClearValue(TextElement.ForegroundProperty);
-                        Identity.Foreground = HeaderLabel.Foreground.WithOpacity(0.6);
+                        Identity.ClearValue(ForegroundProperty);
                     }
 
                     HeaderLinkRun.Text = title;
