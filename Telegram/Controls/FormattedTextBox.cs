@@ -346,14 +346,25 @@ namespace Telegram.Controls
             switch (e.Key)
             {
                 case VirtualKey.Back or VirtualKey.Delete when IsReplaceEmojiEnabled:
-                    BeginUndoGroup();
-
                     base.OnKeyDown(e);
 
-                    if (Document.Selection.Expand(TextRangeUnit.Hidden) != 0 && Emoticon.Data.ContainsKey(Document.Selection.Text))
+                    BeginUndoGroup();
+
+                    if (Document.Selection.Expand(TextRangeUnit.Hidden) != 0)
                     {
-                        Document.Selection.CharacterFormat.Hidden = FormatEffect.Off;
-                        Document.Selection.Collapse(e.Key is VirtualKey.Delete);
+                        if (Emoticon.Data.ContainsKey(Document.Selection.Text))
+                        {
+                            Document.Selection.CharacterFormat.Hidden = FormatEffect.Off;
+                            Document.Selection.Collapse(e.Key is VirtualKey.Delete);
+                        }
+                        else if (IsCustomEmoji(Document.Selection, out _, out _))
+                        {
+                            var follow = Document.GetRange(Document.Selection.EndPosition, Document.Selection.EndPosition);
+                            if (follow.Character != '\uEA4F')
+                            {
+                                Document.Selection.Delete(TextRangeUnit.Hidden, 1);
+                            }
+                        }
                     }
 
                     EndUndoGroup();
@@ -1812,20 +1823,6 @@ namespace Telegram.Controls
                 }
 
                 lastPosition = range.StartPosition;
-
-                if (range.CharacterFormat.Hidden == FormatEffect.On && range.Link.Length == 0)
-                {
-                    range.Expand(TextRangeUnit.Hidden);
-
-                    if (IsCustomEmoji(range, out _, out _))
-                    {
-                        var follow = Document.GetRange(range.EndPosition, range.EndPosition);
-                        if (follow.Character != '\uEA4F')
-                        {
-                            range.Delete(TextRangeUnit.Hidden, 1);
-                        }
-                    }
-                }
 
                 if (range.ParagraphFormat.SpaceAfter == 6 && range.CharacterFormat.Size != 9)
                 {
