@@ -190,13 +190,19 @@ namespace Telegram
             return Locale.Declension(Strings.R.Gift2Availability4Value, gift.OverallLimits.RemainingCount, gift.OverallLimits.TotalCount.ToString("N0"));
         }
 
-        public static int CountUnread(this ChatActiveStories activeStories, out bool closeFriends)
+        public static int CountUnread(this ChatActiveStories activeStories, out bool closeFriends, out bool live)
         {
             var count = 0;
             closeFriends = false;
+            live = false;
 
             foreach (var story in activeStories.Stories)
             {
+                if (story.IsLive)
+                {
+                    live = true;
+                }
+
                 if (story.StoryId > activeStories.MaxReadStoryId)
                 {
                     if (story.IsForCloseFriends)

@@ -8488,6 +8488,9 @@ Upgrade to **Telegram Premium** to increase this limit to **{1}**.</value>
   <data name="LiteSmoothTransitionsInfo" xml:space="preserve">
     <value>You can disable animated transitions between different sections of the app.</value>
   </data>
+  <data name="LiveStoryBadge" xml:space="preserve">
+    <value>LIVE</value>
+  </data>
   <data name="Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>

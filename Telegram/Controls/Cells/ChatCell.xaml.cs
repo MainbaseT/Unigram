@@ -135,6 +135,8 @@ namespace Telegram.Controls.Cells
         private Grid AutoDeleteBadge;
         private TextBlock AutoDeleteLabel;
 
+        private Border LiveBadge;
+
         private BadgeControl DirectMessagesGroup;
 
         private Border CompactBadgeRoot;
@@ -799,6 +801,15 @@ namespace Telegram.Controls.Cells
 
             SelectionOutline.RadiusX = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 12 : 24;
             SelectionOutline.RadiusY = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 12 : 24;
+
+            if (Segments.HasLiveBadge)
+            {
+                LoadTemplateChild(ref LiveBadge);
+            }
+            else if (LiveBadge != null)
+            {
+                UnloadTemplateChild(ref LiveBadge);
+            }
         }
 
         public void UpdateChatEmojiStatus(Chat chat)
@@ -860,6 +871,15 @@ namespace Telegram.Controls.Cells
             if (activeStories.ChatId != _clientService.Options.MyId)
             {
                 Segments.UpdateActiveStories(activeStories, 48, true);
+
+                if (Segments.HasLiveBadge)
+                {
+                    LoadTemplateChild(ref LiveBadge);
+                }
+                else if (LiveBadge != null)
+                {
+                    UnloadTemplateChild(ref LiveBadge);
+                }
             }
         }
 

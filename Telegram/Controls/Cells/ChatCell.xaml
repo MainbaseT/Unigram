@@ -70,7 +70,8 @@
                             <controls:ActiveStoriesSegments x:Name="Segments"
                                                             Width="48"
                                                             Height="48"
-                                                            IsClickEnabled="False">
+                                                            InteractionMode="Auto"
+                                                            IsLiveBadgeVisible="False">
                                 <controls:ProfilePicture x:Name="Photo"
                                                          Size="48" />
                             </controls:ActiveStoriesSegments>
@@ -118,6 +119,28 @@
                                            VerticalAlignment="Center"
                                            Foreground="#FFFFFF" />
                             </Grid>
+
+                            <Border x:Name="LiveBadge"
+                                    x:Load="False"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Bottom"
+                                    Background="#FF2C55"
+                                    BorderBrush="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                                    BorderThickness="2"
+                                    CornerRadius="8"
+                                    Height="16"
+                                    MinWidth="16"
+                                    Margin="0,0,0,-2">
+                                <TextBlock Foreground="#FFFFFF"
+                                           Text="{CustomResource LiveStoryBadge}"
+                                           TextLineBounds="Tight"
+                                           TextAlignment="Center"
+                                           OpticalMarginAlignment="TrimSideBearings"
+                                           FontSize="9"
+                                           Padding="4,0,4,0"
+                                           VerticalAlignment="Center"
+                                           Typography.NumeralAlignment="Tabular" />
+                            </Border>
 
                             <Border x:Name="CompactBadgeRoot"
                                     x:Load="False"

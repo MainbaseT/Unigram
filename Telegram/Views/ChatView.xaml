@@ -222,7 +222,7 @@
                                      Width="216">
                 <StackPanel>
                     <controls:ActiveStoriesSegments x:Name="Segments"
-                                                    IsClickEnabled="False"
+                                                    InteractionMode="Disabled"
                                                     IsEnabled="False"
                                                     Width="120"
                                                     Height="120"

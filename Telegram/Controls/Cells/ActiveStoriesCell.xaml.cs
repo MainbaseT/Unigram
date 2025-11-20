@@ -12,6 +12,7 @@ using System.Numerics;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Stories;
 using Windows.UI.Composition;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
@@ -62,9 +63,6 @@ namespace Telegram.Controls.Cells
 
                 Photo.Source = ProfilePictureSource.Chat(activeStories.ClientService, chat);
             }
-
-            Segments.UpdateActiveStories(activeStories.Item, 48, true);
-            SegmentsSmall.UpdateActiveStories(activeStories.Item, 48, false);
         }
 
         public ChatActiveStories Trigger
@@ -73,6 +71,10 @@ namespace Telegram.Controls.Cells
             {
                 Segments.UpdateActiveStories(value, 48, true);
                 SegmentsSmall.UpdateActiveStories(value, 48, false);
+
+                LiveBadge.Visibility = Segments.HasLiveBadge
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
         }
 
@@ -90,6 +92,7 @@ namespace Telegram.Controls.Cells
             var gradient = ElementComposition.GetElementVisual(SegmentsRoot);
             var cross1 = ElementComposition.GetElementVisual(Segments);
             var cross2 = ElementComposition.GetElementVisual(SegmentsSmall);
+            var live = ElementComposition.GetElementVisual(LiveBadge);
 
             var included = index >= f && index <= l;
             var clamp = Math.Clamp(index, f, l);
@@ -196,6 +199,7 @@ namespace Telegram.Controls.Cells
             visualScale3.SetReferenceParameter("_", tracker);
 
             title.StartAnimation("Opacity", visualScale2);
+            live.StartAnimation("Opacity", visualScale2);
             cross1.StartAnimation("Opacity", visualScale2);
             cross2.StartAnimation("Opacity", visualScale3);
 
@@ -251,6 +255,7 @@ namespace Telegram.Controls.Cells
             var gradient = ElementComposition.GetElementVisual(SegmentsRoot);
             var cross1 = ElementComposition.GetElementVisual(Segments);
             var cross2 = ElementComposition.GetElementVisual(SegmentsSmall);
+            var live = ElementComposition.GetElementVisual(LiveBadge);
 
             ElementCompositionPreview.SetIsTranslationEnabled(container, true);
             ElementCompositionPreview.SetIsTranslationEnabled(Title, true);
@@ -268,11 +273,13 @@ namespace Telegram.Controls.Cells
             photo.CenterPoint = new Vector3(24);
 
             title.StopAnimation("Opacity");
+            live.StopAnimation("Opacity");
             cross1.StopAnimation("Opacity");
             cross2.StopAnimation("Opacity");
             ciccio.StopAnimation("Opacity");
 
             title.Opacity = 1;
+            live.Opacity = 1;
             cross1.Opacity = 1;
             cross2.Opacity = 0;
             ciccio.Opacity = 1;

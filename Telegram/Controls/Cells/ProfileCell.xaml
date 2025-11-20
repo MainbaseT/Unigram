@@ -28,7 +28,7 @@
                Stroke="{ThemeResource SystemControlBackgroundAccentBrush}" />
 
     <controls:ActiveStoriesSegments x:Name="Segments"
-                                    IsClickEnabled="False"
+                                    InteractionMode="Disabled"
                                     IsEnabled="False"
                                     Width="36"
                                     Height="36"

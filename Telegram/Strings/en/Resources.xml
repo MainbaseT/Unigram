@@ -13033,6 +13033,7 @@
     <string name="SponsoredMessageInfo">What are sponsored\nmessages?</string>
     <string name="SponsoredMessageAdWhatIsThis">what\'s this?</string>
 
+    <string name="LiveStoryBadge">LIVE</string>
     <string name="MessageScheduledRepeatYearly">yearly</string>
     <string name="MessageScheduledRepeatMonthly">monthly</string>
     <string name="MessageScheduledRepeatMonthlyMany_one">{0}-monthly</string>
