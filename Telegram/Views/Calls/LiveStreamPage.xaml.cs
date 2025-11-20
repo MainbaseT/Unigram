@@ -63,7 +63,7 @@ namespace Telegram.Views.Calls
             _call = call;
             _call.NetworkStateChanged += OnNetworkStateChanged;
             _call.JoinedStateChanged += OnJoinedStateChanged;
-            _call.AvailableStreamsChanged += OnAvailableStreamsChanged;
+            _call.StreamStateChanged += OnStreamStateChanged;
             _call.PropertyChanged += OnPropertyChanged;
             _call.AddIncomingVideoOutput("unified", _unifiedVideo = VoipVideoOutput.CreateSink(Viewport, false));
 
@@ -74,7 +74,7 @@ namespace Telegram.Views.Calls
             //ElementCompositionPreview.SetIsTranslationEnabled(PinnedGlyph, true);
             //ViewportAspect.Constraint = new Size(16, 9);
 
-            OnAvailableStreamsChanged();
+            OnStreamStateChanged(_call.StreamState);
             OnPropertyChanged();
         }
 
@@ -191,14 +191,14 @@ namespace Telegram.Views.Calls
             _inactivityTimer.Start();
         }
 
-        private void OnAvailableStreamsChanged(object sender, EventArgs e)
+        private void OnStreamStateChanged(VoipGroupCall sender, VoipGroupCallStreamStateChangedEventArgs args)
         {
-            this.BeginOnUIThread(OnAvailableStreamsChanged);
+            this.BeginOnUIThread(() => OnStreamStateChanged(args.StreamState));
         }
 
-        private void OnAvailableStreamsChanged()
+        private void OnStreamStateChanged(VoipGroupCallStreamState streamState)
         {
-            if (_call.AvailableStreamsCount > 0 || !_call.IsConnected)
+            if (streamState != VoipGroupCallStreamState.NotAvailable || !_call.IsConnected)
             {
                 _transportUnavailable = false;
                 _inactivityTimer.Start();
@@ -253,7 +253,7 @@ namespace Telegram.Views.Calls
 
             _call.NetworkStateChanged -= OnNetworkStateChanged;
             _call.JoinedStateChanged -= OnJoinedStateChanged;
-            _call.AvailableStreamsChanged -= OnAvailableStreamsChanged;
+            _call.StreamStateChanged -= OnStreamStateChanged;
             _call.PropertyChanged -= OnPropertyChanged;
         }
 
@@ -330,7 +330,7 @@ namespace Telegram.Views.Calls
 
         private void OnNetworkStateChanged(VoipGroupCall sender, VoipGroupCallNetworkStateChangedEventArgs args)
         {
-            this.BeginOnUIThread(() => OnAvailableStreamsChanged());
+            this.BeginOnUIThread(() => OnStreamStateChanged(sender.StreamState));
         }
 
         private void OnJoinedStateChanged(VoipGroupCall sender, VoipGroupCallJoinedStateChangedEventArgs args)

@@ -26,6 +26,13 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Services.Calls
 {
+    public enum VoipGroupCallStreamState
+    {
+        Unknown,
+        NotAvailable,
+        Available
+    }
+
     public partial class VoipGroupCall : VoipCallBase
     {
         private readonly IViewService _viewService;
@@ -76,7 +83,8 @@ namespace Telegram.Services.Calls
         private bool _isConnected;
         private bool _isClosed;
 
-        private int _availableStreamsCount = 0;
+        private VoipGroupCallStreamState _streamState;
+        private readonly object _streamStateLock = new();
 
         public VoipGroupCall(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, XamlRoot xamlRoot, Chat chat, GroupCall groupCall, MessageSender alias, string inviteHash, bool isLiveStory)
             : base(clientService, settingsService, aggregator)
@@ -310,6 +318,17 @@ namespace Telegram.Services.Calls
             }
         }
 
+        public VoipGroupCallStreamState StreamState
+        {
+            get
+            {
+                lock (_streamStateLock)
+                {
+                    return _streamState;
+                }
+            }
+        }
+
         private IList<byte> EncryptData(GroupCallDataChannel dataChannel, IList<byte> data, int unencryptedPrefixSize)
         {
             Data response = null;
@@ -350,8 +369,7 @@ namespace Telegram.Services.Calls
         public event TypedEventHandler<VoipGroupCall, VoipGroupCallTopDonorsChangedEventArgs> TopDonorsChanged;
         public event TypedEventHandler<VoipGroupCall, VoipGroupCallTotalStarCountChangedEventArgs> TotalStarCountChanged;
 
-        public event EventHandler AvailableStreamsChanged;
-        public int AvailableStreamsCount => _availableStreamsCount;
+        public event TypedEventHandler<VoipGroupCall, VoipGroupCallStreamStateChangedEventArgs> StreamStateChanged;
 
         private GroupCallParticipantsCollection _participants;
         public GroupCallParticipantsCollection Participants
@@ -710,26 +728,39 @@ namespace Telegram.Services.Calls
         {
             if (IsRtmpStream)
             {
+                var streamStateChanged = VoipGroupCallStreamState.Unknown;
+
                 var response = await ClientService.SendAsync(new GetGroupCallStreams(Id));
                 if (response is GroupCallStreams streams && streams.Streams.Count > 0)
                 {
                     args.Deferral(streams.Streams[0].TimeOffset);
 
-                    if (_availableStreamsCount == 0)
+                    lock (_streamStateLock)
                     {
-                        _availableStreamsCount = 1;
-                        AvailableStreamsChanged?.Invoke(this, EventArgs.Empty);
+                        if (_streamState != VoipGroupCallStreamState.Available)
+                        {
+                            _streamState = VoipGroupCallStreamState.Available;
+                            streamStateChanged = VoipGroupCallStreamState.Available;
+                        }
                     }
                 }
                 else
                 {
                     args.Deferral(0);
 
-                    if (_availableStreamsCount > 0)
+                    lock (_streamStateLock)
                     {
-                        _availableStreamsCount = 0;
-                        AvailableStreamsChanged?.Invoke(this, EventArgs.Empty);
+                        if (_streamState != VoipGroupCallStreamState.NotAvailable)
+                        {
+                            _streamState = VoipGroupCallStreamState.NotAvailable;
+                            streamStateChanged = VoipGroupCallStreamState.NotAvailable;
+                        }
                     }
+                }
+
+                if (streamStateChanged != VoipGroupCallStreamState.Unknown)
+                {
+                    StreamStateChanged?.Invoke(this, new VoipGroupCallStreamStateChangedEventArgs(streamStateChanged));
                 }
             }
             else

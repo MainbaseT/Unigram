@@ -10,6 +10,18 @@ using Telegram.Td.Api;
 
 namespace Telegram.Services.Calls
 {
+    public record VoipGroupCallJoinedStateChangedEventArgs(bool IsJoined, bool NeedRejoin)
+    {
+        // TODO: handle in StoryContent/Window to close the view
+        public bool IsClosed => !IsJoined && !NeedRejoin;
+    }
+
+    public record VoipGroupCallNetworkStateChangedEventArgs(bool IsConnected, bool IsTransitioningFromBroadcastToRtc);
+
+    public record VoipGroupCallStreamStateChangedEventArgs(VoipGroupCallStreamState StreamState);
+
+    public record VoipGroupCallVerificationStateChangedEventArgs(int Generation, IList<string> Emojis);
+
     public record VoipGroupCallMessagesChangedEventArgs(GroupCallMessage Message, bool Deleted);
 
     public record VoipGroupCallReactionsChangedEventArgs(MessageSender SenderId, long StarCount);

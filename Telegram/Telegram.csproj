@@ -395,7 +395,7 @@
     <Compile Include="Controls\Views\RecentChatsView.xaml.cs">
       <DependentUpon>RecentChatsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Services\Calls\VoipGroupCallLiveStoryEventArgs.cs" />
+    <Compile Include="Services\Calls\VoipGroupCallEventArgs.cs" />
     <Compile Include="Services\Settings\ToolTipSettings.cs" />
     <Compile Include="Services\TextRecognitionService.cs" />
     <Compile Include="Td\Api\ChatProjection.cs" />
@@ -454,16 +454,9 @@
     <Compile Include="Entities\VideoGeneration.cs" />
     <Compile Include="Services\Calls\VoipCallBase.cs" />
     <Compile Include="Services\Calls\VoipCoordinator.cs" />
-    <Compile Include="Services\Calls\VoipGroupCallVerificationStateChangedEventArgs.cs" />
-    <Compile Include="Services\Calls\VoipGroupCallJoinedStateChangedEventArgs.cs" />
     <Compile Include="Services\Calls\VoipGroupCallParticipants.cs" />
     <Compile Include="Services\Calls\VoipCall.cs" />
-    <Compile Include="Services\Calls\VoipCallAudioLevelUpdatedEventArgs.cs" />
-    <Compile Include="Services\Calls\VoipCallConnectionStateChangedEventArgs.cs" />
-    <Compile Include="Services\Calls\VoipCallMediaStateChangedEventArgs.cs" />
-    <Compile Include="Services\Calls\VoipCallRemoteBatteryLevelIsLowChangedEventArgs.cs" />
-    <Compile Include="Services\Calls\VoipCallSignalBarsUpdatedEventArgs.cs" />
-    <Compile Include="Services\Calls\VoipCallStateChangedEventArgs.cs" />
+    <Compile Include="Services\Calls\VoipCallEventArgs.cs" />
     <Compile Include="Services\Calls\VoipConnectionState.cs" />
     <Compile Include="Services\Calls\VoipState.cs" />
     <Compile Include="Services\Calls\VoipVideoOutput.cs" />
@@ -480,7 +473,6 @@
     <Compile Include="Services\Calls\VoipService.cs" />
     <Compile Include="Services\Calls\VoipVideoType.cs" />
     <Compile Include="Services\Calls\VoipGroupCall.cs" />
-    <Compile Include="Services\Calls\VoipGroupCallNetworkStateChangedEventArgs.cs" />
     <Compile Include="Services\ForumTopicService.cs" />
     <Compile Include="Td\Api\ErrorStarsNeeded.cs" />
     <Compile Include="Td\Api\InputMessageReplyToTopicMessage.cs" />
