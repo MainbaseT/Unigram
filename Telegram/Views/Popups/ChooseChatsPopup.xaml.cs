@@ -875,6 +875,18 @@ namespace Telegram.Views.Popups
         public override int NumberOfSentMessages => 1;
     }
 
+    public partial class ChooseChatsConfigurationPostLogs : ChooseChatsConfiguration
+    {
+        public ChooseChatsConfigurationPostLogs(string path)
+        {
+            Path = path;
+        }
+
+        public string Path { get; }
+
+        public override int NumberOfSentMessages => 1;
+    }
+
     public partial class ChooseChatsConfigurationVerifyChat : ChooseChatsConfiguration
     {
         public ChooseChatsConfigurationVerifyChat(long botUserId)

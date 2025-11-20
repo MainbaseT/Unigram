@@ -241,30 +241,34 @@ namespace Telegram.ViewModels
 
         public void SendCalls()
         {
-            SendFile("tgcalls.txt");
+            SendFile("tgcalls.txt", false);
         }
 
         public void SendGroupCalls(object sender, RoutedEventArgs e)
         {
-            SendFile("tgcalls_group.txt");
+            SendFile("tgcalls_group.txt", false);
         }
 
         public void SendLog()
         {
-            SendFile("tdlib_log.txt");
+            SendFile("tdlib_log.txt", true);
         }
 
         public void SendLogOld(object sender, RoutedEventArgs e)
         {
-            SendFile("tdlib_log.txt.old");
+            SendFile("tdlib_log.txt.old", true);
         }
 
-        private async void SendFile(string fileName)
+        private async void SendFile(string fileName, bool logs)
         {
             var file = await ApplicationData.Current.LocalFolder.TryGetItemAsync(fileName) as StorageFile;
             if (file != null)
             {
-                await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationPostMessage(new InputMessageDocument(new InputFileLocal(file.Path), null, true, null)));
+                ChooseChatsConfiguration configuration = logs
+                    ? new ChooseChatsConfigurationPostLogs(file.Path)
+                    : new ChooseChatsConfigurationPostMessage(new InputMessageDocument(new InputFileLocal(file.Path), null, true, null));
+
+                await ShowPopupAsync(new ChooseChatsPopup(), configuration);
             }
         }
 

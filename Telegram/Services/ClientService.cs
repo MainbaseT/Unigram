@@ -51,6 +51,8 @@ namespace Telegram.Services
         void CancelDownloadFile(File file, bool onlyIfPending = false);
         bool IsDownloadFileCanceled(int fileId);
 
+        void PrepareLogs(int fileId, int verbosityLevel);
+
         Task<Object> GetCustomEmojiStickerSets(IList<long> customEmojiIds);
         Task<bool> HasPrivacySettingsRuleAsync<T>(UserPrivacySetting setting) where T : UserPrivacySettingRule;
 
@@ -334,6 +336,9 @@ namespace Telegram.Services
 
         private readonly List<long> _recentChats = new();
         private readonly object _recentChatsLock = new();
+
+        private HashSet<int> _preparedLogsFileIds;
+        private int _preparedLogsVerbosity = -1;
 
         private UnconfirmedSession _unconfirmedSession;
 
@@ -2897,6 +2902,22 @@ namespace Telegram.Services
             {
                 case UpdateFile updateFile:
                     {
+                        if (_preparedLogsFileIds != null && _preparedLogsFileIds.Contains(updateFile.File.Id))
+                        {
+                            if (updateFile.File.Remote.UploadedSize > 0)
+                            {
+                                _preparedLogsFileIds.Remove(updateFile.File.Id);
+
+                                if (_preparedLogsFileIds.Empty())
+                                {
+                                    Client.Execute(new SetLogVerbosityLevel(_preparedLogsVerbosity));
+
+                                    _preparedLogsFileIds = null;
+                                    _preparedLogsVerbosity = -1;
+                                }
+                            }
+                        }
+
                         // TODO: move the message after track when figured out why WeakAction throws a NRE
                         var token = SessionId << 16 | updateFile.File.Id;
                         if (updateFile.File.Local.IsDownloadingCompleted)
