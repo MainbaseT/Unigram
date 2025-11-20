@@ -17,6 +17,7 @@ using Telegram.Controls.Media;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
+using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.Views;
 using Telegram.Views.Popups;
@@ -79,248 +80,251 @@ namespace Telegram.ViewModels
 
             _configuration = parameter as ChooseChatsConfiguration;
 
-            if (parameter is ChooseChatsConfigurationGroupCall configurationGroupCall)
+            switch (parameter)
             {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.PostMessages;
-                PrimaryButtonText = Strings.Send;
-                IsCommentEnabled = true;
-                IsChatSelection = false;
-            }
-            else if (parameter is ChooseChatsConfigurationShareOperation configurationShareOperation)
-            {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.PostMessages;
-                IsCommentEnabled = true;
-                IsChatSelection = false;
-            }
-            else if (parameter is ChooseChatsConfigurationSwitchInline configurationSwitchInline)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = ChooseChatsOptions.PostMessages;
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                case ChooseChatsConfigurationGroupCall:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.PostMessages;
+                    PrimaryButtonText = Strings.Send;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
+                    break;
+                case ChooseChatsConfigurationShareOperation:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.PostMessages;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
+                    break;
+                case ChooseChatsConfigurationSwitchInline configurationSwitchInline:
+                    {
+                        SelectionMode = ListViewSelectionMode.None;
+                        Options = ChooseChatsOptions.PostMessages;
+                        IsCommentEnabled = false;
+                        IsChatSelection = false;
 
-                if (configurationSwitchInline.TargetChat is TargetChatChosen chosen)
-                {
-                    Options.AllowBotChats = chosen.Types.AllowBotChats;
-                    Options.AllowUserChats = chosen.Types.AllowUserChats;
-                    Options.AllowGroupChats = chosen.Types.AllowGroupChats;
-                    Options.AllowChannelChats = chosen.Types.AllowChannelChats;
-                }
-            }
-            else if (parameter is ChooseChatsConfigurationPostText configurationPostText)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = ChooseChatsOptions.PostMessages;
-                PrimaryButtonText = Strings.Send;
-                IsCommentEnabled = true;
-                IsChatSelection = false;
+                        if (configurationSwitchInline.TargetChat is TargetChatChosen chosen)
+                        {
+                            Options.AllowBotChats = chosen.Types.AllowBotChats;
+                            Options.AllowUserChats = chosen.Types.AllowUserChats;
+                            Options.AllowGroupChats = chosen.Types.AllowGroupChats;
+                            Options.AllowChannelChats = chosen.Types.AllowChannelChats;
+                        }
 
-                SendMessage = configurationPostText.Text;
-            }
-            else if (parameter is ChooseChatsConfigurationReplyToMessage)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = ChooseChatsOptions.PostMessages;
-                IsCommentEnabled = false;
-                IsChatSelection = false;
-            }
-            else if (parameter is ChooseChatsConfigurationShareGame configurationShareMessage)
-            {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.PostMessages;
-                PrimaryButtonText = Strings.Send;
-                IsCommentEnabled = true;
-                IsChatSelection = false;
+                        break;
+                    }
 
-                // TODO: sharing links isn't currently supported anyway
-                //Messages = new[] { configurationShareMessage.Message };
-                //IsWithMyScore = configurationShareMessage.WithMyScore;
+                case ChooseChatsConfigurationPostText configurationPostText:
+                    SelectionMode = ListViewSelectionMode.None;
+                    Options = ChooseChatsOptions.PostMessages;
+                    PrimaryButtonText = Strings.Send;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
 
-                //var message = configurationShareMessage.Message;
-                //var chat = ClientService.GetChat(configurationShareMessage.ChatId);
+                    SendMessage = configurationPostText.Text;
+                    break;
+                case ChooseChatsConfigurationReplyToMessage:
+                    SelectionMode = ListViewSelectionMode.None;
+                    Options = ChooseChatsOptions.PostMessages;
+                    IsCommentEnabled = false;
+                    IsChatSelection = false;
+                    break;
+                case ChooseChatsConfigurationShareGame:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.PostMessages;
+                    PrimaryButtonText = Strings.Send;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
 
-                //if (ClientService.TryGetSupergroup(chat, out Supergroup supergroup)
-                //    && supergroup.HasActiveUsername(out string username))
-                //{
-                //    var link = $"{username}/{message.Id}";
+                    // TODO: sharing links isn't currently supported anyway
+                    //Messages = new[] { configurationShareMessage.Message };
+                    //IsWithMyScore = configurationShareMessage.WithMyScore;
 
-                //    if (message.Content is MessageVideoNote)
-                //    {
-                //        link = $"https://telesco.pe/{link}";
-                //    }
-                //    else
-                //    {
-                //        link = MeUrlPrefixConverter.Convert(ClientService, link);
-                //    }
+                    //var message = configurationShareMessage.Message;
+                    //var chat = ClientService.GetChat(configurationShareMessage.ChatId);
 
-                //    var title = message.GetCaption()?.Text;
-                //    if (message.Content is MessageText text)
-                //    {
-                //        title = text.Text.Text;
-                //    }
+                    //if (ClientService.TryGetSupergroup(chat, out Supergroup supergroup)
+                    //    && supergroup.HasActiveUsername(out string username))
+                    //{
+                    //    var link = $"{username}/{message.Id}";
 
-                //    ShareLink = new HttpUrl(link);
-                //}
-                //else if (message.Content is MessageGame game)
-                //{
-                //    var viaBot = ClientService.GetUser(message.ViaBotUserId);
-                //    if (viaBot != null && viaBot.HasActiveUsername(out username))
-                //    {
-                //        ShareLink = new HttpUrl(MeUrlPrefixConverter.Convert(ClientService, $"{username}?game={game.Game.ShortName}"));
-                //    }
-                //}
-            }
-            else if (parameter is ChooseChatsConfigurationInviteToChat configurationInviteToChat)
-            {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.InviteUsers;
-                PrimaryButtonText = Strings.Done;
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                    //    if (message.Content is MessageVideoNote)
+                    //    {
+                    //        link = $"https://telesco.pe/{link}";
+                    //    }
+                    //    else
+                    //    {
+                    //        link = MeUrlPrefixConverter.Convert(ClientService, link);
+                    //    }
 
-                if (ClientService.TryGetChat(configurationInviteToChat.ChatId, out Chat chat))
-                {
-                    Title = chat.Type is ChatTypeSupergroup { IsChannel: true }
-                        ? Strings.AddSubscriber
-                        : Strings.AddMember;
-                }
-            }
-            else if (parameter is ChooseChatsConfigurationShareStory)
-            {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.PostMessages;
-                PrimaryButtonText = Strings.Send;
-                IsCommentEnabled = true;
-                IsChatSelection = false;
-            }
-            else if (parameter is ChooseChatsConfigurationShareMessages configurationShareMessages)
-            {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.PostMessages;
-                PrimaryButtonText = Strings.Send;
-                IsCommentEnabled = true;
-                IsChatSelection = false;
-            }
-            else if (parameter is ChooseChatsConfigurationPostLink configurationPostLink)
-            {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.PostMessages;
-                PrimaryButtonText = Strings.Send;
-                IsCommentEnabled = true;
-                IsChatSelection = false;
+                    //    var title = message.GetCaption()?.Text;
+                    //    if (message.Content is MessageText text)
+                    //    {
+                    //        title = text.Text.Text;
+                    //    }
 
-                ShareLink = configurationPostLink.Url;
-            }
-            else if (parameter is ChooseChatsConfigurationPostMessage configurationPostMessage)
-            {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.PostMessages;
-                PrimaryButtonText = Strings.Send;
-                IsCommentEnabled = true;
-                IsChatSelection = false;
-            }
-            else if (parameter is ChooseChatsConfigurationStartBot configurationStartBot)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = ChooseChatsOptions.GroupsAndChannels;
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                    //    ShareLink = new HttpUrl(link);
+                    //}
+                    //else if (message.Content is MessageGame game)
+                    //{
+                    //    var viaBot = ClientService.GetUser(message.ViaBotUserId);
+                    //    if (viaBot != null && viaBot.HasActiveUsername(out username))
+                    //    {
+                    //        ShareLink = new HttpUrl(MeUrlPrefixConverter.Convert(ClientService, $"{username}?game={game.Game.ShortName}"));
+                    //    }
+                    //}
+                    break;
+                case ChooseChatsConfigurationInviteToChat configurationInviteToChat:
+                    {
+                        SelectionMode = ListViewSelectionMode.Multiple;
+                        Options = ChooseChatsOptions.InviteUsers;
+                        PrimaryButtonText = Strings.Done;
+                        IsCommentEnabled = false;
+                        IsChatSelection = false;
 
-                Title = Strings.AddToGroupOrChannel;
-            }
-            else if (parameter is ChooseChatsConfigurationSetTheme configurationSetTheme)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = new ChooseChatsOptions()
-                {
-                    AllowChannelChats = false,
-                    AllowGroupChats = false,
-                    AllowBotChats = false,
-                    AllowUserChats = true,
-                    AllowSecretChats = false,
-                    AllowSelf = false,
-                    CanPostMessages = false,
-                    CanInviteUsers = false,
-                    CanShareContact = false,
-                    Mode = ChooseChatsMode.Chats,
-                    ShowMessages = false
-                };
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                        if (ClientService.TryGetChat(configurationInviteToChat.ChatId, out Chat chat))
+                        {
+                            Title = chat.Type is ChatTypeSupergroup { IsChannel: true }
+                                ? Strings.AddSubscriber
+                                : Strings.AddMember;
+                        }
 
-                Title = Strings.SelectChat;
-            }
-            else if (parameter is ChooseChatsConfigurationRequestUsers configurationRequestUsers)
-            {
-                SelectionMode = configurationRequestUsers.MaxQuantity != 1
-                    ? ListViewSelectionMode.Multiple
-                    : ListViewSelectionMode.None;
-                Options = new ChooseChatsOptionsRequestUsers(configurationRequestUsers);
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                        break;
+                    }
 
-                if (configurationRequestUsers.RestrictUserIsBot && configurationRequestUsers.UserIsBot)
-                {
-                    Title = Strings.ChooseBot;
-                }
-                else
-                {
-                    Title = configurationRequestUsers.MaxQuantity != 1
-                        ? Strings.ChooseUsers
-                        : Strings.ChooseUser;
-                }
-            }
-            else if (parameter is ChooseChatsConfigurationRequestChat configurationRequestChat)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = new ChooseChatsOptionsRequestChat(configurationRequestChat);
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                case ChooseChatsConfigurationShareStory:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.PostMessages;
+                    PrimaryButtonText = Strings.Send;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
+                    break;
+                case ChooseChatsConfigurationShareMessages:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.PostMessages;
+                    PrimaryButtonText = Strings.Send;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
+                    break;
+                case ChooseChatsConfigurationPostLink configurationPostLink:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.PostMessages;
+                    PrimaryButtonText = Strings.Send;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
 
-                Title = configurationRequestChat.ChatIsChannel
-                    ? Strings.ChooseChannel
-                    : Strings.ChooseGroup;
-            }
-            else if (parameter is ChooseChatsConfigurationVerifyChat)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = ChooseChatsOptions.All;
-                ShouldCloseOnCommit = false;
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                    ShareLink = configurationPostLink.Url;
+                    break;
+                case ChooseChatsConfigurationPostMessage:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.PostMessages;
+                    PrimaryButtonText = Strings.Send;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
+                    break;
+                case ChooseChatsConfigurationPostLogs:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.PostMessages;
+                    PrimaryButtonText = Strings.Send;
+                    IsCommentEnabled = true;
+                    IsChatSelection = false;
+                    break;
+                case ChooseChatsConfigurationStartBot:
+                    SelectionMode = ListViewSelectionMode.None;
+                    Options = ChooseChatsOptions.GroupsAndChannels;
+                    IsCommentEnabled = false;
+                    IsChatSelection = false;
 
-                Title = Strings.BotChooseChatToVerify;
-            }
-            else if (parameter is ChooseChatsConfigurationTransferGift transferGift)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = ChooseChatsOptions.UsersAndChannels;
-                ShouldCloseOnCommit = false;
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                    Title = Strings.AddToGroupOrChannel;
+                    break;
+                case ChooseChatsConfigurationSetTheme:
+                    SelectionMode = ListViewSelectionMode.None;
+                    Options = new ChooseChatsOptions()
+                    {
+                        AllowChannelChats = false,
+                        AllowGroupChats = false,
+                        AllowBotChats = false,
+                        AllowUserChats = true,
+                        AllowSecretChats = false,
+                        AllowSelf = false,
+                        CanPostMessages = false,
+                        CanInviteUsers = false,
+                        CanShareContact = false,
+                        Mode = ChooseChatsMode.Chats,
+                        ShowMessages = false
+                    };
+                    IsCommentEnabled = false;
+                    IsChatSelection = false;
 
-                if (transferGift.Gift.Gift is SentGiftUpgraded upgraded)
-                {
-                    Title = string.Format(Strings.Gift2Transfer, upgraded.Gift.ToName());
-                }
-            }
-            else if (parameter is ChooseChatsConfigurationCreateGroupCall)
-            {
-                SelectionMode = ListViewSelectionMode.Multiple;
-                Options = ChooseChatsOptions.Contacts;
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                    Title = Strings.SelectChat;
+                    break;
+                case ChooseChatsConfigurationRequestUsers configurationRequestUsers:
+                    SelectionMode = configurationRequestUsers.MaxQuantity != 1
+                            ? ListViewSelectionMode.Multiple
+                            : ListViewSelectionMode.None;
+                    Options = new ChooseChatsOptionsRequestUsers(configurationRequestUsers);
+                    IsCommentEnabled = false;
+                    IsChatSelection = false;
 
-                Title = Strings.NewCall;
-            }
-            else if (parameter is ChooseChatsConfigurationBotAddToChannel)
-            {
-                SelectionMode = ListViewSelectionMode.None;
-                Options = ChooseChatsOptions.ChannelsCanPromoteMembers;
-                IsCommentEnabled = false;
-                IsChatSelection = false;
+                    if (configurationRequestUsers.RestrictUserIsBot && configurationRequestUsers.UserIsBot)
+                    {
+                        Title = Strings.ChooseBot;
+                    }
+                    else
+                    {
+                        Title = configurationRequestUsers.MaxQuantity != 1
+                            ? Strings.ChooseUsers
+                            : Strings.ChooseUser;
+                    }
+                    break;
+                case ChooseChatsConfigurationRequestChat configurationRequestChat:
+                    SelectionMode = ListViewSelectionMode.None;
+                    Options = new ChooseChatsOptionsRequestChat(configurationRequestChat);
+                    IsCommentEnabled = false;
+                    IsChatSelection = false;
+
+                    Title = configurationRequestChat.ChatIsChannel
+                        ? Strings.ChooseChannel
+                        : Strings.ChooseGroup;
+                    break;
+                case ChooseChatsConfigurationVerifyChat:
+                    SelectionMode = ListViewSelectionMode.None;
+                    Options = ChooseChatsOptions.All;
+                    ShouldCloseOnCommit = false;
+                    IsCommentEnabled = false;
+                    IsChatSelection = false;
+
+                    Title = Strings.BotChooseChatToVerify;
+                    break;
+                case ChooseChatsConfigurationTransferGift transferGift:
+                    {
+                        SelectionMode = ListViewSelectionMode.None;
+                        Options = ChooseChatsOptions.UsersAndChannels;
+                        ShouldCloseOnCommit = false;
+                        IsCommentEnabled = false;
+                        IsChatSelection = false;
+
+                        if (transferGift.Gift.Gift is SentGiftUpgraded upgraded)
+                        {
+                            Title = string.Format(Strings.Gift2Transfer, upgraded.Gift.ToName());
+                        }
+
+                        break;
+                    }
+
+                case ChooseChatsConfigurationCreateGroupCall:
+                    SelectionMode = ListViewSelectionMode.Multiple;
+                    Options = ChooseChatsOptions.Contacts;
+                    IsCommentEnabled = false;
+                    IsChatSelection = false;
+
+                    Title = Strings.NewCall;
+                    break;
+                case ChooseChatsConfigurationBotAddToChannel:
+                    SelectionMode = ListViewSelectionMode.None;
+                    Options = ChooseChatsOptions.ChannelsCanPromoteMembers;
+                    IsCommentEnabled = false;
+                    IsChatSelection = false;
+                    break;
             }
 
             #endregion
@@ -661,7 +665,7 @@ namespace Telegram.ViewModels
 
         public void SendWithChat(Chat chat, Action<MessageSendOptions, MessageTopic> action)
         {
-            var starCount = ClientService.PaidMessageStarCount(chat);
+            _ = ClientService.PaidMessageStarCount(chat);
             var options = new MessageSendOptions(null, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
 
             SelectedTopics.TryGetValue(chat.Id, out MessageTopic topic);
@@ -687,7 +691,7 @@ namespace Telegram.ViewModels
             {
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                    SendWithChat(chat, (options, topic) =>
                     {
                         ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(_caption, null, false)));
                     });
@@ -710,7 +714,7 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                    SendWithChat(chat, (options, topic) =>
                     {
                         ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageForwarded(shareGame.Messages[0].ChatId, shareGame.Messages[0].Id, shareGame.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
                     });
@@ -724,7 +728,7 @@ namespace Telegram.ViewModels
                 {
                     foreach (var messages in shareMessages.Messages.GroupBy(x => x.ChatId))
                     {
-                        SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                        SendWithChat(chat, (options, topic) =>
                         {
                             ClientService.Send(new ForwardMessages(chat.Id, topic, messages.Key, messages.Select(x => x.Id).ToList(), options, _sendAsCopy || _removeCaptions, _removeCaptions));
                         });
@@ -737,7 +741,7 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                    SendWithChat(chat, (options, topic) =>
                     {
                         ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
                     });
@@ -747,13 +751,34 @@ namespace Telegram.ViewModels
             {
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                    SendWithChat(chat, (options, topic) =>
                     {
                         ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, postMessage.Content));
                     });
                 }
 
                 //NavigationService.GoBack();
+            }
+            else if (_configuration is ChooseChatsConfigurationPostLogs postLogs)
+            {
+                var content = new InputMessageDocument(new InputFileLocal(postLogs.Path), null, true, null);
+                var verbosityLevel = SettingsService.Current.VerbosityLevel;
+
+                Client.Execute(new SetLogVerbosityLevel(0));
+
+                foreach (var chat in chats)
+                {
+                    SendWithChat(chat, (options, topic) =>
+                    {
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, content), result =>
+                        {
+                            if (result is Message { Content: MessageDocument document })
+                            {
+                                ClientService.PrepareLogs(document.Document.DocumentValue.Id, verbosityLevel);
+                            }
+                        });
+                    });
+                }
             }
             else if (_configuration is ChooseChatsConfigurationPostLink postLink && postLink.InternalLink != null)
             {
@@ -764,7 +789,7 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                        SendWithChat(chat, (options, topic) =>
                         {
                             ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
                         });
@@ -777,7 +802,7 @@ namespace Telegram.ViewModels
 
                 foreach (var chat in chats)
                 {
-                    SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                    SendWithChat(chat, (options, topic) =>
                     {
                         ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
                     });
@@ -813,7 +838,7 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                        SendWithChat(chat, (options, topic) =>
                         {
                             ClientService.Send(new SendInlineQueryResultMessage(chat.Id, topic, null, options, switchInline.InlineQueryId, switchInline.Result.GetId(), false));
                         });
@@ -841,7 +866,7 @@ namespace Telegram.ViewModels
 
                     foreach (var chat in chats)
                     {
-                        SendWithChat(chat, (MessageSendOptions options, MessageTopic topic) =>
+                        SendWithChat(chat, (options, topic) =>
                         {
                             ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
                         });
