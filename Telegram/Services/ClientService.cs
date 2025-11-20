@@ -9,6 +9,7 @@ using System;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,7 +72,8 @@ namespace Telegram.Services
         bool IsPremium { get; }
         bool IsPremiumAvailable { get; }
 
-        long UnixTime { get; }
+        double UnixTime { get; }
+        long UnixTimeMilliseconds { get; }
 
         bool TranslateMessages { get; }
         bool TranslateChats { get; }
@@ -882,7 +884,8 @@ namespace Telegram.Services
 
         private void Clear()
         {
-            _unixTimeDifference = 0;
+            _localTicksAtSync = 0;
+            _serverTimeAtSync = 0;
             _options.Clear();
 
             _files.Clear();
@@ -1385,9 +1388,20 @@ namespace Telegram.Services
 
         public bool IsPremiumAvailable => _options.IsPremium || _options.IsPremiumAvailable;
 
-        private long _unixTimeDifference;
+        private long _localTicksAtSync;
+        private long _serverTimeAtSync;
 
-        public long UnixTime => _unixTimeDifference + MonotonicUnixTime.Now;
+        public double UnixTime
+        {
+            get
+            {
+                long currentTicks = Stopwatch.GetTimestamp();
+                double elapsedSeconds = (double)(currentTicks - _localTicksAtSync) / Stopwatch.Frequency;
+                return _serverTimeAtSync + elapsedSeconds;
+            }
+        }
+
+        public long UnixTimeMilliseconds => (long)(UnixTime * 1000);
 
         public StarAmount OwnedStarCount
         {
@@ -3453,7 +3467,8 @@ namespace Telegram.Services
 
                         if (updateOption.Name == OptionsService.R.UnixTime && updateOption.Value is OptionValueInteger unixTime)
                         {
-                            _unixTimeDifference = MonotonicUnixTime.Now - unixTime.Value;
+                            _localTicksAtSync = Stopwatch.GetTimestamp();
+                            _serverTimeAtSync = unixTime.Value;
                         }
                         else if (updateOption.Name == OptionsService.R.MyId && updateOption.Value is OptionValueInteger myId)
                         {
