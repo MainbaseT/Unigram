@@ -448,9 +448,9 @@ namespace Telegram.Navigation
         public static INavigationService GetNavigationService(Window window)
         {
             var content = window.Content;
-            if (content is ContentControl contentControl)
+            if (content is WindowControl contentControl)
             {
-                content = contentControl.Content as UIElement;
+                content = contentControl.Content;
             }
 
             if (content is RootPage rootPage && rootPage.NavigationService != null)
