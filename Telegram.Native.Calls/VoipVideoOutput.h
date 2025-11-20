@@ -510,7 +510,23 @@ private:
             return;
         }
 
-        m_resourcesValid = true;
+        if (m_surface)
+        {
+            m_resourcesValid = true;
+        }
+        else
+        {
+            try
+            {
+                auto surface = m_compositionDevice.CreateDrawingSurface2({ 0, 0 }, DirectXPixelFormat::B8G8R8A8UIntNormalized, DirectXAlphaMode::Premultiplied);
+                m_surface = surface.as<abi::ICompositionDrawingSurfaceInterop>();
+                m_resourcesValid = true;
+            }
+            catch (...)
+            {
+                m_resourcesValid = false;
+            }
+        }
     }
 
 public:
@@ -520,19 +536,25 @@ public:
     {
         m_frameReceivedArgs = winrt::make_self<winrt::Telegram::Native::Calls::implementation::FrameReceivedEventArgs>(0, 0);
         m_mirrored = mirrored;
+        m_renderingDeviceReplaced = m_compositionDevice.RenderingDeviceReplaced({ this, &VoipVideoOutput::OnRenderingDeviceReplaced });
 
-        // TODO: CreateDrawingSurface2 may throw in case the device was lost.
-        // I'm not sure about what to do in this case, as we don't have access to PlaceholderImageHelper to forcefully recreate the device and retry.
-        auto surface = m_compositionDevice.CreateDrawingSurface2({ 0, 0 }, DirectXPixelFormat::B8G8R8A8UIntNormalized, DirectXAlphaMode::Premultiplied);
-        m_surface = surface.as<abi::ICompositionDrawingSurfaceInterop>();
-        m_brush = surface.Compositor().CreateSurfaceBrush(surface);
+        CompositionDrawingSurface surface{ nullptr };
+        try
+        {
+            surface = m_compositionDevice.CreateDrawingSurface2({ 0, 0 }, DirectXPixelFormat::B8G8R8A8UIntNormalized, DirectXAlphaMode::Premultiplied);
+            m_surface = surface.as<abi::ICompositionDrawingSurfaceInterop>();
+            m_resourcesValid = true;
+        }
+        catch (...)
+        {
+            m_resourcesValid = false;
+        }
+        m_brush = visual.Compositor().CreateSurfaceBrush(surface);
         m_brush.HorizontalAlignmentRatio(.5);
         m_brush.VerticalAlignmentRatio(.5);
         m_brush.Stretch(winrt::Windows::UI::Composition::CompositionStretch::Uniform);
 
         visual.Brush(m_brush);
-        m_resourcesValid = true;
-        m_renderingDeviceReplaced = m_compositionDevice.RenderingDeviceReplaced({ this, &VoipVideoOutput::OnRenderingDeviceReplaced });
     }
 
     ~VoipVideoOutput()
