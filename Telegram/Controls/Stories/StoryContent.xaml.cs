@@ -23,6 +23,7 @@ using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
 using Telegram.Controls.Stories.Widgets;
 using Telegram.Converters;
+using Telegram.Native;
 using Telegram.Native.Calls;
 using Telegram.Native.Composition;
 using Telegram.Native.Media;
@@ -33,6 +34,7 @@ using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Stories;
+using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -114,8 +116,12 @@ namespace Telegram.Controls.Stories
 
         private void DiscardGroupCall()
         {
-            _unifiedVideo?.Stop();
-            _unifiedVideo = null;
+            if (_unifiedVideo != null)
+            {
+                _unifiedVideo.Stop();
+                _unifiedVideo.FrameReceived -= OnFrameReceived;
+                _unifiedVideo = null;
+            }
 
             if (_call != null)
             {
@@ -828,6 +834,8 @@ namespace Telegram.Controls.Stories
                 _call.PropertyChanged += OnPropertyChanged;
                 _call.AddIncomingVideoOutput("unified", _unifiedVideo = VoipVideoOutput.CreateSink(LayoutRoot, false));
 
+                _unifiedVideo.FrameReceived += OnFrameReceived;
+
                 story.GroupCall = _call;
 
                 _topDonors = new Dictionary<MessageSender, int>(new MessageSenderEqualityComparer());
@@ -837,6 +845,8 @@ namespace Telegram.Controls.Stories
 
                 _pinnedMessages = new SortedObservableCollection<GroupCallMessage>(_call.PinnedMessages, new GroupCallMessageComparer());
                 PinnedMessagesHost.ItemsSource = _pinnedMessages;
+
+                ShowSkeleton();
             }
             else if (!_loading && !_unloaded)
             {
@@ -844,6 +854,13 @@ namespace Telegram.Controls.Stories
                 _timer.Start();
                 Progress.Update(_viewModel.Items.IndexOf(_viewModel.SelectedItem), _viewModel.Items.Count, 5);
             }
+        }
+
+        private void OnFrameReceived(VoipVideoOutputSink sender, FrameReceivedEventArgs args)
+        {
+            _unifiedVideo?.FrameReceived -= OnFrameReceived;
+
+            this.BeginOnUIThread(HideSkeleton);
         }
 
         private VoipVideoOutputSink _unifiedVideo;
@@ -1106,7 +1123,6 @@ namespace Telegram.Controls.Stories
             }
             else if (download)
             {
-                _loading = true;
                 ShowSkeleton();
 
                 //VideoPanel.Opacity = 0;
@@ -1227,6 +1243,8 @@ namespace Telegram.Controls.Stories
 
         private void ShowSkeleton()
         {
+            _loading = true;
+
             if (ActualSize.X == 0 || ActualSize.Y == 0)
             {
                 return;
@@ -1272,14 +1290,19 @@ namespace Telegram.Controls.Stories
             ElementCompositionPreview.SetElementChildVisual(ActiveRoot, visual);
         }
 
+        private void HideSkeleton()
+        {
+            _loading = false;
+            ElementCompositionPreview.SetElementChildVisual(ActiveRoot, BootStrapper.Current.Compositor.CreateSpriteVisual());
+        }
+
         private bool _loading;
 
         private void Texture_ImageOpened(object sender, RoutedEventArgs e)
         {
             Logger.Debug("ImageOpened " + _viewModel.ChatId);
 
-            _loading = false;
-            ElementCompositionPreview.SetElementChildVisual(ActiveRoot, BootStrapper.Current.Compositor.CreateSpriteVisual());
+            HideSkeleton();
 
             Video?.Clear();
 
@@ -1467,8 +1490,7 @@ namespace Telegram.Controls.Stories
 
         private void OnVout(AsyncMediaPlayer sender, object e)
         {
-            _loading = false;
-            ElementCompositionPreview.SetElementChildVisual(ActiveRoot, BootStrapper.Current.Compositor.CreateSpriteVisual());
+            HideSkeleton();
 
             Texture1.Source = null;
             Texture2.Source = null;
@@ -1485,8 +1507,7 @@ namespace Telegram.Controls.Stories
 
             if (e.Cache == 100 && _loading)
             {
-                _loading = false;
-                ElementCompositionPreview.SetElementChildVisual(ActiveRoot, BootStrapper.Current.Compositor.CreateSpriteVisual());
+                HideSkeleton();
 
                 if (_viewModel?.SelectedItem != null && _viewModel.SelectedItem.PosterChatId != _openedChatId && _viewModel.SelectedItem.Id != _openedStoryId)
                 {
@@ -1497,7 +1518,6 @@ namespace Telegram.Controls.Stories
             }
             else if (e.Cache < 100 && !_loading)
             {
-                _loading = true;
                 ShowSkeleton();
             }
         }
