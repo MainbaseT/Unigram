@@ -1811,7 +1811,12 @@ namespace Telegram.Controls.Stories
             flyout.CreateFlyoutSeparator();
             flyout.CreateFlyoutItem(OpenMessage, message, Strings.OpenProfile, Icons.PersonCircle);
             flyout.CreateFlyoutItem(CopyMessage, message, Strings.Copy, Icons.Copy);
-            flyout.CreateFlyoutItem(x => { }, message, Strings.TranslateMessage, Icons.Translate);
+
+            var translate = TypeResolver.Current.Resolve<ITranslateService>(ViewModel.SessionId);
+            if (translate.CanTranslateText(message.Text.Text))
+            {
+                flyout.CreateFlyoutItem(TranslateMessage, message, Strings.TranslateMessage, Icons.Translate);
+            }
 
             if (message.CanBeDeleted)
             {
@@ -1829,6 +1834,19 @@ namespace Telegram.Controls.Stories
         private void CopyMessage(GroupCallMessage message)
         {
             MessageHelper.CopyText(XamlRoot, message.Text);
+        }
+
+        private void TranslateMessage(GroupCallMessage message)
+        {
+            var language = LanguageIdentification.IdentifyLanguage(message.Text.Text);
+            var translate = TypeResolver.Current.Resolve<ITranslateService>(ViewModel.SessionId);
+
+            var popup = new TranslatePopup(translate, message.Text.Text, language, ViewModel.Settings.Translate.To, false)
+            {
+                RequestedTheme = ElementTheme.Dark
+            };
+
+            ViewModel.ShowPopup(popup);
         }
 
         public async void DeleteMessage(GroupCallMessage message)

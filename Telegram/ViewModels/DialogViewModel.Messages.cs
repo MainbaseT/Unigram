@@ -1236,16 +1236,16 @@ namespace Telegram.ViewModels
 
         #region Translate
 
-        public async void TranslateMessage(MessageQuote message)
+        public void TranslateMessage(MessageQuote message)
         {
             string text = message.Quote.Text;
 
             var language = LanguageIdentification.IdentifyLanguage(text);
             var popup = new TranslatePopup(_translateService, text, language, Settings.Translate.To, !message.Message.CanBeSaved);
-            await ShowPopupAsync(popup);
+            ShowPopup(popup);
         }
 
-        public async void TranslateMessage(MessageViewModel message)
+        public void TranslateMessage(MessageViewModel message)
         {
             string text;
             long chatId;
@@ -1309,7 +1309,7 @@ namespace Telegram.ViewModels
 
             var language = LanguageIdentification.IdentifyLanguage(text);
             var popup = new TranslatePopup(_translateService, /*chatId, messageId,*/ text, language, Settings.Translate.To, !message.CanBeSaved);
-            await ShowPopupAsync(popup);
+            ShowPopup(popup);
         }
 
         #endregion
