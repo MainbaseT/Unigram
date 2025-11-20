@@ -70,6 +70,8 @@ namespace Telegram.Controls.Stories
     {
         private volatile bool _unloaded;
 
+        private LayerVisual _messagesVisual;
+
         public StoryContent()
         {
             InitializeComponent();
@@ -78,6 +80,8 @@ namespace Telegram.Controls.Stories
 
             _timer = new StoryContentPhotoTimer();
             _timer.Tick += OnTick;
+
+            _messagesVisual = CompositionDevice.GetElementLayerVisual(MessagesHost);
 
             SizeChanged += OnSizeChanged;
             Unloaded += OnUnloaded;
@@ -1858,7 +1862,12 @@ namespace Telegram.Controls.Stories
 
         private void MessagesHost_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var layerVisual = CompositionDevice.GetElementLayerVisual(MessagesHost);
+            var layerVisual = _messagesVisual;
+            if (layerVisual == null)
+            {
+                return;
+            }
+
             var compositor = layerVisual.Compositor;
 
             var alphaMask = new AlphaMaskEffect
