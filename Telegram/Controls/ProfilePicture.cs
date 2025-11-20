@@ -142,22 +142,21 @@ namespace Telegram.Controls
             }
             else if (source == null)
             {
-                if (_presenter != null)
-                {
-                    _presenter.Unload(this);
-                    _presenter = null;
-                }
-                else if (_invalidated)
-                {
-                    Invalidate(null);
-                }
+                Unload();
             }
         }
 
         private void Unload()
         {
-            _presenter?.Unload(this);
-            _presenter = null;
+            if (_presenter != null)
+            {
+                _presenter.Unload(this);
+                _presenter = null;
+            }
+            else if (_invalidated)
+            {
+                Invalidate(null);
+            }
         }
 
         private ProfilePictureSource _source;
