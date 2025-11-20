@@ -482,12 +482,12 @@ namespace Telegram.Services
                 if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCall.Id && groupCall.ClientService == clientService)
                 {
                     groupCall.Update(update.GroupCall, out bool closed);
-                    handled = true;
+                    handled = false;
 
                     if (closed)
                     {
                         _activeCall = null;
-                        changed = false;
+                        changed = true;
                     }
                 }
                 //else if (_activeCall is VoipCall call && call.GroupCallId == update.GroupCall.Id && !_upgrading)
