@@ -3811,17 +3811,17 @@ namespace Telegram.ViewModels
                         var response = await ClientService.SendAsync(new CreateGroupCall(null));
                         if (response is GroupCallInfo info && ClientService.TryGetGroupCall(info.GroupCallId, out GroupCall groupCall))
                         {
-                                var options = await PickMessageSendOptionsAsync();
-                                if (options == null)
-                                {
-                                    return;
-                                }
-
-                                await SendMessageAsync(null, new InputMessageText(groupCall.InviteLink.AsFormattedText(), null, false), options);
+                            var options = await PickMessageSendOptionsAsync();
+                            if (options == null)
+                            {
+                                return;
                             }
+
+                            await SendMessageAsync(null, new InputMessageText(groupCall.InviteLink.AsFormattedText(), null, false), options);
                         }
                     }
                 }
+            }
             else
             {
                 _voipService.JoinGroupCall(NavigationService, chat.Id);
@@ -3926,7 +3926,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                    SponsoredMessage = null;
+                SponsoredMessage = null;
                 ClientService.Send(new ToggleHasSponsoredMessagesEnabled(false));
 
                 ToastPopup.Show(XamlRoot, Strings.AdHidden, ToastPopupIcon.AntiSpam);

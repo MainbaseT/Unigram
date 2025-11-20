@@ -241,7 +241,7 @@ namespace Telegram.Controls.Chats
             }
             
             var message = ViewModel.PendingSponsoredMessage;
-            if (message != null && ScrollingHost.VerticalOffset.AlmostEquals(ScrollingHost.ScrollableHeight, 1e-02))
+            if (message != null && ViewModel.IsNewestSliceLoaded is true && ScrollingHost.VerticalOffset.AlmostEquals(ScrollingHost.ScrollableHeight, 1e-02))
             {
                 var point = e.GetCurrentPoint(ScrollingHost);
                 if (point.Properties.MouseWheelDelta < 0)
