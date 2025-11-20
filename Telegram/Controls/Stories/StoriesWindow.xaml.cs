@@ -372,6 +372,7 @@ namespace Telegram.Controls.Stories
                             TextArea.Visibility = Visibility.Collapsed;
 
                             Interactions.Update(selectedItem);
+                            LiveInteractions.Unload();
                         }
                         else if (selectedItem.Chat.Type is ChatTypeSupergroup || !selectedItem.CanBeReplied)
                         {
@@ -381,6 +382,7 @@ namespace Telegram.Controls.Stories
                             TextArea.Visibility = Visibility.Collapsed;
 
                             ChannelInteractions.Update(selectedItem);
+                            LiveInteractions.Unload();
                         }
                         else if (selectedItem.CanBeReplied)
                         {
@@ -388,6 +390,8 @@ namespace Telegram.Controls.Stories
                             LiveInteractions.Visibility = Visibility.Collapsed;
                             ChannelInteractions.Visibility = Visibility.Collapsed;
                             TextArea.Visibility = Visibility.Visible;
+
+                            LiveInteractions.Unload();
                         }
                         else
                         {
@@ -395,6 +399,8 @@ namespace Telegram.Controls.Stories
                             LiveInteractions.Visibility = Visibility.Collapsed;
                             ChannelInteractions.Visibility = Visibility.Collapsed;
                             TextArea.Visibility = Visibility.Collapsed;
+
+                            LiveInteractions.Unload();
                         }
                     }
                 }

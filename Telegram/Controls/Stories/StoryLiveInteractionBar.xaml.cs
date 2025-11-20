@@ -53,10 +53,15 @@ namespace Telegram.Controls.Stories
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
+            Unload();
+        }
+
+        public void Unload()
+        {
             _content = null;
             _activeStories?.Aggregator.Unsubscribe(this);
             _paidReaction?.Completed -= PaidReaction_Completed;
-            _groupCall.TotalStarCountChanged -= OnTotalStarCountChanged;
+            _groupCall?.TotalStarCountChanged -= OnTotalStarCountChanged;
         }
 
         public void Update(StoryContent content, ActiveStoriesViewModel activeStories, StoryViewModel story)
