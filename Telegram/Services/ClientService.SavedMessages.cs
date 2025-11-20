@@ -30,7 +30,7 @@ namespace Telegram.Services
 
     public partial class ClientService
     {
-        private readonly ReaderWriterDictionary<long, SavedMessagesTopic> _savedMessagesTopics = new();
+        private readonly ReaderWriterDictionary<long, SavedMessagesTopic> _savedMessagesTopics = new(100);
         private readonly SortedSet<OrderedItem> _savedMessages = new();
         private bool _haveFullSavedMessages;
 

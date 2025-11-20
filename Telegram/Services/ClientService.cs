@@ -301,23 +301,23 @@ namespace Telegram.Services
 
         private readonly ReaderWriterDictionary<long, MessageEffect> _effects = new();
 
-        private readonly ReaderWriterDictionary<long, Chat> _chats = new();
+        private readonly ReaderWriterDictionary<long, Chat> _chats = new(1000);
 
         private readonly ConcurrentDictionary<long, ConcurrentDictionary<MessageSender, ChatAction>> _chatActions = new();
         private readonly ConcurrentDictionary<ChatMessageTopic, ConcurrentDictionary<MessageSender, ChatAction>> _topicActions = new();
 
         private readonly ReaderWriterDictionary<int, SecretChat> _secretChats = new();
 
-        private readonly ReaderWriterDictionary<long, long> _usersToChats = new();
+        private readonly ReaderWriterDictionary<long, long> _usersToChats = new(500);
 
-        private readonly ReaderWriterDictionary<long, User> _users = new();
-        private readonly ReaderWriterDictionary<long, UserFullInfo> _usersFull = new();
+        private readonly ReaderWriterDictionary<long, User> _users = new(500);
+        private readonly ReaderWriterDictionary<long, UserFullInfo> _usersFull = new(500);
 
-        private readonly ReaderWriterDictionary<long, BasicGroup> _basicGroups = new();
-        private readonly ReaderWriterDictionary<long, BasicGroupFullInfo> _basicGroupsFull = new();
+        private readonly ReaderWriterDictionary<long, BasicGroup> _basicGroups = new(500);
+        private readonly ReaderWriterDictionary<long, BasicGroupFullInfo> _basicGroupsFull = new(500);
 
-        private readonly ReaderWriterDictionary<long, Supergroup> _supergroups = new();
-        private readonly ReaderWriterDictionary<long, SupergroupFullInfo> _supergroupsFull = new();
+        private readonly ReaderWriterDictionary<long, Supergroup> _supergroups = new(500);
+        private readonly ReaderWriterDictionary<long, SupergroupFullInfo> _supergroupsFull = new(500);
 
         private readonly ReaderWriterDictionary<int, GroupCall> _groupCalls = new();
 

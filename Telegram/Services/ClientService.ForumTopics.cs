@@ -30,7 +30,7 @@ namespace Telegram.Services
 
     public partial class ClientService
     {
-        private readonly ReaderWriterDictionary<long, ForumTopicService> _forums = new();
+        private readonly ReaderWriterDictionary<long, ForumTopicService> _forums = new(100);
 
         public void SetPinnedForumTopics(long chatId, IList<int> forumTopicIds)
         {

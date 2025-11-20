@@ -15,7 +15,17 @@ namespace Telegram.Collections
     public class ReaderWriterDictionary<TKey, TValue> : IEnumerable<TValue>
     {
         private readonly ReaderWriterLockSlim _lock = new();
-        private readonly Dictionary<TKey, TValue> _dictionary = new();
+        private readonly Dictionary<TKey, TValue> _dictionary;
+
+        public ReaderWriterDictionary()
+        {
+            _dictionary = new();
+        }
+
+        public ReaderWriterDictionary(int capacity)
+        {
+            _dictionary = new(capacity);
+        }
 
         public TValue this[TKey key]
         {

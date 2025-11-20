@@ -26,7 +26,7 @@ namespace Telegram.Services
 
     public partial class ClientService
     {
-        private readonly ReaderWriterDictionary<long, DirectMessagesChatTopicService> _directMessagesChats = new();
+        private readonly ReaderWriterDictionary<long, DirectMessagesChatTopicService> _directMessagesChats = new(100);
 
         public Task<Topics> GetDirectMessagesChatTopicsAsync(long chatId, int offset, int limit)
         {

@@ -21,7 +21,7 @@ namespace Telegram.Services
 
         private readonly long _chatId;
 
-        private readonly ReaderWriterDictionary<long, DirectMessagesChatTopic> _topics = new();
+        private readonly ReaderWriterDictionary<long, DirectMessagesChatTopic> _topics = new(100);
 
         private readonly SortedSet<OrderedItem> _order = new();
         private bool _haveFullList;
