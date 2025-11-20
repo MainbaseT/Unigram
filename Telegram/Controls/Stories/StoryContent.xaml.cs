@@ -1180,28 +1180,40 @@ namespace Telegram.Controls.Stories
             _type = StoryType.Video;
         }
 
+        private bool _hidden = false;
+
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            var active = ElementComposition.GetElementVisual(ActiveRoot);
-            var opacity = active.Compositor.CreateScalarKeyFrameAnimation();
-            opacity.InsertKeyFrame(0, 1);
-            opacity.InsertKeyFrame(1, 0);
+            var point = e.GetCurrentPoint(this);
+            if (point.Properties.IsLeftButtonPressed)
+            {
+                _hidden = true;
 
-            active.StartAnimation("Opacity", opacity);
+                var active = ElementComposition.GetElementVisual(ActiveRoot);
+                var opacity = active.Compositor.CreateScalarKeyFrameAnimation();
+                opacity.InsertKeyFrame(0, 1);
+                opacity.InsertKeyFrame(1, 0);
 
-            Suspend(StoryPauseSource.Interaction);
+                active.StartAnimation("Opacity", opacity);
+
+                Suspend(StoryPauseSource.Interaction);
+            }
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            var active = ElementComposition.GetElementVisual(ActiveRoot);
-            var opacity = active.Compositor.CreateScalarKeyFrameAnimation();
-            opacity.InsertKeyFrame(0, 0);
-            opacity.InsertKeyFrame(1, 1);
+            if (_hidden)
+            {
+                _hidden = false;
+                var active = ElementComposition.GetElementVisual(ActiveRoot);
+                var opacity = active.Compositor.CreateScalarKeyFrameAnimation();
+                opacity.InsertKeyFrame(0, 0);
+                opacity.InsertKeyFrame(1, 1);
 
-            active.StartAnimation("Opacity", opacity);
+                active.StartAnimation("Opacity", opacity);
 
-            Resume(StoryPauseSource.Interaction);
+                Resume(StoryPauseSource.Interaction);
+            }
         }
 
         private void MoreButton_Click(object sender, RoutedEventArgs e)
