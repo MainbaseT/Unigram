@@ -519,7 +519,7 @@ namespace Telegram.Navigation
 
             // TODO: Transition from splash screen to passcode
             _locked = new PasscodePage(this, biometrics && IsInMainView);
-            _lockedContent = _content.Content;
+            _lockedContent = _content?.Content;
 
             SetContent(_locked);
         }
