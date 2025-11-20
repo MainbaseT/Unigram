@@ -232,6 +232,58 @@ namespace Telegram.Views.Popups
             UpdatePermissions();
         }
 
+        public DeleteMessagesPopup(IClientService clientService, GroupCall groupCall, GroupCallMessage message)
+        {
+            InitializeComponent();
+
+            DataContext = TypeResolver.Current.Resolve<SupergroupEditRestrictedViewModel>(clientService.SessionId);
+
+            Title = Strings.DeleteSingleMessagesTitle;
+            PrimaryButtonText = Strings.Delete;
+            SecondaryButtonText = Strings.Cancel;
+
+            if (groupCall.CanDeleteMessages)
+            {
+                ReportSpamCheck.Content = Strings.DeleteReportSpam;
+                DeleteAllCheck.Content = string.Format(Strings.DeleteAllFrom, clientService.GetTitle(message.SenderId));
+                BanUserCheck.Content = string.Format(Strings.DeleteBan, clientService.GetTitle(message.SenderId));
+
+                ReportSpamCount.Visibility =
+                    DeleteAllCount.Visibility =
+                    BanUserCount.Visibility = Visibility.Collapsed;
+
+                ReportSpamIcon.Visibility =
+                    DeleteAllIcon.Visibility =
+                    BanUserIcon.Visibility = Visibility.Collapsed;
+
+                ReportSpamExpander.Margin =
+                    DeleteAllExpander.Margin =
+                    BanUserExpander.Margin = new Thickness(0, 0, -72, 0);
+
+                PermissionsToggle.Content = Strings.DeleteToggleRestrictUser;
+
+                BanUserRoot.Visibility = Visibility.Collapsed;
+
+                _messagesCount = 0;
+            }
+            else
+            {
+                AdditionalRoot.Visibility = Visibility.Collapsed;
+                BasicRoot.Visibility = Visibility.Visible;
+
+                RevokeCheck.Visibility = Visibility.Collapsed;
+
+                TextBlockHelper.SetMarkdown(Message, Strings.AreYouSureDeleteSingleMessage);
+            }
+
+            _clientService = clientService;
+            _senders = [message.SenderId];
+
+            _reportSpam = Array.Empty<MessageSender>();
+            _deleteAll = Array.Empty<MessageSender>();
+            _banUser = Array.Empty<MessageSender>();
+        }
+
         #region Binding
 
         private string ConvertCanSendCount(int count)

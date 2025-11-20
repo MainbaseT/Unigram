@@ -5,27 +5,41 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
+using Telegram.Collections;
 using Telegram.Common;
+using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
 using Telegram.Controls.Stories.Widgets;
+using Telegram.Converters;
+using Telegram.Native.Calls;
+using Telegram.Native.Composition;
 using Telegram.Native.Media;
 using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Services.Calls;
 using Telegram.Streams;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.ViewModels.Stories;
+using Telegram.Views.Popups;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
@@ -50,6 +64,8 @@ namespace Telegram.Controls.Stories
         Video,
     }
 
+    // TODO: Live story loading state
+    //       Live story no stream state
     public sealed partial class StoryContent : UserControl
     {
         private volatile bool _unloaded;
@@ -87,6 +103,26 @@ namespace Telegram.Controls.Stories
                 _player.Buffering -= OnBuffering;
                 _player.EndReached -= OnEndReached;
                 _player.Close();
+            }
+
+            DiscardGroupCall();
+        }
+
+        private void DiscardGroupCall()
+        {
+            _unifiedVideo?.Stop();
+            _unifiedVideo = null;
+
+            if (_call != null)
+            {
+                _call.NetworkStateChanged -= OnNetworkStateChanged;
+                _call.MessagesChanged -= OnMessagesChanged;
+                _call.PinnedMessagesChanged -= OnPinnedMessagesChanged;
+                _call.ReactionsChanged -= OnReactionsChanged;
+                _call.TopDonorsChanged -= OnTopDonorsChanged;
+                _call.PropertyChanged -= OnPropertyChanged;
+                _call.Discard();
+                _call = null;
             }
         }
 
@@ -286,9 +322,18 @@ namespace Telegram.Controls.Stories
 
         private void Update(StoryViewModel story)
         {
-            Subtitle.Text = story.Date != 0
-                ? Locale.FormatRelativeShort(story.Date)
-                : string.Format("{0}/{1}", 1 + ViewModel.Items.IndexOf(story), ViewModel.Items.Count);
+            if (story.Content is StoryContentLive && story.GroupCall != null)
+            {
+                LiveBadge.Visibility = Visibility.Visible;
+                Subtitle.Text = Locale.Declension(Strings.R.LiveStoryWatching, story.GroupCall.ParticipantCount);
+            }
+            else
+            {
+                LiveBadge.Visibility = Visibility.Collapsed;
+                Subtitle.Text = story.Date != 0
+                    ? Locale.FormatRelativeShort(story.Date)
+                    : string.Format("{0}/{1}", 1 + ViewModel.Items.IndexOf(story), ViewModel.Items.Count);
+            }
 
             switch (story.PrivacySettings)
             {
@@ -724,9 +769,15 @@ namespace Telegram.Controls.Stories
             }
         }
 
+        private VoipGroupCall _call;
+        private ObservableCollection<GroupCallMessage> _messages;
+        private SortedObservableCollection<GroupCallMessage> _pinnedMessages;
+        private Dictionary<MessageSender, int> _topDonors;
+
         private void Activate(StoryViewModel story)
         {
             CollapseCaption();
+            DiscardGroupCall();
 
             if (story.Content is StoryContentVideo videoContent && !_unloaded)
             {
@@ -757,6 +808,32 @@ namespace Telegram.Controls.Stories
                     FindName(nameof(Video));
                 }
             }
+            else if (story.Content is StoryContentLive live && story.ClientService.TryGetGroupCall(live.GroupCallId, out GroupCall groupCall) && !_unloaded)
+            {
+                _timer.Stop();
+                Progress.Update(0, 1, 0);
+
+                Suspend(StoryPauseSource.Live);
+
+                _call = new VoipGroupCall(ViewModel.ClientService, ViewModel.Settings, ViewModel.Aggregator, XamlRoot, ViewModel.Chat, groupCall, null, null, true);
+                _call.NetworkStateChanged += OnNetworkStateChanged;
+                _call.MessagesChanged += OnMessagesChanged;
+                _call.PinnedMessagesChanged += OnPinnedMessagesChanged;
+                _call.ReactionsChanged += OnReactionsChanged;
+                _call.TopDonorsChanged += OnTopDonorsChanged;
+                _call.PropertyChanged += OnPropertyChanged;
+                _call.AddIncomingVideoOutput("unified", _unifiedVideo = VoipVideoOutput.CreateSink(LayoutRoot, false));
+
+                story.GroupCall = _call;
+
+                _topDonors = new Dictionary<MessageSender, int>(new MessageSenderEqualityComparer());
+
+                _messages = new ObservableCollection<GroupCallMessage>(_call.Messages);
+                MessagesHost.ItemsSource = _messages;
+
+                _pinnedMessages = new SortedObservableCollection<GroupCallMessage>(_call.PinnedMessages, new GroupCallMessageComparer());
+                PinnedMessagesHost.ItemsSource = _pinnedMessages;
+            }
             else if (!_loading && !_unloaded)
             {
                 _timer.Stop();
@@ -765,11 +842,134 @@ namespace Telegram.Controls.Stories
             }
         }
 
+        private VoipVideoOutputSink _unifiedVideo;
+
+        private void OnNetworkStateChanged(VoipGroupCall sender, VoipGroupCallNetworkStateChangedEventArgs args)
+        {
+            // TODO
+        }
+
+        private void OnMessagesChanged(VoipGroupCall sender, VoipGroupCallMessagesChangedEventArgs args)
+        {
+            this.BeginOnUIThread(() => UpdateMessages(args.Message, args.Deleted));
+        }
+
+        private void OnPinnedMessagesChanged(VoipGroupCall sender, VoipGroupCallMessagesChangedEventArgs args)
+        {
+            this.BeginOnUIThread(() => UpdatePinnedMessages(args.Message, args.Deleted));
+        }
+
+        private void OnReactionsChanged(VoipGroupCall sender, VoipGroupCallReactionsChangedEventArgs args)
+        {
+            this.BeginOnUIThread(() => ReactionsHost.Add(sender.ClientService, args.SenderId, args.StarCount));
+        }
+
+        private void OnTopDonorsChanged(VoipGroupCall sender, VoipGroupCallTopDonorsChangedEventArgs args)
+        {
+            this.BeginOnUIThread(() => UpdateTopDonors(args.Donors));
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (sender is VoipGroupCall groupCall && e.PropertyName == nameof(Call))
+            {
+                this.BeginOnUIThread(() =>
+                {
+                    Subtitle.Text = Locale.Declension(Strings.R.LiveStoryWatching, groupCall.ParticipantCount);
+                });
+            }
+        }
+
+        private void UpdateMessages(GroupCallMessage message, bool expired)
+        {
+            if (expired)
+            {
+                _messages.Remove(message);
+            }
+            else
+            {
+                _messages.Add(message);
+
+                //if (message.PaidMessageStarCount > 0)
+                //{
+                //    ReactionsHost.Add(ViewModel.ClientService, message.SenderId, message.PaidMessageStarCount);
+                //}
+            }
+        }
+
+        private void UpdatePinnedMessages(GroupCallMessage message, bool expired)
+        {
+            if (expired)
+            {
+                _pinnedMessages.Remove(message);
+            }
+            else
+            {
+                _pinnedMessages.Add(message);
+            }
+        }
+
+        private void UpdateTopDonors(IList<PaidReactor> donors)
+        {
+            var diff = new Dictionary<MessageSender, int>(_topDonors.Count + donors.Count, new MessageSenderEqualityComparer());
+
+            foreach (var donor in _topDonors)
+            {
+                diff[donor.Key] = 0;
+            }
+
+            for (int i = 0; i < donors.Count; i++)
+            {
+                var donor = donors[i].SenderId;
+                var newPosition = i + 1;
+
+                if (_topDonors.TryGetValue(donor, out int oldPosition))
+                {
+                    if (oldPosition == newPosition)
+                    {
+                        diff.Remove(donor);
+                    }
+                    else
+                    {
+                        diff[donor] = newPosition;
+                    }
+                }
+                else
+                {
+                    diff[donor] = newPosition;
+                }
+            }
+
+            _topDonors.Clear();
+
+            for (int i = 0; i < donors.Count; i++)
+            {
+                _topDonors[donors[i].SenderId] = i + 1;
+            }
+
+            MessagesHost.ForEach<LiveStoryMessageCell, GroupCallMessage>((content, message) =>
+            {
+                if (diff.TryGetValue(message.SenderId, out int position))
+                {
+                    content.Update(ViewModel.ClientService, message, position);
+                }
+            });
+
+            PinnedMessagesHost.ForEach<LiveStoryPinnedMessageCell, GroupCallMessage>((content, message) =>
+            {
+                if (diff.TryGetValue(message.SenderId, out int position))
+                {
+                    content.Update(ViewModel.ClientService, message, position);
+                }
+            });
+        }
+
         private void Deactivate(StoryViewModel story)
         {
             _player?.Stop();
 
             //UnloadVideo();
+            DiscardGroupCall();
             CollapseCaption();
 
             if (_openedChatId == story.PosterChatId && _openedStoryId == story.Id)
@@ -1539,6 +1739,223 @@ namespace Telegram.Controls.Stories
                 // Never happens here
             }
         }
+
+        private void MessagesHost_ChoosingItemContainer(ListViewBase sender, ChoosingItemContainerEventArgs args)
+        {
+            if (args.ItemContainer == null)
+            {
+                args.ItemContainer = new ListViewItem
+                {
+                    Style = sender.ItemContainerStyle,
+                    ContentTemplate = sender.ItemTemplate
+                };
+
+                args.ItemContainer.ContextRequested += MessagesHost_ContextRequested;
+            }
+
+            args.IsContainerPrepared = true;
+        }
+
+        private void MessagesHost_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            var flyout = new MenuFlyout();
+            var message = MessagesHost.ItemFromContainer(sender) as GroupCallMessage;
+
+            var textBlock = new TextBlock();
+            textBlock.Text = Formatter.SentDate(message.Date);
+            textBlock.FontSize = 12;
+
+            var placeholder = new MenuFlyoutContent();
+            placeholder.Content = textBlock;
+            placeholder.FontSize = 12;
+            placeholder.Padding = new Thickness(12, 4, 12, 4);
+            placeholder.HorizontalAlignment = HorizontalAlignment.Left;
+
+            flyout.Items.Add(placeholder);
+            flyout.CreateFlyoutSeparator();
+            flyout.CreateFlyoutItem(OpenMessage, message, Strings.OpenProfile, Icons.PersonCircle);
+            flyout.CreateFlyoutItem(CopyMessage, message, Strings.Copy, Icons.Copy);
+            flyout.CreateFlyoutItem(x => { }, message, Strings.TranslateMessage, Icons.Translate);
+
+            if (message.CanBeDeleted)
+            {
+                flyout.CreateFlyoutItem(DeleteMessage, message, Strings.Delete, Icons.Delete, destructive: true);
+            }
+
+            flyout.ShowAt(sender, args);
+        }
+
+        private void OpenMessage(GroupCallMessage message)
+        {
+            ViewModel.NavigationService.NavigateToSender(message.SenderId);
+        }
+
+        private void CopyMessage(GroupCallMessage message)
+        {
+            MessageHelper.CopyText(XamlRoot, message.Text);
+        }
+
+        public async void DeleteMessage(GroupCallMessage message)
+        {
+            if (ViewModel.SelectedItem?.Content is not StoryContentLive live || !ViewModel.ClientService.TryGetGroupCall(live.GroupCallId, out GroupCall groupCall))
+            {
+                return;
+            }
+
+            var popup = new DeleteMessagesPopup(ViewModel.ClientService, groupCall, message);
+            popup.RequestedTheme = ElementTheme.Dark;
+
+            var confirm = await ViewModel.ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                if (popup.DeleteAll.Any())
+                {
+                    ViewModel.ClientService.Send(new DeleteGroupCallMessagesBySender(_call.Id, message.SenderId, popup.ReportSpam.Any()));
+                }
+                else
+                {
+                    ViewModel.ClientService.Send(new DeleteGroupCallMessages(_call.Id, [message.MessageId], popup.ReportSpam.Any()));
+                }
+
+                if (popup.BanUser.Any())
+                {
+                    if (ViewModel.Chat.Type is ChatTypePrivate)
+                    {
+                        ViewModel.ClientService.Send(new SetMessageSenderBlockList(message.SenderId, new BlockListMain()));
+                    }
+                    else
+                    {
+                        ViewModel.ClientService.Send(new SetChatMemberStatus(ViewModel.ChatId, message.SenderId, new ChatMemberStatusBanned()));
+                    }
+                }
+            }
+        }
+
+        private void MessagesHost_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.InRecycleQueue)
+            {
+                return;
+            }
+            else if (args.ItemContainer.ContentTemplateRoot is LiveStoryMessageCell content && args.Item is GroupCallMessage message)
+            {
+                _topDonors.TryGetValue(message.SenderId, out int position);
+                content.Update(_call.ClientService, message, position);
+            }
+        }
+
+        private void MessagesHost_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var layerVisual = CompositionDevice.GetElementLayerVisual(MessagesHost);
+            var compositor = layerVisual.Compositor;
+
+            var alphaMask = new AlphaMaskEffect
+            {
+                Name = "AlphaMask",
+                Source = new CompositionEffectSourceParameter("source"),
+                AlphaMask = new CompositionEffectSourceParameter("mask")
+            };
+
+            var next = e.NewSize.ToVector2();
+            var top = 24 / next.Y;
+            var bottom = (next.Y - 8) / next.Y;
+
+            var gradientBrush = compositor.CreateLinearGradientBrush();
+            gradientBrush.StartPoint = new(0, 0);
+            gradientBrush.EndPoint = new(0, 1);
+            gradientBrush.MappingMode = CompositionMappingMode.Relative;
+            //gradientBrush.ExtendMode = CompositionGradientExtendMode.Clamp;
+
+            gradientBrush.ColorStops.Add(compositor.CreateColorGradientStop(0, Colors.Transparent));
+            gradientBrush.ColorStops.Add(compositor.CreateColorGradientStop(top, Colors.White));
+            gradientBrush.ColorStops.Add(compositor.CreateColorGradientStop(bottom, Colors.White));
+            gradientBrush.ColorStops.Add(compositor.CreateColorGradientStop(1, Colors.Transparent));
+
+            var effectFactory = compositor.CreateEffectFactory(alphaMask);
+            var effectBrush = effectFactory.CreateBrush();
+            effectBrush.SetSourceParameter("mask", gradientBrush);
+            layerVisual.Effect = effectBrush;
+        }
+
+        private void PinnedMessagesHost_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.InRecycleQueue)
+            {
+                return;
+            }
+            else if (args.ItemContainer.ContentTemplateRoot is LiveStoryPinnedMessageCell content && args.Item is GroupCallMessage message)
+            {
+                _topDonors.TryGetValue(message.SenderId, out int position);
+                content.Update(_call.ClientService, message, position);
+            }
+        }
+
+        private void ReactionsHost_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var visual = ElementComposition.GetElementVisual(MessagesHost);
+            ElementCompositionPreview.SetIsTranslationEnabled(MessagesHost, true);
+
+            var prev = e.PreviousSize.ToVector2();
+            var next = e.NewSize.ToVector2();
+
+            var animation = visual.Compositor.CreateScalarKeyFrameAnimation();
+            animation.InsertKeyFrame(0, next.Y - prev.Y);
+            animation.InsertKeyFrame(1, 0);
+
+            visual.StartAnimation("Translation.Y", animation);
+        }
+
+        private async void PinnedMessage_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not LiveStoryPinnedMessageCell pinnedContent || pinnedContent.Message == null)
+            {
+                return;
+            }
+
+            await MessagesHost.ScrollToItem2(pinnedContent.Message, VerticalAlignment.Center);
+
+            var container = MessagesHost.ContainerFromItem(pinnedContent.Message) as SelectorItem;
+            if (container?.ContentTemplateRoot is LiveStoryMessageCell content)
+            {
+                content.Highlight();
+            }
+        }
+
+        private bool _messagesCollapsed;
+
+        public void ShowHideMessages(bool show)
+        {
+            if (_messagesCollapsed != show)
+            {
+                return;
+            }
+
+            _messagesCollapsed = !show;
+            MessagesHost.Visibility = Visibility.Visible;
+
+            var visual = ElementComposition.GetElementVisual(MessagesHost);
+            ElementCompositionPreview.SetIsTranslationEnabled(MessagesHost, true);
+
+            var compositor = visual.Compositor;
+            var clip = (visual.Clip ??= compositor.CreateInsetClip()) as InsetClip;
+
+            var batch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            batch.Completed += (s, args) =>
+            {
+                if (_messagesCollapsed)
+                {
+                    MessagesHost.Visibility = Visibility.Collapsed;
+                }
+            };
+
+            var translation = compositor.CreateScalarKeyFrameAnimation();
+            translation.InsertKeyFrame(0, show ? MessagesHost.ActualSize.Y : 0);
+            translation.InsertKeyFrame(1, show ? 0 : MessagesHost.ActualSize.Y);
+
+            visual.StartAnimation("Translation.Y", translation);
+
+            batch.End();
+        }
     }
 
     public partial class StoryContentPhotoTimer
@@ -1650,22 +2067,25 @@ namespace Telegram.Controls.Stories
 
                     ElementCompositionPreview.SetElementChildVisual(rectangle, visual);
 
-                    ExpressionAnimation expression = compositor.CreateExpressionAnimation();
-                    expression.SetReferenceParameter("_", _progressPropertySet);
-                    expression.SetReferenceParameter("V", visual);
-                    expression.Expression = "Vector2(_.Progress * V.Size.X, 2)";
+                    if (duration > 0)
+                    {
+                        ExpressionAnimation expression = compositor.CreateExpressionAnimation();
+                        expression.SetReferenceParameter("_", _progressPropertySet);
+                        expression.SetReferenceParameter("V", visual);
+                        expression.Expression = "Vector2(_.Progress * V.Size.X, 2)";
 
-                    // Apply the expression to the point visual's Offset property
-                    ellipse.StartAnimation("Size", expression);
+                        // Apply the expression to the point visual's Offset property
+                        ellipse.StartAnimation("Size", expression);
 
-                    // Start the animation by incrementing the progress value
-                    var easing = compositor.CreateLinearEasingFunction();
-                    var compositorAnimation = compositor.CreateScalarKeyFrameAnimation();
-                    compositorAnimation.InsertKeyFrame(1.0f, 1.0f, easing);
-                    compositorAnimation.Duration = TimeSpan.FromSeconds(duration); // Adjust duration as needed
+                        // Start the animation by incrementing the progress value
+                        var easing = compositor.CreateLinearEasingFunction();
+                        var compositorAnimation = compositor.CreateScalarKeyFrameAnimation();
+                        compositorAnimation.InsertKeyFrame(1.0f, 1.0f, easing);
+                        compositorAnimation.Duration = TimeSpan.FromSeconds(duration); // Adjust duration as needed
 
-                    _progressPropertySet.StartAnimation("Progress", compositorAnimation);
-                    _progressController = _progressPropertySet.TryGetAnimationController("Progress");
+                        _progressPropertySet.StartAnimation("Progress", compositorAnimation);
+                        _progressController = _progressPropertySet.TryGetAnimationController("Progress");
+                    }
                 }
 
                 ColumnDefinitions.Add(new ColumnDefinition());

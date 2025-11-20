@@ -203,6 +203,46 @@ namespace Telegram.Common
             }
         }
 
+        public static void ForEach<TContent, TValue>(this ListViewBase listView, Action<TContent, TValue> handler) where TContent : class where TValue : class
+        {
+            int lastCacheIndex;
+            int firstCacheIndex;
+
+            if (listView.ItemsPanelRoot is ItemsStackPanel stack)
+            {
+                lastCacheIndex = stack.LastCacheIndex;
+                firstCacheIndex = stack.FirstCacheIndex;
+            }
+            else if (listView.ItemsPanelRoot is ItemsWrapGrid wrap)
+            {
+                lastCacheIndex = wrap.LastCacheIndex;
+                firstCacheIndex = wrap.FirstCacheIndex;
+            }
+            else
+            {
+                return;
+            }
+
+            for (int i = firstCacheIndex; i <= lastCacheIndex; i++)
+            {
+                var container = listView.ContainerFromIndex(i) as SelectorItem;
+                var content = container?.ContentTemplateRoot as TContent;
+
+                if (content == null)
+                {
+                    continue;
+                }
+
+                var item = listView.ItemFromContainer(container) as TValue;
+                if (item == null)
+                {
+                    continue;
+                }
+
+                handler(content, item);
+            }
+        }
+
         public static void ForEach<T>(this ListViewBase listView, Action<SelectorItem, T> handler) where T : class
         {
             int lastCacheIndex;
@@ -838,6 +878,16 @@ namespace Telegram.Common
                 a = 255;
             }
 
+            byte r = (byte)((color & 0x00ff0000) >> 16);
+            byte g = (byte)((color & 0x0000ff00) >> 8);
+            byte b = (byte)(color & 0x000000ff);
+
+            return Color.FromArgb(a, r, g, b);
+        }
+
+        public static Color ToColor(this int color, double alpha)
+        {
+            byte a = (byte)(alpha * 255);
             byte r = (byte)((color & 0x00ff0000) >> 16);
             byte g = (byte)((color & 0x0000ff00) >> 8);
             byte b = (byte)(color & 0x000000ff);

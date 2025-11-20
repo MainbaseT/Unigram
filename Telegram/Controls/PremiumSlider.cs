@@ -11,7 +11,6 @@ using System.Numerics;
 using Telegram.Common;
 using Telegram.Native.Composition;
 using Telegram.Views.Stars.Popups;
-using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -54,10 +53,14 @@ namespace Telegram.Controls
             DefaultStyleKey = typeof(PremiumSlider);
         }
 
-        public void Initialize(int value, long maxRealValue)
+        public void Initialize(long value, long minRealValue, long maxRealValue)
         {
             var sliderSteps = new List<int> { 1, 10, 50, 100, 500, 1_000, 2_000, 5_000, 7_500, 10_000 };
-            sliderSteps.RemoveAll(x => x >= maxRealValue);
+            sliderSteps.RemoveAll(x => x >= maxRealValue || x <= minRealValue);
+            if (minRealValue != maxRealValue)
+            {
+                sliderSteps.Insert(0, (int)minRealValue);
+            }
             sliderSteps.Add((int)maxRealValue);
 
             _stepped = new SteppedValue(100, sliderSteps);
@@ -310,9 +313,7 @@ namespace Telegram.Controls
                 _arrow.Properties.InsertVector3("Translation", new Vector3());
             }
 
-            Arrow.Fill = new SolidColorBrush(ColorsHelper.Mix(
-                Color.FromArgb(0xFF, 0xEE, 0xAC, 0x0D),
-                Color.FromArgb(0xFF, 0xF9, 0xD3, 0x16), -_thumb.Offset.X / Thumb.ActualSize.X));
+            Arrow.Fill = GetArrowFill(-_thumb.Offset.X / Thumb.ActualSize.X);
 
             Vector2 CalculateRadius(float diff)
             {
@@ -350,6 +351,16 @@ namespace Telegram.Controls
                 _arrowCentered = true;
                 CreatePathGeometry(0, 0);
             }
+        }
+
+        private SolidColorBrush GetArrowFill(double amount)
+        {
+            return Foreground switch
+            {
+                SolidColorBrush solid => solid,
+                LinearGradientBrush linear => new SolidColorBrush(ColorsHelper.Mix(linear.GradientStops[0].Color, linear.GradientStops[^1].Color, amount)),
+                _ => null
+            };
         }
 
         private bool _arrowCentered = true;

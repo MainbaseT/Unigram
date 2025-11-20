@@ -239,6 +239,8 @@ namespace Telegram.Services
 
         GroupCall GetGroupCall(int id);
         bool TryGetGroupCall(int id, out GroupCall value);
+        bool TryGetGroupCallMessageLevel(long paidMessageStarCount, out GroupCallMessageLevel value);
+        bool TryGetGroupCallMinimumMessageLevel(int length, int customEmojiCount, out GroupCallMessageLevel value);
 
         MessageTag GetSavedMessagesTag(ReactionType reaction);
         bool TryGetSavedMessagesTag(ReactionType reaction, out MessageTag value);
@@ -336,6 +338,8 @@ namespace Telegram.Services
         private UnconfirmedSession _unconfirmedSession;
 
         private IList<string> _diceEmojis;
+
+        private IList<GroupCallMessageLevel> _groupCallMessageLevels;
 
         private IList<int> _savedAnimations;
         private IList<int> _recentStickers;
@@ -932,6 +936,8 @@ namespace Telegram.Services
             _unreadCounts.Clear();
 
             _diceEmojis = null;
+
+            _groupCallMessageLevels = null;
 
             _suggestedActions.Clear();
 
@@ -2715,6 +2721,37 @@ namespace Telegram.Services
 
         public IList<EmojiChatTheme> ChatThemes => _chatThemes?.ChatThemes ?? Array.Empty<EmojiChatTheme>();
 
+        public bool TryGetGroupCallMessageLevel(long paidMessageStarCount, out GroupCallMessageLevel value)
+        {
+            if (_groupCallMessageLevels != null)
+            {
+                value = _groupCallMessageLevels.FirstOrDefault(x => x.MinStarCount <= paidMessageStarCount);
+                return value != null;
+            }
+
+            value = null;
+            return false;
+        }
+
+        public bool TryGetGroupCallMinimumMessageLevel(int length, int customEmojiCount, out GroupCallMessageLevel value)
+        {
+            if (_groupCallMessageLevels != null)
+            {
+                for (int i = _groupCallMessageLevels.Count - 1; i >= 0; i--)
+                {
+                    var level = _groupCallMessageLevels[i];
+                    if (level.MaxTextLength >= length && level.MaxCustomEmojiCount >= customEmojiCount)
+                    {
+                        value = level;
+                        return true;
+                    }
+                }
+            }
+
+            value = null;
+            return false;
+        }
+
         public bool IsDiceEmoji(string text, out string dice)
         {
             text = text.Trim();
@@ -3417,6 +3454,9 @@ namespace Telegram.Services
                     break;
                 case UpdateGroupCall updateGroupCall:
                     _groupCalls[updateGroupCall.GroupCall.Id] = updateGroupCall.GroupCall;
+                    break;
+                case UpdateGroupCallMessageLevels updateGroupCallMessageLevels:
+                    _groupCallMessageLevels = updateGroupCallMessageLevels.Levels.ToArray();
                     break;
                 case UpdateInstalledStickerSets updateInstalledStickerSets:
                     switch (updateInstalledStickerSets.StickerType)

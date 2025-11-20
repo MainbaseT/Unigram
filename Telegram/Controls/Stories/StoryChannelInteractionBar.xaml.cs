@@ -240,7 +240,10 @@ namespace Telegram.Controls.Stories
             _interaction = interaction;
             _reaction = value;
 
-            UpdateInteraction(story, interaction, recycled);
+            if (story.InteractionInfo != null)
+            {
+                UpdateInteraction(story, interaction, recycled);
+            }
 
             var around = value?.AroundAnimation?.StickerValue;
             if (around != null && around.Local.CanBeDownloaded && !around.Local.IsDownloadingActive && !around.Local.IsDownloadingCompleted)

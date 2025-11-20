@@ -320,6 +320,22 @@ namespace Telegram.Converters
             return string.Format(Strings.PmFwdOriginalDateTimeAt, Date(dateTime), Time(dateTime));
         }
 
+        public static string SentDate(int value)
+        {
+            var dateTime = ToLocalTime(value);
+
+            if (dateTime.Date == DateTime.Now.Date)
+            {
+                return string.Format(Strings.LiveStoryMessageSentTodayAt, Time(dateTime));
+            }
+            else if (dateTime.Date == DateTime.Now.Date.AddDays(-1))
+            {
+                return string.Format(Strings.LiveStoryMessageSentYesterdayAt, Time(dateTime));
+            }
+
+            return string.Format(Strings.LiveStoryMessageSentDateTimeAt, Date(dateTime), Time(dateTime));
+        }
+
         public static string DateExtended(int value)
         {
             var dateTime = ToLocalTime(value);

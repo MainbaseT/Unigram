@@ -25,15 +25,23 @@ namespace Telegram.Services
     /// </summary>
     public interface IEventAggregator
     {
-        SubscriptionBuilder Subscribe<T>(object subscriber, Action<T> action);
+        SubscriptionBuilder Subscribe<T>(object subscriber, Action<T> action, EventType type = EventType.None, long id = 0);
         void Subscribe<T>(object subscriber, long token, UpdateHandler<T> action);
 
         void Unsubscribe(object subscriber);
-        void Unsubscribe<T>(object subscriber);
+        void Unsubscribe<T>(object subscriber, EventType type = EventType.None, long id = 0);
         void Unsubscribe(object subscriber, long token);
 
-        void Publish(object message);
+        void Publish(object message, EventType type = EventType.None, long id = 0);
         void Publish(object message, long token);
+    }
+
+    // TODO: Use in more places if possible
+    public enum EventType
+    {
+        None,
+        Chat,
+        GroupCall
     }
 
     public partial class EventAggregator : IEventAggregator
@@ -43,17 +51,51 @@ namespace Telegram.Services
 
         #region By type
 
-        private readonly ConcurrentDictionary<Type, TypeHandler> _typeHandlers = new();
-
-        public SubscriptionBuilder Subscribe<T>(object subscriber, Action<T> action)
+        private readonly struct SubscriptionKey
         {
-            Add(subscriber, typeof(T), action);
-            return new SubscriptionBuilder(this, subscriber);
+            public SubscriptionKey(Type messageType, EventType type, long id)
+            {
+                MessageType = messageType;
+                Type = type;
+                Id = id;
+            }
+
+            public readonly Type MessageType;
+
+            public readonly EventType Type;
+
+            public readonly long Id;
+
+            public override bool Equals(object obj)
+            {
+                if (obj is SubscriptionKey other)
+                {
+                    return other.MessageType == MessageType
+                        && other.Type == Type
+                        && other.Id == Id;
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(MessageType, Type, Id);
+            }
         }
 
-        public void Add(object subscriber, Type messageType, Delegate action)
+        private readonly ConcurrentDictionary<SubscriptionKey, TypeHandler> _typeHandlers = new();
+
+        public SubscriptionBuilder Subscribe<T>(object subscriber, Action<T> action, EventType type = EventType.None, long id = 0)
         {
-            var handler = _typeHandlers.GetOrAdd(messageType, x => new TypeHandler());
+            Add(subscriber, typeof(T), type, id, action);
+            return new SubscriptionBuilder(this, subscriber, type, id);
+        }
+
+        public void Add(object subscriber, Type messageType, EventType type, long id, Delegate action)
+        {
+            var key = new SubscriptionKey(messageType, type, id);
+            var handler = _typeHandlers.GetOrAdd(key, x => new TypeHandler());
             handler.Subscribe(subscriber, action);
         }
 
@@ -69,26 +111,29 @@ namespace Telegram.Services
             }
         }
 
-        public virtual void Unsubscribe<T>(object subscriber)
+        public virtual void Unsubscribe<T>(object subscriber, EventType type = EventType.None, long id = 0)
         {
-            if (_typeHandlers.TryGetValue(typeof(T), out var handler))
+            var key = new SubscriptionKey(typeof(T), type, id);
+
+            if (_typeHandlers.TryGetValue(key, out var handler))
             {
                 if (handler.Unsubscribe(subscriber))
                 {
-                    _typeHandlers.TryRemove(typeof(T), out _);
+                    _typeHandlers.TryRemove(key, out _);
                 }
             }
         }
 
-        public virtual void Publish(object message)
+        public virtual void Publish(object message, EventType type = EventType.None, long id = 0)
         {
             var messageType = message.GetType();
+            var key = new SubscriptionKey(messageType, type, id);
 
-            if (_typeHandlers.TryGetValue(messageType, out TypeHandler handler))
+            if (_typeHandlers.TryGetValue(key, out TypeHandler handler))
             {
                 if (handler.Handle(message))
                 {
-                    _typeHandlers.TryRemove(messageType, out _);
+                    _typeHandlers.TryRemove(key, out _);
                 }
             }
         }
@@ -165,16 +210,6 @@ namespace Telegram.Services
 
         private readonly ConcurrentDictionary<long, LongHandler> _longHandlers = new();
 
-        class Subscriber
-        {
-            public long Token;
-
-            public Subscriber(long token)
-            {
-                Token = token;
-            }
-        }
-
         public void Subscribe<T>(object subscriber, long token, UpdateHandler<T> action)
         {
             var handler = _longHandlers.GetOrAdd(token, x => new LongHandler());
@@ -240,15 +275,21 @@ namespace Telegram.Services
         private readonly EventAggregator _aggregator;
         private readonly object _subscriber;
 
-        public SubscriptionBuilder(EventAggregator aggregator, object subscriber)
+        private readonly EventType _type;
+        private readonly long _id;
+
+        public SubscriptionBuilder(EventAggregator aggregator, object subscriber, EventType type, long id)
         {
             _aggregator = aggregator;
             _subscriber = subscriber;
+
+            _type = type;
+            _id = id;
         }
 
         public SubscriptionBuilder Subscribe<T>(Action<T> action)
         {
-            _aggregator.Add(_subscriber, typeof(T), action);
+            _aggregator.Add(_subscriber, typeof(T), _type, _id, action);
             return this;
         }
     }

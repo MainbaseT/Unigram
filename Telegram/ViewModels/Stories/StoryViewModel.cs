@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Services.Calls;
 using Telegram.Td.Api;
 
 namespace Telegram.ViewModels.Stories
@@ -55,6 +56,9 @@ namespace Telegram.ViewModels.Stories
 
         public bool IsBotPreview { get; set; }
 
+        // TODO: Find a better solution
+        public VoipGroupCall GroupCall { get; set; }
+
         public async Task LoadAsync()
         {
             if (_task != null)
@@ -70,6 +74,11 @@ namespace Telegram.ViewModels.Stories
             {
                 Update(story);
                 Prepare();
+
+                if (story.Content is StoryContentLive live && !ClientService.TryGetGroupCall(live.GroupCallId, out _))
+                {
+                    await ClientService.SendAsync(new GetGroupCall(live.GroupCallId));
+                }
             }
 
             _task.SetResult(true);

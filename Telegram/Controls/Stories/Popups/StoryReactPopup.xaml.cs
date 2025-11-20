@@ -10,15 +10,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Telegram.Common;
-using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Navigation;
+using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
-using Telegram.ViewModels;
+using Telegram.ViewModels.Stories;
 using Telegram.Views.Host;
+using Telegram.Views.Stars.Popups;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
@@ -27,12 +28,14 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 
-namespace Telegram.Views.Stars.Popups
+namespace Telegram.Controls.Stories.Popups
 {
-    public sealed partial class ReactPopup : ContentPopup
+    public sealed partial class StoryReactPopup : ContentPopup
     {
         private readonly IClientService _clientService;
-        private readonly MessageViewModel _message;
+        private readonly INavigationService _navigationService;
+        private readonly StoryViewModel _story;
+        private readonly FormattedText _text;
 
         private MessageSender _selection;
 
@@ -44,20 +47,66 @@ namespace Telegram.Views.Stars.Popups
 
         private TeachingTipEx _balance;
 
-        public ReactPopup(IClientService clientService, MessageViewModel message)
+        public StoryReactPopup(IClientService clientService, INavigationService navigationService, StoryViewModel story, FormattedText text, long minimumStarCount, long starCount = 50)
         {
             InitializeComponent();
 
             _clientService = clientService;
-            _message = message;
+            _navigationService = navigationService;
+            _story = story;
+            _text = text ?? string.Empty.AsFormattedText();
 
-            if (clientService.TryGetChat(message.ChatId, out Chat chat))
+            starCount = Math.Max(minimumStarCount, starCount);
+
+            StarCountSlider.Initialize(/*_starCount =*/ starCount, minimumStarCount, clientService.Options.PaidGroupCallMessageStarCountMax);
+
+            if (clientService.TryGetChat(story.PosterChatId, out Chat chat))
             {
-                TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.StarsReactionText, chat.Title));
+                TextBlockHelper.SetMarkdown(Subtitle, string.Format(Strings.LiveStoryReactText, chat.Title));
 
-                StarCountSlider.Initialize(_starCount = 50, 1, clientService.Options.PaidReactionStarCountMax);
+                if (text != null)
+                {
+                    LevelRoot.Visibility = Visibility.Visible;
+                    TopReactorsRoot.Visibility = Visibility.Collapsed;
 
-                _reactors = new List<PaidReactor>(message.InteractionInfo?.Reactions?.PaidReactors ?? Array.Empty<PaidReactor>());
+                    _reactors = [.. Array.Empty<PaidReactor>()];
+                    _selection = _story.GroupCall.MessageSenderId;
+
+                    UpdateOrder();
+                    UpdateAlias();
+
+                }
+                else
+                {
+                    InitializeTopDonors();
+                }
+
+                //_reactors = new List<PaidReactor>(message.InteractionInfo?.Reactions?.PaidReactors ?? Array.Empty<PaidReactor>());
+
+                //if (_reactors.Count > 0)
+                //{
+                //    UpdateOrder();
+                //}
+                //else
+                //{
+                //    TopReactorsRoot.Visibility = Visibility.Collapsed;
+                //}
+
+                //Anonymous.IsChecked = !(_self?.IsAnonymous ?? (clientService.DefaultPaidReactionType is PaidReactionTypeAnonymous));
+
+                //UpdateAlias();
+            }
+
+            Opened += OnOpened;
+            Closed += OnClosed;
+        }
+
+        private async void InitializeTopDonors()
+        {
+            var response = await _clientService.SendAsync(new GetLiveStoryTopDonors(_story.GroupCall.Id));
+            if (response is LiveStoryDonors donors)
+            {
+                _reactors = [.. donors.TopDonors ?? Array.Empty<PaidReactor>()];
 
                 if (_reactors.Count > 0)
                 {
@@ -65,16 +114,16 @@ namespace Telegram.Views.Stars.Popups
                 }
                 else
                 {
+                    _selection = _story.GroupCall.MessageSenderId;
+                    UpdateOrder();
+
                     TopReactorsRoot.Visibility = Visibility.Collapsed;
                 }
 
-                Anonymous.IsChecked = !(_self?.IsAnonymous ?? (clientService.DefaultPaidReactionType is PaidReactionTypeAnonymous));
-
                 UpdateAlias();
-            }
 
-            Opened += OnOpened;
-            Closed += OnClosed;
+                StarCountSlider_ValueChanged(null, null);
+            }
         }
 
         private void OnOpened(ContentDialog sender, ContentDialogOpenedEventArgs args)
@@ -129,7 +178,7 @@ namespace Telegram.Views.Stars.Popups
         private void Buy_Click(Hyperlink sender, HyperlinkClickEventArgs args)
         {
             Hide();
-            _message.Delegate.NavigationService.ShowPopup(new BuyPopup());
+            _navigationService.ShowPopup(new BuyPopup());
         }
 
         private void OnClosed(ContentDialog sender, ContentDialogClosedEventArgs args)
@@ -142,14 +191,25 @@ namespace Telegram.Views.Stars.Popups
             if (_self != null && _starCount != StarCount)
             {
                 UpdateOrder();
-            }
 
-            _starCount = StarCount;
+                Preview.Update(_clientService, new GroupCallMessage(0, _self.SenderId, 0, _text, StarCount, false, false), 0);
 
-            if (PurchaseText != null)
-            {
-                PurchaseText.Text = string.Format(Strings.StarsReactionSend.ReplaceStar(Icons.Premium), StarCount.ToString("N0"));
-                AutomationProperties.SetName(PurchaseCommand, PurchaseText.Text);
+                if (_clientService.TryGetGroupCallMessageLevel(StarCount, out GroupCallMessageLevel level))
+                {
+                    StarCountSlider.Foreground = new SolidColorBrush(level.SecondColor.ToColor());
+
+                    Duration.Text = Locale.FormatShortTime(level.PinDuration);
+                    Length.Text = level.MaxTextLength.ToString();
+                    Emoji.Text = level.MaxCustomEmojiCount.ToString();
+                }
+
+                _starCount = StarCount;
+
+                if (PurchaseText != null)
+                {
+                    PurchaseText.Text = string.Format(Strings.StarsReactionSend.ReplaceStar(Icons.Premium), StarCount.ToString("N0"));
+                    AutomationProperties.SetName(PurchaseCommand, PurchaseText.Text);
+                }
             }
         }
 
@@ -171,7 +231,7 @@ namespace Telegram.Views.Stars.Popups
                 {
                     if (_selection != null)
                     {
-                        _self = new PaidReactor(_selection, 0, false, true, Anonymous.IsChecked != true);
+                        _self = new PaidReactor(_selection, 0, false, true, false);
                     }
                     else if (_clientService.DefaultPaidReactionType is PaidReactionTypeChat reactionTypeChat)
                     {
@@ -179,7 +239,7 @@ namespace Telegram.Views.Stars.Popups
                     }
                     else
                     {
-                        _self = new PaidReactor(_clientService.MyId, 0, false, true, Anonymous.IsChecked != true);
+                        _self = new PaidReactor(_clientService.MyId, 0, false, true, false);
                     }
                 }
 
@@ -188,7 +248,7 @@ namespace Telegram.Views.Stars.Popups
             else
             {
                 _self.StarCount = _count + StarCount;
-                _self.IsAnonymous = Anonymous.IsChecked != true;
+                _self.IsAnonymous = false;
             }
 
             _reactors.Remove(_self);
@@ -213,18 +273,14 @@ namespace Telegram.Views.Stars.Popups
             TopReactors.UpdateMessageReactions(_clientService, _reactors, _self);
         }
 
-        private int _starCount;
-        public int StarCount => StarCountSlider.RealValue;
+        private long _starCount;
+        public long StarCount => StarCountSlider.RealValue;
 
         public PaidReactionType Type
         {
             get
             {
-                if (Anonymous.IsChecked != true)
-                {
-                    return new PaidReactionTypeAnonymous();
-                }
-                else if (_self?.SenderId is MessageSenderChat messageSenderChat)
+                if (_self?.SenderId is MessageSenderChat messageSenderChat)
                 {
                     return new PaidReactionTypeChat(messageSenderChat.ChatId);
                 }
@@ -269,8 +325,8 @@ namespace Telegram.Views.Stars.Popups
         {
             var flyout = new MenuFlyout();
 
-            var response = await _clientService.SendAsync(new GetChatAvailablePaidMessageReactionSenders(_message.ChatId));
-            if (response is MessageSenders senders)
+            var response = await _clientService.SendAsync(new GetLiveStoryAvailableMessageSenders(_story.PosterChatId));
+            if (response is ChatMessageSenders senders)
             {
                 void handler(object sender, RoutedEventArgs _)
                 {
@@ -286,8 +342,6 @@ namespace Telegram.Views.Stars.Popups
                         {
                             _selection = messageSender;
                         }
-
-                        Anonymous.IsChecked = true;
 
                         UpdateAlias();
                         UpdateOrder();
@@ -307,14 +361,14 @@ namespace Telegram.Views.Stars.Popups
                     item.Icon = new FontIcon();
                     item.Tag = picture;
 
-                    if (_clientService.TryGetUser(messageSender, out User senderUser))
+                    if (_clientService.TryGetUser(messageSender.Sender, out User senderUser))
                     {
                         picture.Source = ProfilePictureSource.User(_clientService, senderUser);
 
                         item.Text = senderUser.FullName();
                         item.Info = Strings.VoipGroupPersonalAccount;
                     }
-                    else if (_clientService.TryGetChat(messageSender, out Chat senderChat))
+                    else if (_clientService.TryGetChat(messageSender.Sender, out Chat senderChat))
                     {
                         picture.Source = ProfilePictureSource.Chat(_clientService, senderChat);
 
@@ -391,7 +445,7 @@ namespace Telegram.Views.Stars.Popups
                         }
                         else if (step.Status == DiffStatus.Move && step.OldStartIndex < Children.Count && step.NewStartIndex < Children.Count)
                         {
-                            UpdateItem(step.Items[0].OldValue, step.Items[0].NewValue);
+                            UpdateItem(step.Items[0].OldValue, step.Items[0].NewValue, step.NewStartIndex);
                             Children.Move((uint)step.OldStartIndex, (uint)step.NewStartIndex);
                         }
                         else if (step.Status == DiffStatus.Remove && step.OldStartIndex < Children.Count)
@@ -407,7 +461,7 @@ namespace Telegram.Views.Stars.Popups
 
                     foreach (var item in diff.NotMovedItems)
                     {
-                        UpdateItem(item.OldValue, item.NewValue);
+                        UpdateItem(item.OldValue, item.NewValue, item.NewSeqIndex);
                     }
                 }
 
@@ -418,7 +472,7 @@ namespace Telegram.Views.Stars.Popups
         private void UpdateButton(IClientService clientService, PaidReactor item, int index)
         {
             var button = GetOrCreateButton(item, index);
-            button.UpdateCell(clientService, item, index + 1, false);
+            button.UpdateCell(clientService, item, index + 1, true);
             //button.SetReaction(message, item);
 
             //if (animate)
@@ -523,11 +577,11 @@ namespace Telegram.Views.Stars.Popups
             this.stops = stops.ToArray();
         }
 
-        public void setValue(long value)
+        public void setValue(int value)
         {
             setValue(value, false);
         }
-        public void setValue(long value, bool byScroll)
+        public void setValue(int value, bool byScroll)
         {
             this.progress = getProgress(value);
             if (!byScroll)
@@ -549,20 +603,15 @@ namespace Telegram.Views.Stars.Popups
 
         public int getValue(double progress)
         {
-            if (stops.Length > 1)
-            {
-                if (progress <= 0f) return stops[0];
-                if (progress >= 1f) return stops[stops.Length - 1];
-                double scaledProgress = progress * (stops.Length - 1);
-                int index = (int)scaledProgress;
-                double localProgress = scaledProgress - index;
-                return (int)Math.Round(stops[index] + localProgress * (stops[index + 1] - stops[index]));
-            }
-
-            return stops[0];
+            if (progress <= 0f) return stops[0];
+            if (progress >= 1f) return stops[stops.Length - 1];
+            double scaledProgress = progress * (stops.Length - 1);
+            int index = (int)scaledProgress;
+            double localProgress = scaledProgress - index;
+            return (int)Math.Round(stops[index] + localProgress * (stops[index + 1] - stops[index]));
         }
 
-        public float getProgress(long value)
+        public float getProgress(int value)
         {
             for (int i = 1; i < stops.Length; ++i)
             {

@@ -20,7 +20,7 @@ namespace Telegram.Collections
             _comparer = comparer;
         }
 
-        public SortedObservableCollection(IComparer<T> comparer, IEnumerable<T> source)
+        public SortedObservableCollection(IEnumerable<T> source, IComparer<T> comparer)
             : base(source)
         {
             _comparer = comparer;

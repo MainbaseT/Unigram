@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vlc="using:LibVLCSharp.Platforms.Windows"
              xmlns:controls="using:Telegram.Controls"
+             xmlns:cells="using:Telegram.Controls.Cells"
              xmlns:local="using:Telegram.Controls.Stories"
              mc:Ignorable="d"
              d:DesignHeight="300"
@@ -132,10 +133,10 @@
                 <Grid Grid.Column="1"
                       VerticalAlignment="Center"
                       Margin="0,1,0,3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
                     <Grid HorizontalAlignment="Left">
                         <Grid.ColumnDefinitions>
@@ -156,14 +157,40 @@
                                                Grid.Column="1" />
                     </Grid>
 
-                    <TextBlock x:Name="Subtitle"
-                               Foreground="{ThemeResource PageHeaderDisabledBrush}"
-                               Style="{StaticResource CaptionTextBlockStyle}"
-                               TextWrapping="NoWrap"
-                               TextTrimming="CharacterEllipsis"
-                               VerticalAlignment="Bottom"
-                               Margin="4,0,0,0"
-                               Grid.Column="1" />
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name="LiveBadge"
+                                VerticalAlignment="Bottom"
+                                Background="#FF2C55"
+                                BorderBrush="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                                BorderThickness="2"
+                                CornerRadius="8"
+                                Height="16"
+                                MinWidth="16"
+                                Margin="0,0,4,0"
+                                Visibility="Collapsed">
+                            <TextBlock Foreground="#FFFFFF"
+                                       Text="{CustomResource LiveStoryBadge}"
+                                       TextLineBounds="Tight"
+                                       TextAlignment="Center"
+                                       OpticalMarginAlignment="TrimSideBearings"
+                                       FontSize="9"
+                                       Padding="4,0,4,0"
+                                       VerticalAlignment="Center"
+                                       Typography.NumeralAlignment="Tabular" />
+                        </Border>
+
+                        <TextBlock x:Name="Subtitle"
+                                   Foreground="{ThemeResource PageHeaderDisabledBrush}"
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   TextWrapping="NoWrap"
+                                   TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Bottom"
+                                   Grid.Column="1" />
+                    </Grid>
                 </Grid>
 
                 <Border x:Name="Privacy"
@@ -283,6 +310,79 @@
                                  VerticalAlignment="Stretch"
                                  Opacity="0"
                                  Grid.Row="1" />
+            </Grid>
+
+            <Grid x:Name="MessagesRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ListView x:Name="MessagesHost"
+                          SelectionMode="None"
+                          ChoosingItemContainer="MessagesHost_ChoosingItemContainer"
+                          ContainerContentChanging="MessagesHost_ContainerContentChanging"
+                          SizeChanged="MessagesHost_SizeChanged"
+                          Margin="0,-12,0,0"
+                          Padding="0,12,0,8"
+                          Grid.Row="1">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel VerticalAlignment="Bottom"
+                                             ItemsUpdatingScrollMode="KeepLastItemInView" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <cells:LiveStoryMessageCell HorizontalAlignment="Left" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem"
+                               BasedOn="{StaticResource DefaultListViewItemStyle}">
+                            <Setter Property="Margin"
+                                    Value="8,1" />
+                            <Setter Property="Padding"
+                                    Value="0" />
+                            <Setter Property="MinHeight"
+                                    Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+                <ListView x:Name="PinnedMessagesHost"
+                          SelectionMode="None"
+                          ContainerContentChanging="PinnedMessagesHost_ContainerContentChanging"
+                          Padding="0,0,8,0"
+                          Grid.Row="2">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <cells:LiveStoryPinnedMessageCell Click="PinnedMessage_Click" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem"
+                               BasedOn="{StaticResource DefaultListViewItemStyle}">
+                            <Setter Property="Margin"
+                                    Value="8,1,0,8" />
+                            <Setter Property="Padding"
+                                    Value="0" />
+                            <Setter Property="MinHeight"
+                                    Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+
+                <local:StoryReactionStream x:Name="ReactionsHost"
+                                           SizeChanged="ReactionsHost_SizeChanged"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Bottom"
+                                           IsHitTestVisible="False"
+                                           Grid.RowSpan="3" />
             </Grid>
         </Grid>
 

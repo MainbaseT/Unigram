@@ -808,7 +808,7 @@ namespace Telegram.Views.Calls
 
         private void OnMessagesChanged(VoipGroupCall sender, VoipGroupCallMessagesChangedEventArgs args)
         {
-            this.BeginOnUIThread(() => UpdateMessages(args.Message, args.Expired));
+            this.BeginOnUIThread(() => UpdateMessages(args.Message, args.Deleted));
         }
 
         private void UpdateMessages(GroupCallMessage message, bool expired)
@@ -1361,9 +1361,9 @@ namespace Telegram.Views.Calls
                 }
             }
 
-            if (_call.CanToggleCanSendMessages)
+            if (_call.CanToggleAreMessagesAllowed)
             {
-                flyout.CreateFlyoutItem(ToggleCanSendMessages, _call.CanSendMessages ? Strings.VoipChannelDisableComments : Strings.VoipChannelEnableComments, _call.CanSendMessages ? Icons.ChatOff : Icons.Chat);
+                flyout.CreateFlyoutItem(ToggleAreMessagesAllowed, _call.AreMessagesAllowed ? Strings.VoipChannelDisableComments : Strings.VoipChannelEnableComments, _call.AreMessagesAllowed ? Icons.ChatOff : Icons.Chat);
             }
 
             if (_call.ScheduledStartDate == 0)
@@ -1470,9 +1470,9 @@ namespace Telegram.Views.Calls
             }
         }
 
-        private void ToggleCanSendMessages()
+        private void ToggleAreMessagesAllowed()
         {
-            _call.ClientService.Send(new ToggleGroupCallCanSendMessages(_call.Id, !_call.CanSendMessages));
+            _call.ClientService.Send(new ToggleGroupCallAreMessagesAllowed(_call.Id, !_call.AreMessagesAllowed));
         }
 
         private async void SetTitle()

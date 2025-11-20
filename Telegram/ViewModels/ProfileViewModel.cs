@@ -1903,4 +1903,13 @@ namespace Telegram.ViewModels
             }
         }
     }
+
+    public partial class GroupCallMessageComparer : IComparer<GroupCallMessage>
+    {
+        public int Compare(GroupCallMessage x, GroupCallMessage y)
+        {
+            // TODO: expiration date?
+            return y.Date.CompareTo(x.Date);
+        }
+    }
 }

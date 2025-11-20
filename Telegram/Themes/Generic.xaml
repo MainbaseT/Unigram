@@ -2203,6 +2203,10 @@
     <Style TargetType="local:PremiumSlider">
         <Setter Property="UseSystemFocusVisuals"
                 Value="{StaticResource UseSystemFocusVisuals}" />
+        <Setter Property="Foreground"
+                Value="{StaticResource StarCountLinearGradientBrush}" />
+        <Setter Property="Background"
+                Value="#26EFAD0D" />
         <Setter Property="FocusVisualMargin"
                 Value="-3" />
         <Setter Property="IsFocusEngagementEnabled"
@@ -2249,7 +2253,7 @@
                                     <RowDefinition Height="40" />
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
-                                <Border Background="{StaticResource StarCountLinearGradientBrush}"
+                                <Border Background="{TemplateBinding Foreground}"
                                         Height="40"
                                         CornerRadius="0"
                                         Grid.ColumnSpan="2" />
@@ -2274,7 +2278,7 @@
                                 </local:AnimatedTextBlock>
 
                                 <Path x:Name="Arrow"
-                                      Fill="#EEAC0D"
+                                      Fill="{TemplateBinding Foreground}"
                                       Stretch="None"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Bottom"
@@ -2310,7 +2314,7 @@
                             </Grid>
                         </Canvas>
 
-                        <Grid Background="#26EFAD0D"
+                        <Grid Background="{TemplateBinding Background}"
                               CornerRadius="10"
                               Height="20"
                               Control.IsTemplateFocusTarget="True"
@@ -2325,7 +2329,7 @@
                                        Margin="8,4,8,5" />
 
                             <Grid x:Name="ValueRoot"
-                                  Background="{StaticResource StarCountLinearGradientBrush}">
+                                  Background="{TemplateBinding Foreground}">
                                 <TextBlock Text="{TemplateBinding MinimumText}"
                                            TextAlignment="Left"
                                            FontWeight="SemiBold"
@@ -5651,6 +5655,23 @@
                                         <Setter Target="ExpiresInLabel.Visibility"
                                                 Value="Visible" />
                                     </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="ReadOnlyStates">
+                                <VisualState x:Name="NotReadOnly" />
+                                <VisualState x:Name="ReadOnly">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                                                       Storyboard.TargetName="ContentPresenter">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{ThemeResource SystemControlForegroundBaseLowBrush}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity"
+                                                                       Storyboard.TargetName="ContentBackground">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="0" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>

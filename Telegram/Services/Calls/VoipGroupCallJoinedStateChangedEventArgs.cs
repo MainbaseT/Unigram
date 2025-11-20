@@ -20,5 +20,8 @@ namespace Telegram.Services.Calls
         public bool IsJoined { get; }
 
         public bool NeedRejoin { get; }
+
+        // TODO: handle in StoryContent/Window to close the view
+        public bool IsClosed => !IsJoined && !NeedRejoin;
     }
 }

@@ -25,7 +25,6 @@ namespace Telegram.ViewModels.Stories
 
     public partial class ActiveStoriesViewModel : ComposeViewModel
     {
-        private readonly IClientService _clientService;
         private readonly long _chatId;
 
         private readonly ChatActiveStories _activeStories;
@@ -40,7 +39,6 @@ namespace Telegram.ViewModels.Stories
         public ActiveStoriesViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ChatActiveStories activeStories, Chat chat)
             : base(clientService, settingsService, aggregator)
         {
-            _clientService = clientService;
             _chatId = activeStories.ChatId;
 
             _activeStories = activeStories;
@@ -58,7 +56,6 @@ namespace Telegram.ViewModels.Stories
         public ActiveStoriesViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, StoryViewModel selectedItem, ObservableCollection<StoryViewModel> stories)
             : base(clientService, settingsService, aggregator)
         {
-            _clientService = clientService;
             _chatId = selectedItem.PosterChatId;
 
             Chat = clientService.GetChat(selectedItem.PosterChatId);
@@ -73,7 +70,6 @@ namespace Telegram.ViewModels.Stories
         public ActiveStoriesViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, Story story)
             : base(clientService, settingsService, aggregator)
         {
-            _clientService = clientService;
             _chatId = story.PosterChatId;
 
             Chat = clientService.GetChat(story.PosterChatId);
@@ -130,9 +126,13 @@ namespace Telegram.ViewModels.Stories
             foreach (var story in activeStories.Stories)
             {
                 _stories.TryGetValue(story.StoryId, out var item);
-                item ??= new StoryViewModel(_clientService, activeStories.ChatId, story);
+                item ??= new StoryViewModel(ClientService, activeStories.ChatId, story);
 
-                if (story.StoryId > activeStories.MaxReadStoryId)
+                if (story.IsLive)
+                {
+                    selected = item;
+                }
+                else if (story.StoryId > activeStories.MaxReadStoryId)
                 {
                     selected ??= item;
                 }

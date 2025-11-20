@@ -193,6 +193,7 @@ namespace Telegram
             public const string LeaveCommunities = "LeaveCommunities";
             public const string Likes = "Likes";
             public const string Links = "Links";
+            public const string LiveStoryWatching = "LiveStoryWatching";
             public const string MaximumReactionsValue = "MaximumReactionsValue";
             public const string Media = "Media";
             public const string Members = "Members";
@@ -12624,6 +12625,55 @@ namespace Telegram
         /// </summary>
         public static string LiveStoryBadge => Resource.GetString("LiveStoryBadge");
         
+        /// <summary>
+        /// Localized resource similar to "emoji"
+        /// </summary>
+        public static string LiveStoryHighlightFeatureEmoji => Resource.GetString("LiveStoryHighlightFeatureEmoji");
+        
+        /// <summary>
+        /// Localized resource similar to "characters"
+        /// </summary>
+        public static string LiveStoryHighlightFeatureLength => Resource.GetString("LiveStoryHighlightFeatureLength");
+        
+        /// <summary>
+        /// Localized resource similar to "pin in chat"
+        /// </summary>
+        public static string LiveStoryHighlightFeaturePin => Resource.GetString("LiveStoryHighlightFeaturePin");
+        
+        /// <summary>
+        /// Localized resource similar to "Edit Stars"
+        /// </summary>
+        public static string LiveStoryMessageEditStars => Resource.GetString("LiveStoryMessageEditStars");
+        
+        /// <summary>
+        /// Localized resource similar to "Remove Stars"
+        /// </summary>
+        public static string LiveStoryMessageRemoveStars => Resource.GetString("LiveStoryMessageRemoveStars");
+        
+        /// <summary>
+        /// Localized resource similar to "Sent {0} at {1}"
+        /// </summary>
+        public static string LiveStoryMessageSentDateTimeAt => Resource.GetString("LiveStoryMessageSentDateTimeAt");
+        
+        /// <summary>
+        /// Localized resource similar to "Sent today at {0}"
+        /// </summary>
+        public static string LiveStoryMessageSentTodayAt => Resource.GetString("LiveStoryMessageSentTodayAt");
+        
+        /// <summary>
+        /// Localized resource similar to "Sent yesterday at {0}"
+        /// </summary>
+        public static string LiveStoryMessageSentYesterdayAt => Resource.GetString("LiveStoryMessageSentYesterdayAt");
+        
+        /// <summary>
+        /// Localized resource similar to "Highlight and pin your message by sending Stars to **{0}**"
+        /// </summary>
+        public static string LiveStoryReactText => Resource.GetString("LiveStoryReactText");
+        
+        /// <summary>
+        /// Localized resource similar to "React with Stars"
+        /// </summary>
+        public static string LiveStoryReactTitle => Resource.GetString("LiveStoryReactTitle");
         
         /// <summary>
         /// Localized resource similar to "Loading..."
@@ -16124,6 +16174,11 @@ namespace Telegram
         public static string PrivacyGiftsTitle => Resource.GetString("PrivacyGiftsTitle");
         
         /// <summary>
+        /// Localized resource similar to "From Channels"
+        /// </summary>
+        public static string PrivacyGiftsTypeFromChannels => Resource.GetString("PrivacyGiftsTypeFromChannels");
+        
+        /// <summary>
         /// Localized resource similar to "Accepted gift types"
         /// </summary>
         public static string PrivacyGiftsTypeHeader => Resource.GetString("PrivacyGiftsTypeHeader");
@@ -16214,6 +16269,26 @@ namespace Telegram
         /// Localized resource similar to "all bots"
         /// </summary>
         public static string PrivacyMiniappsText => Resource.GetString("PrivacyMiniappsText");
+        
+        /// <summary>
+        /// Localized resource similar to "Saved Music"
+        /// </summary>
+        public static string PrivacyMusic => Resource.GetString("PrivacyMusic");
+        
+        /// <summary>
+        /// Localized resource similar to "You can restrict who can see you music with granular precision."
+        /// </summary>
+        public static string PrivacyMusicInfo => Resource.GetString("PrivacyMusicInfo");
+        
+        /// <summary>
+        /// Localized resource similar to "You can add users or entire groups that will not see your music."
+        /// </summary>
+        public static string PrivacyMusicInfo3 => Resource.GetString("PrivacyMusicInfo3");
+        
+        /// <summary>
+        /// Localized resource similar to "Who can see my saved music in profile?"
+        /// </summary>
+        public static string PrivacyMusicTitle => Resource.GetString("PrivacyMusicTitle");
         
         /// <summary>
         /// Localized resource similar to "Peer-to-Peer Calls"

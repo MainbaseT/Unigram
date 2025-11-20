@@ -13034,6 +13034,19 @@
     <string name="SponsoredMessageAdWhatIsThis">what\'s this?</string>
 
     <string name="LiveStoryBadge">LIVE</string>
+    <string name="LiveStoryReactTitle">React with Stars</string>
+    <string name="LiveStoryReactText">Highlight and pin your message by sending Stars to **{0}**</string>
+    <string name="LiveStoryHighlightFeaturePin">pin in chat</string>
+    <string name="LiveStoryHighlightFeatureLength">characters</string>
+    <string name="LiveStoryHighlightFeatureEmoji">emoji</string>
+    <string name="LiveStoryMessageEditStars">Edit Stars</string>
+    <string name="LiveStoryMessageRemoveStars">Remove Stars</string>
+    <string name="LiveStoryMessageSentDateTimeAt">Sent {0} at {1}</string>
+    <string name="LiveStoryMessageSentTodayAt">Sent today at {0}</string>
+    <string name="LiveStoryMessageSentYesterdayAt">Sent yesterday at {0}</string>
+    <string name="LiveStoryWatching_one">{0} watching</string>
+    <string name="LiveStoryWatching_other">{0} watching</string>
+
     <string name="MessageScheduledRepeatYearly">yearly</string>
     <string name="MessageScheduledRepeatMonthly">monthly</string>
     <string name="MessageScheduledRepeatMonthlyMany_one">{0}-monthly</string>
@@ -13051,5 +13064,11 @@
     <string name="MessageScheduledRepeatOption6Monthly">Every 6 months</string>
     <string name="MessageScheduledRepeatOptionYearly">Yearly</string>
     <string name="MessageScheduledRepeatPremium">Subscribe to **Telegram Premium** to schedule repeating messages.</string>
+
+    <string name="PrivacyMusic">Saved Music</string>
+    <string name="PrivacyMusicTitle">Who can see my saved music in profile?</string>
+    <string name="PrivacyMusicInfo">You can restrict who can see you music with granular precision.</string>
+    <string name="PrivacyMusicInfo3">You can add users or entire groups that will not see your music.</string>
+    <string name="PrivacyGiftsTypeFromChannels">From Channels</string>
 
 </resources>

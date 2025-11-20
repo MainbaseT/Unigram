@@ -266,7 +266,11 @@ namespace Telegram.Services
                 return;
             }
 
-            await JoinAsyncInternal(clientService, navigation, chat, chat.VideoChat.GroupCallId, null, inviteHash);
+            var response = await clientService.SendAsync(new GetGroupCall(chat.VideoChat.GroupCallId));
+            if (response is GroupCall groupCall)
+            {
+                await JoinAsyncInternal(clientService, navigation, chat, groupCall, null, inviteHash, false);
+            }
         }
 
         public async void CreateGroupCall(IClientService clientService, INavigationService navigation, long chatId)
@@ -337,22 +341,16 @@ namespace Telegram.Services
                 }
 
                 var response = await clientService.SendAsync(new CreateVideoChat(chat.Id, string.Empty, startDate, popup.IsStartWithSelected));
-                if (response is GroupCallId groupCallId)
+                if (response is GroupCallId groupCallId && clientService.TryGetGroupCall(groupCallId.Id, out GroupCall groupCall))
                 {
-                    await JoinAsyncInternal(clientService, navigation, chat, groupCallId.Id, alias, string.Empty);
+                    await JoinAsyncInternal(clientService, navigation, chat, groupCall, alias, string.Empty, false);
                 }
             }
         }
 
-        private async Task JoinAsyncInternal(IClientService clientService, INavigationService navigation, Chat chat, int groupCallId, MessageSender alias, string inviteHash)
+        private async Task JoinAsyncInternal(IClientService clientService, INavigationService navigation, Chat chat, GroupCall groupCall, MessageSender alias, string inviteHash, bool isLiveStory)
         {
             alias ??= chat.VideoChat.DefaultParticipantId;
-
-            var groupCall = clientService.GetGroupCall(groupCallId);
-            if (groupCall == null)
-            {
-                return;
-            }
 
             if (alias == null && !groupCall.IsRtmpStream)
             {
@@ -391,7 +389,7 @@ namespace Telegram.Services
                     var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
                     var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
 
-                    _activeCall = new VoipGroupCall(clientService, settings, aggregator, xamlRoot, chat, groupCall, alias, inviteHash);
+                    _activeCall = new VoipGroupCall(clientService, settings, aggregator, xamlRoot, chat, groupCall, alias, inviteHash, isLiveStory);
                     changed = groupCall.ScheduledStartDate > 0;
                 }
 
@@ -403,7 +401,7 @@ namespace Telegram.Services
                 if (changed)
                 {
                     var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
-                    aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.Title, groupCall.InviteLink, groupCall.PaidMessageStarCount, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsVideoChat, groupCall.IsLiveStory, groupCall.IsRtmpStream, true, false, groupCall.IsOwned, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.MessageSenderId, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.CanSendMessages, groupCall.CanToggleCanSendMessages, groupCall.CanDeleteMessages, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
+                    aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.Title, groupCall.InviteLink, groupCall.PaidMessageStarCount, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsVideoChat, groupCall.IsLiveStory, groupCall.IsRtmpStream, true, false, groupCall.IsOwned, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.MessageSenderId, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.CanSendMessages, groupCall.AreMessagesAllowed, groupCall.CanToggleAreMessagesAllowed, groupCall.CanDeleteMessages, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
                 }
             });
         }
@@ -474,20 +472,22 @@ namespace Telegram.Services
             }
         }
 
-        public void Handle(IClientService clientService, UpdateGroupCall update)
+        public bool Handle(IClientService clientService, UpdateGroupCall update)
         {
             var changed = false;
+            var handled = true;
 
             lock (_activeLock)
             {
                 if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCall.Id && groupCall.ClientService == clientService)
                 {
                     groupCall.Update(update.GroupCall, out bool closed);
+                    handled = true;
 
                     if (closed)
                     {
                         _activeCall = null;
-                        changed = true;
+                        changed = false;
                     }
                 }
                 //else if (_activeCall is VoipCall call && call.GroupCallId == update.GroupCall.Id && !_upgrading)
@@ -513,41 +513,94 @@ namespace Telegram.Services
                     aggregator.Publish(new UpdateActiveCall());
                 }
             }
+
+            return handled;
         }
 
         private bool _upgrading;
 
-        public void Handle(IClientService clientService, UpdateGroupCallParticipant update)
+        public bool Handle(IClientService clientService, UpdateGroupCallParticipant update)
         {
             lock (_activeLock)
             {
                 if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCallId && groupCall.ClientService == clientService)
                 {
-                    groupCall.Update(update.Participant);
+                    groupCall.UpdateParticipant(update.Participant);
+                    return false;
                 }
             }
+
+            return true;
         }
 
-        public void Handle(IClientService clientService, UpdateGroupCallVerificationState update)
+        public bool Handle(IClientService clientService, UpdateGroupCallVerificationState update)
         {
             lock (_activeLock)
             {
                 if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCallId && groupCall.ClientService == clientService)
                 {
-                    groupCall.Update(update.Generation, update.Emojis);
+                    groupCall.UpdateVerificationState(update.Generation, update.Emojis);
+                    return false;
                 }
             }
+
+            return true;
         }
 
-        public void Handle(IClientService clientService, UpdateNewGroupCallMessage update)
+        public bool Handle(IClientService clientService, UpdateGroupCallMessageSendFailed update)
         {
             lock (_activeLock)
             {
                 if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCallId && groupCall.ClientService == clientService)
                 {
-                    groupCall.Update(update.Message);
+                    //groupCall.Update(update.Message);
+                    return false;
                 }
             }
+
+            return true;
+        }
+
+        public bool Handle(IClientService clientService, UpdateGroupCallMessagesDeleted update)
+        {
+            lock (_activeLock)
+            {
+                if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCallId && groupCall.ClientService == clientService)
+                {
+                    //groupCall.Update(update.Message);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool Handle(IClientService clientService, UpdateNewGroupCallMessage update)
+        {
+            lock (_activeLock)
+            {
+                if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCallId && groupCall.ClientService == clientService)
+                {
+                    //groupCall.Update(update.Message);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool Handle(IClientService clientService, UpdateNewGroupCallPaidReaction update)
+        {
+            lock (_activeLock)
+            {
+                if (_activeCall is VoipGroupCall groupCall && groupCall.Id == update.GroupCallId && groupCall.ClientService == clientService)
+                {
+                    //groupCall.Update(update.Message);
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static VoipState ToState(Call call)

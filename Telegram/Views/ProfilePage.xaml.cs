@@ -412,7 +412,7 @@ namespace Telegram.Views
 
             if (fullInfo != null)
             {
-                ViewModel.Members = new SortedObservableCollection<ChatMember>(new ChatMemberComparer(ViewModel.ClientService, true), fullInfo.Members);
+                ViewModel.Members = new SortedObservableCollection<ChatMember>(fullInfo.Members, new ChatMemberComparer(ViewModel.ClientService, true));
             }
         }
 

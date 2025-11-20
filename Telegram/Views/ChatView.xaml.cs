@@ -6176,7 +6176,7 @@ namespace Telegram.Views
             var opacityHide = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
             opacityHide.InsertKeyFrame(0, 1);
             opacityHide.InsertKeyFrame(1, 0);
-            opacityHide.Duration = Constants.FastAnimation * 10;
+            opacityHide.Duration = Constants.FastAnimation;
 
             more.CenterPoint = new Vector3(16, 16, 0);
             alias.CenterPoint = new Vector3(16, 16, 0);

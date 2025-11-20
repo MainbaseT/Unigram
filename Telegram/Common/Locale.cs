@@ -330,6 +330,22 @@ namespace Telegram.Common
             return Math.Round(diff / 60d / 60d) + "h";
         }
 
+        public static string FormatShortTime(int livePeriod)
+        {
+            if (livePeriod < 60)
+            {
+                return livePeriod + "s";
+            }
+            else if (livePeriod < 60 * 60)
+            {
+                return livePeriod / 60 + "m";
+            }
+            else
+            {
+                return livePeriod / 60 / 60 + "h";
+            }
+        }
+
         public static string FormatTtl(int ttl, bool shorter = false)
         {
             if (shorter)

@@ -8491,6 +8491,42 @@ Upgrade to **Telegram Premium** to increase this limit to **{1}**.</value>
   <data name="LiveStoryBadge" xml:space="preserve">
     <value>LIVE</value>
   </data>
+  <data name="LiveStoryHighlightFeatureEmoji" xml:space="preserve">
+    <value>emoji</value>
+  </data>
+  <data name="LiveStoryHighlightFeatureLength" xml:space="preserve">
+    <value>characters</value>
+  </data>
+  <data name="LiveStoryHighlightFeaturePin" xml:space="preserve">
+    <value>pin in chat</value>
+  </data>
+  <data name="LiveStoryMessageEditStars" xml:space="preserve">
+    <value>Edit Stars</value>
+  </data>
+  <data name="LiveStoryMessageRemoveStars" xml:space="preserve">
+    <value>Remove Stars</value>
+  </data>
+  <data name="LiveStoryMessageSentDateTimeAt" xml:space="preserve">
+    <value>Sent {0} at {1}</value>
+  </data>
+  <data name="LiveStoryMessageSentTodayAt" xml:space="preserve">
+    <value>Sent today at {0}</value>
+  </data>
+  <data name="LiveStoryMessageSentYesterdayAt" xml:space="preserve">
+    <value>Sent yesterday at {0}</value>
+  </data>
+  <data name="LiveStoryReactText" xml:space="preserve">
+    <value>Highlight and pin your message by sending Stars to **{0}**</value>
+  </data>
+  <data name="LiveStoryReactTitle" xml:space="preserve">
+    <value>React with Stars</value>
+  </data>
+  <data name="LiveStoryWatching_one" xml:space="preserve">
+    <value>{0} watching</value>
+  </data>
+  <data name="LiveStoryWatching_other" xml:space="preserve">
+    <value>{0} watching</value>
+  </data>
   <data name="Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
@@ -10829,6 +10865,9 @@ seamlessly and efficiently.</value>
   <data name="PrivacyGiftsTitle" xml:space="preserve">
     <value>Automatically display gifts from</value>
   </data>
+  <data name="PrivacyGiftsTypeFromChannels" xml:space="preserve">
+    <value>From Channels</value>
+  </data>
   <data name="PrivacyGiftsTypeHeader" xml:space="preserve">
     <value>Accepted gift types</value>
   </data>
@@ -10884,6 +10923,18 @@ seamlessly and efficiently.</value>
   </data>
   <data name="PrivacyMiniappsText" xml:space="preserve">
     <value>all bots</value>
+  </data>
+  <data name="PrivacyMusic" xml:space="preserve">
+    <value>Saved Music</value>
+  </data>
+  <data name="PrivacyMusicInfo" xml:space="preserve">
+    <value>You can restrict who can see you music with granular precision.</value>
+  </data>
+  <data name="PrivacyMusicInfo3" xml:space="preserve">
+    <value>You can add users or entire groups that will not see your music.</value>
+  </data>
+  <data name="PrivacyMusicTitle" xml:space="preserve">
+    <value>Who can see my saved music in profile?</value>
   </data>
   <data name="PrivacyP2P" xml:space="preserve">
     <value>Peer-to-Peer Calls</value>

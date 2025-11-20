@@ -25,6 +25,7 @@ namespace Telegram.Controls.Chats
             ExpiresInLabel = GetTemplateChild(nameof(ExpiresInLabel)) as TextBlock;
 
             OnSlowModeDelayChanged(SlowModeDelay, SlowModeDelayExpiresIn);
+            OnReadOnlyChanged(IsReadOnly);
 
             base.OnApplyTemplate();
         }
@@ -75,5 +76,28 @@ namespace Telegram.Controls.Chats
             ExpiresInLabel.Text = TimeSpan.FromSeconds(expiresIn).ToString("mm\\:ss");
             VisualStateManager.GoToState(this, expiresIn > 0 ? "ExpiresIn" : "Expired", false);
         }
+
+        #region IsReadOnly
+
+        public bool IsReadOnly
+        {
+            get { return (bool)GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsReadOnlyProperty =
+            DependencyProperty.Register(nameof(IsReadOnly), typeof(bool), typeof(ChatSendButton), new PropertyMetadata(false, OnReadOnlyChanged));
+
+        private static void OnReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ChatSendButton)d).OnReadOnlyChanged((bool)e.NewValue);
+        }
+
+        private void OnReadOnlyChanged(bool newValue)
+        {
+            VisualStateManager.GoToState(this, newValue ? "ReadOnly" : "NotReadOnly", false);
+        }
+
+        #endregion
     }
 }

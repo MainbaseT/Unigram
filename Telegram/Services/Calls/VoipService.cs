@@ -29,9 +29,6 @@ namespace Telegram.Services
 
     public partial class VoipService : ServiceBase, IVoipService
     {
-        private readonly object _activeLock = new();
-        private VoipCallBase _activeCall;
-
         public VoipService(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
@@ -40,7 +37,11 @@ namespace Telegram.Services
                 .Subscribe<UpdateGroupCall>(Handle)
                 .Subscribe<UpdateGroupCallParticipant>(Handle)
                 .Subscribe<UpdateGroupCallVerificationState>(Handle)
-                .Subscribe<UpdateNewGroupCallMessage>(Handle);
+                .Subscribe<UpdateGroupCallMessageSendFailed>(Handle)
+                .Subscribe<UpdateGroupCallMessagesDeleted>(Handle)
+                .Subscribe<UpdateNewGroupCallMessage>(Handle)
+                .Subscribe<UpdateNewGroupCallPaidReaction>(Handle)
+                .Subscribe<UpdateLiveStoryTopDonors>(Handle);
         }
 
         public VoipCallBase ActiveCall => TypeResolver.Current.Voip.ActiveCall;
@@ -95,22 +96,63 @@ namespace Telegram.Services
 
         public void Handle(UpdateGroupCall update)
         {
-            TypeResolver.Current.Voip.Handle(ClientService, update);
+            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            {
+                Aggregator.Publish(update, EventType.GroupCall, update.GroupCall.Id);
+            }
         }
 
         public void Handle(UpdateGroupCallParticipant update)
         {
-            TypeResolver.Current.Voip.Handle(ClientService, update);
+            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            {
+                Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
+            }
         }
 
         public void Handle(UpdateGroupCallVerificationState update)
         {
-            TypeResolver.Current.Voip.Handle(ClientService, update);
+            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            {
+                Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
+            }
+        }
+
+        public void Handle(UpdateGroupCallMessageSendFailed update)
+        {
+            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            {
+                Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
+            }
+        }
+
+        public void Handle(UpdateGroupCallMessagesDeleted update)
+        {
+            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            {
+                Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
+            }
         }
 
         public void Handle(UpdateNewGroupCallMessage update)
         {
-            TypeResolver.Current.Voip.Handle(ClientService, update);
+            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            {
+                Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
+            }
+        }
+
+        public void Handle(UpdateNewGroupCallPaidReaction update)
+        {
+            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            {
+                Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
+            }
+        }
+
+        public void Handle(UpdateLiveStoryTopDonors update)
+        {
+            Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
         }
     }
 }

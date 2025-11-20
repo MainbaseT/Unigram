@@ -355,9 +355,19 @@ namespace Telegram.Controls.Stories
                             return;
                         }
 
-                        if (viewModel.Items[real].IsMyStory)
+                        if (selectedItem.Content is StoryContentLive)
+                        {
+                            Interactions.Visibility = Visibility.Collapsed;
+                            LiveInteractions.Visibility = Visibility.Visible;
+                            ChannelInteractions.Visibility = Visibility.Collapsed;
+                            TextArea.Visibility = Visibility.Collapsed;
+
+                            LiveInteractions.Update(child, activeStories, selectedItem);
+                        }
+                        else if (viewModel.Items[real].IsMyStory)
                         {
                             Interactions.Visibility = Visibility.Visible;
+                            LiveInteractions.Visibility = Visibility.Collapsed;
                             ChannelInteractions.Visibility = Visibility.Collapsed;
                             TextArea.Visibility = Visibility.Collapsed;
 
@@ -366,6 +376,7 @@ namespace Telegram.Controls.Stories
                         else if (selectedItem.Chat.Type is ChatTypeSupergroup || !selectedItem.CanBeReplied)
                         {
                             Interactions.Visibility = Visibility.Collapsed;
+                            LiveInteractions.Visibility = Visibility.Collapsed;
                             ChannelInteractions.Visibility = Visibility.Visible;
                             TextArea.Visibility = Visibility.Collapsed;
 
@@ -374,12 +385,14 @@ namespace Telegram.Controls.Stories
                         else if (selectedItem.CanBeReplied)
                         {
                             Interactions.Visibility = Visibility.Collapsed;
+                            LiveInteractions.Visibility = Visibility.Collapsed;
                             ChannelInteractions.Visibility = Visibility.Collapsed;
                             TextArea.Visibility = Visibility.Visible;
                         }
                         else
                         {
                             Interactions.Visibility = Visibility.Collapsed;
+                            LiveInteractions.Visibility = Visibility.Collapsed;
                             ChannelInteractions.Visibility = Visibility.Collapsed;
                             TextArea.Visibility = Visibility.Collapsed;
                         }
@@ -847,8 +860,12 @@ namespace Telegram.Controls.Stories
         {
             if (args.Key is VirtualKey.Space /*&& args.Modifiers == VirtualKeyModifiers.None*/)
             {
-                ActiveCard.Toggle();
-                args.Handled = true;
+                var focused = FocusManager.GetFocusedElement(XamlRoot);
+                if (focused is not RichEditBox)
+                {
+                    ActiveCard.Toggle();
+                    args.Handled = true;
+                }
             }
         }
 
@@ -1338,7 +1355,8 @@ namespace Telegram.Controls.Stories
         Popup = 1 << 5,
         Interaction = 1 << 6,
         Caption = 1 << 7,
-        Window = 1 << 8
+        Window = 1 << 8,
+        Live = 1 << 9
     }
 
     enum Direction
