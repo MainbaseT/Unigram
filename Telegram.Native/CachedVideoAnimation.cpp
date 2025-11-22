@@ -92,6 +92,16 @@ namespace winrt::Telegram::Native::implementation
         return true;
     }
 
+    inline HANDLE CachedVideoAnimation::GetCacheHandle()
+    {
+        if (m_cacheHandle == INVALID_HANDLE_VALUE)
+        {
+            m_cacheHandle = CreateFile2(m_cacheFile.c_str(), GENERIC_READ, 0, OPEN_EXISTING, NULL);
+        }
+
+        return m_cacheHandle;
+    }
+
     winrt::Telegram::Native::CachedVideoAnimation CachedVideoAnimation::LoadFromFile(IVideoAnimationSource file, int32_t width, int32_t height, bool fit, bool createCache, bool limitFps)
     {
         auto info = winrt::make_self<CachedVideoAnimation>();
@@ -252,7 +262,7 @@ namespace winrt::Telegram::Native::implementation
                 {
                     std::lock_guard<std::mutex> guard(GetLockForKey(m_cacheKey));
 
-                    HANDLE precacheFile = CreateFile2(m_cacheFile.c_str(), GENERIC_READ, 0, OPEN_EXISTING, NULL);
+                    HANDLE precacheFile = GetCacheHandle(); //CreateFile2(m_cacheFile.c_str(), GENERIC_READ, 0, OPEN_EXISTING, NULL);
                     if (precacheFile != INVALID_HANDLE_VALUE)
                     {
                         if (SetFilePointer(precacheFile, offset, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER)
@@ -292,7 +302,7 @@ namespace winrt::Telegram::Native::implementation
                             }
                         }
 
-                        CloseHandle(precacheFile);
+                        //CloseHandle(precacheFile);
 
                         if (loadedFromCache)
                         {

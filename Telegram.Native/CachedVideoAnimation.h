@@ -44,6 +44,12 @@ namespace winrt::Telegram::Native::implementation
                 m_animation->Close();
                 m_animation = nullptr;
             }
+
+            if (m_cacheHandle)
+            {
+                CloseHandle(m_cacheHandle);
+                m_cacheHandle = INVALID_HANDLE_VALUE;
+            }
         }
 
         static winrt::Telegram::Native::CachedVideoAnimation LoadFromFile(IVideoAnimationSource file, int32_t width, int32_t height, bool fit, bool precache, bool limitFps);
@@ -86,6 +92,8 @@ namespace winrt::Telegram::Native::implementation
         bool Load(IVideoAnimationSource file, int32_t width, int32_t height, bool fit, bool limitFps);
         void RenderSync(uint8_t* pixels, double& seconds, bool& completed, bool* rendered);
 
+        HANDLE GetCacheHandle();
+
         bool ReadHeader(HANDLE precacheFile);
 
         static void CompressThreadProc();
@@ -114,6 +122,7 @@ namespace winrt::Telegram::Native::implementation
         bool m_precache = false;
         winrt::hstring m_path;
         std::wstring m_cacheFile;
+        HANDLE m_cacheHandle = INVALID_HANDLE_VALUE;
         std::string m_data;
         std::string m_cacheKey;
         uint8_t* m_decompressBuffer = nullptr;  // Raw pointer for performance
