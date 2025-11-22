@@ -26,15 +26,15 @@ namespace Telegram.Stub
             SystemEvents.SessionEnded += OnSessionEnded;
 
             _notifyIcon = notifyIcon;
-            _notifyIcon.Click += OpenApp;
-            _notifyIcon.Closed += OnClosed;
+            _notifyIcon.Click += OnClick;
+            _notifyIcon.Exit += OnExit;
 
             try
             {
                 var local = ApplicationData.Current.LocalSettings;
                 if (local.Values.TryGet("IsLaunchMinimized", out bool minimized) && !minimized)
                 {
-                    OpenApp(null, EventArgs.Empty);
+                    OnClick(null, EventArgs.Empty);
                 }
                 else
                 {
@@ -45,13 +45,6 @@ namespace Telegram.Stub
             {
                 // Can happen
             }
-        }
-
-        public event EventHandler? Closed;
-
-        private void OnClosed(object? sender, EventArgs e)
-        {
-            Closed?.Invoke(this, e);
         }
 
         private void OnSessionEnded(object sender, SessionEndedEventArgs e)
@@ -79,7 +72,7 @@ namespace Telegram.Stub
             _notifyIcon.Dispose();
         }
 
-        private async void OpenApp(object? sender, EventArgs e)
+        private async void OnClick(object? sender, EventArgs e)
         {
             try
             {
@@ -91,7 +84,7 @@ namespace Telegram.Stub
             Connect();
         }
 
-        private async void Exit(object sender, EventArgs e)
+        private async void OnExit(object? sender, EventArgs e)
         {
             _closeRequested = false;
 
@@ -242,11 +235,11 @@ namespace Telegram.Stub
 
                 if (unreadCount > 0 || unreadUnmutedCount > 0)
                 {
-                    _notifyIcon?.Icon = unreadUnmutedCount > 0 ? "Resources\\Unmuted.ico" : "Resources\\Muted.ico";
+                    _notifyIcon?.Icon = unreadUnmutedCount > 0 ? NotifyIconIcon.Unmuted : NotifyIconIcon.Muted;
                 }
                 else
                 {
-                    _notifyIcon?.Icon = "Resources\\Default.ico";
+                    _notifyIcon?.Icon = NotifyIconIcon.Default;
                 }
             }
 

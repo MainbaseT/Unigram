@@ -20,6 +20,13 @@ namespace Telegram.Stub
         }
     }
 
+    internal enum NotifyIconIcon : int
+    {
+        Default = 1001,
+        Muted = 1002,
+        Unmuted = 1003
+    }
+
     internal class NotifyIcon
     {
         private const int WM_DESTROY = 0x0002;
@@ -37,7 +44,6 @@ namespace Telegram.Stub
         private uint _taskbarRestart;
         private IntPtr _menu;
         private readonly WndProc _wndProcDelegate;
-        private readonly CancellationTokenSource _cts;
 
         private readonly BridgeApplicationContext _context;
         private readonly NotifyIconSynchronizationContext _synchronization;
@@ -47,9 +53,7 @@ namespace Telegram.Stub
             AppDomain.CurrentDomain.ProcessExit += (_, _) => RemoveTrayIcon();
 
             _wndProcDelegate = WndProc2;
-            _cts = new CancellationTokenSource();
-
-            _icon = "Resources\\Default.ico";
+            _icon = NotifyIconIcon.Default;
 
             NativeMethods.SetProcessDpiAwarenessContext(NativeMethods.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
             CreateMessageWindow();
@@ -66,18 +70,15 @@ namespace Telegram.Stub
             {
                 if (msg.message == WM_USER_CALLBACK)
                 {
-                    // Process callback posted by SynchronizationContext
                     var handle = GCHandle.FromIntPtr(msg.lParam);
-                    var callback = (SendOrPostCallback)handle.Target;
+                    var callback = handle.Target as SendOrPostCallback;
                     handle.Free();
-                    callback(null);
+                    callback?.Invoke(null);
                 }
 
                 NativeMethods.TranslateMessage(ref msg);
                 NativeMethods.DispatchMessage(ref msg);
             }
-
-            _cts.Cancel();
         }
 
         private void CreateMessageWindow()
@@ -112,7 +113,9 @@ namespace Telegram.Stub
 
         private void CreateTrayIcon()
         {
-            _iconHandle = LoadImage(IntPtr.Zero, _icon, IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_DEFAULTCOLOR);
+            var hModule = NativeMethods.GetModuleHandle(null);
+
+            _iconHandle = NativeMethods.LoadImage(hModule, new IntPtr((int)_icon), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_DEFAULTCOLOR);
 
             NOTIFYICONDATA data = new NOTIFYICONDATA
             {
@@ -175,8 +178,7 @@ namespace Telegram.Stub
                     break;
 
                 case WM_DESTROY:
-                    RemoveTrayIcon();
-                    NativeMethods.PostQuitMessage(0);
+                    Dispose();
                     break;
             }
 
@@ -190,7 +192,7 @@ namespace Telegram.Stub
 
         private void OnExit()
         {
-            Dispose();
+            Exit?.Invoke(this, EventArgs.Empty);
         }
 
         const uint MF_BYCOMMAND = 0x00000000;
@@ -208,31 +210,28 @@ namespace Telegram.Stub
 
         public event EventHandler? Click;
 
-        public event EventHandler? Closed;
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        static extern IntPtr LoadImage(IntPtr hInst, string name, uint type, int cx, int cy, uint fuLoad);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern bool DestroyIcon(IntPtr hIcon);
+        public event EventHandler? Exit;
 
         const uint IMAGE_ICON = 1;
         const uint LR_DEFAULTCOLOR = 0x0;
         const uint LR_DEFAULTSIZE = 0x40;
-        const uint LR_LOADFROMFILE = 0x00000010;
 
         private IntPtr _iconHandle;
 
-        private string _icon;
-        public string Icon
+        private NotifyIconIcon _icon;
+        public NotifyIconIcon Icon
         {
             get => _icon;
             set
             {
                 if (_icon != value)
                 {
+                    NativeMethods.DestroyIcon(_iconHandle);
+
+                    var hModule = NativeMethods.GetModuleHandle(null);
+
                     _icon = value;
-                    _iconHandle = LoadImage(IntPtr.Zero, value, IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_DEFAULTCOLOR);
+                    _iconHandle = NativeMethods.LoadImage(hModule, new IntPtr((int)value), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_DEFAULTCOLOR);
 
                     var data = new NOTIFYICONDATA();
                     data.cbSize = Marshal.SizeOf<NOTIFYICONDATA>();
@@ -250,11 +249,8 @@ namespace Telegram.Stub
 
         public void Dispose()
         {
-            _cts.Cancel();
             RemoveTrayIcon();
             NativeMethods.PostQuitMessage(0);
-
-            Closed?.Invoke(this, EventArgs.Empty);
         }
 
         private void ShowContextMenu()
@@ -305,17 +301,17 @@ namespace Telegram.Stub
         }
     }
 
-    public class NativeMethods
+    public static class NativeMethods
     {
         [DllImport("user32.dll")]
         public static extern bool SetProcessDpiAwarenessContext(IntPtr dpiContext);
 
         public static readonly IntPtr DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = new IntPtr(-4);
 
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern ushort RegisterClass([In] ref WNDCLASS lpWndClass);
 
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr CreateWindowEx(
             int dwExStyle,
             string lpClassName,
@@ -349,14 +345,17 @@ namespace Telegram.Stub
         [DllImport("user32.dll")]
         public static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
-
         [DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern bool Shell_NotifyIcon(uint dwMessage, ref NOTIFYICONDATA pnid);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr LoadIcon(IntPtr hInstance, IntPtr iconName);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr LoadImage(IntPtr hInst, IntPtr name, uint type, int cx, int cy, uint fuLoad);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool DestroyIcon(IntPtr hIcon);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr CreatePopupMenu();
@@ -378,6 +377,9 @@ namespace Telegram.Stub
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern uint RegisterWindowMessage(string lpString);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr GetModuleHandle(string? lpModuleName);
     }
 
     [StructLayout(LayoutKind.Sequential)]

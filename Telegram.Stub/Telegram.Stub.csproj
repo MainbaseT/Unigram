@@ -10,23 +10,16 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>x64;arm64</Platforms>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <Win32Resource>Resources.res</Win32Resource>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Fido2.Models" Version="4.0.0" />
     <PackageReference Include="Microsoft.Win32.SystemEvents" Version="10.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\Default.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Muted.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Unmuted.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
