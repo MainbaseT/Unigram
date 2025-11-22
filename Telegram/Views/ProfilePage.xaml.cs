@@ -230,7 +230,7 @@ namespace Telegram.Views
         {
             if (PowerSavingPolicy.AreSmoothTransitionsEnabled && SettingsService.Current.Diagnostics.ConnectedAnimationsDebug && e.SourcePageType == typeof(ChatPage) && ViewModel.NavigationService.TryGetChatFromParameter(e.Parameter, out ChatMessageTopic nextTopic))
             {
-                if (ViewModel.Chat.Id == nextTopic.ChatId && ViewModel.Topic.AreTheSame(nextTopic.MessageTopic))
+                if (ViewModel.Chat.Id == nextTopic.ChatId && ViewModel.Chat.Id != ViewModel.ClientService.Options.MyId && ViewModel.Topic.AreTheSame(nextTopic.MessageTopic))
                 {
                     ProfileHeader.PrepareExit();
                 }

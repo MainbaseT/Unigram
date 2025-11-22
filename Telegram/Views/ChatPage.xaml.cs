@@ -58,7 +58,7 @@ namespace Telegram.Views
         {
             if (PowerSavingPolicy.AreSmoothTransitionsEnabled && SettingsService.Current.Diagnostics.ConnectedAnimationsDebug && e.SourcePageType == typeof(ProfilePage) && ViewModel.NavigationService.TryGetChatFromParameter(e.Parameter, out ChatMessageTopic nextTopic))
             {
-                if (ViewModel.Chat.Id == nextTopic.ChatId && ViewModel.TopicId.AreTheSame(nextTopic.MessageTopic))
+                if (ViewModel.Chat.Id == nextTopic.ChatId && ViewModel.Chat.Id != ViewModel.ClientService.Options.MyId && ViewModel.TopicId.AreTheSame(nextTopic.MessageTopic))
                 {
                     View.PrepareExit();
                 }
