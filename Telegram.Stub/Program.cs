@@ -20,7 +20,7 @@ namespace Telegram.Stub
 
         private static readonly Mutex _mutex = new Mutex(true, MUTEX_NAME);
 
-        private static BridgeApplicationContext? _context;
+        private static NotifyIcon? _context;
 
         [STAThread]
         public static void Main(string[] args)
@@ -34,7 +34,8 @@ namespace Telegram.Stub
 
             if (_mutex.WaitOne(0, true))
             {
-                _context = new BridgeApplicationContext();
+                _context = new NotifyIcon();
+                _mutex.ReleaseMutex();
             }
         }
 

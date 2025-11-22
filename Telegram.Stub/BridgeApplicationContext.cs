@@ -21,11 +21,11 @@ namespace Telegram.Stub
         private bool _closeRequested = true;
         private int _processId;
 
-        public BridgeApplicationContext()
+        public BridgeApplicationContext(NotifyIcon notifyIcon)
         {
             SystemEvents.SessionEnded += OnSessionEnded;
 
-            _notifyIcon = new NotifyIcon();
+            _notifyIcon = notifyIcon;
             _notifyIcon.Click += OpenApp;
             _notifyIcon.Closed += OnClosed;
 

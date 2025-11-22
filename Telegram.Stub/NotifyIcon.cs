@@ -2,6 +2,24 @@
 
 namespace Telegram.Stub
 {
+    internal class NotifyIconSynchronizationContext : SynchronizationContext
+    {
+        private readonly IntPtr _hwnd;
+
+        const int WM_USER_CALLBACK = 0x0400 + 1;
+
+        public NotifyIconSynchronizationContext(IntPtr hwnd)
+        {
+            _hwnd = hwnd;
+        }
+
+        public override void Post(SendOrPostCallback d, object? state)
+        {
+            var handle = GCHandle.Alloc(d);
+            NativeMethods.PostMessage(_hwnd, WM_USER_CALLBACK, IntPtr.Zero, GCHandle.ToIntPtr(handle));
+        }
+    }
+
     internal class NotifyIcon
     {
         private const int WM_DESTROY = 0x0002;
@@ -13,41 +31,53 @@ namespace Telegram.Stub
         private const int MENU_OPEN = 1001;
         private const int MENU_EXIT = 1002;
 
+        const int WM_USER_CALLBACK = 0x0400 + 1;
+
         private IntPtr _hwnd;
         private uint _taskbarRestart;
         private IntPtr _menu;
         private readonly WndProc _wndProcDelegate;
         private readonly CancellationTokenSource _cts;
 
+        private readonly BridgeApplicationContext _context;
+        private readonly NotifyIconSynchronizationContext _synchronization;
+
         public NotifyIcon()
         {
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => RemoveTrayIcon();
+
             _wndProcDelegate = WndProc2;
             _cts = new CancellationTokenSource();
 
             _icon = "Resources\\Default.ico";
 
-            Thread messageThread = new Thread(() =>
+            NativeMethods.SetProcessDpiAwarenessContext(NativeMethods.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+            CreateMessageWindow();
+            CreateTrayIcon();
+            CreateContextMenu();
+
+            _context = new BridgeApplicationContext(this);
+            _synchronization = new NotifyIconSynchronizationContext(_hwnd);
+
+            SynchronizationContext.SetSynchronizationContext(_synchronization);
+
+            MSG msg;
+            while (NativeMethods.GetMessage(out msg, IntPtr.Zero, 0, 0))
             {
-                AppDomain.CurrentDomain.ProcessExit += (_, _) => RemoveTrayIcon();
-
-                SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-                CreateMessageWindow();
-                CreateTrayIcon();
-                CreateContextMenu();
-
-                MSG msg;
-                while (GetMessage(out msg, IntPtr.Zero, 0, 0))
+                if (msg.message == WM_USER_CALLBACK)
                 {
-                    TranslateMessage(ref msg);
-                    DispatchMessage(ref msg);
+                    // Process callback posted by SynchronizationContext
+                    var handle = GCHandle.FromIntPtr(msg.lParam);
+                    var callback = (SendOrPostCallback)handle.Target;
+                    handle.Free();
+                    callback(null);
                 }
 
-                _cts.Cancel();
-            });
+                NativeMethods.TranslateMessage(ref msg);
+                NativeMethods.DispatchMessage(ref msg);
+            }
 
-            messageThread.SetApartmentState(ApartmentState.STA);
-            messageThread.IsBackground = false;
-            messageThread.Start();
+            _cts.Cancel();
         }
 
         private void CreateMessageWindow()
@@ -61,13 +91,13 @@ namespace Telegram.Stub
                 hInstance = IntPtr.Zero //Marshal.GetHINSTANCE(typeof(Program).Module)
             };
 
-            ushort classAtom = RegisterClass(ref wc);
+            ushort classAtom = NativeMethods.RegisterClass(ref wc);
             if (classAtom == 0)
             {
                 throw new Exception($"RegisterClass failed with error: {Marshal.GetLastWin32Error()}");
             }
 
-            _hwnd = CreateWindowEx(
+            _hwnd = NativeMethods.CreateWindowEx(
                 0, className, "",
                 0, 0, 0, 0, 0,
                 IntPtr.Zero, IntPtr.Zero, wc.hInstance, IntPtr.Zero);
@@ -77,7 +107,7 @@ namespace Telegram.Stub
                 throw new Exception($"CreateWindowEx failed with error: {Marshal.GetLastWin32Error()}");
             }
 
-            _taskbarRestart = RegisterWindowMessage("TaskbarCreated");
+            _taskbarRestart = NativeMethods.RegisterWindowMessage("TaskbarCreated");
         }
 
         private void CreateTrayIcon()
@@ -95,7 +125,7 @@ namespace Telegram.Stub
                 uCallbackMessage = WM_USER
             };
 
-            if (!Shell_NotifyIcon(0x00000000, ref data)) // NIM_ADD
+            if (!NativeMethods.Shell_NotifyIcon(0x00000000, ref data)) // NIM_ADD
             {
                 throw new Exception($"Shell_NotifyIcon failed with error: {Marshal.GetLastWin32Error()}");
             }
@@ -103,10 +133,10 @@ namespace Telegram.Stub
 
         private void CreateContextMenu()
         {
-            _menu = CreatePopupMenu();
+            _menu = NativeMethods.CreatePopupMenu();
 
-            AppendMenu(_menu, 0, MENU_OPEN, "Open");
-            AppendMenu(_menu, 0, MENU_EXIT, "Exit");
+            NativeMethods.AppendMenu(_menu, 0, MENU_OPEN, "Open");
+            NativeMethods.AppendMenu(_menu, 0, MENU_EXIT, "Exit");
         }
 
         private IntPtr WndProc2(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam)
@@ -146,11 +176,11 @@ namespace Telegram.Stub
 
                 case WM_DESTROY:
                     RemoveTrayIcon();
-                    PostQuitMessage(0);
+                    NativeMethods.PostQuitMessage(0);
                     break;
             }
 
-            return DefWindowProc(hwnd, msg, wParam, lParam);
+            return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
         }
 
         private void OnOpen()
@@ -168,12 +198,12 @@ namespace Telegram.Stub
 
         public void UpdateOpenText(string text)
         {
-            ModifyMenu(_menu, MENU_OPEN, MF_BYCOMMAND | MF_STRING, MENU_OPEN, text);
+            NativeMethods.ModifyMenu(_menu, MENU_OPEN, MF_BYCOMMAND | MF_STRING, MENU_OPEN, text);
         }
 
         public void UpdateExitText(string text)
         {
-            ModifyMenu(_menu, MENU_EXIT, MF_BYCOMMAND | MF_STRING, MENU_EXIT, text);
+            NativeMethods.ModifyMenu(_menu, MENU_EXIT, MF_BYCOMMAND | MF_STRING, MENU_EXIT, text);
         }
 
         public event EventHandler? Click;
@@ -213,7 +243,7 @@ namespace Telegram.Stub
                     //data.szTip = "My tooltip";
 
                     // NIM_MODIFY
-                    Shell_NotifyIcon(0x00000001, ref data);
+                    NativeMethods.Shell_NotifyIcon(0x00000001, ref data);
                 }
             }
         }
@@ -222,7 +252,7 @@ namespace Telegram.Stub
         {
             _cts.Cancel();
             RemoveTrayIcon();
-            PostQuitMessage(0);
+            NativeMethods.PostQuitMessage(0);
 
             Closed?.Invoke(this, EventArgs.Empty);
         }
@@ -230,13 +260,13 @@ namespace Telegram.Stub
         private void ShowContextMenu()
         {
             POINT pt;
-            GetCursorPos(out pt);
+            NativeMethods.GetCursorPos(out pt);
 
-            SetForegroundWindow(_hwnd);
+            NativeMethods.SetForegroundWindow(_hwnd);
 
             // TPM_RETURNCMD (0x0100) returns the selected menu item ID
             // TPM_RIGHTBUTTON (0x0002) allows right-click to select
-            int cmd = TrackPopupMenu(_menu, 0x0100 | 0x0002, pt.X, pt.Y, 0, _hwnd, IntPtr.Zero);
+            int cmd = NativeMethods.TrackPopupMenu(_menu, 0x0100 | 0x0002, pt.X, pt.Y, 0, _hwnd, IntPtr.Zero);
 
             // If TPM_RETURNCMD is used, handle the command directly
             if (cmd > 0)
@@ -244,7 +274,7 @@ namespace Telegram.Stub
                 HandleMenuCommand(cmd);
             }
 
-            PostMessage(_hwnd, 0, IntPtr.Zero, IntPtr.Zero); // Dismiss menu properly
+            NativeMethods.PostMessage(_hwnd, 0, IntPtr.Zero, IntPtr.Zero); // Dismiss menu properly
         }
 
         private void HandleMenuCommand(int menuId)
@@ -270,20 +300,23 @@ namespace Telegram.Stub
                     hWnd = _hwnd,
                     uID = 1
                 };
-                Shell_NotifyIcon(0x00000001, ref data); // NIM_DELETE
+                NativeMethods.Shell_NotifyIcon(0x00000001, ref data); // NIM_DELETE
             }
         }
+    }
 
+    public class NativeMethods
+    {
         [DllImport("user32.dll")]
-        static extern bool SetProcessDpiAwarenessContext(IntPtr dpiContext);
+        public static extern bool SetProcessDpiAwarenessContext(IntPtr dpiContext);
 
-        private static readonly IntPtr DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = new IntPtr(-4);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern ushort RegisterClass([In] ref WNDCLASS lpWndClass);
+        public static readonly IntPtr DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = new IntPtr(-4);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr CreateWindowEx(
+        public static extern ushort RegisterClass([In] ref WNDCLASS lpWndClass);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr CreateWindowEx(
             int dwExStyle,
             string lpClassName,
             string lpWindowName,
@@ -296,109 +329,109 @@ namespace Telegram.Stub
         );
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+        public static extern bool GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool PeekMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
+        public static extern bool PeekMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
 
         [DllImport("user32.dll")]
-        private static extern bool TranslateMessage(ref MSG lpMsg);
+        public static extern bool TranslateMessage(ref MSG lpMsg);
 
         [DllImport("user32.dll")]
-        private static extern IntPtr DispatchMessage(ref MSG lpMsg);
+        public static extern IntPtr DispatchMessage(ref MSG lpMsg);
 
         [DllImport("user32.dll")]
-        private static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
+        public static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        private static extern bool PostQuitMessage(int nExitCode);
+        public static extern bool PostQuitMessage(int nExitCode);
 
         [DllImport("user32.dll")]
-        private static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+        public static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
+        public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
 
         [DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern bool Shell_NotifyIcon(uint dwMessage, ref NOTIFYICONDATA pnid);
+        public static extern bool Shell_NotifyIcon(uint dwMessage, ref NOTIFYICONDATA pnid);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr LoadIcon(IntPtr hInstance, IntPtr iconName);
+        public static extern IntPtr LoadIcon(IntPtr hInstance, IntPtr iconName);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr CreatePopupMenu();
+        public static extern IntPtr CreatePopupMenu();
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern bool AppendMenu(IntPtr hMenu, uint uFlags, int uIDNewItem, string lpNewItem);
+        public static extern bool AppendMenu(IntPtr hMenu, uint uFlags, int uIDNewItem, string lpNewItem);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern bool ModifyMenu(IntPtr hMenu, uint uPosition, uint uFlags, uint uIDNewItem, string lpNewItem);
+        public static extern bool ModifyMenu(IntPtr hMenu, uint uPosition, uint uFlags, uint uIDNewItem, string lpNewItem);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool GetCursorPos(out POINT lpPoint);
+        public static extern bool GetCursorPos(out POINT lpPoint);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern int TrackPopupMenu(IntPtr hMenu, uint uFlags, int x, int y, int reserved, IntPtr hWnd, IntPtr rect);
+        public static extern int TrackPopupMenu(IntPtr hMenu, uint uFlags, int x, int y, int reserved, IntPtr hWnd, IntPtr rect);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern uint RegisterWindowMessage(string lpString);
+        public static extern uint RegisterWindowMessage(string lpString);
+    }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct POINT { public int X; public int Y; }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct POINT { public int X; public int Y; }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct MSG
-        {
-            public IntPtr hWnd;
-            public uint message;
-            public IntPtr wParam;
-            public IntPtr lParam;
-            public uint time;
-            public int pt_x;
-            public int pt_y;
-        }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MSG
+    {
+        public IntPtr hWnd;
+        public uint message;
+        public IntPtr wParam;
+        public IntPtr lParam;
+        public uint time;
+        public int pt_x;
+        public int pt_y;
+    }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct WNDCLASS
-        {
-            public uint style;
-            public WndProc lpfnWndProc;
-            public int cbClsExtra;
-            public int cbWndExtra;
-            public IntPtr hInstance;
-            public IntPtr hIcon;
-            public IntPtr hCursor;
-            public IntPtr hbrBackground;
-            public string lpszMenuName;
-            public string lpszClassName;
-        }
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    public struct WNDCLASS
+    {
+        public uint style;
+        public WndProc lpfnWndProc;
+        public int cbClsExtra;
+        public int cbWndExtra;
+        public IntPtr hInstance;
+        public IntPtr hIcon;
+        public IntPtr hCursor;
+        public IntPtr hbrBackground;
+        public string lpszMenuName;
+        public string lpszClassName;
+    }
 
-        private delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+    public delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private struct NOTIFYICONDATA
-        {
-            public int cbSize;
-            public IntPtr hWnd;
-            public int uID;
-            public int uFlags;
-            public int uCallbackMessage;
-            public IntPtr hIcon;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-            public string szTip;
-            public int dwState;
-            public int dwStateMask;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-            public string szInfo;
-            public int uTimeoutOrVersion;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-            public string szInfoTitle;
-            public int dwInfoFlags;
-            public Guid guidItem;
-            public IntPtr hBalloonIcon;
-        }
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct NOTIFYICONDATA
+    {
+        public int cbSize;
+        public IntPtr hWnd;
+        public int uID;
+        public int uFlags;
+        public int uCallbackMessage;
+        public IntPtr hIcon;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string szTip;
+        public int dwState;
+        public int dwStateMask;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+        public string szInfo;
+        public int uTimeoutOrVersion;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+        public string szInfoTitle;
+        public int dwInfoFlags;
+        public Guid guidItem;
+        public IntPtr hBalloonIcon;
     }
 }
