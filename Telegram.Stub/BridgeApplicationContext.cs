@@ -1,15 +1,11 @@
-//
+﻿//
 // Copyright Fela Ameghino 2015-2023
 //
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Microsoft.Win32;
-using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation.Collections;
@@ -17,47 +13,28 @@ using Windows.Storage;
 
 namespace Telegram.Stub
 {
-    class BridgeApplicationContext : ApplicationContext
+    class BridgeApplicationContext
     {
-        private AppServiceConnection _connection = null;
-
-        private MenuItem _openMenuItem;
-        private MenuItem _exitMenuItem;
-        private NotifyIcon _notifyIcon = null;
+        private AppServiceConnection? _connection = null;
+        private readonly NotifyIcon _notifyIcon;
 
         private bool _closeRequested = true;
         private int _processId;
 
-        //private InterceptKeys _intercept;
-
         public BridgeApplicationContext()
         {
-            //_intercept = new InterceptKeys();
-
             SystemEvents.SessionEnded += OnSessionEnded;
-
-            _openMenuItem = new MenuItem("Open Unigram", new EventHandler(OpenApp));
-            _exitMenuItem = new MenuItem("Quit Unigram", new EventHandler(Exit));
-            _openMenuItem.DefaultItem = true;
 
             _notifyIcon = new NotifyIcon();
             _notifyIcon.Click += OpenApp;
-            _notifyIcon.Icon = Properties.Resources.Default;
-            _notifyIcon.ContextMenu = new ContextMenu(new MenuItem[] { _openMenuItem, _exitMenuItem });
-#if DEBUG
-            _notifyIcon.Text = "Telegram";
-#else
-            _notifyIcon.Text = "Unigram";
-#endif
-
-            _notifyIcon.Visible = true;
+            _notifyIcon.Closed += OnClosed;
 
             try
             {
                 var local = ApplicationData.Current.LocalSettings;
                 if (local.Values.TryGet("IsLaunchMinimized", out bool minimized) && !minimized)
                 {
-                    OpenApp(null, null);
+                    OpenApp(null, EventArgs.Empty);
                 }
                 else
                 {
@@ -70,75 +47,12 @@ namespace Telegram.Stub
             }
         }
 
-        /*[DllImport("..\\Telegram.Diagnostics.dll")]
-        public static extern int start(uint pid, uint framework);
+        public event EventHandler? Closed;
 
-        private void LaunchLayoutCycleMonitor(uint pid)
+        private void OnClosed(object? sender, EventArgs e)
         {
-            var process = Process.GetCurrentProcess();
-            var fullPath = process.MainModule.FileName;
-
-            var path = Path.GetDirectoryName(fullPath);
-            path = Path.GetDirectoryName(path);
-            path = Path.Combine(path, "Telegram.Diagnostics.dll");
-
-            AllowAppContainerAccess(path);
-
-            //if (!AllowAppContainerAccess(path))
-            //{
-            //    MessageBox.Show("AllowAppContainerAccess");
-            //    return;
-            //}
-
-            var hr = start(pid, 1);
-
-            var exception = Marshal.GetExceptionForHR(hr);
-            if (exception != null)
-            {
-                MessageBox.Show(exception.ToString());
-            }
-            else
-            {
-                MessageBox.Show("All good");
-            }
+            Closed?.Invoke(this, e);
         }
-
-        [DllImport("Advapi32.dll", SetLastError = true)]
-        private static extern bool ConvertStringSecurityDescriptorToSecurityDescriptor(string StringSecurityDescriptor, uint StringSDRevision, out IntPtr SecurityDescriptor, out UIntPtr SecurityDescriptorSize);
-
-        [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetSecurityDescriptorDacl(IntPtr pSecurityDescriptor, [MarshalAs(UnmanagedType.Bool)] out bool bDaclPresent, ref IntPtr pDacl, [MarshalAs(UnmanagedType.Bool)] out bool bDaclDefaulted);
-
-        [DllImport("advapi32.dll")]
-        public static extern int SetNamedSecurityInfo(
-                    String pObjectName,
-                    int ObjectType,
-                    int SecurityInfo,
-                    IntPtr psidOwner,
-                    IntPtr psidGroup,
-                    IntPtr pDacl,
-                    IntPtr pSacl);
-
-        private bool AllowAppContainerAccess(string path)
-        {
-            var success = ConvertStringSecurityDescriptorToSecurityDescriptor("D:(A;;GRGX;;;S-1-15-2-1)(A;;GRGX;;;S-1-15-2-2)", 1, out IntPtr sd, out UIntPtr sd_length);
-            if (success)
-            {
-                IntPtr dacl = IntPtr.Zero;
-                success = GetSecurityDescriptorDacl(sd, out bool present, ref dacl, out bool defaulted);
-
-                if (success)
-                {
-                    var result = SetNamedSecurityInfo(path, 1, 4, IntPtr.Zero, IntPtr.Zero, dacl, IntPtr.Zero);
-                    success = result == 0;
-                }
-
-                Marshal.FreeHGlobal(sd);
-            }
-
-            return success;
-        }*/
 
         private void OnSessionEnded(object sender, SessionEndedEventArgs e)
         {
@@ -163,18 +77,10 @@ namespace Telegram.Stub
             }
 
             _notifyIcon.Dispose();
-            Application.Exit();
         }
 
-        private async void OpenApp(object sender, EventArgs e)
+        private async void OpenApp(object? sender, EventArgs e)
         {
-            // There's a bug (I guess?) in NotifyIcon that causes Click handler
-            // to be fired if user opens the context menu and then dismisses it.
-            if (e is MouseEventArgs args && args.Button == MouseButtons.Right)
-            {
-                return;
-            }
-
             try
             {
                 var appListEntries = await Package.Current.GetAppListEntriesAsync();
@@ -210,7 +116,6 @@ namespace Telegram.Stub
             }
 
             _notifyIcon.Dispose();
-            Application.Exit();
         }
 
         private async void Connect()
@@ -304,14 +209,14 @@ namespace Telegram.Stub
             {
                 Logger.Info("OpenText");
 
-                _openMenuItem.Text = openText;
+                _notifyIcon?.UpdateOpenText(openText);
             }
 
             if (args.Request.Message.TryGet("ExitText", out string exitText))
             {
                 Logger.Info("ExitText");
 
-                _exitMenuItem.Text = exitText;
+                _notifyIcon?.UpdateExitText(exitText);
             }
 
             if (args.Request.Message.TryGetValue("FlashWindow", out object flash))
@@ -337,11 +242,11 @@ namespace Telegram.Stub
 
                 if (unreadCount > 0 || unreadUnmutedCount > 0)
                 {
-                    _notifyIcon.Icon = unreadUnmutedCount > 0 ? Properties.Resources.Unmuted : Properties.Resources.Muted;
+                    _notifyIcon?.Icon = unreadUnmutedCount > 0 ? "Resources\\Unmuted.ico" : "Resources\\Muted.ico";
                 }
                 else
                 {
-                    _notifyIcon.Icon = Properties.Resources.Default;
+                    _notifyIcon?.Icon = "Resources\\Default.ico";
                 }
             }
 
@@ -356,15 +261,8 @@ namespace Telegram.Stub
                 Logger.Info("Exit");
                 _closeRequested = false;
 
-                _connection.RequestReceived -= OnRequestReceived;
-                _connection.ServiceClosed -= OnServiceClosed;
-            }
-
-            if (args.Request.Message.TryGet("Debug", out string debug))
-            {
-                Logger.Info("Debug");
-                _ = Task.Run(() => MessageBox.Show(debug));
-                response.Add("Debug", debug);
+                _connection?.RequestReceived -= OnRequestReceived;
+                _connection?.ServiceClosed -= OnServiceClosed;
             }
 
             try
@@ -391,9 +289,8 @@ namespace Telegram.Stub
             {
                 Logger.Info("Exit");
 
-                _connection.Dispose();
-                _notifyIcon.Dispose();
-                Application.Exit();
+                _connection?.Dispose();
+                _notifyIcon?.Dispose();
             }
         }
 
@@ -401,9 +298,10 @@ namespace Telegram.Stub
         {
             Logger.Info("_closeRequested: " + _closeRequested);
 
-            _connection.RequestReceived -= OnRequestReceived;
-            _connection.ServiceClosed -= OnServiceClosed;
-            _connection.Dispose();
+            sender.RequestReceived -= OnRequestReceived;
+            sender.ServiceClosed -= OnServiceClosed;
+            sender.Dispose();
+
             _connection = null;
 
             if (_closeRequested)
@@ -414,7 +312,6 @@ namespace Telegram.Stub
             else
             {
                 _notifyIcon.Dispose();
-                Application.Exit();
             }
         }
     }

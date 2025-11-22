@@ -4,15 +4,15 @@
 // Distributed under the GNU General Public License v3.0. (See accompanying
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Telegram.Stub
 {
     public static class Extensions
     {
-        public static bool TryGet<T>(this IDictionary<string, object> dict, string key, out T value)
+        public static bool TryGet<T>(this IDictionary<string, object> dict, string key, [NotNullWhen(true)] out T value)
         {
-            if (dict.TryGetValue(key, out object tryGetValue) && tryGetValue is T tryGet)
+            if (dict.TryGetValue(key, out object? tryGetValue) && tryGetValue is T tryGet)
             {
                 value = tryGet;
                 return true;
