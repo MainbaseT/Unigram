@@ -1601,7 +1601,7 @@ namespace Telegram.Controls.Cells
                 case MessageVoiceNote voiceNote:
                     return Text1("\U0001F3A4 ", voiceNote.Caption, Strings.AttachAudio);
                 case MessageVideo video:
-                    if (video.Cover?.Minithumbnail == null && video.Video.Minithumbnail == null || video.IsSecret || forceEmoji)
+                    if ((video.Cover?.Minithumbnail == null && video.Video.Minithumbnail == null) || video.IsSecret || forceEmoji)
                     {
                         return Text1("\U0001F4F9 ", video.Caption, Strings.AttachVideo);
                     }
