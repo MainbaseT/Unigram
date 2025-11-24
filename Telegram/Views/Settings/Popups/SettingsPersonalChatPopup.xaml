@@ -34,7 +34,7 @@
                                 Padding="0"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
-                                Style="{StaticResource EmptyButtonStyle}">
+                                Style="{StaticResource ListEmptyButtonStyle}">
                             <cells:ChatShareCell x:Name="CurrentLocation"
                                                  Glyph="&#xE10A;"
                                                  Title="{CustomResource EditProfileChannelHide}"

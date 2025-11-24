@@ -23,58 +23,109 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Cells
 {
-    public sealed partial class ChatShareCell : GridEx, IMultipleElement
+    public sealed partial class ChatShareCell : ControlEx, IMultipleElement
     {
         private bool _selected;
 
         public ChatShareCell()
         {
-            InitializeComponent();
+            DefaultStyleKey = typeof(ChatShareCell);
+        }
+
+        #region InitializeComponent
+
+        private Grid PhotoPanel;
+        private Rectangle SelectionOutline;
+        private ProfilePicture Photo;
+        private CustomEmojiIcon BotVerified;
+        private TextBlock TitleLabel;
+        private IdentityIcon Identity;
+
+        // Deferred
+        private Border OnlineBadge;
+
+        private bool _templateApplied;
+
+        protected override void OnApplyTemplate()
+        {
+            PhotoPanel = GetTemplateChild(nameof(PhotoPanel)) as Grid;
+            SelectionOutline = GetTemplateChild(nameof(SelectionOutline)) as Rectangle;
+            Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
+            BotVerified = GetTemplateChild(nameof(BotVerified)) as CustomEmojiIcon;
+            TitleLabel = GetTemplateChild(nameof(TitleLabel)) as TextBlock;
+            Identity = GetTemplateChild(nameof(Identity)) as IdentityIcon;
 
             _selectionPhoto = ElementComposition.GetElementVisual(Photo);
             _selectionOutline = ElementComposition.GetElementVisual(SelectionOutline);
             _selectionPhoto.CenterPoint = new Vector3(18);
             _selectionOutline.CenterPoint = new Vector3(18);
             _selectionOutline.Opacity = 0;
+
+            _templateApplied = true;
+
+            if (_useProperties)
+            {
+                Photo.Source = _photoSource;
+                SelectionOutline.RadiusX = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
+                SelectionOutline.RadiusY = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
+                TitleLabel.Text = _title ?? string.Empty;
+
+                _photoSource = null;
+                _title = null;
+            }
         }
+
+        #endregion
+
+        private bool _useProperties;
 
         public string Glyph
         {
             set
             {
-                Photo.Source = ProfilePictureSourceText.GetGlyph(value, long.MinValue);
-                SelectionOutline.RadiusX = 18;
-                SelectionOutline.RadiusY = 18;
+                PhotoSource = ProfilePictureSourceText.GetGlyph(value, long.MinValue);
             }
         }
 
+        private ProfilePictureSource _photoSource;
         public ProfilePictureSource PhotoSource
         {
             set
             {
-                Photo.Source = value;
-                SelectionOutline.RadiusX = 18;
-                SelectionOutline.RadiusY = 18;
+                if (_templateApplied)
+                {
+                    Photo.Source = value;
+                    SelectionOutline.RadiusX = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
+                    SelectionOutline.RadiusY = Photo.ComputedShape == ProfilePictureShape.Superellipse ? 9 : 18;
+                }
+                else
+                {
+                    _photoSource = value;
+                    _useProperties = true;
+                }
             }
         }
 
-        public ProfilePictureShape PhotoShape
-        {
-            set
-            {
-                Photo.Shape = value;
-                SelectionOutline.RadiusX = value == ProfilePictureShape.Superellipse ? 9 : 18;
-                SelectionOutline.RadiusY = value == ProfilePictureShape.Superellipse ? 9 : 18;
-            }
-        }
-
+        private string _title;
         public string Title
         {
-            get => TitleLabel.Text;
-            set => TitleLabel.Text = value;
+            get => TitleLabel?.Text;
+            set
+            {
+                if (_templateApplied)
+                {
+                    TitleLabel.Text = value;
+                }
+                else
+                {
+                    _title = value;
+                    _useProperties = true;
+                }
+            }
         }
 
         protected override void OnLoaded()
@@ -348,8 +399,8 @@ namespace Telegram.Controls.Cells
 
         #region Selection Animation
 
-        private readonly Visual _selectionOutline;
-        private readonly Visual _selectionPhoto;
+        private Visual _selectionOutline;
+        private Visual _selectionPhoto;
 
         private CompositionPathGeometry _polygon;
         private ShapeVisual _visual;

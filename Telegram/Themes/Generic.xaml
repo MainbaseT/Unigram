@@ -15,6 +15,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ms-appx:///Controls/PatternBackground.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Cells/ChatCell.xaml" />
+        <ResourceDictionary Source="ms-appx:///Controls/Cells/ChatShareCell.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Cells/ForumTopicCell.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Cells/ForumTopicVerticalCell.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Cells/SharedMediaCell.xaml" />
