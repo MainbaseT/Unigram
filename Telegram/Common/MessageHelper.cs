@@ -552,6 +552,9 @@ namespace Telegram.Common
                 case InternalLinkTypeStory story:
                     NavigateToStory(clientService, navigation, story.StoryPosterUsername, story.StoryId);
                     break;
+                case InternalLinkTypeLiveStory liveStory:
+                    NavigateToLiveStory(clientService, navigation, liveStory.StoryPosterUsername);
+                    break;
                 case InternalLinkTypeTheme theme:
                     NavigateToTheme(clientService, navigation, theme.ThemeName);
                     break;
@@ -797,6 +800,48 @@ namespace Telegram.Common
                 {
                     navigation.ShowToast(Strings.StoryNotFound, ToastPopupIcon.ExpiredStory);
                 }
+            }
+            else
+            {
+                navigation.ShowToast(Strings.NoUsernameFound, ToastPopupIcon.Info);
+            }
+        }
+
+        private static async void NavigateToLiveStory(IClientService clientService, INavigationService navigation, string username)
+        {
+            var response = await clientService.SendAsync(new SearchPublicChat(username));
+            if (response is Chat chat)
+            {
+                var response2 = await clientService.SendAsync(new GetChatActiveStories(chat.Id));
+                if (response2 is ChatActiveStories stories)
+                {
+                    var liveStory = stories.Stories.FirstOrDefault(x => x.IsLive);
+                    if (liveStory != null)
+                    {
+                        var response3 = await clientService.SendAsync(new GetStory(chat.Id, liveStory.StoryId, false));
+                        if (response3 is Story story)
+                        {
+                            if (story.Content is StoryContentLive live && !clientService.TryGetGroupCall(live.GroupCallId, out _))
+                            {
+                                await clientService.SendAsync(new GetGroupCall(live.GroupCallId));
+                            }
+
+                            var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
+                            var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+
+                            var activeStories = new ActiveStoriesViewModel(clientService, settings, aggregator, story);
+                            var viewModel = StoryListViewModel.Create(navigation, activeStories);
+
+                            var window = new StoriesWindow();
+                            window.Update(viewModel, activeStories, StoryOpenOrigin.Card, Rect.Empty, null);
+                            _ = window.ShowAsync(navigation.XamlRoot);
+
+                            return;
+                        }
+                    }
+                }
+
+                navigation.ShowToast(Strings.StoryNotFound, ToastPopupIcon.ExpiredStory);
             }
             else
             {
