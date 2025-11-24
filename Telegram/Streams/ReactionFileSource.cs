@@ -21,7 +21,7 @@ namespace Telegram.Streams
         {
             _reaction = reaction;
 
-            DownloadFile(null, null);
+            DownloadFile(null, DelayedFileDownload.Loaded, null);
         }
 
         private ReactionFileSource(IClientService clientService, ReactionType reaction, File file)
@@ -31,7 +31,7 @@ namespace Telegram.Streams
 
             if (file == null)
             {
-                DownloadFile(null, null);
+                DownloadFile(null, DelayedFileDownload.Loaded, null);
             }
         }
 
@@ -53,15 +53,15 @@ namespace Telegram.Streams
 
         public override long Id => GetHashCode();
 
-        public override async void DownloadFile(object sender, UpdateHandler<File> handler)
+        public override async void DownloadFile(object sender, DelayedFileDownload download, UpdateHandler<File> handler)
         {
-            if (_file != null && _file.Local.IsDownloadingCompleted)
+            if (_file != null && _file.Local.IsDownloadingCompleted && download != DelayedFileDownload.Unloaded)
             {
                 handler?.Invoke(sender, _file);
             }
             else
             {
-                if (_file == null)
+                if (_file == null && download != DelayedFileDownload.Unloaded)
                 {
                     Sticker sticker = null;
                     if (_reaction is ReactionTypeEmoji emoji)
@@ -106,20 +106,20 @@ namespace Telegram.Streams
                 {
                     return;
                 }
-                else if (_file.Local.IsDownloadingCompleted)
+                else if (_file.Local.IsDownloadingCompleted && download != DelayedFileDownload.Unloaded)
                 {
                     handler?.Invoke(sender, _file);
                     return;
                 }
 
-                if (handler != null)
+                if (handler != null && download != DelayedFileDownload.Unloaded)
                 {
                     UpdateManager.Subscribe(sender, _clientService, _file, ref _fileToken, handler, true);
                 }
 
                 if (_file.Local.CanBeDownloaded /*&& !_file.Local.IsDownloadingActive*/)
                 {
-                    _clientService.DownloadFile(_file.Id, 16);
+                    _clientService.DownloadFile(_file.Id, download == DelayedFileDownload.Playing ? 16 : 15);
                 }
             }
         }

@@ -996,7 +996,7 @@ namespace Telegram.Controls
 
                 if (_presentation.Source is DelayedFileSource delayed && !delayed.IsDownloadingCompleted)
                 {
-                    delayed.DownloadFile(this, UpdateFile);
+                    delayed.DownloadFile(this, DelayedFileDownload.Loaded, UpdateFile);
                 }
                 else
                 {
@@ -1086,20 +1086,16 @@ namespace Telegram.Controls
                 var task = Volatile.Read(ref _task);
                 if (task == null)
                 {
-                    if (!_requested)
+                    if (_presentation.Source is DelayedFileSource delayed && !delayed.IsDownloadingCompleted)
                     {
-                        _requested = true;
-
-                        if (_presentation.Source is DelayedFileSource delayed && !delayed.IsDownloadingCompleted)
-                        {
-                            delayed.DownloadFile(this, UpdateFile);
-                        }
-                        else
-                        {
-                            _loader.Load(this);
-                        }
+                        delayed.DownloadFile(this, DelayedFileDownload.Playing, UpdateFile);
+                    }
+                    else if (!_requested)
+                    {
+                        _loader.Load(this);
                     }
 
+                    _requested = true;
                     return;
                 }
 
@@ -1136,6 +1132,15 @@ namespace Telegram.Controls
             if (_playing == 0)
             {
                 _ticking = false;
+
+                var task = Volatile.Read(ref _task);
+                if (task == null && _requested)
+                {
+                    if (_presentation.Source is DelayedFileSource delayed && !delayed.IsDownloadingCompleted)
+                    {
+                        delayed.DownloadFile(this, DelayedFileDownload.Unloaded, UpdateFile);
+                    }
+                }
             }
         }
 

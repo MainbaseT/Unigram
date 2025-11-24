@@ -13,6 +13,13 @@ using Telegram.ViewModels.Drawers;
 
 namespace Telegram.Streams
 {
+    public enum DelayedFileDownload
+    {
+        Loaded,
+        Playing,
+        Unloaded
+    }
+
     public partial class DelayedFileSource : LocalFileSource
     {
         protected readonly IClientService _clientService;
@@ -28,7 +35,7 @@ namespace Telegram.Streams
 
             if (file != null)
             {
-                DownloadFile(null, null);
+                DownloadFile(null, DelayedFileDownload.Loaded, null);
             }
         }
 
@@ -175,28 +182,29 @@ namespace Telegram.Streams
 
         public bool IsDownloadingCompleted => _file?.Local.IsDownloadingCompleted ?? false;
 
-        public virtual void DownloadFile(object sender, UpdateHandler<File> handler)
+        public virtual void DownloadFile(object sender, DelayedFileDownload download, UpdateHandler<File> handler)
         {
-            if (_file.Local.IsDownloadingCompleted)
+            if (_file.Local.IsDownloadingCompleted && download != DelayedFileDownload.Unloaded)
             {
                 handler?.Invoke(sender, _file);
             }
             else
             {
-                if (handler != null)
+                if (handler != null && download != DelayedFileDownload.Unloaded)
                 {
                     UpdateManager.Subscribe(sender, _clientService, _file, ref _fileToken, handler, true);
                 }
 
                 if (_file.Local.CanBeDownloaded /*&& !_file.Local.IsDownloadingActive*/)
                 {
-                    _clientService.DownloadFile(_file.Id, 16);
+                    _clientService.DownloadFile(_file.Id, download == DelayedFileDownload.Playing ? 16 : 15);
                 }
             }
         }
 
         public void Complete()
         {
+            DownloadFile(null, DelayedFileDownload.Unloaded, null);
             UpdateManager.Unsubscribe(this, ref _fileToken);
         }
 

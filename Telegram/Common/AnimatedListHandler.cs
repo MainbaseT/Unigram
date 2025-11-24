@@ -192,7 +192,8 @@ namespace Telegram.Common
                 return;
             }
 
-            for (int i = firstCacheIndex; i <= lastCacheIndex; i++)
+            // We do three passes to try to optimize download order
+            for (int i = lastVisibleIndex; i >= firstVisibleIndex; i--)
             {
                 var container = _listView.ContainerFromIndex(i) as SelectorItem;
                 if (container == null || container.ContentTemplateRoot is not FrameworkElement content)
@@ -200,11 +201,35 @@ namespace Telegram.Common
                     continue;
                 }
 
-                var within = load && i >= firstVisibleIndex && i <= lastVisibleIndex;
+                var player = content as IPlayerView;
+                player ??= content.FindName("Player") as IPlayerView;
+                player?.ViewportChanged(true);
+            }
+
+            for (int i = firstCacheIndex; i < firstVisibleIndex; i++)
+            {
+                var container = _listView.ContainerFromIndex(i) as SelectorItem;
+                if (container == null || container.ContentTemplateRoot is not FrameworkElement content)
+                {
+                    continue;
+                }
 
                 var player = content as IPlayerView;
                 player ??= content.FindName("Player") as IPlayerView;
-                player?.ViewportChanged(within);
+                player?.ViewportChanged(false);
+            }
+
+            for (int i = lastCacheIndex; i > lastVisibleIndex; i--)
+            {
+                var container = _listView.ContainerFromIndex(i) as SelectorItem;
+                if (container == null || container.ContentTemplateRoot is not FrameworkElement content)
+                {
+                    continue;
+                }
+
+                var player = content as IPlayerView;
+                player ??= content.FindName("Player") as IPlayerView;
+                player?.ViewportChanged(false);
             }
 
             _unloaded = !load;

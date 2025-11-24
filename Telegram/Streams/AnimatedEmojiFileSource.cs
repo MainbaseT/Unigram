@@ -21,20 +21,20 @@ namespace Telegram.Streams
         {
             _emoji = emoji;
 
-            DownloadFile(null, null);
+            DownloadFile(null, DelayedFileDownload.Loaded, null);
         }
 
         public override long Id => _emoji.GetHashCode();
 
-        public override async void DownloadFile(object sender, UpdateHandler<File> handler)
+        public override async void DownloadFile(object sender, DelayedFileDownload download, UpdateHandler<File> handler)
         {
-            if (_file != null && _file.Local.IsDownloadingCompleted)
+            if (_file != null && _file.Local.IsDownloadingCompleted && download != DelayedFileDownload.Unloaded)
             {
                 handler?.Invoke(sender, _file);
             }
             else
             {
-                if (_file == null)
+                if (_file == null && download != DelayedFileDownload.Unloaded)
                 {
                     var response = await _clientService.SendAsync(new GetAnimatedEmoji(_emoji));
                     if (response is AnimatedEmoji emoji)
@@ -53,7 +53,7 @@ namespace Telegram.Streams
                 {
                     return;
                 }
-                else if (_file.Local.IsDownloadingCompleted)
+                else if (_file.Local.IsDownloadingCompleted && download != DelayedFileDownload.Unloaded)
                 {
                     handler?.Invoke(sender, _file);
                     return;
@@ -66,7 +66,7 @@ namespace Telegram.Streams
 
                 if (_file.Local.CanBeDownloaded /*&& !_file.Local.IsDownloadingActive*/)
                 {
-                    _clientService.DownloadFile(_file.Id, 16);
+                    _clientService.DownloadFile(_file.Id, download == DelayedFileDownload.Playing ? 16 : 15);
                 }
             }
         }
