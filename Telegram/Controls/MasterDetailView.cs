@@ -780,7 +780,21 @@ namespace Telegram.Controls
         {
             if (DetailFrame.Content is HostedPage hosted)
             {
-                _backStack.ReplaceWith(BuildBackStack(hosted.NavigationMode == HostedNavigationMode.Root || (hosted.NavigationMode == HostedNavigationMode.RootWhenParameterless && NavigationService.CurrentPageParam == null)));
+                if (hosted.ShowHeader)
+                {
+                    if (string.IsNullOrEmpty(hosted.Title))
+                    {
+                        _backStack.Clear();
+                    }
+                    else
+                    {
+                        _backStack.ReplaceWith(BuildBackStack(hosted.NavigationMode == HostedNavigationMode.Root || (hosted.NavigationMode == HostedNavigationMode.RootWhenParameterless && NavigationService.CurrentPageParam == null)));
+                    }
+                }
+                else
+                {
+                    _backStack.Clear();
+                }
             }
             else if (_backStack.Count > 0)
             {
