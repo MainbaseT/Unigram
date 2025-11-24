@@ -6,6 +6,7 @@
 //
 
 using Telegram.Common;
+using Telegram.Controls.Cells;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -29,17 +30,30 @@ namespace Telegram.Controls
 
         private void OnSelectionModeChanged(SelectorItem selector)
         {
-            if (selector.ContentTemplateRoot is Grid content)
+            if (selector.ContentTemplateRoot is Grid grid)
             {
                 if (SelectionMode == ListViewSelectionMode.Multiple)
                 {
-                    content.Margin = new Thickness(-28, 0, 0, 0);
-                    content.Padding = new Thickness(content.Padding.Right + 28, content.Padding.Top, content.Padding.Right, content.Padding.Bottom);
+                    grid.Margin = new Thickness(-28, 0, 0, 0);
+                    grid.Padding = new Thickness(grid.Padding.Right + 28, grid.Padding.Top, grid.Padding.Right, grid.Padding.Bottom);
                 }
                 else
                 {
-                    content.Margin = new Thickness(0);
-                    content.Padding = new Thickness(content.Padding.Right, content.Padding.Top, content.Padding.Right, content.Padding.Bottom);
+                    grid.Margin = new Thickness(0);
+                    grid.Padding = new Thickness(grid.Padding.Right, grid.Padding.Top, grid.Padding.Right, grid.Padding.Bottom);
+                }
+            }
+            else if (selector.ContentTemplateRoot is ProfileCell profileCell)
+            {
+                if (SelectionMode == ListViewSelectionMode.Multiple)
+                {
+                    profileCell.Margin = new Thickness(-28, 0, 0, 0);
+                    profileCell.Padding = new Thickness(profileCell.Padding.Right + 28, profileCell.Padding.Top, profileCell.Padding.Right, profileCell.Padding.Bottom);
+                }
+                else
+                {
+                    profileCell.Margin = new Thickness(0);
+                    profileCell.Padding = new Thickness(profileCell.Padding.Right, profileCell.Padding.Top, profileCell.Padding.Right, profileCell.Padding.Bottom);
                 }
             }
         }
@@ -51,12 +65,22 @@ namespace Telegram.Controls
                 return;
             }
 
-            if (args.ItemContainer.ContentTemplateRoot is Grid content && ItemContainerCornerRadius.TopLeft > 0)
+            if (ItemContainerCornerRadius.TopLeft > 0)
             {
-                // TODO: some day would be great to get rid of this
-                content.CornerRadius = new CornerRadius(4);
-                content.BorderThickness = new Thickness(1);
-                //content.Background = null;
+                if (args.ItemContainer.ContentTemplateRoot is Grid grid)
+                {
+                    // TODO: some day would be great to get rid of this
+                    grid.CornerRadius = new CornerRadius(4);
+                    grid.BorderThickness = new Thickness(1);
+                    //content.Background = null;
+                }
+                else if(args.ItemContainer.ContentTemplateRoot is ProfileCell profileCell)
+                {
+                    // TODO: some day would be great to get rid of this
+                    profileCell.CornerRadius = new CornerRadius(4);
+                    profileCell.BorderThickness = new Thickness(1);
+                    //content.Background = null;
+                }
             }
         }
 
