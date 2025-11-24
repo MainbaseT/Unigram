@@ -69,7 +69,7 @@ namespace Telegram.Views.Business
                 var cell = content.Children[0] as ProfileCell;
                 var button = content.Children[1] as Button;
 
-                cell.UpdateUser(ViewModel.ClientService, user, 36);
+                cell.UpdateUserInflated(ViewModel.ClientService, user, 36);
                 button.Tag = user;
             }
         }

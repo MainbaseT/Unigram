@@ -27,20 +27,84 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Cells
 {
-    public sealed partial class ProfileCell : Grid
+    public sealed partial class ProfileCell : Control
     {
         public ProfileCell()
         {
-            InitializeComponent();
+            DefaultStyleKey = typeof(ProfileCell);
         }
 
+        #region InitializeComponent
+
+        private Rectangle SelectionOutline;
+        private ActiveStoriesSegments Segments;
+        private ProfilePicture Photo;
+        private Grid TitlePanel;
+        private CustomEmojiIcon BotVerified;
+        private TextBlock TitleLabel;
+        private IdentityIcon Identity;
+        private TextBlock SubtitleLabel;
+
+        // Deferred
+        private Border RestrictsNewChats;
+        private TextBlock InfoLabel;
+
+        private bool _templateApplied;
+
+        protected override void OnApplyTemplate()
+        {
+            SelectionOutline = GetTemplateChild(nameof(SelectionOutline)) as Rectangle;
+            Segments = GetTemplateChild(nameof(Segments)) as ActiveStoriesSegments;
+            Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
+            TitlePanel = GetTemplateChild(nameof(TitlePanel)) as Grid;
+            BotVerified = GetTemplateChild(nameof(BotVerified)) as CustomEmojiIcon;
+            TitleLabel = GetTemplateChild(nameof(TitleLabel)) as TextBlock;
+            Identity = GetTemplateChild(nameof(Identity)) as IdentityIcon;
+            SubtitleLabel = GetTemplateChild(nameof(SubtitleLabel)) as TextBlock;
+
+            _templateApplied = true;
+
+            if (_user != null)
+            {
+                UpdateUser(_clientService, _user, _photoSize, _phoneNumber);
+
+                _clientService = null;
+                _user = null;
+            }
+            else if (_chat != null)
+            {
+                UpdateChat(_clientService, _chat, _photoSize);
+
+                _clientService = null;
+                _chat = null;
+            }
+            else if (_member != null)
+            {
+                UpdateMessageSender(_clientService, _member);
+
+                _clientService = null;
+                _member = null;
+            }
+            else if (_element != null)
+            {
+                UpdateChatFolder(_clientService, _element);
+
+                _clientService = null;
+                _element = null;
+            }
+        }
+
+        #endregion
+
+        private event RoutedEventHandler _click;
         public event RoutedEventHandler Click
         {
-            add { Segments.IsEnabled = true; Segments.Click += value; }
-            remove { Segments.IsEnabled = false; Segments.Click -= value; }
+            add { Segments?.IsEnabled = true; _click += value; }
+            remove { Segments?.IsEnabled = false; _click -= value; }
         }
 
         public int PhotoSize
@@ -61,7 +125,7 @@ namespace Telegram.Controls.Cells
             set => SubtitleLabel.Text = value;
         }
 
-        public void UpdateUser(IClientService clientService, User user, int photoSize, bool phoneNumber = false)
+        public void UpdateUserInflated(IClientService clientService, User user, int photoSize, bool phoneNumber = false)
         {
             TitleLabel.Text = user.FullName();
 
@@ -95,8 +159,65 @@ namespace Telegram.Controls.Cells
             Identity.SetStatus(clientService, user, BotVerified);
         }
 
-        public void UpdateChat(IClientService clientService, Chat chat, int photoSize, bool phoneNumber = false)
+        private IClientService _clientService;
+        private User _user;
+        private Chat _chat;
+        private int _photoSize;
+        private bool _phoneNumber;
+
+        public void UpdateUser(IClientService clientService, User user, int photoSize, bool phoneNumber = false)
         {
+            if (!_templateApplied)
+            {
+                _clientService = clientService;
+                _user = user;
+                _photoSize = photoSize;
+                _phoneNumber = phoneNumber;
+                return;
+            }
+
+            TitleLabel.Text = user.FullName();
+
+            if (phoneNumber)
+            {
+                if (SettingsService.Current.Diagnostics.HidePhoneNumber)
+                {
+                    SubtitleLabel.Text = "+42 --- --- ----";
+                }
+                else
+                {
+                    SubtitleLabel.Text = PhoneNumber.Format(user.PhoneNumber);
+                }
+            }
+            else if (user.Type is UserTypeBot bot)
+            {
+                SubtitleLabel.Text = bot.ActiveUserCount > 0 ? Locale.Declension(Strings.R.BotDAU, bot.ActiveUserCount) : Strings.Bot;
+                SubtitleLabel.Style = BootStrapper.Current.Resources["InfoCaptionTextBlockStyle"] as Style;
+            }
+            else
+            {
+                SubtitleLabel.Text = LastSeenConverter.GetLabel(user, false);
+                SubtitleLabel.Style = BootStrapper.Current.Resources[user.Status is UserStatusOnline ? "AccentCaptionTextBlockStyle" : "InfoCaptionTextBlockStyle"] as Style;
+            }
+
+            Segments.Width = photoSize;
+            Segments.Height = photoSize;
+            Photo.Size = photoSize;
+            Photo.Source = ProfilePictureSource.User(clientService, user);
+
+            Identity.SetStatus(clientService, user, BotVerified);
+        }
+
+        public void UpdateChat(IClientService clientService, Chat chat, int photoSize)
+        {
+            if (!_templateApplied)
+            {
+                _clientService = clientService;
+                _chat = chat;
+                _photoSize = photoSize;
+                return;
+            }
+
             TitleLabel.Text = chat.Title;
 
             //if (phoneNumber)
@@ -510,7 +631,7 @@ namespace Telegram.Controls.Cells
                 }
                 else if (userId != null)
                 {
-                    RestrictsNewChats ??= FindName(nameof(RestrictsNewChats)) as Border;
+                    RestrictsNewChats ??= GetTemplateChild(nameof(RestrictsNewChats)) as Border;
                     RestrictsNewChats.Visibility = Visibility.Visible;
                 }
 
@@ -648,7 +769,7 @@ namespace Telegram.Controls.Cells
                 }
                 else if (userId != null)
                 {
-                    RestrictsNewChats ??= FindName(nameof(RestrictsNewChats)) as Border;
+                    RestrictsNewChats ??= GetTemplateChild(nameof(RestrictsNewChats)) as Border;
                     RestrictsNewChats.Visibility = Visibility.Visible;
                 }
 
@@ -680,20 +801,12 @@ namespace Telegram.Controls.Cells
 
                 if (member.Status is ChatMemberStatusAdministrator administrator)
                 {
-                    if (InfoLabel == null)
-                    {
-                        FindName(nameof(InfoLabel));
-                    }
-
+                    InfoLabel ??= GetTemplateChild(nameof(InfoLabel)) as TextBlock;
                     InfoLabel.Text = string.IsNullOrEmpty(administrator.CustomTitle) ? Strings.ChannelAdmin : administrator.CustomTitle;
                 }
                 else if (member.Status is ChatMemberStatusCreator creator)
                 {
-                    if (InfoLabel == null)
-                    {
-                        FindName(nameof(InfoLabel));
-                    }
-
+                    InfoLabel ??= GetTemplateChild(nameof(InfoLabel)) as TextBlock;
                     InfoLabel.Text = string.IsNullOrEmpty(creator.CustomTitle) ? Strings.ChannelCreator : creator.CustomTitle;
                 }
                 else
@@ -950,8 +1063,17 @@ namespace Telegram.Controls.Cells
             args.Handled = true;
         }
 
+        private MessageSender _member;
+
         public void UpdateMessageSender(IClientService clientService, MessageSender member)
         {
+            if (!_templateApplied)
+            {
+                _clientService = clientService;
+                _member = member;
+                return;
+            }
+
             UpdateStyleNoSubtitle();
 
             var messageSender = clientService.GetMessageSender(member);
@@ -1147,8 +1269,17 @@ namespace Telegram.Controls.Cells
             args.Handled = true;
         }
 
+        private ChatFolderElement _element;
+
         public void UpdateChatFolder(IClientService clientService, ChatFolderElement element)
         {
+            if (!_templateApplied)
+            {
+                _clientService = clientService;
+                _element = element;
+                return;
+            }
+
             UpdateStyleNoSubtitle();
 
             if (element is FolderChat folderChat && clientService.TryGetChat(folderChat.ChatId, out Chat chat))
@@ -1242,7 +1373,7 @@ namespace Telegram.Controls.Cells
             TitlePanel.VerticalAlignment = VerticalAlignment.Center;
             SubtitleLabel.Visibility = Visibility.Collapsed;
 
-            SetRowSpan(TitlePanel, 2);
+            Grid.SetRowSpan(TitlePanel, 2);
         }
 
 

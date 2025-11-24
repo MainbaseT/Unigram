@@ -1777,7 +1777,7 @@ namespace Telegram.Common
 
                 profile.Loaded -= handler;
                 profile.ShowHideSkeleton(false);
-                profile.UpdateChat(clientService, chat, 36, true);
+                profile.UpdateChat(clientService, chat, 36);
                 profile.Subtitle = Strings.ViewProfile;
             }
             else
