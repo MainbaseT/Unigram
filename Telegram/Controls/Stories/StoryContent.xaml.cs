@@ -66,13 +66,12 @@ namespace Telegram.Controls.Stories
         Video,
     }
 
-    // TODO: Live story loading state
-    //       Live story no stream state
+    // TODO: Live story no stream state
     public sealed partial class StoryContent : UserControl
     {
         private volatile bool _unloaded;
 
-        private LayerVisual _messagesVisual;
+        private readonly LayerVisual _messagesVisual;
 
         public StoryContent()
         {
@@ -118,8 +117,8 @@ namespace Telegram.Controls.Stories
         {
             if (_unifiedVideo != null)
             {
-                _unifiedVideo.Stop();
                 _unifiedVideo.FrameReceived -= OnFrameReceived;
+                _unifiedVideo.Stop();
                 _unifiedVideo = null;
             }
 
@@ -395,6 +394,11 @@ namespace Telegram.Controls.Stories
 
                 Mute.IsEnabled = !video.IsAnimation;
                 Mute.IsChecked = !video.IsAnimation && !_viewModel.Settings.VolumeMuted;
+            }
+            else if (story.Content is StoryContentLive)
+            {
+                Mute.Visibility = Visibility.Collapsed;
+                MutePlaceholder.Visibility = Visibility.Collapsed;
             }
 
             if (string.IsNullOrEmpty(story.Caption?.Text))
@@ -821,7 +825,7 @@ namespace Telegram.Controls.Stories
             else if (story.Content is StoryContentLive live && story.ClientService.TryGetGroupCall(live.GroupCallId, out GroupCall groupCall) && !_unloaded)
             {
                 _timer.Stop();
-                Progress.Update(0, 1, 0);
+                Progress.Update(-1, 1, 0);
 
                 Suspend(StoryPauseSource.Live);
 
@@ -2126,25 +2130,22 @@ namespace Telegram.Controls.Stories
 
                     ElementCompositionPreview.SetElementChildVisual(rectangle, visual);
 
-                    if (duration > 0)
-                    {
-                        ExpressionAnimation expression = compositor.CreateExpressionAnimation();
-                        expression.SetReferenceParameter("_", _progressPropertySet);
-                        expression.SetReferenceParameter("V", visual);
-                        expression.Expression = "Vector2(_.Progress * V.Size.X, 2)";
+                    ExpressionAnimation expression = compositor.CreateExpressionAnimation();
+                    expression.SetReferenceParameter("_", _progressPropertySet);
+                    expression.SetReferenceParameter("V", visual);
+                    expression.Expression = "Vector2(_.Progress * V.Size.X, 2)";
 
-                        // Apply the expression to the point visual's Offset property
-                        ellipse.StartAnimation("Size", expression);
+                    // Apply the expression to the point visual's Offset property
+                    ellipse.StartAnimation("Size", expression);
 
-                        // Start the animation by incrementing the progress value
-                        var easing = compositor.CreateLinearEasingFunction();
-                        var compositorAnimation = compositor.CreateScalarKeyFrameAnimation();
-                        compositorAnimation.InsertKeyFrame(1.0f, 1.0f, easing);
-                        compositorAnimation.Duration = TimeSpan.FromSeconds(duration); // Adjust duration as needed
+                    // Start the animation by incrementing the progress value
+                    var easing = compositor.CreateLinearEasingFunction();
+                    var compositorAnimation = compositor.CreateScalarKeyFrameAnimation();
+                    compositorAnimation.InsertKeyFrame(1.0f, 1.0f, easing);
+                    compositorAnimation.Duration = TimeSpan.FromSeconds(duration); // Adjust duration as needed
 
-                        _progressPropertySet.StartAnimation("Progress", compositorAnimation);
-                        _progressController = _progressPropertySet.TryGetAnimationController("Progress");
-                    }
+                    _progressPropertySet.StartAnimation("Progress", compositorAnimation);
+                    _progressController = _progressPropertySet.TryGetAnimationController("Progress");
                 }
 
                 ColumnDefinitions.Add(new ColumnDefinition());
