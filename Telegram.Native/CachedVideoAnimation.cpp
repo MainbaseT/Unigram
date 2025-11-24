@@ -96,10 +96,19 @@ namespace winrt::Telegram::Native::implementation
     {
         if (m_cacheHandle == INVALID_HANDLE_VALUE)
         {
-            m_cacheHandle = CreateFile2(m_cacheFile.c_str(), GENERIC_READ, 0, OPEN_EXISTING, NULL);
+            m_cacheHandle = CreateFile2(m_cacheFile.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, NULL);
         }
 
         return m_cacheHandle;
+    }
+
+    inline void CachedVideoAnimation::CloseCacheHandle()
+    {
+        if (m_cacheHandle != INVALID_HANDLE_VALUE)
+        {
+            CloseHandle(m_cacheHandle);
+            m_cacheHandle = INVALID_HANDLE_VALUE;
+        }
     }
 
     winrt::Telegram::Native::CachedVideoAnimation CachedVideoAnimation::LoadFromFile(IVideoAnimationSource file, int32_t width, int32_t height, bool fit, bool createCache, bool limitFps)
@@ -139,15 +148,17 @@ namespace winrt::Telegram::Native::implementation
 
                 std::lock_guard<std::mutex> guard(GetLockForKey(info->m_cacheKey));
 
-                HANDLE precacheFile = CreateFile2(info->m_cacheFile.c_str(), GENERIC_READ, 0, OPEN_EXISTING, NULL);
+                HANDLE precacheFile = info->GetCacheHandle(); // CreateFile2(info->m_cacheFile.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, NULL);
                 if (precacheFile != INVALID_HANDLE_VALUE)
                 {
                     bool headerValid = info->ReadHeader(precacheFile);
-                    CloseHandle(precacheFile);
-
                     if (headerValid)
                     {
                         createCache = false;
+                    }
+                    else
+                    {
+                        info->CloseCacheHandle();
                     }
                 }
 
@@ -156,20 +167,6 @@ namespace winrt::Telegram::Native::implementation
                     if (!info->Load(file, width, height, fit, limitFps))
                     {
                         return nullptr;
-                    }
-
-                    info->m_precache = true;
-                    precacheFile = CreateFile2(info->m_cacheFile.c_str(), GENERIC_WRITE, 0, CREATE_ALWAYS, NULL);
-                    if (precacheFile != INVALID_HANDLE_VALUE)
-                    {
-                        DWORD write;
-                        uint8_t version = CACHED_VERSION;
-                        uint32_t offset = 0;
-                        SetFilePointer(precacheFile, 0, NULL, FILE_BEGIN);
-                        WriteFile(precacheFile, &version, sizeof(uint8_t), &write, NULL);
-                        WriteFile(precacheFile, &offset, sizeof(uint32_t), &write, NULL);
-
-                        CloseHandle(precacheFile);
                     }
                 }
             }
@@ -427,7 +424,7 @@ namespace winrt::Telegram::Native::implementation
 
                 std::lock_guard<std::mutex> guard(GetLockForKey(item->m_cacheKey));
 
-                HANDLE precacheFile = CreateFile2(item->m_cacheFile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, OPEN_EXISTING, NULL);
+                HANDLE precacheFile = CreateFile2(item->m_cacheFile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, OPEN_ALWAYS, NULL);
                 if (precacheFile != INVALID_HANDLE_VALUE)
                 {
                     // Quick header check
@@ -439,13 +436,13 @@ namespace winrt::Telegram::Native::implementation
                     }
 
                     DWORD write;
-                    DWORD totalSize = SetFilePointer(precacheFile, sizeof(uint8_t) + sizeof(uint32_t), NULL, FILE_BEGIN);
-                    if (totalSize == INVALID_SET_FILE_POINTER)
-                    {
-                        CloseHandle(precacheFile);
-                        item->m_caching = false;
-                        continue;
-                    }
+                    uint8_t version = CACHED_VERSION;
+                    uint32_t offset = 0;
+                    SetFilePointer(precacheFile, 0, NULL, FILE_BEGIN);
+                    WriteFile(precacheFile, &version, sizeof(uint8_t), &write, NULL);
+                    WriteFile(precacheFile, &offset, sizeof(uint32_t), &write, NULL);
+
+                    DWORD totalSize = sizeof(uint8_t) + sizeof(uint32_t);
 
                     double seconds = 0;
                     bool completed = false;
@@ -503,7 +500,7 @@ namespace winrt::Telegram::Native::implementation
                         WriteFile(precacheFile, &version, sizeof(uint8_t), &write, NULL);
                         WriteFile(precacheFile, &totalSize, sizeof(uint32_t), &write, NULL);
 
-                        SetFilePointer(precacheFile, 0, NULL, FILE_END);
+                        SetFilePointer(precacheFile, totalSize, NULL, FILE_BEGIN);
                         WriteFile(precacheFile, &item->m_maxFrameSize, sizeof(uint32_t), &write, NULL);
                         WriteFile(precacheFile, &item->m_imageSize, sizeof(uint32_t), &write, NULL);
                         WriteFile(precacheFile, &item->m_pixelWidth, sizeof(int32_t), &write, NULL);
@@ -514,6 +511,8 @@ namespace winrt::Telegram::Native::implementation
                         {
                             WriteFile(precacheFile, item->m_fileOffsets.data(), sizeof(uint32_t) * item->m_frameCount, &write, NULL);
                         }
+
+                        SetEndOfFile(precacheFile);
                     }
 
                     CloseHandle(precacheFile);

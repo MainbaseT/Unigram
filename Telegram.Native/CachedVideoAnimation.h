@@ -93,6 +93,7 @@ namespace winrt::Telegram::Native::implementation
         void RenderSync(uint8_t* pixels, double& seconds, bool& completed, bool* rendered);
 
         HANDLE GetCacheHandle();
+        void CloseCacheHandle();
 
         bool ReadHeader(HANDLE precacheFile);
 
