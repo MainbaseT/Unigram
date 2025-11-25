@@ -188,6 +188,11 @@ namespace Telegram.Controls.Cells
 
         private void UpdateFile(object target, File file)
         {
+            if (_item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            {
+                return;
+            }
+
             UpdateFile(_item, file);
         }
 
@@ -283,7 +288,7 @@ namespace Telegram.Controls.Cells
 
         private void UpdatePlayback(PlaybackItem item, Audio audio, File file)
         {
-            if (item == TypeResolver.Current.Playback.CurrentItem)
+            if (item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
                 if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
                 {
@@ -293,6 +298,8 @@ namespace Telegram.Controls.Cells
                 {
                     Button.SetGlyph(file.Id, MessageContentState.Pause);
                 }
+
+                DownloadRoot.Visibility = Visibility.Collapsed;
 
                 UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration);
 
@@ -408,7 +415,7 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            if (_item == TypeResolver.Current.Playback.CurrentItem)
+            if (_item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
             {
                 if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
                 {
@@ -458,7 +465,7 @@ namespace Telegram.Controls.Cells
             }
             else
             {
-                if (_item == TypeResolver.Current.Playback.CurrentItem)
+                if (_item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
                 {
                     if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
                     {

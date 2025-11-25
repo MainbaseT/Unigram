@@ -189,6 +189,11 @@ namespace Telegram.Controls.Cells
 
         private void UpdateFile(object target, File file)
         {
+            if (_message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            {
+                return;
+            }
+
             UpdateFile(_message, file);
         }
 
@@ -294,6 +299,8 @@ namespace Telegram.Controls.Cells
                 {
                     Button.SetGlyph(file.Id, MessageContentState.Pause);
                 }
+
+                DownloadRoot.Visibility = Visibility.Collapsed;
 
                 UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration);
 
