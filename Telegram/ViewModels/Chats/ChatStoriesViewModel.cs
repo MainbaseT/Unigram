@@ -441,7 +441,7 @@ namespace Telegram.ViewModels.Chats
 
         public void OpenStory(StoryViewModel story, Rect origin, Func<ActiveStoriesViewModel, Rect> closing)
         {
-            var activeStories = new ActiveStoriesViewModel(ClientService, Settings, Aggregator, story, Items);
+            var activeStories = new ActiveStoriesViewModel(ClientService, Settings, Aggregator, story, ItemsView);
             var viewModel = StoryListViewModel.Create(NavigationService, activeStories);
 
             var window = new StoriesWindow();
