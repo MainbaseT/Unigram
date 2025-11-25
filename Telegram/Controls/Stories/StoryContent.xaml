@@ -7,6 +7,7 @@
              xmlns:controls="using:Telegram.Controls"
              xmlns:cells="using:Telegram.Controls.Cells"
              xmlns:local="using:Telegram.Controls.Stories"
+             xmlns:common="using:Telegram.Common"
              mc:Ignorable="d"
              d:DesignHeight="300"
              d:DesignWidth="400"
@@ -323,6 +324,20 @@
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+                <Border x:Name="MessagesShadow"
+                        Grid.Row="1"
+                        Grid.RowSpan="2">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="0,1">
+                            <common:Scrim.Gradient>
+                                <common:CubicBezierGradient TopColor="#00171717"
+                                                            BottomColor="#DD171717" />
+                            </common:Scrim.Gradient>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+
                 <ListView x:Name="MessagesHost"
                           SelectionMode="None"
                           ChoosingItemContainer="MessagesHost_ChoosingItemContainer"

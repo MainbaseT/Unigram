@@ -2047,12 +2047,13 @@ namespace Telegram.Controls.Stories
 
             _messagesCollapsed = !show;
             MessagesHost.Visibility = Visibility.Visible;
+            MessagesShadow.Visibility = Visibility.Visible;
 
             var visual = ElementComposition.GetElementVisual(MessagesHost);
+            var shadow = ElementComposition.GetElementVisual(MessagesShadow);
             ElementCompositionPreview.SetIsTranslationEnabled(MessagesHost, true);
 
             var compositor = visual.Compositor;
-            var clip = (visual.Clip ??= compositor.CreateInsetClip()) as InsetClip;
 
             var batch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
@@ -2060,14 +2061,21 @@ namespace Telegram.Controls.Stories
                 if (_messagesCollapsed)
                 {
                     MessagesHost.Visibility = Visibility.Collapsed;
+                    MessagesShadow.Visibility = Visibility.Collapsed;
                 }
             };
 
             var translation = compositor.CreateScalarKeyFrameAnimation();
-            translation.InsertKeyFrame(0, show ? MessagesHost.ActualSize.Y : 0);
-            translation.InsertKeyFrame(1, show ? 0 : MessagesHost.ActualSize.Y);
+            translation.InsertKeyFrame(0, show ? MessagesShadow.ActualSize.Y : 0);
+            translation.InsertKeyFrame(1, show ? 0 : MessagesShadow.ActualSize.Y);
+
+            var opacity = compositor.CreateScalarKeyFrameAnimation();
+            opacity.InsertKeyFrame(0, show ? 0 : 1);
+            opacity.InsertKeyFrame(1, show ? 1 : 0);
 
             visual.StartAnimation("Translation.Y", translation);
+            visual.StartAnimation("Opacity", opacity);
+            shadow.StartAnimation("Opacity", opacity);
 
             batch.End();
         }
