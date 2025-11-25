@@ -348,6 +348,7 @@ namespace Telegram.ViewModels.Settings
 
         public async void Password()
         {
+            // TODO: Maybe use NavigationService.NavigateToPasswordAsync
             var response = await ClientService.SendAsync(new GetPasswordState());
             if (response is PasswordState passwordState)
             {
@@ -381,7 +382,7 @@ namespace Telegram.ViewModels.Settings
                 }
                 else
                 {
-                    passwordState = await NavigationService.NavigateToPasswordAsync();
+                    passwordState = await NavigationService.NavigateToPasswordSetupAsync();
                 }
 
                 HasPassword = passwordState?.HasPassword ?? false;

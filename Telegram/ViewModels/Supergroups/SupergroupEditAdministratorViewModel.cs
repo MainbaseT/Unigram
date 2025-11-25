@@ -611,7 +611,7 @@ namespace Telegram.ViewModels.Supergroups
                 var confirm = await ShowPopupAsync(builder.ToString(), Strings.EditAdminTransferAlertTitle, primary, Strings.Cancel);
                 if (confirm == ContentDialogResult.Primary && canTransfer is CanTransferOwnershipResultPasswordNeeded)
                 {
-                    NavigationService.NavigateToPassword();
+                    NavigationService.NavigateToPasswordSetup();
                 }
             }
             else if (canTransfer is CanTransferOwnershipResultOk)

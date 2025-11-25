@@ -815,6 +815,50 @@ namespace Telegram.Common
 
         public async Task<PasswordState> NavigateToPasswordAsync()
         {
+            var response = await ClientService.SendAsync(new GetPasswordState());
+            if (response is PasswordState passwordState)
+            {
+                if (passwordState.HasPassword)
+                {
+                    var popup = new SettingsPasswordConfirmPopup(ClientService, passwordState);
+
+                    var confirm = await ShowPopupAsync(popup);
+                    if (confirm == ContentDialogResult.Primary && !string.IsNullOrEmpty(popup.Password))
+                    {
+                        Navigate(typeof(SettingsPasswordPage), popup.Password);
+                    }
+                    else if (popup.RecoveryEmailAddressCodeInfo != null)
+                    {
+                        var emailCode = new SettingsPasswordEmailCodePopup(ClientService, popup.RecoveryEmailAddressCodeInfo, SettingsPasswordEmailCodeType.Recovery);
+
+                        if (ContentDialogResult.Primary == await ShowPopupAsync(emailCode))
+                        {
+                            ShowPopup(new SettingsPasswordDonePopup());
+                        }
+                    }
+                }
+                else if (passwordState.RecoveryEmailAddressCodeInfo != null)
+                {
+                    var emailCode = new SettingsPasswordEmailCodePopup(ClientService, passwordState.RecoveryEmailAddressCodeInfo, SettingsPasswordEmailCodeType.Continue);
+
+                    if (ContentDialogResult.Primary == await ShowPopupAsync(emailCode))
+                    {
+                        ShowPopup(new SettingsPasswordDonePopup());
+                    }
+                }
+                else
+                {
+                    passwordState = await NavigateToPasswordSetupAsync();
+                }
+
+                return passwordState;
+            }
+
+            return null;
+        }
+
+        public async Task<PasswordState> NavigateToPasswordSetupAsync()
+        {
             var intro = new SettingsPasswordIntroPopup();
 
             if (ContentDialogResult.Primary != await ShowPopupAsync(intro))

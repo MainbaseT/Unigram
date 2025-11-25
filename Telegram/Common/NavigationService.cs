@@ -165,14 +165,22 @@ namespace Telegram.Common
             }
         }
 
-        public static Task<PasswordState> NavigateToPasswordAsync(this INavigationService service)
+        public static Task<PasswordState> NavigateToPasswordSetupAsync(this INavigationService service)
         {
             if (service is TLNavigationService serviceEx)
             {
-                return serviceEx.NavigateToPasswordAsync();
+                return serviceEx.NavigateToPasswordSetupAsync();
             }
 
             return Task.FromResult<PasswordState>(null);
+        }
+
+        public static void NavigateToPasswordSetup(this INavigationService service)
+        {
+            if (service is TLNavigationService serviceEx)
+            {
+                _ = serviceEx.NavigateToPasswordSetupAsync();
+            }
         }
 
         public static void NavigateToPassword(this INavigationService service)
@@ -181,6 +189,16 @@ namespace Telegram.Common
             {
                 _ = serviceEx.NavigateToPasswordAsync();
             }
+        }
+
+        public static Task<PasswordState> NavigateToPasswordAsync(this INavigationService service)
+        {
+            if (service is TLNavigationService serviceEx)
+            {
+                return serviceEx.NavigateToPasswordAsync();
+            }
+
+            return Task.FromResult<PasswordState>(null);
         }
 
         public static void ShowLimitReached(this INavigationService service, PremiumLimitType limit)

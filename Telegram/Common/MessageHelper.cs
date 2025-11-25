@@ -30,6 +30,7 @@ using Telegram.Views.Host;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
 using Telegram.Views.Settings;
+using Telegram.Views.Settings.Privacy;
 using Telegram.Views.Stars;
 using Telegram.Views.Stars.Popups;
 using Windows.ApplicationModel;
@@ -602,6 +603,12 @@ namespace Telegram.Common
                     break;
                 case InternalLinkTypeGiftCollection giftCollection:
                     NavigateToUsername(clientService, navigation, giftCollection.GiftOwnerUsername);
+                    break;
+                case InternalLinkTypePasswordSettings:
+                    navigation.NavigateToPassword();
+                    break;
+                case InternalLinkTypePhoneNumberPrivacySettings:
+                    navigation.Navigate(typeof(SettingsPrivacyPhonePage));
                     break;
             }
         }

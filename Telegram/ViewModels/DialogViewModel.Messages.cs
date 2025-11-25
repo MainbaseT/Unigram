@@ -1591,7 +1591,7 @@ namespace Telegram.ViewModels
                         var confirm = await ShowPopupAsync(builder.ToString(), Strings.EditAdminTransferAlertTitle, primary, Strings.Cancel);
                         if (confirm == ContentDialogResult.Primary && error.Message.Equals("PASSWORD_MISSING"))
                         {
-                            NavigationService.NavigateToPassword();
+                            NavigationService.NavigateToPasswordSetup();
                         }
                     }
                     else if (error.Message.Equals("PASSWORD_HASH_INVALID"))
