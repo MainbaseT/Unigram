@@ -224,6 +224,15 @@ namespace Telegram.Controls.Stories
 
                     PhotoMini.Source = ProfilePictureSource.User(activeStories.ClientService, user);
                     Photo.Source = ProfilePictureSource.User(activeStories.ClientService, user);
+
+                    if (activeStories.SelectedItem?.Content is StoryContentLive && user.ProfilePhoto != null)
+                    {
+                        BackgroundPhoto.SetSource(activeStories.ClientService, user.ProfilePhoto.Big, user.ProfilePhoto.Minithumbnail, blurRadius: 15);
+                    }
+                    else
+                    {
+                        BackgroundPhoto.Clear();
+                    }
                 }
                 else
                 {
@@ -234,6 +243,15 @@ namespace Telegram.Controls.Stories
 
                     PhotoMini.Source = ProfilePictureSource.Chat(activeStories.ClientService, chat);
                     Photo.Source = ProfilePictureSource.Chat(activeStories.ClientService, chat);
+
+                    if (activeStories.SelectedItem?.Content is StoryContentLive && chat.Photo != null)
+                    {
+                        BackgroundPhoto.SetSource(activeStories.ClientService, chat.Photo.Big, chat.Photo.Minithumbnail, blurRadius: 15);
+                    }
+                    else
+                    {
+                        BackgroundPhoto.Clear();
+                    }
                 }
 
                 if (activeStories.Item != null)

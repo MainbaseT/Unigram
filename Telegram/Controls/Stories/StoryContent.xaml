@@ -60,6 +60,11 @@
     </UserControl.Resources>
 
     <Grid Background="Black">
+        <controls:ImageView x:Name="BackgroundPhoto"
+                            Stretch="UniformToFill"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center" />
+
         <Grid x:Name="LayoutRoot">
             <Grid.Background>
                 <ImageBrush x:Name="ThumbnailTexture"
