@@ -15,7 +15,7 @@ namespace winrt::Telegram::Native::Calls::implementation
 {
     struct VoipVideoOutputSink : VoipVideoOutputSinkT<VoipVideoOutputSink>
     {
-        VoipVideoOutputSink(CompositionGraphicsDevice const& device, SpriteVisual const& visual, bool mirrored);
+        VoipVideoOutputSink(CompositionGraphicsDevice const& device, SpriteVisual const& visual, bool mirrored, bool uniformToFill);
 
         void Stop();
 

@@ -65,7 +65,7 @@ namespace Telegram.Views.Calls
             _call.JoinedStateChanged += OnJoinedStateChanged;
             _call.StreamStateChanged += OnStreamStateChanged;
             _call.PropertyChanged += OnPropertyChanged;
-            _call.AddIncomingVideoOutput("unified", _unifiedVideo = VoipVideoOutput.CreateSink(Viewport, false));
+            _call.AddIncomingVideoOutput("unified", _unifiedVideo = VoipVideoOutput.CreateSink(Viewport));
 
             Window.Current.SetTitleBar(TitleArea);
 

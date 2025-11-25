@@ -530,7 +530,7 @@ private:
     }
 
 public:
-    VoipVideoOutput(CompositionGraphicsDevice const& device, SpriteVisual const& visual, bool mirrored)
+    VoipVideoOutput(CompositionGraphicsDevice const& device, SpriteVisual const& visual, bool mirrored, bool uniformToFill)
         : m_compositionDevice(device)
         , m_queue(RenderQueueManager::instance().get_queue(device))
     {
@@ -552,7 +552,7 @@ public:
         m_brush = visual.Compositor().CreateSurfaceBrush(surface);
         m_brush.HorizontalAlignmentRatio(.5);
         m_brush.VerticalAlignmentRatio(.5);
-        m_brush.Stretch(winrt::Windows::UI::Composition::CompositionStretch::Uniform);
+        m_brush.Stretch(uniformToFill ? CompositionStretch::UniformToFill : CompositionStretch::Uniform);
 
         visual.Brush(m_brush);
     }

@@ -129,6 +129,7 @@ namespace Telegram.Controls.Stories
                 _call.PinnedMessagesChanged -= OnPinnedMessagesChanged;
                 _call.ReactionsChanged -= OnReactionsChanged;
                 _call.TopDonorsChanged -= OnTopDonorsChanged;
+                _call.StreamerChanged -= OnStreamerChanged;
                 _call.PropertyChanged -= OnPropertyChanged;
                 _call.Discard();
                 _call = null;
@@ -835,10 +836,18 @@ namespace Telegram.Controls.Stories
                 _call.PinnedMessagesChanged += OnPinnedMessagesChanged;
                 _call.ReactionsChanged += OnReactionsChanged;
                 _call.TopDonorsChanged += OnTopDonorsChanged;
+                _call.StreamerChanged += OnStreamerChanged;
                 _call.PropertyChanged += OnPropertyChanged;
-                _call.AddIncomingVideoOutput("unified", _unifiedVideo = VoipVideoOutput.CreateSink(LayoutRoot, false));
 
-                _unifiedVideo.FrameReceived += OnFrameReceived;
+                if (_call.IsRtmpStream)
+                {
+                    _call.AddIncomingVideoOutput("unified", _unifiedVideo = VoipVideoOutput.CreateSink(LayoutRoot, uniformToFill: true));
+                    _unifiedVideo.FrameReceived += OnFrameReceived;
+                }
+                else
+                {
+                    UpdateStreamer(_call.Streamer);
+                }
 
                 story.GroupCall = _call;
 
@@ -892,6 +901,31 @@ namespace Telegram.Controls.Stories
         private void OnTopDonorsChanged(VoipGroupCall sender, VoipGroupCallTopDonorsChangedEventArgs args)
         {
             this.BeginOnUIThread(() => UpdateTopDonors(args.Donors));
+        }
+
+        private void OnStreamerChanged(VoipGroupCall sender, VoipGroupCallStreamerChangedEventArgs args)
+        {
+            this.BeginOnUIThread(() => UpdateStreamer(args.Streamer));
+        }
+
+        private void UpdateStreamer(GroupCallParticipant participant)
+        {
+            if (_unifiedVideo != null)
+            {
+                _unifiedVideo.FrameReceived -= OnFrameReceived;
+                _unifiedVideo.Stop();
+                _unifiedVideo = null;
+            }
+
+            if (participant?.VideoInfo != null)
+            {
+                var channelInfo = new VoipVideoChannelInfo(participant.AudioSourceId, participant.ParticipantId, participant.VideoInfo.EndpointId, participant.VideoInfo.SourceGroups, VoipVideoChannelQuality.Full, VoipVideoChannelQuality.Full);
+
+                _call.SetRequestedVideoChannels([channelInfo]);
+                _call.AddIncomingVideoOutput(channelInfo.EndpointId, _unifiedVideo = VoipVideoOutput.CreateSink(LayoutRoot, uniformToFill: true));
+
+                _unifiedVideo.FrameReceived += OnFrameReceived;
+            }
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

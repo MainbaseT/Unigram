@@ -9,7 +9,10 @@ using Telegram.Native.Calls;
 
 namespace Telegram.Services.Calls
 {
-    public record VoipCallAudioLevelUpdatedEventArgs(float AudioLevel);
+    public class VoipCallAudioLevelUpdatedEventArgs(float audioLevel)
+    {
+        public float AudioLevel { get; set; } = audioLevel;
+    }
 
     public record VoipCallConnectionStateChangedEventArgs(VoipConnectionState State);
 
@@ -17,7 +20,10 @@ namespace Telegram.Services.Calls
 
     public record VoipCallRemoteBatteryLevelIsLowChangedEventArgs(bool IsLow);
 
-    public record VoipCallSignalBarsUpdatedEventArgs(int Count);
+    public class VoipCallSignalBarsUpdatedEventArgs(int count)
+    {
+        public int Count { get; set; } = count;
+    }
 
     public record VoipCallStateChangedEventArgs(VoipState State, VoipReadyState ReadyState);
 }

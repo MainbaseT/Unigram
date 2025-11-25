@@ -2079,7 +2079,7 @@ namespace Telegram.Views.Calls
             }
             else
             {
-                var sink = new VoipVideoOutputSink(PlaceholderHelper.Foreground.Device, cell.Visual, mirrored);
+                var sink = new VoipVideoOutputSink(PlaceholderHelper.Foreground.Device, cell.Visual, mirrored, false);
                 reference = new VoipVideoOutputReference(sink, cell.Visual.Brush as CompositionSurfaceBrush);
 
                 _sinks[endpointId] = reference;

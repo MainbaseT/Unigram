@@ -29,4 +29,6 @@ namespace Telegram.Services.Calls
     public record VoipGroupCallTopDonorsChangedEventArgs(IList<PaidReactor> Donors);
 
     public record VoipGroupCallTotalStarCountChangedEventArgs(long TotalStarCount);
+
+    public record VoipGroupCallStreamerChangedEventArgs(GroupCallParticipant Streamer);
 }

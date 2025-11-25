@@ -76,6 +76,9 @@ namespace Telegram.Services.Calls
 
         private Timer _pinnedMessagesTimer;
 
+        private GroupCallParticipant _streamer;
+        private readonly object _streamerLock = new();
+
         private VoipCallCoordinator _coordinator;
         private VoipPhoneCall _systemCall;
 
@@ -329,6 +332,17 @@ namespace Telegram.Services.Calls
             }
         }
 
+        public GroupCallParticipant Streamer
+        {
+            get
+            {
+                lock (_streamerLock)
+                {
+                    return _streamer;
+                }
+            }
+        }
+
         private IList<byte> EncryptData(GroupCallDataChannel dataChannel, IList<byte> data, int unencryptedPrefixSize)
         {
             Data response = null;
@@ -370,6 +384,8 @@ namespace Telegram.Services.Calls
         public event TypedEventHandler<VoipGroupCall, VoipGroupCallTotalStarCountChangedEventArgs> TotalStarCountChanged;
 
         public event TypedEventHandler<VoipGroupCall, VoipGroupCallStreamStateChangedEventArgs> StreamStateChanged;
+
+        public event TypedEventHandler<VoipGroupCall, VoipGroupCallStreamerChangedEventArgs> StreamerChanged;
 
         private GroupCallParticipantsCollection _participants;
         public GroupCallParticipantsCollection Participants
@@ -552,7 +568,32 @@ namespace Telegram.Services.Calls
 
                     RejoinScreenSharing();
                 }
+
+                if (IsLiveStory && !IsRtmpStream)
+                {
+                    InitializeStreamer(); 
+                }
             });
+        }
+
+        private async void InitializeStreamer()
+        {
+            GroupCallParticipant streamerChanged = null;
+
+            var response = await ClientService.SendAsync(new GetLiveStoryStreamer(Id));
+            if (response is GroupCallParticipant participant)
+            {
+                lock (_streamerLock)
+                {
+                    _streamer = participant;
+                    streamerChanged = participant;
+                }
+            }
+
+            if (streamerChanged != null)
+            {
+                StreamerChanged?.Invoke(this, new VoipGroupCallStreamerChangedEventArgs(streamerChanged));
+            }
         }
 
         #region Capturing
