@@ -31,6 +31,7 @@ using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
@@ -871,6 +872,8 @@ namespace Telegram.Controls
                     UserFirstAudioTitle.Text = fullInfo.FirstProfileAudio.FileName;
                     UserFirstAudioSubtitle.Text = string.Empty;
                 }
+
+                AutomationProperties.SetName(UserFirstAudioRoot, UserFirstAudioText.Text);
             }
             else
             {

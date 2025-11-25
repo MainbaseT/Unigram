@@ -5,7 +5,12 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using LinqToVisualTree;
+using System.Linq;
+using System.Text;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Controls
@@ -15,6 +20,11 @@ namespace Telegram.Controls
         public MenuFlyoutContent()
         {
             DefaultStyleKey = typeof(MenuFlyoutContent);
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new MenuFlyoutContentAutomationPeer(this);
         }
 
         protected override void OnApplyTemplate()
@@ -60,5 +70,46 @@ namespace Telegram.Controls
             DependencyProperty.Register("ContentTemplate", typeof(DataTemplate), typeof(MenuFlyoutContent), new PropertyMetadata(null));
 
         #endregion
+    }
+
+    public partial class MenuFlyoutContentAutomationPeer : MenuFlyoutItemAutomationPeer
+    {
+        private readonly MenuFlyoutContent _owner;
+
+        public MenuFlyoutContentAutomationPeer(MenuFlyoutContent owner)
+            : base(owner)
+        {
+            _owner = owner;
+        }
+
+        protected override string GetNameCore()
+        {
+            var builder = new StringBuilder();
+            var descendants = _owner.Descendants();
+
+            foreach (UIElement child in descendants.Where(x => x is TextBlock or RichTextBlock))
+            {
+                var view = AutomationProperties.GetAccessibilityView(child);
+                if (view == AccessibilityView.Raw)
+                {
+                    continue;
+                }
+
+                var peer = FrameworkElementAutomationPeer.FromElement(child);
+                if (peer == null)
+                {
+                    continue;
+                }
+
+                if (builder.Length > 0)
+                {
+                    builder.Append(", ");
+                }
+
+                builder.Append(peer.GetName());
+            }
+
+            return builder.ToString();
+        }
     }
 }

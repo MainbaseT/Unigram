@@ -343,14 +343,15 @@
                                Margin="0,0,4,0"
                                VerticalAlignment="Center"
                                Grid.Column="1" />
-                    <TextBlock TextTrimming="CharacterEllipsis"
+                    <TextBlock x:Name="UserFirstAudioText"
+                               TextTrimming="CharacterEllipsis"
                                TextWrapping="NoWrap"
                                Style="{StaticResource CaptionTextBlockStyle}"
                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
                                Grid.Column="2">
-                    <Run x:Name="UserFirstAudioTitle"
-                         FontWeight="SemiBold" />
-                    <Run x:Name="UserFirstAudioSubtitle" />
+                        <Run x:Name="UserFirstAudioTitle"
+                             FontWeight="SemiBold" />
+                        <Run x:Name="UserFirstAudioSubtitle" />
                     </TextBlock>
 
                     <TextBlock Text="&#xEAB9;"
