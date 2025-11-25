@@ -85,12 +85,12 @@ namespace winrt::Telegram::Native::Media::implementation
         }
 
         m_player = libvlc_media_player_new(m_instance);
-        m_events = new EventContext(m_player, get_weak());
 
         libvlc_audio_set_volume(m_player, static_cast<int>(options.Volume() * 100));
         libvlc_audio_set_mute(m_player, options.Mute());
         libvlc_media_player_set_rate(m_player, options.Rate());
 
+        m_events = new EventContext(m_player, get_weak());
         m_defaultAudioRenderDeviceChanged = MediaDevice::DefaultAudioRenderDeviceChanged({ this, &AsyncMediaPlayer::OnDefaultAudioRenderDeviceChanged });
     }
 
@@ -774,7 +774,16 @@ namespace winrt::Telegram::Native::Media::implementation
     {
         try
         {
-            m_dispatcherQueue.TryEnqueue(callback);
+            if (m_dispatcherQueue)
+            {
+                m_dispatcherQueue.TryEnqueue(callback);
+            }
+            else
+            {
+                post_to_threadpool([callback = std::move(callback)]() {
+                    callback();
+                    });
+            }
         }
         catch (...)
         {
