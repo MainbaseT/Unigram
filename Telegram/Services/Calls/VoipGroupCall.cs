@@ -534,11 +534,6 @@ namespace Telegram.Services.Calls
                     }
                 }
 
-                if (IsLiveStory)
-                {
-                    ClientService.Send(new GetLiveStoryTopDonors(Id));
-                }
-
                 if (response is Text json && _manager != null)
                 {
                     bool broadcast;

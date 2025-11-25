@@ -323,9 +323,14 @@ namespace Telegram.Controls.Stories.Popups
 
         private async void Alias_Click(object sender, RoutedEventArgs e)
         {
+            if (_story.Content is not StoryContentLive live)
+            {
+                return;
+            }
+
             var flyout = new MenuFlyout();
 
-            var response = await _clientService.SendAsync(new GetLiveStoryAvailableMessageSenders(_story.PosterChatId));
+            var response = await _clientService.SendAsync(new GetLiveStoryAvailableMessageSenders(live.GroupCallId));
             if (response is ChatMessageSenders senders)
             {
                 void handler(object sender, RoutedEventArgs _)

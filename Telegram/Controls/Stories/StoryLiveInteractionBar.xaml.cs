@@ -659,7 +659,7 @@ namespace Telegram.Controls.Stories
                 return;
             }
 
-            _activeStories.ClientService.Send(new SetGroupCallMessageSender(_groupCall.Id, messageSender.Sender));
+            _activeStories.ClientService.Send(new SetLiveStoryMessageSender(_groupCall.Id, messageSender.Sender));
         }
 
         private async void ButtonAlias_Click(object sender, RoutedEventArgs e)
@@ -671,7 +671,7 @@ namespace Telegram.Controls.Stories
                 MessageField.Focus(FocusState.Programmatic);
             };
 
-            var response = await ViewModel.ClientService.SendAsync(new GetLiveStoryAvailableMessageSenders(_activeStories.ChatId));
+            var response = await ViewModel.ClientService.SendAsync(new GetLiveStoryAvailableMessageSenders(_groupCall.Id));
             if (response is ChatMessageSenders senders)
             {
                 void handler(object sender, RoutedEventArgs _)
