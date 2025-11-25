@@ -299,6 +299,7 @@ namespace Telegram.ViewModels
 
             if (string.IsNullOrEmpty(value))
             {
+                _chatsAndContacts1.ClearIfNotEmpty();
                 _chatsAndContacts2.ClearIfNotEmpty();
                 _globalSearch.ClearIfNotEmpty();
 
