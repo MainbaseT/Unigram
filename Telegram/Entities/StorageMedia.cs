@@ -32,8 +32,6 @@ namespace Telegram.Entities
         public StorageMedia(StorageFile file, ulong fileSize)
         {
             File = file;
-            //DateModified = basic.DateModified;
-            //ItemDate = basic.ItemDate;
             Size = fileSize;
 
             EditState = new ImageGeneration();
@@ -41,8 +39,6 @@ namespace Telegram.Entities
 
         public StorageFile File { get; private set; }
 
-        //public DateTimeOffset DateModified { get; }
-        //public DateTimeOffset ItemDate { get; }
         public ulong Size { get; }
 
         protected ImageSource _preview;

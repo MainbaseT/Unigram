@@ -172,12 +172,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
-            ReplaceDiff(_recent, temp, cancellationToken);
+            ReplaceDiff(_recent, temp);
         }
 
         private async Task LoadSimilarAsync(string query, CancellationToken cancellationToken)
@@ -199,12 +194,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
-            ReplaceDiff(_similar, temp, cancellationToken);
+            ReplaceDiff(_similar, temp);
         }
 
         private async Task LoadChatsAndContactsPart1Async(string query, CancellationToken cancellationToken)
@@ -246,12 +236,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
-            ReplaceDiff(_chatsAndContacts1, temp, cancellationToken);
+            ReplaceDiff(_chatsAndContacts1, temp);
         }
 
         private async Task LoadChatsAndContactsPart2Async(string query, CancellationToken cancellationToken)
@@ -269,7 +254,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                ReplaceDiff(_chatsAndContacts2, temp, cancellationToken);
+                ReplaceDiff(_chatsAndContacts2, temp);
             }
         }
 
@@ -288,7 +273,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                ReplaceDiff(_globalSearch, temp, cancellationToken);
+                ReplaceDiff(_globalSearch, temp);
             }
         }
 
@@ -308,16 +293,47 @@ namespace Telegram.ViewModels
             }
         }
 
-        private async void ReplaceDiff<T>(DiffObservableCollection<T> destination, IEnumerable<T> source, CancellationToken cancellationToken)
+        private void ReplaceDiff<T>(DiffObservableCollection<T> destination, IList<T> source)
         {
-            var diff = await Task.Run(() => DiffUtil.CalculateDiff(destination, source, destination.DefaultDiffHandler, destination.DefaultOptions));
-
-            if (cancellationToken.IsCancellationRequested)
+            if (destination.Empty())
             {
+                destination.AddRange(source);
+                return;
+            }
+            else if (source.Empty())
+            {
+                destination.ClearIfNotEmpty();
                 return;
             }
 
-            destination.ReplaceDiff(diff);
+            var recycledItems = Math.Min(destination.Count, source.Count);
+            var changedItems = Math.Max(destination.Count, source.Count);
+
+            if (destination.Count > source.Count)
+            {
+                for (int i = recycledItems; i < changedItems; i++)
+                {
+                    destination.RemoveAt(recycledItems);
+                }
+            }
+            else if (source.Count > destination.Count)
+            {
+                for (int i = recycledItems; i < changedItems; i++)
+                {
+                    destination.Insert(i, source[i]);
+                }
+            }
+
+            for (int i = 0; i < recycledItems; i++)
+            {
+                var oldItem = destination[i];
+                var newItem = source[i];
+
+                if (destination.DefaultDiffHandler == null || !destination.DefaultDiffHandler.CompareItems(oldItem, newItem))
+                {
+                    destination[i] = newItem;
+                }
+            }
         }
 
         #region ISupportIncrementalLoading

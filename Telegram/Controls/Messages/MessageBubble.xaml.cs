@@ -231,7 +231,7 @@ namespace Telegram.Controls.Messages
             _layerVisual = CompositionDevice.GetElementLayerVisual(ContentPanel);
 
             // Forces ParentForTransform with LayerVisual
-            var media = ElementComposition.GetElementVisual(Media);
+            ElementComposition.GetElementVisual(Media);
 
             if (_shadow != null)
             {

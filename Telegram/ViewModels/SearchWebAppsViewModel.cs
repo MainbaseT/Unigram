@@ -341,12 +341,46 @@ namespace Telegram.ViewModels
             }
         }
 
-        private async void ReplaceDiff<T>(DiffObservableCollection<T> destination, IEnumerable<T> source)
+        private void ReplaceDiff<T>(DiffObservableCollection<T> destination, IList<T> source)
         {
-            using (await _diffLock.WaitAsync())
+            if (destination.Empty())
             {
-                var diff = await Task.Run(() => DiffUtil.CalculateDiff(destination, source, destination.DefaultDiffHandler, destination.DefaultOptions));
-                destination.ReplaceDiff(diff);
+                destination.AddRange(source);
+                return;
+            }
+            else if (source.Empty())
+            {
+                destination.ClearIfNotEmpty();
+                return;
+            }
+
+            var recycledItems = Math.Min(destination.Count, source.Count);
+            var changedItems = Math.Max(destination.Count, source.Count);
+
+            if (destination.Count > source.Count)
+            {
+                for (int i = recycledItems; i < changedItems; i++)
+                {
+                    destination.RemoveAt(recycledItems);
+                }
+            }
+            else if (source.Count > destination.Count)
+            {
+                for (int i = recycledItems; i < changedItems; i++)
+                {
+                    destination.Insert(i, source[i]);
+                }
+            }
+
+            for (int i = 0; i < recycledItems; i++)
+            {
+                var oldItem = destination[i];
+                var newItem = source[i];
+
+                if (destination.DefaultDiffHandler == null || !destination.DefaultDiffHandler.CompareItems(oldItem, newItem))
+                {
+                    destination[i] = newItem;
+                }
             }
         }
 
