@@ -85,6 +85,27 @@ namespace Telegram.Controls.Views
                     online.Visibility = user.Status is UserStatusOnline ? Visibility.Visible : Visibility.Collapsed;
                 }
             });
+
+            ItemsHost.ForEach<ProfileCell, SearchResult>((content, result) =>
+            {
+                var badge = content.Content as BadgeControl;
+                if (badge != null)
+                {
+                    if (result.Chat != null)
+                    {
+                        var muted = ViewModel.ClientService.Notifications.IsMuted(result.Chat);
+                        badge.IsUnmuted = !muted;
+                        badge.Text = result.Chat.UnreadCount > 0 ? result.Chat.UnreadCount.ToString() : string.Empty;
+                        badge.Visibility = result.Chat.UnreadCount > 0 || result.Chat.IsMarkedAsUnread
+                            ? Visibility.Visible
+                            : Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        badge.Visibility = Visibility.Collapsed;
+                    }
+                }
+            });
         }
 
         public void Deactivate()
@@ -222,6 +243,24 @@ namespace Telegram.Controls.Views
                 }
 
                 content.UpdateSearchResult(ViewModel.ClientService, args, OnContainerContentChanging);
+
+                var badge = content.Content as BadgeControl;
+                if (badge != null)
+                {
+                    if (result.Chat != null)
+                    {
+                        var muted = ViewModel.ClientService.Notifications.IsMuted(result.Chat);
+                        badge.IsUnmuted = !muted;
+                        badge.Text = result.Chat.UnreadCount > 0 ? result.Chat.UnreadCount.ToString() : string.Empty;
+                        badge.Visibility = result.Chat.UnreadCount > 0 || result.Chat.IsMarkedAsUnread
+                            ? Visibility.Visible
+                            : Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        badge.Visibility = Visibility.Collapsed;
+                    }
+                }
             }
             else if (args.Item is Message message)
             {

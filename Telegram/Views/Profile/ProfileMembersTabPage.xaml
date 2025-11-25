@@ -70,7 +70,13 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <cells:ProfileCell Background="{ThemeResource SettingsItemBackground}"
-                                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" />
+                                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                        <TextBlock Style="{StaticResource InfoCaptionTextBlockStyle}"
+                                   VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"
+                                   TextWrapping="NoWrap"
+                                   MaxLines="1" />
+                    </cells:ProfileCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Footer>

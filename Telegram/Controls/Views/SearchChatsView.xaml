@@ -48,7 +48,9 @@
         </DataTemplate>
 
         <DataTemplate x:Name="ProfileTemplate">
-            <cells:ProfileCell />
+            <cells:ProfileCell>
+                <controls:BadgeControl />
+            </cells:ProfileCell>
         </DataTemplate>
 
         <DataTemplate x:Name="MessageTemplate">

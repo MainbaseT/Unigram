@@ -106,15 +106,15 @@
                                    Grid.Row="1"
                                    MaxLines="1" />
 
-                        <TextBlock x:Name="InfoLabel"
-                                   x:Load="False"
-                                   Style="{StaticResource InfoCaptionTextBlockStyle}"
-                                   VerticalAlignment="Center"
-                                   TextTrimming="CharacterEllipsis"
-                                   TextWrapping="NoWrap"
-                                   Grid.Column="2"
-                                   Grid.RowSpan="2"
-                                   MaxLines="1" />
+                        <ContentPresenter x:Name="ContentPresenter"
+                                          x:Load="False"
+                                          ContentTransitions="{TemplateBinding ContentTransitions}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Grid.Column="2"
+                                          Grid.RowSpan="2" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

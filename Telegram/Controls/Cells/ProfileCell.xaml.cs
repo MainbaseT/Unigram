@@ -31,7 +31,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls.Cells
 {
-    public sealed partial class ProfileCell : Control
+    public sealed partial class ProfileCell : ContentControl
     {
         public ProfileCell()
         {
@@ -51,7 +51,7 @@ namespace Telegram.Controls.Cells
 
         // Deferred
         private Border RestrictsNewChats;
-        private TextBlock InfoLabel;
+        private ContentPresenter ContentPresenter;
 
         private bool _templateApplied;
 
@@ -65,6 +65,11 @@ namespace Telegram.Controls.Cells
             TitleLabel = GetTemplateChild(nameof(TitleLabel)) as TextBlock;
             Identity = GetTemplateChild(nameof(Identity)) as IdentityIcon;
             SubtitleLabel = GetTemplateChild(nameof(SubtitleLabel)) as TextBlock;
+
+            if (Content != null)
+            {
+                ContentPresenter ??= GetTemplateChild(nameof(ContentPresenter)) as ContentPresenter;
+            }
 
             _templateApplied = true;
 
@@ -106,6 +111,16 @@ namespace Telegram.Controls.Cells
         }
 
         #endregion
+
+        protected override void OnContentChanged(object oldContent, object newContent)
+        {
+            if (newContent != null)
+            {
+                ContentPresenter ??= GetTemplateChild(nameof(ContentPresenter)) as ContentPresenter;
+            }
+
+            base.OnContentChanged(oldContent, newContent);
+        }
 
         private event RoutedEventHandler _click;
         public event RoutedEventHandler Click
@@ -806,17 +821,18 @@ namespace Telegram.Controls.Cells
 
                 if (member.Status is ChatMemberStatusAdministrator administrator)
                 {
-                    InfoLabel ??= GetTemplateChild(nameof(InfoLabel)) as TextBlock;
-                    InfoLabel.Text = string.IsNullOrEmpty(administrator.CustomTitle) ? Strings.ChannelAdmin : administrator.CustomTitle;
+                    var infoLabel = Content as TextBlock;
+                    infoLabel?.Text = string.IsNullOrEmpty(administrator.CustomTitle) ? Strings.ChannelAdmin : administrator.CustomTitle;
                 }
                 else if (member.Status is ChatMemberStatusCreator creator)
                 {
-                    InfoLabel ??= GetTemplateChild(nameof(InfoLabel)) as TextBlock;
-                    InfoLabel.Text = string.IsNullOrEmpty(creator.CustomTitle) ? Strings.ChannelCreator : creator.CustomTitle;
+                    var infoLabel = Content as TextBlock;
+                    infoLabel?.Text = string.IsNullOrEmpty(creator.CustomTitle) ? Strings.ChannelCreator : creator.CustomTitle;
                 }
                 else
                 {
-                    InfoLabel?.Text = string.Empty;
+                    var infoLabel = Content as TextBlock;
+                    infoLabel?.Text = string.Empty;
                 }
             }
             else if (args.Phase == 2)
