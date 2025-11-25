@@ -96,6 +96,13 @@ namespace Telegram.Controls.Cells
                 _clientService = null;
                 _element = null;
             }
+
+            if (_subtitle != null)
+            {
+                SubtitleLabel.Text = _subtitle;
+
+                _subtitle = null;
+            }
         }
 
         #endregion
@@ -107,22 +114,20 @@ namespace Telegram.Controls.Cells
             remove { Segments?.IsEnabled = false; _click -= value; }
         }
 
-        public int PhotoSize
-        {
-            get => Photo.Size;
-            set => Photo.Size = value;
-        }
-
-        public string Title
-        {
-            get => TitleLabel.Text;
-            set => TitleLabel.Text = value;
-        }
-
+        private string _subtitle;
         public string Subtitle
         {
-            get => SubtitleLabel.Text;
-            set => SubtitleLabel.Text = value;
+            set
+            {
+                if (_templateApplied)
+                {
+                    SubtitleLabel.Text = value;
+                }
+                else
+                {
+                    _subtitle = value;
+                }
+            }
         }
 
         public void UpdateUserInflated(IClientService clientService, User user, int photoSize, bool phoneNumber = false)
