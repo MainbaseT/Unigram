@@ -487,6 +487,17 @@ namespace Telegram.ViewModels
 
                             continue;
                         }
+                        // TODO: there's a bug server-side that ignores force_file while processing WEBP documents in a album
+                        // this makes the whole album upload to fail. We work this around by always breaking WEBP upload to a single message.
+                        else if (item is StorageDocument document && document.File.HasExtension(".webp"))
+                        {
+                            AddAlbum();
+
+                            albumType = StorageAlbumType.None;
+                            view.Add(item);
+
+                            continue;
+                        }
 
                         var type = item switch
                         {
