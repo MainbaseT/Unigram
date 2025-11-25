@@ -648,6 +648,8 @@ namespace Telegram.Views
                 {
                     UpdatePlaybackHidden(false);
 
+                    CallBanner?.Update(null);
+
                     _activeCallVisible = false;
                     MasterDetail.ShowHideBanner(_activeCallVisible || _playbackVisible);
                 }
