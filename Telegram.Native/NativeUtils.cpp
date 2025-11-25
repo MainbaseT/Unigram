@@ -11,6 +11,7 @@
 #include "FatalError.h"
 
 #include <roerrorapi.h>
+#include <detours.h>
 
 #include <winrt/Telegram.Td.h>
 #include <winrt/Windows.Data.Xml.Dom.h>
@@ -35,10 +36,29 @@ namespace winrt::Telegram::Native::implementation
 {
     FatalErrorCallback NativeUtils::Callback;
 
+    PFN_RhGetCurrentObjSize NativeUtils::s_RhGetCurrentObjSize;
+    PFN_RhpSuppressGcStress NativeUtils::s_RhpSuppressGcStress;
+
     void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback)
     {
         Client::SetLogMessageCallback(0, &NativeUtils::LogMessageCallback);
         Callback = callback;
+
+        auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
+        if (mrt100)
+        {
+            s_RhGetCurrentObjSize = reinterpret_cast<PFN_RhGetCurrentObjSize>(GetProcAddress(mrt100, "RhGetCurrentObjSize"));
+
+            if (s_RhGetCurrentObjSize)
+            {
+                DetourTransactionBegin();
+                DetourUpdateThread(GetCurrentThread());
+
+                DetourAttach(reinterpret_cast<PVOID*>(&s_RhGetCurrentObjSize), NativeUtils::RhGetCurrentObjSize);
+
+                DetourTransactionCommit();
+            }
+        }
     }
 
     inline bool Contains(const hstring& message, std::wstring_view text)

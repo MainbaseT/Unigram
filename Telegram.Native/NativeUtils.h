@@ -14,6 +14,9 @@
 #include <winrt/Windows.UI.Xaml.Media.h>
 #include <winrt/Windows.UI.Xaml.Core.Direct.h>
 
+using PFN_RhGetCurrentObjSize = WINUSERAPI INT64(WINAPI*)();
+using PFN_RhpSuppressGcStress = WINUSERAPI void(WINAPI*)();
+
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::UI::Text;
 using namespace winrt::Windows::UI::Xaml;
@@ -72,6 +75,9 @@ namespace winrt::Telegram::Native::implementation
 
         static FatalErrorCallback Callback;
 
+        static PFN_RhGetCurrentObjSize s_RhGetCurrentObjSize;
+        static PFN_RhpSuppressGcStress s_RhpSuppressGcStress;
+
     private:
         static winrt::Telegram::Native::FatalError GetStowedException2(STOWED_EXCEPTION_INFORMATION_V2* stowed);
 
@@ -80,6 +86,11 @@ namespace winrt::Telegram::Native::implementation
         static bool IsBrowsePath(const std::wstring& path);
         static ULONGLONG FileTimeToSeconds(FILETIME& ft);
         static bool IsFileReadableInternal(hstring path, int64_t* fileSize, int64_t* fileTime);
+
+        static INT64 RhGetCurrentObjSize()
+        {
+            return 0x7FFFFFFFFFFFFFFF;
+        }
     };
 } // namespace winrt::Telegram::Native::implementation
 
