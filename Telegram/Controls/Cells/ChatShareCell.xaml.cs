@@ -65,6 +65,17 @@ namespace Telegram.Controls.Cells
             _selectionOutline.CenterPoint = new Vector3(18);
             _selectionOutline.Opacity = 0;
 
+            if (_visual != null)
+            {
+                ElementCompositionPreview.SetElementChildVisual(PhotoPanel, _visual);
+
+                if (_selected)
+                {
+                    _selected = false;
+                    UpdateState(true, false, false);
+                }
+            }
+
             _templateApplied = true;
 
             if (_useProperties)
@@ -460,7 +471,10 @@ namespace Telegram.Controls.Cells
             visual.CenterPoint = new Vector3(8);
             visual.Scale = new Vector3(0);
 
-            ElementCompositionPreview.SetElementChildVisual(PhotoPanel, visual);
+            if (PhotoPanel != null)
+            {
+                ElementCompositionPreview.SetElementChildVisual(PhotoPanel, visual);
+            }
 
             _polygon = polygon;
             _visual = visual;
@@ -476,6 +490,12 @@ namespace Telegram.Controls.Cells
             if (_visual == null)
             {
                 InitializeSelection();
+            }
+
+            if (_selectionPhoto == null)
+            {
+                _selected = selected;
+                return;
             }
 
             if (animate)
