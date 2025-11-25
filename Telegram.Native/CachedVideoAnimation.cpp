@@ -148,7 +148,7 @@ namespace winrt::Telegram::Native::implementation
 
                 std::lock_guard<std::mutex> guard(GetLockForKey(info->m_cacheKey));
 
-                HANDLE precacheFile = info->GetCacheHandle(); // CreateFile2(info->m_cacheFile.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, OPEN_EXISTING, NULL);
+                HANDLE precacheFile = info->GetCacheHandle();
                 if (precacheFile != INVALID_HANDLE_VALUE)
                 {
                     bool headerValid = info->ReadHeader(precacheFile);
@@ -259,7 +259,7 @@ namespace winrt::Telegram::Native::implementation
                 {
                     std::lock_guard<std::mutex> guard(GetLockForKey(m_cacheKey));
 
-                    HANDLE precacheFile = GetCacheHandle(); //CreateFile2(m_cacheFile.c_str(), GENERIC_READ, 0, OPEN_EXISTING, NULL);
+                    HANDLE precacheFile = GetCacheHandle();
                     if (precacheFile != INVALID_HANDLE_VALUE)
                     {
                         if (SetFilePointer(precacheFile, offset, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER)
@@ -298,8 +298,6 @@ namespace winrt::Telegram::Native::implementation
                                 }
                             }
                         }
-
-                        //CloseHandle(precacheFile);
 
                         if (loadedFromCache)
                         {
