@@ -6,6 +6,7 @@
 //
 
 using System;
+using System.ComponentModel;
 using Telegram.Common;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -41,6 +42,8 @@ namespace Telegram.Controls
         public bool CanZoomOut => ScrollingHost?.ZoomFactor > MinZoomFactor;
 
         public double ZoomFactor => ScrollingHost?.ZoomFactor ?? 1;
+
+        public event CancelEventHandler PanStarting;
 
         #region MaxZoomFactor
 
@@ -115,6 +118,14 @@ namespace Telegram.Controls
         private void ScrollingHost_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Mouse)
+            {
+                return;
+            }
+
+            var args = new CancelEventArgs();
+            PanStarting?.Invoke(this, args);
+
+            if (args.Cancel)
             {
                 return;
             }

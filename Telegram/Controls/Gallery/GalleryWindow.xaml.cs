@@ -1322,5 +1322,11 @@ namespace Telegram.Controls.Gallery
                 ToastPopup.Show(Recognize, Strings.ScanTextFirstTime, Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.Top, dismissAfter: TimeSpan.FromSeconds(3));
             }
         }
+
+        private void ScrollingHost_PanStarting(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var container = GetElement(CarouselDirection.None);
+            e.Cancel = container.IsTextSelectionEnabled;
+        }
     }
 }
