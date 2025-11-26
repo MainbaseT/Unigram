@@ -720,7 +720,14 @@ namespace Telegram.Controls
 
         public void UpdateChatActiveStories(Chat chat)
         {
-            Segments.SetChat(ViewModel.ClientService, chat, 140);
+            if (ViewModel.Topic == null)
+            {
+                Segments.SetChat(ViewModel.ClientService, chat, 140);
+            }
+            else
+            {
+                Segments.Clear();
+            }
         }
 
         public void UpdateChatNotificationSettings(Chat chat)
