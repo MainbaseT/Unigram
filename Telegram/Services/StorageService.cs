@@ -582,7 +582,14 @@ namespace Telegram.Services
                     // - ArgumentException
                     // - FileNotFoundException
 
-                    SAP.FutureAccessList.Clear();
+                    try
+                    {
+                        SAP.FutureAccessList.Clear();
+                    }
+                    catch
+                    {
+                        // All the remote procedure calls must be wrapped in a try-catch block
+                    }
                 }
             }
         }
