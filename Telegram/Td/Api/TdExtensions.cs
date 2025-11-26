@@ -2679,6 +2679,7 @@ namespace Telegram
                 && x.AcceptedGiftTypes.PremiumSubscription == y.AcceptedGiftTypes.PremiumSubscription
                 && x.AcceptedGiftTypes.UnlimitedGifts == y.AcceptedGiftTypes.UnlimitedGifts
                 && x.AcceptedGiftTypes.UpgradedGifts == y.AcceptedGiftTypes.UpgradedGifts
+                && x.AcceptedGiftTypes.GiftsFromChannels == y.AcceptedGiftTypes.GiftsFromChannels
                 && x.ShowGiftButton == y.ShowGiftButton;
         }
 
