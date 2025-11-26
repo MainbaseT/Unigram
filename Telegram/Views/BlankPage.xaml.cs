@@ -36,7 +36,7 @@ namespace Telegram.Views
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.NavigationMode == NavigationMode.Back && Frame.ForwardStack.Count > 0 && Frame.ForwardStack[0].SourcePageType == typeof(AuthorizationPage))
+            if (e.NavigationMode == NavigationMode.Back && Frame.ForwardStack.Count > 0 && Frame.ForwardStack[^1].SourcePageType == typeof(AuthorizationPage))
             {
                 _clientService.Send(new Destroy());
             }

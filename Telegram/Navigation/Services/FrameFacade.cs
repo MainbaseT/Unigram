@@ -308,10 +308,16 @@ namespace Telegram.Navigation.Services
             NavigationModeHint = NavigationMode.New;
             Navigated?.Invoke(Frame, args);
 
-            if (Frame.BackStack.Count > 0 && _authorizationTypes.Contains(Frame.BackStack[Frame.BackStack.Count - 1].SourcePageType))
+            static void RemoveEntry(IList<PageStackEntry> stack)
             {
-                Frame.BackStack.RemoveAt(Frame.BackStack.Count - 1);
+                if (stack.Count > 0 && _authorizationTypes.Contains(stack[^1].SourcePageType))
+                {
+                    stack.RemoveAt(stack.Count - 1);
+                }
             }
+
+            RemoveEntry(Frame.BackStack);
+            RemoveEntry(Frame.ForwardStack);
         }
 
         public event EventHandler<NavigatingEventArgs> Navigating;
