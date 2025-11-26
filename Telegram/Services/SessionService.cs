@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,6 +35,7 @@ namespace Telegram.Services
         IEventAggregator Aggregator { get; }
 
         Task<Object> SetAuthenticationPhoneNumberAsync(SetAuthenticationPhoneNumber function);
+        void RequestQrCodeAuthentication(IList<long> otherUserIds);
     }
 
     public partial class SessionService : ViewModelBase, ISessionService
@@ -161,7 +163,7 @@ namespace Telegram.Services
 
         private bool _loggingOut;
         private bool _continueOnLogOut;
-        private SetAuthenticationPhoneNumber _continueOnLogOutAction;
+        private Function _continueOnLogOutAction;
         private TaskCompletionSource<Object> _continueResult;
 
         public Task<Object> SetAuthenticationPhoneNumberAsync(SetAuthenticationPhoneNumber function)
@@ -174,6 +176,16 @@ namespace Telegram.Services
             ClientService.Send(new LogOut());
 
             return _continueResult.Task;
+        }
+
+        public void RequestQrCodeAuthentication(IList<long> otherUserIds)
+        {
+            _loggingOut = false;
+            _continueOnLogOut = true;
+            _continueOnLogOutAction = new RequestQrCodeAuthentication(otherUserIds);
+            _continueResult = new TaskCompletionSource<Object>();
+
+            ClientService.Send(new LogOut());
         }
 
         private async void ContinueOnLogOut()

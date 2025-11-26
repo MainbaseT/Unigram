@@ -88,7 +88,15 @@ namespace Telegram.ViewModels.Authorization
                                     }
                                 }
 
-                                ClientService.Send(new RequestQrCodeAuthentication(userIds));
+                                // If auth state is not WaitPhoneNumber we force a log out to avoid AUTH_TOKEN_ALREADY_ACCEPTED
+                                if (authState is not AuthorizationStateWaitPhoneNumber)
+                                {
+                                    _sessionService.RequestQrCodeAuthentication(userIds);
+                                }
+                                else
+                                {
+                                    ClientService.Send(new RequestQrCodeAuthentication(userIds));
+                                }
                             }
 
                             return;
