@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableDefaultItems>false</EnableDefaultItems>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>x64;arm64</Platforms>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
@@ -14,7 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\**" />
+    <Compile Include="BridgeApplicationContext.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="NotifyIcon.cs" />
+    <Compile Include="Program.cs" />
   </ItemGroup>
 
   <ItemGroup>
