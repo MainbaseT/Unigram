@@ -204,7 +204,7 @@ namespace Telegram.ViewModels
 
             if (message.Content is MessageAlbum album)
             {
-                message = album.Messages.FirstOrDefault();
+                message = album.Messages[album.IsMedia ? 0 : ^1];
             }
 
             var should = await ShouldReplyInAnotherChatAsync(message);
@@ -255,7 +255,7 @@ namespace Telegram.ViewModels
 
             if (message.Content is MessageAlbum album)
             {
-                message = album.Messages.FirstOrDefault();
+                message = album.Messages[album.IsMedia ? 0 : ^1];
             }
 
             var should = await ShouldReplyInAnotherChatAsync(message);
