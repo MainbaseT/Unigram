@@ -1452,6 +1452,8 @@ namespace Telegram.ViewModels
 
         private async Task<LoadSliceResult> LoadMessageSliceImpl(Chat chat, long fromMessageId, int fromDateOffset, VerticalAlignment alignment, ScrollIntoViewAlignment? direction, double? pixel)
         {
+            fromMessageId = fromMessageId == long.MaxValue ? 0 : fromMessageId;
+
             Task<Object> func;
             if (Type == DialogType.Pinned)
             {
@@ -2383,34 +2385,43 @@ namespace Telegram.ViewModels
             }
             else
             {
-                var details = GetCurrentDetails();
-
-                bool TryRemove(long chatId, out long v1, out long v2)
+                var status = ClientService.GetChatMemberStatus(chat, out _);
+                if (status is ChatMemberStatusLeft)
                 {
-                    var a = Settings.Chats.TryRemove(chat.Id, details.TopicId, ChatSetting.ReadInboxMaxId, out v1);
-                    var b = Settings.Chats.TryRemove(chat.Id, details.TopicId, ChatSetting.Index, out v2);
-                    return a && b;
+                    Logger.Debug(string.Format("{0} - Loading messages from zero", chat.Id));
+                    LoadMessageSliceAsync(null, long.MaxValue, VerticalAlignment.Top);
                 }
+                else
+                {
+                    var details = GetCurrentDetails();
 
-                if (TryRemove(chat.Id, out long readInboxMaxId, out long start) &&
-                    readInboxMaxId == details.LastReadInboxMessageId &&
-                    start <= details.LastReadInboxMessageId)
-                {
-                    if (Settings.Chats.TryRemove(chat.Id, details.TopicId, ChatSetting.Pixel, out double pixel))
+                    bool TryRemove(long chatId, out long v1, out long v2)
                     {
-                        Logger.Debug(string.Format("{0} - Loading messages from specific pixel", chat.Id));
-                        LoadMessageSliceAsync(null, start, VerticalAlignment.Bottom, pixel);
+                        var a = Settings.Chats.TryRemove(chat.Id, details.TopicId, ChatSetting.ReadInboxMaxId, out v1);
+                        var b = Settings.Chats.TryRemove(chat.Id, details.TopicId, ChatSetting.Index, out v2);
+                        return a && b;
                     }
-                    else
+
+                    if (TryRemove(chat.Id, out long readInboxMaxId, out long start) &&
+                        readInboxMaxId == details.LastReadInboxMessageId &&
+                        start <= details.LastReadInboxMessageId)
                     {
-                        Logger.Debug(string.Format("{0} - Loading messages from specific id, pixel missing", chat.Id));
-                        LoadMessageSliceAsync(null, start, VerticalAlignment.Bottom);
+                        if (Settings.Chats.TryRemove(chat.Id, details.TopicId, ChatSetting.Pixel, out double pixel))
+                        {
+                            Logger.Debug(string.Format("{0} - Loading messages from specific pixel", chat.Id));
+                            LoadMessageSliceAsync(null, start, VerticalAlignment.Bottom, pixel);
+                        }
+                        else
+                        {
+                            Logger.Debug(string.Format("{0} - Loading messages from specific id, pixel missing", chat.Id));
+                            LoadMessageSliceAsync(null, start, VerticalAlignment.Bottom);
+                        }
                     }
-                }
-                else /*if (chat.UnreadCount > 0)*/
-                {
-                    Logger.Debug(string.Format("{0} - Loading messages from LastReadInboxMessageId: {1}", chat.Id, chat.LastReadInboxMessageId));
-                    LoadMessageSliceAsync(null, details.LastReadInboxMessageId, VerticalAlignment.Top);
+                    else /*if (chat.UnreadCount > 0)*/
+                    {
+                        Logger.Debug(string.Format("{0} - Loading messages from LastReadInboxMessageId: {1}", chat.Id, chat.LastReadInboxMessageId));
+                        LoadMessageSliceAsync(null, details.LastReadInboxMessageId, VerticalAlignment.Top);
+                    }
                 }
             }
 #pragma warning restore CS4014

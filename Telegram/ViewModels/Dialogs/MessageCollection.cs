@@ -182,12 +182,11 @@ namespace Telegram.ViewModels
                 }
             }
 
-            _messages[item.Id] = item;
-
             if (item.Id != 0)
             {
                 _first = Math.Min(item.Id, _first);
                 _last = Math.Max(item.Id, _last);
+                _messages[item.Id] = item;
             }
 
             if (_suppressOperations || item.Content is MessageHeaderNewThread or MessageSponsored)
