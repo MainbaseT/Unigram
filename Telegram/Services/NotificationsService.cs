@@ -366,11 +366,34 @@ namespace Telegram.Services
             }
         }
 
+        private ulong _lastPlayedSent;
+        private ulong _lastPlayedReceived;
+
         public void PlaySound(bool sent)
         {
             if (!_settings.Notifications.InAppSounds)
             {
                 return;
+            }
+
+            var now = Logger.TickCount;
+            if (sent)
+            {
+                if (now - _lastPlayedSent < 500)
+                {
+                    return;
+                }
+
+                _lastPlayedSent = now;
+            }
+            else
+            {
+                if (now - _lastPlayedReceived < 500)
+                {
+                    return;
+                }
+
+                _lastPlayedReceived = now;
             }
 
             Task.Run(() => SoundEffects.Play(sent ? SoundEffect.Sent : SoundEffect.Received));

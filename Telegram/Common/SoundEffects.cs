@@ -170,9 +170,9 @@ namespace Telegram.Common
                 fileInputNodeResult.FileInputNode
                     .AddOutgoingConnection(deviceOutputNodeResult.DeviceOutputNode);
 
-                async void handler(AudioFileInputNode node, object args)
+                void handler(AudioFileInputNode node, object args)
                 {
-                    using (await _lock.WaitAsync())
+                    using (_lock.Wait())
                     {
                         try
                         {
@@ -193,7 +193,7 @@ namespace Telegram.Common
                     }
                 }
 
-                using (await _lock.WaitAsync())
+                using (_lock.Wait())
                 {
                     Stop(type);
 
