@@ -88,6 +88,8 @@ namespace Telegram.Stub
             {
                 File.AppendAllText(path, entry + "\n");
             }
+
+            System.Diagnostics.Debug.WriteLine(entry);
         }
 
         //private const string FormatWithMessage = "[{0:yyyy-MM-dd HH\\:mm\\:ss\\:ffff}][{1}][{2}:{3}] {4}";

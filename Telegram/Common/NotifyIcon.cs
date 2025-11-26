@@ -25,6 +25,8 @@ namespace Telegram.Common
         private static AppServiceConnection _connection;
         private static BackgroundTaskDeferral _deferral;
 
+        private static TaskCompletionSource<bool> _connected;
+
         private static readonly DisposableMutex _lock = new();
 
         public static async Task AddLoopbackExemptionAsync()
@@ -48,6 +50,7 @@ namespace Telegram.Common
             {
                 try
                 {
+                    _connected = new();
                     await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync("SystemTrayGroup");
                 }
                 catch
@@ -55,6 +58,19 @@ namespace Telegram.Common
                     // The app has been compiled without desktop bridge
                 }
             }
+        }
+
+        public static async Task ConnectAsync()
+        {
+            using (await _lock.WaitAsync())
+            {
+                if (_connection == null)
+                {
+                    await LaunchAsync();
+                }
+            }
+
+            await _connected?.Task;
         }
 
         public static async void Connect(AppServiceConnection connection, IBackgroundTaskInstance task)
@@ -80,6 +96,8 @@ namespace Telegram.Common
             };
 
             await SendMessageAsync(values);
+
+            _connected?.TrySetResult(true);
         }
 
         public static Task ExitAsync()
@@ -110,12 +128,12 @@ namespace Telegram.Common
             _ = SendMessageAsync(new ValueSet { { "UnreadCount", unreadCount }, { "UnreadUnmutedCount", unreadMutedCount } });
         }
 
-        private static Task<AppServiceResponse> SendMessageAsync(string message, object parameter = null, bool reconnect = true)
+        private static Task<AppServiceResponse> SendMessageAsync(string message, object parameter = null, bool reconnect = true, int timeout = 500)
         {
-            return SendMessageAsync(new ValueSet { { message, parameter ?? true } }, reconnect);
+            return SendMessageAsync(new ValueSet { { message, parameter ?? true } }, reconnect, timeout);
         }
 
-        private static async Task<AppServiceResponse> SendMessageAsync(ValueSet message, bool reconnect = true)
+        private static async Task<AppServiceResponse> SendMessageAsync(ValueSet message, bool reconnect = true, int timeout = 500)
         {
             try
             {
@@ -137,12 +155,19 @@ namespace Telegram.Common
                         }
                     }
 
-                    var task = connection.SendMessageAsync(message).AsTask();
-                    var completed = await Task.WhenAny(task, Task.Delay(500));
-
-                    if (task == completed)
+                    if (timeout != 0)
                     {
-                        response = task.Result;
+                        var task = connection.SendMessageAsync(message).AsTask();
+                        var completed = await Task.WhenAny(task, Task.Delay(timeout));
+
+                        if (task == completed)
+                        {
+                            response = task.Result;
+                        }
+                    }
+                    else
+                    {
+                        response = await connection.SendMessageAsync(message);
                     }
                 }
 

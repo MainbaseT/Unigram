@@ -195,7 +195,7 @@ namespace Telegram.Stub
                 Logger.Info("ProcessId");
 
                 _processId = processId;
-                response.Add("ProcessId", Process.GetCurrentProcess().Id);
+                response.Add("ProcessId", Environment.ProcessId);
             }
 
             if (args.Request.Message.TryGet("OpenText", out string openText))
