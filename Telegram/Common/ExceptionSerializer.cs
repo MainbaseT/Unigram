@@ -600,6 +600,7 @@ namespace Telegram.Common
                     return "Illegal operation attempted on a registry key that has been marked for deletion.";
 
                 case "Acceso denegado.":
+                case "Acesso negado.":
                 case "Accès refusé.":
                 case "Отказано в доступе.":
                 case "拒绝访问。":
