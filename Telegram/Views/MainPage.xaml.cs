@@ -117,9 +117,34 @@ namespace Telegram.Views
                 args.Direction, args.InputDevice, args.FocusState));
         }
 
+        private readonly int[] _lastCollectionCount = new int[3]
+        {
+            GC.CollectionCount(0),
+            GC.CollectionCount(1),
+            GC.CollectionCount(2)
+        };
+
+        private bool PollGC()
+        {
+            var occurred = false;
+
+            for (int i = 0; i <= 2; i++)
+            {
+                int count = GC.CollectionCount(i);
+                if (count != _lastCollectionCount[i])
+                {
+                    _lastCollectionCount[i] = count;
+                    occurred = true;
+                }
+            }
+
+            return occurred;
+        }
+
         private void MemoryUsageTimer_Tick(object sender, object e)
         {
             var memoryUsage = Math.Round(Windows.System.MemoryManager.AppMemoryUsage / 1024.0 / 1024.0);
+            var occurred = PollGC();
 
             //var currentProcess = HeapSizeCalculator.GetHeapSizes(true);
             //double unmanaged = currentProcess.NativeHeap / 1024.0 / 1024.0;
@@ -127,11 +152,11 @@ namespace Telegram.Views
 
             if (MasterDetail?.NavigationService?.Frame?.Content is ChatPage page)
             {
-                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB" + page.View.GetVirtualizationInfo();
+                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB" + (occurred ? " OCCURRED" : string.Empty) + page.View.GetVirtualizationInfo();
             }
             else if (memoryUsage != _memoryUsage)
             {
-                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB";
+                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB" + (occurred ? " OCCURRED" : string.Empty);
             }
 
             _memoryUsage = memoryUsage;
