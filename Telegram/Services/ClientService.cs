@@ -607,7 +607,7 @@ namespace Telegram.Services
                 _client.Send(new SetOption("storage_max_time_from_last_access", new OptionValueInteger(SettingsService.Current.Diagnostics.StorageMaxTimeFromLastAccess)));
                 _client.Send(new SetTdlibParameters
                 {
-                    DatabaseDirectory = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session}"),
+                    DatabaseDirectory = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session.Id}"),
                     UseSecretChats = true,
                     UseMessageDatabase = useMessageDatabase,
                     ApiId = Constants.ApiId,
@@ -678,7 +678,7 @@ namespace Telegram.Services
                 }
 
                 var now = DateTime.Now;
-                var path = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session}", "stickers");
+                var path = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session.Id}", "stickers");
 
                 foreach (var file in GetFiles(path))
                 {
@@ -1021,7 +1021,7 @@ namespace Telegram.Services
 
         private void DeleteDatabase()
         {
-            var databasePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session}", "db.sqlite");
+            var databasePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session.Id}", "db.sqlite");
             if (System.IO.File.Exists(databasePath))
             {
                 try
