@@ -15,7 +15,7 @@ namespace Telegram.Stub
 
         public override void Post(SendOrPostCallback d, object? state)
         {
-            var handle = GCHandle.Alloc(d);
+            var handle = GCHandle.Alloc(Tuple.Create(d, state));
             NativeMethods.PostMessage(_hwnd, WM_USER_CALLBACK, IntPtr.Zero, GCHandle.ToIntPtr(handle));
         }
     }
@@ -71,9 +71,9 @@ namespace Telegram.Stub
                 if (msg.message == WM_USER_CALLBACK)
                 {
                     var handle = GCHandle.FromIntPtr(msg.lParam);
-                    var callback = handle.Target as SendOrPostCallback;
+                    var callback = handle.Target as Tuple<SendOrPostCallback, object?>;
                     handle.Free();
-                    callback?.Invoke(null);
+                    callback?.Item1.Invoke(callback.Item2);
                 }
 
                 NativeMethods.TranslateMessage(ref msg);
@@ -123,7 +123,7 @@ namespace Telegram.Stub
                 hWnd = _hwnd,
                 uID = 1,
                 uFlags = 0x00000004 | 0x00000002 | 0x00000001, // NIF_TIP | NIF_ICON | NIF_MESSAGE
-                szTip = "Test",
+                szTip = "Unigram",
                 hIcon = _iconHandle,
                 uCallbackMessage = WM_USER
             };
