@@ -160,7 +160,7 @@ namespace Telegram.Views.Stars.Popups
 
             clientService.TryGetChatFromUser(clientService.Options.MyId, out Chat chat);
 
-            var content = new MessageGiftedPremium(_clientService.Options.MyId, userId, new FormattedText(string.Empty, Array.Empty<TextEntity>()), _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, _option.Sticker);
+            var content = new MessageGiftedPremium(_clientService.Options.MyId, userId, new FormattedText(string.Empty, Array.Empty<TextEntity>()), _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, 0, _option.Sticker);
             var message = new Message(0, new MessageSenderUser(clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null);
 
             var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
@@ -208,7 +208,7 @@ namespace Telegram.Views.Stars.Popups
             }
             else if (_option != null && _receiverId is MessageSenderUser user)
             {
-                content = new MessageGiftedPremium(_clientService.Options.MyId, user.UserId, text, _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, _option.Sticker);
+                content = new MessageGiftedPremium(_clientService.Options.MyId, user.UserId, text, _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, 0, _option.Sticker);
 
                 PurchaseText.Text = string.Format(Strings.Gift2SendPremium, Formatter.FormatAmount(_option.Amount, _option.Currency));
             }
