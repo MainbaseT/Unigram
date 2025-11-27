@@ -26,20 +26,6 @@ STDAPI_(BOOL) DllMain(_In_opt_ HINSTANCE hinst, DWORD reason, _In_opt_ void* res
     if (reason == DLL_THREAD_ATTACH)
     {
         SetUnhandledExceptionFilter(Filter);
-
-        if (!NativeUtils::s_RhpSuppressGcStress)
-        {
-            auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
-            if (mrt100)
-            {
-                NativeUtils::s_RhpSuppressGcStress = reinterpret_cast<PFN_RhpSuppressGcStress>(GetProcAddress(mrt100, "RhpSuppressGcStress"));
-            }
-        }
-
-        if (NativeUtils::s_RhpSuppressGcStress)
-        {
-            NativeUtils::s_RhpSuppressGcStress();
-        }
     }
 
     return TRUE;

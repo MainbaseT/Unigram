@@ -14,9 +14,6 @@
 #include <detours.h>
 
 #include <winrt/Telegram.Td.h>
-#include <winrt/Windows.Data.Xml.Dom.h>
-#include <winrt/Windows.UI.Notifications.h>
-#include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
@@ -27,7 +24,6 @@ BOOL
     );
 
 using namespace winrt::Telegram::Td;
-using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::UI::Notifications;
 using namespace winrt::Windows::ApplicationModel::Core;
 using namespace winrt::Windows::Foundation::Collections;
@@ -37,7 +33,6 @@ namespace winrt::Telegram::Native::implementation
     FatalErrorCallback NativeUtils::Callback;
 
     PFN_RhGetCurrentObjSize NativeUtils::s_RhGetCurrentObjSize;
-    PFN_RhpSuppressGcStress NativeUtils::s_RhpSuppressGcStress;
 
     void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback)
     {

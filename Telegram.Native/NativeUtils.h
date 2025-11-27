@@ -76,7 +76,6 @@ namespace winrt::Telegram::Native::implementation
         static FatalErrorCallback Callback;
 
         static PFN_RhGetCurrentObjSize s_RhGetCurrentObjSize;
-        static PFN_RhpSuppressGcStress s_RhpSuppressGcStress;
 
     private:
         static winrt::Telegram::Native::FatalError GetStowedException2(STOWED_EXCEPTION_INFORMATION_V2* stowed);
