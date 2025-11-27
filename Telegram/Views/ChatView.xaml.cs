@@ -2696,6 +2696,7 @@ namespace Telegram.Views
                 {
                     header.LinkPreviewOptions.ForceSmallMedia = !header.LinkPreviewOptions.ForceSmallMedia;
                     header.LinkPreviewOptions.ForceLargeMedia = !header.LinkPreviewOptions.ForceSmallMedia;
+                    header.LinkPreviewOptions.Url = header.LinkPreviewUrl;
                 }
 
                 flyout.CreateFlyoutItem(ChangeShowAbove, header, header.LinkPreviewOptions.ShowAboveText ? Strings.LinkBelow : Strings.LinkAbove, header.LinkPreviewOptions.ShowAboveText ? Icons.MoveDown : Icons.MoveUp);
