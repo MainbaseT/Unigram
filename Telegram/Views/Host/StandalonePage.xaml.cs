@@ -97,8 +97,8 @@ namespace Telegram.Views.Host
         {
             InitializeTitleBar();
 
-            ShowHideBanner(TypeResolver.Current.Playback);
-            TypeResolver.Current.Playback.SourceChanged += OnPlaybackSourceChanged;
+            ShowHideBanner(LifetimeService.Current.Playback);
+            LifetimeService.Current.Playback.SourceChanged += OnPlaybackSourceChanged;
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -107,7 +107,7 @@ namespace Telegram.Views.Host
             MasterDetail.Dispose();
 
             UnloadTitleBar();
-            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackSourceChanged;
+            LifetimeService.Current.Playback.SourceChanged -= OnPlaybackSourceChanged;
         }
 
         private void InitializeTitleBar()
@@ -175,7 +175,7 @@ namespace Telegram.Views.Host
             }
             else if (command == ShortcutCommand.MediaStop)
             {
-                TypeResolver.Current.Playback.Clear();
+                LifetimeService.Current.Playback.Clear();
                 args.Handled = true;
             }
         }

@@ -24,7 +24,6 @@ using Telegram.Streams;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
-using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.Foundation;
 using Windows.UI;
@@ -2114,7 +2113,7 @@ namespace Telegram.Controls
             {
                 if (userFull.FirstProfileAudio != null)
                 {
-                    TypeResolver.Current.Playback.Play(XamlRoot, new AudioWithOwner(ViewModel.ClientService, user.Id, userFull.FirstProfileAudio));
+                    LifetimeService.Current.Playback.Play(XamlRoot, new AudioWithOwner(ViewModel.ClientService, user.Id, userFull.FirstProfileAudio));
                     ViewModel.ShowPopup(new PlaybackPopup(ViewModel.ClientService, ViewModel.NavigationService));
                 }
             }

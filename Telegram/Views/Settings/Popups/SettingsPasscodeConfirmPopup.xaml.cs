@@ -24,7 +24,7 @@ namespace Telegram.Views.Settings.Popups
         {
             InitializeComponent();
 
-            _passcodeService = TypeResolver.Current.Passcode;
+            _passcodeService = LifetimeService.Current.Passcode;
 
             _retryTimer = new DispatcherTimer();
             _retryTimer.Interval = TimeSpan.FromMilliseconds(100);

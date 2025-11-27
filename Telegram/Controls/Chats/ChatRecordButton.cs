@@ -259,7 +259,7 @@ namespace Telegram.Controls.Chats
                 return;
             }
 
-            TypeResolver.Current.Playback.Pause();
+            LifetimeService.Current.Playback.Pause();
 
             Logger.Debug("Permissions granted, mode: " + Mode);
 

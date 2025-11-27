@@ -15,6 +15,7 @@ using Telegram.Controls.Messages.Content;
 using Telegram.Controls.Stories;
 using Telegram.Converters;
 using Telegram.Navigation.Services;
+using Telegram.Services;
 using Telegram.Services.Updates;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Chats;
@@ -386,11 +387,11 @@ namespace Telegram.ViewModels
         {
             if (message.Content is MessageAudio or MessageVoiceNote)
             {
-                TypeResolver.Current.Playback.Play(XamlRoot, message, TopicId);
+                LifetimeService.Current.Playback.Play(XamlRoot, message, TopicId);
 
                 if (timestamp > 0)
                 {
-                    TypeResolver.Current.Playback.Seek(TimeSpan.FromSeconds(timestamp));
+                    LifetimeService.Current.Playback.Seek(TimeSpan.FromSeconds(timestamp));
                 }
             }
             else if (message.Content is MessagePoll poll)
@@ -524,7 +525,7 @@ namespace Telegram.ViewModels
 
         public void PlayMessage(MessageViewModel message)
         {
-            TypeResolver.Current.Playback.Play(XamlRoot, message, TopicId);
+            LifetimeService.Current.Playback.Play(XamlRoot, message, TopicId);
         }
 
         public bool RecognizeSpeech(MessageViewModel message)

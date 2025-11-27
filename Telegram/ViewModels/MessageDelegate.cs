@@ -20,7 +20,6 @@ using Telegram.Services.Settings;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Gallery;
-using Telegram.Views;
 using Windows.UI.Xaml;
 
 namespace Telegram.ViewModels
@@ -418,7 +417,7 @@ namespace Telegram.ViewModels
         /// </summary>
         public virtual void PlayMessage(MessageViewModel message)
         {
-            TypeResolver.Current.Playback.Play(XamlRoot, message);
+            LifetimeService.Current.Playback.Play(XamlRoot, message);
         }
 
         /// <summary>

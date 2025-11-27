@@ -15,7 +15,6 @@ using Telegram.Navigation.Services;
 using Telegram.Services.Calls;
 using Telegram.Services.Updates;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Telegram.Views.Calls.Popups;
 using Windows.UI.Xaml.Controls;
 
@@ -201,7 +200,7 @@ namespace Telegram.Services
                     changed = false;
                 }
 
-                foreach (var aggregator in TypeResolver.Current.ResolveAll<IEventAggregator>())
+                foreach (var aggregator in LifetimeService.Current.ResolveAll<IEventAggregator>())
                 {
                     aggregator.Publish(new UpdateActiveCall());
                 }
@@ -235,7 +234,7 @@ namespace Telegram.Services
                     changed = false;
                 }
 
-                foreach (var aggregator in TypeResolver.Current.ResolveAll<IEventAggregator>())
+                foreach (var aggregator in LifetimeService.Current.ResolveAll<IEventAggregator>())
                 {
                     aggregator.Publish(new UpdateActiveCall());
                 }
@@ -393,7 +392,7 @@ namespace Telegram.Services
                     changed = groupCall.ScheduledStartDate > 0;
                 }
 
-                foreach (var aggregator in TypeResolver.Current.ResolveAll<IEventAggregator>())
+                foreach (var aggregator in LifetimeService.Current.ResolveAll<IEventAggregator>())
                 {
                     aggregator.Publish(new UpdateActiveCall());
                 }
@@ -465,7 +464,7 @@ namespace Telegram.Services
 
             if (changed)
             {
-                foreach (var aggregator in TypeResolver.Current.ResolveAll<IEventAggregator>())
+                foreach (var aggregator in LifetimeService.Current.ResolveAll<IEventAggregator>())
                 {
                     aggregator.Publish(new UpdateActiveCall());
                 }
@@ -508,7 +507,7 @@ namespace Telegram.Services
 
             if (changed)
             {
-                foreach (var aggregator in TypeResolver.Current.ResolveAll<IEventAggregator>())
+                foreach (var aggregator in LifetimeService.Current.ResolveAll<IEventAggregator>())
                 {
                     aggregator.Publish(new UpdateActiveCall());
                 }

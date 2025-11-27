@@ -86,8 +86,6 @@ namespace Telegram.Navigation
 
     public partial class WindowContext
     {
-        private readonly ILifetimeService _lifetime;
-
         private readonly Window _window;
 
         private bool _consolidated;
@@ -134,7 +132,6 @@ namespace Telegram.Navigation
                 All.Add(this);
             }
 
-            _lifetime = TypeResolver.Current.Lifetime;
             _inputListener = new InputListener(window);
 
             window.Activated += OnActivated;
@@ -155,7 +152,7 @@ namespace Telegram.Navigation
 
             #endregion
 
-            if (TypeResolver.Current.Passcode.IsLockscreenRequired)
+            if (LifetimeService.Current.Passcode.IsLockscreenRequired)
             {
                 Lock(true);
             }

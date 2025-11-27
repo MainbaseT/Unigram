@@ -13,7 +13,6 @@ using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Services.Settings;
 using Telegram.Services.Updates;
-using Telegram.Views;
 using Windows.Security.Cryptography;
 
 namespace Telegram.Services
@@ -144,7 +143,7 @@ namespace Telegram.Services
         {
             var update = new UpdatePasscodeLock(enabled);
 
-            foreach (var aggregator in TypeResolver.Current.ResolveAll<IEventAggregator>())
+            foreach (var aggregator in LifetimeService.Current.ResolveAll<IEventAggregator>())
             {
                 aggregator.Publish(update);
             }

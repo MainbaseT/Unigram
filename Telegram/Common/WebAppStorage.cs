@@ -13,7 +13,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Telegram.Services;
-using Telegram.Views;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage;
@@ -480,7 +479,7 @@ namespace Telegram.Common
         {
             var userIds = new HashSet<long>();
 
-            foreach (var session in TypeResolver.Current.Lifetime.Items)
+            foreach (var session in LifetimeService.Current.Items)
             {
                 if (_clientService.Options.TestMode == session.Settings.UseTestDC && session.UserId != 0)
                 {

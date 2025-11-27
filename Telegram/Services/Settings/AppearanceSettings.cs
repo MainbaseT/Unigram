@@ -223,8 +223,8 @@ namespace Telegram.Services.Settings
 
             if (updateBackground)
             {
-                var aggregator = TypeResolver.Current.Resolve<IEventAggregator>();
-                var clientService = TypeResolver.Current.Resolve<IClientService>();
+                var aggregator = LifetimeService.Current.Resolve<IEventAggregator>();
+                var clientService = LifetimeService.Current.Resolve<IClientService>();
 
                 if (aggregator != null && clientService != null)
                 {

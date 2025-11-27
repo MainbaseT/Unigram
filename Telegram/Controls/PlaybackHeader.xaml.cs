@@ -71,13 +71,13 @@ namespace Telegram.Controls
             _navigationService = navigationService;
 
             // We unsubscribe first to avoid duplicated notifications
-            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
+            LifetimeService.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.StateChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.PositionChanged -= OnPositionChanged;
 
-            TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.StateChanged += OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.PositionChanged += OnPositionChanged;
+            LifetimeService.Current.Playback.SourceChanged += OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.StateChanged += OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.PositionChanged += OnPositionChanged;
 
             UpdateGlyph();
         }
@@ -108,9 +108,9 @@ namespace Telegram.Controls
 
         private void UpdateGlyph()
         {
-            UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration, TypeResolver.Current.Playback.IsPlaying);
+            UpdatePosition(LifetimeService.Current.Playback.Position, LifetimeService.Current.Playback.Duration, LifetimeService.Current.Playback.IsPlaying);
 
-            var item = TypeResolver.Current.Playback.CurrentItem;
+            var item = LifetimeService.Current.Playback.CurrentItem;
             if (item == null)
             {
                 _chatId = 0;
@@ -135,7 +135,7 @@ namespace Telegram.Controls
                     : Visibility.Visible;
             }
 
-            VolumeButton.Glyph = TypeResolver.Current.Playback.Volume switch
+            VolumeButton.Glyph = LifetimeService.Current.Playback.Volume switch
             {
                 double n when n > 0.66 => Icons.Speaker3,
                 double n when n > 0.33 => Icons.Speaker2,
@@ -143,8 +143,8 @@ namespace Telegram.Controls
                 _ => Icons.SpeakerOff
             };
 
-            PlaybackButton.Glyph = TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused ? Icons.Play : Icons.Pause;
-            Automation.SetToolTip(PlaybackButton, TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused ? Strings.AccActionPlay : Strings.AccActionPause);
+            PlaybackButton.Glyph = LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused ? Icons.Play : Icons.Pause;
+            Automation.SetToolTip(PlaybackButton, LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused ? Strings.AccActionPlay : Strings.AccActionPause);
 
             if (item is PlaybackItemMessage message)
             {
@@ -242,18 +242,18 @@ namespace Telegram.Controls
 
         private void UpdateRepeat()
         {
-            RepeatButton.IsChecked = TypeResolver.Current.Playback.IsRepeatEnabled;
-            Automation.SetToolTip(RepeatButton, TypeResolver.Current.Playback.IsRepeatEnabled == null
+            RepeatButton.IsChecked = LifetimeService.Current.Playback.IsRepeatEnabled;
+            Automation.SetToolTip(RepeatButton, LifetimeService.Current.Playback.IsRepeatEnabled == null
                 ? Strings.AccDescrRepeatOne
-                : TypeResolver.Current.Playback.IsRepeatEnabled == true
+                : LifetimeService.Current.Playback.IsRepeatEnabled == true
                 ? Strings.AccDescrRepeatList
                 : Strings.AccDescrRepeatOff);
         }
 
         private void UpdateSpeed(int duration)
         {
-            SpeedText.Text = string.Format("{0:N1}x", TypeResolver.Current.Playback.PlaybackSpeed);
-            SpeedButton.Badge = string.Format("{0:N1}x", TypeResolver.Current.Playback.PlaybackSpeed);
+            SpeedText.Text = string.Format("{0:N1}x", LifetimeService.Current.Playback.PlaybackSpeed);
+            SpeedButton.Badge = string.Format("{0:N1}x", LifetimeService.Current.Playback.PlaybackSpeed);
 
             SpeedText.Visibility = duration >= 10 * 60
                 ? Visibility.Visible
@@ -266,30 +266,30 @@ namespace Telegram.Controls
 
         private void Toggle_Click(object sender, RoutedEventArgs e)
         {
-            if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
+            if (LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused)
             {
-                TypeResolver.Current.Playback.Play();
+                LifetimeService.Current.Playback.Play();
             }
             else
             {
-                TypeResolver.Current.Playback.Pause();
+                LifetimeService.Current.Playback.Pause();
             }
         }
 
         private void Next_Click(object sender, RoutedEventArgs e)
         {
-            TypeResolver.Current.Playback.MoveNext();
+            LifetimeService.Current.Playback.MoveNext();
         }
 
         private void Previous_Click(object sender, RoutedEventArgs e)
         {
-            if (TypeResolver.Current.Playback.Position.TotalSeconds > 5)
+            if (LifetimeService.Current.Playback.Position.TotalSeconds > 5)
             {
-                TypeResolver.Current.Playback.Seek(TimeSpan.Zero);
+                LifetimeService.Current.Playback.Seek(TimeSpan.Zero);
             }
             else
             {
-                TypeResolver.Current.Playback.MovePrevious();
+                LifetimeService.Current.Playback.MovePrevious();
             }
         }
 
@@ -307,7 +307,7 @@ namespace Telegram.Controls
                     _ => Icons.SpeakerOff
                 }),
                 FontWeight = FontWeights.SemiBold,
-                Value = TypeResolver.Current.Playback.Volume * 100
+                Value = LifetimeService.Current.Playback.Volume * 100
             };
 
             slider.ValueChanged += VolumeSlider_ValueChanged;
@@ -319,9 +319,9 @@ namespace Telegram.Controls
 
         private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            TypeResolver.Current.Playback.Volume = e.NewValue / 100;
+            LifetimeService.Current.Playback.Volume = e.NewValue / 100;
 
-            VolumeButton.Glyph = TypeResolver.Current.Playback.Volume switch
+            VolumeButton.Glyph = LifetimeService.Current.Playback.Volume switch
             {
                 double n when n > 0.66 => Icons.Speaker3,
                 double n when n > 0.33 => Icons.Speaker2,
@@ -332,38 +332,38 @@ namespace Telegram.Controls
 
         private void Repeat_Click(object sender, RoutedEventArgs e)
         {
-            TypeResolver.Current.Playback.IsRepeatEnabled = RepeatButton.IsChecked;
+            LifetimeService.Current.Playback.IsRepeatEnabled = RepeatButton.IsChecked;
             UpdateRepeat();
         }
 
         private void Shuffle_Click(object sender, RoutedEventArgs e)
         {
-            //TypeResolver.Current.Playback.IsShuffleEnabled = ShuffleButton.IsChecked == true;
-            TypeResolver.Current.Playback.IsReversed = ShuffleButton.IsChecked == true;
+            //LifetimeService.Current.Playback.IsShuffleEnabled = ShuffleButton.IsChecked == true;
+            LifetimeService.Current.Playback.IsReversed = ShuffleButton.IsChecked == true;
         }
 
         private void Speed_Click(object sender, RoutedEventArgs e)
         {
             var flyout = new MenuFlyout();
-            flyout.CreatePlaybackSpeed(TypeResolver.Current.Playback.PlaybackSpeed, FlyoutPlacementMode.Bottom, UpdatePlaybackSpeed);
+            flyout.CreatePlaybackSpeed(LifetimeService.Current.Playback.PlaybackSpeed, FlyoutPlacementMode.Bottom, UpdatePlaybackSpeed);
             flyout.ShowAt(SpeedButton, FlyoutPlacementMode.BottomEdgeAlignedRight);
         }
 
         private void UpdatePlaybackSpeed(double value)
         {
-            TypeResolver.Current.Playback.PlaybackSpeed = value;
+            LifetimeService.Current.Playback.PlaybackSpeed = value;
             SpeedText.Text = string.Format("{0:N1}x", value);
             SpeedButton.Badge = string.Format("{0:N1}x", value);
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            TypeResolver.Current.Playback?.Clear();
+            LifetimeService.Current.Playback?.Clear();
         }
 
         private void View_Click(object sender, RoutedEventArgs e)
         {
-            var item = TypeResolver.Current.Playback.CurrentItem;
+            var item = LifetimeService.Current.Playback.CurrentItem;
             if (item == null)
             {
                 return;
@@ -392,33 +392,33 @@ namespace Telegram.Controls
         {
             if (e.Key == VirtualKey.Right || e.Key == VirtualKey.Up)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Position + TimeSpan.FromSeconds(5));
+                LifetimeService.Current.Playback?.Seek(Slider.Position + TimeSpan.FromSeconds(5));
             }
             else if (e.Key == VirtualKey.Left || e.Key == VirtualKey.Down)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Position - TimeSpan.FromSeconds(5));
+                LifetimeService.Current.Playback?.Seek(Slider.Position - TimeSpan.FromSeconds(5));
             }
             else if (e.Key == VirtualKey.PageUp)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Position + TimeSpan.FromSeconds(30));
+                LifetimeService.Current.Playback?.Seek(Slider.Position + TimeSpan.FromSeconds(30));
             }
             else if (e.Key == VirtualKey.PageDown)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Position - TimeSpan.FromSeconds(30));
+                LifetimeService.Current.Playback?.Seek(Slider.Position - TimeSpan.FromSeconds(30));
             }
             else if (e.Key == VirtualKey.Home)
             {
-                TypeResolver.Current.Playback?.Seek(TimeSpan.Zero);
+                LifetimeService.Current.Playback?.Seek(TimeSpan.Zero);
             }
             else if (e.Key == VirtualKey.End)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Duration);
+                LifetimeService.Current.Playback?.Seek(Slider.Duration);
             }
         }
 
         private void Slider_PositionChanged(object sender, PlaybackSliderPositionChanged e)
         {
-            TypeResolver.Current.Playback?.Seek(e.NewPosition);
+            LifetimeService.Current.Playback?.Seek(e.NewPosition);
         }
 
         private void Buttons_SizeChanged(object sender, SizeChangedEventArgs e)

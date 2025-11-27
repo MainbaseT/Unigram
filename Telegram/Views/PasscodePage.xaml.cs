@@ -35,7 +35,7 @@ namespace Telegram.Views
             _window = window;
             _window.SetTitleBar(TitleBar);
 
-            _passcodeService = TypeResolver.Current.Passcode;
+            _passcodeService = LifetimeService.Current.Passcode;
             _biometrics = biometrics;
 
             _retryTimer = new DispatcherTimer();

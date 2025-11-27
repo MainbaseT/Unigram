@@ -1159,7 +1159,7 @@ namespace Telegram.Views.Popups
             }
 
             if (ViewModel.Configuration is ChooseChatsConfigurationShareOperation
-                && TypeResolver.Current.Count > 1
+                && LifetimeService.Current.Count > 1
                 && ViewModel.ClientService.TryGetUser(ViewModel.ClientService.Options.MyId, out User user))
             {
                 Alias.Visibility = Visibility.Visible;
@@ -2207,7 +2207,7 @@ namespace Telegram.Views.Popups
         {
             var flyout = new MenuFlyout();
 
-            foreach (var session in TypeResolver.Current.GetSessions())
+            foreach (var session in LifetimeService.Current.Items)
             {
                 if (session.ClientService.TryGetUser(session.ClientService.Options.MyId, out User user))
                 {
@@ -2235,7 +2235,7 @@ namespace Telegram.Views.Popups
         {
             if (sender is MenuFlyoutItem item && item.CommandParameter is int sessionId)
             {
-                var session = TypeResolver.Current.Lifetime.Items.FirstOrDefault(x => x.Id == sessionId);
+                var session = LifetimeService.Current.Items.FirstOrDefault(x => x.Id == sessionId);
                 if (session != null)
                 {
                     AccountClick?.Invoke(session, EventArgs.Empty);

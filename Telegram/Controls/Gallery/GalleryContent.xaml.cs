@@ -14,7 +14,6 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Gallery;
-using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
@@ -430,7 +429,7 @@ namespace Telegram.Controls.Gallery
 
                 if (!item.IsLoopingEnabled)
                 {
-                    TypeResolver.Current.Playback.Pause();
+                    LifetimeService.Current.Playback.Pause();
                 }
 
                 // Always recreate HLS player for now, try to reuse native one

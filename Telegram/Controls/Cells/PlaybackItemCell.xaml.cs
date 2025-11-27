@@ -12,7 +12,6 @@ using Telegram.Native.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
@@ -44,9 +43,9 @@ namespace Telegram.Controls.Cells
 
         protected override void OnUnloaded()
         {
-            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
+            LifetimeService.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.StateChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.PositionChanged -= OnPositionChanged;
         }
 
         private bool _hidden;
@@ -76,7 +75,7 @@ namespace Telegram.Controls.Cells
 
             _item = item;
 
-            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
 
             var audio = GetContent(item);
             if (audio == null)
@@ -84,7 +83,7 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.SourceChanged += OnPlaybackStateChanged;
 
             if (string.IsNullOrEmpty(audio.Title))
             {
@@ -166,7 +165,7 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            if (message == TypeResolver.Current.Playback.CurrentItem /*&& !_pressed*/)
+            if (message == LifetimeService.Current.Playback.CurrentItem /*&& !_pressed*/)
             {
                 Subtitle.Text = FormatTime(position) + " / " + FormatTime(duration);
             }
@@ -188,7 +187,7 @@ namespace Telegram.Controls.Cells
 
         private void UpdateFile(object target, File file)
         {
-            if (_item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            if (_item.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
             {
                 return;
             }
@@ -198,8 +197,8 @@ namespace Telegram.Controls.Cells
 
         private void UpdateFile(PlaybackItem item, File file)
         {
-            TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
+            LifetimeService.Current.Playback.StateChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.PositionChanged -= OnPositionChanged;
 
             var audio = GetContent(item);
             if (audio == null)
@@ -288,9 +287,9 @@ namespace Telegram.Controls.Cells
 
         private void UpdatePlayback(PlaybackItem item, Audio audio, File file)
         {
-            if (item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            if (item.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
             {
-                if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
+                if (LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused)
                 {
                     Button.SetGlyph(file.Id, MessageContentState.Play);
                 }
@@ -301,10 +300,10 @@ namespace Telegram.Controls.Cells
 
                 DownloadRoot.Visibility = Visibility.Collapsed;
 
-                UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration);
+                UpdatePosition(LifetimeService.Current.Playback.Position, LifetimeService.Current.Playback.Duration);
 
-                TypeResolver.Current.Playback.StateChanged += OnPlaybackStateChanged;
-                TypeResolver.Current.Playback.PositionChanged += OnPositionChanged;
+                LifetimeService.Current.Playback.StateChanged += OnPlaybackStateChanged;
+                LifetimeService.Current.Playback.PositionChanged += OnPositionChanged;
             }
             else
             {
@@ -415,20 +414,20 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            if (_item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            if (_item.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
             {
-                if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
+                if (LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused)
                 {
-                    TypeResolver.Current.Playback.Play();
+                    LifetimeService.Current.Playback.Play();
                 }
                 else
                 {
-                    TypeResolver.Current.Playback.Pause();
+                    LifetimeService.Current.Playback.Pause();
                 }
             }
             else
             {
-                TypeResolver.Current.Playback.Play(_item);
+                LifetimeService.Current.Playback.Play(_item);
             }
         }
 
@@ -465,20 +464,20 @@ namespace Telegram.Controls.Cells
             }
             else
             {
-                if (_item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+                if (_item.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
                 {
-                    if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
+                    if (LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused)
                     {
-                        TypeResolver.Current.Playback.Play();
+                        LifetimeService.Current.Playback.Play();
                     }
                     else
                     {
-                        TypeResolver.Current.Playback.Pause();
+                        LifetimeService.Current.Playback.Pause();
                     }
                 }
                 else
                 {
-                    TypeResolver.Current.Playback.Play(_item);
+                    LifetimeService.Current.Playback.Play(_item);
                 }
             }
         }

@@ -14,7 +14,6 @@ using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Telegram.Views.Settings;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -172,7 +171,7 @@ namespace Telegram.ViewModels.Settings
             RaisePropertyChanged();
         }
 
-        public bool IsAllAccountsAvailable => TypeResolver.Current.GetSessions().Count() > 1;
+        public bool IsAllAccountsAvailable => LifetimeService.Current.Count > 1;
 
         public bool IsAllAccountsNotifications
         {

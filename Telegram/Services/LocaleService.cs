@@ -150,7 +150,7 @@ namespace Telegram.Services
 
             LoadCurrentCulture();
 
-            foreach (var clientService in TypeResolver.Current.ResolveAll<IClientService>())
+            foreach (var clientService in LifetimeService.Current.ResolveAll<IClientService>())
             {
                 var response = await clientService.SendAsync(new SetOption("language_pack_id", new OptionValueString(info.Id)));
                 if (response is Ok && refresh)

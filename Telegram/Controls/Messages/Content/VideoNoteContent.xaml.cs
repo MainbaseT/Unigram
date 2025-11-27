@@ -44,9 +44,9 @@ namespace Telegram.Controls.Messages.Content
 
         protected override void OnUnloaded()
         {
-            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
+            LifetimeService.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.StateChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.PositionChanged -= OnPositionChanged;
         }
 
         #region InitializeComponent
@@ -96,7 +96,7 @@ namespace Telegram.Controls.Messages.Content
         {
             _message = message;
 
-            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
 
             var videoNote = GetContent(message, out bool isSecret);
             if (videoNote == null || !_templateApplied)
@@ -104,7 +104,7 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.SourceChanged += OnPlaybackStateChanged;
 
             LayoutRoot.Constraint = message;
 
@@ -187,7 +187,7 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            if (message.AreTheSame(TypeResolver.Current.Playback.CurrentItem) /*&& !_pressed*/)
+            if (message.AreTheSame(LifetimeService.Current.Playback.CurrentItem) /*&& !_pressed*/)
             {
                 if (duration.TotalSeconds == 0)
                 {
@@ -239,9 +239,9 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
-            if (message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            if (message.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
             {
-                if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
+                if (LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused)
                 {
                     Button.SetGlyph(file.Id, MessageContentState.Play);
                 }
@@ -254,7 +254,7 @@ namespace Telegram.Controls.Messages.Content
 
                 Player.Source = null;
 
-                UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration, TypeResolver.Current.Playback.IsPlaying);
+                UpdatePosition(LifetimeService.Current.Playback.Position, LifetimeService.Current.Playback.Duration, LifetimeService.Current.Playback.IsPlaying);
             }
             else
             {
@@ -375,9 +375,9 @@ namespace Telegram.Controls.Messages.Content
 
         public void Recycle()
         {
-            TypeResolver.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
+            LifetimeService.Current.Playback.SourceChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.StateChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.PositionChanged -= OnPositionChanged;
 
             RemoveMessage(XamlRoot, _message);
 
@@ -465,15 +465,15 @@ namespace Telegram.Controls.Messages.Content
                     _message.ClientService.Send(new CancelPreliminaryUploadFile(file.Id));
                 }
             }
-            else if (_message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            else if (_message.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
             {
-                if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
+                if (LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused)
                 {
-                    TypeResolver.Current.Playback.Play();
+                    LifetimeService.Current.Playback.Play();
                 }
                 else
                 {
-                    TypeResolver.Current.Playback.Pause();
+                    LifetimeService.Current.Playback.Pause();
                 }
             }
             // This branch could be likely removed with some tuning
@@ -580,13 +580,13 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateSource()
         {
-            TypeResolver.Current.Playback.StateChanged -= OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.PositionChanged -= OnPositionChanged;
+            LifetimeService.Current.Playback.StateChanged -= OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.PositionChanged -= OnPositionChanged;
 
-            if (_withinViewport && _message.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            if (_withinViewport && _message.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
             {
-                TypeResolver.Current.Playback.StateChanged += OnPlaybackStateChanged;
-                TypeResolver.Current.Playback.PositionChanged += OnPositionChanged;
+                LifetimeService.Current.Playback.StateChanged += OnPlaybackStateChanged;
+                LifetimeService.Current.Playback.PositionChanged += OnPositionChanged;
 
                 if (_panel == null)
                 {
@@ -594,13 +594,13 @@ namespace Telegram.Controls.Messages.Content
                     _panel.IsHitTestVisible = false;
 
                     Element.Children.Add(_panel);
-                    TypeResolver.Current.Playback.Attach(_panel);
+                    LifetimeService.Current.Playback.Attach(_panel);
                 }
             }
             else if (_panel != null)
             {
                 Element.Children.Remove(_panel);
-                TypeResolver.Current.Playback.Detach(_panel);
+                LifetimeService.Current.Playback.Detach(_panel);
 
                 _panel = null;
             }

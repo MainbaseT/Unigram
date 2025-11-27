@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using Telegram.Navigation.Services;
 using Telegram.Services.Calls;
 using Telegram.Td.Api;
-using Telegram.Views;
 
 namespace Telegram.Services
 {
@@ -44,18 +43,18 @@ namespace Telegram.Services
                 .Subscribe<UpdateLiveStoryTopDonors>(Handle);
         }
 
-        public VoipCallBase ActiveCall => TypeResolver.Current.Voip.ActiveCall;
+        public VoipCallBase ActiveCall => LifetimeService.Current.Voip.ActiveCall;
 
         #region Private
 
         public void StartPrivateCall(INavigationService navigation, Chat chat, bool video)
         {
-            TypeResolver.Current.Voip.StartPrivateCall(ClientService, navigation, chat, video);
+            LifetimeService.Current.Voip.StartPrivateCall(ClientService, navigation, chat, video);
         }
 
         public void StartPrivateCall(INavigationService navigation, User user, bool video)
         {
-            TypeResolver.Current.Voip.StartPrivateCall(ClientService, navigation, user, video);
+            LifetimeService.Current.Voip.StartPrivateCall(ClientService, navigation, user, video);
         }
 
         #endregion
@@ -64,39 +63,39 @@ namespace Telegram.Services
 
         public void JoinGroupCall(INavigationService navigation, InputGroupCall groupCall)
         {
-            TypeResolver.Current.Voip.JoinGroupCall(ClientService, navigation, groupCall);
+            LifetimeService.Current.Voip.JoinGroupCall(ClientService, navigation, groupCall);
         }
 
         public void CreateGroupCall(INavigationService navigation, IList<long> userIds)
         {
-            TypeResolver.Current.Voip.CreateGroupCall(ClientService, navigation, userIds);
+            LifetimeService.Current.Voip.CreateGroupCall(ClientService, navigation, userIds);
         }
 
         public void JoinGroupCall(INavigationService navigation, long chatId, string inviteHash)
         {
-            TypeResolver.Current.Voip.JoinGroupCall(ClientService, navigation, chatId, inviteHash);
+            LifetimeService.Current.Voip.JoinGroupCall(ClientService, navigation, chatId, inviteHash);
         }
 
         public void CreateGroupCall(INavigationService navigation, long chatId)
         {
-            TypeResolver.Current.Voip.CreateGroupCall(ClientService, navigation, chatId);
+            LifetimeService.Current.Voip.CreateGroupCall(ClientService, navigation, chatId);
         }
 
         #endregion
 
         public void Handle(UpdateNewCallSignalingData update)
         {
-            TypeResolver.Current.Voip.Handle(ClientService, update);
+            LifetimeService.Current.Voip.Handle(ClientService, update);
         }
 
         public void Handle(UpdateCall update)
         {
-            TypeResolver.Current.Voip.Handle(ClientService, update);
+            LifetimeService.Current.Voip.Handle(ClientService, update);
         }
 
         public void Handle(UpdateGroupCall update)
         {
-            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            if (LifetimeService.Current.Voip.Handle(ClientService, update))
             {
                 Aggregator.Publish(update, EventType.GroupCall, update.GroupCall.Id);
             }
@@ -104,7 +103,7 @@ namespace Telegram.Services
 
         public void Handle(UpdateGroupCallParticipant update)
         {
-            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            if (LifetimeService.Current.Voip.Handle(ClientService, update))
             {
                 Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
             }
@@ -112,7 +111,7 @@ namespace Telegram.Services
 
         public void Handle(UpdateGroupCallVerificationState update)
         {
-            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            if (LifetimeService.Current.Voip.Handle(ClientService, update))
             {
                 Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
             }
@@ -120,7 +119,7 @@ namespace Telegram.Services
 
         public void Handle(UpdateGroupCallMessageSendFailed update)
         {
-            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            if (LifetimeService.Current.Voip.Handle(ClientService, update))
             {
                 Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
             }
@@ -128,7 +127,7 @@ namespace Telegram.Services
 
         public void Handle(UpdateGroupCallMessagesDeleted update)
         {
-            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            if (LifetimeService.Current.Voip.Handle(ClientService, update))
             {
                 Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
             }
@@ -136,7 +135,7 @@ namespace Telegram.Services
 
         public void Handle(UpdateNewGroupCallMessage update)
         {
-            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            if (LifetimeService.Current.Voip.Handle(ClientService, update))
             {
                 Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
             }
@@ -144,7 +143,7 @@ namespace Telegram.Services
 
         public void Handle(UpdateNewGroupCallPaidReaction update)
         {
-            if (TypeResolver.Current.Voip.Handle(ClientService, update))
+            if (LifetimeService.Current.Voip.Handle(ClientService, update))
             {
                 Aggregator.Publish(update, EventType.GroupCall, update.GroupCallId);
             }

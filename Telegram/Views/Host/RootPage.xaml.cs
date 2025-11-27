@@ -68,7 +68,7 @@ namespace Telegram.Views.Host
         {
             InitializeComponent();
 
-            _lifetime = TypeResolver.Current.Lifetime;
+            _lifetime = LifetimeService.Current;
             _context = context;
 
             _navigationViewSelected = RootDestination.Chats;
@@ -174,7 +174,7 @@ namespace Telegram.Views.Host
             var premium = 0;
             var count = 0;
 
-            foreach (var session in TypeResolver.Current.Lifetime.Items)
+            foreach (var session in _lifetime.Items)
             {
                 if (session.Settings.UseTestDC)
                 {

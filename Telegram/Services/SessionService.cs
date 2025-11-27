@@ -121,7 +121,6 @@ namespace Telegram.Services
             }
         }
 
-
         private bool _isActive;
         public bool IsActive
         {
@@ -139,14 +138,6 @@ namespace Telegram.Services
                     // No secondary windows are open, no calls are in progress, no audio is being played.
                     //ClientService.Close(true);
                 }
-            }
-        }
-
-        public void Handle(UpdateUser update)
-        {
-            if (update.User.Id == ClientService.Options.MyId)
-            {
-                _lifetimeService.Update();
             }
         }
 
@@ -279,7 +270,7 @@ namespace Telegram.Services
             {
                 ContinueOnLogOut();
             }
-            else if (update.AuthorizationState is AuthorizationStateWaitPhoneNumber or AuthorizationStateWaitOtherDeviceConfirmation && !_isActive && _lifetimeService.Items.Count > 1)
+            else if (update.AuthorizationState is AuthorizationStateWaitPhoneNumber or AuthorizationStateWaitOtherDeviceConfirmation && !_isActive && _lifetimeService.Count > 1)
             {
                 ClientService.Send(new Destroy());
             }

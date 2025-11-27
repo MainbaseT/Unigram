@@ -45,13 +45,13 @@ namespace Telegram.Controls
         private void OnConnected(object sender, RoutedEventArgs e)
         {
             VideoNoteContent.VisibleMessagesChanged += OnVisibleMessagesChanged;
-            TypeResolver.Current.Playback.SourceChanged += OnSourceChanged;
+            LifetimeService.Current.Playback.SourceChanged += OnSourceChanged;
         }
 
         private void OnDisconnected(object sender, RoutedEventArgs e)
         {
             VideoNoteContent.VisibleMessagesChanged -= OnVisibleMessagesChanged;
-            TypeResolver.Current.Playback.SourceChanged -= OnSourceChanged;
+            LifetimeService.Current.Playback.SourceChanged -= OnSourceChanged;
         }
 
         private void OnVisibleMessagesChanged(object sender, EventArgs e)
@@ -66,7 +66,7 @@ namespace Telegram.Controls
 
         private void OnSourceChanged()
         {
-            if (TypeResolver.Current.Playback.CurrentItem is PlaybackItemMessage message && message.Message.Content is MessageVideoNote)
+            if (LifetimeService.Current.Playback.CurrentItem is PlaybackItemMessage message && message.Message.Content is MessageVideoNote)
             {
                 if (message.XamlRoot != XamlRoot || VideoNoteContent.IsMessageVisible(XamlRoot, message.Message))
                 {
@@ -128,12 +128,12 @@ namespace Telegram.Controls
                 _panel = new SwapChainPanel();
 
                 Presenter.Child = _panel;
-                TypeResolver.Current.Playback.Attach(_panel);
+                LifetimeService.Current.Playback.Attach(_panel);
             }
             else if (_panel != null)
             {
                 Presenter.Child = null;
-                TypeResolver.Current.Playback.Detach(_panel);
+                LifetimeService.Current.Playback.Detach(_panel);
 
                 _panel = null;
             }

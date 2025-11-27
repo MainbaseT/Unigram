@@ -140,21 +140,29 @@ namespace Telegram.Collections
             }
         }
 
+        public IList<TValue> Values
+        {
+            get
+            {
+                IList<TValue> snapshot;
+
+                _lock.EnterReadLock();
+                try
+                {
+                    snapshot = _dictionary.Values.ToArray();
+                }
+                finally
+                {
+                    _lock.ExitReadLock();
+                }
+
+                return snapshot;
+            }
+        }
+
         public IEnumerator<TValue> GetEnumerator()
         {
-            IList<TValue> snapshot;
-
-            _lock.EnterReadLock();
-            try
-            {
-                snapshot = _dictionary.Values.ToArray();
-            }
-            finally
-            {
-                _lock.ExitReadLock();
-            }
-
-            return snapshot.GetEnumerator();
+            return Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

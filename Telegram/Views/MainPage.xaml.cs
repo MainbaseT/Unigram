@@ -67,12 +67,12 @@ namespace Telegram.Views
         public MainPage()
         {
             InitializeComponent();
-            DataContext = TypeResolver.Current.Resolve<MainViewModel>();
+            DataContext = LifetimeService.Current.Resolve<MainViewModel>();
 
             _clientService = ViewModel.ClientService;
 
             ViewModel.Chats.Delegate = this;
-            TypeResolver.Current.Playback.SourceChanged += OnPlaybackSourceChanged;
+            LifetimeService.Current.Playback.SourceChanged += OnPlaybackSourceChanged;
 
             InitializeLock();
 
@@ -192,7 +192,7 @@ namespace Telegram.Views
                     viewModel.Dispose();
                 }
 
-                TypeResolver.Current.Playback.SourceChanged -= OnPlaybackSourceChanged;
+                LifetimeService.Current.Playback.SourceChanged -= OnPlaybackSourceChanged;
 
                 MasterDetail.NavigationService.FrameFacade.Navigating -= OnNavigating;
                 MasterDetail.NavigationService.FrameFacade.Navigated -= OnNavigated;
@@ -1034,7 +1034,7 @@ namespace Telegram.Views
 
             OnStateChanged(null, null);
 
-            ShowHideBanner(TypeResolver.Current.Playback);
+            ShowHideBanner(LifetimeService.Current.Playback);
 
             var update = new UpdateConnectionState(ViewModel.ClientService.ConnectionState);
             if (update.State != null)
@@ -1264,7 +1264,7 @@ namespace Telegram.Views
             }
             else if (command is ShortcutCommand.MediaStop)
             {
-                TypeResolver.Current.Playback.Clear();
+                LifetimeService.Current.Playback.Clear();
                 args.Handled = true;
             }
             else if (command is ShortcutCommand.CallAccept && ViewModel.VoipService.ActiveCall is VoipCall acceptCall)

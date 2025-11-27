@@ -6,7 +6,6 @@
 //
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Navigation;
@@ -78,7 +77,7 @@ namespace Telegram
             }
 
             WatchDog.Initialize();
-            TypeResolver.Current.Configure();
+            LifetimeService.Initialize();
 
             RequestedTheme = SettingsService.Current.Appearance.GetCalculatedApplicationTheme();
             InitializeComponent();
@@ -120,13 +119,13 @@ namespace Telegram
                         return;
                     }
 
-                    var session = TypeResolver.Current.Lifetime.ActiveItem.Id;
+                    var session = LifetimeService.Current.ActiveItem.Id;
                     if (data.TryGetValue("session", out string value) && int.TryParse(value, out int result))
                     {
                         session = result;
                     }
 
-                    if (TypeResolver.Current.TryResolve(session, out INotificationsService service))
+                    if (LifetimeService.Current.TryResolve(session, out INotificationsService service))
                     {
                         await service.ProcessAsync(data);
                     }
@@ -141,10 +140,10 @@ namespace Telegram
             //Locator.Configure();
             //UnigramContainer.Current.ResolveType<IGenerationService>();
 
-            if (TypeResolver.Current.Passcode.IsEnabled)
+            if (LifetimeService.Current.Passcode.IsEnabled)
             {
-                TypeResolver.Current.Passcode.Lock(true);
-                InactivityHelper.Initialize(TypeResolver.Current.Passcode.AutolockTimeout);
+                LifetimeService.Current.Passcode.Lock(true);
+                InactivityHelper.Initialize(LifetimeService.Current.Passcode.AutolockTimeout);
             }
         }
 
@@ -156,26 +155,25 @@ namespace Telegram
 
             if (startKind == StartKind.Activate)
             {
-                var lifetime = TypeResolver.Current.Lifetime;
-                var sessionId = lifetime.ActiveItem.Id;
-
-                var id = Toast.GetSession(args);
-                if (id != null)
+                var sessionId = Toast.GetSession(args);
+                if (sessionId != null)
                 {
-                    lifetime.ActiveItem = lifetime.Items.FirstOrDefault(x => x.Id == id.Value) ?? lifetime.ActiveItem;
-                }
+                    if (LifetimeService.Current.ActiveItem.Id != sessionId && LifetimeService.Current.TryResolve(sessionId.Value, out ISessionService session))
+                    {
+                        LifetimeService.Current.ActiveItem = session;
 
-                if (sessionId != TypeResolver.Current.Lifetime.ActiveItem.Id)
-                {
-                    var root = WindowContext.Current.Content as RootPage;
-                    root?.Switch(lifetime.ActiveItem);
+                        if (WindowContext.Current.Content is RootPage root)
+                        {
+                            root.Switch(LifetimeService.Current.ActiveItem);
+                        }
+                    }
                 }
             }
 
-            var navigation = WindowContext.Current.NavigationServices.GetByFrameId($"{TypeResolver.Current.Lifetime.ActiveItem.Id}");
+            var navigation = WindowContext.Current.NavigationServices.GetByFrameId($"{LifetimeService.Current.ActiveItem.Id}");
 
-            var update = TypeResolver.Current.Resolve<ICloudUpdateService>();
-            var service = TypeResolver.Current.Resolve<IClientService>();
+            var update = LifetimeService.Current.Resolve<ICloudUpdateService>();
+            var service = LifetimeService.Current.Resolve<IClientService>();
 
             var state = await service.GetAuthorizationStateAsync();
 
@@ -198,20 +196,23 @@ namespace Telegram
             }
         }
 
-        public override UIElement CreateRootElement(IActivatedEventArgs e, WindowContext window)
+        public override UIElement CreateRootElement(IActivatedEventArgs args, WindowContext window)
         {
-            var id = Toast.GetSession(e);
-            if (id != null)
+            var sessionId = Toast.GetSession(args);
+            if (sessionId != null)
             {
-                TypeResolver.Current.Lifetime.ActiveItem = TypeResolver.Current.Lifetime.Items.FirstOrDefault(x => x.Id == id.Value) ?? TypeResolver.Current.Lifetime.ActiveItem;
+                if (LifetimeService.Current.ActiveItem.Id != sessionId && LifetimeService.Current.TryResolve(sessionId.Value, out ISessionService session))
+                {
+                    LifetimeService.Current.ActiveItem = session;
+                }
             }
 
-            var session = TypeResolver.Current.Lifetime.ActiveItem;
-            var navigationService = NavigationServiceFactory(window, BackButton.Ignore, session, $"{session.Id}", true) as NavigationService;
+            var activeSession = LifetimeService.Current.ActiveItem;
+            var navigationService = NavigationServiceFactory(window, BackButton.Ignore, activeSession, $"{activeSession.Id}", true) as NavigationService;
 
-            if (e is ShareTargetActivatedEventArgs)
+            if (args is ShareTargetActivatedEventArgs)
             {
-                return new SharePage(window, session)
+                return new SharePage(window, activeSession)
                 {
                     FlowDirection = LocaleService.Current.FlowDirection
                 };
@@ -320,7 +321,7 @@ namespace Telegram
             Logger.Info("OnResuming");
 
             // #1225: Will this work? No one knows.
-            foreach (var network in TypeResolver.Current.ResolveAll<INetworkService>())
+            foreach (var network in LifetimeService.Current.ResolveAll<INetworkService>())
             {
                 network.Reconnect();
             }
@@ -340,10 +341,10 @@ namespace Telegram
         {
             Logger.Info("OnSuspendingAsync");
 
-            TypeResolver.Current.Passcode.CloseTime = DateTime.UtcNow;
+            LifetimeService.Current.Passcode.CloseTime = DateTime.UtcNow;
 
-            //return Task.WhenAll(TypeResolver.Current.ResolveAll<IVoipService>().Select(x => x.DiscardAsync()));
-            //await Task.WhenAll(TLContainer.Current.ResolveAll<IClientService>().Select(x => x.CloseAsync()));
+            //return Task.WhenAll(LifetimeService.Current.ResolveAll<IVoipService>().Select(x => x.DiscardAsync()));
+            //await Task.WhenAll(LifetimeService.Current.ResolveAll<IClientService>().Select(x => x.CloseAsync()));
             return Task.CompletedTask;
         }
 

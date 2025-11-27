@@ -25,7 +25,7 @@ namespace Telegram.Common
         public TLRootNavigationService(ISessionService sessionService, WindowContext window, Frame frame, ISessionService session, string id)
             : base(window, frame, session, id)
         {
-            _lifetimeService = TypeResolver.Current.Lifetime;
+            _lifetimeService = LifetimeService.Current;
         }
 
         public async void Handle(UpdateAuthorizationState update)
@@ -48,7 +48,7 @@ namespace Telegram.Common
                         Navigate(typeof(AuthorizationPage));
                     }
 
-                    if (_lifetimeService.Items.Count > 1)
+                    if (_lifetimeService.Count > 1)
                     {
                         ClearBackStack();
                         AddToBackStack(typeof(BlankPage));

@@ -7,6 +7,7 @@
 
 using Telegram.Controls;
 using Telegram.Navigation;
+using Telegram.Services;
 using Telegram.ViewModels;
 using Telegram.Views.Host;
 using Windows.UI.Xaml;
@@ -26,7 +27,7 @@ namespace Telegram.Views
             PrimaryButtonText = Strings.LogOutTitle;
             SecondaryButtonText = Strings.Cancel;
 
-            if (TypeResolver.Current.Count < 3)
+            if (LifetimeService.Current.Count < 3)
             {
                 FindName(nameof(AddAccount));
             }

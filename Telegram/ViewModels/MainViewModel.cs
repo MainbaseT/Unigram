@@ -198,14 +198,14 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (TypeResolver.Current.Playback.CurrentItem is not PlaybackItemMessage message || message.ClientService != ClientService)
+            if (LifetimeService.Current.Playback.CurrentItem is not PlaybackItemMessage message || message.ClientService != ClientService)
             {
                 return;
             }
 
             if (message.ChatId == update.ChatId && update.MessageIds.Contains(message.Id))
             {
-                TypeResolver.Current.Playback.Clear();
+                LifetimeService.Current.Playback.Clear();
             }
         }
 

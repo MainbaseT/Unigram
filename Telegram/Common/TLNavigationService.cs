@@ -57,7 +57,7 @@ namespace Telegram.Common
             : base(window, frame, clientService.Session, id)
         {
             _clientService = clientService;
-            _passcodeService = TypeResolver.Current.Passcode;
+            _passcodeService = LifetimeService.Current.Passcode;
             _viewService = viewService;
         }
 

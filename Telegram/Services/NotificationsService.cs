@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
@@ -569,7 +568,7 @@ namespace Telegram.Services
 
                 var showPreview = _settings.Notifications.GetShowPreview(chat);
 
-                if (chat.Type is ChatTypeSecret || !showPreview || !_settings.Notifications.ShowName || TypeResolver.Current.Passcode.IsLockscreenRequired)
+                if (chat.Type is ChatTypeSecret || !showPreview || !_settings.Notifications.ShowName || LifetimeService.Current.Passcode.IsLockscreenRequired)
                 {
                     picture = string.Empty;
                     caption = Strings.AppName;
@@ -638,7 +637,7 @@ namespace Telegram.Services
                 xml += $"<image placement='appLogoOverride' hint-crop='circle' src='{picture}'/>";
             }
 
-            if (TypeResolver.Current.GetSessions().Count() > 1
+            if (LifetimeService.Current.Count > 1
                 && SettingsService.Current.IsAllAccountsNotifications
                 && _clientService.TryGetUser(_clientService.Options.MyId, out User user))
             {

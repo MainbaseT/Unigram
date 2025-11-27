@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Controls;
 using Telegram.Navigation;
-using Telegram.Views;
 using Telegram.Views.Host;
 using Windows.Storage;
 using Windows.UI.Xaml.Media;
@@ -21,58 +20,133 @@ namespace Telegram.Services
 {
     public interface ILifetimeService
     {
-        void Update();
-
         ISessionService Create(bool update = true, bool test = false);
-        ISessionService Remove(ISessionService item);
-        ISessionService Remove(ISessionService item, ISessionService active);
-
         void Destroy(ISessionService item);
 
-        bool ShouldClose(ISessionService item);
+        int Count { get; }
 
-        bool Contains(string phoneNumber);
-
-        void Register(ISessionService item);
-        void Unregister(ISessionService item);
-
-        MvxObservableCollection<ISessionService> Items { get; }
+        IList<ISessionService> Items { get; }
         ISessionService ActiveItem { get; set; }
         ISessionService PreviousItem { get; set; }
     }
 
     public partial class LifetimeService : BindableBase, ILifetimeService
     {
-        private readonly Dictionary<int, ISessionService> _sessions = new();
+        private static readonly LifetimeService _instance = new();
+
+        private readonly ReaderWriterDictionary<int, ISessionService> _sessions = new();
+        private readonly IPasscodeService _passcode;
+        private readonly ILocaleService _locale;
+        private readonly IPlaybackService _playback;
+        private readonly VoipCoordinator _voip;
+
+        public IPasscodeService Passcode => _passcode;
+        public ILocaleService Locale => _locale;
+        public IPlaybackService Playback => _playback;
+        public VoipCoordinator Voip => _voip;
 
         public LifetimeService()
         {
-            Items = new MvxObservableCollection<ISessionService>();
+            _passcode = new PasscodeService(SettingsService.Current.PasscodeLock);
+            _playback = new PlaybackService(SettingsService.Current);
+            _voip = new VoipCoordinator();
+            _locale = LocaleService.Current;
+
+            var first = 0;
+
+            foreach (var sessionId in GetSessionsToInitialize())
+            {
+                if (first < 1 || sessionId == SettingsService.Current.PreviousSession)
+                {
+                    first = sessionId;
+                }
+
+                var session = Build(sessionId);
+                if (session.IsActive)
+                {
+                    _activeItem = session;
+                }
+            }
+
+            _activeItem ??= Build(first);
         }
 
-        public void Register(ISessionService item)
+        public static void Initialize()
         {
-            _sessions[item.Id] = item;
+            Logger.Info(Current.Count);
         }
 
-        public void Unregister(ISessionService item)
+        public static LifetimeService Current => _instance;
+
+        public int Count => _sessions.Count;
+
+        private ISessionService Build(int id)
         {
-            _sessions[item.Id] = null;
+            var session = new SessionService(this, _locale, _passcode, id, id == SettingsService.Current.ActiveSession);
+            return _sessions[id] = session;
         }
 
-        public void Update()
+        private IEnumerable<int> GetSessionsToInitialize()
         {
-            Items.ReplaceWith(TypeResolver.Current.GetSessions());
-            ActiveItem = Items.FirstOrDefault(x => x.IsActive) ?? Items.FirstOrDefault();
+            var folders = Directory.GetDirectories(ApplicationData.Current.LocalFolder.Path);
+
+            var toBeDeleted = new HashSet<string>();
+            var toBeInitialized = 0;
+
+            foreach (var folder in folders)
+            {
+                if (int.TryParse(Path.GetFileName(folder), out int session))
+                {
+                    var container = ApplicationData.Current.LocalSettings.CreateContainer($"{session}", ApplicationDataCreateDisposition.Always);
+                    if (container.Values.ContainsKey("UserId"))
+                    {
+                        toBeInitialized++;
+                        yield return session;
+                    }
+                    else
+                    {
+                        toBeDeleted.Add(folder);
+                    }
+                }
+            }
+
+            // We delete unauthorized sessions only if there's some active one.
+            // This is just to remember proxy settings for the user in case they restart the app.
+            if (toBeInitialized > 0 && toBeDeleted.Count > 0)
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    foreach (var path in toBeDeleted)
+                    {
+                        try
+                        {
+                            Directory.Delete(path, true);
+                        }
+                        catch
+                        {
+                            // Directory or files might be locked
+                        }
+                    }
+                });
+            }
         }
 
-        private void Update(ISessionService session)
+        public IEnumerable<T> ResolveAll<T>()
         {
-            Items.ReplaceWith(TypeResolver.Current.GetSessions());
-            ActiveItem = session;
+            foreach (var container in _sessions)
+            {
+                if (container != null)
+                {
+                    var service = container.Resolve<T>();
+                    if (service != null)
+                    {
+                        yield return service;
+                    }
+                }
+            }
         }
 
-        public MvxObservableCollection<ISessionService> Items { get; }
+        public IList<ISessionService> Items => _sessions.Values;
 
         private ISessionService _previousItem;
         public ISessionService PreviousItem
@@ -113,52 +187,33 @@ namespace Telegram.Services
         public ISessionService Create(bool update = true, bool test = false)
         {
             var app = BootStrapper.Current as App;
-            var sessions = TypeResolver.Current.GetSessions().ToList();
+            var sessions = _sessions.Values;
             var id = sessions.Count > 0 ? sessions.Max(x => x.Id) + 1 : 0;
 
             var settings = ApplicationData.Current.LocalSettings.CreateContainer($"{id}", ApplicationDataCreateDisposition.Always);
             settings.Values["UseTestDC"] = test;
 
-            var container = TypeResolver.Current.Build(id);
-            var session = container.Resolve<ISessionService>();
+            var session = Build(id);
+
             if (update)
             {
-                Update(session);
+                ActiveItem = session;
             }
 
             return session;
         }
 
-        public ISessionService Remove(ISessionService item)
-        {
-            return Remove(item, _previousItem ?? Create());
-        }
-
-        public ISessionService Remove(ISessionService item, ISessionService active)
-        {
-            TypeResolver.Current.Destroy(item.Id);
-            active ??= _previousItem ?? Create();
-            Update(active);
-
-            item.Aggregator.Unsubscribe(item);
-            //WindowContext.Unsubscribe(item);
-
-            WindowContext.Current.NavigationServices.RemoveByFrameId($"{item.Id}");
-            WindowContext.Current.NavigationServices.RemoveByFrameId($"Main{item.Id}");
-
-            return active;
-        }
-
         public async void Destroy(ISessionService item)
         {
-            ISessionService replace = null;
+            Logger.Info(item.Id);
+
+            ISessionService? replace = null;
             if (item.IsActive)
             {
                 ActiveItem = replace = _previousItem ?? Items.FirstOrDefault(x => x.Id != item.Id) ?? Create(false);
             }
 
-            TypeResolver.Current.Destroy(item.Id);
-            Update();
+            _sessions.Remove(item.Id);
 
             item.Aggregator.Unsubscribe(item);
             //WindowContext.Unsubscribe(item);
@@ -202,28 +257,29 @@ namespace Telegram.Services
             });
         }
 
-        public bool ShouldClose(ISessionService item)
+        public TService Resolve<TService>()
         {
-            return true;
-        }
+            var session = ActiveItem?.Id ?? 0;
+            var result = default(TService);
 
-        public bool Contains(string phoneNumber)
-        {
-            foreach (var session in Items)
+            if (_sessions.TryGetValue(session, out ISessionService container))
             {
-                var user = session.ClientService.GetUser(session.UserId);
-                if (user == null)
-                {
-                    continue;
-                }
-
-                if (user.PhoneNumber.Contains(phoneNumber) || phoneNumber.Contains(user.PhoneNumber))
-                {
-                    return true;
-                }
+                result = container.Resolve<TService>();
             }
 
-            return false;
+            return result;
+        }
+
+        public bool TryResolve<TService>(int session, out TService result)
+        {
+            result = default;
+
+            if (_sessions.TryGetValue(session, out ISessionService container))
+            {
+                result = container.Resolve<TService>();
+            }
+
+            return result != null;
         }
     }
 }

@@ -49,15 +49,15 @@ namespace Telegram.Views.Popups
             // rather than using the playlist provided by PlaybackService
 
             _items = new DiffObservableCollection<PlaybackItem>(this, Constants.DiffOptions);
-            _items.AddRange(TypeResolver.Current.Playback.Items);
+            _items.AddRange(LifetimeService.Current.Playback.Items);
 
             Slider.AddHandler(KeyDownEvent, new KeyEventHandler(Slider_KeyDown), true);
             Slider.PositionChanged += Slider_PositionChanged;
 
-            TypeResolver.Current.Playback.SourceChanged += OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.StateChanged += OnPlaybackStateChanged;
-            TypeResolver.Current.Playback.PositionChanged += OnPositionChanged;
-            TypeResolver.Current.Playback.PlaylistChanged += OnPlaylistChanged;
+            LifetimeService.Current.Playback.SourceChanged += OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.StateChanged += OnPlaybackStateChanged;
+            LifetimeService.Current.Playback.PositionChanged += OnPositionChanged;
+            LifetimeService.Current.Playback.PlaylistChanged += OnPlaylistChanged;
 
             ScrollingHost.ItemsSource = _items;
 
@@ -76,7 +76,7 @@ namespace Telegram.Views.Popups
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            _ = ScrollingHost.ScrollToItem2(TypeResolver.Current.Playback?.CurrentItem, VerticalAlignment.Center);
+            _ = ScrollingHost.ScrollToItem2(LifetimeService.Current.Playback?.CurrentItem, VerticalAlignment.Center);
         }
 
         private void OnPlaybackStateChanged(IPlaybackService sender, object args)
@@ -97,7 +97,7 @@ namespace Telegram.Views.Popups
         {
             this.BeginOnUIThread(() =>
             {
-                _items.ReplaceDiff(TypeResolver.Current.Playback.Items);
+                _items.ReplaceDiff(LifetimeService.Current.Playback.Items);
             });
         }
 
@@ -116,9 +116,9 @@ namespace Telegram.Views.Popups
 
         private void UpdateGlyph()
         {
-            UpdatePosition(TypeResolver.Current.Playback.Position, TypeResolver.Current.Playback.Duration, TypeResolver.Current.Playback.IsPlaying);
+            UpdatePosition(LifetimeService.Current.Playback.Position, LifetimeService.Current.Playback.Duration, LifetimeService.Current.Playback.IsPlaying);
 
-            var item = TypeResolver.Current.Playback.CurrentItem;
+            var item = LifetimeService.Current.Playback.CurrentItem;
             if (item == null)
             {
                 TitleLabel.Text = string.Empty;
@@ -134,7 +134,7 @@ namespace Telegram.Views.Popups
                 UpdateIsProfileAudio(item);
             }
 
-            VolumeButton.Glyph = TypeResolver.Current.Playback.Volume switch
+            VolumeButton.Glyph = LifetimeService.Current.Playback.Volume switch
             {
                 double n when n > 0.66 => Icons.Speaker3,
                 double n when n > 0.33 => Icons.Speaker2,
@@ -142,8 +142,8 @@ namespace Telegram.Views.Popups
                 _ => Icons.SpeakerOff
             };
 
-            PlaybackButton.Glyph = TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused ? Icons.PlayFilled24 : Icons.PauseFilled24;
-            Automation.SetToolTip(PlaybackButton, TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused ? Strings.AccActionPlay : Strings.AccActionPause);
+            PlaybackButton.Glyph = LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused ? Icons.PlayFilled24 : Icons.PauseFilled24;
+            Automation.SetToolTip(PlaybackButton, LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused ? Strings.AccActionPlay : Strings.AccActionPause);
 
             HeaderLabel.Visibility = Visibility.Collapsed;
 
@@ -241,10 +241,10 @@ namespace Telegram.Views.Popups
 
         private void UpdateRepeat()
         {
-            RepeatButton.IsChecked = TypeResolver.Current.Playback.IsRepeatEnabled;
-            Automation.SetToolTip(RepeatButton, TypeResolver.Current.Playback.IsRepeatEnabled == null
+            RepeatButton.IsChecked = LifetimeService.Current.Playback.IsRepeatEnabled;
+            Automation.SetToolTip(RepeatButton, LifetimeService.Current.Playback.IsRepeatEnabled == null
                 ? Strings.AccDescrRepeatOne
-                : TypeResolver.Current.Playback.IsRepeatEnabled == true
+                : LifetimeService.Current.Playback.IsRepeatEnabled == true
                 ? Strings.AccDescrRepeatList
                 : Strings.AccDescrRepeatOff);
         }
@@ -264,7 +264,7 @@ namespace Telegram.Views.Popups
 
             var response = await _clientService.SendAsync(new IsProfileAudio(item.Document.Id));
 
-            if (!item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            if (!item.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
             {
                 return;
             }
@@ -536,7 +536,7 @@ namespace Telegram.Views.Popups
             _clientService.Send(new AddProfileAudio(item.Document.Id));
             _navigationService.ShowToast(Strings.AudioSaveToMyProfileSaved, ToastPopupIcon.SavedMessages);
 
-            if (item.AreTheSame(TypeResolver.Current.Playback.CurrentItem))
+            if (item.AreTheSame(LifetimeService.Current.Playback.CurrentItem))
             {
                 ShowHideRemove(true);
             }
@@ -564,30 +564,30 @@ namespace Telegram.Views.Popups
 
         private void Toggle_Click(object sender, RoutedEventArgs e)
         {
-            if (TypeResolver.Current.Playback.PlaybackState == PlaybackState.Paused)
+            if (LifetimeService.Current.Playback.PlaybackState == PlaybackState.Paused)
             {
-                TypeResolver.Current.Playback.Play();
+                LifetimeService.Current.Playback.Play();
             }
             else
             {
-                TypeResolver.Current.Playback.Pause();
+                LifetimeService.Current.Playback.Pause();
             }
         }
 
         private void Next_Click(object sender, RoutedEventArgs e)
         {
-            TypeResolver.Current.Playback.MoveNext();
+            LifetimeService.Current.Playback.MoveNext();
         }
 
         private void Previous_Click(object sender, RoutedEventArgs e)
         {
-            if (TypeResolver.Current.Playback.Position.TotalSeconds > 5)
+            if (LifetimeService.Current.Playback.Position.TotalSeconds > 5)
             {
-                TypeResolver.Current.Playback.Seek(TimeSpan.Zero);
+                LifetimeService.Current.Playback.Seek(TimeSpan.Zero);
             }
             else
             {
-                TypeResolver.Current.Playback.MovePrevious();
+                LifetimeService.Current.Playback.MovePrevious();
             }
         }
 
@@ -605,7 +605,7 @@ namespace Telegram.Views.Popups
                     _ => Icons.SpeakerOff
                 }),
                 FontWeight = FontWeights.SemiBold,
-                Value = TypeResolver.Current.Playback.Volume * 100
+                Value = LifetimeService.Current.Playback.Volume * 100
             };
 
             slider.ValueChanged += VolumeSlider_ValueChanged;
@@ -617,9 +617,9 @@ namespace Telegram.Views.Popups
 
         private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            TypeResolver.Current.Playback.Volume = e.NewValue / 100;
+            LifetimeService.Current.Playback.Volume = e.NewValue / 100;
 
-            VolumeButton.Glyph = TypeResolver.Current.Playback.Volume switch
+            VolumeButton.Glyph = LifetimeService.Current.Playback.Volume switch
             {
                 double n when n > 0.66 => Icons.Speaker3,
                 double n when n > 0.33 => Icons.Speaker2,
@@ -630,47 +630,47 @@ namespace Telegram.Views.Popups
 
         private void Repeat_Click(object sender, RoutedEventArgs e)
         {
-            TypeResolver.Current.Playback.IsRepeatEnabled = RepeatButton.IsChecked;
+            LifetimeService.Current.Playback.IsRepeatEnabled = RepeatButton.IsChecked;
             UpdateRepeat();
         }
 
         private void Shuffle_Click(object sender, RoutedEventArgs e)
         {
-            //TypeResolver.Current.Playback.IsShuffleEnabled = ShuffleButton.IsChecked == true;
-            TypeResolver.Current.Playback.IsReversed = ShuffleButton.IsChecked == true;
+            //LifetimeService.Current.Playback.IsShuffleEnabled = ShuffleButton.IsChecked == true;
+            LifetimeService.Current.Playback.IsReversed = ShuffleButton.IsChecked == true;
         }
 
         private void Slider_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Right || e.Key == VirtualKey.Up)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Position + TimeSpan.FromSeconds(5));
+                LifetimeService.Current.Playback?.Seek(Slider.Position + TimeSpan.FromSeconds(5));
             }
             else if (e.Key == VirtualKey.Left || e.Key == VirtualKey.Down)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Position - TimeSpan.FromSeconds(5));
+                LifetimeService.Current.Playback?.Seek(Slider.Position - TimeSpan.FromSeconds(5));
             }
             else if (e.Key == VirtualKey.PageUp)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Position + TimeSpan.FromSeconds(30));
+                LifetimeService.Current.Playback?.Seek(Slider.Position + TimeSpan.FromSeconds(30));
             }
             else if (e.Key == VirtualKey.PageDown)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Position - TimeSpan.FromSeconds(30));
+                LifetimeService.Current.Playback?.Seek(Slider.Position - TimeSpan.FromSeconds(30));
             }
             else if (e.Key == VirtualKey.Home)
             {
-                TypeResolver.Current.Playback?.Seek(TimeSpan.Zero);
+                LifetimeService.Current.Playback?.Seek(TimeSpan.Zero);
             }
             else if (e.Key == VirtualKey.End)
             {
-                TypeResolver.Current.Playback?.Seek(Slider.Duration);
+                LifetimeService.Current.Playback?.Seek(Slider.Duration);
             }
         }
 
         private void Slider_PositionChanged(object sender, PlaybackSliderPositionChanged e)
         {
-            TypeResolver.Current.Playback?.Seek(e.NewPosition);
+            LifetimeService.Current.Playback?.Seek(e.NewPosition);
         }
 
         private void OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
@@ -715,13 +715,13 @@ namespace Telegram.Views.Popups
                     _clientService.Send(new SetProfileAudioPosition(item.Id, 0));
                 }
 
-                TypeResolver.Current.Playback.MoveTo(item, index);
+                LifetimeService.Current.Playback.MoveTo(item, index);
             }
         }
 
         private void AddToProfile_Click(object sender, RoutedEventArgs e)
         {
-            if (TypeResolver.Current.Playback.CurrentItem is PlaybackItem item)
+            if (LifetimeService.Current.Playback.CurrentItem is PlaybackItem item)
             {
                 _clientService.Send(new AddProfileAudio(item.Document.Id));
                 ShowHideRemove(true);
@@ -730,7 +730,7 @@ namespace Telegram.Views.Popups
 
         private void RemoveFromProfile_Click(object sender, TextUrlClickEventArgs e)
         {
-            if (TypeResolver.Current.Playback.CurrentItem is PlaybackItem item)
+            if (LifetimeService.Current.Playback.CurrentItem is PlaybackItem item)
             {
                 _clientService.Send(new RemoveProfileAudio(item.Document.Id));
                 ShowHideRemove(false);
@@ -748,7 +748,7 @@ namespace Telegram.Views.Popups
 
         private async void More_ContextRequested(object sender, RoutedEventArgs e)
         {
-            var item = TypeResolver.Current.Playback.CurrentItem;
+            var item = LifetimeService.Current.Playback.CurrentItem;
             if (item != null)
             {
                 var flyout = new MenuFlyout();
