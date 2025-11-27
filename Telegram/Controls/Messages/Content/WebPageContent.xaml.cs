@@ -20,8 +20,6 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 
@@ -87,11 +85,11 @@ namespace Telegram.Controls.Messages.Content
 
         private DashPath AccentDash;
         private MessageReplyPattern Pattern;
-        private FormattedTextBlock Label;
+        private Grid Label;
         private RichTextBlockOverflow OverflowArea;
-        private Run TitleLabel;
-        private Run SubtitleLabel;
-        private Span ContentLabel;
+        private TextBlock TitleLabel;
+        private TextBlock SubtitleLabel;
+        private FormattedTextBlock ContentLabel;
         private Grid MediaPanel;
         private Border Media;
         private Border Overlay;
@@ -104,11 +102,11 @@ namespace Telegram.Controls.Messages.Content
         {
             AccentDash = GetTemplateChild(nameof(AccentDash)) as DashPath;
             Pattern = GetTemplateChild(nameof(Pattern)) as MessageReplyPattern;
-            Label = GetTemplateChild(nameof(Label)) as FormattedTextBlock;
+            Label = GetTemplateChild(nameof(Label)) as Grid;
             OverflowArea = GetTemplateChild(nameof(OverflowArea)) as RichTextBlockOverflow;
-            TitleLabel = GetTemplateChild(nameof(TitleLabel)) as Run;
-            SubtitleLabel = GetTemplateChild(nameof(SubtitleLabel)) as Run;
-            ContentLabel = GetTemplateChild(nameof(ContentLabel)) as Span;
+            TitleLabel = GetTemplateChild(nameof(TitleLabel)) as TextBlock;
+            SubtitleLabel = GetTemplateChild(nameof(SubtitleLabel)) as TextBlock;
+            ContentLabel = GetTemplateChild(nameof(ContentLabel)) as FormattedTextBlock;
             MediaPanel = GetTemplateChild(nameof(MediaPanel)) as Grid;
             Media = GetTemplateChild(nameof(Media)) as Border;
             Overlay = GetTemplateChild(nameof(Overlay)) as Border;
@@ -116,13 +114,7 @@ namespace Telegram.Controls.Messages.Content
             ButtonLine = GetTemplateChild(nameof(ButtonLine)) as Grid;
             Button = GetTemplateChild(nameof(Button)) as TextBlock;
 
-            BindingOperations.SetBinding(TitleLabel, Run.ForegroundProperty, new Binding
-            {
-                Path = new PropertyPath("HeaderBrush"),
-                Source = this
-            });
-
-            Label.OverflowContentTarget = OverflowArea;
+            ContentLabel.OverflowContentTarget = OverflowArea;
             Click += Button_Click;
 
             _templateApplied = true;
@@ -505,14 +497,14 @@ namespace Telegram.Controls.Messages.Content
                 empty = false;
                 TitleLabel.Text = Strings.AppName;
                 SubtitleLabel.Text = Strings.ChatBackground;
-                Label.SetText(clientService, string.Empty.AsFormattedText());
+                ContentLabel.SetText(clientService, string.Empty.AsFormattedText());
             }
             else if (linkPreview.Type is LinkPreviewTypeUpgradedGift upgradedGift)
             {
                 empty = false;
                 TitleLabel.Text = Strings.AppName;
                 SubtitleLabel.Text = Environment.NewLine + upgradedGift.Gift.ToName();
-                Label.SetText(clientService, string.Empty.AsFormattedText());
+                ContentLabel.SetText(clientService, string.Empty.AsFormattedText());
             }
             else
             {
@@ -520,54 +512,42 @@ namespace Telegram.Controls.Messages.Content
                 {
                     empty = false;
                     TitleLabel.Text = linkPreview.SiteName;
+                    TitleLabel.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     TitleLabel.Text = string.Empty;
+                    TitleLabel.Visibility = Visibility.Collapsed;
                 }
 
                 if (!string.IsNullOrWhiteSpace(linkPreview.Title))
                 {
-                    if (TitleLabel.Text.Length > 0)
-                    {
-                        SubtitleLabel.Text = Environment.NewLine;
-                    }
-
                     empty = false;
-                    SubtitleLabel.Text += linkPreview.Title;
+                    SubtitleLabel.Text = linkPreview.Title;
+                    SubtitleLabel.Visibility = Visibility.Visible;
                 }
                 else if (!string.IsNullOrWhiteSpace(linkPreview.Author))
                 {
-                    if (TitleLabel.Text.Length > 0)
-                    {
-                        SubtitleLabel.Text = Environment.NewLine;
-                    }
-
                     empty = false;
-                    SubtitleLabel.Text += linkPreview.Author;
+                    SubtitleLabel.Text = linkPreview.Author;
+                    SubtitleLabel.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     SubtitleLabel.Text = string.Empty;
+                    SubtitleLabel.Visibility = Visibility.Collapsed;
                 }
 
                 if (!string.IsNullOrWhiteSpace(linkPreview.Description?.Text))
                 {
-                    if (SubtitleLabel.Text.Length > 0)
-                    {
-                        SubtitleLabel.Text += Environment.NewLine;
-                    }
-                    else if (TitleLabel.Text.Length > 0)
-                    {
-                        TitleLabel.Text += Environment.NewLine;
-                    }
-
                     empty = false;
-                    Label.SetText(clientService, linkPreview.Description);
+                    ContentLabel.SetText(clientService, linkPreview.Description);
+                    ContentLabel.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    Label.SetText(clientService, string.Empty.AsFormattedText());
+                    ContentLabel.SetText(clientService, string.Empty.AsFormattedText());
+                    ContentLabel.Visibility = Visibility.Collapsed;
                 }
             }
 
