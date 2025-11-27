@@ -2219,6 +2219,12 @@ namespace Telegram.Services
                         ProcessFiles(starSubscriptionTypeBot.Photo);
                     }
                     break;
+                case global::Telegram.Td.Api.StartLiveStoryResultOk startLiveStoryResultOk:
+                    if (startLiveStoryResultOk.Story != null)
+                    {
+                        ProcessFiles(startLiveStoryResultOk.Story);
+                    }
+                    break;
                 case global::Telegram.Td.Api.StarTransaction starTransaction:
                     if (starTransaction.Type != null)
                     {
