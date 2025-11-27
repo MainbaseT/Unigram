@@ -14,7 +14,6 @@ using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Windows.Foundation;
 using Windows.UI.Xaml.Data;
 
@@ -45,9 +44,9 @@ namespace Telegram.ViewModels.Drawers
             Aggregator.Subscribe<UpdateSavedAnimations>(this, Handle);
         }
 
-        public static AnimationDrawerViewModel Create(int sessionId)
+        public static AnimationDrawerViewModel Create(ISessionService session)
         {
-            var context = TypeResolver.Current.Resolve<AnimationDrawerViewModel>(sessionId);
+            var context = session.Resolve<AnimationDrawerViewModel>();
             context.Dispatcher = WindowContext.Current.Dispatcher;
             return context;
         }

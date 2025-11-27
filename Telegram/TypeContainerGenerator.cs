@@ -66,7 +66,6 @@ namespace Telegram
                 ( typeof(ILocationService), typeof(LocationService) ),
                 ( typeof(IThemeService), typeof(ThemeService) ),
                 ( typeof(IViewService), typeof(ViewService) ),
-                ( typeof(ISessionService), typeof(SessionService) ),
                 ( typeof(IStorageService), typeof(StorageService) ),
                 ( typeof(ITranslateService), typeof(TranslateService) ),
                 ( typeof(IProfilePhotoService), typeof(ProfilePhotoService) ),
@@ -250,11 +249,11 @@ namespace Telegram
             var singletonBucket = new Dictionary<Type, Type>();
 
             var builder = new FormattedBuilder();
-            builder.AppendLine("namespace Telegram.Views");
+            builder.AppendLine("namespace Telegram.Services");
             builder.AppendLine("{");
-            builder.AppendLine("public partial class TypeLocator");
+            builder.AppendLine("public partial class SessionService");
             builder.AppendLine("{");
-            builder.AppendLine("private readonly int _session;");
+            builder.AppendLine("private readonly int _id;");
             builder.AppendLine();
 
             for (int i = 0; i < _globals.Count; i++)
@@ -281,7 +280,7 @@ namespace Telegram
 
             builder.AppendLine();
 
-            builder.AppendIndent("public TypeLocator(");
+            builder.AppendIndent("public SessionService(");
 
             for (int i = 0; i < _globals.Count; i++)
             {
@@ -292,7 +291,8 @@ namespace Telegram
             builder.Append("int session, bool active)\r\n");
             builder.AppendLine("{");
 
-            builder.AppendLine("_session = session;");
+            builder.AppendLine("_id = session;");
+            builder.AppendLine("_sessionService = this;");
             builder.AppendLine();
 
             for (int i = 0; i < _globals.Count; i++)
@@ -317,6 +317,9 @@ namespace Telegram
 
                 singletonBucket[singleton.Value] = singleton.Key;
             }
+
+            builder.AppendLine();
+            builder.AppendLine("Initialize(active);");
 
             builder.AppendLine("}");
             builder.AppendLine();
@@ -392,11 +395,15 @@ namespace Telegram
                 {
                     getter = GetSingletonName(param.ParameterType) + " ??= " + GenerateConstructor(param.ParameterType, depth + 1);
                 }
-                else if (param.Name == "session" && param.ParameterType == typeof(int))
+                else if (param.ParameterType == typeof(ISessionService))
+                {
+                    getter = "_sessionService";
+                }
+                else if (param.Name == "session")
                 {
                     getter = "_session";
                 }
-                else if (param.Name == "selected" || param.Name == "online")
+                else if (param.Name == "active" || param.Name == "online")
                 {
                     getter = "active";
                 }

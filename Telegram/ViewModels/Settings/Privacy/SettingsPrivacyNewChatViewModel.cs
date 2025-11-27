@@ -14,7 +14,6 @@ using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Telegram.Views.Settings.Privacy;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -36,7 +35,7 @@ namespace Telegram.ViewModels.Settings.Privacy
         public SettingsPrivacyNewChatViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
-            _allowUnpaidRules = TypeResolver.Current.Resolve<SettingsPrivacyAllowUnpaidMessagesViewModel>(SessionId);
+            _allowUnpaidRules = Session.Resolve<SettingsPrivacyAllowUnpaidMessagesViewModel>();
             _allowUnpaidRules.PropertyChanged += OnPropertyChanged;
 
             Children.Add(_allowUnpaidRules);

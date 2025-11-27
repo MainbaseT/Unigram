@@ -183,7 +183,7 @@ namespace Telegram.Controls.Messages
 
             var radius = 8;
 
-            viewModel ??= EmojiDrawerViewModel.Create(clientService.SessionId, _mode);
+            viewModel ??= EmojiDrawerViewModel.Create(clientService.Session, _mode);
 
             var view = new EmojiDrawer(_mode);
             view.DataContext = viewModel;

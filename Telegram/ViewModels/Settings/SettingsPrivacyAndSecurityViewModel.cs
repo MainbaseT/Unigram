@@ -15,7 +15,6 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Settings.Privacy;
-using Telegram.Views;
 using Telegram.Views.Popups;
 using Telegram.Views.Settings;
 using Telegram.Views.Settings.LoginEmail;
@@ -50,18 +49,18 @@ namespace Telegram.ViewModels.Settings
         {
             _passcodeService = passcodeService;
 
-            _showForwardedRules = TypeResolver.Current.Resolve<SettingsPrivacyShowForwardedViewModel>(SessionId);
-            _showPhoneRules = TypeResolver.Current.Resolve<SettingsPrivacyShowPhoneViewModel>(SessionId);
-            _showPhotoRules = TypeResolver.Current.Resolve<SettingsPrivacyShowPhotoViewModel>(SessionId);
-            _showStatusRules = TypeResolver.Current.Resolve<SettingsPrivacyShowStatusViewModel>(SessionId);
-            _showBioRules = TypeResolver.Current.Resolve<SettingsPrivacyShowBioViewModel>(SessionId);
-            _showProfileAudioRules = TypeResolver.Current.Resolve<SettingsPrivacyShowProfileAudioViewModel>(SessionId);
-            _showBirthdateRules = TypeResolver.Current.Resolve<SettingsPrivacyShowBirthdateViewModel>(SessionId);
-            _autosaveGiftsRules = TypeResolver.Current.Resolve<SettingsPrivacyAutosaveGiftsViewModel>(SessionId);
-            _allowCallsRules = TypeResolver.Current.Resolve<SettingsPrivacyAllowCallsViewModel>(SessionId);
-            _allowChatInvitesRules = TypeResolver.Current.Resolve<SettingsPrivacyAllowChatInvitesViewModel>(SessionId);
-            _allowPrivateVoiceAndVideoNoteMessages = TypeResolver.Current.Resolve<SettingsPrivacyAllowPrivateVoiceAndVideoNoteMessagesViewModel>(SessionId);
-            _newChatRules = TypeResolver.Current.Resolve<SettingsPrivacyNewChatViewModel>(SessionId);
+            _showForwardedRules = Session.Resolve<SettingsPrivacyShowForwardedViewModel>();
+            _showPhoneRules = Session.Resolve<SettingsPrivacyShowPhoneViewModel>();
+            _showPhotoRules = Session.Resolve<SettingsPrivacyShowPhotoViewModel>();
+            _showStatusRules = Session.Resolve<SettingsPrivacyShowStatusViewModel>();
+            _showBioRules = Session.Resolve<SettingsPrivacyShowBioViewModel>();
+            _showProfileAudioRules = Session.Resolve<SettingsPrivacyShowProfileAudioViewModel>();
+            _showBirthdateRules = Session.Resolve<SettingsPrivacyShowBirthdateViewModel>();
+            _autosaveGiftsRules = Session.Resolve<SettingsPrivacyAutosaveGiftsViewModel>();
+            _allowCallsRules = Session.Resolve<SettingsPrivacyAllowCallsViewModel>();
+            _allowChatInvitesRules = Session.Resolve<SettingsPrivacyAllowChatInvitesViewModel>();
+            _allowPrivateVoiceAndVideoNoteMessages = Session.Resolve<SettingsPrivacyAllowPrivateVoiceAndVideoNoteMessagesViewModel>();
+            _newChatRules = Session.Resolve<SettingsPrivacyNewChatViewModel>();
 
             Children.Add(_showForwardedRules);
             Children.Add(_showPhotoRules);

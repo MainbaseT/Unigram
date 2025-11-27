@@ -12,7 +12,6 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -437,7 +436,7 @@ namespace Telegram.Common
                 return;
             }
 
-            var clientService = TypeResolver.Current.Resolve<IClientService>(navigationService.SessionId);
+            var clientService = navigationService.Session.Resolve<IClientService>();
 
             if (type is TextEntityTypeTextUrl textUrl)
             {

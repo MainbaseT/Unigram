@@ -140,7 +140,7 @@ namespace Telegram.Controls.Messages
 
             var radius = 8;
 
-            viewModel ??= EffectDrawerViewModel.Create(clientService.SessionId);
+            viewModel ??= EffectDrawerViewModel.Create(clientService.Session);
 
             var view = new EffectDrawer();
             view.DataContext = viewModel;

@@ -32,7 +32,7 @@ namespace Telegram.Navigation
         /// If a developer overrides this method, the developer can resolve DataContext or unwrap DataContext 
         /// available for the Page object when using a MVVM pattern that relies on a wrapped/porxy around ViewModels
         /// </summary>
-        public virtual ViewModelBase ViewModelForPage(UIElement page, int sessionId) => null;
+        public virtual ViewModelBase ViewModelForPage(UIElement page, ISessionService session) => null;
 
         public static new BootStrapper Current { get; private set; }
 
@@ -535,7 +535,7 @@ namespace Telegram.Navigation
         /// A developer should call this when creating a new/secondary frame.
         /// The shell back button should only be setup one time.
         /// </summary>
-        public INavigationService NavigationServiceFactory(WindowContext window, BackButton backButton, int session, string id, bool root)
+        public INavigationService NavigationServiceFactory(WindowContext window, BackButton backButton, ISessionService session, string id, bool root)
         {
             Logger.Info($"{nameof(backButton)}: {backButton}");
 
@@ -545,7 +545,7 @@ namespace Telegram.Navigation
         /// <summary>
         /// Creates the NavigationService instance for given Frame.
         /// </summary>
-        protected virtual INavigationService CreateNavigationService(WindowContext window, Frame frame, int session, string id, bool root)
+        protected virtual INavigationService CreateNavigationService(WindowContext window, Frame frame, ISessionService session, string id, bool root)
         {
             Logger.Info($"Frame: {frame}");
 
@@ -559,7 +559,7 @@ namespace Telegram.Navigation
         /// A developer should call this when creating a new/secondary frame.
         /// The shell back button should only be setup one time.
         /// </summary>
-        public INavigationService NavigationServiceFactory(WindowContext window, BackButton backButton, Frame frame, int session, string id, bool root)
+        public INavigationService NavigationServiceFactory(WindowContext window, BackButton backButton, Frame frame, ISessionService session, string id, bool root)
         {
             Logger.Info($"{nameof(backButton)}: {backButton} {nameof(frame)}: {frame}");
 

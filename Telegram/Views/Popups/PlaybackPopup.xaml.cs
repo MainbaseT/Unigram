@@ -558,7 +558,7 @@ namespace Telegram.Views.Popups
 
         private void SaveToFiles(PlaybackItem item)
         {
-            var service = TypeResolver.Current.Resolve<IStorageService>(_clientService.SessionId);
+            var service = _clientService.Session.Resolve<IStorageService>();
             _ = service.SaveFileAsAsync(item.Document);
         }
 

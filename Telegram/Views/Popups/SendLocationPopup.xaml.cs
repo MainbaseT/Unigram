@@ -10,6 +10,7 @@ using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Devices.Geolocation;
@@ -34,10 +35,10 @@ namespace Telegram.Views.Popups
 
         public InputMessageContent Media { get; private set; }
 
-        public SendLocationPopup(int sessionId)
+        public SendLocationPopup(ISessionService session)
         {
             InitializeComponent();
-            DataContext = TypeResolver.Current.Resolve<SendLocationViewModel>(sessionId);
+            DataContext = session.Resolve<SendLocationViewModel>();
 
             Title = Strings.AttachLocation;
 

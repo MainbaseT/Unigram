@@ -648,7 +648,7 @@ namespace Telegram.Common
                 var confirm = await navigation.ShowPopupAsync(new JoinGroupCallPopup(clientService, participants));
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    TypeResolver.Current.Resolve<IVoipService>(clientService.SessionId).JoinGroupCall(navigation, inputGroupCall);
+                    clientService.Session.Resolve<IVoipService>().JoinGroupCall(navigation, inputGroupCall);
                 }
             }
             else
@@ -793,8 +793,8 @@ namespace Telegram.Common
                 var response2 = await clientService.SendAsync(new GetStory(chat.Id, storyId, false));
                 if (response2 is Story story)
                 {
-                    var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
-                    var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+                    var settings = clientService.Session.Resolve<ISettingsService>();
+                    var aggregator = clientService.Session.Resolve<IEventAggregator>();
 
                     var activeStories = new ActiveStoriesViewModel(clientService, settings, aggregator, story);
                     var viewModel = StoryListViewModel.Create(navigation, activeStories);
@@ -833,8 +833,8 @@ namespace Telegram.Common
                                 await clientService.SendAsync(new GetGroupCall(live.GroupCallId));
                             }
 
-                            var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
-                            var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+                            var settings = clientService.Session.Resolve<ISettingsService>();
+                            var aggregator = clientService.Session.Resolve<IEventAggregator>();
 
                             var activeStories = new ActiveStoriesViewModel(clientService, settings, aggregator, story);
                             var viewModel = StoryListViewModel.Create(navigation, activeStories);

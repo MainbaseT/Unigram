@@ -38,7 +38,7 @@ namespace Telegram.Views.Popups
         {
             InitializeComponent();
 
-            DataContext = TypeResolver.Current.Resolve<SupergroupEditRestrictedViewModel>(clientService.SessionId);
+            DataContext = clientService.Session.Resolve<SupergroupEditRestrictedViewModel>();
 
             Title = messages.Count == 1
                 ? topic is not MessageTopicSavedMessages ? Strings.DeleteSingleMessagesTitle : Strings.UnsaveSingleMessagesTitle
@@ -236,7 +236,7 @@ namespace Telegram.Views.Popups
         {
             InitializeComponent();
 
-            DataContext = TypeResolver.Current.Resolve<SupergroupEditRestrictedViewModel>(clientService.SessionId);
+            DataContext = clientService.Session.Resolve<SupergroupEditRestrictedViewModel>();
 
             Title = Strings.DeleteSingleMessagesTitle;
             PrimaryButtonText = Strings.Delete;

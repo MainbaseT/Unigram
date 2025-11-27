@@ -157,8 +157,7 @@ namespace Telegram.ViewModels
 
         public void OpenFile(File file)
         {
-            // TODO: I don't like retrieving services this way
-            var service = TypeResolver.Current.Resolve<IStorageService>(ClientService.SessionId);
+            var service = ClientService.Session.Resolve<IStorageService>();
             if (service != null)
             {
                 _ = service.OpenFileAsync(file);

@@ -54,7 +54,7 @@ namespace Telegram.Common
         private readonly Dictionary<string, AppWindow> _instantWindows = new();
 
         public TLNavigationService(IClientService clientService, IViewService viewService, WindowContext window, Frame frame, string id)
-            : base(window, frame, clientService.SessionId, id)
+            : base(window, frame, clientService.Session, id)
         {
             _clientService = clientService;
             _passcodeService = TypeResolver.Current.Passcode;
@@ -296,7 +296,7 @@ namespace Telegram.Common
                 Content = control =>
                 {
                     // TODO: WinUI - control will be replaced by WindowContext.
-                    var nav = BootStrapper.Current.NavigationServiceFactory(WindowContext.Current, BootStrapper.BackButton.Ignore, SessionId, "Payments" + Guid.NewGuid(), false);
+                    var nav = BootStrapper.Current.NavigationServiceFactory(WindowContext.Current, BootStrapper.BackButton.Ignore, Session, "Payments" + Guid.NewGuid(), false);
                     nav.Navigate(typeof(PaymentFormPage), new PaymentFormArgs(inputInvoice, paymentForm, content));
 
                     return nav.Frame;
@@ -331,7 +331,7 @@ namespace Telegram.Common
                 PersistedId = "Payments",
                 Content = control =>
                 {
-                    var nav = BootStrapper.Current.NavigationServiceFactory(WindowContext.Current, BootStrapper.BackButton.Ignore, SessionId, "Payments" + Guid.NewGuid(), false);
+                    var nav = BootStrapper.Current.NavigationServiceFactory(WindowContext.Current, BootStrapper.BackButton.Ignore, Session, "Payments" + Guid.NewGuid(), false);
                     nav.Navigate(typeof(PaymentFormPage), paymentReceipt);
 
                     return nav.Frame;
@@ -802,7 +802,7 @@ namespace Telegram.Common
                 var confirm = await ShowPopupAsync(popup);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    var viewModel = TypeResolver.Current.Resolve<SettingsPasscodeViewModel>(SessionId);
+                    var viewModel = Session.Resolve<SettingsPasscodeViewModel>();
                     viewModel.NavigationService = this;
 
                     if (await viewModel.ToggleAsync())

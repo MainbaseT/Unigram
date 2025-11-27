@@ -15,7 +15,6 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Stories;
-using Telegram.Views;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -127,8 +126,8 @@ namespace Telegram.Controls
 
             if (clientService.TryGetActiveStories(chat.Id, out ChatActiveStories chatActiveStories))
             {
-                var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
-                var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+                var settings = clientService.Session.Resolve<ISettingsService>();
+                var aggregator = clientService.Session.Resolve<IEventAggregator>();
 
                 var activeStories = new ActiveStoriesViewModel(clientService, settings, aggregator, chatActiveStories, chat);
                 await activeStories.Wait;

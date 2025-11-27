@@ -350,7 +350,7 @@ namespace Telegram.ViewModels.Settings
             }
 
             var popup = new ChooseChatsPopup();
-            popup.Legacy(SessionId);
+            popup.Legacy(Session);
             popup.PrimaryButtonText = Strings.OK;
             popup.ViewModel.NavigationService = NavigationService;
             popup.ViewModel.AllowEmptySelection = true;
@@ -502,7 +502,7 @@ namespace Telegram.ViewModels.Settings
             }
 
             var popup = new ChooseChatsPopup();
-            popup.Legacy(SessionId);
+            popup.Legacy(Session);
             popup.PrimaryButtonText = Strings.OK;
             popup.ViewModel.NavigationService = NavigationService;
             popup.ViewModel.AllowEmptySelection = true;

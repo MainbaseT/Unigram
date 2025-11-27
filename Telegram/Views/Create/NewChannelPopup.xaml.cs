@@ -32,7 +32,7 @@ namespace Telegram.Views.Create
 
         public override void OnNavigatedTo(object parameter)
         {
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(ViewModel.SessionId, EmojiDrawerMode.Text);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(ViewModel.Session, EmojiDrawerMode.Text);
         }
 
         private void Title_Loaded(object sender, RoutedEventArgs e)

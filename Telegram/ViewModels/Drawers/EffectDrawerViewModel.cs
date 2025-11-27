@@ -11,7 +11,6 @@ using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 
 namespace Telegram.ViewModels.Drawers
 {
@@ -26,9 +25,9 @@ namespace Telegram.ViewModels.Drawers
             SavedStickers = new MvxObservableCollection<MessageEffect>();
         }
 
-        public static EffectDrawerViewModel Create(int sessionId)
+        public static EffectDrawerViewModel Create(ISessionService session)
         {
-            var context = TypeResolver.Current.Resolve<EffectDrawerViewModel>(sessionId);
+            var context = session.Resolve<EffectDrawerViewModel>();
             context.Dispatcher = WindowContext.Current.Dispatcher;
             return context;
         }

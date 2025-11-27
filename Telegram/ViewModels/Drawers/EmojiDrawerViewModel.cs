@@ -15,7 +15,6 @@ using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using WinRT;
 
 namespace Telegram.ViewModels.Drawers
@@ -76,9 +75,9 @@ namespace Telegram.ViewModels.Drawers
             Aggregator.Subscribe<UpdateInstalledStickerSets>(this, Handle);
         }
 
-        public static EmojiDrawerViewModel Create(int sessionId, EmojiDrawerMode mode = EmojiDrawerMode.Chat)
+        public static EmojiDrawerViewModel Create(ISessionService session, EmojiDrawerMode mode = EmojiDrawerMode.Chat)
         {
-            var context = TypeResolver.Current.Resolve<EmojiDrawerViewModel>(sessionId);
+            var context = session.Resolve<EmojiDrawerViewModel>();
             context.Dispatcher = WindowContext.Current.Dispatcher;
             context.Mode = mode;
             return context;

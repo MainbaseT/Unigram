@@ -15,7 +15,6 @@ using Telegram.Common;
 using Telegram.Native.Calls;
 using Telegram.Navigation;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Telegram.Views.Calls;
 using Telegram.Views.Calls.Popups;
 using Windows.ApplicationModel.Calls;
@@ -1742,7 +1741,7 @@ namespace Telegram.Services.Calls
             }
             else
             {
-                var service = TypeResolver.Current.Resolve<IViewService>(int.MaxValue);
+                var service = ClientService.Session.Resolve<IViewService>();
                 var options = new ViewServiceOptions
                 {
                     Width = 720,

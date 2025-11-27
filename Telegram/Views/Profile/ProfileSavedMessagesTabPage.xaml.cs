@@ -58,7 +58,7 @@ namespace Telegram.Views.Profile
 
         public void Activate(INavigationService navigationService)
         {
-            var viewModel = TypeResolver.Current.Resolve<DialogViewModel, IDialogDelegate>(View, navigationService.SessionId);
+            var viewModel = navigationService.Session.Resolve<DialogViewModel, IDialogDelegate>(View);
             viewModel.NavigationService = navigationService;
             viewModel.IsSavedMessagesTab = true;
             DataContext = viewModel;

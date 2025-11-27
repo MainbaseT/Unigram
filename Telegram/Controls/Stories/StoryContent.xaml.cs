@@ -34,7 +34,6 @@ using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Stories;
-using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -1871,7 +1870,7 @@ namespace Telegram.Controls.Stories
             flyout.CreateFlyoutItem(OpenMessage, message, Strings.OpenProfile, Icons.PersonCircle);
             flyout.CreateFlyoutItem(CopyMessage, message, Strings.Copy, Icons.Copy);
 
-            var translate = TypeResolver.Current.Resolve<ITranslateService>(ViewModel.SessionId);
+            var translate = ViewModel.Session.Resolve<ITranslateService>();
             if (translate.CanTranslateText(message.Text.Text))
             {
                 flyout.CreateFlyoutItem(TranslateMessage, message, Strings.TranslateMessage, Icons.Translate);
@@ -1898,7 +1897,7 @@ namespace Telegram.Controls.Stories
         private void TranslateMessage(GroupCallMessage message)
         {
             var language = LanguageIdentification.IdentifyLanguage(message.Text.Text);
-            var translate = TypeResolver.Current.Resolve<ITranslateService>(ViewModel.SessionId);
+            var translate = ViewModel.Session.Resolve<ITranslateService>();
 
             var popup = new TranslatePopup(translate, message.Text.Text, language, ViewModel.Settings.Translate.To, false)
             {

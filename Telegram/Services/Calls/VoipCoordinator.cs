@@ -194,8 +194,8 @@ namespace Telegram.Services
 
                 lock (_activeLock)
                 {
-                    var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
-                    var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+                    var settings = clientService.Session.Resolve<ISettingsService>();
+                    var aggregator = clientService.Session.Resolve<IEventAggregator>();
 
                     _activeCall = new VoipGroupCall(clientService, settings, aggregator, xamlRoot, groupCall);
                     changed = false;
@@ -228,8 +228,8 @@ namespace Telegram.Services
 
                 lock (_activeLock)
                 {
-                    var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
-                    var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+                    var settings = clientService.Session.Resolve<ISettingsService>();
+                    var aggregator = clientService.Session.Resolve<IEventAggregator>();
 
                     _activeCall = new VoipGroupCall(clientService, settings, aggregator, xamlRoot, userIds);
                     changed = false;
@@ -386,8 +386,8 @@ namespace Telegram.Services
 
                 lock (_activeLock)
                 {
-                    var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
-                    var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+                    var settings = clientService.Session.Resolve<ISettingsService>();
+                    var aggregator = clientService.Session.Resolve<IEventAggregator>();
 
                     _activeCall = new VoipGroupCall(clientService, settings, aggregator, xamlRoot, chat, groupCall, alias, inviteHash, isLiveStory);
                     changed = groupCall.ScheduledStartDate > 0;
@@ -400,7 +400,7 @@ namespace Telegram.Services
 
                 if (changed)
                 {
-                    var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+                    var aggregator = clientService.Session.Resolve<IEventAggregator>();
                     aggregator.Publish(new UpdateGroupCall(new GroupCall(groupCall.Id, groupCall.Title, groupCall.InviteLink, groupCall.PaidMessageStarCount, groupCall.ScheduledStartDate, groupCall.EnabledStartNotification, groupCall.IsActive, groupCall.IsVideoChat, groupCall.IsLiveStory, groupCall.IsRtmpStream, true, false, groupCall.IsOwned, groupCall.CanBeManaged, groupCall.ParticipantCount, groupCall.HasHiddenListeners, groupCall.LoadedAllParticipants, groupCall.MessageSenderId, groupCall.RecentSpeakers, groupCall.IsMyVideoEnabled, groupCall.IsMyVideoPaused, groupCall.CanEnableVideo, groupCall.MuteNewParticipants, groupCall.CanToggleMuteNewParticipants, groupCall.CanSendMessages, groupCall.AreMessagesAllowed, groupCall.CanToggleAreMessagesAllowed, groupCall.CanDeleteMessages, groupCall.RecordDuration, groupCall.IsVideoRecorded, groupCall.Duration)));
                 }
             });
@@ -440,8 +440,8 @@ namespace Telegram.Services
                     }
                     else
                     {
-                        var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
-                        var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+                        var settings = clientService.Session.Resolve<ISettingsService>();
+                        var aggregator = clientService.Session.Resolve<IEventAggregator>();
 
                         _activeCall = new VoipCall(clientService, settings, aggregator, update.Call, state);
                         changed = true;

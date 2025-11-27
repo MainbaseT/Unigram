@@ -666,8 +666,8 @@ namespace Telegram.Views.Stars.Popups
                 .Where(x => x is not null)
                 .ToList();
 
-            var storageService = TypeResolver.Current.Resolve<IStorageService>(_clientService.SessionId);
-            var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(_clientService.SessionId);
+            var storageService = _clientService.Session.Resolve<IStorageService>();
+            var aggregator = _clientService.Session.Resolve<IEventAggregator>();
 
             var viewModel = new StandaloneGalleryViewModel(_clientService, storageService, aggregator, items, item);
             _navigationService.ShowGallery(viewModel, Media1);

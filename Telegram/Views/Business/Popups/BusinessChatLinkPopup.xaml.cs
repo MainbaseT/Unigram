@@ -39,7 +39,7 @@ namespace Telegram.Views.Business.Popups
 
             LinkButton.Text = chatLink.Link.Replace("https://", string.Empty);
 
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(viewModel.SessionId);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(viewModel.Session);
             CaptionInput.DataContext = viewModel;
             CaptionInput.CustomEmoji = CustomEmoji;
             CaptionInput.SetText(chatLink.Text);

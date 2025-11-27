@@ -513,7 +513,7 @@ namespace Telegram.Controls.Cells
             }
 
             var context = WindowContext.ForXamlRoot(this);
-            var service = context.NavigationServices.GetByFrameId($"Main{_viewModel.SessionId}") as NavigationService;
+            var service = context.NavigationServices.GetByFrameId($"Main{_viewModel.Session.Id}") as NavigationService;
 
             var grid = new Grid();
             var chatView = new ChatView
@@ -523,7 +523,7 @@ namespace Telegram.Controls.Cells
                 Height = 360
             };
 
-            var viewModel = TypeResolver.Current.Resolve<DialogViewModel, IDialogDelegate>(chatView, service.SessionId);
+            var viewModel = service.Session.Resolve<DialogViewModel, IDialogDelegate>(chatView);
             viewModel.NavigationService = service;
             viewModel.Dispatcher = service.Dispatcher;
             chatView.Activate(viewModel);

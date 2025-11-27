@@ -42,16 +42,17 @@ namespace Telegram.Controls
 
         public DialogViewModel ViewModel => DataContext as DialogViewModel;
 
-        public int SessionId
+        public ISessionService Session
         {
             get
             {
                 if (DataContext is ViewModelBase viewModel)
                 {
-                    return viewModel.SessionId;
+                    return viewModel.Session;
                 }
 
-                return int.MaxValue;
+                // TODO: verify
+                return null;
             }
         }
 
@@ -114,7 +115,7 @@ namespace Telegram.Controls
                 if (EmojisRoot == null)
                 {
                     FindName(nameof(EmojisRoot));
-                    EmojisRoot.DataContext = EmojiDrawerViewModel.Create(SessionId);
+                    EmojisRoot.DataContext = EmojiDrawerViewModel.Create(Session);
                     EmojisRoot.ItemContextRequested += EmojiContextRequested;
                 }
                 else
@@ -151,7 +152,7 @@ namespace Telegram.Controls
                 if (AnimationsRoot == null)
                 {
                     FindName(nameof(AnimationsRoot));
-                    AnimationsRoot.DataContext = AnimationDrawerViewModel.Create(SessionId);
+                    AnimationsRoot.DataContext = AnimationDrawerViewModel.Create(Session);
                     AnimationsRoot.ItemClick += AnimationClick;
                     AnimationsRoot.ItemContextRequested += AnimationContextRequested;
                 }
@@ -189,7 +190,7 @@ namespace Telegram.Controls
                 if (StickersRoot == null)
                 {
                     FindName(nameof(StickersRoot));
-                    StickersRoot.DataContext = StickerDrawerViewModel.Create(SessionId);
+                    StickersRoot.DataContext = StickerDrawerViewModel.Create(Session);
                     StickersRoot.ItemClick += StickerClick;
                     StickersRoot.ItemContextRequested += StickerContextRequested;
                     StickersRoot.ChoosingItem += ChoosingSticker;

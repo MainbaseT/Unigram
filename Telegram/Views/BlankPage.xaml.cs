@@ -28,10 +28,10 @@ namespace Telegram.Views
             NavigationCacheMode = NavigationCacheMode.Required;
         }
 
-        public void Activate(int sessionId)
+        public void Activate(ISessionService session)
         {
-            _clientService ??= TypeResolver.Current.Resolve<IClientService>(sessionId);
-            _aggregator ??= TypeResolver.Current.Resolve<IEventAggregator>(sessionId);
+            _clientService ??= session.Resolve<IClientService>();
+            _aggregator ??= session.Resolve<IEventAggregator>();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

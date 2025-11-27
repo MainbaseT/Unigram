@@ -13,7 +13,6 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Supergroups;
-using Telegram.Views;
 using Telegram.Views.Chats;
 using Telegram.Views.Chats.Popups;
 using Telegram.Views.Monetization.Popups;
@@ -37,7 +36,7 @@ namespace Telegram.ViewModels.Chats
         public ChatRevenueViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
-            Stars = TypeResolver.Current.Resolve<ChatStarsViewModel>(clientService.SessionId);
+            Stars = clientService.Session.Resolve<ChatStarsViewModel>();
             Items = new IncrementalCollection<object>(this);
 
             Children.Add(Stars);

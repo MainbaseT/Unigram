@@ -37,8 +37,8 @@ namespace Telegram.ViewModels.Stories
         public StoryListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, StoryList storyList)
             : base(clientService, settingsService, aggregator)
         {
-            _storageService = TypeResolver.Current.Resolve<IStorageService>(clientService.SessionId);
-            _translateService = TypeResolver.Current.Resolve<ITranslateService>(clientService.SessionId);
+            _storageService = Session.Resolve<IStorageService>();
+            _translateService = Session.Resolve<ITranslateService>();
 
             Items = new ItemsCollection(clientService, aggregator, this, storyList);
         }
@@ -46,8 +46,8 @@ namespace Telegram.ViewModels.Stories
         public StoryListViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, params ActiveStoriesViewModel[] items)
             : base(clientService, settingsService, aggregator)
         {
-            _storageService = TypeResolver.Current.Resolve<IStorageService>(clientService.SessionId);
-            _translateService = TypeResolver.Current.Resolve<ITranslateService>(clientService.SessionId);
+            _storageService = Session.Resolve<IStorageService>();
+            _translateService = Session.Resolve<ITranslateService>();
 
             Items = new ObservableCollection<ActiveStoriesViewModel>(items);
         }

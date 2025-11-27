@@ -67,7 +67,7 @@ namespace Telegram.ViewModels
         private string _nextOffset;
 
         public SearchChatsViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
-            : base(clientService, settingsService, TypeResolver.Current.Resolve<IStorageService>(clientService.SessionId), aggregator)
+            : base(clientService, settingsService, clientService.Session.Resolve<IStorageService>(), aggregator)
         {
             _channels = new SearchChannelsViewModel(clientService, settingsService, aggregator);
             _webApps = new SearchWebAppsViewModel(clientService, settingsService, aggregator);

@@ -1113,9 +1113,9 @@ namespace Telegram.Views.Popups
         }
 
         [Obsolete]
-        public void Legacy(int sessionId)
+        public void Legacy(ISessionService session)
         {
-            DataContext = TypeResolver.Current.Resolve<ChooseChatsViewModel>(sessionId);
+            DataContext = session.Resolve<ChooseChatsViewModel>();
         }
 
         private bool _legacyNavigated;
@@ -1129,7 +1129,7 @@ namespace Telegram.Views.Popups
 
             _legacyNavigated = true;
 
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(ViewModel.SessionId);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(ViewModel.Session);
             ViewModel.PropertyChanged += OnPropertyChanged;
 
             if (ViewModel.Options.Mode == ChooseChatsMode.Contacts)
@@ -1299,7 +1299,7 @@ namespace Telegram.Views.Popups
         public static ChooseChatsPopup Create(INavigationService navigationService, string title)
         {
             var popup = new ChooseChatsPopup();
-            popup.DataContext = TypeResolver.Current.Resolve<ChooseChatsViewModel>(navigationService.SessionId);
+            popup.DataContext = navigationService.Session.Resolve<ChooseChatsViewModel>();
             popup.ViewModel.NavigationService = navigationService;
             popup.ViewModel.Title = title;
             popup.ChatFolders.Visibility = Visibility.Collapsed;
@@ -1310,7 +1310,7 @@ namespace Telegram.Views.Popups
         public static async Task<Chat> PickChatAsync(INavigationService navigationService, string title, ChooseChatsOptions options)
         {
             var popup = new ChooseChatsPopup();
-            popup.DataContext = TypeResolver.Current.Resolve<ChooseChatsViewModel>(navigationService.SessionId);
+            popup.DataContext = navigationService.Session.Resolve<ChooseChatsViewModel>();
             popup.ViewModel.NavigationService = navigationService;
             popup.ViewModel.Title = title;
             popup.ChatFolders.Visibility = Visibility.Collapsed;
@@ -1345,7 +1345,7 @@ namespace Telegram.Views.Popups
         public static async Task<IList<Chat>> PickChatsAsync(INavigationService navigationService, string title, long[] selected, ChooseChatsOptions options, ListViewSelectionMode selectionMode = ListViewSelectionMode.Multiple, bool allowEmptySelection = false)
         {
             var popup = new ChooseChatsPopup();
-            popup.DataContext = TypeResolver.Current.Resolve<ChooseChatsViewModel>(navigationService.SessionId);
+            popup.DataContext = navigationService.Session.Resolve<ChooseChatsViewModel>();
             popup.ViewModel.NavigationService = navigationService;
             popup.ViewModel.SelectionMode = selectionMode;
             popup.ViewModel.AllowEmptySelection = allowEmptySelection;
@@ -1474,7 +1474,7 @@ namespace Telegram.Views.Popups
                 });
 
                 var popup = new ChooseChatsPopup();
-                popup.DataContext = TypeResolver.Current.Resolve<ChooseChatsViewModel>(navigationService.SessionId);
+                popup.DataContext = navigationService.Session.Resolve<ChooseChatsViewModel>();
                 popup.ViewModel.NavigationService = navigationService;
                 popup.ViewModel.Title = include ? Strings.FilterAlwaysShow : Strings.FilterNeverShow;
                 popup.ViewModel.AllowEmptySelection = true;
@@ -1509,7 +1509,7 @@ namespace Telegram.Views.Popups
             else
             {
                 var popup = new ChooseChatsPopup();
-                popup.DataContext = TypeResolver.Current.Resolve<ChooseChatsViewModel>(navigationService.SessionId);
+                popup.DataContext = navigationService.Session.Resolve<ChooseChatsViewModel>();
                 popup.ViewModel.NavigationService = navigationService;
                 popup.ViewModel.Title = include ? Strings.FilterAlwaysShow : Strings.FilterNeverShow;
                 popup.ViewModel.AllowEmptySelection = true;
@@ -2217,7 +2217,7 @@ namespace Telegram.Views.Popups
 
                     var item = new ToggleMenuFlyoutItem();
                     item.Style = BootStrapper.Current.Resources["ProfilePictureToggleMenuFlyoutItemStyle"] as Style;
-                    item.IsChecked = session.Id == ViewModel.SessionId;
+                    item.IsChecked = session == ViewModel.Session;
                     item.Icon = new SymbolIcon();
                     item.Text = user.FullName();
                     item.Tag = photo;

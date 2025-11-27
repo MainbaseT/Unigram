@@ -20,22 +20,20 @@ namespace Telegram.Views.Popups
 {
     public sealed partial class IdenticonPopup : ContentPopup
     {
-        public IdenticonPopup(int sessionId, Chat chat)
+        public IdenticonPopup(IClientService clientService, Chat chat)
         {
             InitializeComponent();
             Title = Strings.EncryptionKey;
 
             if (chat.Type is ChatTypeSecret secret)
             {
-                var service = TypeResolver.Current.Resolve<IClientService>(sessionId);
-
-                var secretChat = service.GetSecretChat(secret.SecretChatId);
+                var secretChat = clientService.GetSecretChat(secret.SecretChatId);
                 if (secretChat == null)
                 {
                     return;
                 }
 
-                var user = service.GetUser(secret.UserId);
+                var user = clientService.GetUser(secret.UserId);
                 if (user == null)
                 {
                     return;

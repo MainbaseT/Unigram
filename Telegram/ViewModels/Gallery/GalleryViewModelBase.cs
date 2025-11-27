@@ -12,7 +12,6 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Delegates;
-using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.Streams;
@@ -30,7 +29,7 @@ namespace Telegram.ViewModels.Gallery
         public IGalleryDelegate Delegate { get; set; }
 
         public GalleryViewModelBase(IClientService clientService, IStorageService storageService, IEventAggregator aggregator)
-            : base(clientService, TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId), aggregator)
+            : base(clientService, clientService.Session.Resolve<ISettingsService>(), aggregator)
         {
             _storageService = storageService;
             //Aggregator.Subscribe(this);

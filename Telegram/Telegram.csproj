@@ -398,6 +398,7 @@
     <Compile Include="Services\Calls\VoipGroupCallEventArgs.cs" />
     <Compile Include="Services\Settings\ToolTipSettings.cs" />
     <Compile Include="Services\TextRecognitionService.cs" />
+    <Compile Include="Services\SessionService.g.cs" />
     <Compile Include="Td\Api\ChatProjection.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />
@@ -516,7 +517,6 @@
     <Compile Include="Collections\Handlers\ChatDiffHandler.cs" />
     <Compile Include="Common\ListViewExtensions.cs" />
     <Compile Include="Common\NotifyIcon.cs" />
-    <Compile Include="Common\TypeLocator.cs" />
     <Compile Include="Common\TypeResolver.cs" />
     <Compile Include="Controls\ActiveStoriesSegments.cs" />
     <Compile Include="Controls\AnimatedImage.cs" />

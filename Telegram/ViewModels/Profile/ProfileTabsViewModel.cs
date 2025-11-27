@@ -15,7 +15,6 @@ using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Telegram.Views.Chats;
 using Telegram.Views.Profile;
 using Windows.UI.Xaml.Navigation;
@@ -190,14 +189,14 @@ namespace Telegram.ViewModels.Profile
         public ProfileTabsViewModel(IClientService clientService, ISettingsService settingsService, IStorageService storageService, IEventAggregator aggregator)
             : base(clientService, settingsService, storageService, aggregator)
         {
-            _savedChatsViewModel = TypeResolver.Current.Resolve<ProfileSavedChatsTabViewModel>(clientService.SessionId);
-            _pinnedStoriesTabViewModel = TypeResolver.Current.Resolve<ProfileStoriesTabViewModel>(clientService.SessionId);
-            _archivedStoriesTabViewModel = TypeResolver.Current.Resolve<ProfileStoriesTabViewModel>(clientService.SessionId);
-            _groupsTabViewModel = TypeResolver.Current.Resolve<ProfileGroupsTabViewModel>(clientService.SessionId);
-            _channelsTabViewModel = TypeResolver.Current.Resolve<ProfileChannelsTabViewModel>(clientService.SessionId);
-            _botsTabViewModel = TypeResolver.Current.Resolve<ProfileBotsTabViewModel>(clientService.SessionId);
-            _giftsTabViewModel = TypeResolver.Current.Resolve<ProfileGiftsTabViewModel>(clientService.SessionId);
-            _membersTabVieModel = TypeResolver.Current.Resolve<ProfileMembersTabViewModel>(clientService.SessionId);
+            _savedChatsViewModel = Session.Resolve<ProfileSavedChatsTabViewModel>();
+            _pinnedStoriesTabViewModel = Session.Resolve<ProfileStoriesTabViewModel>();
+            _archivedStoriesTabViewModel = Session.Resolve<ProfileStoriesTabViewModel>();
+            _groupsTabViewModel = Session.Resolve<ProfileGroupsTabViewModel>();
+            _channelsTabViewModel = Session.Resolve<ProfileChannelsTabViewModel>();
+            _botsTabViewModel = Session.Resolve<ProfileBotsTabViewModel>();
+            _giftsTabViewModel = Session.Resolve<ProfileGiftsTabViewModel>();
+            _membersTabVieModel = Session.Resolve<ProfileMembersTabViewModel>();
             _membersTabVieModel.IsEmbedded = true;
 
             _pinnedStoriesTabViewModel.SetType(ChatStoriesType.Pinned);

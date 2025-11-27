@@ -22,7 +22,7 @@ namespace Telegram.Common
     {
         private readonly ILifetimeService _lifetimeService;
 
-        public TLRootNavigationService(ISessionService sessionService, WindowContext window, Frame frame, int session, string id)
+        public TLRootNavigationService(ISessionService sessionService, WindowContext window, Frame frame, ISessionService session, string id)
             : base(window, frame, session, id)
         {
             _lifetimeService = TypeResolver.Current.Lifetime;

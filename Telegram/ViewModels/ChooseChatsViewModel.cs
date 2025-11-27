@@ -19,7 +19,6 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Telegram.Views.Popups;
 using Telegram.Views.Supergroups.Popups;
 using Windows.ApplicationModel.DataTransfer;
@@ -946,7 +945,7 @@ namespace Telegram.ViewModels
             }
             else if (_configuration is ChooseChatsConfigurationCreateGroupCall)
             {
-                TypeResolver.Current.Resolve<IVoipService>(SessionId).CreateGroupCall(NavigationService, Array.Empty<long>());
+                Session.Resolve<IVoipService>().CreateGroupCall(NavigationService, Array.Empty<long>());
             }
             else if (_configuration is ChooseChatsConfigurationBotAddToChannel botAddToChannel)
             {

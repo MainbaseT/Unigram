@@ -15,7 +15,6 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Chats;
-using Telegram.Views;
 using Telegram.Views.Chats;
 using Windows.UI.Xaml.Navigation;
 using WinRT;
@@ -45,9 +44,9 @@ namespace Telegram.ViewModels
         public RevenueViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator)
         {
-            _statisticsViewModel = TypeResolver.Current.Resolve<ChatStatisticsViewModel>(clientService.SessionId);
-            _boostsViewModel = TypeResolver.Current.Resolve<ChatBoostsViewModel>(clientService.SessionId);
-            _revenueViewModel = TypeResolver.Current.Resolve<ChatRevenueViewModel>(clientService.SessionId);
+            _statisticsViewModel = Session.Resolve<ChatStatisticsViewModel>();
+            _boostsViewModel = Session.Resolve<ChatBoostsViewModel>();
+            _revenueViewModel = Session.Resolve<ChatRevenueViewModel>();
 
             Children.Add(_statisticsViewModel);
             Children.Add(_boostsViewModel);

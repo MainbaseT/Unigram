@@ -109,7 +109,7 @@ namespace Telegram.Views.Popups
                 if (StickersRoot == null)
                 {
                     FindName(nameof(StickersPanel));
-                    StickersRoot.DataContext = StickerDrawerViewModel.Create(ViewModel.SessionId);
+                    StickersRoot.DataContext = StickerDrawerViewModel.Create(ViewModel.Session);
                     StickersRoot.ItemClick += Stickers_ItemClick;
                 }
 
@@ -126,7 +126,7 @@ namespace Telegram.Views.Popups
                 if (EmojisRoot == null)
                 {
                     FindName(nameof(EmojisPanel));
-                    EmojisRoot.DataContext = EmojiDrawerViewModel.Create(ViewModel.SessionId, EmojiDrawerMode.ChatPhoto);
+                    EmojisRoot.DataContext = EmojiDrawerViewModel.Create(ViewModel.Session, EmojiDrawerMode.ChatPhoto);
                 }
 
                 EmojisRoot.Activate(null);

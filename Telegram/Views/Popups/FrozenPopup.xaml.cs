@@ -47,7 +47,7 @@ namespace Telegram.Views.Popups
             var navigationService = WindowContext.GetNavigationService(sender.XamlRoot);
             if (navigationService != null)
             {
-                var clientService = TypeResolver.Current.Resolve<IClientService>(navigationService.SessionId);
+                var clientService = navigationService.Session.Resolve<IClientService>();
 
                 Hide();
                 MessageHelper.OpenUrl(clientService, navigationService, _state.AppealLink);

@@ -33,7 +33,7 @@ namespace Telegram.Views.Business
 
             BackgroundControl.Update(ViewModel.ClientService, ViewModel.Aggregator);
 
-            StickerPanel.DataContext = StickerDrawerViewModel.Create(ViewModel.SessionId);
+            StickerPanel.DataContext = StickerDrawerViewModel.Create(ViewModel.Session);
             UpdateSticker();
         }
 

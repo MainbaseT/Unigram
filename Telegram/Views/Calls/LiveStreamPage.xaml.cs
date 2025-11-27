@@ -551,9 +551,9 @@ namespace Telegram.Views.Calls
             }
         }
 
-        private async void ShareInviteLink()
+        private void ShareInviteLink()
         {
-            await this.ShowPopupAsync(_call.ClientService.SessionId, new ChooseChatsPopup(), new ChooseChatsConfigurationGroupCall(_call.Id, true));
+            this.ShowPopup(_call.ClientService.Session, new ChooseChatsPopup(), new ChooseChatsConfigurationGroupCall(_call.Id, true));
         }
 
         private readonly ScrollViewer _scrollingHost;

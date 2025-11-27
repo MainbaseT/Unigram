@@ -71,7 +71,7 @@ namespace Telegram.Views.Users
                 {
                     FindName(nameof(NotePanel));
 
-                    EmojiPanel.DataContext = EmojiDrawerViewModel.Create(ViewModel.SessionId);
+                    EmojiPanel.DataContext = EmojiDrawerViewModel.Create(ViewModel.Session);
                     NoteField.AllowedEntities = FormattedTextEntity.Bold | FormattedTextEntity.Italic | FormattedTextEntity.Underline | FormattedTextEntity.Strikethrough | FormattedTextEntity.Spoiler | FormattedTextEntity.CustomEmoji;
                     NoteField.CustomEmoji = CustomEmoji;
                     NoteField.MaxLength = (int)ViewModel.ClientService.Options.UserNoteTextLengthMax;

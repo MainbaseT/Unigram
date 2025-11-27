@@ -58,7 +58,7 @@ namespace Telegram.Views
 
         public void Activate(INavigationService navigationService)
         {
-            var viewModel = TypeResolver.Current.Resolve<DialogBusinessRepliesViewModel, IDialogDelegate>(View, navigationService.SessionId);
+            var viewModel = navigationService.Session.Resolve<DialogBusinessRepliesViewModel, IDialogDelegate>(View);
             viewModel.NavigationService = navigationService;
             DataContext = viewModel;
             View.Activate(viewModel);

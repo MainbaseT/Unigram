@@ -73,7 +73,7 @@ namespace Telegram.Controls.Stories
             _groupCall.TotalStarCountChanged += OnTotalStarCountChanged;
             _groupCall.PropertyChanged += OnPropertyChanged;
 
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(activeStories.SessionId);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(activeStories.Session);
             MessageField.CustomEmoji = CustomEmoji;
             MessageField.DataContext = EmojiPanel.DataContext;
 

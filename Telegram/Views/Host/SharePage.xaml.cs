@@ -24,13 +24,13 @@ namespace Telegram.Views.Host
     {
         private readonly WindowContext _window;
 
-        public SharePage(WindowContext window, int sessionId)
+        public SharePage(WindowContext window, ISessionService session)
         {
             InitializeComponent();
 
             _window = window;
 
-            Background.Update(TypeResolver.Current.Resolve<IClientService>(sessionId));
+            Background.Update(session.Resolve<IClientService>());
 
             StateLabel.Text = Constants.RELEASE
                 ? Strings.AppDisplayName

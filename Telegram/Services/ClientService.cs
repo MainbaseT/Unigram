@@ -66,6 +66,7 @@ namespace Telegram.Services
 
         Sticker NextGreetingSticker();
 
+        ISessionService Session { get; }
         int SessionId { get; }
     }
 
@@ -295,7 +296,7 @@ namespace Telegram.Services
 
         private Client _client;
 
-        private readonly int _session;
+        private readonly ISessionService _session;
 
         private readonly IDeviceInfoService _deviceInfoService;
         private readonly ISettingsService _settings;
@@ -399,7 +400,7 @@ namespace Telegram.Services
         private static volatile Task _longRunningTask;
         private static readonly object _longRunningLock = new();
 
-        public ClientService(int session, bool online, IDeviceInfoService deviceInfoService, ISettingsService settings, ILocaleService locale, IEventAggregator aggregator)
+        public ClientService(ISessionService session, bool online, IDeviceInfoService deviceInfoService, ISettingsService settings, ILocaleService locale, IEventAggregator aggregator)
         {
             _session = session;
             _deviceInfoService = deviceInfoService;
@@ -1275,8 +1276,9 @@ namespace Telegram.Services
             return null;
         }
 
+        public ISessionService Session => _session;
 
-        public int SessionId => _session;
+        public int SessionId => _session.Id;
 
         public Client Client => _client;
 

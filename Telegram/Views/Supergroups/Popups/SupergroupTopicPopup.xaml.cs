@@ -68,7 +68,7 @@ namespace Telegram.Views.Supergroups.Popups
             }
             else
             {
-                Emoji.DataContext = EmojiDrawerViewModel.Create(clientService.SessionId, EmojiDrawerMode.Topics);
+                Emoji.DataContext = EmojiDrawerViewModel.Create(clientService.Session, EmojiDrawerMode.Topics);
                 Emoji.ViewModel.Update();
                 Emoji.ItemClick += OnItemClick;
 

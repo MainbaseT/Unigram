@@ -117,7 +117,7 @@ namespace Telegram.Views.Calls
 
             _messages = new ObservableCollection<GroupCallMessage>(_call.Messages);
             MessagesHost.ItemsSource = _messages;
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(_call.SessionId);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(_call.ClientService.Session);
             MessageField.CustomEmoji = CustomEmoji;
             MessageField.DataContext = EmojiPanel.DataContext;
             MessageField.MaxLength = (int)_call.ClientService.Options.GroupCallMessageTextLengthMax;
@@ -1522,9 +1522,9 @@ namespace Telegram.Views.Calls
             }
         }
 
-        private async void ShareInviteLink()
+        private void ShareInviteLink()
         {
-            await this.ShowPopupAsync(_call.ClientService.SessionId, new ChooseChatsPopup(), new ChooseChatsConfigurationGroupCall(_call.Id, false));
+            this.ShowPopup(_call.ClientService.Session, new ChooseChatsPopup(), new ChooseChatsConfigurationGroupCall(_call.Id, false));
         }
 
         private void OnChoosingItemContainer(ListViewBase sender, ChoosingItemContainerEventArgs args)

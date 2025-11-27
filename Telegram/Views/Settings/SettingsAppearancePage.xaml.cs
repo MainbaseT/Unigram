@@ -272,7 +272,7 @@ namespace Telegram.Views.Settings
 
             var message = new Message(0, senderId, 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, null, null);
 
-            var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
+            var settings = clientService.Session.Resolve<ISettingsService>();
 
             var delegato = new ChatMessageDelegate(clientService, settings, null);
             var viewModel = new MessageViewModel(clientService, delegato, null, null, null, message, true);
@@ -292,7 +292,7 @@ namespace Telegram.Views.Settings
                 .Select(x => new AvailableReaction(new ReactionTypeEmoji(x), false))
                 .ToList();
 
-            var viewModel = EmojiDrawerViewModel.Create(ViewModel.ClientService.SessionId, EmojiDrawerMode.Reactions);
+            var viewModel = EmojiDrawerViewModel.Create(ViewModel.ClientService.Session, EmojiDrawerMode.Reactions);
             _ = viewModel.UpdateReactions(new AvailableReactions(reactions, empty, empty, true, false, null));
 
             var flyout = EmojiMenuFlyout.ShowAt(ViewModel.ClientService, EmojiDrawerMode.Reactions, Reaction, EmojiFlyoutAlignment.TopRight, viewModel);

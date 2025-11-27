@@ -11,7 +11,6 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
-using Telegram.Views;
 using Windows.ApplicationModel;
 using Windows.Services.Store;
 using Windows.System;
@@ -97,7 +96,7 @@ namespace Telegram.Controls.Messages.Content
             else
             {
                 var navigationService = WindowContext.Current.GetNavigationService();
-                var service = TypeResolver.Current.Resolve<ICloudUpdateService>(_message.ClientService.SessionId);
+                var service = _message.ClientService.Session.Resolve<ICloudUpdateService>();
 
                 if (navigationService != null && service != null)
                 {

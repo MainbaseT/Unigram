@@ -42,11 +42,11 @@ namespace Telegram.Views.Popups
             InitializeComponent();
 
             _viewModel = new CreatePollViewModel(clientService,
-                TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId),
-                TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId));
+                clientService.Session.Resolve<ISettingsService>(),
+                clientService.Session.Resolve<IEventAggregator>());
 
             QuestionText.DataContext = _viewModel;
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(clientService.SessionId);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(clientService.Session);
 
             if (question != null)
             {

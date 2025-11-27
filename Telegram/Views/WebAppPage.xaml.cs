@@ -83,9 +83,9 @@ namespace Telegram.Views
             InitializeComponent();
 
             _clientService = clientService;
-            _viewService = TypeResolver.Current.Resolve<IViewService>(clientService.SessionId);
+            _viewService = clientService.Session.Resolve<IViewService>();
             _navigationService = new SecondaryNavigationService(clientService, navigationService, _viewService, WindowContext.Current);
-            _aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+            _aggregator = clientService.Session.Resolve<IEventAggregator>();
 
             _aggregator.Subscribe<UpdateWebAppMessageSent>(this, Handle)
                 .Subscribe<UpdatePaymentCompleted>(Handle);
@@ -184,9 +184,9 @@ namespace Telegram.Views
             InitializeComponent();
 
             _clientService = clientService;
-            _viewService = TypeResolver.Current.Resolve<IViewService>(clientService.SessionId);
+            _viewService = clientService.Session.Resolve<IViewService>();
             _navigationService = new SecondaryNavigationService(clientService, navigationService, _viewService, WindowContext.Current);
-            _aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+            _aggregator = clientService.Session.Resolve<IEventAggregator>();
 
             _botUser = botUser;
             _gameChatId = gameChatId;
@@ -998,14 +998,14 @@ namespace Telegram.Views
             MenuItemAddToStartMenu();
         }
 
-        private async void ProcessShareGame(bool withMyScore)
+        private void ProcessShareGame(bool withMyScore)
         {
-            await this.ShowPopupAsync(_clientService.SessionId, new ChooseChatsPopup(), new ChooseChatsConfigurationShareGame(_gameChatId, _gameMessageId, withMyScore));
+            this.ShowPopup(_clientService.Session, new ChooseChatsPopup(), new ChooseChatsConfigurationShareGame(_gameChatId, _gameMessageId, withMyScore));
         }
 
-        private async void ProcessShareToStory(JsonObject eventData)
+        private void ProcessShareToStory(JsonObject eventData)
         {
-            await MessagePopup.ShowAsync(XamlRoot, Strings.WebAppShareStoryNotSupported, Strings.AppName, Strings.OK);
+            _ = MessagePopup.ShowAsync(XamlRoot, Strings.WebAppShareStoryNotSupported, Strings.AppName, Strings.OK);
         }
 
         private async void RequestClipboardText(JsonObject eventData)

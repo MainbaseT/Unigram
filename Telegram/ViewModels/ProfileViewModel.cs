@@ -894,7 +894,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            ShowPopup(new IdenticonPopup(SessionId, chat));
+            ShowPopup(new IdenticonPopup(ClientService, chat));
         }
 
         public async void Invite()

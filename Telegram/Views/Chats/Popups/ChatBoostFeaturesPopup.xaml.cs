@@ -192,7 +192,7 @@ namespace Telegram.Views.Chats.Popups
                         _slots = slots;
                         Progress.Animate(++_boostCount);
 
-                        var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(_clientService.SessionId);
+                        var aggregator = _clientService.Session.Resolve<IEventAggregator>();
                         aggregator.Publish(new UpdateConfetti());
                     }
                 }

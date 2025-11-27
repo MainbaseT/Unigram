@@ -89,7 +89,7 @@ namespace Telegram.Navigation
 
         public IEventAggregator Aggregator => _aggregator;
 
-        public int SessionId => _clientService.SessionId;
+        public ISessionService Session => _clientService.Session;
 
         public bool IsPremium => _clientService.IsPremium;
         public bool IsPremiumAvailable => _clientService.IsPremiumAvailable;

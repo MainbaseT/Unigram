@@ -8,6 +8,7 @@
 using System.ComponentModel;
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Payments;
 using Windows.UI.Xaml.Controls;
@@ -20,10 +21,10 @@ namespace Telegram.Views.Payments
 
         public SavedCredentials Credentials { get; private set; }
 
-        public PaymentCredentialsPopup(int sessionId, PaymentFormTypeRegular paymentForm)
+        public PaymentCredentialsPopup(ISessionService session, PaymentFormTypeRegular paymentForm)
         {
             InitializeComponent();
-            DataContext = TypeResolver.Current.Resolve<PaymentCredentialsViewModel>(sessionId);
+            DataContext = session.Resolve<PaymentCredentialsViewModel>();
 
             Title = Strings.PaymentCardInfo;
 
@@ -40,10 +41,10 @@ namespace Telegram.Views.Payments
             }
         }
 
-        public PaymentCredentialsPopup(int sessionId, PaymentFormTypeRegular paymentForm, PaymentOption paymentOption)
+        public PaymentCredentialsPopup(ISessionService session, PaymentFormTypeRegular paymentForm, PaymentOption paymentOption)
         {
             InitializeComponent();
-            DataContext = TypeResolver.Current.Resolve<PaymentCredentialsViewModel>(sessionId);
+            DataContext = session.Resolve<PaymentCredentialsViewModel>();
 
             Title = Strings.PaymentCardInfo;
 

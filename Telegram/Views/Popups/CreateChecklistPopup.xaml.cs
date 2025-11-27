@@ -58,8 +58,8 @@ namespace Telegram.Views.Popups
 
             _checklist = checklist;
             _viewModel = new CreateChecklistViewModel(clientService,
-                TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId),
-                TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId));
+                clientService.Session.Resolve<ISettingsService>(),
+                clientService.Session.Resolve<IEventAggregator>());
 
             TitleText.DataContext = _viewModel;
             TitleText.MaxLength = (int)clientService.Options.ChecklistTitleLengthMax;
@@ -72,7 +72,7 @@ namespace Telegram.Views.Popups
             AddTask.DataContext = _viewModel;
             AddTask.MaxLength = (int)clientService.Options.ChecklistTaskTextLengthMax;
 
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(clientService.SessionId);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(clientService.Session);
 
             if (checklist == null)
             {

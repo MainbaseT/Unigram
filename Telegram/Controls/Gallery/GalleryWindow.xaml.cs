@@ -21,7 +21,6 @@ using Telegram.ViewModels.Chats;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Gallery;
 using Telegram.ViewModels.Users;
-using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.Devices.Input;
 using Windows.Foundation;
@@ -1116,7 +1115,7 @@ namespace Telegram.Controls.Gallery
                 {
                     flyout.CreateFlyoutItem(container.CopySelectedText, Strings.Copy, Icons.Copy, VirtualKey.C, VirtualKeyModifiers.Control);
 
-                    var translate = TypeResolver.Current.Resolve<ITranslateService>(ViewModel.ClientService.SessionId);
+                    var translate = ViewModel.ClientService.Session.Resolve<ITranslateService>();
                     if (translate.CanTranslateText(container.SelectedText))
                     {
                         void handler()
@@ -1132,7 +1131,7 @@ namespace Telegram.Controls.Gallery
                 }
                 else
                 {
-                    var translate = TypeResolver.Current.Resolve<ITranslateService>(ViewModel.ClientService.SessionId);
+                    var translate = ViewModel.ClientService.Session.Resolve<ITranslateService>();
                     if (translate.CanTranslateText(container.RecognizedText))
                     {
                         void handler()

@@ -74,7 +74,7 @@ namespace Telegram.Views.Calls.Popups
         private void Join_Click(object sender, TextUrlClickEventArgs e)
         {
             Hide();
-            TypeResolver.Current.Resolve<IVoipService>(_clientService.SessionId).JoinGroupCall(_navigationService, new InputGroupCallLink(_groupCall.InviteLink));
+            _clientService.Session.Resolve<IVoipService>().JoinGroupCall(_navigationService, new InputGroupCallLink(_groupCall.InviteLink));
         }
     }
 }

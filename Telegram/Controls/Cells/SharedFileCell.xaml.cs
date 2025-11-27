@@ -14,7 +14,6 @@ using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Chats;
 using Telegram.ViewModels.Profile;
-using Telegram.Views;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -321,7 +320,7 @@ namespace Telegram.Controls.Cells
             else if (_viewModel == null)
             {
                 // TODO: I don't like retrieving services this way
-                var service = TypeResolver.Current.Resolve<IStorageService>(_message.ClientService.SessionId);
+                var service = _message.ClientService.Session.Resolve<IStorageService>();
                 if (service != null)
                 {
                     _ = service.OpenFileAsync(file);
@@ -335,7 +334,7 @@ namespace Telegram.Controls.Cells
                     return;
                 }
 
-                var storageService = TypeResolver.Current.Resolve<IStorageService>(_message.ClientService.SessionId);
+                var storageService = _message.ClientService.Session.Resolve<IStorageService>();
                 var viewModel = new ChatGalleryViewModel(_message.ClientService, storageService, _viewModel.Aggregator, _message.ChatId, _viewModel.Topic, _message, properties);
                 _viewModel.NavigationService.ShowGallery(viewModel, Texture);
             }

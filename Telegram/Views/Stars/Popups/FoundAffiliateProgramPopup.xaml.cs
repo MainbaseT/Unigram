@@ -224,7 +224,7 @@ namespace Telegram.Views.Stars.Popups
                 Hide();
 
                 var popup = new ConnectedAffiliateProgramPopup(_clientService, _navigationService, program, _selectedType);
-                var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(_clientService.SessionId);
+                var aggregator = _clientService.Session.Resolve<IEventAggregator>();
 
                 aggregator.Publish(new UpdateChatAffiliatePrograms(_selectedType));
 

@@ -13,7 +13,9 @@ using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Navigation;
 using Telegram.Td.Api;
+using Telegram.ViewModels.Delegates;
 using Telegram.Views.Host;
+using Windows.System;
 
 namespace Telegram.Services
 {
@@ -28,49 +30,60 @@ namespace Telegram.Services
         bool IsUnmuted { get; }
         bool ShowCount { get; }
 
-
-
         IClientService ClientService { get; }
         ISettingsService Settings { get; }
         IEventAggregator Aggregator { get; }
+
+        bool TryResolve<T>(out T result);
+        T Resolve<T>();
+        T Resolve<T, TDelegate>(TDelegate delegato) where T : IDelegable<TDelegate> where TDelegate : IViewModelDelegate;
 
         Task<Object> SetAuthenticationPhoneNumberAsync(SetAuthenticationPhoneNumber function);
         void RequestQrCodeAuthentication(IList<long> otherUserIds);
     }
 
-    public partial class SessionService : ViewModelBase, ISessionService
+    public partial class SessionService : BindableBase, ISessionService
     {
-        private readonly ILifetimeService _lifetimeService;
-        private readonly int _id;
+        public IClientService ClientService => _clientService;
 
-        public SessionService(int session, bool selected, IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ILifetimeService lifecycleService)
-            : base(clientService, settingsService, aggregator)
+        public ISettingsService Settings => _settingsService;
+
+        public IEventAggregator Aggregator => _eventAggregator;
+
+        private void Initialize(bool active)
         {
-            _lifetimeService = lifecycleService;
-            _id = session;
-
             _unreadCount = new DebouncedProperty<int>(200, UpdateUnreadCount, useBackgroundThread: true);
 
-            Subscribe();
+            Aggregator.Subscribe<UpdateUnreadMessageCount>(this, Handle)
+                .Subscribe<UpdateUnreadChatCount>(Handle)
+                .Subscribe<UpdateAuthorizationState>(Handle);
 
-            IsActive = selected;
+            IsActive = active;
 
             var unreadCount = ClientService.GetUnreadCount(new ChatListMain());
             Handle(unreadCount.UnreadChatCount);
             Handle(unreadCount.UnreadMessageCount);
         }
 
-        public override void Subscribe()
+        public bool TryResolve<T>(out T result)
         {
-            Aggregator.Subscribe<UpdateUnreadMessageCount>(this, Handle)
-                .Subscribe<UpdateUnreadChatCount>(Handle)
-                .Subscribe<UpdateAuthorizationState>(Handle);
+            result = Resolve<T>();
+            return result != null;
         }
+
+        public T Resolve<T, TDelegate>(TDelegate delegato) where T : IDelegable<TDelegate> where TDelegate : IViewModelDelegate
+        {
+            var result = Resolve<T>();
+            result?.Delegate = delegato;
+
+            return result;
+        }
+
 
         public int Id => _id;
         public long UserId => ClientService.Options.MyId;
 
-        private readonly DebouncedProperty<int> _unreadCount;
+        private DebouncedProperty<int> _unreadCount;
         public int UnreadCount
         {
             get => _unreadCount;
@@ -90,6 +103,24 @@ namespace Telegram.Services
                 RaisePropertyChanged(nameof(ShowCount));
             });
         }
+
+        public virtual void BeginOnUIThread(DispatcherQueueHandler action)
+        {
+            var dispatcher = WindowContext.Main?.Dispatcher;
+            if (dispatcher != null)
+            {
+                dispatcher.Dispatch(action);
+            }
+            else
+            {
+                try
+                {
+                    action();
+                }
+                catch { }
+            }
+        }
+
 
         private bool _isActive;
         public bool IsActive
@@ -218,11 +249,11 @@ namespace Telegram.Services
 
                 WindowContext.ForEach(window =>
                 {
-                    if (window.Content is StandalonePage page && page.NavigationService?.SessionId == SessionId)
+                    if (window.Content is StandalonePage page && page.NavigationService?.Session == this)
                     {
                         _ = window.ConsolidateAsync();
                     }
-                    else if (window.Content is RootPage root && root.NavigationService?.SessionId == SessionId)
+                    else if (window.Content is RootPage root && root.NavigationService?.Session == this)
                     {
                         root.NavigationService.Block();
                         ContentPopup.Block(root.NavigationService.XamlRoot);
@@ -270,7 +301,7 @@ namespace Telegram.Services
             {
                 WindowContext.ForEach(window =>
                 {
-                    var root = window.NavigationServices.FirstOrDefault(x => x.SessionId == Id && x.FrameFacade.FrameId == $"{Id}") as TLRootNavigationService;
+                    var root = window.NavigationServices.FirstOrDefault(x => x.Session == this && x.FrameFacade.FrameId == $"{Id}") as TLRootNavigationService;
                     root?.Handle(update);
                 });
             }

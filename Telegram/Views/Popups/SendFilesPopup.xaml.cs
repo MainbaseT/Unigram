@@ -279,7 +279,7 @@ namespace Telegram.Views.Popups
 
             SendHighQuality = viewModel.Settings.SendLargePhotos;
 
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(viewModel.SessionId);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(viewModel.Session);
             CaptionInput.CustomEmoji = CustomEmoji;
             CaptionInput.ViewModel = viewModel;
 

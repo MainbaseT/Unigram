@@ -214,7 +214,7 @@ namespace Telegram.Views.Host
             var service = _context.NavigationServices.GetByFrameId($"{session.Id}") as NavigationService;
             if (service == null)
             {
-                service = BootStrapper.Current.NavigationServiceFactory(_context, BootStrapper.BackButton.Attach, new Frame { CacheSize = 0 }, session.Id, $"{session.Id}", true) as NavigationService;
+                service = BootStrapper.Current.NavigationServiceFactory(_context, BootStrapper.BackButton.Attach, new Frame { CacheSize = 0 }, session, $"{session.Id}", true) as NavigationService;
                 service.Frame.Navigating += OnNavigating;
                 service.Frame.Navigated += OnNavigated;
 
@@ -1004,7 +1004,7 @@ namespace Telegram.Views.Host
 
         private void UpdateNavigation()
         {
-            var clientService = TypeResolver.Current.Resolve<IClientService>(_navigationService.SessionId);
+            var clientService = _navigationService.Session.Resolve<IClientService>();
             if (clientService == null)
             {
                 // TODO: this should never be happening

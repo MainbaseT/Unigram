@@ -70,7 +70,7 @@ namespace Telegram.Controls.Messages
             _bubble = bubble;
             _flyout = flyout;
 
-            _viewModel = EmojiDrawerViewModel.Create(message.ClientService.SessionId, EmojiDrawerMode.Reactions);
+            _viewModel = EmojiDrawerViewModel.Create(message.ClientService.Session, EmojiDrawerMode.Reactions);
 
             InitializeComponent();
             Initialize(reactions, message.ClientService, flyout);
@@ -88,7 +88,7 @@ namespace Telegram.Controls.Messages
             _reserved = reserved;
             _flyout = flyout;
 
-            _viewModel = EmojiDrawerViewModel.Create(story.ClientService.SessionId, EmojiDrawerMode.Reactions);
+            _viewModel = EmojiDrawerViewModel.Create(story.ClientService.Session, EmojiDrawerMode.Reactions);
 
             InitializeComponent();
             Initialize(reactions, story.ClientService, flyout);
@@ -372,7 +372,7 @@ namespace Telegram.Controls.Messages
             _reserved = reserved;
             _flyout = flyout;
 
-            _viewModel = EmojiDrawerViewModel.Create(clientService.SessionId, EmojiDrawerMode.Reactions);
+            _viewModel = EmojiDrawerViewModel.Create(clientService.Session, EmojiDrawerMode.Reactions);
             _clientService = clientService;
 
             InitializeComponent();
@@ -654,7 +654,7 @@ namespace Telegram.Controls.Messages
                 .Select(x => new AvailableReaction(new ReactionTypeEmoji(x), false))
                 .ToList();
 
-            var viewModel = EmojiDrawerViewModel.Create(clientService.SessionId, EmojiDrawerMode.Reactions);
+            var viewModel = EmojiDrawerViewModel.Create(clientService.Session, EmojiDrawerMode.Reactions);
             _ = viewModel.UpdateReactions(new AvailableReactions(reactions, empty, empty, true, false, null));
 
             _viewModel = viewModel;

@@ -38,7 +38,7 @@ namespace Telegram.Views.Folders
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(ViewModel.SessionId);
+            EmojiPanel.DataContext = EmojiDrawerViewModel.Create(ViewModel.Session);
             TagPreviewText.DataContext = ViewModel;
 
             TitleField.AllowedEntities = FormattedTextEntity.CustomEmoji;

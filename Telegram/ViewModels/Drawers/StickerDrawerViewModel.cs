@@ -16,7 +16,6 @@ using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI.Xaml.Data;
@@ -77,9 +76,9 @@ namespace Telegram.ViewModels.Drawers
                 .Subscribe<UpdateInstalledStickerSets>(Handle);
         }
 
-        public static StickerDrawerViewModel Create(int sessionId)
+        public static StickerDrawerViewModel Create(ISessionService session)
         {
-            var context = TypeResolver.Current.Resolve<StickerDrawerViewModel>(sessionId);
+            var context = session.Resolve<StickerDrawerViewModel>();
             context.Dispatcher = WindowContext.Current.Dispatcher;
             return context;
         }

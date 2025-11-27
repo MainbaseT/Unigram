@@ -57,7 +57,7 @@ namespace Telegram.Views.Stars.Popups
 
             _clientService = clientService;
             _navigationService = navigationService;
-            _aggregator = TypeResolver.Current.Resolve<IEventAggregator>(clientService.SessionId);
+            _aggregator = clientService.Session.Resolve<IEventAggregator>();
 
             _gift = gift;
             _receiverId = receiverId;

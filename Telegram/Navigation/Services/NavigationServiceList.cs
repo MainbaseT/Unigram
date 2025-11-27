@@ -55,17 +55,6 @@ namespace Telegram.Navigation.Services
             return null;
         }
 
-        public void RemoveBySessionId(int session)
-        {
-            foreach (var service in this.ToList())
-            {
-                if (service.SessionId == session)
-                {
-                    Remove(service);
-                }
-            }
-        }
-
         public IEnumerator<INavigationService> GetEnumerator()
         {
             return _items.GetEnumerator();

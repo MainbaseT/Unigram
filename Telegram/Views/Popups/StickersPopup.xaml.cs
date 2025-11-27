@@ -36,7 +36,7 @@ namespace Telegram.Views.Popups
         private StickersPopup(INavigationService navigationService)
         {
             InitializeComponent();
-            DataContext = TypeResolver.Current.Resolve<StickersViewModel>(navigationService.SessionId);
+            DataContext = navigationService.Session.Resolve<StickersViewModel>();
 
             VerticalContentAlignment = VerticalAlignment.Center;
 

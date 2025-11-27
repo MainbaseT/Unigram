@@ -7,6 +7,7 @@
 
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Payments;
 using Windows.UI.Xaml.Controls;
@@ -19,10 +20,10 @@ namespace Telegram.Views.Payments
 
         public ValidatedOrderInfo ValidatedInfo { get; private set; }
 
-        public PaymentAddressPopup(int sessionId, InputInvoice inputInvoice, Invoice invoice, OrderInfo info)
+        public PaymentAddressPopup(ISessionService session, InputInvoice inputInvoice, Invoice invoice, OrderInfo info)
         {
             InitializeComponent();
-            DataContext = TypeResolver.Current.Resolve<PaymentAddressViewModel>(sessionId);
+            DataContext = session.Resolve<PaymentAddressViewModel>();
 
             Title = Strings.PaymentShippingInfo;
             PrimaryButtonText = Strings.OK;

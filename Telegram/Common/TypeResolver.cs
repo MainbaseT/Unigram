@@ -10,7 +10,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Services;
-using Telegram.ViewModels.Delegates;
 using Windows.Storage;
 
 namespace Telegram.Views
@@ -19,7 +18,7 @@ namespace Telegram.Views
     {
         private static readonly TypeResolver _instance = new();
 
-        private readonly ReaderWriterDictionary<int, TypeLocator> _containers = new();
+        private readonly ReaderWriterDictionary<int, ISessionService> _containers = new();
         private readonly ILifetimeService _lifetime;
         private readonly IPasscodeService _passcode;
         private readonly ILocaleService _locale;
@@ -81,7 +80,6 @@ namespace Telegram.Views
                     else
                     {
                         toBeDeleted.Add(folder);
-
                     }
                 }
             }
@@ -141,9 +139,9 @@ namespace Telegram.Views
             }
         }
 
-        public TypeLocator Build(int id)
+        public ISessionService Build(int id)
         {
-            return _containers[id] = new TypeLocator(_lifetime, _locale, _passcode, id, id == SettingsService.Current.ActiveSession);
+            return _containers[id] = new SessionService(_lifetime, _locale, _passcode, id, id == SettingsService.Current.ActiveSession);
         }
 
         public void Destroy(int id)
@@ -155,19 +153,10 @@ namespace Telegram.Views
 
         public TService Resolve<TService>()
         {
-            return Resolve<TService>(int.MaxValue);
-        }
-
-        public TService Resolve<TService>(int session)
-        {
-            if (session == int.MaxValue)
-            {
-                session = _lifetime.ActiveItem?.Id ?? 0;
-            }
-
+            var session = _lifetime.ActiveItem?.Id ?? 0;
             var result = default(TService);
-            //if (_containers.TryGetValue(account, out IContainer container))
-            if (_containers.TryGetValue(session, out TypeLocator container))
+
+            if (_containers.TryGetValue(session, out ISessionService container))
             {
                 result = container.Resolve<TService>();
             }
@@ -184,34 +173,12 @@ namespace Telegram.Views
 
             result = default;
 
-            //if (_containers.TryGetValue(account, out IContainer container))
-            if (_containers.TryGetValue(session, out TypeLocator container))
+            if (_containers.TryGetValue(session, out ISessionService container))
             {
                 result = container.Resolve<TService>();
             }
 
             return result != null;
-        }
-
-        public TService Resolve<TService, TDelegate>(TDelegate delegato, int session)
-            where TService : IDelegable<TDelegate>
-            where TDelegate : IViewModelDelegate
-        {
-            if (session == int.MaxValue)
-            {
-                session = _lifetime.ActiveItem?.Id ?? 0;
-            }
-
-            var result = default(TService);
-            //if (_containers.TryGetValue(account, out IContainer container))
-            if (_containers.TryGetValue(session, out TypeLocator container))
-            {
-                result = container.Resolve<TService>();
-            }
-
-            result?.Delegate = delegato;
-
-            return result;
         }
     }
 }

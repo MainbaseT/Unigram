@@ -147,7 +147,7 @@ namespace Telegram.Views.Chats.Popups
             var response = await _clientService.SendAsync(new BoostChat(_chat.Id, selected));
             if (response is not Error)
             {
-                var aggregator = TypeResolver.Current.Resolve<IEventAggregator>(_clientService.SessionId);
+                var aggregator = _clientService.Session.Resolve<IEventAggregator>();
                 aggregator.Publish(new UpdateConfetti());
 
                 Hide();

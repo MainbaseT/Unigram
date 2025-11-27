@@ -1915,7 +1915,7 @@ namespace Telegram.Views
             ByNavigation(navigation => viewModel.Feedback(navigation));
         }
 
-        private async void Share_Click(object sender, RoutedEventArgs e)
+        private void Share_Click(object sender, RoutedEventArgs e)
         {
             var link = ViewModel.ShareLink;
             if (link == null)
@@ -1923,7 +1923,7 @@ namespace Telegram.Views
                 return;
             }
 
-            await this.ShowPopupAsync(ViewModel.SessionId, new ChooseChatsPopup(), new ChooseChatsConfigurationPostLink(new HttpUrl(link.ToString())));
+            this.ShowPopup(ViewModel.Session, new ChooseChatsPopup(), new ChooseChatsConfigurationPostLink(new HttpUrl(link.ToString())));
         }
 
         private void Browser_Click(object sender, RoutedEventArgs e)

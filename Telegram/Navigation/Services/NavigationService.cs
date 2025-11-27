@@ -97,7 +97,7 @@ namespace Telegram.Navigation.Services
 
         WindowContext Window { get; }
 
-        int SessionId { get; }
+        ISessionService Session { get; }
 
         void AddToBackStack(Type type, object parameter = null, NavigationTransitionInfo info = null);
         void InsertToBackStack(int index, Type type, object parameter = null, NavigationTransitionInfo info = null);
@@ -172,7 +172,7 @@ namespace Telegram.Navigation.Services
             set => Frame.SetNavigationState(value);
         }
 
-        public int SessionId { get; private set; }
+        public ISessionService Session { get; private set; }
 
         public IDictionary<string, object> CacheKeyToParameter { get; } = new Dictionary<string, object>();
 
@@ -228,11 +228,11 @@ namespace Telegram.Navigation.Services
             BackStack.Clear();
         }
 
-        public NavigationService(WindowContext window, Frame frame, int session, string id)
+        public NavigationService(WindowContext window, Frame frame, ISessionService session, string id)
         {
             Window = window;
             Dispatcher = window?.Dispatcher;
-            SessionId = session;
+            Session = session;
             FrameFacade = new FrameFacade(this, frame, id);
             FrameFacade.Navigating += OnNavigating;
             FrameFacade.Navigated += OnNavigated;
@@ -421,7 +421,7 @@ namespace Telegram.Navigation.Services
             if (page.DataContext is not INavigable or null && allowCreate)
             {
                 // to support dependency injection, but keeping it optional.
-                var viewModel = BootStrapper.Current.ViewModelForPage(page, SessionId);
+                var viewModel = BootStrapper.Current.ViewModelForPage(page, Session);
                 if (viewModel != null)
                 {
                     page.DataContext = viewModel;
@@ -479,7 +479,7 @@ namespace Telegram.Navigation.Services
                 }
                 else if (page is BlankPage blank)
                 {
-                    blank.Activate(SessionId);
+                    blank.Activate(Session);
                 }
 
                 //if (mode == NavigationMode.New)
@@ -505,7 +505,7 @@ namespace Telegram.Navigation.Services
         public Task<ViewLifetimeControl> OpenAsync(Type page, object parameter = null, string title = null, Size size = default)
         {
             Logger.Info($"Page: {page}, Parameter: {parameter}, Title: {title}, Size: {size}");
-            return viewService.OpenAsync(page, parameter, title, size, SessionId);
+            return viewService.OpenAsync(Session, page, parameter, title, size);
         }
 
         public void ShowPopup(ContentPopup popup, object parameter = null, ElementTheme requestedTheme = ElementTheme.Default)
@@ -520,7 +520,7 @@ namespace Telegram.Navigation.Services
                 popup.RequestedTheme = requestedTheme;
             }
 
-            var viewModel = BootStrapper.Current.ViewModelForPage(popup, SessionId);
+            var viewModel = BootStrapper.Current.ViewModelForPage(popup, Session);
             if (viewModel != null)
             {
                 viewModel.NavigationService = this;

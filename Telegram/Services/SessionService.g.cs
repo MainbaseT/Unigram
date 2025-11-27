@@ -5,11 +5,11 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-namespace Telegram.Views
+namespace Telegram.Services
 {
-    public partial class TypeLocator
+    public partial class SessionService
     {
-        private readonly int _session;
+        private readonly int _id;
 
         private readonly Telegram.Services.ILifetimeService _lifetimeService;
         private readonly Telegram.Services.ILocaleService _localeService;
@@ -37,19 +37,20 @@ namespace Telegram.Views
         private Telegram.Services.IProfilePhotoService _profilePhotoService;
         private Telegram.Services.ITextRecognitionService _textRecognitionService;
 
-        public TypeLocator(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, int session, bool active)
+        public SessionService(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, int session, bool active)
         {
-            _session = session;
+            _id = session;
+            _sessionService = this;
 
             _lifetimeService = lifetimeService;
             _localeService = localeService;
             _passcodeService = passcodeService;
 
             _deviceInfoService = new Telegram.Services.DeviceInfoService();
-            _settingsService = new Telegram.Services.SettingsService(_session);
+            _settingsService = new Telegram.Services.SettingsService(_id);
             _eventAggregator = new Telegram.Services.EventAggregator();
             _clientService = new Telegram.Services.ClientService(
-                _session,
+                _sessionService,
                 active,
                 _deviceInfoService,
                 _settingsService,
@@ -70,18 +71,13 @@ namespace Telegram.Views
             _generationService = new Telegram.Services.GenerationService(
                 _clientService,
                 _eventAggregator);
-            _sessionService = new Telegram.Services.SessionService(
-                _session,
-                active,
-                _clientService,
-                _settingsService,
-                _eventAggregator,
-                _lifetimeService);
             _notificationsService = new Telegram.Services.NotificationsService(
                 _clientService,
                 _settingsService,
                 _sessionService,
                 _eventAggregator);
+
+            Initialize(active);
         }
 
         public T Resolve<T>()

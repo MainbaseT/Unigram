@@ -398,7 +398,7 @@ namespace Telegram.Controls.Gallery
             }
             else if (item is GalleryMessage message && !item.IsMedia)
             {
-                var service = TypeResolver.Current.Resolve<IStorageService>(_window.ClientService.SessionId);
+                var service = _window.ClientService.Session.Resolve<IStorageService>();
                 if (service != null)
                 {
                     _ = service.OpenFileAsync(file);
@@ -639,7 +639,7 @@ namespace Telegram.Controls.Gallery
             }
 
             var fileId = _itemId;
-            var service = TypeResolver.Current.Resolve<ITextRecognitionService>(viewModel.SessionId);
+            var service = viewModel.Session.Resolve<ITextRecognitionService>();
 
             var status = await service.EnsureReadyAsync();
             if (status is TextRecognitionStatusUnavailable unavailable)

@@ -56,7 +56,7 @@ namespace Telegram.Views.Stars.Popups
             var content = new MessageGift(gift, clientService.MyId, _receiverId, string.Empty, new FormattedText(string.Empty, Array.Empty<TextEntity>()), gift.DefaultSellStarCount, 0, false, false, false, false, false, false, false, false, string.Empty, string.Empty);
             var message = new Message(0, new MessageSenderUser(clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null);
 
-            var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
+            var settings = clientService.Session.Resolve<ISettingsService>();
 
             var delegato = new ChatMessageDelegate(clientService, settings, chat);
             var viewModel = new MessageViewModel(clientService, delegato, chat, null, null, message, true);
@@ -64,7 +64,7 @@ namespace Telegram.Views.Stars.Popups
             BackgroundControl.Update(clientService, null);
             Message.UpdateMessage(viewModel);
 
-            var emoji = EmojiDrawerViewModel.Create(clientService.SessionId);
+            var emoji = EmojiDrawerViewModel.Create(clientService.Session);
             EmojiPanel.DataContext = emoji;
             CaptionInput.DataContext = emoji;
             CaptionInput.CustomEmoji = CustomEmoji;
@@ -163,7 +163,7 @@ namespace Telegram.Views.Stars.Popups
             var content = new MessageGiftedPremium(_clientService.Options.MyId, userId, new FormattedText(string.Empty, Array.Empty<TextEntity>()), _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, 0, _option.Sticker);
             var message = new Message(0, new MessageSenderUser(clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null);
 
-            var settings = TypeResolver.Current.Resolve<ISettingsService>(clientService.SessionId);
+            var settings = clientService.Session.Resolve<ISettingsService>();
 
             var delegato = new ChatMessageDelegate(clientService, settings, chat);
             var viewModel = new MessageViewModel(clientService, delegato, chat, null, null, message, true);
@@ -171,7 +171,7 @@ namespace Telegram.Views.Stars.Popups
             BackgroundControl.Update(clientService, null);
             Message.UpdateMessage(viewModel);
 
-            var emoji = EmojiDrawerViewModel.Create(clientService.SessionId);
+            var emoji = EmojiDrawerViewModel.Create(clientService.Session);
             EmojiPanel.DataContext = emoji;
             CaptionInput.DataContext = emoji;
             CaptionInput.CustomEmoji = CustomEmoji;
@@ -220,7 +220,7 @@ namespace Telegram.Views.Stars.Popups
             _clientService.TryGetChatFromUser(_clientService.Options.MyId, out Chat chat);
             var message = new Message(0, new MessageSenderUser(_clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null);
 
-            var settings = TypeResolver.Current.Resolve<ISettingsService>(_clientService.SessionId);
+            var settings = _clientService.Session.Resolve<ISettingsService>();
 
             var delegato = new ChatMessageDelegate(_clientService, settings, chat);
             var viewModel = new MessageViewModel(_clientService, delegato, chat, null, null, message, true);
