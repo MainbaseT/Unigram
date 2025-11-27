@@ -249,6 +249,20 @@ namespace Telegram.Stub
 
         public void Dispose()
         {
+            var sameThread = NativeMethods.GetWindowThreadProcessId(_hwnd, out _) == NativeMethods.GetCurrentThreadId();
+            if (sameThread)
+            {
+                RemoveTrayIcon();
+                NativeMethods.PostQuitMessage(0);
+            }
+            else
+            {
+                _synchronization.Post(DisposeAsync, null);
+            }
+        }
+
+        private void DisposeAsync(object? state)
+        {
             RemoveTrayIcon();
             NativeMethods.PostQuitMessage(0);
         }
@@ -303,6 +317,12 @@ namespace Telegram.Stub
 
     public static class NativeMethods
     {
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("kernel32.dll")]
+        public static extern uint GetCurrentThreadId();
+
         [DllImport("user32.dll")]
         public static extern bool SetProcessDpiAwarenessContext(IntPtr dpiContext);
 
