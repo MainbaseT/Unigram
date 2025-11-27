@@ -39,7 +39,6 @@ namespace Telegram.ViewModels.Delegates
         void UpdateSupergroupEmptyState(Chat chat, Supergroup supergroup);
 
         void UpdatePinnedMessage(Chat chat, bool known);
-        void UpdateCallbackQueryAnswer(Chat chat, MessageViewModel answer);
 
         void UpdateComposerHeader(Chat chat, MessageComposerHeader header);
         void UpdateSearchMask(Chat chat, ChatSearchViewModel search);

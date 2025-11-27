@@ -454,35 +454,6 @@ namespace Telegram.ViewModels
 
         private DispatcherTimer _informativeTimer;
 
-        private MessageViewModel _informativeMessage;
-        public MessageViewModel InformativeMessage
-        {
-            get => _informativeMessage;
-            set
-            {
-                _informativeTimer?.Stop();
-
-                if (value != null)
-                {
-                    if (_informativeTimer == null)
-                    {
-                        _informativeTimer = new DispatcherTimer();
-                        _informativeTimer.Interval = TimeSpan.FromSeconds(5);
-                        _informativeTimer.Tick += (s, args) =>
-                        {
-                            _informativeTimer.Stop();
-                            InformativeMessage = null;
-                        };
-                    }
-
-                    _informativeTimer.Start();
-                }
-
-                Set(ref _informativeMessage, value);
-                Delegate?.UpdateCallbackQueryAnswer(_chat, value);
-            }
-        }
-
         private OutputChatActionManager _chatActionManager;
         public OutputChatActionManager ChatActionManager
         {

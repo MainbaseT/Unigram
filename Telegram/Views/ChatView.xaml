@@ -1458,16 +1458,6 @@
 
                     <chats:ChatSponsoredHeader x:Name="Sponsored"
                                                Visibility="Collapsed" />
-
-                    <Grid x:Name="CallbackQueryAnswerPanel"
-                          Visibility="{x:Bind ViewModel.InformativeMessage, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
-                          Background="{ThemeResource PageSubHeaderBackgroundBrush}"
-                          MinHeight="{ThemeResource AppBarThemeCompactHeight}">
-                        <messages:MessageReply x:Name="CallbackQueryAnswer"
-                                               VerticalAlignment="Stretch"
-                                               Padding="12,6"
-                                               IsHitTestVisible="False" />
-                    </Grid>
                 </Grid>
 
                 <StackPanel x:Name="DateHeaderRelative"

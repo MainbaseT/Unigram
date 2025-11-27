@@ -1494,58 +1494,23 @@ namespace Telegram.ViewModels
             }
             else if (inline.Type is InlineKeyboardButtonTypeCallback callback)
             {
-                var bot = message.GetViaBotUser();
-                if (bot != null)
-                {
-                    InformativeMessage = CreateMessage(new Message(-1, new MessageSenderUser(bot.Id), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageText(new FormattedText(Strings.Loading, Array.Empty<TextEntity>()), null, null), null));
-                }
-
                 var response = await ClientService.SendAsync(new GetCallbackQueryAnswer(chat.Id, message.Id, new CallbackQueryPayloadData(callback.Data)));
                 if (response is CallbackQueryAnswer answer)
                 {
-                    InformativeMessage = null;
-
                     if (!string.IsNullOrEmpty(answer.Text))
                     {
                         if (answer.ShowAlert)
                         {
-                            await ShowPopupAsync(new MessagePopup(answer.Text));
+                            ShowPopup(new MessagePopup(answer.Text));
                         }
                         else
                         {
-                            if (bot == null)
-                            {
-                                // TODO:
-                                await ShowPopupAsync(new MessagePopup(answer.Text));
-                                return;
-                            }
-
-                            InformativeMessage = CreateMessage(new Message(0, new MessageSenderUser(bot.Id), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, new MessageText(new FormattedText(answer.Text, Array.Empty<TextEntity>()), null, null), null));
+                            ShowToast(answer.Text);
                         }
                     }
                     else if (!string.IsNullOrEmpty(answer.Url))
                     {
-                        if (MessageHelper.TryCreateUri(answer.Url, out Uri uri))
-                        {
-                            if (MessageHelper.IsTelegramUrl(uri))
-                            {
-                                MessageHelper.OpenTelegramUrl(ClientService, NavigationService, uri);
-                            }
-                            else
-                            {
-                                //var dialog = new MessagePopup(response.Result.Url, "Open this link?");
-                                //dialog.PrimaryButtonText = "OK";
-                                //dialog.SecondaryButtonText = "Cancel";
-
-                                //var result = await ShowPopupAsync(dialog);
-                                //if (result != ContentDialogResult.Primary)
-                                //{
-                                //    return;
-                                //}
-
-                                await Launcher.LaunchUriAsync(uri);
-                            }
-                        }
+                        MessageHelper.OpenUrl(ClientService, NavigationService, answer.Url);
                     }
                 }
             }

@@ -1151,12 +1151,10 @@ namespace Telegram.Views
             Clipper = null;
             ClipperBackground = null;
             PinnedMessage = null;
-            CallbackQueryAnswerPanel = null;
             DateHeaderRelative = null;
             DateHeaderPanel = null;
             DateHeader = null;
             DateHeaderLabel = null;
-            CallbackQueryAnswer = null;
             HeaderLeft = null;
             BackButton = null;
             Segments = null;
@@ -5794,29 +5792,6 @@ namespace Telegram.Views
         public void UpdatePinnedMessage(Chat chat, bool known)
         {
             PinnedMessage.UpdateMessage(chat, null, known, -1, ViewModel.PinnedMessages.TotalCount, false);
-        }
-
-        public void UpdateCallbackQueryAnswer(Chat chat, MessageViewModel message)
-        {
-            if (message == null)
-            {
-                CallbackQueryAnswerPanel.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                CallbackQueryAnswerPanel.Visibility = Visibility.Visible;
-                CallbackQueryAnswer.UpdateMessage(message, false, null);
-
-                if (message.Id == 0 && AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged))
-                {
-                    CallbackQueryAnswer.Focus(FocusState.Keyboard);
-                }
-                else
-                {
-                    var peer = FrameworkElementAutomationPeer.FromElement(CallbackQueryAnswer);
-                    peer?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
-                }
-            }
         }
 
         public void UpdateComposerHeader(Chat chat, MessageComposerHeader header)
