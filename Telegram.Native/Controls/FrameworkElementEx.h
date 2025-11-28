@@ -11,14 +11,8 @@ struct FrameworkElementEx : TBase
 
     FrameworkElementEx()
     {
-        m_loadedToken = this->Loaded({ this, &FrameworkElementEx::HandleChanged });
-        m_unloadedToken = this->Unloaded({ this, &FrameworkElementEx::HandleChanged });
-    }
-
-    ~FrameworkElementEx()
-    {
-        this->Loaded(m_loadedToken);
-        this->Unloaded(m_unloadedToken);
+        m_loadedRevoker = this->Loaded(winrt::auto_revoke, { this, &FrameworkElementEx::HandleChanged });
+        m_unloadedRevoker = this->Unloaded(winrt::auto_revoke, { this, &FrameworkElementEx::HandleChanged });
     }
 
     bool IsConnected() const noexcept { return m_loaded; }
@@ -28,8 +22,8 @@ struct FrameworkElementEx : TBase
     virtual void OnUnloaded() {}
 
 private:
-    winrt::event_token m_loadedToken{};
-    winrt::event_token m_unloadedToken{};
+    winrt::Windows::UI::Xaml::FrameworkElement::Loaded_revoker m_loadedRevoker{};
+    winrt::Windows::UI::Xaml::FrameworkElement::Unloaded_revoker m_unloadedRevoker{};
 
     bool m_loaded{ false };
     bool m_unloaded{ false };

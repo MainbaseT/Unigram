@@ -8,13 +8,7 @@ namespace winrt::Telegram::Native::Controls::implementation
 {
     AnimatedImageBase::AnimatedImageBase()
     {
-        m_sizeChangedToken = SizeChanged({ this, &AnimatedImageBase::HandleSizeChanged });
-    }
-
-    AnimatedImageBase::~AnimatedImageBase()
-    {
-        SizeChanged(m_sizeChangedToken);
-        UnregisterViewportChanged();
+        m_sizeChangedRevoker = SizeChanged(winrt::auto_revoke, { this, &AnimatedImageBase::HandleSizeChanged });
     }
 
     void AnimatedImageBase::OnLoaded()
@@ -22,28 +16,31 @@ namespace winrt::Telegram::Native::Controls::implementation
         if (auto xamlRoot = XamlRoot())
         {
             m_rasterizationScale = xamlRoot.RasterizationScale();
-            m_xamlRootChangedToken = xamlRoot.Changed({ this, &AnimatedImageBase::HandleXamlRootChanged });
+            m_xamlRootChangedRevoker = xamlRoot.Changed(winrt::auto_revoke, { this, &AnimatedImageBase::HandleXamlRootChanged });
         }
     }
 
     void AnimatedImageBase::OnUnloaded()
     {
-        XamlRoot().Changed(m_xamlRootChangedToken);
+        if (m_xamlRootChangedRevoker)
+        {
+            m_xamlRootChangedRevoker.revoke();
+        }
     }
 
     void AnimatedImageBase::RegisterViewportChanged()
     {
-        if (!m_effectiveViewportChangedToken)
+        if (!m_effectiveViewportChangedRevoker)
         {
-            m_effectiveViewportChangedToken = EffectiveViewportChanged({ this, &AnimatedImageBase::HandleEffectiveViewportChanged });
+            m_effectiveViewportChangedRevoker = EffectiveViewportChanged(winrt::auto_revoke, { this, &AnimatedImageBase::HandleEffectiveViewportChanged });
         }
     }
 
     void AnimatedImageBase::UnregisterViewportChanged()
     {
-        if (m_effectiveViewportChangedToken)
+        if (m_effectiveViewportChangedRevoker)
         {
-            EffectiveViewportChanged(m_effectiveViewportChangedToken);
+            m_effectiveViewportChangedRevoker.revoke();
         }
     }
 

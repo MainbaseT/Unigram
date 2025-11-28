@@ -17,7 +17,6 @@ namespace winrt::Telegram::Native::Controls::implementation
     struct AnimatedImageBase : FrameworkElementEx<AnimatedImageBase, AnimatedImageBaseT<AnimatedImageBase>>
     {
         AnimatedImageBase();
-        ~AnimatedImageBase();
 
         virtual void OnLoaded() override;
         virtual void OnUnloaded() override;
@@ -30,9 +29,9 @@ namespace winrt::Telegram::Native::Controls::implementation
         void UnregisterViewportChanged();
 
     private:
-        winrt::event_token m_sizeChangedToken{};
-        winrt::event_token m_xamlRootChangedToken{};
-        winrt::event_token m_effectiveViewportChangedToken{};
+        FrameworkElement::SizeChanged_revoker m_sizeChangedRevoker{};
+        XamlRoot::Changed_revoker m_xamlRootChangedRevoker{};
+        FrameworkElement::EffectiveViewportChanged_revoker m_effectiveViewportChangedRevoker{};
 
         double m_rasterizationScale{ 0 };
         bool m_visible{ false };
