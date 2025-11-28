@@ -60,10 +60,10 @@ namespace Telegram.Collections
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    InsertRange(_reverse ? Count - e.NewStartingIndex : e.NewStartingIndex, e.NewItems);
+                    InsertRange(_reverse ? _source.Count - e.NewStartingIndex - e.NewItems.Count : e.NewStartingIndex, e.NewItems);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveRange(_reverse ? Count - e.OldStartingIndex : e.OldStartingIndex, e.OldItems.Count);
+                    RemoveRange(_reverse ? _source.Count - e.OldStartingIndex : e.OldStartingIndex, e.OldItems.Count);
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     ReplaceWith(_reverse ? _source.Reverse() : _source);
