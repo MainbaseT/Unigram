@@ -243,6 +243,7 @@ namespace Telegram.Controls
         }
 
         private bool _withinViewport;
+        private bool _visible = true;
 
         // TODO: a bit redunant now as it's already tracked internally
         private bool _effectiveViewportRegistered;
@@ -258,6 +259,33 @@ namespace Telegram.Controls
             {
                 _withinViewport = false;
                 Pause();
+            }
+        }
+
+        public void ViewportChanged(bool within, bool visible)
+        {
+            within &= visible;
+
+            if (within && !_withinViewport)
+            {
+                _withinViewport = true;
+                Play();
+            }
+            else if (_withinViewport && !within)
+            {
+                _withinViewport = false;
+                Pause();
+            }
+
+            if (visible && !_visible)
+            {
+                _visible = true;
+                Visibility = Visibility.Visible;
+            }
+            else if (_visible && !visible)
+            {
+                _visible = false;
+                Visibility = Visibility.Collapsed;
             }
         }
 
