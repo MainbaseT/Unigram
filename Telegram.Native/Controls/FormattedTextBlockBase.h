@@ -34,6 +34,9 @@ namespace winrt::Telegram::Native::Controls::implementation
 
     private:
         RichTextBlock m_textBlock{ nullptr };
+        FrameworkElement::LostFocus_revoker m_focusLostRevoker{};
+        FrameworkElement::SizeChanged_revoker m_sizeChangedRevoker{};
+        RichTextBlock::ContextMenuOpening_revoker m_contextMenuOpeningRevoker{};
         FrameworkElement::LayoutUpdated_revoker m_layoutUpdatedRevoker{};
         FrameworkElement::EffectiveViewportChanged_revoker m_effectiveViewportChangedRevoker{};
 

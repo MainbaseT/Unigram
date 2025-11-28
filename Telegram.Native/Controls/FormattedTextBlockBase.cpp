@@ -21,9 +21,9 @@ namespace winrt::Telegram::Native::Controls::implementation
         if (auto textBlock = GetTemplateChild(L"TextBlock"))
         {
             m_textBlock = textBlock.as<RichTextBlock>();
-            m_textBlock.LostFocus(winrt::auto_revoke, { this, &FormattedTextBlockBase::HandleLostFocus });
-            m_textBlock.SizeChanged(winrt::auto_revoke, { this, &FormattedTextBlockBase::HandleSizeChanged });
-            m_textBlock.ContextMenuOpening(winrt::auto_revoke, { this, &FormattedTextBlockBase::HandleContextMenuOpening });
+            m_focusLostRevoker = m_textBlock.LostFocus(winrt::auto_revoke, { this, &FormattedTextBlockBase::HandleLostFocus });
+            m_sizeChangedRevoker = m_textBlock.SizeChanged(winrt::auto_revoke, { this, &FormattedTextBlockBase::HandleSizeChanged });
+            m_contextMenuOpeningRevoker = m_textBlock.ContextMenuOpening(winrt::auto_revoke, { this, &FormattedTextBlockBase::HandleContextMenuOpening });
 
             m_textBlock.AddHandler(UIElement::DoubleTappedEvent(), winrt::box_value(DoubleTappedEventHandler({ this, &FormattedTextBlockBase::HandleDoubleTapped })), true);
             m_textBlock.AddHandler(UIElement::TappedEvent(), winrt::box_value(TappedEventHandler({ this, &FormattedTextBlockBase::HandleTapped })), true);
