@@ -293,6 +293,8 @@ namespace Telegram.ViewModels
             _messagesToken = default;
 
             _messages.ClearIfNotEmpty();
+            _messages.Key = Strings.SearchMessages;
+
             _tracker.Clear();
 
             var query = value ?? string.Empty;
@@ -476,6 +478,11 @@ namespace Telegram.ViewModels
             var response = await ClientService.SendAsync(new SearchMessages(null, query, _nextOffset ?? string.Empty, 50, null, null, 0, 0));
             if (response is FoundMessages messages && !cancellationToken.IsCancellationRequested)
             {
+                if (string.IsNullOrEmpty(_nextOffset))
+                {
+                    _messages.Key = Locale.Declension(Strings.R.messages, messages.TotalCount);
+                }
+
                 _nextOffset = string.IsNullOrEmpty(messages.NextOffset) ? null : messages.NextOffset;
 
                 foreach (var message in messages.Messages)
@@ -598,7 +605,7 @@ namespace Telegram.ViewModels
 
     public partial class KeyedCollection<T> : DiffObservableCollection<T>, IKeyedCollection
     {
-        public string Key { get; }
+        public string Key { get; set; }
 
         public int Index { get; set; }
 
