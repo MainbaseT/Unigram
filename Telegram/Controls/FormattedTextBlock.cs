@@ -20,7 +20,6 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
-using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -61,7 +60,7 @@ namespace Telegram.Controls
     }
 
     [ContentProperty(Name = "Blocks")]
-    public partial class FormattedTextBlock : ControlEx
+    public partial class FormattedTextBlock : FormattedTextBlockBase
     {
         private IClientService _clientService;
         private StyledText _text;
@@ -79,8 +78,6 @@ namespace Telegram.Controls
         private CanvasGeometry _spoilerGeometry;
 
         private Span _spanForInlines;
-
-        private ulong _expandSelectionDeadline;
 
         private readonly List<int> _codeBlocks = new();
         private readonly List<Hyperlink> _links = new();
@@ -164,12 +161,10 @@ namespace Telegram.Controls
 
         protected override void OnApplyTemplate()
         {
-            Below = GetTemplateChild(nameof(Below)) as Canvas;
+            base.OnApplyTemplate();
 
+            Below = GetTemplateChild(nameof(Below)) as Canvas;
             TextBlock = GetTemplateChild(nameof(TextBlock)) as RichTextBlock;
-            TextBlock.LostFocus += OnLostFocus;
-            TextBlock.SizeChanged += OnSizeChanged;
-            TextBlock.ContextMenuOpening += OnContextMenuOpening;
 
             for (int i = 0; i < _blocks?.Count; i++)
             {
@@ -181,9 +176,6 @@ namespace Telegram.Controls
                     _spanForInlines = spanForInlines;
                 }
             }
-
-            TextBlock.AddHandler(DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
-            TextBlock.AddHandler(TappedEvent, new TappedEventHandler(OnTapped), true);
 
             _templateApplied = true;
 
@@ -198,47 +190,12 @@ namespace Telegram.Controls
             }
         }
 
-        private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            e.Handled = true;
-        }
-
         public double LastAvailableWidth { get; private set; }
 
         protected override Size MeasureOverride(Size availableSize)
         {
             LastAvailableWidth = availableSize.Width;
             return base.MeasureOverride(availableSize);
-        }
-
-        private void OnLostFocus(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                TextBlock.Select(TextBlock.ContentStart, TextBlock.ContentStart);
-            }
-            catch
-            {
-                // All the remote procedure calls must be wrapped in a try-catch block
-            }
-        }
-
-        private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            if (e.PointerDeviceType == PointerDeviceType.Mouse)
-            {
-                _expandSelectionDeadline = Logger.TickCount + BootStrapper.Current.UISettings.DoubleClickTime;
-            }
-        }
-
-        private void OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            // If a double tap is followed by a single tap, then it's a triple tap (duh)
-            if (e.PointerDeviceType == PointerDeviceType.Mouse && Logger.TickCount < _expandSelectionDeadline)
-            {
-                _expandSelectionDeadline = Logger.TickCount + BootStrapper.Current.UISettings.DoubleClickTime;
-                VisualUtilities.QueueCallbackForCompositionRendering(ExpandSelection);
-            }
         }
 
         private bool _textSelectionDisabled;
@@ -327,48 +284,6 @@ namespace Telegram.Controls
             return false;
         }
 
-        private void ExpandSelection()
-        {
-            if (TextBlock.SelectionStart != null && TextBlock.SelectionEnd != null)
-            {
-                static DependencyObject FindParent(DependencyObject obj)
-                {
-                    if (obj is RichTextBlock or Paragraph)
-                    {
-                        return obj;
-                    }
-                    else if (obj is TextElement element)
-                    {
-                        return FindParent(element.ElementStart.Parent);
-                    }
-
-                    return null;
-                }
-
-                var startBlock = FindParent(TextBlock.SelectionStart.Parent);
-                var endBlock = FindParent(TextBlock.SelectionEnd.Parent);
-
-                if (startBlock == endBlock)
-                {
-                    try
-                    {
-                        if (startBlock is TextElement element)
-                        {
-                            TextBlock.Select(element.ContentStart, element.ContentEnd);
-                        }
-                        else if (startBlock is RichTextBlock block)
-                        {
-                            TextBlock.Select(block.ContentStart, block.ContentEnd);
-                        }
-                    }
-                    catch
-                    {
-                        // All the remote procedure calls must be wrapped in a try-catch block
-                    }
-                }
-            }
-        }
-
         public void Clear()
         {
             _clientService = null;
@@ -395,7 +310,7 @@ namespace Telegram.Controls
             if (_effectiveViewportChanged != null)
             {
                 _effectiveViewportChanged = null;
-                TextBlock.EffectiveViewportChanged -= OnEffectiveViewportChanged;
+                UnregisterViewportChanged();
             }
         }
 
@@ -1259,7 +1174,7 @@ namespace Telegram.Controls
                                 if (_effectiveViewportChanged == null)
                                 {
                                     _effectiveViewportChanged = new();
-                                    TextBlock.EffectiveViewportChanged += OnEffectiveViewportChanged;
+                                    RegisterViewportChanged();
                                 }
 
                                 _effectiveViewportChanged.Add(player);
@@ -1417,10 +1332,9 @@ namespace Telegram.Controls
             Below.Margin = new Thickness(0, topPadding, 0, 0);
             TextBlock.Margin = new Thickness(0, topPadding, 0, 0);
 
-            if (spoilerChanged && !_layoutUpdated)
+            if (spoilerChanged)
             {
-                _layoutUpdated = true;
-                TextBlock.LayoutUpdated += OnLayoutUpdated;
+                RegisterLayoutChanged();
             }
         }
 
@@ -1430,49 +1344,28 @@ namespace Telegram.Controls
 
         private HashSet<CustomEmojiIcon> _effectiveViewportChanged;
 
-        private void OnEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+        protected override void OnViewportChanged(double left, double top, double right, double bottom)
         {
             if (_effectiveViewportChanged == null)
             {
-                TextBlock.EffectiveViewportChanged -= OnEffectiveViewportChanged;
+                UnregisterViewportChanged();
                 return;
             }
-
-            double viewportRight = args.EffectiveViewport.X + args.EffectiveViewport.Width;
-            double viewportBottom = args.EffectiveViewport.Y + args.EffectiveViewport.Height;
 
             foreach (var child in _effectiveViewportChanged)
             {
                 bool intersects =
-                    child.ActualOffset.X + child.ActualSize.X > args.EffectiveViewport.X &&
-                    child.ActualOffset.X < viewportRight &&
-                    child.ActualOffset.Y + child.ActualSize.Y > args.EffectiveViewport.Y &&
-                    child.ActualOffset.Y < viewportBottom;
+                    child.ActualOffset.X + child.ActualSize.X > left &&
+                    child.ActualOffset.X < right &&
+                    child.ActualOffset.Y + child.ActualSize.Y > top &&
+                    child.ActualOffset.Y < bottom;
 
                 child.ViewportChanged(intersects);
             }
         }
 
-        private bool _layoutUpdated;
-
-        private void OnLayoutUpdated(object sender, object e)
+        protected override void OnLayoutUpdated()
         {
-            UpdateComponent();
-        }
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            UpdateComponent();
-        }
-
-        private void UpdateComponent()
-        {
-            if (_layoutUpdated)
-            {
-                _layoutUpdated = false;
-                TextBlock.LayoutUpdated -= OnLayoutUpdated;
-            }
-
             UpdateBelow();
             UpdateSpoilers();
         }

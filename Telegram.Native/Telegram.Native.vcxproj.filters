@@ -1188,5 +1188,8 @@
     <Midl Include="Controls\ControlEx.idl">
       <Filter>Controls</Filter>
     </Midl>
+    <Midl Include="Controls\FormattedTextBlockBase.idl">
+      <Filter>Controls</Filter>
+    </Midl>
   </ItemGroup>
 </Project>
