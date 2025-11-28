@@ -1282,7 +1282,7 @@ namespace Telegram.Controls
             //_isFormatted = runs.Count > 0 || fontSize != 0;
             HasCodeBlocks = preformatted;
 
-            var spoilerChanged = (_spoiler != null) != (spoiler != null);
+            var spoilerChanged = (_spoiler != null) || (spoiler != null);
             if (spoiler?.Ranges.Count > 0)
             {
                 spoiler.Foreground = new SolidColorBrush(Colors.Transparent);
