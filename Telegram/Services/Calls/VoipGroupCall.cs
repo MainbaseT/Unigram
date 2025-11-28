@@ -570,7 +570,7 @@ namespace Telegram.Services.Calls
 
                 if (IsLiveStory && !IsRtmpStream)
                 {
-                    InitializeStreamer(); 
+                    InitializeStreamer();
                 }
             });
         }

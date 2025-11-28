@@ -12,7 +12,6 @@ using Telegram.Controls.Media;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Telegram.Views.Popups;
 using Windows.UI.Composition;
 using Windows.UI.Text;

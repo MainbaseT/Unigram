@@ -12,7 +12,6 @@ using Telegram.Controls.Messages.Content;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;

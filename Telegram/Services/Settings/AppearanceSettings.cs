@@ -10,7 +10,6 @@ using System.Threading;
 using Telegram.Common;
 using Telegram.Navigation;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;

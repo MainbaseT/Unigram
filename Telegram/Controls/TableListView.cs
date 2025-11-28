@@ -74,7 +74,7 @@ namespace Telegram.Controls
                     grid.BorderThickness = new Thickness(1);
                     //content.Background = null;
                 }
-                else if(args.ItemContainer.ContentTemplateRoot is ProfileCell profileCell)
+                else if (args.ItemContainer.ContentTemplateRoot is ProfileCell profileCell)
                 {
                     // TODO: some day would be great to get rid of this
                     profileCell.CornerRadius = new CornerRadius(4);

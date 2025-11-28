@@ -239,7 +239,7 @@ namespace Telegram.Controls.Chats
                     // All the remote procedure calls must be wrapped in a try-catch block
                 }
             }
-            
+
             var message = ViewModel.PendingSponsoredMessage;
             if (message != null && ViewModel.IsNewestSliceLoaded is true && ScrollingHost.VerticalOffset.AlmostEquals(ScrollingHost.ScrollableHeight, 1e-02))
             {

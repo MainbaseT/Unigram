@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Td;
 using Telegram.Td.Api;
-using Telegram.Views;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
