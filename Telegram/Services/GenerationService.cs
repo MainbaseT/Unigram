@@ -580,7 +580,7 @@ namespace Telegram.Services
         }
     }
 
-    [JsonSourceGenerationOptions(IgnoreReadOnlyProperties = true, Converters = new[] { typeof(Vector2Converter) })]
+    [JsonSourceGenerationOptions(IgnoreReadOnlyProperties = true, NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals, Converters = new[] { typeof(Vector2Converter) })]
     [JsonSerializable(typeof(ImageGeneration))]
     [JsonSerializable(typeof(VideoGeneration))]
     public partial class GenerationJsonContext : JsonSerializerContext
