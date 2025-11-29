@@ -53,13 +53,13 @@
 
                 <controls:HeaderedControl Header="{CustomResource AddExceptions}"
                                           Footer="{CustomResource CustomShareGiftsInfo}">
-                    <controls:SettingsButton Content="{CustomResource AlwaysShareWith}"
+                    <controls:SettingsButton Content="{CustomResource AlwaysAllow}"
                                              Click="{x:Bind ViewModel.Always}"
                                              Visibility="{x:Bind ConvertAlways(ViewModel.SelectedItem), Mode=OneWay}"
                                              Badge="{x:Bind ViewModel.AllowedBadge, Mode=OneWay}"
                                              Glyph="&#xF164;" />
 
-                    <controls:SettingsButton Content="{CustomResource NeverShareWith}"
+                    <controls:SettingsButton Content="{CustomResource NeverAllow}"
                                              Click="{x:Bind ViewModel.Never}"
                                              Visibility="{x:Bind ConvertNever(ViewModel.SelectedItem), Mode=OneWay}"
                                              Badge="{x:Bind ViewModel.RestrictedBadge, Mode=OneWay}"
