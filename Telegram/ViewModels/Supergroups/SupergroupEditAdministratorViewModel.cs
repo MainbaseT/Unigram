@@ -46,6 +46,13 @@ namespace Telegram.ViewModels.Supergroups
             set => Set(ref _member, value);
         }
 
+        private bool _isForum;
+        public bool IsForum
+        {
+            get => _isForum;
+            set => Set(ref _isForum, value);
+        }
+
         protected override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
             // Currently, we only support editing admin rights for users
@@ -62,6 +69,8 @@ namespace Telegram.ViewModels.Supergroups
             {
                 return;
             }
+
+            IsForum = ClientService.IsForum(chat);
 
             var response = await ClientService.SendAsync(new GetChatMember(chat.Id, args.MemberId));
             if (response is ChatMember member)
@@ -93,6 +102,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanDeleteStories = administrator.Rights.CanDeleteStories;
                     CanPromoteMembers = administrator.Rights.CanPromoteMembers;
                     CanRestrictMembers = administrator.Rights.CanRestrictMembers;
+                    CanManageTopics = administrator.Rights.CanManageTopics;
                     CanManageVideoChats = administrator.Rights.CanManageVideoChats;
                     IsAnonymous = administrator.Rights.IsAnonymous;
 
@@ -112,6 +122,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanDeleteStories = true;
                     CanPromoteMembers = member.Status is ChatMemberStatusCreator;
                     CanRestrictMembers = true;
+                    CanManageTopics = true;
                     CanManageVideoChats = true;
 
                     if (member.Status is ChatMemberStatusCreator creator)
@@ -180,7 +191,8 @@ namespace Telegram.ViewModels.Supergroups
                     _canEditStories &&
                     _canDeleteStories &&
                     (supergroup.IsChannel || _canRestrictMembers) &&
-                    (supergroup.IsChannel || _canManageVideoChats);
+                    (supergroup.IsChannel || _canManageVideoChats) &&
+                    (!_isForum || _canManageTopics);
             }
         }
 
@@ -461,6 +473,19 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        private bool _canManageTopics;
+        public bool CanManageTopics
+        {
+            get => _canManageTopics;
+            set
+            {
+                if (Set(ref _canManageTopics, value))
+                {
+                    RaisePropertyChanged(nameof(CanTransferOwnership));
+                }
+            }
+        }
+
         private bool _isAnonymous;
         public bool IsAnonymous
         {
@@ -516,7 +541,7 @@ namespace Telegram.ViewModels.Supergroups
                 return;
             }
 
-            var channel = chat.Type is ChatTypeSupergroup supergroup && supergroup.IsChannel;
+            var channel = chat.Type is ChatTypeSupergroup { IsChannel: true };
 
             ChatMemberStatus status;
             if (member.Status is ChatMemberStatusCreator creator)
@@ -542,7 +567,8 @@ namespace Telegram.ViewModels.Supergroups
                         CanDeleteStories = _canDeleteStories,
                         CanPromoteMembers = _canPromoteMembers,
                         CanRestrictMembers = !channel && _canRestrictMembers,
-                        CanManageVideoChats = !channel && _canManageVideoChats
+                        CanManageVideoChats = !channel && _canManageVideoChats,
+                        CanManageTopics = _isForum && _canManageTopics,
                     },
                     CustomTitle = _customTitle ?? string.Empty,
                     CanBeEdited = true

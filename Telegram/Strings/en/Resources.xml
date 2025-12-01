@@ -13071,4 +13071,6 @@
     <string name="PrivacyMusicInfo3">You can add users or entire groups that will not see your music.</string>
     <string name="PrivacyGiftsTypeFromChannels">From Channels</string>
 
+    <string name="ManageTopicsPermission">Manage Topics</string>
+
 </resources>

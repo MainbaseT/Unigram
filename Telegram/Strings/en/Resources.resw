@@ -8657,6 +8657,9 @@ Secret chats and pending messages will be lost.</value>
   <data name="ManageLinksInfoHelpPaid" xml:space="preserve">
     <value>You can create additional invite links that have a limited time, number of uses or require a paid subscription.</value>
   </data>
+  <data name="ManageTopicsPermission" xml:space="preserve">
+    <value>Manage Topics</value>
+  </data>
   <data name="Map" xml:space="preserve">
     <value>Map</value>
   </data>

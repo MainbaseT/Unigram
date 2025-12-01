@@ -102,6 +102,10 @@
                               IsChecked="{x:Bind ViewModel.CanPinMessages, Mode=TwoWay}"
                               Content="{CustomResource EditAdminPinMessages}" />
 
+                    <CheckBox x:Name="ManageTopics"
+                              IsChecked="{x:Bind ViewModel.CanManageTopics, Mode=TwoWay}"
+                              Content="{CustomResource ManageTopicsPermission}" />
+
                     <CheckBox x:Name="ManageVideoChats"
                               IsChecked="{x:Bind ViewModel.CanManageVideoChats, Mode=TwoWay}"
                               Content="{CustomResource StartVoipChatPermission}" />
