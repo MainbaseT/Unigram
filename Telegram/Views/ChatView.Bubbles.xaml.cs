@@ -46,8 +46,8 @@ namespace Telegram.Views
                 return;
             }
 
+            _viewChanged = true;
             UpdateArrowVisibility();
-            ViewVisibleMessages(false);
         }
 
         private bool _viewChanged;
@@ -56,7 +56,6 @@ namespace Telegram.Views
         {
             _viewChanged = true;
             UpdateArrowVisibility();
-            //ViewVisibleMessages(false);
         }
 
         private void ItemsPanelRoot_LayoutUpdated(object sender, object e)
@@ -137,7 +136,7 @@ namespace Telegram.Views
             }
 
             var panel = Messages.ItemsPanelRoot as ItemsStackPanel;
-            if (panel == null || panel.FirstVisibleIndex < 0 || panel.LastVisibleIndex >= _messages.Count)
+            if (panel == null /*|| panel.FirstVisibleIndex < 0 || panel.LastVisibleIndex >= _messages.Count*/)
             {
                 return;
             }
