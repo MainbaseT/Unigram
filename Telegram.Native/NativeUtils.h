@@ -15,7 +15,6 @@
 #include <winrt/Windows.UI.Xaml.Core.Direct.h>
 
 using PFN_RhGetCurrentObjSize = WINUSERAPI INT64(WINAPI*)();
-using PFN_RhpSuppressGcStress = WINUSERAPI void(WINAPI*)();
 
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::UI::Text;

@@ -272,13 +272,13 @@ namespace winrt::Telegram::Native::implementation
     {
         HRESULT result;
 
-        IRestrictedErrorInfo* info;
+        winrt::com_ptr<IRestrictedErrorInfo> info;
         //winrt::com_ptr<ILanguageExceptionErrorInfo2> info2;
         //winrt::com_ptr<IUnknown> language;
         winrt::com_ptr<IRestrictedErrorInfoContext> context;
         STOWED_EXCEPTION_INFORMATION_V2* stowed;
 
-        CleanupIfFailed(result, GetRestrictedErrorInfo(&info));
+        CleanupIfFailed(result, GetRestrictedErrorInfo(info.put()));
         //CleanupIfFailed(result, info->QueryInterface(info2.put()));
         //CleanupIfFailed(result, info2->GetLanguageException(language.put()));
 
@@ -292,6 +292,8 @@ namespace winrt::Telegram::Native::implementation
         {
             return nullptr;
         }
+
+        CleanupIfFailed(result, SetRestrictedErrorInfo(info.get()));
 
         // TODO: Currently unused, we still propagate the managed exception and we get details from there
         // Would be fine to use this method, but strings are a little messed up:
