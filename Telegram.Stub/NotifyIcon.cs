@@ -31,6 +31,7 @@ namespace Telegram.Stub
     {
         private const int WM_DESTROY = 0x0002;
         private const int WM_USER = 0x0400;
+        private const int WM_LBUTTONUP = 0x0202;
         private const int WM_RBUTTONUP = 0x0205;
         private const int WM_LBUTTONDBLCLK = 0x0203;
         private const int WM_COMMAND = 0x0111;
@@ -156,9 +157,8 @@ namespace Telegram.Stub
                     {
                         ShowContextMenu();
                     }
-                    else if ((int)lParam == WM_LBUTTONDBLCLK)
+                    else if ((int)lParam == WM_LBUTTONUP)
                     {
-                        // Handle double-click on tray icon
                         OnOpen();
                     }
                     break;
