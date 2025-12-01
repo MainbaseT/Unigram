@@ -88,10 +88,16 @@ namespace Telegram.ViewModels.Settings
                     var response = await _clientService.SendAsync(new GetChatNotificationSettingsExceptions(_scope, false));
                     if (response is Telegram.Td.Api.Chats chats)
                     {
-                        foreach (var id in chats.ChatIds)
+                        foreach (var chat in _clientService.GetChats(chats.ChatIds))
                         {
-                            var chat = _clientService.GetChat(id);
-                            if (chat != null)
+                            if (_clientService.TryGetUser(chat.Id, out User user))
+                            {
+                                if (user.Type is not UserTypeDeleted)
+                                {
+                                    Add(chat);
+                                }
+                            }
+                            else
                             {
                                 Add(chat);
                             }

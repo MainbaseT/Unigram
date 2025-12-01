@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Collections;
@@ -378,7 +379,29 @@ namespace Telegram.ViewModels.Settings
             var chats = await ClientService.SendAsync(new GetChatNotificationSettingsExceptions(_scope, false)) as Telegram.Td.Api.Chats;
             if (chats?.ChatIds.Count > 0)
             {
-                ExceptionsCount = string.Format("{0}, {1}", Alert ? Strings.NotificationsOn : Strings.NotificationsOff, Locale.Declension(Strings.R.Exception, chats.ChatIds.Count));
+                static int Count(IClientService clientService, IList<long> chatIds)
+                {
+                    var count = 0;
+
+                    foreach (var chat in clientService.GetChats(chatIds))
+                    {
+                        if (clientService.TryGetUser(chat.Id, out User user))
+                        {
+                            if (user.Type is not UserTypeDeleted)
+                            {
+                                count++;
+                            }
+                        }
+                        else
+                        {
+                            count++;
+                        }
+                    }
+
+                    return count;
+                }
+
+                ExceptionsCount = string.Format("{0}, {1}", Alert ? Strings.NotificationsOn : Strings.NotificationsOff, Locale.Declension(Strings.R.Exception, Count(ClientService, chats.ChatIds)));
             }
         }
 
