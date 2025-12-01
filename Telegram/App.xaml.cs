@@ -170,10 +170,11 @@ namespace Telegram
                 }
             }
 
-            var navigation = WindowContext.Current.NavigationServices.GetByFrameId($"{LifetimeService.Current.ActiveItem.Id}");
+            var activeSession = LifetimeService.Current.ActiveItem;
+            var navigation = WindowContext.Current.NavigationServices.GetByFrameId($"{activeSession.Id}");
 
-            var update = LifetimeService.Current.Resolve<ICloudUpdateService>();
-            var service = LifetimeService.Current.Resolve<IClientService>();
+            var update = activeSession.Resolve<ICloudUpdateService>();
+            var service = activeSession.Resolve<IClientService>();
 
             var state = await service.GetAuthorizationStateAsync();
 

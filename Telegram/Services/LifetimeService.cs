@@ -131,21 +131,6 @@ namespace Telegram.Services
             }
         }
 
-        public IEnumerable<T> ResolveAll<T>()
-        {
-            foreach (var container in _sessions)
-            {
-                if (container != null)
-                {
-                    var service = container.Resolve<T>();
-                    if (service != null)
-                    {
-                        yield return service;
-                    }
-                }
-            }
-        }
-
         public IList<ISessionService> Items => _sessions.Values;
 
         private ISessionService _previousItem;
@@ -210,7 +195,10 @@ namespace Telegram.Services
             ISessionService? replace = null;
             if (item.IsActive)
             {
-                ActiveItem = replace = _previousItem ?? Items.FirstOrDefault(x => x.Id != item.Id) ?? Create(false);
+                var previous = _previousItem == item ? null : _previousItem;
+                var active = previous ?? Items.FirstOrDefault(x => x != item) ?? Create(false);
+
+                ActiveItem = replace = active;
             }
 
             _sessions.Remove(item.Id);
@@ -257,26 +245,28 @@ namespace Telegram.Services
             });
         }
 
-        public TService Resolve<TService>()
+        public IEnumerable<T> ResolveAll<T>()
         {
-            var session = ActiveItem?.Id ?? 0;
-            var result = default(TService);
-
-            if (_sessions.TryGetValue(session, out ISessionService container))
+            foreach (var container in _sessions)
             {
-                result = container.Resolve<TService>();
+                if (container != null)
+                {
+                    var service = container.Resolve<T>();
+                    if (service != null)
+                    {
+                        yield return service;
+                    }
+                }
             }
-
-            return result;
         }
 
-        public bool TryResolve<TService>(int session, out TService result)
+        public bool TryResolve<T>(int session, out T result)
         {
             result = default;
 
             if (_sessions.TryGetValue(session, out ISessionService container))
             {
-                result = container.Resolve<TService>();
+                result = container.Resolve<T>();
             }
 
             return result != null;

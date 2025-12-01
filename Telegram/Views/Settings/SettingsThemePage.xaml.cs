@@ -20,7 +20,7 @@ namespace Telegram.Views.Settings
         public SettingsThemePage()
         {
             InitializeComponent();
-            DataContext = LifetimeService.Current.Resolve<SettingsThemeViewModel>();
+            DataContext = LifetimeService.Current.ActiveItem.Resolve<SettingsThemeViewModel>();
 
             WatchDog.TrackEvent("SettingsThemePage");
         }

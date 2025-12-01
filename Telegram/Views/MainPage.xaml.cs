@@ -68,7 +68,7 @@ namespace Telegram.Views
         public MainPage()
         {
             InitializeComponent();
-            DataContext = LifetimeService.Current.Resolve<MainViewModel>();
+            DataContext = LifetimeService.Current.ActiveItem.Resolve<MainViewModel>();
 
             _clientService = ViewModel.ClientService;
 
