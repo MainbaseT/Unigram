@@ -130,6 +130,7 @@
                                  Width="32"
                                  Height="32"
                                  HorizontalAlignment="Center"
+                                 VerticalAlignment="Top"
                                  Margin="8,0,8,0"
                                  Canvas.ZIndex="1">
                     <controls:ProfilePicture x:Name="Photo"
@@ -138,7 +139,7 @@
 
                 <Grid Grid.Column="1"
                       VerticalAlignment="Center"
-                      Margin="0,1,0,3">
+                      Margin="0,-2,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
