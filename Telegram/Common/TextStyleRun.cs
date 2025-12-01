@@ -322,7 +322,7 @@ namespace Telegram.Common
         {
             if (string.IsNullOrEmpty(text?.Text))
             {
-                return null;
+                return StyledText.Empty;
             }
 
             return new StyledText(text.Text, text.Entities, GetParagraphs(text.Text, text.Entities));
@@ -332,7 +332,7 @@ namespace Telegram.Common
         {
             if (string.IsNullOrEmpty(text))
             {
-                return null;
+                return StyledText.Empty;
             }
 
             return new StyledText(text, entities, GetParagraphs(text, entities ?? Array.Empty<TextEntity>()));
@@ -533,6 +533,8 @@ namespace Telegram.Common
         public IList<StyledParagraph> Paragraphs { get; }
 
         public bool IsPlain { get; }
+
+        public static StyledText Empty = new(string.Empty, Array.Empty<TextEntity>(), Array.Empty<StyledParagraph>());
     }
 
     public partial class StyledParagraph

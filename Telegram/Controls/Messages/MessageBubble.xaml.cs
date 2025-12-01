@@ -1903,7 +1903,9 @@ namespace Telegram.Controls.Messages
                 Message.SetQuery(_query);
 
                 ContentPanel.MaxWidth = Message.HasCodeBlocks ? double.PositiveInfinity : 432;
-                Message.Visibility = Visibility.Visible;
+                Message.Visibility = textz.Text.Length > 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
 
                 return;
             }
@@ -1916,71 +1918,67 @@ namespace Telegram.Controls.Messages
             //}
 
             var content = message.GeneratedContent ?? message.Content;
-            if (content is MessageText text)
+            switch (content)
             {
-                result = ReplaceEntities(message, text.Text);
-            }
-            else if (content is MessageAlbum album)
-            {
-                result = ReplaceEntities(message, album.Caption);
-            }
-            else if (content is MessagePaidAlbum paidAlbum)
-            {
-                result = ReplaceEntities(message, paidAlbum.Caption);
-            }
-            else if (content is MessageAnimation animation)
-            {
-                result = ReplaceEntities(message, animation.Caption);
-            }
-            else if (content is MessageAudio audio)
-            {
-                result = ReplaceEntities(message, audio.Caption);
-            }
-            else if (content is MessageDocument document)
-            {
-                result = ReplaceEntities(message, document.Caption);
-            }
-            else if (content is MessageInvoice invoice)
-            {
-                result = ReplaceEntities(message, invoice.PaidMediaCaption);
-            }
-            else if (content is MessagePhoto photo)
-            {
-                result = ReplaceEntities(message, photo.Caption);
-            }
-            else if (content is MessageVideo video)
-            {
-                result = ReplaceEntities(message, video.Caption);
-            }
-            else if (content is MessageVoiceNote voiceNote)
-            {
-                result = ReplaceEntities(message, voiceNote.Caption);
-            }
-            else if (content is MessageUnsupported)
-            {
-                var usupported = Strings.UnsupportedMessage;
-                var entity = new TextEntity(0, Strings.UnsupportedMessage.Length, new TextEntityTypeItalic());
+                case MessageText text:
+                    result = ReplaceEntities(message, text.Text);
+                    break;
+                case MessageAlbum album:
+                    result = ReplaceEntities(message, album.Caption);
+                    break;
+                case MessagePaidAlbum paidAlbum:
+                    result = ReplaceEntities(message, paidAlbum.Caption);
+                    break;
+                case MessageAnimation animation:
+                    result = ReplaceEntities(message, animation.Caption);
+                    break;
+                case MessageAudio audio:
+                    result = ReplaceEntities(message, audio.Caption);
+                    break;
+                case MessageDocument document:
+                    result = ReplaceEntities(message, document.Caption);
+                    break;
+                case MessageInvoice invoice:
+                    result = ReplaceEntities(message, invoice.PaidMediaCaption);
+                    break;
+                case MessagePhoto photo:
+                    result = ReplaceEntities(message, photo.Caption);
+                    break;
+                case MessageVideo video:
+                    result = ReplaceEntities(message, video.Caption);
+                    break;
+                case MessageVoiceNote voiceNote:
+                    result = ReplaceEntities(message, voiceNote.Caption);
+                    break;
+                case MessageUnsupported:
+                    {
+                        var usupported = Strings.UnsupportedMessage;
+                        var entity = new TextEntity(0, Strings.UnsupportedMessage.Length, new TextEntityTypeItalic());
 
-                result = ReplaceEntities(message, new FormattedText(usupported, new[] { entity }));
-            }
-            else if (content is MessageVenue venue)
-            {
-                var venueText = $"{venue.Venue.Title}\n{venue.Venue.Address}";
-                var venueEntities = new TextEntity[]
-                {
+                        result = ReplaceEntities(message, new FormattedText(usupported, new[] { entity }));
+                        break;
+                    }
+
+                case MessageVenue venue:
+                    {
+                        var venueText = $"{venue.Venue.Title}\n{venue.Venue.Address}";
+                        var venueEntities = new TextEntity[]
+                        {
                     new(0, venue.Venue.Title.Length, new TextEntityTypeBold())
-                };
+                        };
 
-                result = ReplaceEntities(message, venueText, venueEntities);
-            }
-            else if (content is MessageBigEmoji bigEmoji)
-            {
-                //var paragraph = new Paragraph();
-                //paragraph.Inlines.Add(new Run { Text = bigEmoji.Text.Text, FontSize = 32 });
+                        result = ReplaceEntities(message, venueText, venueEntities);
+                        break;
+                    }
 
-                //Message.Blocks.Clear();
-                //Message.Blocks.Add(paragraph);
-                result = ReplaceEntities(message, bigEmoji.Text, 32);
+                case MessageBigEmoji bigEmoji:
+                    //var paragraph = new Paragraph();
+                    //paragraph.Inlines.Add(new Run { Text = bigEmoji.Text.Text, FontSize = 32 });
+
+                    //Message.Blocks.Clear();
+                    //Message.Blocks.Add(paragraph);
+                    result = ReplaceEntities(message, bigEmoji.Text, 32);
+                    break;
             }
 
             ContentPanel.MaxWidth = Message.HasCodeBlocks ? double.PositiveInfinity : 432;

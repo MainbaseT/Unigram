@@ -572,7 +572,7 @@ namespace Telegram.ViewModels
             }
             else
             {
-                Text = null;
+                Text = StyledText.Empty;
             }
         }
 
