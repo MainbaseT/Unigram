@@ -6711,6 +6711,10 @@ namespace Telegram.Views
                 {
                     ShowAction(Strings.ForumReplyToMessagesInTopic, false, true);
                 }
+                else if (ViewModel.ForumTopic is ForumTopic { Info.IsClosed: true })
+                {
+                    ShowAction(Strings.TopicClosedByAdmin, false);
+                }
                 else
                 {
                     ShowArea(group.IsAdministeredDirectMessagesGroup ? 0 : group.PaidMessageStarCount);
