@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Runtime;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Composition;
@@ -124,9 +125,9 @@ namespace Telegram.Views
             GC.CollectionCount(2)
         };
 
-        private bool PollGC()
+        private string PollGC()
         {
-            var occurred = false;
+            var occurred = GCSettings.LatencyMode == GCLatencyMode.SustainedLowLatency ? " S" : " I";
 
             for (int i = 0; i <= 2; i++)
             {
@@ -134,7 +135,7 @@ namespace Telegram.Views
                 if (count != _lastCollectionCount[i])
                 {
                     _lastCollectionCount[i] = count;
-                    occurred = true;
+                    occurred += i.ToString();
                 }
             }
 
@@ -152,11 +153,11 @@ namespace Telegram.Views
 
             if (MasterDetail?.NavigationService?.Frame?.Content is ChatPage page)
             {
-                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB" + (occurred ? " OCCURRED" : string.Empty) + page.View.GetVirtualizationInfo();
+                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB" + occurred + page.View.GetVirtualizationInfo();
             }
             else if (memoryUsage != _memoryUsage)
             {
-                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB" + (occurred ? " OCCURRED" : string.Empty);
+                MemoryLabel.Text = $"- {memoryUsage:F0} MB, {managed:F0} MB" + occurred;
             }
 
             _memoryUsage = memoryUsage;
@@ -1201,6 +1202,11 @@ namespace Telegram.Views
                     {
                         MasterDetail.NavigationService.ClearCache(true);
                     }
+
+                    GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                    GCSettings.LatencyMode = GCSettings.LatencyMode == GCLatencyMode.Interactive
+                        ? GCLatencyMode.SustainedLowLatency
+                        : GCLatencyMode.Interactive;
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
