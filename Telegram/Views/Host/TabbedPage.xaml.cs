@@ -171,7 +171,7 @@ namespace Telegram.Views.Host
 
         public void AddNewTab(TabViewItem newTab)
         {
-            Navigation.TabItems.Insert(Navigation.SelectedIndex + 1, newTab);
+            Navigation.TabItems.Insert(Math.Min(Navigation.SelectedIndex + 1, Navigation.TabItems.Count), newTab);
             Navigation.SelectedIndex++;
         }
 
