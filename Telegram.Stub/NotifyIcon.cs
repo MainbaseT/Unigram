@@ -129,10 +129,7 @@ namespace Telegram.Stub
                 uCallbackMessage = WM_USER
             };
 
-            if (!NativeMethods.Shell_NotifyIcon(0x00000000, ref data)) // NIM_ADD
-            {
-                throw new Exception($"Shell_NotifyIcon failed with error: {Marshal.GetLastWin32Error()}");
-            }
+            NativeMethods.Shell_NotifyIcon(0x00000000, ref data); // NIM_ADD
         }
 
         private void CreateContextMenu()
