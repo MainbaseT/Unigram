@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
@@ -228,6 +229,12 @@ namespace Telegram.Services
         {
             Logger.Info("UpdateSuggestedActions");
 
+            var enableArchiveAndMuteNewChats = update.AddedActions.FirstOrDefault(x => x is SuggestedActionEnableArchiveAndMuteNewChats);
+            if (enableArchiveAndMuteNewChats == null)
+            {
+                return;
+            }
+
             await ViewService.WaitForMainWindowAsync();
 
             var window = WindowContext.Active ?? WindowContext.Main;
@@ -235,29 +242,26 @@ namespace Telegram.Services
 
             dispatcher?.Dispatch(async () =>
             {
-                foreach (var action in update.AddedActions)
+                var xamlRoot = window.Content?.XamlRoot;
+                if (xamlRoot == null)
                 {
-                    var xamlRoot = window.Content?.XamlRoot;
-                    if (xamlRoot == null)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    if (action is SuggestedActionEnableArchiveAndMuteNewChats)
+                if (enableArchiveAndMuteNewChats is SuggestedActionEnableArchiveAndMuteNewChats)
+                {
+                    var confirm = await MessagePopup.ShowAsync(xamlRoot, Strings.HideNewChatsAlertText, Strings.HideNewChatsAlertTitle, Strings.OK, Strings.Cancel);
+                    if (confirm == ContentDialogResult.Primary)
                     {
-                        var confirm = await MessagePopup.ShowAsync(xamlRoot, Strings.HideNewChatsAlertText, Strings.HideNewChatsAlertTitle, Strings.OK, Strings.Cancel);
-                        if (confirm == ContentDialogResult.Primary)
+                        var response = await _clientService.SendAsync(new GetArchiveChatListSettings());
+                        if (response is ArchiveChatListSettings settings)
                         {
-                            var response = await _clientService.SendAsync(new GetArchiveChatListSettings());
-                            if (response is ArchiveChatListSettings settings)
-                            {
-                                settings.ArchiveAndMuteNewChatsFromUnknownUsers = true;
-                                _clientService.Send(new SetArchiveChatListSettings(settings));
-                            }
+                            settings.ArchiveAndMuteNewChatsFromUnknownUsers = true;
+                            _clientService.Send(new SetArchiveChatListSettings(settings));
                         }
-
-                        _clientService.Send(new HideSuggestedAction(action));
                     }
+
+                    _clientService.Send(new HideSuggestedAction(enableArchiveAndMuteNewChats));
                 }
             });
         }
