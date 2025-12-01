@@ -253,44 +253,45 @@ namespace Telegram.Controls.Messages
         public virtual async void OnContextRequested(ContextRequestedEventArgs args)
         {
             var message = _message;
-            if (message == null || message.IsChannelPost)
+            if (message == null || (message.IsChannelPost && _reactionType is not ReactionTypeCustomEmoji))
             {
                 return;
             }
 
             var flyout = new MenuFlyout();
-            var popup = new InteractionsView(message.ClientService, message.ChatId, message.Id, _reactionType)
+            if (!message.IsChannelPost)
             {
-                Width = 264,
-                Height = 48 * _reaction.TotalCount,
-                MinHeight = 48,
-                MaxHeight = 360
-            };
-
-            void handler(InteractionsView sender, ItemClickEventArgs e)
-            {
-                sender.ItemClick -= handler;
-                flyout.Hide();
-
-                if (e.ClickedItem is AddedReaction addedReaction)
+                var popup = new InteractionsView(message.ClientService, message.ChatId, message.Id, _reactionType)
                 {
-                    message.Delegate.NavigationService.NavigateToSender(addedReaction.SenderId);
-                }
-                else if (e.ClickedItem is MessageViewer messageViewer)
+                    Width = 264,
+                    Height = 48 * _reaction.TotalCount,
+                    MinHeight = 48,
+                    MaxHeight = 360
+                };
+
+                void handler(InteractionsView sender, ItemClickEventArgs e)
                 {
-                    message.Delegate.NavigationService.NavigateToUser(messageViewer.UserId);
+                    sender.ItemClick -= handler;
+                    flyout.Hide();
+
+                    if (e.ClickedItem is AddedReaction addedReaction)
+                    {
+                        message.Delegate.NavigationService.NavigateToSender(addedReaction.SenderId);
+                    }
+                    else if (e.ClickedItem is MessageViewer messageViewer)
+                    {
+                        message.Delegate.NavigationService.NavigateToUser(messageViewer.UserId);
+                    }
                 }
+
+                popup.ItemClick += handler;
+
+                flyout.Items.Add(new MenuFlyoutContent
+                {
+                    Content = popup,
+                    Padding = new Thickness(0)
+                });
             }
-
-            popup.ItemClick += handler;
-
-            flyout.Items.Add(new MenuFlyoutContent
-            {
-                Content = popup,
-                Padding = new Thickness(0)
-            });
-
-            flyout.ShowAt(this, args);
 
             if (_reactionType is ReactionTypeCustomEmoji customEmoji)
             {
@@ -345,6 +346,8 @@ namespace Telegram.Controls.Messages
                 flyout.CreateFlyoutSeparator();
                 flyout.Items.Add(content);
 
+                flyout.ShowAt(this, args);
+
                 var function = _message.ClientService.GetCustomEmojiStickerSets(new[] { customEmoji.CustomEmojiId });
 
                 await Task.WhenAll(function, Task.Delay(250));
@@ -394,6 +397,10 @@ namespace Telegram.Controls.Messages
 
                     visual.StartAnimation("Opacity", animation);
                 }
+            }
+            else
+            {
+                flyout.ShowAt(this, args);
             }
         }
 
