@@ -329,30 +329,30 @@ namespace Telegram.Services
             var items = _items;
             var transport = _transport;
 
-            if (items == null || item == null || transport == null /*|| item?.Stream?.File == null*/)
-            {
-                transport?.IsEnabled = false;
-                transport?.DisplayUpdater.ClearAll();
-                return;
-            }
-
-            transport.IsEnabled = true;
-            transport.IsPlayEnabled = true;
-            transport.IsPauseEnabled = true;
-            transport.IsPreviousEnabled = true;
-            transport.IsNextEnabled = items.Count > 1;
-
-            transport.DisplayUpdater.ClearAll();
-            transport.DisplayUpdater.Type = WM.MediaPlaybackType.Music;
-
             try
             {
+                if (items == null || item == null || transport == null /*|| item?.Stream?.File == null*/)
+                {
+                    transport?.IsEnabled = false;
+                    transport?.DisplayUpdater.ClearAll();
+                    return;
+                }
+
+                transport.IsEnabled = true;
+                transport.IsPlayEnabled = true;
+                transport.IsPauseEnabled = true;
+                transport.IsPreviousEnabled = true;
+                transport.IsNextEnabled = items.Count > 1;
+
+                transport.DisplayUpdater.ClearAll();
+                transport.DisplayUpdater.Type = WM.MediaPlaybackType.Music;
+
                 transport.DisplayUpdater.MusicProperties.Title = item.Title ?? string.Empty;
                 transport.DisplayUpdater.MusicProperties.Artist = item.Performer ?? string.Empty;
+
+                transport.DisplayUpdater.Update();
             }
             catch { }
-
-            transport.DisplayUpdater.Update();
         }
 
         public IReadOnlyList<PlaybackItem> Items => _items?.ToList() ?? (IReadOnlyList<PlaybackItem>)Array.Empty<PlaybackItem>();
