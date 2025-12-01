@@ -16,6 +16,7 @@ using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
 
 namespace Telegram.ViewModels
 {
@@ -782,7 +783,10 @@ namespace Telegram.ViewModels
 
                     if (!update.Message.IsOutgoing && Settings.Notifications.InAppSounds)
                     {
-                        if (NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated)
+                        var muted = ClientService.Notifications.IsMuted(Chat);
+                        var listeners = AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged);
+
+                        if (NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && (listeners || !muted))
                         {
                             _notificationsService.PlaySound(false);
                         }
@@ -1241,7 +1245,13 @@ namespace Telegram.ViewModels
 
                 if (Settings.Notifications.InAppSounds)
                 {
-                    _notificationsService.PlaySound(true);
+                    var muted = ClientService.Notifications.IsMuted(Chat);
+                    var listeners = AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged);
+
+                    if (NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && (listeners || !muted))
+                    {
+                        _notificationsService.PlaySound(true);
+                    }
                 }
             }
         }
