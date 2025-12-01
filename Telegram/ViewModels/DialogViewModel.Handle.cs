@@ -781,15 +781,9 @@ namespace Telegram.ViewModels
                         InsertMessage(message);
                     }
 
-                    if (!update.Message.IsOutgoing && Settings.Notifications.InAppSounds)
+                    if (!update.Message.IsOutgoing)
                     {
-                        var muted = ClientService.Notifications.IsMuted(Chat);
-                        var listeners = AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged);
-
-                        if (NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && (listeners || !muted))
-                        {
-                            _notificationsService.PlaySound(false);
-                        }
+                        PlaySound(false);
                     }
                 });
             }
@@ -1242,16 +1236,19 @@ namespace Telegram.ViewModels
                     bubble.UpdateMessage(message);
                     Delegate?.ViewVisibleMessages();
                 }, newMessageId: update.Message.Id);
+            }
+        }
 
-                if (Settings.Notifications.InAppSounds)
+        private void PlaySound(bool sent)
+        {
+            if (Settings.Notifications.InAppSounds)
+            {
+                var muted = ClientService.Notifications.IsMuted(Chat);
+                var listeners = AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged);
+
+                if (NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && (listeners || !muted))
                 {
-                    var muted = ClientService.Notifications.IsMuted(Chat);
-                    var listeners = AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged);
-
-                    if (NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && (listeners || !muted))
-                    {
-                        _notificationsService.PlaySound(true);
-                    }
+                    _notificationsService.PlaySound(sent);
                 }
             }
         }
@@ -1407,6 +1404,11 @@ namespace Telegram.ViewModels
                     {
                         Items.UpdateMessageSendSucceeded(messageId, message);
                         Delegate?.UpdateMessageSendSucceeded(messageId, message);
+                    }
+
+                    if (newMessageId.HasValue)
+                    {
+                        PlaySound(true);
                     }
                 }
             });
