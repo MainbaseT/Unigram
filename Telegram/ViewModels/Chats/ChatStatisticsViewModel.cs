@@ -177,7 +177,9 @@ namespace Telegram.ViewModels.Chats
                         var inner = await ClientService.SendAsync(new GetMessages(chatId, messageIds)) as Messages;
                         if (inner != null)
                         {
-                            messages = inner.MessagesValue.ToDictionary(x => x.Id);
+                            messages = inner.MessagesValue
+                                .Where(x => x != null)
+                                .ToDictionary(x => x.Id);
                         }
                     }
 

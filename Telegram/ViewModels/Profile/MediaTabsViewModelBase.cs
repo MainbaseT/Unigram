@@ -304,20 +304,20 @@ namespace Telegram.ViewModels.Profile
             //    return;
             //}
 
-            DeleteMessages(chat, new[] { message });
+            DeleteMessages(chat, [message]);
         }
 
         private async void DeleteMessages(Chat chat, IList<MessageWithOwner> messages)
         {
-            var first = messages.FirstOrDefault();
-            if (first == null)
+            var items = messages
+                .Where(x => x != null)
+                .DistinctBy(x => x.Id)
+                .ToList();
+
+            if (items.Empty())
             {
                 return;
             }
-
-            var items = messages
-                .DistinctBy(x => x.Id)
-                .ToList();
 
             var properties = await ClientService.GetMessagePropertiesAsync(items.Select(x => new MessageId(x)));
 

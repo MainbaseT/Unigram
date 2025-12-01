@@ -1160,7 +1160,7 @@ namespace Telegram.Controls.Stories
         public Task<ContentDialogResult> ShowActionAsync(FrameworkElement target, object text, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark)
         {
             var toast = ToastPopup.ShowImpl(XamlRoot, null as FormattedText, null, placement, requestedTheme, target: target);
-            if (toast.Content is Grid content)
+            if (toast?.Content is Grid content)
             {
                 var tsc = new TaskCompletionSource<ContentDialogResult>();
                 var undo = new Button()

@@ -446,7 +446,7 @@ namespace Telegram.Controls
         public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FormattedText text, string action, FrameworkElement icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null)
         {
             var toast = ShowImpl(xamlRoot, text, icon, placement, requestedTheme, dismissAfter);
-            if (toast.Content is Grid content)
+            if (toast?.Content is Grid content)
             {
                 var tsc = new TaskCompletionSource<ContentDialogResult>();
                 var undo = new Button()
