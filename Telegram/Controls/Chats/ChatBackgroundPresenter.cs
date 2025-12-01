@@ -610,7 +610,13 @@ namespace Telegram.Controls.Chats
         {
             if (file.Id == _backgroundId)
             {
-                this.BeginOnUIThread(() => UpdateSource(null, _background, _thumbnail, _theme));
+                this.BeginOnUIThread(() =>
+                {
+                    if (IsConnected)
+                    {
+                        UpdateSource(null, _background, _thumbnail, _theme);
+                    }
+                });
             }
         }
 

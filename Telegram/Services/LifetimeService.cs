@@ -30,7 +30,7 @@ namespace Telegram.Services
         ISessionService PreviousItem { get; set; }
     }
 
-    public partial class LifetimeService : BindableBase, ILifetimeService
+    public partial class LifetimeService : ILifetimeService
     {
         private static readonly LifetimeService _instance = new();
 
