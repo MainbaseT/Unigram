@@ -197,7 +197,7 @@ namespace Telegram.Controls.Messages.Content
                 element.Margin = new Thickness(0, 0, 0, 2);
                 selector.Margin = new Thickness(0, 0, 0, 6);
 
-                if (pos.Text == null)
+                if (string.IsNullOrEmpty(pos.Text?.Text))
                 {
                     continue;
                 }

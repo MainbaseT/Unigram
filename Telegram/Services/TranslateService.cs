@@ -141,7 +141,7 @@ namespace Telegram.Services
 
         public bool Translate(MessageViewModel message, string toLanguage)
         {
-            if (message.IsOutgoing || message.Text == null)
+            if (message.IsOutgoing || string.IsNullOrEmpty(message.Text?.Text))
             {
                 return false;
             }

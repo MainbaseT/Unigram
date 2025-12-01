@@ -2512,7 +2512,7 @@ namespace Telegram.Controls.Messages
             _highlight.Children.InsertAtTop(solid);
             _highlight.Size = target.ActualSize;
 
-            if (options.Quote != null && options.Quote.IsManual && message.Text != null)
+            if (options.Quote != null && options.Quote.IsManual && !string.IsNullOrEmpty(message.Text?.Text))
             {
                 var caption = content.GetCaption();
                 var index = ClientEx.SearchQuote(caption, options.Quote);

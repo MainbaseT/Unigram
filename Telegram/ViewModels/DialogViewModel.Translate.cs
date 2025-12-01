@@ -79,7 +79,7 @@ namespace Telegram.ViewModels
 
         private void UpdateLanguageStatistics(MessageViewModel message)
         {
-            if (IsLanguageDetected || message.IsOutgoing || message.Text == null || !HasAutomaticTranslation())
+            if (IsLanguageDetected || message.IsOutgoing || string.IsNullOrEmpty(message.Text?.Text) || !HasAutomaticTranslation())
             {
                 return;
             }
