@@ -984,13 +984,13 @@ namespace Telegram.ViewModels
             }
 
             options ??= await PickMessageSendOptionsAsync(reorder: reorder);
-            options.UpdateOrderOfInstalledStickerSets = reorder;
 
             if (options == null)
             {
                 return null;
             }
 
+            options.UpdateOrderOfInstalledStickerSets = reorder;
             reply ??= GetReply(options.OnlyPreview == false, options.SchedulingState != null);
 
             Object response = null;
