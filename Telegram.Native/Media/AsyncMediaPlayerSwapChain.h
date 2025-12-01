@@ -44,7 +44,7 @@ namespace winrt::Telegram::Native::Media::implementation
         IVector<hstring> SwapChainOptions() const;
 
         bool Create(bool subscribe = false);
-        void Destroy();
+        void Close();
 
         void Attach(SwapChainPanel const& panel, bool subscribe = false);
         void Detach(SwapChainPanel const& panel);

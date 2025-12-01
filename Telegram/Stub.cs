@@ -6052,18 +6052,6 @@ public static class AsyncMediaPlayerSwapChain_stub
             throw new RuntimeException(ex);
         }
     }
-    public static void Destroy_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender)
-    {
-        try
-        {
-            sender.Destroy();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static void Detach_stub(this Telegram.Native.Media.AsyncMediaPlayerSwapChain sender, Windows.UI.Xaml.Controls.SwapChainPanel panel)
     {
         try

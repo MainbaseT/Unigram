@@ -25,7 +25,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
     AsyncMediaPlayerSwapChain::~AsyncMediaPlayerSwapChain()
     {
-        Destroy();
+        Close();
     }
 
     //void AsyncMediaPlayerSwapChain::OnSuspending(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&)
@@ -188,7 +188,7 @@ namespace winrt::Telegram::Native::Media::implementation
         }
         catch (...)
         {
-            Destroy();
+            Close();
             // TODO: Add logging
             // Telegram::Logger::Error(ex.ToString());
         }
@@ -196,7 +196,7 @@ namespace winrt::Telegram::Native::Media::implementation
         return false;
     }
 
-    void AsyncMediaPlayerSwapChain::Destroy()
+    void AsyncMediaPlayerSwapChain::Close()
     {
         //if (m_suspending)
         //{
@@ -215,8 +215,7 @@ namespace winrt::Telegram::Native::Media::implementation
 
         {
             std::lock_guard<std::mutex> lock(m_panelLock);
-            OnAttach(m_panel, nullptr, false);
-            m_panel = nullptr;
+            OnAttach(m_panel, m_panel = nullptr, false);
         }
 
         if (m_swapChain)
@@ -240,8 +239,7 @@ namespace winrt::Telegram::Native::Media::implementation
     void AsyncMediaPlayerSwapChain::Attach(SwapChainPanel const& panel, bool subscribe)
     {
         std::lock_guard<std::mutex> lock(m_panelLock);
-        OnAttach(m_panel, panel, subscribe);
-        m_panel = panel;
+        OnAttach(m_panel, m_panel = panel, subscribe);
     }
 
     void AsyncMediaPlayerSwapChain::OnAttach(SwapChainPanel const& oldPanel, SwapChainPanel const& newPanel, bool subscribe)

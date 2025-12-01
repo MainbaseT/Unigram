@@ -5,7 +5,6 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-using LibVLCSharp.Platforms.Windows;
 using Telegram.Common;
 using Telegram.Native.Media;
 using Telegram.Services;
@@ -30,16 +29,45 @@ namespace Telegram.Controls
             InitializeComponent();
         }
 
-        private bool _isUnloadedExpected;
-        public override bool IsUnloadedExpected
-        {
-            get => Video.IsUnloadedExpected;
-            set => Video.IsUnloadedExpected = value;
-        }
+        public override bool IsUnloadedExpected { get; set; }
 
         private void OnConnected(object sender, RoutedEventArgs e)
         {
             IsUnloadedExpected = false;
+
+            if (_core == null)
+            {
+                var options = new AsyncMediaPlayerOptions
+                {
+                    CreateSwapChain = true,
+                    Mute = SettingsService.Current.VolumeMuted,
+                    Volume = SettingsService.Current.VolumeLevel,
+                    Rate = SettingsService.Current.Playback.VideoSpeed,
+                    Debug = SettingsService.Current.VerbosityLevel >= 4,
+                };
+
+                _core = new AsyncMediaPlayer(options);
+                _core.VideoOut += OnVout;
+                _core.Stopped += OnStopped;
+                _core.PositionChanged += OnTimeChanged;
+                _core.DurationChanged += OnLengthChanged;
+                _core.EndReached += OnEndReached;
+                _core.Playing += OnPlaying;
+                _core.Paused += OnPaused;
+                _core.VolumeChanged += OnVolumeChanged;
+                _core.StreamSelected += OnEESelected;
+
+                _core.Context.Attach(Video, true);
+
+                if (_video != null)
+                {
+                    _core.Play(new RemoteFileSource(_video.ClientService, _video.File, _video.Duration));
+                    _core.Position = _initialPosition;
+                }
+
+                _video = null;
+                _initialPosition = 0;
+            }
         }
 
         private void OnDisconnected(object sender, RoutedEventArgs e)
@@ -115,7 +143,7 @@ namespace Telegram.Controls
 
         public override void Clear()
         {
-            Video.Clear();
+            _core?.Context.Clear();
         }
 
         public override void Seek(double value)
@@ -178,38 +206,6 @@ namespace Telegram.Controls
             {
                 _core?.Mute = value;
             }
-        }
-
-        private void OnInitialized(object sender, VideoViewInitializedEventArgs e)
-        {
-            var options = new AsyncMediaPlayerOptions
-            {
-                CreateSwapChain = false,
-                Mute = SettingsService.Current.VolumeMuted,
-                Volume = SettingsService.Current.VolumeLevel,
-                Rate = SettingsService.Current.Playback.VideoSpeed,
-                Debug = SettingsService.Current.VerbosityLevel >= 4,
-            };
-
-            _core = new AsyncMediaPlayer(options, e.SwapChain);
-            _core.VideoOut += OnVout;
-            _core.Stopped += OnStopped;
-            _core.PositionChanged += OnTimeChanged;
-            _core.DurationChanged += OnLengthChanged;
-            _core.EndReached += OnEndReached;
-            _core.Playing += OnPlaying;
-            _core.Paused += OnPaused;
-            _core.VolumeChanged += OnVolumeChanged;
-            _core.StreamSelected += OnEESelected;
-
-            if (_video != null)
-            {
-                _core.Play(new RemoteFileSource(_video.ClientService, _video.File, _video.Duration));
-                _core.Position = _initialPosition;
-            }
-
-            _video = null;
-            _initialPosition = 0;
         }
 
         private void OnVout(AsyncMediaPlayer sender, object args)

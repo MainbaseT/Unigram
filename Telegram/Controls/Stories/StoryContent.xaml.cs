@@ -66,7 +66,7 @@ namespace Telegram.Controls.Stories
     }
 
     // TODO: Live story no stream state
-    public sealed partial class StoryContent : UserControl
+    public sealed partial class StoryContent : UserControlEx
     {
         private volatile bool _unloaded;
 
@@ -84,7 +84,7 @@ namespace Telegram.Controls.Stories
             _messagesVisual = CompositionDevice.GetElementLayerVisual(MessagesHost);
 
             SizeChanged += OnSizeChanged;
-            Unloaded += OnUnloaded;
+            Disconnected += OnUnloaded;
         }
 
         private void OnTick(object sender, EventArgs e)
@@ -258,7 +258,7 @@ namespace Telegram.Controls.Stories
                     SegmentsInactive.UpdateActiveStories(activeStories.Item, 48, true);
                 }
 
-                Video?.Clear();
+                _player?.Context.Clear();
             }
 
             var story = activeStories.SelectedItem;
@@ -798,6 +798,11 @@ namespace Telegram.Controls.Stories
 
         private void Play(StoryVideo stream)
         {
+            if (_player == null || Video == null)
+            {
+                InitializeVideo();
+            }
+
             if (_player != null && !_unloaded && _viewModel != null && stream != null)
             {
                 _player.Play(new RemoteFileSource(_viewModel.ClientService, stream.Video));
@@ -819,29 +824,7 @@ namespace Telegram.Controls.Stories
                 var video = SelectVideoFile(videoContent);
 
                 Progress.Update(_viewModel.Items.IndexOf(_viewModel.SelectedItem), _viewModel.Items.Count, video.Duration);
-
-                if (_player != null)
-                {
-                    _mediaStream = video;
-                    Play(_mediaStream);
-                }
-                else if (Video != null)
-                {
-                    if (Video.IsConnected)
-                    {
-                        _mediaStream = video;
-                        Video_Initialized(Video, new LibVLCSharp.Platforms.Windows.VideoViewInitializedEventArgs(Video.SwapChain));
-                    }
-                    else
-                    {
-                        // TODO: dispose
-                    }
-                }
-                else
-                {
-                    _mediaStream = video;
-                    FindName(nameof(Video));
-                }
+                Play(video);
             }
             else if (story.Content is StoryContentLive live && story.ClientService.TryGetGroupCall(live.GroupCallId, out GroupCall groupCall) && !_unloaded)
             {
@@ -1165,7 +1148,7 @@ namespace Telegram.Controls.Stories
 
             if (_type == StoryType.Photo)
             {
-                Video?.Clear();
+                _player?.Context.Clear();
             }
 
             if (file.Local.IsDownloadingCompleted)
@@ -1197,8 +1180,6 @@ namespace Telegram.Controls.Stories
 
             _type = StoryType.Photo;
         }
-
-        private StoryVideo _mediaStream;
 
         private StoryType _type;
 
@@ -1245,12 +1226,12 @@ namespace Telegram.Controls.Stories
             {
                 if (_type == StoryType.Photo && Video != null)
                 {
-                    Video.Clear();
+                    _player?.Context.Clear();
                 }
             }
             else
             {
-                Video?.Clear();
+                _player?.Context.Clear();
             }
 
             story.ClientService.DownloadFile(file.Id, 32, 0, video.PreloadPrefixSize);
@@ -1362,7 +1343,7 @@ namespace Telegram.Controls.Stories
 
             HideSkeleton();
 
-            Video?.Clear();
+            _player?.Context.Clear();
 
             if (_open)
             {
@@ -1518,7 +1499,7 @@ namespace Telegram.Controls.Stories
             }
         }
 
-        private void Video_Initialized(object sender, LibVLCSharp.Platforms.Windows.VideoViewInitializedEventArgs e)
+        private void InitializeVideo()
         {
             if (_unloaded)
             {
@@ -1527,23 +1508,22 @@ namespace Telegram.Controls.Stories
 
             Logger.Info();
 
+            FindName(nameof(Video));
+
             var options = new AsyncMediaPlayerOptions
             {
-                CreateSwapChain = false,
+                CreateSwapChain = true,
                 Mute = _viewModel.Settings.VolumeMuted,
                 Volume = 1,
                 Debug = SettingsService.Current.VerbosityLevel >= 4,
             };
 
-            _player = new AsyncMediaPlayer(options, e.SwapChain);
+            _player = new AsyncMediaPlayer(options);
             _player.VideoOut += OnVout;
             _player.Buffering += OnBuffering;
             _player.EndReached += OnEndReached;
 
-            if (_mediaStream != null)
-            {
-                Play(_mediaStream);
-            }
+            _player.Context.Attach(Video, true);
         }
 
         private void OnVout(AsyncMediaPlayer sender, object e)

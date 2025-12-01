@@ -14,6 +14,7 @@
 #include <chrono>
 
 #include <winrt/Windows.Media.Devices.h>
+#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.System.h>
 
 using namespace winrt::Windows::Media::Devices;
@@ -293,7 +294,7 @@ namespace winrt::Telegram::Native::Media::implementation
                     }
                     if (swapChain)
                     {
-                        swapChain.Destroy();
+                        swapChain.Close();
                     }
                     });
             }
