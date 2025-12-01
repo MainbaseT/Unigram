@@ -13072,5 +13072,8 @@
     <string name="PrivacyGiftsTypeFromChannels">From Channels</string>
 
     <string name="ManageTopicsPermission">Manage Topics</string>
+    <string name="NotificationsDeleteAllException">Delete All Exceptions</string>
+    <string name="NotificationsDeleteAllExceptionTitle">Delete all exceptions</string>
+    <string name="NotificationsDeleteAllExceptionAlert">Are you sure you want to delete all exceptions?</string>
 
 </resources>

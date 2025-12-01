@@ -9604,6 +9604,15 @@ Please make sure you entered the right Server URL and Stream Key in your app.</v
   <data name="NotificationsChartTitle" xml:space="preserve">
     <value>Notifications</value>
   </data>
+  <data name="NotificationsDeleteAllException" xml:space="preserve">
+    <value>Delete All Exceptions</value>
+  </data>
+  <data name="NotificationsDeleteAllExceptionAlert" xml:space="preserve">
+    <value>Are you sure you want to delete all exceptions?</value>
+  </data>
+  <data name="NotificationsDeleteAllExceptionTitle" xml:space="preserve">
+    <value>Delete all exceptions</value>
+  </data>
   <data name="NotificationsExceptions" xml:space="preserve">
     <value>Exceptions</value>
   </data>

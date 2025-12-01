@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Telegram.Collections;
@@ -184,6 +185,18 @@ namespace Telegram.ViewModels.Settings
                     Scope.Save();
 
                     ShowToast(string.Format(Strings.NotificationsMutedForHint, Locale.FormatMuteFor(popup.Value)), ToastPopupIcon.MuteFor);
+                }
+            }
+        }
+
+        public async void RemoveAll()
+        {
+            var confirm = await ShowPopupAsync(Strings.NotificationsDeleteAllExceptionAlert, Strings.NotificationsDeleteAllExceptionTitle, Strings.Delete, Strings.Cancel, destructive: true);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                foreach (var chat in Items.ToList())
+                {
+                    Remove(chat);
                 }
             }
         }
