@@ -51,20 +51,61 @@ namespace Telegram.Controls.Messages.Content
 
         public string GetAutomationName()
         {
-            if (!_templateApplied)
+            var linkPreview = GetContent(_message)?.LinkPreview;
+            if (linkPreview == null)
             {
                 return Strings.AccDescrLinkPreview;
             }
 
             var builder = new StringBuilder();
 
-            var peer = FrameworkElementAutomationPeer.FromElement(Label);
-            if (peer == null)
+            if (linkPreview.Type is LinkPreviewTypeBackground)
             {
-                return builder.ToString();
+                builder.Append(Strings.AppName + ", ");
+                builder.Append(Strings.ChatBackground);
             }
+            else if (linkPreview.Type is LinkPreviewTypeUpgradedGift upgradedGift)
+            {
+                builder.Append(Strings.AppName + ", ");
+                builder.Append(upgradedGift.Gift.ToName());
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(linkPreview.SiteName))
+                {
+                    builder.Append(linkPreview.SiteName);
+                }
 
-            builder.Append(peer.GetName());
+                if (!string.IsNullOrWhiteSpace(linkPreview.Title))
+                {
+                    if (builder.Length > 0)
+                    {
+                        builder.Append(", ");
+                    }
+
+                    builder.Append(linkPreview.Title);
+                }
+                else if (!string.IsNullOrWhiteSpace(linkPreview.Author))
+                {
+                    if (builder.Length > 0)
+                    {
+                        builder.Append(", ");
+                    }
+
+                    builder.Append(linkPreview.Author);
+                }
+
+                if (!string.IsNullOrWhiteSpace(linkPreview.Description?.Text))
+                {
+                    if (builder.Length > 0)
+                    {
+                        builder.Append(", ");
+                    }
+
+                    builder.Append(linkPreview.Description.Text);
+                    ContentLabel.Visibility = Visibility.Visible;
+                }
+            }
 
             if (builder.Length > 0)
             {
@@ -503,7 +544,7 @@ namespace Telegram.Controls.Messages.Content
             {
                 empty = false;
                 TitleLabel.Text = Strings.AppName;
-                SubtitleLabel.Text = Environment.NewLine + upgradedGift.Gift.ToName();
+                SubtitleLabel.Text = upgradedGift.Gift.ToName();
                 ContentLabel.SetText(clientService, string.Empty.AsFormattedText());
             }
             else
