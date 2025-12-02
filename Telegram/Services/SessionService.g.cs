@@ -131,8 +131,6 @@ namespace Telegram.Services
                         _notificationsService,
                         _contactsService,
                         _passcodeService,
-                        _lifetimeService,
-                        _sessionService,
                         _voipService,
                         _settingsSearchService ??= new Telegram.Services.SettingsSearchService(_clientService),
                         _cloudUpdateService ??= new Telegram.Services.CloudUpdateService(

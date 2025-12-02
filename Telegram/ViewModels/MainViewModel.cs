@@ -36,21 +36,15 @@ namespace Telegram.ViewModels
     {
         private readonly IContactsService _contactsService;
         private readonly IPasscodeService _passcodeService;
-        private readonly ILifetimeService _lifetimeService;
-        private readonly ISessionService _sessionService;
         private readonly IVoipService _voipService;
         private readonly ICloudUpdateService _cloudUpdateService;
         private readonly IShortcutsService _shortcutService;
 
-        public bool Refresh { get; set; }
-
-        public MainViewModel(IClientService clientService, ISettingsService settingsService, IStorageService storageService, IEventAggregator aggregator, INotificationsService pushService, IContactsService contactsService, IPasscodeService passcodeService, ILifetimeService lifecycle, ISessionService session, IVoipService voipService, ISettingsSearchService settingsSearchService, ICloudUpdateService cloudUpdateService, IShortcutsService shortcutService)
+        public MainViewModel(IClientService clientService, ISettingsService settingsService, IStorageService storageService, IEventAggregator aggregator, INotificationsService pushService, IContactsService contactsService, IPasscodeService passcodeService, IVoipService voipService, ISettingsSearchService settingsSearchService, ICloudUpdateService cloudUpdateService, IShortcutsService shortcutService)
             : base(clientService, settingsService, aggregator)
         {
             _contactsService = contactsService;
             _passcodeService = passcodeService;
-            _lifetimeService = lifecycle;
-            _sessionService = session;
             _voipService = voipService;
             _cloudUpdateService = cloudUpdateService;
             _shortcutService = shortcutService;
@@ -102,9 +96,6 @@ namespace Telegram.ViewModels
             //Calls = null;
             //Settings = null;
         }
-
-        public ILifetimeService Lifetime => _lifetimeService;
-        public ISessionService Session => _sessionService;
 
         public IPasscodeService Passcode => _passcodeService;
 
