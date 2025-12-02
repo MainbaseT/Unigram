@@ -42,7 +42,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        protected override void UpdateInteraction(MessageViewModel message, MessageReaction interaction, bool recycled)
+        protected override void UpdateInteraction(MessageViewModel message, MessageReaction interaction, bool recycled, bool chosen)
         {
             IsChecked = interaction.IsChosen;
 

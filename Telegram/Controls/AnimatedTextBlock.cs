@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System.Runtime.CompilerServices;
 using System;
 using System.Numerics;
 using Windows.Foundation;
@@ -36,10 +37,10 @@ namespace Telegram.Controls
             Presenter = GetTemplateChild(nameof(Presenter)) as AnimatedTextBlockPresenter;
             Presenter.Owner = this;
 
-            ChangePartText(ref NextPart, nameof(NextPart), Text, true, true);
+            ChangePartText(ref NextPart, Text, true, true);
         }
 
-        private void ChangePartText(ref TextBlock part, string name, string text, bool resize, bool length = false)
+        private void ChangePartText(ref TextBlock part, string text, bool resize, bool length = false, [CallerArgumentExpression("part")] string name = null)
         {
             if (part != null || text.Length > 0 || length)
             {
@@ -78,7 +79,7 @@ namespace Telegram.Controls
 
         public void SetText(string text, bool animate)
         {
-            _disableAnimations = animate;
+            _disableAnimations = !animate;
             Text = text;
             _disableAnimations = false;
         }
@@ -127,7 +128,7 @@ namespace Telegram.Controls
 
         #endregion
 
-        #region
+        #region TextWrapping
 
         public TextWrapping TextWrapping
         {
@@ -149,11 +150,11 @@ namespace Telegram.Controls
 
             if (_disableAnimations)
             {
-                ChangePartText(ref PrefixPart, nameof(PrefixPart), string.Empty, false);
-                ChangePartText(ref SuffixPart, nameof(SuffixPart), string.Empty, false);
+                ChangePartText(ref PrefixPart, string.Empty, false);
+                ChangePartText(ref SuffixPart, string.Empty, false);
 
-                ChangePartText(ref PrevPart, nameof(PrevPart), string.Empty, true);
-                ChangePartText(ref NextPart, nameof(NextPart), newValue, true);
+                ChangePartText(ref PrevPart, string.Empty, true);
+                ChangePartText(ref NextPart, newValue, true);
                 return;
             }
 
@@ -228,11 +229,11 @@ namespace Telegram.Controls
                 prevValue = prevValue.Replace(" ", " \u200B");
                 suffix = suffix.Replace(" ", " \u200B");
 
-                ChangePartText(ref PrefixPart, nameof(PrefixPart), prefix, false);
-                ChangePartText(ref SuffixPart, nameof(SuffixPart), suffix, false);
+                ChangePartText(ref PrefixPart, prefix, false);
+                ChangePartText(ref SuffixPart, suffix, false);
 
-                ChangePartText(ref PrevPart, nameof(PrevPart), prevValue, true, true);
-                ChangePartText(ref NextPart, nameof(NextPart), nextValue, true);
+                ChangePartText(ref PrevPart, prevValue, true, true);
+                ChangePartText(ref NextPart, nextValue, true);
 
                 var prevVisual = ElementComposition.GetElementVisual(PrevPart);
                 var nextVisual = ElementComposition.GetElementVisual(NextPart);
@@ -266,11 +267,11 @@ namespace Telegram.Controls
             }
             else
             {
-                ChangePartText(ref PrefixPart, nameof(PrefixPart), string.Empty, false);
-                ChangePartText(ref SuffixPart, nameof(SuffixPart), string.Empty, false);
+                ChangePartText(ref PrefixPart, string.Empty, false);
+                ChangePartText(ref SuffixPart, string.Empty, false);
 
-                ChangePartText(ref PrevPart, nameof(PrevPart), string.Empty, true);
-                ChangePartText(ref NextPart, nameof(NextPart), newValue, true);
+                ChangePartText(ref PrevPart, string.Empty, true);
+                ChangePartText(ref NextPart, newValue, true);
             }
 
             InvalidateMeasure();

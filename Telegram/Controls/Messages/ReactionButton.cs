@@ -98,6 +98,7 @@ namespace Telegram.Controls.Messages
         protected MessageViewModel _message;
         protected MessageReaction _reaction;
         private ReactionType _reactionType;
+        private bool _chosen;
 
         private UnreadReaction _unread;
 
@@ -136,7 +137,9 @@ namespace Telegram.Controls.Messages
             _message = message;
             _reaction = reaction;
 
-            UpdateInteraction(message, reaction, recycled);
+            UpdateInteraction(message, reaction, recycled, _chosen != reaction.IsChosen);
+
+            _chosen = reaction.IsChosen;
 
             if (reaction.Type.AreTheSame(_reactionType))
             {
@@ -164,14 +167,14 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        protected virtual void UpdateInteraction(MessageViewModel message, MessageReaction interaction, bool recycled)
+        protected virtual void UpdateInteraction(MessageViewModel message, MessageReaction interaction, bool recycled, bool chosen)
         {
             IsChecked = interaction.IsChosen;
 
             if (interaction.TotalCount > interaction.RecentSenderIds.Count)
             {
                 Count.Visibility = Visibility.Visible;
-                Count.SetText(Formatter.ShortNumber(interaction.TotalCount), recycled);
+                Count.SetText(Formatter.ShortNumber(interaction.TotalCount), recycled && chosen);
 
                 RecentChoosers?.Visibility = Visibility.Collapsed;
             }

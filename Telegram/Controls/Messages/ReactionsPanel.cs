@@ -15,6 +15,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Animation;
 
@@ -38,6 +39,8 @@ namespace Telegram.Controls.Messages
             {
                 new RepositionThemeTransition()
             };
+
+            ElementComposition.GetElementVisual(this);
         }
 
         protected override AutomationPeer OnCreateAutomationPeer()
