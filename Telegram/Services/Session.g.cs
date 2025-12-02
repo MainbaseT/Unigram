@@ -89,7 +89,6 @@ namespace Telegram.Services
                         _clientService,
                         _settingsService,
                         _eventAggregator,
-                        _sessionService,
                         _lifetimeService,
                         _notificationsService);
                 case "Telegram.ViewModels.Authorization.AuthorizationRegistrationViewModel":
