@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -52,23 +53,20 @@ namespace Telegram.Services
             _voip = new VoipCoordinator();
             _locale = LocaleService.Current;
 
-            var first = 0;
+            var sessions = GetSessionsToInitialize(out int nextId)
+                .OrderByDescending(s => s.IsActive)
+                .ThenByDescending(s => s.IsPrevious)
+                .ToList();
 
-            foreach (var sessionId in GetSessionsToInitialize())
+            for (int i = 0; i < sessions.Count; i++)
             {
-                if (first < 1 || sessionId == SettingsService.Current.PreviousSession)
-                {
-                    first = sessionId;
-                }
+                var available = sessions[i];
+                var session = Build(available.Id, i == 0);
 
-                var session = Build(sessionId);
-                if (session.IsActive)
-                {
-                    _activeItem = session;
-                }
+                _activeItem ??= session;
             }
 
-            _activeItem ??= Build(first);
+            _activeItem ??= Build(nextId, true);
         }
 
         public static void Initialize()
@@ -80,28 +78,37 @@ namespace Telegram.Services
 
         public int Count => _sessions.Count;
 
-        private ISessionService Build(int id)
+        private ISessionService Build(int id, bool active)
         {
-            var session = new SessionService(this, _locale, _passcode, id, id == SettingsService.Current.ActiveSession);
-            return _sessions[id] = session;
+            var session = new SessionService(this, _locale, _passcode, id, active);
+            _sessions[id] = session;
+            return session;
         }
 
-        private IEnumerable<int> GetSessionsToInitialize()
+        record AvailableSession(int Id, bool IsActive, bool IsPrevious);
+
+        private IList<AvailableSession> GetSessionsToInitialize(out int nextId)
         {
             var folders = Directory.GetDirectories(ApplicationData.Current.LocalFolder.Path);
 
             var toBeDeleted = new HashSet<string>();
-            var toBeInitialized = 0;
+            var toBeInitialized = new List<AvailableSession>();
+
+            var maxId = -1;
 
             foreach (var folder in folders)
             {
-                if (int.TryParse(Path.GetFileName(folder), out int session))
+                if (int.TryParse(Path.GetFileName(folder), out int sessionId))
                 {
-                    var container = ApplicationData.Current.LocalSettings.CreateContainer($"{session}", ApplicationDataCreateDisposition.Always);
+                    maxId = Math.Max(maxId, sessionId);
+
+                    var container = ApplicationData.Current.LocalSettings.CreateContainer($"{sessionId}", ApplicationDataCreateDisposition.Always);
                     if (container.Values.ContainsKey("UserId"))
                     {
-                        toBeInitialized++;
-                        yield return session;
+                        toBeInitialized.Add(new AvailableSession(
+                            sessionId,
+                            sessionId == SettingsService.Current.ActiveSession,
+                            sessionId == SettingsService.Current.PreviousSession));
                     }
                     else
                     {
@@ -112,7 +119,7 @@ namespace Telegram.Services
 
             // We delete unauthorized sessions only if there's some active one.
             // This is just to remember proxy settings for the user in case they restart the app.
-            if (toBeInitialized > 0 && toBeDeleted.Count > 0)
+            if (toBeInitialized.Count > 0 && toBeDeleted.Count > 0)
             {
                 Task.Factory.StartNew(() =>
                 {
@@ -129,6 +136,17 @@ namespace Telegram.Services
                     }
                 });
             }
+
+            if (toBeInitialized.Count == 0 && toBeDeleted.Count == 1)
+            {
+                nextId = Math.Max(0, maxId);
+            }
+            else
+            {
+                nextId = Math.Max(0, maxId + 1);
+            }
+
+            return toBeInitialized;
         }
 
         public IList<ISessionService> Items => _sessions.Values;
@@ -151,21 +169,13 @@ namespace Telegram.Services
                     return;
                 }
 
-                if (_activeItem != null)
-                {
-                    _activeItem.IsActive = false;
-                    _previousItem = _activeItem;
-                    SettingsService.Current.PreviousSession = _activeItem.Id;
-                }
+                _activeItem.IsActive = false;
+                _previousItem = _activeItem;
+                SettingsService.Current.PreviousSession = _activeItem.Id;
 
-                if (value != null)
-                {
-                    value.IsActive = true;
-                    SettingsService.Current.ActiveSession = value.Id;
-                }
-
-                //Set(ref _activeItem, value);
                 _activeItem = value;
+                _activeItem.IsActive = true;
+                SettingsService.Current.ActiveSession = value.Id;
             }
         }
 
@@ -178,7 +188,7 @@ namespace Telegram.Services
             var settings = ApplicationData.Current.LocalSettings.CreateContainer($"{id}", ApplicationDataCreateDisposition.Always);
             settings.Values["UseTestDC"] = test;
 
-            var session = Build(id);
+            var session = Build(id, update);
 
             if (update)
             {
