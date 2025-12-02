@@ -461,9 +461,9 @@ namespace Telegram.Views.Host
 
                 if (items.Count > 1)
                 {
-                    foreach (var item in items)
+                    for (int i = items.Count - 1; i >= 0; i--)
                     {
-                        _navigationViewItems.Insert(1, item);
+                        _navigationViewItems.Insert(1, items[i]);
                     }
                 }
             }
@@ -1190,7 +1190,7 @@ namespace Telegram.Views.Host
                     var sessions = _navigationViewItems.OfType<ISession>();
                     var ids = sessions.Select(x => x.Id);
 
-                    _menuSessions = sessions.Reverse().Hash(x => x.UserId);
+                    _menuSessions = sessions.Hash(x => x.UserId);
                     SettingsService.Current.AccountsSelectorOrder = ids.ToArray();
                 }
                 else

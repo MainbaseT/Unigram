@@ -160,7 +160,7 @@ namespace Telegram.Services
 
             if (show)
             {
-                foreach (var session in _sessions.OrderByDescending(x => { int index = Array.IndexOf(SettingsService.Current.AccountsSelectorOrder, x.Id); return index < 0 ? x.Id : index; }))
+                foreach (var session in _sessions.OrderBy(x => { int index = Array.IndexOf(SettingsService.Current.AccountsSelectorOrder, x.Id); return index < 0 ? x.Id : index; }))
                 {
                     hash = ((hash * 20261) + 0x80000000L + session.UserId) % 0x80000000L;
 
