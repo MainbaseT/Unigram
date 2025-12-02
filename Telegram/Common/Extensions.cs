@@ -1331,6 +1331,18 @@ namespace Telegram.Common
         }
 #endif
 
+        public static long Hash<T>(this IEnumerable<T> source, Func<T, long> predicate)
+        {
+            var hash = 0L;
+
+            foreach (var item in source)
+            {
+                hash = ((hash * 20261) + 0x80000000L + predicate(item)) % 0x80000000L;
+            }
+
+            return hash;
+        }
+
         public static T RemoveLast<T>(this List<T> list)
         {
             if (list.Count > 0)

@@ -26,6 +26,8 @@ namespace Telegram.Services
 
         int Count { get; }
 
+        IList<ISessionService> GetItemsForMenu(bool show, out long hash);
+
         IList<ISessionService> Items { get; }
         ISessionService ActiveItem { get; set; }
         ISessionService PreviousItem { get; set; }
@@ -151,6 +153,25 @@ namespace Telegram.Services
 
         public IList<ISessionService> Items => _sessions.Values;
 
+        public IList<ISessionService> GetItemsForMenu(bool show, out long hash)
+        {
+            IList<ISessionService> sessions = null;
+            hash = 0;
+
+            if (show)
+            {
+                foreach (var session in _sessions.OrderByDescending(x => { int index = Array.IndexOf(SettingsService.Current.AccountsSelectorOrder, x.Id); return index < 0 ? x.Id : index; }))
+                {
+                    hash = ((hash * 20261) + 0x80000000L + session.UserId) % 0x80000000L;
+
+                    sessions ??= [];
+                    sessions.Add(session);
+                }
+            }
+
+            return sessions ?? Array.Empty<ISessionService>();
+        }
+
         private ISessionService _previousItem;
         public ISessionService PreviousItem
         {
@@ -164,7 +185,7 @@ namespace Telegram.Services
             get => _activeItem;
             set
             {
-                if (_activeItem == value)
+                if (_activeItem == value || !IsValidSession(value))
                 {
                     return;
                 }
@@ -177,6 +198,16 @@ namespace Telegram.Services
                 _activeItem.IsActive = true;
                 SettingsService.Current.ActiveSession = value.Id;
             }
+        }
+
+        private bool IsValidSession(ISessionService session)
+        {
+            if (_sessions.TryGetValue(session.Id, out var active))
+            {
+                return active == session;
+            }
+
+            return false;
         }
 
         public ISessionService Create(bool update = true, bool test = false)

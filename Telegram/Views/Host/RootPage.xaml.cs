@@ -9,7 +9,6 @@ using LinqToVisualTree;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -62,7 +61,8 @@ namespace Telegram.Views.Host
         private RootDestination _navigationViewSelected;
         private readonly MvxObservableCollection<object> _navigationViewItems;
 
-        private long _attachmentMenuBots;
+        private long _menuSessions;
+        private long _menuBots;
 
         public RootPage(WindowContext context, NavigationService service)
         {
@@ -204,6 +204,12 @@ namespace Telegram.Views.Host
         {
             _lifetime.ActiveItem = session;
 
+            if (_lifetime.ActiveItem != session)
+            {
+                InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded);
+                return;
+            }
+
             if (_navigationService != null)
             {
                 Destroy(_navigationService);
@@ -313,7 +319,7 @@ namespace Telegram.Views.Host
             if (frame?.Content is MainPage page && page.ViewModel != null)
             {
                 InitializeUser(page.ViewModel.ClientService);
-                InitializeSessions(page.ViewModel.ClientService, SettingsService.Current.IsAccountsSelectorExpanded, _lifetime.Items);
+                InitializeSessions(page.ViewModel.ClientService, SettingsService.Current.IsAccountsSelectorExpanded);
             }
         }
 
@@ -342,32 +348,51 @@ namespace Telegram.Views.Host
             Expanded.IsChecked = SettingsService.Current.IsAccountsSelectorExpanded;
         }
 
-        private void InitializeSessions(bool show, IList<ISessionService> items)
+        private void InitializeSessions(bool show)
         {
-            if (_navigationService.Content is MainPage page)
+            var clientService = _navigationService.Session.Resolve<IClientService>();
+            if (clientService != null)
             {
-                InitializeSessions(page.ViewModel.ClientService, SettingsService.Current.IsAccountsSelectorExpanded, _lifetime.Items);
+                InitializeSessions(clientService, SettingsService.Current.IsAccountsSelectorExpanded);
             }
         }
 
-        private void InitializeSessions(IClientService clientService, bool show, IList<ISessionService> items)
+        private void InitializeSessions(IClientService clientService, bool show)
         {
+            var items = _lifetime.GetItemsForMenu(show, out long sessionsHash);
             var bots = clientService.GetBotsForMenu(out long botsHash);
+
+            var itemsChanged = _menuSessions != sessionsHash;
+            var botsChanged = _menuBots != botsHash;
+
+            var index = 1;
 
             for (int i = 0; i < _navigationViewItems.Count; i++)
             {
                 if (_navigationViewItems[i] is ISessionService || _navigationViewItems[i] is RootDestination.AddAccount)
                 {
-                    _navigationViewItems.RemoveAt(i);
-
-                    if (i < _navigationViewItems.Count && _navigationViewItems[i] is RootDestination.Separator)
+                    if (itemsChanged)
                     {
                         _navigationViewItems.RemoveAt(i);
-                    }
 
-                    i--;
+                        if (i < _navigationViewItems.Count && _navigationViewItems[i] is RootDestination.Separator)
+                        {
+                            _navigationViewItems.RemoveAt(i);
+                        }
+
+                        i--;
+                    }
+                    else
+                    {
+                        index++;
+
+                        if (i + i < _navigationViewItems.Count && _navigationViewItems[i + 1] is RootDestination.Separator)
+                        {
+                            index++;
+                        }
+                    }
                 }
-                else if (_navigationViewItems[i] is AttachmentMenuBot && _attachmentMenuBots != botsHash)
+                else if (botsChanged && _navigationViewItems[i] is AttachmentMenuBot)
                 {
                     _navigationViewItems.RemoveAt(i);
 
@@ -385,46 +410,46 @@ namespace Telegram.Views.Host
 
             if (!hasArchived)
             {
-                if (_navigationViewItems[1] is RootDestination.ArchivedChats)
-                {
-                    _navigationViewItems.RemoveAt(1);
-                }
-            }
-            else if (_navigationViewItems[1] is not RootDestination.ArchivedChats)
-            {
-                _navigationViewItems.Insert(1, RootDestination.ArchivedChats);
-            }
-
-            var index = hasArchived ? 4 : 3;
-
-            if (!hasPremium)
-            {
-                if (_navigationViewItems[index] is RootDestination.Status)
+                if (_navigationViewItems[index] is RootDestination.ArchivedChats)
                 {
                     _navigationViewItems.RemoveAt(index);
                 }
             }
-            else if (_navigationViewItems[index] is not RootDestination.Status)
+            else if (_navigationViewItems[index] is not RootDestination.ArchivedChats)
             {
-                _navigationViewItems.Insert(index, RootDestination.Status);
+                _navigationViewItems.Insert(index, RootDestination.ArchivedChats);
             }
 
-            index = hasPremium && hasArchived ? 5 : hasPremium || hasArchived ? 4 : 3;
+            var premiumIndex = hasArchived ? index + 3 : index + 2;
 
-            if (_attachmentMenuBots != botsHash)
+            if (!hasPremium)
             {
+                if (_navigationViewItems[premiumIndex] is RootDestination.Status)
+                {
+                    _navigationViewItems.RemoveAt(premiumIndex);
+                }
+            }
+            else if (_navigationViewItems[premiumIndex] is not RootDestination.Status)
+            {
+                _navigationViewItems.Insert(premiumIndex, RootDestination.Status);
+            }
+
+            if (botsChanged)
+            {
+                var botsIndex = hasPremium && hasArchived ? index + 4 : hasPremium || hasArchived ? index + 3 : index + 2;
+
                 for (int i = bots.Count - 1; i >= 0; i--)
                 {
-                    _navigationViewItems.Insert(index, bots[i]);
+                    _navigationViewItems.Insert(botsIndex, bots[i]);
                 }
 
                 if (bots.Count > 0)
                 {
-                    _navigationViewItems.Insert(index, RootDestination.Separator);
+                    _navigationViewItems.Insert(botsIndex, RootDestination.Separator);
                 }
             }
 
-            if (show && items != null)
+            if (itemsChanged && show)
             {
                 _navigationViewItems.Insert(1, RootDestination.Separator);
 
@@ -437,14 +462,22 @@ namespace Telegram.Views.Host
 
                 if (items.Count > 1)
                 {
-                    foreach (var item in items.OrderByDescending(x => { int index = Array.IndexOf(SettingsService.Current.AccountsSelectorOrder, x.Id); return index < 0 ? x.Id : index; }))
+                    foreach (var item in items)
                     {
                         _navigationViewItems.Insert(1, item);
                     }
                 }
             }
+            else if (show)
+            {
+                NavigationViewList.ForEach(container =>
+                {
+                    UpdateContainerContent(container, NavigationViewList.ItemFromContainer(container));
+                });
+            }
 
-            _attachmentMenuBots = botsHash;
+            _menuSessions = sessionsHash;
+            _menuBots = botsHash;
         }
 
         #region Recycling
@@ -683,7 +716,7 @@ namespace Telegram.Views.Host
         {
             SettingsService.Current.IsAccountsSelectorExpanded = !SettingsService.Current.IsAccountsSelectorExpanded;
 
-            InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded, _lifetime.Items);
+            InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded);
             Expanded.IsChecked = SettingsService.Current.IsAccountsSelectorExpanded;
 
             var selector = NavigationViewList.ContainerFromIndex(0);
@@ -849,7 +882,7 @@ namespace Telegram.Views.Host
 
         public void UpdateSessions()
         {
-            InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded, _lifetime.Items);
+            InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded);
         }
 
         public void SetSelectedIndex(RootDestination value)
@@ -1002,60 +1035,14 @@ namespace Telegram.Views.Host
             }
         }
 
-        private void UpdateNavigation()
-        {
-            var clientService = _navigationService.Session.Resolve<IClientService>();
-            if (clientService == null)
-            {
-                // TODO: this should never be happening
-                return;
-            }
-
-            var bots = clientService.GetBotsForMenu(out long botsHash);
-            var index = -1;
-
-            if (_attachmentMenuBots != botsHash)
-            {
-                for (int i = 0; i < _navigationViewItems.Count; i++)
-                {
-                    if (_navigationViewItems[i] is AttachmentMenuBot)
-                    {
-                        _navigationViewItems.RemoveAt(i);
-                        index = i--;
-                    }
-                }
-
-                // The list was not initiated yet
-                if (index == -1 && bots.Count > 0)
-                {
-                    InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded, _lifetime.Items);
-                    return;
-                }
-            }
-
-            NavigationViewList.ForEach(container =>
-            {
-                UpdateContainerContent(container, NavigationViewList.ItemFromContainer(container));
-            });
-
-            if (_attachmentMenuBots != botsHash && index != -1)
-            {
-                for (int i = bots.Count - 1; i >= 0; i--)
-                {
-                    _navigationViewItems.Insert(index, bots[i]);
-                }
-            }
-
-            _attachmentMenuBots = botsHash;
-        }
-
         private void Navigation_PaneOpening(SplitView sender, object args)
         {
-            UpdateNavigation();
+            InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded);
 
-            if (_navigationService?.Content is MainPage main)
+            var clientService = _navigationService.Session.Resolve<IClientService>();
+            if (clientService != null)
             {
-                InitializeUser(main.ViewModel.ClientService);
+                InitializeUser(clientService);
             }
 
             Theme.Visibility = Visibility.Visible;
@@ -1205,11 +1192,13 @@ namespace Telegram.Views.Host
                     var sessions = _navigationViewItems.OfType<ISessionService>();
                     var ids = sessions.Select(x => x.Id);
 
+                    _menuSessions = sessions.Reverse().Hash(x => x.UserId);
                     SettingsService.Current.AccountsSelectorOrder = ids.ToArray();
                 }
                 else
                 {
-                    InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded, _lifetime.Items);
+                    _menuSessions = 0;
+                    InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded);
                 }
             }
         }
