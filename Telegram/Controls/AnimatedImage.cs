@@ -1807,11 +1807,7 @@ namespace Telegram.Controls
             }
         }
 
-        private volatile bool _workStarted;
-        private Thread _workThread;
-
-        private readonly WorkQueue _workQueue = new();
-        private readonly object _workLock = new();
+        private readonly LifoActionWorker _workQueue = new();
 
         private readonly ConcurrentDictionary<int, WeakReference<AnimatedImagePresenter>> _delegates = new();
         private readonly Dictionary<AnimatedImagePresentation, AnimatedImagePresenter> _presenters = new();
@@ -1862,90 +1858,61 @@ namespace Telegram.Controls
             sender.CorrelationId = correlationId;
 
             _delegates[correlationId] = new WeakReference<AnimatedImagePresenter>(sender);
-            _workQueue.Push(new WorkItem(correlationId, sender.Presentation));
-
-            lock (_workLock)
-            {
-                if (!_workStarted)
-                {
-                    _workStarted = true;
-                    _workThread = new Thread(Work) { IsBackground = true };
-                    _workThread.Start();
-                }
-            }
+            _workQueue.Run(() => Work(new WorkItem(correlationId, sender.Presentation)));
         }
 
-        private void Work()
+        private void Work(WorkItem work)
         {
+            if (!_delegates.TryRemove(work.CorrelationId, out var weakDelegate))
+            {
+                return;
+            }
+
             try
             {
-                while (true)
+                if (work.Presentation.Source is LocalFileSource local)
                 {
-                    var work = _workQueue.WaitAndPop();
-                    if (work == null)
+                    if (local.Format is StickerFormatTgs)
                     {
-                        break;
+                        LoadLottie(weakDelegate, work, local);
                     }
-
-                    if (!_delegates.TryRemove(work.CorrelationId, out var weakDelegate))
+                    else if (local.Format is StickerFormatWebp)
                     {
-                        continue;
+                        LoadWebP(weakDelegate, work, local);
                     }
-
-                    try
+                    else if (local.Format is StickerFormatWebm)
                     {
-                        if (work.Presentation.Source is LocalFileSource local)
+                        LoadCachedVideo(weakDelegate, work);
+                    }
+                    else
+                    {
+                        if (local.FilePath.HasExtension(".tgs", ".json"))
                         {
-                            if (local.Format is StickerFormatTgs)
-                            {
-                                LoadLottie(weakDelegate, work, local);
-                            }
-                            else if (local.Format is StickerFormatWebp)
-                            {
-                                LoadWebP(weakDelegate, work, local);
-                            }
-                            else if (local.Format is StickerFormatWebm)
-                            {
-                                LoadCachedVideo(weakDelegate, work);
-                            }
-                            else
-                            {
-                                if (local.FilePath.HasExtension(".tgs", ".json"))
-                                {
-                                    LoadLottie(weakDelegate, work, local);
-                                }
-                                else if (local.FilePath.HasExtension(".webp"))
-                                {
-                                    LoadWebP(weakDelegate, work, local);
-                                }
-                                else
-                                {
-                                    LoadCachedVideo(weakDelegate, work);
-                                }
-                            }
+                            LoadLottie(weakDelegate, work, local);
                         }
-                        else if (work.Presentation.Source is ParticlesImageSource particles)
+                        else if (local.FilePath.HasExtension(".webp"))
                         {
-                            LoadParticles(weakDelegate, work, particles);
+                            LoadWebP(weakDelegate, work, local);
                         }
                         else
                         {
                             LoadCachedVideo(weakDelegate, work);
                         }
                     }
-                    catch
-                    {
-                        // Shit happens...
-                        NotifyDelegate(weakDelegate, null, null);
-                    }
+                }
+                else if (work.Presentation.Source is ParticlesImageSource particles)
+                {
+                    LoadParticles(weakDelegate, work, particles);
+                }
+                else
+                {
+                    LoadCachedVideo(weakDelegate, work);
                 }
             }
-            finally
+            catch
             {
-                lock (_workLock)
-                {
-                    _workStarted = false;
-                }
+                // Shit happens...
+                NotifyDelegate(weakDelegate, null, null);
             }
         }
 

@@ -76,7 +76,7 @@ namespace Telegram.Common
         private readonly ConcurrentStack<Action> taskQueue = new();
         private int _concurrentCount = 0;
 
-        public void Enqueue(Action task)
+        public void Run(Action task)
         {
             taskQueue.Push(task);
 
@@ -85,16 +85,33 @@ namespace Telegram.Common
                 return;
             }
 
-            ThreadPool.UnsafeQueueUserWorkItem(state =>
+            ThreadPool.UnsafeQueueUserWorkItem(static state =>
             {
-                while (taskQueue.TryPop(out Action nextTaskAction))
+                var self = (LifoActionWorker)state!;
+                try
                 {
-                    taskQueue.Clear();
-                    nextTaskAction();
-                }
+                    do
+                    {
+                        while (self.taskQueue.TryPop(out var next))
+                        {
+                            next();
+                        }
 
-                Interlocked.Exchange(ref _concurrentCount, 0);
-            }, null);
+                        Interlocked.Exchange(ref self._concurrentCount, 0);
+
+                        if (self.taskQueue.IsEmpty)
+                        {
+                            return;
+                        }
+
+                    } while (0 == Interlocked.Exchange(ref self._concurrentCount, 1));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                    Interlocked.Exchange(ref self._concurrentCount, 0);
+                }
+            }, this);
         }
     }
 
