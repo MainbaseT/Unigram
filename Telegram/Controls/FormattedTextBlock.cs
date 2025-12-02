@@ -1360,7 +1360,7 @@ namespace Telegram.Controls
                     child.ActualOffset.Y + child.ActualSize.Y > top &&
                     child.ActualOffset.Y < bottom;
 
-                child.ViewportChanged(intersects, child.ActualOffset.Y >= 0);
+                child.ViewportChanged(intersects);
             }
         }
 

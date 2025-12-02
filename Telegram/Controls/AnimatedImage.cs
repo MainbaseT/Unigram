@@ -262,33 +262,6 @@ namespace Telegram.Controls
             }
         }
 
-        public void ViewportChanged(bool within, bool visible)
-        {
-            within &= visible;
-
-            if (within && !_withinViewport)
-            {
-                _withinViewport = true;
-                Play();
-            }
-            else if (_withinViewport && !within)
-            {
-                _withinViewport = false;
-                Pause();
-            }
-
-            if (visible && !_visible)
-            {
-                _visible = true;
-                Visibility = Visibility.Visible;
-            }
-            else if (_visible && !visible)
-            {
-                _visible = false;
-                Visibility = Visibility.Collapsed;
-            }
-        }
-
         //public bool IsDisabledByPolicy
         //{
         //    get => Type switch
