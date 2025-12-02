@@ -28,7 +28,7 @@ namespace Telegram.Views
             NavigationCacheMode = NavigationCacheMode.Required;
         }
 
-        public void Activate(ISessionService session)
+        public void Activate(ISession session)
         {
             _clientService ??= session.Resolve<IClientService>();
             _aggregator ??= session.Resolve<IEventAggregator>();

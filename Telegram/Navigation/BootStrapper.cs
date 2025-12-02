@@ -32,7 +32,7 @@ namespace Telegram.Navigation
         /// If a developer overrides this method, the developer can resolve DataContext or unwrap DataContext 
         /// available for the Page object when using a MVVM pattern that relies on a wrapped/porxy around ViewModels
         /// </summary>
-        public virtual ViewModelBase ViewModelForPage(UIElement page, ISessionService session) => null;
+        public virtual ViewModelBase ViewModelForPage(UIElement page, ISession session) => null;
 
         public static new BootStrapper Current { get; private set; }
 
@@ -535,21 +535,21 @@ namespace Telegram.Navigation
         /// A developer should call this when creating a new/secondary frame.
         /// The shell back button should only be setup one time.
         /// </summary>
-        public INavigationService NavigationServiceFactory(WindowContext window, BackButton backButton, ISessionService session, string id, bool root)
+        public INavigationService NavigationServiceFactory(ISession session, WindowContext window, BackButton backButton, string id, bool root)
         {
             Logger.Info($"{nameof(backButton)}: {backButton}");
 
-            return NavigationServiceFactory(window, backButton, new Frame(), session, id, root);
+            return NavigationServiceFactory(session, window, backButton, new Frame(), id, root);
         }
 
         /// <summary>
         /// Creates the NavigationService instance for given Frame.
         /// </summary>
-        protected virtual INavigationService CreateNavigationService(WindowContext window, Frame frame, ISessionService session, string id, bool root)
+        protected virtual INavigationService CreateNavigationService(ISession session, WindowContext window, Frame frame, string id, bool root)
         {
             Logger.Info($"Frame: {frame}");
 
-            return new NavigationService(window, frame, session, id);
+            return new NavigationService(session, window, frame, id);
         }
 
         /// <summary>
@@ -559,7 +559,7 @@ namespace Telegram.Navigation
         /// A developer should call this when creating a new/secondary frame.
         /// The shell back button should only be setup one time.
         /// </summary>
-        public INavigationService NavigationServiceFactory(WindowContext window, BackButton backButton, Frame frame, ISessionService session, string id, bool root)
+        public INavigationService NavigationServiceFactory(ISession session, WindowContext window, BackButton backButton, Frame frame, string id, bool root)
         {
             Logger.Info($"{nameof(backButton)}: {backButton} {nameof(frame)}: {frame}");
 
@@ -574,7 +574,7 @@ namespace Telegram.Navigation
                 }
             }
 
-            var navigationService = CreateNavigationService(window, frame, session, id, root);
+            var navigationService = CreateNavigationService(session, window, frame, id, root);
             navigationService.FrameFacade.BackButtonHandling = backButton;
             WindowContext.Current.NavigationServices.Add(navigationService);
 

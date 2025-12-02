@@ -20,7 +20,7 @@ namespace Telegram.Views.Payments
 
         public ValidatedOrderInfo ValidatedInfo { get; private set; }
 
-        public PaymentAddressPopup(ISessionService session, InputInvoice inputInvoice, Invoice invoice, OrderInfo info)
+        public PaymentAddressPopup(ISession session, InputInvoice inputInvoice, Invoice invoice, OrderInfo info)
         {
             InitializeComponent();
             DataContext = session.Resolve<PaymentAddressViewModel>();

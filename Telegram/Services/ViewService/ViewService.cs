@@ -29,7 +29,7 @@ namespace Telegram.Services
         /// <param name="size">Anchor size for newly created view</param>        
         /// <returns><see cref="ViewLifetimeControl"/> object that is associated to newly created view. Use it to subscribe to <code>Released</code> event to close window manually.
         /// It won't not be called before all previously started async operations on <see cref="CoreDispatcher"/> complete. <remarks>DO NOT call operations on Dispatcher after this</remarks></returns>
-        Task<ViewLifetimeControl> OpenAsync(ISessionService session, Type page, object parameter = null, string title = null, Size size = default, string id = "0");
+        Task<ViewLifetimeControl> OpenAsync(ISession session, Type page, object parameter = null, string title = null, Size size = default, string id = "0");
 
         Task<ViewLifetimeControl> OpenAsync(ViewServiceOptions options);
     }
@@ -190,7 +190,7 @@ namespace Telegram.Services
             }
         }
 
-        public async Task<ViewLifetimeControl> OpenAsync(ISessionService session, Type page, object parameter = null, string title = null, Size size = default, string id = "0")
+        public async Task<ViewLifetimeControl> OpenAsync(ISession session, Type page, object parameter = null, string title = null, Size size = default, string id = "0")
         {
             Logger.Info($"Page: {page}, Parameter: {parameter}, Title: {title}, Size: {size}");
 
@@ -238,7 +238,7 @@ namespace Telegram.Services
                     newAppView.Title = title;
                     newWindow.PersistedId = "Floating";
 
-                    var nav = BootStrapper.Current.NavigationServiceFactory(newWindow, BootStrapper.BackButton.Ignore, session, id, false);
+                    var nav = BootStrapper.Current.NavigationServiceFactory(session, newWindow, BootStrapper.BackButton.Ignore, id, false);
                     nav.Navigate(page, parameter);
 
                     var control = ViewLifetimeControl.GetForCurrentView();

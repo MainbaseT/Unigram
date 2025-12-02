@@ -24,7 +24,7 @@ namespace Telegram.Views.Host
     {
         private readonly WindowContext _window;
 
-        public SharePage(WindowContext window, ISessionService session)
+        public SharePage(WindowContext window, ISession session)
         {
             InitializeComponent();
 
@@ -66,15 +66,14 @@ namespace Telegram.Views.Host
             }
         }
 
-        private void ShowPopup(ISessionService session, ShareOperation shareOperation)
+        private void ShowPopup(ISession session, ShareOperation shareOperation)
         {
             var popup = new ChooseChatsPopup();
             popup.IsSmokeEnabled = false;
             popup.Closed += OnClosed;
             popup.AccountClick += OnAccountClick;
 
-            var clientService = session.ClientService;
-            var service = new TLNavigationService(clientService, null, _window, null, "Share");
+            var service = new TLNavigationService(session, _window, null, "Share");
 
             service.ShowPopup(popup, new ChooseChatsConfigurationShareOperation(shareOperation));
         }
@@ -88,7 +87,7 @@ namespace Telegram.Views.Host
                     chooseChats.Closed -= OnClosed;
                     chooseChats.Hide();
 
-                    ShowPopup(sender as ISessionService, shareOperation.ShareOperation);
+                    ShowPopup(sender as ISession, shareOperation.ShareOperation);
                 }
             }
         }

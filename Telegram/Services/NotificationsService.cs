@@ -45,7 +45,7 @@ namespace Telegram.Services
     public partial class NotificationsService : INotificationsService
     {
         private readonly IClientService _clientService;
-        private readonly ISessionService _sessionService;
+        private readonly ISession _sessionService;
         private readonly ISettingsService _settings;
         private readonly IEventAggregator _aggregator;
 
@@ -53,7 +53,7 @@ namespace Telegram.Services
 
         private readonly bool? _suppress;
 
-        public NotificationsService(IClientService clientService, ISettingsService settingsService, ISessionService sessionService, IEventAggregator aggregator)
+        public NotificationsService(IClientService clientService, ISettingsService settingsService, ISession sessionService, IEventAggregator aggregator)
         {
             _clientService = clientService;
             _settings = settingsService;

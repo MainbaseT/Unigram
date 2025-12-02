@@ -19,7 +19,7 @@ using Windows.System;
 
 namespace Telegram.Services
 {
-    public interface ISessionService : INotifyPropertyChanged
+    public interface ISession : INotifyPropertyChanged
     {
         int Id { get; }
         long UserId { get; }
@@ -42,7 +42,9 @@ namespace Telegram.Services
         void RequestQrCodeAuthentication(IList<long> otherUserIds);
     }
 
-    public partial class SessionService : BindableBase, ISessionService
+    // TODO: Name collides with Td.Api.Session.
+    //       Find a better name for this class and ISession.
+    public partial class SessionImpl : BindableBase, ISession
     {
         public IClientService ClientService => _clientService;
 

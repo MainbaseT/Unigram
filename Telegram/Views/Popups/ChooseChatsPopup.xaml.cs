@@ -1113,7 +1113,7 @@ namespace Telegram.Views.Popups
         }
 
         [Obsolete]
-        public void Legacy(ISessionService session)
+        public void Legacy(ISession session)
         {
             DataContext = session.Resolve<ChooseChatsViewModel>();
         }

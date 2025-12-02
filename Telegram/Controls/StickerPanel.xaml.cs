@@ -42,7 +42,7 @@ namespace Telegram.Controls
 
         public DialogViewModel ViewModel => DataContext as DialogViewModel;
 
-        public ISessionService Session
+        public ISession Session
         {
             get
             {

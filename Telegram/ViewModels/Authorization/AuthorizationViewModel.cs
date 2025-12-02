@@ -23,16 +23,14 @@ namespace Telegram.ViewModels.Authorization
 {
     public partial class AuthorizationViewModel : ViewModelBase, IDelegable<ISignInDelegate>, IHandle
     {
-        private readonly ISessionService _sessionService;
         private readonly ILifetimeService _lifetimeService;
         private readonly INotificationsService _notificationsService;
 
         public ISignInDelegate Delegate { get; set; }
 
-        public AuthorizationViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ISessionService sessionService, ILifetimeService lifecycleService, INotificationsService notificationsService)
+        public AuthorizationViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, ILifetimeService lifecycleService, INotificationsService notificationsService)
             : base(clientService, settingsService, aggregator)
         {
-            _sessionService = sessionService;
             _lifetimeService = lifecycleService;
             _notificationsService = notificationsService;
 
@@ -91,7 +89,7 @@ namespace Telegram.ViewModels.Authorization
                                 // If auth state is not WaitPhoneNumber we force a log out to avoid AUTH_TOKEN_ALREADY_ACCEPTED
                                 if (authState is not AuthorizationStateWaitPhoneNumber)
                                 {
-                                    _sessionService.RequestQrCodeAuthentication(userIds);
+                                    Session.RequestQrCodeAuthentication(userIds);
                                 }
                                 else
                                 {
@@ -266,7 +264,7 @@ namespace Telegram.ViewModels.Authorization
             Task<Object> request;
             if (ClientService.AuthorizationState is AuthorizationStateWaitOtherDeviceConfirmation)
             {
-                request = _sessionService.SetAuthenticationPhoneNumberAsync(function);
+                request = Session.SetAuthenticationPhoneNumberAsync(function);
             }
             else
             {

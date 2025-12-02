@@ -21,7 +21,7 @@ namespace Telegram.Views.Payments
 
         public SavedCredentials Credentials { get; private set; }
 
-        public PaymentCredentialsPopup(ISessionService session, PaymentFormTypeRegular paymentForm)
+        public PaymentCredentialsPopup(ISession session, PaymentFormTypeRegular paymentForm)
         {
             InitializeComponent();
             DataContext = session.Resolve<PaymentCredentialsViewModel>();
@@ -41,7 +41,7 @@ namespace Telegram.Views.Payments
             }
         }
 
-        public PaymentCredentialsPopup(ISessionService session, PaymentFormTypeRegular paymentForm, PaymentOption paymentOption)
+        public PaymentCredentialsPopup(ISession session, PaymentFormTypeRegular paymentForm, PaymentOption paymentOption)
         {
             InitializeComponent();
             DataContext = session.Resolve<PaymentCredentialsViewModel>();

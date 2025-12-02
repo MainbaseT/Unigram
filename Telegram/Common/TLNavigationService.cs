@@ -7,7 +7,6 @@
 
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Controls;
@@ -29,7 +28,6 @@ using Telegram.Views.Stars.Popups;
 using Telegram.Views.Tabbed;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.ViewManagement;
-using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -51,14 +49,12 @@ namespace Telegram.Common
         private readonly IPasscodeService _passcodeService;
         private readonly IViewService _viewService;
 
-        private readonly Dictionary<string, AppWindow> _instantWindows = new();
-
-        public TLNavigationService(IClientService clientService, IViewService viewService, WindowContext window, Frame frame, string id)
-            : base(window, frame, clientService.Session, id)
+        public TLNavigationService(ISession session, WindowContext window, Frame frame, string id)
+            : base(session, window, frame, id)
         {
-            _clientService = clientService;
+            _clientService = session.Resolve<IClientService>();
             _passcodeService = LifetimeService.Current.Passcode;
-            _viewService = viewService;
+            _viewService = session.Resolve<IViewService>();
         }
 
         public IClientService ClientService => _clientService;
@@ -67,14 +63,14 @@ namespace Telegram.Common
         {
             if (sourceLink != null)
             {
-                var oldViewId = WindowContext.Current.Id;
+                var oldViewId = Window.Id;
                 var found = false;
 
                 await WindowContext.ForEachAsync(window =>
                 {
                     if (window.Content is WebAppPage webApp && webApp.AreTheSame(sourceLink))
                     {
-                        _ = ApplicationViewSwitcher.SwitchAsync(WindowContext.Current.Id, oldViewId);
+                        _ = ApplicationViewSwitcher.SwitchAsync(Window.Id, oldViewId);
                         found = true;
                     }
                 });
@@ -114,7 +110,7 @@ namespace Telegram.Common
                 TabViewItem CreateTabViewItem(WindowContext window)
                 {
                     var frame = new Frame();
-                    var service = new TLNavigationService(ClientService, null, window, frame, "InstantView"); // BootStrapper.Current.NavigationServiceFactory(BootStrapper.BackButton.Ignore, frame, _clientService.SessionId, "ciccio", false);
+                    var service = new TLNavigationService(Session, window, frame, "InstantView"); // BootStrapper.Current.NavigationServiceFactory(BootStrapper.BackButton.Ignore, frame, _clientService.SessionId, "ciccio", false);
 
                     service.Navigate(typeof(InstantPage), new InstantPageArgs(instantView, url));
 
@@ -172,16 +168,16 @@ namespace Telegram.Common
             var already = WindowContext.All.FirstOrDefault(x => x.PersistedId == parameters.PersistedId);
             if (already != null)
             {
-                var oldViewId = WindowContext.Current.Id;
+                var oldViewId = Window.Id;
 
                 await already.Dispatcher.DispatchAsync(() =>
                 {
-                    if (WindowContext.Current.Content is TabbedPage page)
+                    if (Window.Content is TabbedPage page)
                     {
                         page.AddNewTab(newTab(already));
                     }
 
-                    return ApplicationViewSwitcher.SwitchAsync(WindowContext.Current.Id, oldViewId);
+                    return ApplicationViewSwitcher.SwitchAsync(Window.Id, oldViewId);
                 });
             }
             else
@@ -191,7 +187,7 @@ namespace Telegram.Common
                     Width = parameters.Width,
                     Height = parameters.Height,
                     PersistedId = parameters.PersistedId,
-                    Content = control => new TabbedPage(newTab(WindowContext.Current), string.Equals(parameters.PersistedId, "WebApps"))
+                    Content = control => new TabbedPage(newTab(Window), string.Equals(parameters.PersistedId, "WebApps"))
                 });
             }
         }
@@ -296,7 +292,7 @@ namespace Telegram.Common
                 Content = control =>
                 {
                     // TODO: WinUI - control will be replaced by WindowContext.
-                    var nav = BootStrapper.Current.NavigationServiceFactory(WindowContext.Current, BootStrapper.BackButton.Ignore, Session, "Payments" + Guid.NewGuid(), false);
+                    var nav = BootStrapper.Current.NavigationServiceFactory(Session, Window, BootStrapper.BackButton.Ignore, "Payments" + Guid.NewGuid(), false);
                     nav.Navigate(typeof(PaymentFormPage), new PaymentFormArgs(inputInvoice, paymentForm, content));
 
                     return nav.Frame;
@@ -331,7 +327,7 @@ namespace Telegram.Common
                 PersistedId = "Payments",
                 Content = control =>
                 {
-                    var nav = BootStrapper.Current.NavigationServiceFactory(WindowContext.Current, BootStrapper.BackButton.Ignore, Session, "Payments" + Guid.NewGuid(), false);
+                    var nav = BootStrapper.Current.NavigationServiceFactory(Session, Window, BootStrapper.BackButton.Ignore, "Payments" + Guid.NewGuid(), false);
                     nav.Navigate(typeof(PaymentFormPage), paymentReceipt);
 
                     return nav.Frame;

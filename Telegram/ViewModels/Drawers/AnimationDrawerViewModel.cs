@@ -44,7 +44,7 @@ namespace Telegram.ViewModels.Drawers
             Aggregator.Subscribe<UpdateSavedAnimations>(this, Handle);
         }
 
-        public static AnimationDrawerViewModel Create(ISessionService session)
+        public static AnimationDrawerViewModel Create(ISession session)
         {
             var context = session.Resolve<AnimationDrawerViewModel>();
             context.Dispatcher = WindowContext.Current.Dispatcher;

@@ -90,7 +90,7 @@
         </Style>
 
         <DataTemplate x:Name="SessionItemTemplate"
-                      x:DataType="services:ISessionService">
+                      x:DataType="services:ISession">
             <Grid Margin="0,6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />

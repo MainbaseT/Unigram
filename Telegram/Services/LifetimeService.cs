@@ -21,23 +21,23 @@ namespace Telegram.Services
 {
     public interface ILifetimeService
     {
-        ISessionService Create(bool update = true, bool test = false);
-        void Destroy(ISessionService item);
+        ISession Create(bool update = true, bool test = false);
+        void Destroy(ISession item);
 
         int Count { get; }
 
-        IList<ISessionService> GetItemsForMenu(bool show, out long hash);
+        IList<ISession> GetItemsForMenu(bool show, out long hash);
 
-        IList<ISessionService> Items { get; }
-        ISessionService ActiveItem { get; set; }
-        ISessionService PreviousItem { get; set; }
+        IList<ISession> Items { get; }
+        ISession ActiveItem { get; set; }
+        ISession PreviousItem { get; set; }
     }
 
     public partial class LifetimeService : ILifetimeService
     {
         private static readonly LifetimeService _instance = new();
 
-        private readonly ReaderWriterDictionary<int, ISessionService> _sessions = new();
+        private readonly ReaderWriterDictionary<int, ISession> _sessions = new();
         private readonly IPasscodeService _passcode;
         private readonly ILocaleService _locale;
         private readonly IPlaybackService _playback;
@@ -80,9 +80,9 @@ namespace Telegram.Services
 
         public int Count => _sessions.Count;
 
-        private ISessionService Build(int id, bool active)
+        private ISession Build(int id, bool active)
         {
-            var session = new SessionService(this, _locale, _passcode, id, active);
+            var session = new SessionImpl(this, _locale, _passcode, id, active);
             _sessions[id] = session;
             return session;
         }
@@ -151,11 +151,11 @@ namespace Telegram.Services
             return toBeInitialized;
         }
 
-        public IList<ISessionService> Items => _sessions.Values;
+        public IList<ISession> Items => _sessions.Values;
 
-        public IList<ISessionService> GetItemsForMenu(bool show, out long hash)
+        public IList<ISession> GetItemsForMenu(bool show, out long hash)
         {
-            IList<ISessionService> sessions = null;
+            IList<ISession> sessions = null;
             hash = 0;
 
             if (show)
@@ -169,18 +169,18 @@ namespace Telegram.Services
                 }
             }
 
-            return sessions ?? Array.Empty<ISessionService>();
+            return sessions ?? Array.Empty<ISession>();
         }
 
-        private ISessionService _previousItem;
-        public ISessionService PreviousItem
+        private ISession _previousItem;
+        public ISession PreviousItem
         {
             get => _previousItem;
             set => _previousItem = value;
         }
 
-        private ISessionService _activeItem;
-        public ISessionService ActiveItem
+        private ISession _activeItem;
+        public ISession ActiveItem
         {
             get => _activeItem;
             set
@@ -200,7 +200,7 @@ namespace Telegram.Services
             }
         }
 
-        private bool IsValidSession(ISessionService session)
+        private bool IsValidSession(ISession session)
         {
             if (_sessions.TryGetValue(session.Id, out var active))
             {
@@ -210,7 +210,7 @@ namespace Telegram.Services
             return false;
         }
 
-        public ISessionService Create(bool update = true, bool test = false)
+        public ISession Create(bool update = true, bool test = false)
         {
             var app = BootStrapper.Current as App;
             var sessions = _sessions.Values;
@@ -229,11 +229,11 @@ namespace Telegram.Services
             return session;
         }
 
-        public async void Destroy(ISessionService item)
+        public async void Destroy(ISession item)
         {
             Logger.Info(item.Id);
 
-            ISessionService? replace = null;
+            ISession? replace = null;
             if (item.IsActive)
             {
                 var previous = _previousItem == item ? null : _previousItem;
@@ -305,7 +305,7 @@ namespace Telegram.Services
         {
             result = default;
 
-            if (_sessions.TryGetValue(session, out ISessionService container))
+            if (_sessions.TryGetValue(session, out ISession container))
             {
                 result = container.Resolve<T>();
             }

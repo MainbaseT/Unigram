@@ -395,7 +395,7 @@ namespace Telegram
                 {
                     getter = GetSingletonName(param.ParameterType) + " ??= " + GenerateConstructor(param.ParameterType, depth + 1);
                 }
-                else if (param.ParameterType == typeof(ISessionService))
+                else if (param.ParameterType == typeof(ISession))
                 {
                     getter = "_sessionService";
                 }

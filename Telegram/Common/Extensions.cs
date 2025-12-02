@@ -105,7 +105,7 @@ namespace Telegram.Common
 
         // TODO: this is a duplicat of INavigationService.ShowPopupAsync, and it's needed by GamePage, GroupCallPage and LiveStreamPage.
         // Must be removed at some point.
-        public static void ShowPopup(this UserControl frame, ISessionService session, ContentPopup popup, object parameter = null)
+        public static void ShowPopup(this UserControl frame, ISession session, ContentPopup popup, object parameter = null)
         {
             var viewModel = BootStrapper.Current.ViewModelForPage(popup, session);
             if (viewModel != null)

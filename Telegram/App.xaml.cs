@@ -158,7 +158,7 @@ namespace Telegram
                 var sessionId = Toast.GetSession(args);
                 if (sessionId != null)
                 {
-                    if (LifetimeService.Current.ActiveItem.Id != sessionId && LifetimeService.Current.TryResolve(sessionId.Value, out ISessionService session))
+                    if (LifetimeService.Current.ActiveItem.Id != sessionId && LifetimeService.Current.TryResolve(sessionId.Value, out ISession session))
                     {
                         LifetimeService.Current.ActiveItem = session;
 
@@ -202,14 +202,14 @@ namespace Telegram
             var sessionId = Toast.GetSession(args);
             if (sessionId != null)
             {
-                if (LifetimeService.Current.ActiveItem.Id != sessionId && LifetimeService.Current.TryResolve(sessionId.Value, out ISessionService session))
+                if (LifetimeService.Current.ActiveItem.Id != sessionId && LifetimeService.Current.TryResolve(sessionId.Value, out ISession session))
                 {
                     LifetimeService.Current.ActiveItem = session;
                 }
             }
 
             var activeSession = LifetimeService.Current.ActiveItem;
-            var navigationService = NavigationServiceFactory(window, BackButton.Ignore, activeSession, $"{activeSession.Id}", true) as NavigationService;
+            var navigationService = NavigationServiceFactory(activeSession, window, BackButton.Ignore, $"{activeSession.Id}", true) as NavigationService;
 
             if (args is ShareTargetActivatedEventArgs)
             {
@@ -233,14 +233,14 @@ namespace Telegram
             };
         }
 
-        protected override INavigationService CreateNavigationService(WindowContext window, Frame frame, ISessionService session, string id, bool root)
+        protected override INavigationService CreateNavigationService(ISession session, WindowContext window, Frame frame, string id, bool root)
         {
             if (root)
             {
-                return new TLRootNavigationService(session, window, frame, session, id);
+                return new TLRootNavigationService(session, window, frame, id);
             }
 
-            return new TLNavigationService(session.Resolve<IClientService>(), session.Resolve<IViewService>(), window, frame, id);
+            return new TLNavigationService(session, window, frame, id);
         }
 
         private async void OnStartSync(StartKind startKind, INavigationService navigation, ICloudUpdateService updateService = null)
@@ -349,7 +349,7 @@ namespace Telegram
             return Task.CompletedTask;
         }
 
-        public override ViewModelBase ViewModelForPage(UIElement page, ISessionService session)
+        public override ViewModelBase ViewModelForPage(UIElement page, ISession session)
         {
             var sessionId = session.Id;
             return page switch

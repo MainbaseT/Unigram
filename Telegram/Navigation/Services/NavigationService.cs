@@ -97,7 +97,7 @@ namespace Telegram.Navigation.Services
 
         WindowContext Window { get; }
 
-        ISessionService Session { get; }
+        ISession Session { get; }
 
         void AddToBackStack(Type type, object parameter = null, NavigationTransitionInfo info = null);
         void InsertToBackStack(int index, Type type, object parameter = null, NavigationTransitionInfo info = null);
@@ -172,7 +172,7 @@ namespace Telegram.Navigation.Services
             set => Frame.SetNavigationState(value);
         }
 
-        public ISessionService Session { get; private set; }
+        public ISession Session { get; private set; }
 
         public IDictionary<string, object> CacheKeyToParameter { get; } = new Dictionary<string, object>();
 
@@ -228,7 +228,7 @@ namespace Telegram.Navigation.Services
             BackStack.Clear();
         }
 
-        public NavigationService(WindowContext window, Frame frame, ISessionService session, string id)
+        public NavigationService(ISession session, WindowContext window, Frame frame, string id)
         {
             Window = window;
             Dispatcher = window?.Dispatcher;

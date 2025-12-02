@@ -75,7 +75,7 @@ namespace Telegram.ViewModels.Drawers
             Aggregator.Subscribe<UpdateInstalledStickerSets>(this, Handle);
         }
 
-        public static EmojiDrawerViewModel Create(ISessionService session, EmojiDrawerMode mode = EmojiDrawerMode.Chat)
+        public static EmojiDrawerViewModel Create(ISession session, EmojiDrawerMode mode = EmojiDrawerMode.Chat)
         {
             var context = session.Resolve<EmojiDrawerViewModel>();
             context.Dispatcher = WindowContext.Current.Dispatcher;

@@ -200,7 +200,7 @@ namespace Telegram.Views.Host
             Switch(_lifetime.Create());
         }
 
-        public void Switch(ISessionService session)
+        public void Switch(ISession session)
         {
             _lifetime.ActiveItem = session;
 
@@ -220,7 +220,7 @@ namespace Telegram.Views.Host
             var service = _context.NavigationServices.GetByFrameId($"{session.Id}") as NavigationService;
             if (service == null)
             {
-                service = BootStrapper.Current.NavigationServiceFactory(_context, BootStrapper.BackButton.Attach, new Frame { CacheSize = 0 }, session, $"{session.Id}", true) as NavigationService;
+                service = BootStrapper.Current.NavigationServiceFactory(session, _context, BootStrapper.BackButton.Attach, new Frame { CacheSize = 0 }, $"{session.Id}", true) as NavigationService;
                 service.Frame.Navigating += OnNavigating;
                 service.Frame.Navigated += OnNavigated;
 
@@ -350,10 +350,9 @@ namespace Telegram.Views.Host
 
         private void InitializeSessions(bool show)
         {
-            var clientService = _navigationService.Session.Resolve<IClientService>();
-            if (clientService != null)
+            if (_navigationService != null)
             {
-                InitializeSessions(clientService, SettingsService.Current.IsAccountsSelectorExpanded);
+                InitializeSessions(_navigationService.Session.ClientService, SettingsService.Current.IsAccountsSelectorExpanded);
             }
         }
 
@@ -369,7 +368,7 @@ namespace Telegram.Views.Host
 
             for (int i = 0; i < _navigationViewItems.Count; i++)
             {
-                if (_navigationViewItems[i] is ISessionService || _navigationViewItems[i] is RootDestination.AddAccount)
+                if (_navigationViewItems[i] is ISession || _navigationViewItems[i] is RootDestination.AddAccount)
                 {
                     if (itemsChanged)
                     {
@@ -484,7 +483,7 @@ namespace Telegram.Views.Host
 
         private void OnChoosingItemContainer(ListViewBase sender, ChoosingItemContainerEventArgs args)
         {
-            if (args.Item is ISessionService && args.ItemContainer is null or Controls.NavigationViewItem or Controls.NavigationViewItemSeparator)
+            if (args.Item is ISession && args.ItemContainer is null or Controls.NavigationViewItem or Controls.NavigationViewItemSeparator)
             {
                 args.ItemContainer = new ListViewItem();
                 args.ItemContainer.Style = NavigationViewList.ItemContainerStyle;
@@ -531,7 +530,7 @@ namespace Telegram.Views.Host
             var container = sender as ListViewItem;
 
             var item = NavigationViewList.ItemFromContainer(container);
-            if (item is ISessionService session && !session.IsActive)
+            if (item is ISession session && !session.IsActive)
             {
 
             }
@@ -594,7 +593,7 @@ namespace Telegram.Views.Host
         {
             container.Opacity = 1;
 
-            if (item is ISessionService session)
+            if (item is ISession session)
             {
                 var content = container.ContentTemplateRoot as Grid;
                 if (content == null)
@@ -808,7 +807,7 @@ namespace Telegram.Views.Host
 
         private void OnItemClick(object sender, ItemClickEventArgs e)
         {
-            if (e.ClickedItem is ISessionService session)
+            if (e.ClickedItem is ISession session)
             {
                 if (session.IsActive)
                 {
@@ -1039,10 +1038,9 @@ namespace Telegram.Views.Host
         {
             InitializeSessions(SettingsService.Current.IsAccountsSelectorExpanded);
 
-            var clientService = _navigationService.Session.Resolve<IClientService>();
-            if (clientService != null)
+            if (_navigationService != null)
             {
-                InitializeUser(clientService);
+                InitializeUser(_navigationService.Session.ClientService);
             }
 
             Theme.Visibility = Visibility.Visible;
@@ -1166,7 +1164,7 @@ namespace Telegram.Views.Host
 
         private void OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
-            if (e.Items[0] is ISessionService)
+            if (e.Items[0] is ISession)
             {
                 NavigationViewList.CanReorderItems = true;
             }
@@ -1181,15 +1179,15 @@ namespace Telegram.Views.Host
         {
             NavigationViewList.CanReorderItems = false;
 
-            if (args.DropResult == DataPackageOperation.Move && args.Items.Count == 1 && args.Items[0] is ISessionService session)
+            if (args.DropResult == DataPackageOperation.Move && args.Items.Count == 1 && args.Items[0] is ISession session)
             {
                 var items = _navigationViewItems;
                 var index = items.IndexOf(session);
 
                 var compare = items[index > 1 ? index - 1 : index + 1];
-                if (compare is ISessionService)
+                if (compare is ISession)
                 {
-                    var sessions = _navigationViewItems.OfType<ISessionService>();
+                    var sessions = _navigationViewItems.OfType<ISession>();
                     var ids = sessions.Select(x => x.Id);
 
                     _menuSessions = sessions.Reverse().Hash(x => x.UserId);

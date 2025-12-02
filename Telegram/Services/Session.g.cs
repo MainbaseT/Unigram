@@ -7,7 +7,7 @@
 
 namespace Telegram.Services
 {
-    public partial class SessionService
+    public partial class SessionImpl
     {
         private readonly int _id;
 
@@ -23,7 +23,7 @@ namespace Telegram.Services
         private readonly Telegram.Services.IVoipService _voipService;
         private readonly Telegram.Services.INetworkService _networkService;
         private readonly Telegram.Services.IGenerationService _generationService;
-        private readonly Telegram.Services.ISessionService _sessionService;
+        private readonly Telegram.Services.ISession _sessionService;
         private readonly Telegram.Services.INotificationsService _notificationsService;
 
         private Telegram.Services.ISettingsSearchService _settingsSearchService;
@@ -37,7 +37,7 @@ namespace Telegram.Services
         private Telegram.Services.IProfilePhotoService _profilePhotoService;
         private Telegram.Services.ITextRecognitionService _textRecognitionService;
 
-        public SessionService(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, int session, bool active)
+        public SessionImpl(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, int session, bool active)
         {
             _id = session;
             _sessionService = this;

@@ -25,7 +25,7 @@ namespace Telegram.ViewModels.Drawers
             SavedStickers = new MvxObservableCollection<MessageEffect>();
         }
 
-        public static EffectDrawerViewModel Create(ISessionService session)
+        public static EffectDrawerViewModel Create(ISession session)
         {
             var context = session.Resolve<EffectDrawerViewModel>();
             context.Dispatcher = WindowContext.Current.Dispatcher;

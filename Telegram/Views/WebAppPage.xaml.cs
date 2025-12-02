@@ -46,7 +46,6 @@ namespace Telegram.Views
     public sealed partial class WebAppPage : UserControlEx, IPopupHost
     {
         private readonly IClientService _clientService;
-        private readonly IViewService _viewService;
         private readonly SecondaryNavigationService _navigationService;
         private readonly IEventAggregator _aggregator;
 
@@ -83,8 +82,7 @@ namespace Telegram.Views
             InitializeComponent();
 
             _clientService = clientService;
-            _viewService = clientService.Session.Resolve<IViewService>();
-            _navigationService = new SecondaryNavigationService(clientService, navigationService, _viewService, WindowContext.Current);
+            _navigationService = new SecondaryNavigationService(clientService.Session, navigationService, WindowContext.Current);
             _aggregator = clientService.Session.Resolve<IEventAggregator>();
 
             _aggregator.Subscribe<UpdateWebAppMessageSent>(this, Handle)
@@ -184,8 +182,7 @@ namespace Telegram.Views
             InitializeComponent();
 
             _clientService = clientService;
-            _viewService = clientService.Session.Resolve<IViewService>();
-            _navigationService = new SecondaryNavigationService(clientService, navigationService, _viewService, WindowContext.Current);
+            _navigationService = new SecondaryNavigationService(clientService.Session, navigationService, WindowContext.Current);
             _aggregator = clientService.Session.Resolve<IEventAggregator>();
 
             _botUser = botUser;
@@ -2227,8 +2224,8 @@ namespace Telegram.Views
     {
         private readonly INavigationService _source;
 
-        public SecondaryNavigationService(IClientService clientService, INavigationService source, IViewService viewService, WindowContext window)
-            : base(clientService, viewService, window, null, string.Empty)
+        public SecondaryNavigationService(ISession session, INavigationService source, WindowContext window)
+            : base(session, window, null, string.Empty)
         {
             _source = source;
         }
