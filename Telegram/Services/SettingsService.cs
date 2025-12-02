@@ -322,7 +322,7 @@ namespace Telegram.Services
         private static int? _verbosityLevel;
         public int VerbosityLevel
         {
-            get => _verbosityLevel ??= GetValueOrDefault(_local, "VerbosityLevel", Constants.DEBUG ? 4 : 2);
+            get => _verbosityLevel ??= GetValueOrDefault(_local, "VerbosityLevel", ApiInfo.IsPackagedRelease ? 4 : 2);
             set => AddOrUpdateValue(ref _verbosityLevel, _local, "VerbosityLevel", value);
         }
 
