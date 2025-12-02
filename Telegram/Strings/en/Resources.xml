@@ -13075,5 +13075,6 @@
     <string name="NotificationsDeleteAllException">Delete All Exceptions</string>
     <string name="NotificationsDeleteAllExceptionTitle">Delete all exceptions</string>
     <string name="NotificationsDeleteAllExceptionAlert">Are you sure you want to delete all exceptions?</string>
+    <string name="TopicClosedByAdmin">The topic is closed</string>
 
 </resources>

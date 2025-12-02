@@ -14175,6 +14175,9 @@ Please try again in {0}.</value>
   <data name="TopicClosed2" xml:space="preserve">
     <value>{0} closed the topic</value>
   </data>
+  <data name="TopicClosedByAdmin" xml:space="preserve">
+    <value>The topic is closed</value>
+  </data>
   <data name="TopicCreated" xml:space="preserve">
     <value>Topic created</value>
   </data>
