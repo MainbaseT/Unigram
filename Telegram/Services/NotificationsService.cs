@@ -197,7 +197,7 @@ namespace Telegram.Services
 
                 dispatcher?.Dispatch(async () =>
                 {
-                    var xamlRoot = window.Content?.XamlRoot;
+                    var xamlRoot = window.XamlRoot;
                     if (xamlRoot == null)
                     {
                         return;
@@ -242,7 +242,7 @@ namespace Telegram.Services
 
             dispatcher?.Dispatch(async () =>
             {
-                var xamlRoot = window.Content?.XamlRoot;
+                var xamlRoot = window.XamlRoot;
                 if (xamlRoot == null)
                 {
                     return;
@@ -289,7 +289,7 @@ namespace Telegram.Services
 
             dispatcher?.Dispatch(async () =>
             {
-                var xamlRoot = window.Content?.XamlRoot;
+                var xamlRoot = window.XamlRoot;
                 if (xamlRoot == null)
                 {
                     return;

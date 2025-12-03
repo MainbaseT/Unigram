@@ -158,7 +158,6 @@ namespace Telegram.Navigation
             }
 
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
-            ApplicationView.GetForCurrentView().Consolidated += OnConsolidated;
         }
 
         public long Handle
@@ -198,35 +197,15 @@ namespace Telegram.Navigation
                 return;
             }
 
-            OnConsolidated(sender);
-        }
-
-        private void OnConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
-        {
-            OnConsolidated(sender);
-        }
-
-        private void OnConsolidated(ApplicationView sender)
-        {
-            _consolidated = true;
-            _inputListener.Release();
-            sender.VisibleBoundsChanged -= OnVisibleBoundsChanged;
-            sender.Consolidated -= OnConsolidated;
-
-            // TODO: since we can't call Close directly,
-            // Closed event will be never fired.
             OnClosed(null, null);
-            ClearTitleBar(sender);
-
-            // TODO: needed? From some tests, this prevented the whole Window root from being garbage collected
-            if (SynchronizationContext.Current is SecondaryViewSynchronizationContextDecorator decorator)
-            {
-                SynchronizationContext.SetSynchronizationContext(decorator.Context);
-            }
         }
 
         private void OnClosed(object sender, CoreWindowEventArgs e)
         {
+            _consolidated = true;
+            _inputListener.Release();
+            ApplicationView.GetForCurrentView().VisibleBoundsChanged -= OnVisibleBoundsChanged;
+
             lock (_allLock)
             {
                 if (_xamlRoot != null)
@@ -248,6 +227,12 @@ namespace Telegram.Navigation
             _window.Closed -= OnClosed;
             _window.CoreWindow.ResizeStarted -= OnResizeStarted;
             _window.CoreWindow.ResizeCompleted -= OnResizeCompleted;
+
+            // TODO: needed? From some tests, this prevented the whole Window root from being garbage collected
+            if (SynchronizationContext.Current is SecondaryViewSynchronizationContextDecorator decorator)
+            {
+                SynchronizationContext.SetSynchronizationContext(decorator.Context);
+            }
         }
 
         private void OnShutdownCompleted(DispatcherQueue sender, object args)
@@ -275,6 +260,8 @@ namespace Telegram.Navigation
         public bool IsInMainView { get; }
 
         public bool IsCallInProgress { get; private set; }
+
+        public XamlRoot XamlRoot => _content?.XamlRoot;
 
         private WindowControl _content;
         public UIElement Content
@@ -689,7 +676,7 @@ namespace Telegram.Navigation
                     // TODO: WinUI - most likely XamlRoot is going to be null at this stage.
                     // As well, Content may be null too.
 
-                    _ = new ThemePreviewPopup(item).ShowQueuedAsync(Content?.XamlRoot);
+                    _ = new ThemePreviewPopup(item).ShowQueuedAsync(XamlRoot);
                 }
             }
             else if (args is CommandLineActivatedEventArgs commandLine)
