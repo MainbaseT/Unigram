@@ -19,11 +19,11 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="NotifyIcon.cs" />
+    <Compile Include="Passkeys.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fido2.Models" Version="4.0.0" />
     <PackageReference Include="Microsoft.Win32.SystemEvents" Version="10.0.0" />
   </ItemGroup>
 

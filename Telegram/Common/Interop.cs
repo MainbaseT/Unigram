@@ -79,6 +79,20 @@ namespace Telegram.Common
 
 #if NET9_0_OR_GREATER
     [GeneratedComInterface]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+#else
+    [ComImport]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+#endif
+    [Guid("45D64A29-A63E-4CB6-B498-5781D298CB4F")]
+    interface ICoreWindowInterop
+    {
+        IntPtr WindowHandle { get; }
+        void MessageHandled(bool value);
+    }
+
+#if NET9_0_OR_GREATER
+    [GeneratedComInterface]
 #else
     [ComImport]
 #endif

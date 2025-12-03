@@ -5,7 +5,9 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 using Microsoft.Win32;
+using System.Buffers.Text;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation.Collections;
@@ -183,6 +185,9 @@ namespace Telegram.Stub
         //[DllImport("user32.dll", SetLastError = true)]
         //static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
         private async void OnRequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
         {
             Logger.Info();
@@ -198,14 +203,14 @@ namespace Telegram.Stub
                 response.Add("ProcessId", Environment.ProcessId);
             }
 
-            if (args.Request.Message.TryGet("OpenText", out string openText))
+            if (args.Request.Message.TryGet("OpenText", out string? openText))
             {
                 Logger.Info("OpenText");
 
                 _notifyIcon?.UpdateOpenText(openText);
             }
 
-            if (args.Request.Message.TryGet("ExitText", out string exitText))
+            if (args.Request.Message.TryGet("ExitText", out string? exitText))
             {
                 Logger.Info("ExitText");
 
@@ -256,6 +261,87 @@ namespace Telegram.Stub
 
                 _connection?.RequestReceived -= OnRequestReceived;
                 _connection?.ServiceClosed -= OnServiceClosed;
+            }
+
+            if (args.Request.Message.ContainsKey("IsPasskeySupported"))
+            {
+                Logger.Info("IsPasskeySupported");
+
+                response.Add("Result", Passkeys.IsSupported());
+            }
+
+            if (args.Request.Message.TryGet("MakeCredential", out string? makeCredential))
+            {
+                Logger.Info("MakeCredential");
+
+                IntPtr hWnd;
+                if (args.Request.Message.TryGet("WindowId", out long windowId))
+                {
+                    hWnd = new IntPtr(windowId);
+                }
+                else
+                {
+                    hWnd = GetForegroundWindow();
+                }
+
+                var data = Passkeys.DeserializeRegisterData(makeCredential);
+                if (data != null)
+                {
+                    var result = Passkeys.MakeCredential(hWnd, data);
+                    if (result != null)
+                    {
+                        response.Add("Result", true);
+                        response.Add("CredentialId", Base64Url.EncodeToString(result.CredentialId));
+                        response.Add("ClientData", result.ClientDataJson);
+                        response.Add("AttestationObject", result.AttestationObject);
+                    }
+                    else
+                    {
+                        response.Add("Result", false);
+                    }
+                }
+                else
+                {
+                    response.Add("Result", false);
+                }
+            }
+
+            if (args.Request.Message.TryGet("GetAssertion", out string? getAssertion))
+            {
+                Logger.Info("GetAssertion");
+
+                IntPtr hWnd;
+                if (args.Request.Message.TryGet("WindowId", out long windowId))
+                {
+                    hWnd = new IntPtr(windowId);
+                }
+                else
+                {
+                    hWnd = GetForegroundWindow();
+                }
+
+                var data = Passkeys.DeserializeLoginData(getAssertion);
+                if (data != null)
+                {
+                    var result = Passkeys.GetAssertion(hWnd, data);
+                    if (result != null)
+                    {
+                        response.Add("Result", true);
+                        response.Add("CredentialId", Base64Url.EncodeToString(result.CredentialId));
+                        response.Add("ClientData", result.ClientDataJson);
+                        response.Add("AuthenticatorData", result.AuthenticatorData);
+                        response.Add("Signature", result.Signature);
+                        response.Add("UserHandle", Base64Url.EncodeToString(result.UserHandle));
+                    }
+                    else
+                    {
+                        response.Add("Result", false);
+                    }
+                }
+                else
+                {
+                    response.Add("Result", false);
+                }
             }
 
             try

@@ -161,6 +161,18 @@ namespace Telegram.Navigation
             ApplicationView.GetForCurrentView().Consolidated += OnConsolidated;
         }
 
+        public long Handle
+        {
+            get
+            {
+                var window = _window.CoreWindow;
+                var interop = (ICoreWindowInterop)(object)window;
+                var hWnd = interop.WindowHandle;
+
+                return hWnd.ToInt64();
+            }
+        }
+
         public void Activate()
         {
             _window.Activate();
