@@ -36,6 +36,7 @@ using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Views.Host
 {
@@ -600,6 +601,11 @@ namespace Telegram.Views.Host
                 {
                     return;
                 }
+
+                var indicator = content.FindName("SelectionIndicator") as Rectangle;
+                indicator.Visibility = session.IsActive
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
 
                 var user = session.ClientService.GetUser(session.UserId);
                 if (user == null)
