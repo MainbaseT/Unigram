@@ -534,6 +534,10 @@ namespace Telegram.Common
 
                 case "L’application a appelé une interface qui était maintenue en ordre pour un thread différent.":
                 case "O aplicativo chamou uma interface marshalled para um outro thread.":
+                case "La aplicación llamó a una interfaz que se aplanó para un diferente subproceso.":
+                case "L'applicazione ha chiamato un'interfaccia su cui era stato eseguito il marshalling per un thread differente.":
+                case "Eine Schnittstelle, die für einen anderen Thread marshalled war, wurde von der Anwendung aufgerufen.":
+                case "Aplikacja wywołała interfejs, który został skierowany na inny wątek.":
                 case "Приложение обратилось к интерфейсу, относящемуся к другому потоку.":
                     return "The application called an interface that was marshalled for a different thread.";
 

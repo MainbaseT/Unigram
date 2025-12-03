@@ -70,7 +70,7 @@ namespace Telegram.Common
                 {
                     if (window.Content is WebAppPage webApp && webApp.AreTheSame(sourceLink))
                     {
-                        _ = ApplicationViewSwitcher.SwitchAsync(Window.Id, oldViewId);
+                        _ = ApplicationViewSwitcher.SwitchAsync(WindowContext.Current.Id, oldViewId);
                         found = true;
                     }
                 });
@@ -172,12 +172,12 @@ namespace Telegram.Common
 
                 await already.Dispatcher.DispatchAsync(() =>
                 {
-                    if (Window.Content is TabbedPage page)
+                    if (WindowContext.Current.Content is TabbedPage page)
                     {
                         page.AddNewTab(newTab(already));
                     }
 
-                    return ApplicationViewSwitcher.SwitchAsync(Window.Id, oldViewId);
+                    return ApplicationViewSwitcher.SwitchAsync(WindowContext.Current.Id, oldViewId);
                 });
             }
             else
@@ -187,7 +187,7 @@ namespace Telegram.Common
                     Width = parameters.Width,
                     Height = parameters.Height,
                     PersistedId = parameters.PersistedId,
-                    Content = control => new TabbedPage(newTab(Window), string.Equals(parameters.PersistedId, "WebApps"))
+                    Content = control => new TabbedPage(newTab(WindowContext.Current), string.Equals(parameters.PersistedId, "WebApps"))
                 });
             }
         }
@@ -292,7 +292,7 @@ namespace Telegram.Common
                 Content = control =>
                 {
                     // TODO: WinUI - control will be replaced by WindowContext.
-                    var nav = BootStrapper.Current.NavigationServiceFactory(Session, Window, BootStrapper.BackButton.Ignore, "Payments" + Guid.NewGuid(), false);
+                    var nav = BootStrapper.Current.NavigationServiceFactory(Session, WindowContext.Current, BootStrapper.BackButton.Ignore, "Payments" + Guid.NewGuid(), false);
                     nav.Navigate(typeof(PaymentFormPage), new PaymentFormArgs(inputInvoice, paymentForm, content));
 
                     return nav.Frame;
@@ -327,7 +327,7 @@ namespace Telegram.Common
                 PersistedId = "Payments",
                 Content = control =>
                 {
-                    var nav = BootStrapper.Current.NavigationServiceFactory(Session, Window, BootStrapper.BackButton.Ignore, "Payments" + Guid.NewGuid(), false);
+                    var nav = BootStrapper.Current.NavigationServiceFactory(Session, WindowContext.Current, BootStrapper.BackButton.Ignore, "Payments" + Guid.NewGuid(), false);
                     nav.Navigate(typeof(PaymentFormPage), paymentReceipt);
 
                     return nav.Frame;
