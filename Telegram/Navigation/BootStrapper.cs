@@ -216,7 +216,7 @@ namespace Telegram.Navigation
             Logger.Info();
 
             // sometimes activate requires a frame to be built
-            if (WindowContext.Current.Content == null /*&& e is not ShareTargetActivatedEventArgs*/)
+            if (WindowContext.Current?.Content == null /*&& e is not ShareTargetActivatedEventArgs*/)
             {
                 Logger.Info("Calling", member: nameof(InternalActivated));
                 InitializeFrame(e);
