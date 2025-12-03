@@ -286,6 +286,7 @@ namespace winrt::Telegram::Native::Media::implementation
                             delete events;
                         }
 
+                        libvlc_media_player_set_media(player, nullptr);
                         libvlc_media_player_release(player);
                     }
                     if (instance)
