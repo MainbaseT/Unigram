@@ -355,6 +355,11 @@ namespace Telegram.ViewModels.Settings
 
         public async void ClearDatabase()
         {
+            if (StatisticsFast == null)
+            {
+                return;
+            }
+
             var size = string.Format(Strings.LocalDatabaseClearText2, FileSizeConverter.Convert(StatisticsFast.DatabaseSize, true));
 
             var confirm = await ShowPopupAsync(Strings.LocalDatabaseClearText + "\n\n" + size + "\n\n" + Strings.LocalDatabaseClearText3, Strings.LocalDatabaseClearTextTitle, Strings.CacheClear, Strings.Cancel, destructive: true);

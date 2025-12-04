@@ -281,7 +281,14 @@ namespace Telegram.Views.Settings
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)
         {
             var flyout = new MenuFlyout();
-            flyout.CreateFlyoutItem(ViewModel.ClearDatabase, Strings.ClearLocalDatabase, Icons.Delete, destructive: true);
+            if (ViewModel.StatisticsFast == null)
+            {
+                flyout.CreateFlyoutItem(ViewModel.ClearDatabase, Strings.Loading, Icons.Delete, destructive: true);
+            }
+            else
+            {
+                flyout.CreateFlyoutItem(ViewModel.ClearDatabase, Strings.ClearLocalDatabase, Icons.Delete, destructive: true);
+            }
             flyout.ShowAt(sender as UIElement, FlyoutPlacementMode.BottomEdgeAlignedRight);
         }
     }
