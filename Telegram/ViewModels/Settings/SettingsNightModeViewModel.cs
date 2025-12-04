@@ -45,10 +45,17 @@ namespace Telegram.ViewModels.Settings
             Location = location;
             Settings.Appearance.UpdateNightMode();
 
-            var result = await MapLocationFinder.FindLocationsAtAsync(geopoint, MapLocationDesiredAccuracy.Low);
-            if (result.Status == MapLocationFinderStatus.Success)
+            try
             {
-                Town = result.Locations[0].Address.Town;
+                var result = await MapLocationFinder.FindLocationsAtAsync(geopoint, MapLocationDesiredAccuracy.Low);
+                if (result.Status == MapLocationFinderStatus.Success)
+                {
+                    Town = result.Locations[0].Address.Town;
+                }
+            }
+            catch
+            {
+                //
             }
         }
 
