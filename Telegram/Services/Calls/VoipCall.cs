@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Native.Calls;
@@ -348,7 +349,7 @@ namespace Telegram.Services.Calls
                 // All the remote procedure calls must be wrapped in a try-catch block
             }
 
-            ClientService.Send(new AcceptCall(Id, VoipManager.Protocol));
+            ClientService.Send(new AcceptCall(Id, VoipManager.Protocol.ToTd()));
 
             // TODO: consider delivering a fake update to speed up initialization
         }
@@ -524,7 +525,8 @@ namespace Telegram.Services.Calls
 
         private void OnSignalingDataEmitted(VoipManager sender, SignalingDataEmittedEventArgs args)
         {
-            ClientService.Send(new SendCallSignalingData(Id, args.Data));
+            // TODO: Optimize IList<byte> to byte[]
+            ClientService.Send(new SendCallSignalingData(Id, args.Data.ToArray()));
         }
 
         private void OnDeviceChanged(object sender, MediaDeviceChangedEventArgs e)
@@ -602,7 +604,7 @@ namespace Telegram.Services.Calls
                 CustomParameters = ready.CustomParameters,
                 InitializationTimeout = call_packet_timeout_ms / 1000.0,
                 ReceiveTimeout = call_connect_timeout_ms / 1000.0,
-                Servers = ready.Servers,
+                Servers = ready.Servers.ToCalls(),
                 EncryptionKey = ready.EncryptionKey,
                 IsOutgoing = IsOutgoing,
                 EnableP2p = ready.Protocol.UdpP2p && ready.AllowP2p,

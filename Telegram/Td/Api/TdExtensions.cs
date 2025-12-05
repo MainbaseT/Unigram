@@ -18,6 +18,7 @@ using Telegram.Common;
 using Telegram.Controls.Chats;
 using Telegram.Converters;
 using Telegram.Native;
+using Telegram.Native.Calls;
 using Telegram.Services;
 using Telegram.Services.Calls;
 using Telegram.Td;
@@ -43,6 +44,75 @@ namespace Telegram
                 MessagePaidMedia paidMedia => paidMedia.ShowCaptionAboveMedia,
                 _ => false
             };
+        }
+
+        public static CallProtocol ToTd(this VoipCallProtocol protocol)
+        {
+            return new CallProtocol(protocol.UdpP2p, protocol.UdpReflector, protocol.MinLayer, protocol.MaxLayer, protocol.LibraryVersions);
+        }
+
+        public static long ToId(this MessageSender sender)
+        {
+            return sender switch
+            {
+                MessageSenderUser user => user.UserId,
+                MessageSenderChat chat => chat.ChatId,
+                _ => 0
+            };
+        }
+
+        public static IList<VoipVideoSourceGroup> ToCalls(this IList<GroupCallVideoSourceGroup> groups)
+        {
+            var items = new List<VoipVideoSourceGroup>();
+
+            foreach (var group in groups)
+            {
+                items.Add(new VoipVideoSourceGroup(group.Semantics, group.SourceIds));
+            }
+
+            return items;
+        }
+
+        public static IList<VoipCallServer> ToCalls(this IList<CallServer> servers)
+        {
+            static string ToHex(byte[] bytes)
+            {
+                char[] c = new char[bytes.Length * 2];
+                int b;
+
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    b = bytes[i] >> 4;
+                    c[i * 2] = (char)(55 + b + (((b - 10) >> 31) & -7));
+                    b = bytes[i] & 0xF;
+                    c[i * 2 + 1] = (char)(55 + b + (((b - 10) >> 31) & -7));
+                }
+
+                return new string(c);
+            }
+
+            var items = new List<VoipCallServer>(servers.Count);
+
+            foreach (var server in servers)
+            {
+                VoipCallServerType type;
+                if (server.Type is CallServerTypeTelegramReflector reflector)
+                {
+                    type = new VoipCallServerTypeTelegramReflector(ToHex(reflector.PeerTag), reflector.IsTcp);
+                }
+                else if (server.Type is CallServerTypeWebrtc webrtc)
+                {
+                    type = new VoipCallServerTypeWebrtc(webrtc.Username, webrtc.Password, webrtc.SupportsTurn, webrtc.SupportsStun);
+                }
+                else
+                {
+                    continue;
+                }
+
+                items.Add(new VoipCallServer(server.Id, server.IpAddress, server.Ipv6Address, server.Port, type));
+            }
+
+            return items;
         }
 
         // TODO: remove

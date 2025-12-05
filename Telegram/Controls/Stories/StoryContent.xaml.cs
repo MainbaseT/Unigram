@@ -922,7 +922,7 @@ namespace Telegram.Controls.Stories
 
             if (participant?.VideoInfo != null)
             {
-                var channelInfo = new VoipVideoChannelInfo(participant.AudioSourceId, participant.ParticipantId, participant.VideoInfo.EndpointId, participant.VideoInfo.SourceGroups, VoipVideoChannelQuality.Full, VoipVideoChannelQuality.Full);
+                var channelInfo = new VoipVideoChannelInfo(participant.AudioSourceId, participant.ParticipantId.ToId(), participant.VideoInfo.EndpointId, participant.VideoInfo.SourceGroups.ToCalls(), VoipVideoChannelQuality.Full, VoipVideoChannelQuality.Full);
 
                 _call.SetRequestedVideoChannels([channelInfo]);
                 _call.AddIncomingVideoOutput(channelInfo.EndpointId, _unifiedVideo = VoipVideoOutput.CreateSink(LayoutRoot, uniformToFill: true));

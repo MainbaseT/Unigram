@@ -2109,9 +2109,9 @@ namespace Telegram.Views.Calls
                             descriptions[child.EndpointId] =
                                 new VoipVideoChannelInfo(
                                     child.Participant.AudioSourceId,
-                                    child.Participant.ParticipantId,
+                                    child.Participant.ParticipantId.ToId(),
                                     child.EndpointId,
-                                    child.VideoInfo.SourceGroups,
+                                    child.VideoInfo.SourceGroups.ToCalls(),
                                     child.Quality,
                                     child.Quality);
                         }

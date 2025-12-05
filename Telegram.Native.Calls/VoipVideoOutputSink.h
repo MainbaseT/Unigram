@@ -7,7 +7,6 @@
 #include "api/video/video_sink_interface.h"
 #include "api/video/video_frame.h"
 
-using namespace winrt::Telegram::Td::Api;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::UI::Composition;
 

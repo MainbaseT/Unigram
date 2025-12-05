@@ -155,7 +155,7 @@ namespace Telegram.Services
                 return;
             }
 
-            var protocol = VoipManager.Protocol;
+            var protocol = VoipManager.Protocol.ToTd();
 
             var response = await clientService.SendAsync(new CreateCall(user.Id, protocol, video));
             if (response is Error error)

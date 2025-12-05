@@ -143,7 +143,8 @@ namespace Telegram.Services.Calls
             _manager.NetworkStateUpdated += OnNetworkStateUpdated;
             _manager.AudioLevelsUpdated += OnAudioLevelsUpdated;
             _manager.BroadcastTimeRequested += OnBroadcastTimeRequested;
-            _manager.BroadcastPartRequested += OnBroadcastPartRequested;
+            _manager.AudioBroadcastPartRequested += OnAudioBroadcastPartRequested;
+            _manager.VideoBroadcastPartRequested += OnVideoBroadcastPartRequested;
             _manager.MediaChannelDescriptionsRequested += OnMediaChannelDescriptionsRequested;
 
             if (!_isLiveStory)
@@ -225,7 +226,8 @@ namespace Telegram.Services.Calls
             _manager.NetworkStateUpdated += OnNetworkStateUpdated;
             _manager.AudioLevelsUpdated += OnAudioLevelsUpdated;
             _manager.BroadcastTimeRequested += OnBroadcastTimeRequested;
-            _manager.BroadcastPartRequested += OnBroadcastPartRequested;
+            _manager.AudioBroadcastPartRequested += OnAudioBroadcastPartRequested;
+            _manager.VideoBroadcastPartRequested += OnVideoBroadcastPartRequested;
             _manager.MediaChannelDescriptionsRequested += OnMediaChannelDescriptionsRequested;
             _manager.SetEncryptDecrypt(EncryptData, DecryptData);
 
@@ -284,7 +286,8 @@ namespace Telegram.Services.Calls
             _manager.NetworkStateUpdated += OnNetworkStateUpdated;
             _manager.AudioLevelsUpdated += OnAudioLevelsUpdated;
             _manager.BroadcastTimeRequested += OnBroadcastTimeRequested;
-            _manager.BroadcastPartRequested += OnBroadcastPartRequested;
+            _manager.AudioBroadcastPartRequested += OnAudioBroadcastPartRequested;
+            _manager.VideoBroadcastPartRequested += OnVideoBroadcastPartRequested;
             _manager.MediaChannelDescriptionsRequested += OnMediaChannelDescriptionsRequested;
             _manager.SetEncryptDecrypt(EncryptData, DecryptData);
 
@@ -342,10 +345,11 @@ namespace Telegram.Services.Calls
             }
         }
 
-        private IList<byte> EncryptData(GroupCallDataChannel dataChannel, IList<byte> data, int unencryptedPrefixSize)
+        private IList<byte> EncryptData(VoipDataChannel dataChannel, IList<byte> data, int unencryptedPrefixSize)
         {
             Data response = null;
-            ClientService.Send(new EncryptGroupCallData(Id, null, data, unencryptedPrefixSize), result =>
+            // TODO: optimize IList<byte> => byte[]
+            ClientService.Send(new EncryptGroupCallData(Id, null, data.ToArray(), unencryptedPrefixSize), result =>
             {
                 response = result as Data;
                 _encryptMutex.Release();
@@ -355,10 +359,11 @@ namespace Telegram.Services.Calls
             return response?.DataValue ?? Array.Empty<byte>();
         }
 
-        private IList<byte> DecryptData(MessageSender participantId, IList<byte> data)
+        private IList<byte> DecryptData(long userId, IList<byte> data)
         {
             Data response = null;
-            ClientService.Send(new DecryptGroupCallData(Id, participantId, new GroupCallDataChannelMain(), data), result =>
+            // TODO: optimize IList<byte> => byte[]
+            ClientService.Send(new DecryptGroupCallData(Id, new MessageSenderUser(userId), new GroupCallDataChannelMain(), data.ToArray()), result =>
             {
                 response = result as Data;
                 _decryptMutex.Release();
@@ -804,10 +809,38 @@ namespace Telegram.Services.Calls
             }
         }
 
-        private async void OnBroadcastPartRequested(VoipGroupManager sender, BroadcastPartRequestedEventArgs args)
+        private async void OnAudioBroadcastPartRequested(VoipGroupManager sender, AudioBroadcastPartRequestedEventArgs args)
         {
-            var response = await ClientService.SendAsync(new GetGroupCallStreamSegment(Id, args.Time, args.Scale, args.ChannelId, args.VideoQuality));
-            args.Deferral(args.Time, ClientService.UnixTimeMilliseconds, response as Data);
+            var response = await ClientService.SendAsync(new GetGroupCallStreamSegment(Id, args.Time, args.Scale, 0, null));
+            if (response is Data data)
+            {
+                args.Deferral(args.Time, ClientService.UnixTimeMilliseconds, data.DataValue);
+            }
+            else
+            {
+                args.Deferral(args.Time, ClientService.UnixTimeMilliseconds, null);
+            }
+        }
+
+        private async void OnVideoBroadcastPartRequested(VoipGroupManager sender, VideoBroadcastPartRequestedEventArgs args)
+        {
+            GroupCallVideoQuality videoQuality = args.VideoQuality switch
+            {
+                VoipVideoChannelQuality.Thumbnail => new GroupCallVideoQualityThumbnail(),
+                VoipVideoChannelQuality.Medium => new GroupCallVideoQualityMedium(),
+                VoipVideoChannelQuality.Full => new GroupCallVideoQualityFull(),
+                _ => null
+            };
+
+            var response = await ClientService.SendAsync(new GetGroupCallStreamSegment(Id, args.Time, args.Scale, args.ChannelId, videoQuality));
+            if (response is Data data)
+            {
+                args.Deferral(args.Time, ClientService.UnixTimeMilliseconds, data.DataValue);
+            }
+            else
+            {
+                args.Deferral(args.Time, ClientService.UnixTimeMilliseconds, null);
+            }
         }
 
         private async void OnMediaChannelDescriptionsRequested(VoipGroupManager sender, MediaChannelDescriptionsRequestedEventArgs args)
@@ -817,17 +850,21 @@ namespace Telegram.Services.Calls
             var participants = Participants;
             if (participants == null)
             {
-                args.Deferral(Array.Empty<GroupCallParticipant>());
+                args.Deferral(Array.Empty<VoipMediaChannelDescription>());
             }
 
             var knownSources = participants.ToDictionary();
-            var result = new List<GroupCallParticipant>(args.AudioSourceIds.Count);
+            var result = new List<VoipMediaChannelDescription>(args.AudioSourceIds.Count);
 
             foreach (var ssrc in args.AudioSourceIds)
             {
                 if (knownSources.TryGetValue((int)ssrc, out GroupCallParticipant participant))
                 {
-                    result.Add(participant);
+                    result.Add(new VoipMediaChannelDescription
+                    {
+                        AudioSource = participant.AudioSourceId,
+                        UserId = participant.ParticipantId.ToId()
+                    });
                 }
                 else
                 {
@@ -851,7 +888,11 @@ namespace Telegram.Services.Calls
                 {
                     if (knownSources.TryGetValue((int)ssrc, out GroupCallParticipant participant))
                     {
-                        result.Add(participant);
+                        result.Add(new VoipMediaChannelDescription
+                        {
+                            AudioSource = participant.AudioSourceId,
+                            UserId = participant.ParticipantId.ToId()
+                        });
                     }
                 }
             }
@@ -1006,7 +1047,8 @@ namespace Telegram.Services.Calls
                 _manager.NetworkStateUpdated -= OnNetworkStateUpdated;
                 _manager.AudioLevelsUpdated -= OnAudioLevelsUpdated;
                 _manager.BroadcastTimeRequested -= OnBroadcastTimeRequested;
-                _manager.BroadcastPartRequested -= OnBroadcastPartRequested;
+                _manager.AudioBroadcastPartRequested -= OnAudioBroadcastPartRequested;
+                _manager.VideoBroadcastPartRequested -= OnVideoBroadcastPartRequested;
                 _manager.MediaChannelDescriptionsRequested -= OnMediaChannelDescriptionsRequested;
 
                 _manager.SetEncryptDecrypt(null, null);

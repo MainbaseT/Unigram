@@ -437,6 +437,9 @@
     <Midl Include="VoipVideoOutputSink.idl" />
     <Midl Include="FrameReceivedEventArgs.idl" />
     <Midl Include="MediaChannelDescriptionsRequestedEventArgs.idl" />
+    <Midl Include="VoipVideoSourceGroup.idl" />
+    <Midl Include="VoipCallProtocol.idl" />
+    <Midl Include="VoipCallServer.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
