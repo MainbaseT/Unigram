@@ -7,10 +7,12 @@
 
 using Microsoft.Graphics.Canvas.Geometry;
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using Telegram.Common;
 using Telegram.Controls.Media;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -80,7 +82,12 @@ namespace Telegram.Controls.Messages
 
                 var entities = new[]
                 {
-                    new TextEntity(ForwardText.Text.Length, ForwardLink.Text.Length, new TextEntityTypeBold())
+                    new TextStylePart
+                    {
+                        Offset = ForwardText.Text.Length,
+                        Length = ForwardLink.Text.Length,
+                        Type = TextStyle.Bold
+                    }
                 };
 
                 var rectangles2 = PlaceholderHelper.Foreground.LineMetrics(ForwardLabel.Text, entities, 12, double.MaxValue, false);

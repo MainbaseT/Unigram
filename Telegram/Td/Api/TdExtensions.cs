@@ -484,12 +484,12 @@ namespace Telegram
             };
         }
 
-        public static Vector2 ToVector2(this Point point)
+        public static Vector2 ToVector2(this Telegram.Td.Api.Point point)
         {
             return new Vector2((float)point.X, (float)point.Y);
         }
 
-        public static Vector2 ToVector2(this Point point, float scale)
+        public static Vector2 ToVector2(this Telegram.Td.Api.Point point, float scale)
         {
             return new Vector2((float)point.X * scale, (float)point.Y * scale);
         }

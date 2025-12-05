@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
+using Telegram.Native;
 using Telegram.Navigation;
-using Telegram.Td.Api;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -276,7 +276,7 @@ namespace Telegram.Controls
 
             var left = (float)Padding.Left;
             var top = (float)Padding.Top;
-            var rects = PlaceholderHelper.Foreground.LineMetrics(PlaceholderText ?? string.Empty, Array.Empty<TextEntity>(), Placeholder.FontSize, Placeholder.DesiredSize.Width - Padding.Left - Padding.Right, IsPlaceholderRightToLeft);
+            var rects = PlaceholderHelper.Foreground.LineMetrics(PlaceholderText ?? string.Empty, Array.Empty<TextStylePart>(), Placeholder.FontSize, Placeholder.DesiredSize.Width - Padding.Left - Padding.Right, IsPlaceholderRightToLeft);
 
             foreach (var rect in rects)
             {

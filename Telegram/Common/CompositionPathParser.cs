@@ -52,10 +52,61 @@ namespace Telegram.Common
             return null;
         }
 
+        public static CompositionPath Parse(IList<ClosedVectorPath> contours)
+        {
+            return new CompositionPath(Parse(null, contours));
+        }
+
+        public static CanvasGeometry Parse(ICanvasResourceCreator sender, IList<ClosedVectorPath> contours)
+        {
+            using var builder = new CanvasPathBuilder(sender);
+
+            foreach (var path in contours)
+            {
+                var open = true;
+
+                for (int i = 0; i <= path.Commands.Count; i++)
+                {
+                    var command = path.Commands[i % path.Commands.Count];
+                    if (command is VectorPathCommandLine line)
+                    {
+                        var point = line.EndPoint;
+                        if (open)
+                        {
+                            open = false;
+                            builder.BeginFigure((float)point.X, (float)point.Y);
+                        }
+                        else
+                        {
+                            builder.AddLine((float)point.X, (float)point.Y);
+                        }
+                    }
+                    else if (command is VectorPathCommandCubicBezierCurve cubicBezierCurve)
+                    {
+                        if (open)
+                        {
+                            open = false;
+                            builder.BeginFigure((float)cubicBezierCurve.EndPoint.X, (float)cubicBezierCurve.EndPoint.Y);
+                        }
+                        else
+                        {
+                            builder.AddCubicBezier(cubicBezierCurve.StartControlPoint.ToVector2(),
+                                cubicBezierCurve.EndControlPoint.ToVector2(),
+                                cubicBezierCurve.EndPoint.ToVector2());
+                        }
+                    }
+                }
+
+                builder.EndFigure(CanvasFigureLoop.Closed);
+            }
+
+            return CanvasGeometry.CreatePath(builder);
+        }
+
         public static CompositionAnimation ParseThumbnail(float width, float height, IList<ClosedVectorPath> contours, out ShapeVisual visual, bool animated = true)
         {
             CompositionPath path = contours?.Count > 0
-                ? PlaceholderHelper.Foreground.GetOutline(contours)
+                ? new CompositionPath(Parse(null, contours))
                 : new CompositionPath(CanvasGeometry.CreateRoundedRectangle(null, 0, 0, width, height, 80, 80));
 
             return CreateThumbnail(width, height, path, out visual, animated);

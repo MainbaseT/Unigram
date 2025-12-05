@@ -909,42 +909,6 @@ namespace Telegram.Controls
                     partFontSize = Theme.Current.CaptionFontSize;
 
                     _codeBlocks.Add(i);
-
-                    if (false && quote.IsExpandable)
-                    {
-                        var inline = new InlineUIContainer();
-                        var test = new FormattedTextBlock();
-                        test.SetText(clientService, new StyledText(text, null, new[] { new StyledParagraph(text, 0, text.Length, part.Runs, part.Direction, part.Padding) }), partFontSize);
-                        test.MaxLines = 3;
-                        test.TextTrimming = TextTrimming.CharacterEllipsis;
-                        test.IsEnabled = false;
-
-                        var hyperlink = new CheckBox();
-                        hyperlink.Content = test;
-                        hyperlink.Style = BootStrapper.Current.Resources["ExpandableQuoteCheckBoxStyle"] as Style;
-                        hyperlink.Click += (s, args) =>
-                        {
-                            test.MaxLines = test.MaxLines == 3 ? 0 : 3;
-                        };
-
-                        inline.Child = hyperlink;
-                        temp.Inlines.Add(inline);
-
-                        previous = part.Offset + part.Length;
-
-                        if (paragraph != null)
-                        {
-                            direct.AddToCollection(blocks, paragraph);
-                        }
-
-                        if (part.Offset == 0)
-                        {
-                            firstType = type;
-                        }
-
-                        lastType = type;
-                        continue;
-                    }
                 }
 
                 for (int j = 0; j < runs.Count; j++)
@@ -1391,7 +1355,7 @@ namespace Telegram.Controls
                 }
 
                 var partial = _text.Text.Substring(styled.Offset, styled.Length);
-                var entities = styled.Entities ?? Array.Empty<TextEntity>();
+                var entities = styled.Parts ?? Array.Empty<TextStylePart>();
 
                 var size = styled.Type is TextParagraphTypeQuote
                     ? quoteSize
@@ -1488,7 +1452,7 @@ namespace Telegram.Controls
                     int xlength = hyperlink.Length;
 
                     var partial = _text.Text.Substring(styled.Offset, styled.Length);
-                    var entities = styled.Entities ?? Array.Empty<TextEntity>();
+                    var entities = styled.Parts ?? Array.Empty<TextStylePart>();
 
                     var size = styled.Type is TextParagraphTypeQuote
                         ? quoteSize
@@ -1545,7 +1509,7 @@ namespace Telegram.Controls
                     int xlength = hyperlink.Length;
 
                     var partial = _text.Text.Replace('\n', ' ');
-                    var entities = _text.Entities;
+                    var entities = _text.Parts;
 
                     var size = fontSize;
 

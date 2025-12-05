@@ -1045,14 +1045,14 @@ namespace winrt::Telegram::Native::implementation
         return result;
     }
 
-    winrt::Telegram::Native::TextFormat PlaceholderImageHelper::CreateTextFormat2(hstring text, IVector<TextEntity> entities, double fontSize, double width)
+    winrt::Telegram::Native::TextFormat PlaceholderImageHelper::CreateTextFormat2(hstring text, IVector<TextStylePart> entities, double fontSize, double width)
     {
         winrt::com_ptr<TextFormat> textFormat;
         CreateTextFormatImpl(text, entities, fontSize, width, textFormat);
         return textFormat.as<winrt::Telegram::Native::TextFormat>();
     }
 
-    HRESULT PlaceholderImageHelper::CreateTextFormatImpl(hstring text, IVector<TextEntity> entities, double fontSize, double width, winrt::com_ptr<TextFormat>& textFormat2)
+    HRESULT PlaceholderImageHelper::CreateTextFormatImpl(hstring text, IVector<TextStylePart> entities, double fontSize, double width, winrt::com_ptr<TextFormat>& textFormat2)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
@@ -1083,33 +1083,32 @@ namespace winrt::Telegram::Native::implementation
             textLayout.put()				// The IDWriteTextLayout interface pointer.
         ));
 
-        for (const TextEntity& entity : entities)
+        for (const TextStylePart& entity : entities)
         {
-            UINT32 startPosition = entity.Offset();
-            UINT32 length = entity.Length();
-            auto name = winrt::get_class_name(entity.Type());
+            UINT32 startPosition = entity.Offset;
+            UINT32 length = entity.Length;
 
-            if (name == winrt::name_of<TextEntityTypeBold>())
+            if (entity.Type == TextStyle::Bold)
             {
                 ReturnIfFailed(result, textLayout->SetFontWeight(DWRITE_FONT_WEIGHT_SEMI_BOLD, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeItalic>())
+            else if (entity.Type == TextStyle::Italic)
             {
                 ReturnIfFailed(result, textLayout->SetFontStyle(DWRITE_FONT_STYLE_ITALIC, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeStrikethrough>())
+            else if (entity.Type == TextStyle::Strikethrough)
             {
                 ReturnIfFailed(result, textLayout->SetStrikethrough(TRUE, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeUnderline>())
+            else if (entity.Type == TextStyle::Underline)
             {
                 ReturnIfFailed(result, textLayout->SetUnderline(TRUE, { startPosition, length }));
             }
-            //else if (name == winrt::name_of<TextEntityTypeCustomEmoji>())
+            //else if (name == winrt::name_of<TextStylePartTypeCustomEmoji>())
             //{
             //    textLayout->SetInlineObject(m_customEmoji.get(), { startPosition, length });
             //}
-            else if (name == winrt::name_of<TextEntityTypeCode>() || name == winrt::name_of<TextEntityTypePre>() || name == winrt::name_of<TextEntityTypePreCode>())
+            else if (entity.Type == TextStyle::Monospace)
             {
                 ReturnIfFailed(result, textLayout->SetFontCollection(m_systemCollection.get(), { startPosition, length }));
                 ReturnIfFailed(result, textLayout->SetFontFamilyName(L"Consolas", { startPosition, length }));
@@ -1120,7 +1119,7 @@ namespace winrt::Telegram::Native::implementation
         return result;
     }
 
-    float2 PlaceholderImageHelper::ContentEnd(hstring text, IVector<TextEntity> entities, double fontSize, double width)
+    float2 PlaceholderImageHelper::ContentEnd(hstring text, IVector<TextStylePart> entities, double fontSize, double width)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
@@ -1151,33 +1150,32 @@ namespace winrt::Telegram::Native::implementation
             textLayout.put()				// The IDWriteTextLayout interface pointer.
         ));
 
-        for (const TextEntity& entity : entities)
+        for (const TextStylePart& entity : entities)
         {
-            UINT32 startPosition = entity.Offset();
-            UINT32 length = entity.Length();
-            auto name = winrt::get_class_name(entity.Type());
+            UINT32 startPosition = entity.Offset;
+            UINT32 length = entity.Length;
 
-            if (name == winrt::name_of<TextEntityTypeBold>())
+            if (entity.Type == TextStyle::Bold)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontWeight(DWRITE_FONT_WEIGHT_SEMI_BOLD, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeItalic>())
+            else if (entity.Type == TextStyle::Italic)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontStyle(DWRITE_FONT_STYLE_ITALIC, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeStrikethrough>())
+            else if (entity.Type == TextStyle::Strikethrough)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetStrikethrough(TRUE, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeUnderline>())
+            else if (entity.Type == TextStyle::Underline)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetUnderline(TRUE, { startPosition, length }));
             }
-            //else if (name == winrt::name_of<TextEntityTypeCustomEmoji>())
+            //else if (name == winrt::name_of<TextStylePartTypeCustomEmoji>())
             //{
             //    textLayout->SetInlineObject(m_customEmoji.get(), { startPosition, length });
             //}
-            else if (name == winrt::name_of<TextEntityTypeCode>() || name == winrt::name_of<TextEntityTypePre>() || name == winrt::name_of<TextEntityTypePreCode>())
+            else if (entity.Type == TextStyle::Monospace)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontCollection(m_systemCollection.get(), { startPosition, length }));
                 ReturnDefaultIfFailed(result, textLayout->SetFontFamilyName(L"Consolas", { startPosition, length }));
@@ -1195,12 +1193,12 @@ namespace winrt::Telegram::Native::implementation
         return float2(hitTestMetrics.left + hitTestMetrics.width, hitTestMetrics.top + hitTestMetrics.height);
     }
 
-    IVector<Windows::Foundation::Rect> PlaceholderImageHelper::LineMetrics(hstring text, IVector<TextEntity> entities, double fontSize, double width, bool rtl)
+    IVector<Windows::Foundation::Rect> PlaceholderImageHelper::LineMetrics(hstring text, IVector<TextStylePart> entities, double fontSize, double width, bool rtl)
     {
         return RangeMetrics(text, 0, text.size(), entities, fontSize, width, rtl, true);
     }
 
-    IVector<Windows::Foundation::Rect> PlaceholderImageHelper::RangeMetrics(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, bool wrap)
+    IVector<Windows::Foundation::Rect> PlaceholderImageHelper::RangeMetrics(hstring text, int32_t offset, int32_t length, IVector<TextStylePart> entities, double fontSize, double width, bool rtl, bool wrap)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
@@ -1245,33 +1243,32 @@ namespace winrt::Telegram::Native::implementation
             textLayout.put()				// The IDWriteTextLayout interface pointer.
         ));
 
-        for (const TextEntity& entity : entities)
+        for (const TextStylePart& entity : entities)
         {
-            UINT32 startPosition = entity.Offset();
-            UINT32 length = entity.Length();
-            auto name = winrt::get_class_name(entity.Type());
+            UINT32 startPosition = entity.Offset;
+            UINT32 length = entity.Length;
 
-            if (name == winrt::name_of<TextEntityTypeBold>())
+            if (entity.Type == TextStyle::Bold)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontWeight(DWRITE_FONT_WEIGHT_SEMI_BOLD, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeItalic>())
+            else if (entity.Type == TextStyle::Italic)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontStyle(DWRITE_FONT_STYLE_ITALIC, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeStrikethrough>())
+            else if (entity.Type == TextStyle::Strikethrough)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetStrikethrough(TRUE, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeUnderline>())
+            else if (entity.Type == TextStyle::Underline)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetUnderline(TRUE, { startPosition, length }));
             }
-            //else if (name == winrt::name_of<TextEntityTypeCustomEmoji>())
+            //else if (name == winrt::name_of<TextStylePartTypeCustomEmoji>())
             //{
             //    textLayout->SetInlineObject(m_customEmoji.get(), { startPosition, length });
             //}
-            else if (name == winrt::name_of<TextEntityTypeCode>() || name == winrt::name_of<TextEntityTypePre>() || name == winrt::name_of<TextEntityTypePreCode>())
+            else if (entity.Type == TextStyle::Monospace)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontCollection(m_systemCollection.get(), { startPosition, length }));
                 ReturnDefaultIfFailed(result, textLayout->SetFontFamilyName(L"Consolas", { startPosition, length }));
@@ -1317,7 +1314,7 @@ namespace winrt::Telegram::Native::implementation
         return winrt::single_threaded_vector<Windows::Foundation::Rect>(std::move(vector));
     }
 
-    Windows::Foundation::Rect PlaceholderImageHelper::LayoutMetrics(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl)
+    Windows::Foundation::Rect PlaceholderImageHelper::LayoutMetrics(hstring text, int32_t offset, int32_t length, IVector<TextStylePart> entities, double fontSize, double width, bool rtl)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
@@ -1351,33 +1348,32 @@ namespace winrt::Telegram::Native::implementation
             textLayout.put()				// The IDWriteTextLayout interface pointer.
         ));
 
-        for (const TextEntity& entity : entities)
+        for (const TextStylePart& entity : entities)
         {
-            UINT32 startPosition = entity.Offset();
-            UINT32 length = entity.Length();
-            auto name = winrt::get_class_name(entity.Type());
+            UINT32 startPosition = entity.Offset;
+            UINT32 length = entity.Length;
 
-            if (name == winrt::name_of<TextEntityTypeBold>())
+            if (entity.Type == TextStyle::Bold)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontWeight(DWRITE_FONT_WEIGHT_SEMI_BOLD, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeItalic>())
+            else if (entity.Type == TextStyle::Italic)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontStyle(DWRITE_FONT_STYLE_ITALIC, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeStrikethrough>())
+            else if (entity.Type == TextStyle::Strikethrough)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetStrikethrough(TRUE, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeUnderline>())
+            else if (entity.Type == TextStyle::Underline)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetUnderline(TRUE, { startPosition, length }));
             }
-            //else if (name == winrt::name_of<TextEntityTypeCustomEmoji>())
+            //else if (name == winrt::name_of<TextStylePartTypeCustomEmoji>())
             //{
             //    textLayout->SetInlineObject(m_customEmoji.get(), { startPosition, length });
             //}
-            else if (name == winrt::name_of<TextEntityTypeCode>() || name == winrt::name_of<TextEntityTypePre>() || name == winrt::name_of<TextEntityTypePreCode>())
+            else if (entity.Type == TextStyle::Monospace)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontCollection(m_systemCollection.get(), { startPosition, length }));
                 ReturnDefaultIfFailed(result, textLayout->SetFontFamilyName(L"Consolas", { startPosition, length }));
@@ -1390,7 +1386,7 @@ namespace winrt::Telegram::Native::implementation
         return { metrics.left, metrics.top, metrics.width, metrics.height };
     }
 
-    MaxLinesMetrics PlaceholderImageHelper::MaxLines(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, int32_t maxLines)
+    MaxLinesMetrics PlaceholderImageHelper::MaxLines(hstring text, int32_t offset, int32_t length, IVector<TextStylePart> entities, double fontSize, double width, bool rtl, int32_t maxLines)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
@@ -1423,33 +1419,32 @@ namespace winrt::Telegram::Native::implementation
             textLayout.put()				// The IDWriteTextLayout interface pointer.
         ));
 
-        for (const TextEntity& entity : entities)
+        for (const TextStylePart& entity : entities)
         {
-            UINT32 startPosition = entity.Offset();
-            UINT32 length = entity.Length();
-            auto name = winrt::get_class_name(entity.Type());
+            UINT32 startPosition = entity.Offset;
+            UINT32 length = entity.Length;
 
-            if (name == winrt::name_of<TextEntityTypeBold>())
+            if (entity.Type == TextStyle::Bold)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontWeight(DWRITE_FONT_WEIGHT_SEMI_BOLD, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeItalic>())
+            else if (entity.Type == TextStyle::Italic)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontStyle(DWRITE_FONT_STYLE_ITALIC, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeStrikethrough>())
+            else if (entity.Type == TextStyle::Strikethrough)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetStrikethrough(TRUE, { startPosition, length }));
             }
-            else if (name == winrt::name_of<TextEntityTypeUnderline>())
+            else if (entity.Type == TextStyle::Underline)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetUnderline(TRUE, { startPosition, length }));
             }
-            //else if (name == winrt::name_of<TextEntityTypeCustomEmoji>())
+            //else if (name == winrt::name_of<TextStylePartTypeCustomEmoji>())
             //{
             //    textLayout->SetInlineObject(m_customEmoji.get(), { startPosition, length });
             //}
-            else if (name == winrt::name_of<TextEntityTypeCode>() || name == winrt::name_of<TextEntityTypePre>() || name == winrt::name_of<TextEntityTypePreCode>())
+            else if (entity.Type == TextStyle::Monospace)
             {
                 ReturnDefaultIfFailed(result, textLayout->SetFontCollection(m_systemCollection.get(), { startPosition, length }));
                 ReturnDefaultIfFailed(result, textLayout->SetFontFamilyName(L"Consolas", { startPosition, length }));
@@ -1649,82 +1644,82 @@ namespace winrt::Telegram::Native::implementation
         }
     }
 
-    CompositionPath PlaceholderImageHelper::GetOutline(IVector<ClosedVectorPath> contours)
-    {
-        std::lock_guard const guard(m_criticalSection);
-        HRESULT result;
+    //CompositionPath PlaceholderImageHelper::GetOutline(IVector<ClosedVectorPath> contours)
+    //{
+    //    std::lock_guard const guard(m_criticalSection);
+    //    HRESULT result;
 
-        winrt::com_ptr<ID2D1GeometrySink> d2dGeometrySink;
-        winrt::com_ptr<ID2D1PathGeometry1> d2dPathGeometry;
+    //    winrt::com_ptr<ID2D1GeometrySink> d2dGeometrySink;
+    //    winrt::com_ptr<ID2D1PathGeometry1> d2dPathGeometry;
 
-        ReturnNullIfFailed(result, m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
-        ReturnNullIfFailed(result, d2dPathGeometry->Open(d2dGeometrySink.put()));
+    //    ReturnNullIfFailed(result, m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
+    //    ReturnNullIfFailed(result, d2dPathGeometry->Open(d2dGeometrySink.put()));
 
-        for (const ClosedVectorPath& path : contours)
-        {
-            bool open = true;
-            VectorPathCommandCubicBezierCurve endCurve{ nullptr };
+    //    for (const ClosedVectorPath& path : contours)
+    //    {
+    //        bool open = true;
+    //        VectorPathCommandCubicBezierCurve endCurve{ nullptr };
 
-            for (const VectorPathCommand& command : path.Commands())
-            {
-                if (auto line = command.try_as<VectorPathCommandLine>())
-                {
-                    auto endPoint = line.EndPoint();
-                    if (open)
-                    {
-                        open = false;
-                        d2dGeometrySink->BeginFigure({ (float)endPoint.X(), (float)endPoint.Y() }, D2D1_FIGURE_BEGIN_FILLED);
-                    }
-                    else
-                    {
-                        d2dGeometrySink->AddLine({ (float)endPoint.X(), (float)endPoint.Y() });
-                    }
-                }
-                else if (auto cubicBezierCurve = command.try_as<VectorPathCommandCubicBezierCurve>())
-                {
-                    auto endPoint = cubicBezierCurve.EndPoint();
+    //        for (const VectorPathCommand& command : path.Commands())
+    //        {
+    //            if (auto line = command.try_as<VectorPathCommandLine>())
+    //            {
+    //                auto endPoint = line.EndPoint();
+    //                if (open)
+    //                {
+    //                    open = false;
+    //                    d2dGeometrySink->BeginFigure({ (float)endPoint.X(), (float)endPoint.Y() }, D2D1_FIGURE_BEGIN_FILLED);
+    //                }
+    //                else
+    //                {
+    //                    d2dGeometrySink->AddLine({ (float)endPoint.X(), (float)endPoint.Y() });
+    //                }
+    //            }
+    //            else if (auto cubicBezierCurve = command.try_as<VectorPathCommandCubicBezierCurve>())
+    //            {
+    //                auto endPoint = cubicBezierCurve.EndPoint();
 
-                    if (open)
-                    {
-                        open = false;
-                        d2dGeometrySink->BeginFigure({ (float)endPoint.X(), (float)endPoint.Y() }, D2D1_FIGURE_BEGIN_FILLED);
-                        endCurve = cubicBezierCurve;
-                    }
-                    else
-                    {
-                        auto controlPoint1 = cubicBezierCurve.StartControlPoint();
-                        auto controlPoint2 = cubicBezierCurve.EndControlPoint();
+    //                if (open)
+    //                {
+    //                    open = false;
+    //                    d2dGeometrySink->BeginFigure({ (float)endPoint.X(), (float)endPoint.Y() }, D2D1_FIGURE_BEGIN_FILLED);
+    //                    endCurve = cubicBezierCurve;
+    //                }
+    //                else
+    //                {
+    //                    auto controlPoint1 = cubicBezierCurve.StartControlPoint();
+    //                    auto controlPoint2 = cubicBezierCurve.EndControlPoint();
 
-                        d2dGeometrySink->AddBezier({
-                            { (float)controlPoint1.X(), (float)controlPoint1.Y() },
-                            { (float)controlPoint2.X(), (float)controlPoint2.Y() },
-                            { (float)endPoint.X(), (float)endPoint.Y() }
-                            });
-                    }
-                }
-            }
+    //                    d2dGeometrySink->AddBezier({
+    //                        { (float)controlPoint1.X(), (float)controlPoint1.Y() },
+    //                        { (float)controlPoint2.X(), (float)controlPoint2.Y() },
+    //                        { (float)endPoint.X(), (float)endPoint.Y() }
+    //                        });
+    //                }
+    //            }
+    //        }
 
-            if (endCurve)
-            {
-                auto endPoint = endCurve.EndPoint();
-                auto controlPoint1 = endCurve.StartControlPoint();
-                auto controlPoint2 = endCurve.EndControlPoint();
+    //        if (endCurve)
+    //        {
+    //            auto endPoint = endCurve.EndPoint();
+    //            auto controlPoint1 = endCurve.StartControlPoint();
+    //            auto controlPoint2 = endCurve.EndControlPoint();
 
-                d2dGeometrySink->AddBezier({
-                    { (float)controlPoint1.X(), (float)controlPoint1.Y() },
-                    { (float)controlPoint2.X(), (float)controlPoint2.Y() },
-                    { (float)endPoint.X(), (float)endPoint.Y() }
-                    });
-            }
+    //            d2dGeometrySink->AddBezier({
+    //                { (float)controlPoint1.X(), (float)controlPoint1.Y() },
+    //                { (float)controlPoint2.X(), (float)controlPoint2.Y() },
+    //                { (float)endPoint.X(), (float)endPoint.Y() }
+    //                });
+    //        }
 
-            d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
-        }
+    //        d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+    //    }
 
-        ReturnNullIfFailed(result, d2dGeometrySink->Close());
+    //    ReturnNullIfFailed(result, d2dGeometrySink->Close());
 
-        auto geometry = winrt::make_self<CompositionPathSource>(d2dPathGeometry);
-        return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
-    }
+    //    auto geometry = winrt::make_self<CompositionPathSource>(d2dPathGeometry);
+    //    return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
+    //}
 
     CompositionPath PlaceholderImageHelper::GetEllipticalClip(float width, float height, float radius, float x, float y)
     {

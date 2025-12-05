@@ -13,7 +13,6 @@
 #include <roerrorapi.h>
 #include <detours.h>
 
-#include <winrt/Telegram.Td.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
@@ -23,7 +22,6 @@ BOOL
     _Out_ LPWSTR pwszKLID
     );
 
-using namespace winrt::Telegram::Td;
 using namespace winrt::Windows::UI::Notifications;
 using namespace winrt::Windows::ApplicationModel::Core;
 using namespace winrt::Windows::Foundation::Collections;
@@ -36,7 +34,8 @@ namespace winrt::Telegram::Native::implementation
 
     void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback)
     {
-        Client::SetLogMessageCallback(0, &NativeUtils::LogMessageCallback);
+        // TODO: td_set_log_message_callback
+        //Client::SetLogMessageCallback(0, &NativeUtils::LogMessageCallback);
         Callback = callback;
 
         auto mrt100 = GetModuleHandle(L"mrt100_app.dll");

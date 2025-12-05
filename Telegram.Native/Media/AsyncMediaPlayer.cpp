@@ -8,8 +8,6 @@
 #include <format>
 
 #include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Telegram.Td.h>
-#include <winrt/Telegram.Td.Api.h>
 
 namespace winrt::Telegram::Native::Media::implementation
 {
@@ -608,9 +606,10 @@ namespace winrt::Telegram::Native::Media::implementation
         unsigned int line = 0;
         libvlc_log_get_context(ctx, &module, &file, &line);
 
-        std::stringstream ss;
-        ss << "[AsyncMediaPlayer.cpp][" << file << ":" << line << "][" << message;
-        winrt::Telegram::Td::Client::Execute(winrt::Telegram::Td::Api::AddLogMessage(2, winrt::to_hstring(ss.str())));
+        // TODO: td_execute
+        //std::stringstream ss;
+        //ss << "[AsyncMediaPlayer.cpp][" << file << ":" << line << "][" << message;
+        //winrt::Telegram::Td::Client::Execute(winrt::Telegram::Td::Api::AddLogMessage(2, winrt::to_hstring(ss.str())));
 
         m_log(*this, AsyncMediaPlayerLogEventArgs((AsyncMediaPlayerLogLevel)level, winrt::to_hstring(message), winrt::to_hstring(module), winrt::to_hstring(file), line));
     }

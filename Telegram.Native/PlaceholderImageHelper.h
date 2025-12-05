@@ -25,8 +25,6 @@
 #include <windows.graphics.interop.h>
 #include <windows.graphics.effects.interop.h>
 
-#include <winrt/Telegram.Td.Api.h>
-
 using namespace concurrency;
 using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::Graphics::DirectX;
@@ -39,7 +37,6 @@ using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Foundation::Numerics;
 using namespace winrt::Windows::Storage::Streams;
-using namespace winrt::Telegram::Td::Api;
 
 namespace abi
 {
@@ -328,7 +325,7 @@ namespace winrt::Telegram::Native::implementation
         IVector<hstring> GetSystemFontFamilies(IVector<hstring> localeNames);
 
         CompositionEffectBrush GetTail(int topLeftRadius, int topRightRadius, int bottomRightRadius, int bottomLeftRadius);
-        CompositionPath GetOutline(IVector<ClosedVectorPath> contours);
+        //CompositionPath GetOutline(IVector<ClosedVectorPath> contours);
         CompositionPath GetEllipticalClip(float width, float height, float radius, float x, float y);
         CompositionPath GetReplyMarkupClip(IVector<IVector<Windows::Foundation::Rect>> rows, float bottomRightRadius, float bottomLeftRadius);
         CompositionPath GetVoiceNoteClip(IVector<byte> waveform, double waveformWidth);
@@ -344,14 +341,14 @@ namespace winrt::Telegram::Native::implementation
         winrt::Telegram::Native::SurfaceImage Create(int32_t pixelWidth, int32_t pixelHeight);
         HRESULT Invalidate(winrt::Telegram::Native::SurfaceImage imageSource, IBuffer buffer);
 
-        winrt::Telegram::Native::TextFormat CreateTextFormat2(hstring text, IVector<TextEntity> entities, double fontSize, double width);
+        winrt::Telegram::Native::TextFormat CreateTextFormat2(hstring text, IVector<TextStylePart> entities, double fontSize, double width);
 
-        float2 ContentEnd(hstring text, IVector<TextEntity> entities, double fontSize, double width);
-        IVector<Windows::Foundation::Rect> LineMetrics(hstring text, IVector<TextEntity> entities, double fontSize, double width, bool rtl);
-        IVector<Windows::Foundation::Rect> RangeMetrics(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, bool wrap);
-        Windows::Foundation::Rect LayoutMetrics(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl);
-        MaxLinesMetrics MaxLines(hstring text, int32_t offset, int32_t length, IVector<TextEntity> entities, double fontSize, double width, bool rtl, int32_t maxLines);
-        //IVector<Windows::Foundation::Rect> EntityMetrics(hstring text, IVector<TextEntity> entities, double fontSize, double width, bool rtl);
+        float2 ContentEnd(hstring text, IVector<TextStylePart> entities, double fontSize, double width);
+        IVector<Windows::Foundation::Rect> LineMetrics(hstring text, IVector<TextStylePart> entities, double fontSize, double width, bool rtl);
+        IVector<Windows::Foundation::Rect> RangeMetrics(hstring text, int32_t offset, int32_t length, IVector<TextStylePart> entities, double fontSize, double width, bool rtl, bool wrap);
+        Windows::Foundation::Rect LayoutMetrics(hstring text, int32_t offset, int32_t length, IVector<TextStylePart> entities, double fontSize, double width, bool rtl);
+        MaxLinesMetrics MaxLines(hstring text, int32_t offset, int32_t length, IVector<TextStylePart> entities, double fontSize, double width, bool rtl, int32_t maxLines);
+        //IVector<Windows::Foundation::Rect> EntityMetrics(hstring text, IVector<TextStylePart> entities, double fontSize, double width, bool rtl);
 
     private:
         HRESULT CreateDeviceIndependentResources();
@@ -365,7 +362,7 @@ namespace winrt::Telegram::Native::implementation
         HRESULT DrawBlurredImpl(IWICBitmapSource* wicBitmapSource, float blurAmount, SoftwareBitmap& bitmap, bool minithumbnail);
         HRESULT SaveImageToStream(ID2D1Image* image, REFGUID wicFormat, IRandomAccessStream randomAccessStream);
 
-        HRESULT CreateTextFormatImpl(hstring text, IVector<TextEntity> entities, double fontSize, double width, winrt::com_ptr<TextFormat>& textFormat);
+        HRESULT CreateTextFormatImpl(hstring text, IVector<TextStylePart> entities, double fontSize, double width, winrt::com_ptr<TextFormat>& textFormat);
 
     public:
         Window m_window;
