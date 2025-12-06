@@ -158,6 +158,7 @@ namespace Telegram.Navigation
             }
 
             ApplicationView.GetForCurrentView().VisibleBoundsChanged += OnVisibleBoundsChanged;
+            ApplicationView.GetForCurrentView().Consolidated += OnConsolidated;
         }
 
         public long Handle
@@ -197,15 +198,35 @@ namespace Telegram.Navigation
                 return;
             }
 
+            OnConsolidated(sender, null);
+        }
+
+        private void OnConsolidated(ApplicationView sender, ApplicationViewConsolidatedEventArgs args)
+        {
+            if (IsInMainView)
+            {
+                return;
+            }
+
+            _consolidated = true;
+            _inputListener.Release();
+            sender.VisibleBoundsChanged -= OnVisibleBoundsChanged;
+            sender.Consolidated -= OnConsolidated;
+
+            // TODO: since we can't call Close directly,
+            // Closed event will be never fired.
             OnClosed(null, null);
+            ClearTitleBar(sender);
+
+            // TODO: needed? From some tests, this prevented the whole Window root from being garbage collected
+            if (SynchronizationContext.Current is SecondaryViewSynchronizationContextDecorator decorator)
+            {
+                SynchronizationContext.SetSynchronizationContext(decorator.Context);
+            }
         }
 
         private void OnClosed(object sender, CoreWindowEventArgs e)
         {
-            _consolidated = true;
-            _inputListener.Release();
-            ApplicationView.GetForCurrentView().VisibleBoundsChanged -= OnVisibleBoundsChanged;
-
             lock (_allLock)
             {
                 if (_xamlRoot != null)
@@ -227,12 +248,6 @@ namespace Telegram.Navigation
             _window.Closed -= OnClosed;
             _window.CoreWindow.ResizeStarted -= OnResizeStarted;
             _window.CoreWindow.ResizeCompleted -= OnResizeCompleted;
-
-            // TODO: needed? From some tests, this prevented the whole Window root from being garbage collected
-            if (SynchronizationContext.Current is SecondaryViewSynchronizationContextDecorator decorator)
-            {
-                SynchronizationContext.SetSynchronizationContext(decorator.Context);
-            }
         }
 
         private void OnShutdownCompleted(DispatcherQueue sender, object args)
@@ -308,7 +323,7 @@ namespace Telegram.Navigation
 
         private void OnLoading(FrameworkElement sender, object args)
         {
-            sender.Loading -= OnLoading;
+            _content.Loading -= OnLoading;
 
             lock (_allLock)
             {
@@ -321,9 +336,9 @@ namespace Telegram.Navigation
         {
             if (sender is Control control)
             {
-                control.Loaded -= OnLoaded;
             }
 
+            _content.Loaded -= OnLoaded;
             ViewService.OnWindowLoaded();
         }
 
