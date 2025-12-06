@@ -14,7 +14,7 @@ using Windows.Foundation;
 
 namespace Telegram.Td.Api
 {
-    public partial class MessageAlbum : MessageAlbumBase, MessageContent
+    public partial class MessageAlbum : MessageAlbumBase
     {
         public bool IsMedia { get; }
 
@@ -71,7 +71,7 @@ namespace Telegram.Td.Api
         }
     }
 
-    public partial class MessagePaidAlbum : MessageAlbumBase, MessageContent
+    public partial class MessagePaidAlbum : MessageAlbumBase
     {
         public FormattedText Caption { get; set; }
 
@@ -131,7 +131,7 @@ namespace Telegram.Td.Api
         }
     }
 
-    public abstract partial class MessageAlbumBase
+    public abstract partial class MessageAlbumBase : MessageContent
     {
         public const double MAX_WIDTH = 432;
         public const double MAX_HEIGHT = 432;
