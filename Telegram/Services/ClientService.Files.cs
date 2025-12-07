@@ -865,6 +865,12 @@ namespace Telegram.Services
                         ProcessFiles(gift.Sticker);
                     }
                     break;
+                case global::Telegram.Td.Api.GiftAuctionState giftAuctionState:
+                    if (giftAuctionState.Gift != null)
+                    {
+                        ProcessFiles(giftAuctionState.Gift);
+                    }
+                    break;
                 case global::Telegram.Td.Api.GiftChatTheme giftChatTheme:
                     if (giftChatTheme.DarkSettings != null)
                     {
@@ -1119,6 +1125,12 @@ namespace Telegram.Services
                         ProcessFiles(linkPreviewTypeEmbeddedVideoPlayer.Thumbnail);
                     }
                     break;
+                case global::Telegram.Td.Api.LinkPreviewTypeGiftAuction linkPreviewTypeGiftAuction:
+                    if (linkPreviewTypeGiftAuction.Gift != null)
+                    {
+                        ProcessFiles(linkPreviewTypeGiftAuction.Gift);
+                    }
+                    break;
                 case global::Telegram.Td.Api.LinkPreviewTypeGiftCollection linkPreviewTypeGiftCollection:
                     foreach (var item in linkPreviewTypeGiftCollection.Icons)
                     {
@@ -1225,6 +1237,12 @@ namespace Telegram.Services
                         ProcessFiles(message.ReplyTo);
                     }
                     break;
+                case global::Telegram.Td.Api.MessageAlbumLastMessage messageAlbumLastMessage:
+                    if (messageAlbumLastMessage.LastMessage != null)
+                    {
+                        ProcessFiles(messageAlbumLastMessage.LastMessage);
+                    }
+                    break;
                 case global::Telegram.Td.Api.MessageAnimatedEmoji messageAnimatedEmoji:
                     if (messageAnimatedEmoji.AnimatedEmoji != null)
                     {
@@ -1235,6 +1253,12 @@ namespace Telegram.Services
                     if (messageAnimation.Animation != null)
                     {
                         ProcessFiles(messageAnimation.Animation);
+                    }
+                    break;
+                case global::Telegram.Td.Api.MessageAsyncStory messageAsyncStory:
+                    if (messageAsyncStory.Story != null)
+                    {
+                        ProcessFiles(messageAsyncStory.Story);
                     }
                     break;
                 case global::Telegram.Td.Api.MessageAudio messageAudio:
@@ -1265,6 +1289,12 @@ namespace Telegram.Services
                     if (messageChatChangePhoto.Photo != null)
                     {
                         ProcessFiles(messageChatChangePhoto.Photo);
+                    }
+                    break;
+                case global::Telegram.Td.Api.MessageChatEvent messageChatEvent:
+                    if (messageChatEvent.Action != null)
+                    {
+                        ProcessFiles(messageChatEvent.Action);
                     }
                     break;
                 case global::Telegram.Td.Api.MessageChatSetBackground messageChatSetBackground:
@@ -1385,6 +1415,12 @@ namespace Telegram.Services
                         ProcessFiles(messageLinkInfo.Message);
                     }
                     break;
+                case global::Telegram.Td.Api.MessagePaidAlbum messagePaidAlbum:
+                    foreach (var item in messagePaidAlbum.Media)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
                 case global::Telegram.Td.Api.MessagePaidMedia messagePaidMedia:
                     foreach (var item in messagePaidMedia.Media)
                     {
@@ -1425,6 +1461,16 @@ namespace Telegram.Services
                     foreach (var item in messages.MessagesValue)
                     {
                         ProcessFiles(item);
+                    }
+                    break;
+                case global::Telegram.Td.Api.MessageSponsored messageSponsored:
+                    if (messageSponsored.Content != null)
+                    {
+                        ProcessFiles(messageSponsored.Content);
+                    }
+                    if (messageSponsored.Sponsor != null)
+                    {
+                        ProcessFiles(messageSponsored.Sponsor);
                     }
                     break;
                 case global::Telegram.Td.Api.MessageSticker messageSticker:
@@ -2261,6 +2307,12 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
+                case global::Telegram.Td.Api.StarTransactionTypeGiftAuctionBid starTransactionTypeGiftAuctionBid:
+                    if (starTransactionTypeGiftAuctionBid.Gift != null)
+                    {
+                        ProcessFiles(starTransactionTypeGiftAuctionBid.Gift);
+                    }
+                    break;
                 case global::Telegram.Td.Api.StarTransactionTypeGiftOriginalDetailsDrop starTransactionTypeGiftOriginalDetailsDrop:
                     if (starTransactionTypeGiftOriginalDetailsDrop.Gift != null)
                     {
@@ -2523,6 +2575,12 @@ namespace Telegram.Services
                         ProcessFiles(item);
                     }
                     break;
+                case global::Telegram.Td.Api.UpdateActiveGiftAuctions updateActiveGiftAuctions:
+                    foreach (var item in updateActiveGiftAuctions.States)
+                    {
+                        ProcessFiles(item);
+                    }
+                    break;
                 case global::Telegram.Td.Api.UpdateActiveLiveLocationMessages updateActiveLiveLocationMessages:
                     foreach (var item in updateActiveLiveLocationMessages.Messages)
                     {
@@ -2611,6 +2669,12 @@ namespace Telegram.Services
                     if (updateFileAddedToDownloads.FileDownload != null)
                     {
                         ProcessFiles(updateFileAddedToDownloads.FileDownload);
+                    }
+                    break;
+                case global::Telegram.Td.Api.UpdateGiftAuctionState updateGiftAuctionState:
+                    if (updateGiftAuctionState.State != null)
+                    {
+                        ProcessFiles(updateGiftAuctionState.State);
                     }
                     break;
                 case global::Telegram.Td.Api.UpdateMessageContent updateMessageContent:
