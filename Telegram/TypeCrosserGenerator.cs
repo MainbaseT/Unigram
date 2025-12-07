@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Telegram
@@ -18,7 +19,19 @@ namespace Telegram
         [Conditional("DEBUG")]
         public static void Generate()
         {
-            var types = typeof(Telegram.Td.Api.File).Assembly.GetTypes();
+            var typesToSkip = new[]
+            {
+                typeof(Telegram.Td.Api.MessageAlbumLastMessage),
+                typeof(Telegram.Td.Api.MessageChatEvent),
+                typeof(Telegram.Td.Api.MessagePaidAlbum),
+                typeof(Telegram.Td.Api.MessageSponsored),
+            };
+
+            var baseObject = typeof(Telegram.Td.Api.BaseObject);
+            var types = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(t => baseObject.IsAssignableFrom(t) && t != baseObject && !typesToSkip.Contains(t))
+                .ToList();
 
             var typesToCross = new List<Type>();
             var typesToCrossMap = new Dictionary<Type, Dictionary<string, Type>>();
@@ -30,7 +43,7 @@ namespace Telegram
 
                 foreach (var type in types)
                 {
-                    if (type.IsInterface)
+                    if (type.IsAbstract)
                     {
                         continue;
                     }
@@ -69,13 +82,11 @@ namespace Telegram
 
                         typesToCrossMap[type] = targets;
 
-                        foreach (var baseType in type.GetInterfaces())
+                        var baseType = type.BaseType;
+                        if (baseType.IsPublic && baseType.IsVisible && !typesToCross.Contains(baseType))
                         {
-                            if (baseType.IsPublic && baseType.IsVisible && !typesToCross.Contains(baseType))
-                            {
-                                typesToCross.Add(baseType);
-                                addedSomething = true;
-                            }
+                            typesToCross.Add(baseType);
+                            addedSomething = true;
                         }
                     }
                 }

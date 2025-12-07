@@ -12,10 +12,5 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageHeaderNewThread);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

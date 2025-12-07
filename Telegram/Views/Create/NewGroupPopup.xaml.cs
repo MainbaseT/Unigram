@@ -10,6 +10,7 @@ using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Drawers;
 using Telegram.Controls.Media;
+using Telegram.Td.Api;
 using Telegram.ViewModels.Create;
 using Telegram.ViewModels.Drawers;
 using Telegram.Views.Popups;

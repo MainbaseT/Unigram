@@ -8,6 +8,7 @@
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
+using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.UI.Xaml.Controls;
 

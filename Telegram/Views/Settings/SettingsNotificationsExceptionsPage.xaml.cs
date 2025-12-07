@@ -10,6 +10,7 @@ using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Navigation;
+using Telegram.Td.Api;
 using Telegram.ViewModels.Settings;
 using Telegram.Views.Popups;
 using Windows.UI.Xaml;

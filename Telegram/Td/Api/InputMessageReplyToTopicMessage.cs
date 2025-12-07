@@ -37,10 +37,5 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageBigEmoji);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

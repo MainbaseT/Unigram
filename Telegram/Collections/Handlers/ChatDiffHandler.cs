@@ -6,6 +6,7 @@
 //
 
 using Rg.DiffUtils;
+using Telegram.Td.Api;
 
 namespace Telegram.Collections.Handlers
 {

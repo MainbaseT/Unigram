@@ -20,10 +20,5 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageHeaderDate);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

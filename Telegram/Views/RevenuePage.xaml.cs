@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using Telegram.Common;
 using Telegram.Navigation;
+using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views.Chats;
 using Telegram.Views.Profile;

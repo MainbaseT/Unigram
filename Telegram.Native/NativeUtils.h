@@ -14,6 +14,9 @@
 #include <winrt/Windows.UI.Xaml.Media.h>
 #include <winrt/Windows.UI.Xaml.Core.Direct.h>
 
+typedef void (*td_log_message_callback_ptr)(int verbosity_level, const char* message);
+
+using PFN_td_set_log_message_callback = WINUSERAPI void(WINAPI*)(int max_verbosity_level, td_log_message_callback_ptr callback);
 using PFN_RhGetCurrentObjSize = WINUSERAPI INT64(WINAPI*)();
 
 using namespace winrt::Windows::Foundation::Collections;
@@ -64,7 +67,7 @@ namespace winrt::Telegram::Native::implementation
         static int32_t GetScaleForCurrentView();
 
         static void SetFatalErrorCallback(FatalErrorCallback action);
-        static void LogMessageCallback(int verbosityLevel, hstring message);
+        static void LogMessageCallback(int verbosity_level, const char* message);
         static winrt::Telegram::Native::FatalError GetStowedException();
         static winrt::Telegram::Native::FatalError GetBackTrace(hstring type, hstring message);
 

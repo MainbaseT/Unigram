@@ -10,6 +10,7 @@ using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Services;
+using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views;
 using Windows.UI.Xaml;

@@ -39,10 +39,5 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageAsyncStory);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

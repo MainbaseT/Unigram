@@ -5,6 +5,8 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using Telegram.Td.Api;
+
 namespace Telegram.ViewModels.Delegates
 {
     public interface IChatDelegate : IViewModelDelegate

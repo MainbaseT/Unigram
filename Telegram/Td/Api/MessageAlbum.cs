@@ -64,11 +64,6 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageAlbum);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 
     public partial class MessagePaidAlbum : MessageAlbumBase
@@ -123,11 +118,6 @@ namespace Telegram.Td.Api
         public override string ToString()
         {
             return nameof(MessagePaidAlbum);
-        }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
         }
     }
 

@@ -5,31 +5,24 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System;
 using System.Threading.Tasks;
 
 namespace Telegram.Td
 {
-    public delegate void RefAction<T>(ref T value);
-
     partial class TdCompletionSource : TaskCompletionSource<Object>, ClientResultHandler
     {
-        private readonly RefAction<Object> _closure;
+        private readonly Action<Object> _closure;
 
-        public TdCompletionSource(RefAction<Object> closure)
+        public TdCompletionSource(Action<Object> closure)
         {
             _closure = closure;
         }
 
-#if TD_WINRT
         public void OnResult(Object result)
-#else
-        public void OnResult(BaseObject result)
-#endif
         {
-            var temp = result as Object;
-
-            _closure(ref temp);
-            SetResult(temp);
+            _closure(result);
+            SetResult(result);
         }
     }
 }

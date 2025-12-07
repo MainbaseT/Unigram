@@ -304,7 +304,7 @@ namespace Telegram.Services
         private readonly ILocaleService _locale;
         private readonly IEventAggregator _aggregator;
 
-        private readonly RefAction<Object> _processFilesDelegate;
+        private readonly Action<Object> _processFilesDelegate;
 
         private readonly ReaderWriterDictionary<long, MessageEffect> _effects = new();
 
@@ -409,7 +409,7 @@ namespace Telegram.Services
             _options = new OptionsService(this);
             _aggregator = aggregator;
 
-            _processFilesDelegate = new RefAction<Object>(ProcessFiles);
+            _processFilesDelegate = new Action<Object>(ProcessFiles);
 
             Initialize(online);
         }
@@ -2892,11 +2892,7 @@ namespace Telegram.Services
             }
         }
 
-#if TD_WINRT
         public void OnResult(Object update)
-#else
-        public void OnResult(BaseObject update)
-#endif
         {
             ProcessFiles(update);
 
@@ -3003,15 +2999,14 @@ namespace Telegram.Services
                     break;
                 case UpdateNewChat updateNewChat:
                     {
-                        var projection = new ChatProjection(updateNewChat.Chat);
-                        _chats[updateNewChat.Chat.Id] = projection;
+                        _chats[updateNewChat.Chat.Id] = updateNewChat.Chat;
 
-                        Monitor.Enter(projection);
+                        Monitor.Enter(updateNewChat.Chat);
 
-                        UpdateChatLastMessage(projection, updateNewChat.Chat.LastMessage);
-                        SetChatPositions(projection, updateNewChat.Chat.Positions);
+                        UpdateChatLastMessage(updateNewChat.Chat, updateNewChat.Chat.LastMessage);
+                        SetChatPositions(updateNewChat.Chat, updateNewChat.Chat.Positions);
 
-                        Monitor.Exit(projection);
+                        Monitor.Exit(updateNewChat.Chat);
 
                         if (updateNewChat.Chat.Type is ChatTypePrivate privata)
                         {

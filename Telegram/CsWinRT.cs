@@ -6,17 +6,13 @@
 //
 
 global using DispatcherQueue = Windows.System.DispatcherQueue;
-global using Chat = Telegram.Td.Api.ChatProjection;
 global using Object = Telegram.Td.Api.Object;
 global using Point = Windows.Foundation.Point;
 global using TimeZone = Telegram.Td.Api.TimeZone;
 global using User = Telegram.Td.Api.User;
 global using VirtualKey = Windows.System.VirtualKey;
 global using VirtualKeyModifiers = Windows.System.VirtualKeyModifiers;
-#if !TD_WINRT
-global using DeleteFile = Telegram.Td.Api.DeleteFileW;
 global using BaseObject = Telegram.Td.Api.BaseObject;
-#endif
 using System;
 #if NET9_0_OR_GREATER
 using System.Runtime.CompilerServices;

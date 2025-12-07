@@ -98,6 +98,25 @@ namespace Telegram.Collections
             }
         }
 
+        public bool TryRemove(TKey key, out TValue value)
+        {
+            _lock.EnterReadLock();
+            try
+            {
+                if (_dictionary.TryGetValue(key, out value))
+                {
+                    _dictionary.Remove(key);
+                    return true;
+                }
+
+                return false;
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
+        }
+
         public bool ContainsKey(TKey key)
         {
             _lock.EnterReadLock();

@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
@@ -329,29 +328,6 @@ namespace Telegram.Services
                 }
 
                 return file;
-            }
-        }
-
-        public void ProcessFiles(ref Object target)
-        {
-            ProcessFiles(target);
-
-            if (target is global::Telegram.Td.Api.Chat chat)
-            {
-                if (_chats.TryGetValue(chat.Id, out ChatProjection projection))
-                {
-                    target = projection;
-                }
-                else
-                {
-                    // THIS SHOULD NEVER HAPPEN
-                    if (ApiInfo.IsPackagedRelease)
-                    {
-                        Debug.Assert(false, "Not found chat in ProcessFiles");
-                    }
-
-                    target = new ChatProjection(chat);
-                }
             }
         }
 

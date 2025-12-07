@@ -13,10 +13,5 @@ namespace Telegram.Td.Api
         {
             return nameof(PremiumLimitTypeFileSize);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

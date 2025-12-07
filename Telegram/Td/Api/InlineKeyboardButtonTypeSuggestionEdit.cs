@@ -12,10 +12,5 @@ namespace Telegram.Td.Api
         {
             return nameof(InlineKeyboardButtonTypeSuggestionEdit);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

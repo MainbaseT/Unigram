@@ -38,6 +38,16 @@ namespace winrt::Telegram::Native::implementation
         //Client::SetLogMessageCallback(0, &NativeUtils::LogMessageCallback);
         Callback = callback;
 
+        auto tdjson = GetModuleHandle(L"tdjson.dll");
+        if (tdjson)
+        {
+            auto td_set_log_message_callback = reinterpret_cast<PFN_td_set_log_message_callback>(GetProcAddress(tdjson, "td_set_log_message_callback"));
+            if (td_set_log_message_callback)
+            {
+                td_set_log_message_callback(0, &NativeUtils::LogMessageCallback);
+            }
+        }
+
         auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
         if (mrt100)
         {
@@ -65,52 +75,58 @@ namespace winrt::Telegram::Native::implementation
         return message.find(text) != std::wstring::npos;
     }
 
-    inline bool IsDatabaseBrokenError(const hstring& message)
+    inline bool Contains(const std::string& message, std::string_view text)
     {
-        return Contains(message, L"Wrong key or database is corrupted")
-            || Contains(message, L"SQL logic error or missing database")
-            || Contains(message, L"database disk image is malformed")
-            || Contains(message, L"file is encrypted or is not a database")
-            || Contains(message, L"unsupported file format")
-            || Contains(message, L"attempt to write a readonly database for database")
-            || Contains(message, L"file is not a database for database")
-            || Contains(message, L"Can't open database");
+        return message.find(text) != std::string::npos;
     }
 
-    inline bool IsDiskFullError(const hstring& message)
+    inline bool IsDatabaseBrokenError(const std::string& message)
     {
-        return Contains(message, L"There is not enough space on the disk")
-            || Contains(message, L": 112 :")
-            || Contains(message, L"database or disk is full")
-            || Contains(message, L"out of memory for database");
+        return Contains(message, "Wrong key or database is corrupted")
+            || Contains(message, "SQL logic error or missing database")
+            || Contains(message, "database disk image is malformed")
+            || Contains(message, "file is encrypted or is not a database")
+            || Contains(message, "unsupported file format")
+            || Contains(message, "attempt to write a readonly database for database")
+            || Contains(message, "file is not a database for database")
+            || Contains(message, "Can't open database");
     }
 
-    inline bool IsDiskError(const hstring& message)
+    inline bool IsDiskFullError(const std::string& message)
     {
-        return Contains(message, L"I/O error")
-            || Contains(message, L"Structure needs cleaning");
+        return Contains(message, "There is not enough space on the disk")
+            || Contains(message, ": 112 :")
+            || Contains(message, "database or disk is full")
+            || Contains(message, "out of memory for database");
     }
 
-    inline bool IsBinlogError(const hstring& message)
+    inline bool IsDiskError(const std::string& message)
     {
-        return Contains(message, L"Failed to rename binlog")
-            || Contains(message, L"Can't rename")
-            || Contains(message, L"Failed to unlink old binlog")
-            || Contains(message, L"td.binlog")
-            || Contains(message, L": 8 :")
-            || Contains(message, L": 1392 :");
+        return Contains(message, "I/O error")
+            || Contains(message, "Structure needs cleaning");
     }
 
-    inline bool IsOutOfMemoryError(const hstring& message)
+    inline bool IsBinlogError(const std::string& message)
     {
-        return Contains(message, L"zlib deflate init failed")
-            || Contains(message, L"zlib inflate init failed")
-            || Contains(message, L"out of memory")
-            || Contains(message, L": 1450 :");
+        return Contains(message, "Failed to rename binlog")
+            || Contains(message, "Can't rename")
+            || Contains(message, "Failed to unlink old binlog")
+            || Contains(message, "td.binlog")
+            || Contains(message, ": 8 :")
+            || Contains(message, ": 1392 :");
     }
 
-    void NativeUtils::LogMessageCallback(int verbosityLevel, hstring message)
+    inline bool IsOutOfMemoryError(const std::string& message)
     {
+        return Contains(message, "zlib deflate init failed")
+            || Contains(message, "zlib inflate init failed")
+            || Contains(message, "out of memory")
+            || Contains(message, ": 1450 :");
+    }
+
+    void NativeUtils::LogMessageCallback(int verbosity_level, const char* msg)
+    {
+        std::string message = msg;
         if (NativeUtils::Callback)
         {
             if (IsDatabaseBrokenError(message))
@@ -135,12 +151,11 @@ namespace winrt::Telegram::Native::implementation
             }
 
             int bracketCount = 0;
-            std::wstring str = message.c_str();
             size_t start = std::string::npos, end = std::string::npos;
 
-            for (size_t i = 0; i < str.length(); ++i)
+            for (size_t i = 0; i < message.length(); ++i)
             {
-                if (str[i] == '[')
+                if (message[i] == '[')
                 {
                     bracketCount++;
                     if (bracketCount == 3)
@@ -148,7 +163,7 @@ namespace winrt::Telegram::Native::implementation
                         start = i;
                     }
                 }
-                if (str[i] == ']' && bracketCount == 3)
+                if (message[i] == ']' && bracketCount == 3)
                 {
                     end = i;
                     break;
@@ -157,10 +172,10 @@ namespace winrt::Telegram::Native::implementation
 
             if (start != std::string::npos && end != std::string::npos)
             {
-                str.erase(start, end - start + 1);
+                message.erase(start, end - start + 1);
             }
 
-            NativeUtils::Callback(NativeUtils::GetBackTrace(L"TdException", hstring(str)));
+            NativeUtils::Callback(NativeUtils::GetBackTrace(L"TdException", winrt::to_hstring(message)));
         }
     }
 

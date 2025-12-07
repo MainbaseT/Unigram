@@ -42,14 +42,14 @@ namespace Telegram.Services.Factories
 
             if (starCount > 0)
             {
-                return new InputPaidMedia(new InputPaidMediaTypePhoto(), generated, thumbnail, Array.Empty<int>(), size.Width, size.Height);
+                return new InputPaidMedia(new InputPaidMediaTypePhoto(), generated, thumbnail, null, size.Width, size.Height);
             }
             else if (conversionType == ConversionType.Copy)
             {
                 return new InputMessageDocument(generated, thumbnail, false, caption);
             }
 
-            return new InputMessagePhoto(generated, thumbnail, Array.Empty<int>(), size.Width, size.Height, caption, captionAboveMedia, ttl, spoiler);
+            return new InputMessagePhoto(generated, thumbnail, null, size.Width, size.Height, caption, captionAboveMedia, ttl, spoiler);
         }
 
         public static async Task<Object> CreateVideoAsync(StorageVideo video, FormattedText caption, bool animated, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount)
@@ -81,14 +81,14 @@ namespace Telegram.Services.Factories
 
             if (starCount > 0)
             {
-                return new InputPaidMedia(new InputPaidMediaTypeVideo(null, 0, duration, true), generated, thumbnail, Array.Empty<int>(), videoWidth, videoHeight);
+                return new InputPaidMedia(new InputPaidMediaTypeVideo(null, 0, duration, true), generated, thumbnail, null, videoWidth, videoHeight);
             }
             else if (animated && ttl == null)
             {
-                return new InputMessageAnimation(generated, thumbnail, Array.Empty<int>(), duration, videoWidth, videoHeight, caption, captionAboveMedia, spoiler);
+                return new InputMessageAnimation(generated, thumbnail, null, duration, videoWidth, videoHeight, caption, captionAboveMedia, spoiler);
             }
 
-            return new InputMessageVideo(generated, thumbnail, null, 0, Array.Empty<int>(), duration, videoWidth, videoHeight, true, caption, captionAboveMedia, ttl, spoiler);
+            return new InputMessageVideo(generated, thumbnail, null, 0, null, duration, videoWidth, videoHeight, true, caption, captionAboveMedia, ttl, spoiler);
         }
 
         public static async Task<InputMessageContent> CreateVideoNoteAsync(StorageVideo video, VideoGeneration generation, MessageSelfDestructType selfDestructType)

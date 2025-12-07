@@ -80,10 +80,5 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageSponsored);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

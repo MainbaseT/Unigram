@@ -13,10 +13,5 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageHeaderAccountInfo);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

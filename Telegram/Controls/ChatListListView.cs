@@ -12,6 +12,7 @@ using Telegram.Common;
 using Telegram.Composition;
 using Telegram.Controls.Cells;
 using Telegram.Navigation;
+using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.UI;
 using Windows.UI.Composition;

@@ -41,10 +41,5 @@ namespace Telegram.Td.Api
         {
             return nameof(MessageChatEvent);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 }

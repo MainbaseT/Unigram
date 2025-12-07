@@ -28,66 +28,61 @@ namespace Telegram.ViewModels.Profile
         {
             return nameof(ProfileTabArchivedPosts);
         }
-
-        public NativeObject ToUnmanaged()
-        {
-            return null;
-        }
     }
 
     public class ProfileTabSavedChats : ProfileTab
     {
-        public NativeObject ToUnmanaged()
+        public override string ToString()
         {
-            return null;
+            return nameof(ProfileTabSavedChats);
         }
     }
 
     public class ProfileTabPreviews : ProfileTab
     {
-        public NativeObject ToUnmanaged()
+        public override string ToString()
         {
-            return null;
+            return nameof(ProfileTabPreviews);
         }
     }
 
     public class ProfileTabGroups : ProfileTab
     {
-        public NativeObject ToUnmanaged()
+        public override string ToString()
         {
-            return null;
+            return nameof(ProfileTabGroups);
         }
     }
 
     public class ProfileTabSimilarBots : ProfileTab
     {
-        public NativeObject ToUnmanaged()
+        public override string ToString()
         {
-            return null;
+            return nameof(ProfileTabSimilarBots);
         }
     }
 
     public class ProfileTabSimilarChannels : ProfileTab
     {
-        public NativeObject ToUnmanaged()
+        public override string ToString()
         {
-            return null;
+            return nameof(ProfileTabSimilarChannels);
         }
     }
 
     public class ProfileTabMembers : ProfileTab
     {
-        public NativeObject ToUnmanaged()
+        public override string ToString()
         {
-            return null;
+            return nameof(ProfileTabMembers);
         }
     }
 
     public class ProfileTabSavedMessages : ProfileTab
     {
-        public NativeObject ToUnmanaged()
+        public override string ToString()
         {
-            return null;
+            return nameof(ProfileTabSavedMessages);
         }
     }
 

@@ -210,6 +210,7 @@
     <Compile Include="Collections\SearchEmojiCollection.cs" />
     <Compile Include="Collections\SynchronizedList.cs" />
     <Compile Include="Common\AnimationScheduler.cs" />
+    <Compile Include="Common\ArrayPoolBufferWriter.cs" />
     <Compile Include="Common\AutomaticDragHelper.cs" />
     <Compile Include="Common\BezierPoint.cs" />
     <Compile Include="Common\DebouncedPropertyWithToken.cs" />
@@ -399,7 +400,6 @@
     <Compile Include="Services\Settings\ToolTipSettings.cs" />
     <Compile Include="Services\TextRecognitionService.cs" />
     <Compile Include="Services\Session.g.cs" />
-    <Compile Include="Td\Api\ChatProjection.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionEdit.cs" />
@@ -629,6 +629,7 @@
     <Compile Include="Td\Api\UpdatePaymentCompleted.cs" />
     <Compile Include="Td\Api\UpdateTextRecognition.cs" />
     <Compile Include="Td\Client.cs" />
+    <Compile Include="Td\ClientJson.cs" />
     <Compile Include="Td\TdDotNetApi.cs" />
     <Compile Include="TypeContainerGenerator.cs" />
     <Compile Include="TypeCrosserGenerator.cs" />
@@ -4260,9 +4261,6 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.6.1</Version>
     </PackageReference>
-    <PackageReference Include="Telegram.Td.UWP">
-      <Version>1.8.57</Version>
-    </PackageReference>
     <PackageReference Include="VideoLAN.LibVLC.UWP">
       <Version>3.0.22-rc1</Version>
     </PackageReference>
@@ -4291,6 +4289,18 @@
     <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\rlottie\$(Platform)\RLottie.dll" />
     <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\rlottie\$(Platform)\RLottie.pri" />
     <!--<ReferenceCopyLocalPaths Condition=" '$(Configuration)' == 'Debug' " Include="$(ProjectDir)\..\Libraries\rlottie\$(Platform)\zlib1.dll" />-->
+  </ItemGroup>
+  <PropertyGroup>
+    <TelegramTdPlatform Condition="'$(Platform)' == 'Win32'">x86</TelegramTdPlatform>
+    <TelegramTdPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</TelegramTdPlatform>
+    <OpenSSLPlatform Condition="'$(Platform)' == 'Win32'"></OpenSSLPlatform>
+    <OpenSSLPlatform Condition="'$(Platform)' != 'Win32'">-$(Platform)</OpenSSLPlatform>
+  </PropertyGroup>
+  <ItemGroup>
+    <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\tdjson\$(Platform)\tdjson.dll" />
+    <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\tdjson\$(Platform)\libcrypto-3$(OpenSSLPlatform).dll" />
+    <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\tdjson\$(Platform)\libssl-3$(OpenSSLPlatform).dll" />
+    <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\tdjson\$(Platform)\zlib1.dll" />
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="WindowsDesktop, Version=10.0.26100.0">
