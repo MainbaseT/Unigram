@@ -8,19 +8,38 @@
 using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Telegram.Common;
 
+#nullable enable
+
 namespace Telegram.Td.Api
 {
     public abstract class BaseObject
+    {
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public virtual void ToJson(Utf8JsonWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public abstract class Object : BaseObject
+    {
+
+    }
+
+    public abstract class Function : BaseObject
     {
 
     }
 
     // TODO: replace IList with List for faster access and enumeration
+    //       write source code generation using C# instead of modified TDLib one
+    //       DoFromJson can become a delegate as it happens with ParseObject to handle primitives
     public partial class ClientJson
     {
         private static readonly JsonWriterOptions _options = new()
@@ -28,11 +47,13 @@ namespace Telegram.Td.Api
             SkipValidation = true
         };
 
-        public static ReadOnlySpan<byte> ToJson(ArrayPoolBufferWriter buffer, BaseObject obj, long requestId)
+        public static ReadOnlySpan<byte> ToJson(ArrayPoolBufferWriter buffer, Function obj, long requestId)
         {
             using (var writer = new Utf8JsonWriter(buffer, _options))
             {
-                ToJson(writer, obj);
+                writer.WriteStartObject();
+                obj.ToJson(writer);
+                writer.WriteEndObject();
             }
 
             if (requestId != 0)
@@ -43,7 +64,7 @@ namespace Telegram.Td.Api
             return buffer.NullTerminated();
         }
 
-        public static Object FromJson(ReadOnlySpan<byte> jsonData, out int clientId, out long requestId)
+        public static Object? FromJson(ReadOnlySpan<byte> jsonData, out int clientId, out long requestId)
         {
             var reader = new Utf8JsonReader(jsonData);
             reader.Read();
@@ -57,7 +78,9 @@ namespace Telegram.Td.Api
             return null;
         }
 
-        public static T FromJson<T>(ref Utf8JsonReader reader) where T : BaseObject
+        private delegate T? FromHandler<T>(ref Utf8JsonReader r, uint h);
+
+        private static T? FromJson<T>(ref Utf8JsonReader reader, FromHandler<T> handler) where T : Object
         {
             if (reader.TokenType == JsonTokenType.Null)
             {
@@ -66,17 +89,20 @@ namespace Telegram.Td.Api
 
             reader.Read();
 
-            BaseObject obj = null;
+            Object? obj = null;
             if (reader.TokenType == JsonTokenType.PropertyName && reader.ValueTextEquals("@type"u8))
             {
                 reader.Read();
-                obj = DoFromJson(ref reader);
+                var hash = ComputeCrc32(reader.ValueSpan);
+
+                reader.Read();
+                obj = handler(ref reader, hash);
             }
 
             return obj as T;
         }
 
-        public static T FromJson<T>(ref Utf8JsonReader reader, out long requestId, out int clientId) where T : Object
+        private static T? FromJson<T>(ref Utf8JsonReader reader, out long requestId, out int clientId) where T : Object
         {
             requestId = 0;
             clientId = 0;
@@ -88,13 +114,16 @@ namespace Telegram.Td.Api
 
             reader.Read();
 
-            BaseObject obj = null;
+            Object? obj = null;
             while (reader.TokenType == JsonTokenType.PropertyName)
             {
                 if (reader.ValueTextEquals("@type"u8))
                 {
                     reader.Read();
-                    obj = DoFromJson(ref reader);
+                    var hash = ComputeCrc32(reader.ValueSpan);
+
+                    reader.Read();
+                    obj = DoFromJson(ref reader, hash);
 
                     if (reader.TokenType == JsonTokenType.EndObject)
                     {
@@ -104,12 +133,12 @@ namespace Telegram.Td.Api
 
                     continue;
                 }
-                else if (reader.ValueTextEquals("@extra"))
+                else if (reader.ValueTextEquals("@extra"u8))
                 {
                     reader.Read();
                     requestId = reader.GetInt64();
                 }
-                else if (reader.ValueTextEquals("@client_id"))
+                else if (reader.ValueTextEquals("@client_id"u8))
                 {
                     reader.Read();
                     clientId = reader.GetInt32();
@@ -121,16 +150,51 @@ namespace Telegram.Td.Api
             return obj as T;
         }
 
+        private delegate bool ToHandler<T>(ref Utf8JsonReader r, ref T o, uint h);
+
+        private static T ParseObject<T>(ref Utf8JsonReader reader, T obj, ToHandler<T> handler)
+        {
+            reader.ReadStartObject();
+
+            while (reader.TokenType == JsonTokenType.PropertyName)
+            {
+                var hash = ComputeCrc32(reader.ValueSpan);
+
+                if (reader.CurrentDepth == 1)
+                {
+                    var snapshot = reader;
+
+                    reader.Read();
+
+                    if (!handler(ref reader, ref obj, hash))
+                    {
+                        reader = snapshot;
+                        return obj;
+                    }
+
+                    reader.Read();
+                }
+                else
+                {
+                    reader.Read();
+                    handler(ref reader, ref obj, hash);
+                    reader.Read();
+                }
+            }
+
+            return obj;
+        }
+
         #region Crc32
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint ComputeCrc32(ReadOnlySpan<byte> data)
+        private static uint ComputeCrc32(ReadOnlySpan<byte> data)
         {
             return Crc32Partial(data, 0xFFFFFFFF) ^ 0xFFFFFFFF;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint Crc32Partial(ReadOnlySpan<byte> data, uint crc)
+        private static uint Crc32Partial(ReadOnlySpan<byte> data, uint crc)
         {
             int len = data.Length;
             int offset = 0;
@@ -384,11 +448,24 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray<T>(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<T> obj) where T : BaseObject
+        public static void WriteObject(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, BaseObject? obj)
         {
             if (obj == null)
             {
-                writer.WriteNull(utf8PropertyName);
+                return;
+            }
+
+            writer.WritePropertyName(utf8PropertyName);
+            writer.WriteStartObject();
+            obj.ToJson(writer);
+            writer.WriteEndObject();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteArray<T>(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<T>? obj) where T : BaseObject
+        {
+            if (obj == null)
+            {
                 return;
             }
 
@@ -397,23 +474,57 @@ namespace Telegram.Td.Api
 
             if (obj is List<T> list)
                 for (int i = 0; i < list.Count; i++)
-                    ClientJson.ToJson(writer, list[i]);
+                {
+                    var item = list[i];
+                    if (item != null)
+                    {
+                        writer.WriteStartObject();
+                        item.ToJson(writer);
+                        writer.WriteEndObject();
+                    }
+                    else
+                    {
+                        writer.WriteNullValue();
+                    }
+                }
             else if (obj is T[] arr)
                 for (int i = 0; i < arr.Length; i++)
-                    ClientJson.ToJson(writer, arr[i]);
+                {
+                    var item = arr[i];
+                    if (item != null)
+                    {
+                        writer.WriteStartObject();
+                        item.ToJson(writer);
+                        writer.WriteEndObject();
+                    }
+                    else
+                    {
+                        writer.WriteNullValue();
+                    }
+                }
             else
                 foreach (var item in obj)
-                    ClientJson.ToJson(writer, item);
+                {
+                    if (item != null)
+                    {
+                        writer.WriteStartObject();
+                        item.ToJson(writer);
+                        writer.WriteEndObject();
+                    }
+                    else
+                    {
+                        writer.WriteNullValue();
+                    }
+                }
 
             writer.WriteEndArray();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray<T>(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<IList<T>> obj) where T : BaseObject
+        public static void WriteArray<T>(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<IList<T>>? obj) where T : BaseObject
         {
             if (obj == null)
             {
-                writer.WriteNull(utf8PropertyName);
                 return;
             }
 
@@ -426,7 +537,9 @@ namespace Telegram.Td.Api
 
                 foreach (T nested in item)
                 {
-                    ClientJson.ToJson(writer, nested);
+                    writer.WriteStartObject();
+                    nested.ToJson(writer);
+                    writer.WriteEndObject();
                 }
 
                 writer.WriteEndArray();
@@ -436,11 +549,10 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<bool> obj)
+        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<bool>? obj)
         {
             if (obj == null)
             {
-                writer.WriteNull(utf8PropertyName);
                 return;
             }
 
@@ -456,11 +568,10 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<int> obj)
+        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<int>? obj)
         {
             if (obj == null)
             {
-                writer.WriteNull(utf8PropertyName);
                 return;
             }
 
@@ -476,11 +587,10 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<long> obj)
+        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<long>? obj)
         {
             if (obj == null)
             {
-                writer.WriteNull(utf8PropertyName);
                 return;
             }
 
@@ -496,11 +606,10 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<double> obj)
+        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<double>? obj)
         {
             if (obj == null)
             {
-                writer.WriteNull(utf8PropertyName);
                 return;
             }
 
@@ -516,11 +625,10 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<string> obj)
+        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<string>? obj)
         {
             if (obj == null)
             {
-                writer.WriteNull(utf8PropertyName);
                 return;
             }
 
@@ -536,11 +644,10 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<byte[]> obj)
+        public static void WriteArray(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<byte[]>? obj)
         {
             if (obj == null)
             {
-                writer.WriteNull(utf8PropertyName);
                 return;
             }
 
@@ -555,8 +662,10 @@ namespace Telegram.Td.Api
             writer.WriteEndArray();
         }
 
+        public delegate T? GetObjectArrayHandler<T>(ref Utf8JsonReader reader);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<T> GetObjectArray<T>(this ref Utf8JsonReader reader) where T : BaseObject
+        public static List<T>? GetObjectArray<T>(this ref Utf8JsonReader reader, GetObjectArrayHandler<T> handler) where T : BaseObject
         {
             if (reader.TokenType == JsonTokenType.Null)
             {
@@ -566,9 +675,9 @@ namespace Telegram.Td.Api
             var obj = new List<T>();
 
             reader.Read();
-            while (reader.TokenType == JsonTokenType.StartObject)
+            while (reader.TokenType is JsonTokenType.StartObject or JsonTokenType.Null)
             {
-                obj.Add(ClientJson.FromJson<T>(ref reader));
+                obj.Add(handler(ref reader));
                 reader.Read();
             }
 
@@ -576,7 +685,7 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<IList<T>> GetObjectArrayArray<T>(this ref Utf8JsonReader reader) where T : BaseObject
+        public static List<IList<T>>? GetObjectArrayArray<T>(this ref Utf8JsonReader reader, GetObjectArrayHandler<T> handler) where T : BaseObject
         {
             if (reader.TokenType == JsonTokenType.Null)
             {
@@ -588,7 +697,7 @@ namespace Telegram.Td.Api
             reader.Read();
             while (reader.TokenType == JsonTokenType.StartArray)
             {
-                obj.Add(reader.GetObjectArray<T>());
+                obj.Add(reader.GetObjectArray(handler));
                 reader.Read();
             }
 
