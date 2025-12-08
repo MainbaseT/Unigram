@@ -214,7 +214,7 @@ namespace Telegram.Services
         bool TryGetUserFull(long id, out UserFullInfo value);
         bool TryGetUserFull(Chat chat, out UserFullInfo value);
 
-        IList<User> GetUsers(IEnumerable<long> ids);
+        IEnumerable<User> GetUsers(IEnumerable<long> ids);
 
         ChatPermissions GetPermissions(Chat chat, out bool restricted);
 
@@ -2207,20 +2207,16 @@ namespace Telegram.Services
             }
         }
 
-        public IList<User> GetUsers(IEnumerable<long> ids)
+        public IEnumerable<User> GetUsers(IEnumerable<long> ids)
         {
-            var result = new List<User>();
-
             foreach (var id in ids)
             {
                 var user = GetUser(id);
                 if (user != null)
                 {
-                    result.Add(user);
+                    yield return user;
                 }
             }
-
-            return result;
         }
 
         public SecretChat GetSecretChat(int id)

@@ -27,7 +27,7 @@ namespace Telegram.Views.Popups
             InitializeComponent();
 
             var chat = clientService.GetChat(chatId);
-            var users = clientService.GetUsers(members.Select(x => x.UserId));
+            var users = clientService.GetUsers(members.Select(x => x.UserId)).ToList();
 
             ScrollingHost.ItemsSource = users;
 
