@@ -821,7 +821,7 @@ namespace Telegram.ViewModels
                 {
                     fromMessage = null;
                     fromMessageId = Items.LastId;
-                    offset = -50;
+                    offset = -Constants.HistoryLimit;
                 }
 
                 if (fromMessageId == long.MaxValue || fromMessageId == long.MinValue)
@@ -835,31 +835,31 @@ namespace Telegram.ViewModels
                 Function func;
                 if (Type == DialogType.Pinned)
                 {
-                    func = new SearchChatMessages(chat.Id, TopicId, string.Empty, null, fromMessageId, offset, 50, new SearchMessagesFilterPinned());
+                    func = new SearchChatMessages(chat.Id, TopicId, string.Empty, null, fromMessageId, offset, Constants.HistoryLimit, new SearchMessagesFilterPinned());
                 }
                 else if (Search?.SavedMessagesTag != null)
                 {
-                    func = new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, fromMessageId, offset, 50);
+                    func = new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, fromMessageId, offset, Constants.HistoryLimit);
                 }
                 else if (SavedMessagesTopic != null)
                 {
-                    func = new GetSavedMessagesTopicHistory(SavedMessagesTopic.Id, fromMessageId, offset, 50);
+                    func = new GetSavedMessagesTopicHistory(SavedMessagesTopic.Id, fromMessageId, offset, Constants.HistoryLimit);
                 }
                 else if (DirectMessagesChatTopic != null)
                 {
-                    func = new GetDirectMessagesChatTopicHistory(chat.Id, DirectMessagesChatTopic.Id, fromMessageId, offset, 50);
+                    func = new GetDirectMessagesChatTopicHistory(chat.Id, DirectMessagesChatTopic.Id, fromMessageId, offset, Constants.HistoryLimit);
                 }
                 else if (ForumTopic != null)
                 {
-                    func = new GetForumTopicHistory(chat.Id, _forumTopic.Info.ForumTopicId, fromMessageId, offset, 50);
+                    func = new GetForumTopicHistory(chat.Id, _forumTopic.Info.ForumTopicId, fromMessageId, offset, Constants.HistoryLimit);
                 }
                 else if (Thread != null)
                 {
-                    func = new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, fromMessageId, offset, 50);
+                    func = new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, fromMessageId, offset, Constants.HistoryLimit);
                 }
                 else
                 {
-                    func = new GetChatHistory(chat.Id, fromMessageId, offset, 50, false);
+                    func = new GetChatHistory(chat.Id, fromMessageId, offset, Constants.HistoryLimit, false);
                 }
 
                 var tsc = new TaskCompletionSource<MessageCollection>();
@@ -1428,34 +1428,34 @@ namespace Telegram.ViewModels
             Task<Object> func;
             if (Type == DialogType.Pinned)
             {
-                func = ClientService.SendAsync(new SearchChatMessages(chat.Id, TopicId, string.Empty, null, fromMessageId, -25, 50, new SearchMessagesFilterPinned()));
+                func = ClientService.SendAsync(new SearchChatMessages(chat.Id, TopicId, string.Empty, null, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit, new SearchMessagesFilterPinned()));
             }
             else if (Search?.SavedMessagesTag != null && Search.FilterByTag)
             {
-                func = ClientService.SendAsync(new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, fromMessageId, -25, 50));
+                func = ClientService.SendAsync(new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit));
             }
             else if (SavedMessagesTopic != null)
             {
-                func = ClientService.SendAsync(new GetSavedMessagesTopicHistory(SavedMessagesTopic.Id, fromMessageId, -25, 50));
+                func = ClientService.SendAsync(new GetSavedMessagesTopicHistory(SavedMessagesTopic.Id, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit));
             }
             else if (DirectMessagesChatTopic != null)
             {
-                func = ClientService.SendAsync(new GetDirectMessagesChatTopicHistory(chat.Id, DirectMessagesChatTopic.Id, fromMessageId, -25, 50));
+                func = ClientService.SendAsync(new GetDirectMessagesChatTopicHistory(chat.Id, DirectMessagesChatTopic.Id, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit));
             }
             else if (ForumTopic != null)
             {
-                func = ClientService.SendAsync(new GetForumTopicHistory(chat.Id, _forumTopic.Info.ForumTopicId, fromMessageId, -25, 50));
+                func = ClientService.SendAsync(new GetForumTopicHistory(chat.Id, _forumTopic.Info.ForumTopicId, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit));
             }
             else if (Thread != null)
             {
                 // MaxId == 0 means that the thread was never opened
                 if (fromMessageId == 0 || Thread.Messages.Any(x => x.Id == fromMessageId))
                 {
-                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, 1, -25, 50));
+                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, 1, Constants.HistoryOffset, Constants.HistoryLimit));
                 }
                 else
                 {
-                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, fromMessageId, -25, 50));
+                    func = ClientService.SendAsync(new GetMessageThreadHistory(chat.Id, _thread.MessageThreadId, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit));
                 }
             }
             else
@@ -1493,7 +1493,7 @@ namespace Telegram.ViewModels
                     return response;
                 }
 
-                func = GetChatHistoryAsync(chat.Id, fromMessageId, -25, 50, alignment == VerticalAlignment.Top);
+                func = GetChatHistoryAsync(chat.Id, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit, alignment == VerticalAlignment.Top);
             }
 
             if (alignment != VerticalAlignment.Center)

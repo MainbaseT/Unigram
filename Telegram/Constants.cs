@@ -59,6 +59,9 @@ namespace Telegram
 
         public const float BubbleElevation = 8.0f;
 
+        public const int HistoryLimit = 30;
+        public const int HistoryOffset = -15;
+
         public static readonly string[] TelegramHosts = new string[]
         {
             "telegram.org",
