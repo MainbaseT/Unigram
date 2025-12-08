@@ -607,7 +607,7 @@ namespace Telegram.ViewModels.Business
             }
 
             var response = await ClientService.SendAsync(settings == null
-                ? new DeleteBusinessConnectedBot()
+                ? new DeleteBusinessConnectedBot(_cached.BotUserId)
                 : new SetBusinessConnectedBot(settings));
             if (response is Ok)
             {

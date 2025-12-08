@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System.Linq;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Services;
@@ -40,7 +41,7 @@ namespace Telegram.Views.Popups2
                 Footer.Text = string.Format("+{0}", info.MemberCount - info.MemberUserIds.Count);
 
                 Members.Visibility = Visibility.Visible;
-                Members.ItemsSource = clientService.GetUsers(info.MemberUserIds);
+                Members.ItemsSource = clientService.GetUsers(info.MemberUserIds).ToList();
             }
             else
             {

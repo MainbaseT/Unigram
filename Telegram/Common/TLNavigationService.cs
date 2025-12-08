@@ -245,7 +245,7 @@ namespace Telegram.Common
 
             var stickers = await ClientService.SendAsync(new GetPremiumStickerExamples()) as Stickers;
 
-            var businessFeatures = await ClientService.SendAsync(new GetBusinessFeatures()) as BusinessFeatures;
+            var businessFeatures = await ClientService.SendAsync(new GetBusinessFeatures(null)) as BusinessFeatures;
             if (businessFeatures == null)
             {
                 return;

@@ -101,7 +101,7 @@ namespace Telegram.ViewModels.Drawers
                 return;
             }
 
-            ClientService.Send(new GetRecentStickers(), result =>
+            ClientService.Send(new GetRecentStickers(false), result =>
             {
                 if (result is Stickers recent)
                 {
@@ -313,7 +313,7 @@ namespace Telegram.ViewModels.Drawers
             _updating = true;
 
             var result1 = await ClientService.SendAsync(new GetFavoriteStickers());
-            var result2 = await ClientService.SendAsync(new GetRecentStickers());
+            var result2 = await ClientService.SendAsync(new GetRecentStickers(false));
             var result4 = await GetInstalledSets();
 
             if (result1 is Stickers favorite && result2 is Stickers recent)

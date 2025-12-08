@@ -200,7 +200,7 @@ namespace Telegram.Views.Premium.Popups
             ScrollingHost.SelectionMode = ListViewSelectionMode.None;
             ScrollingHost.IsItemClickEnabled = true;
 
-            var response = await _clientService.SendAsync(new GetCreatedPublicChats());
+            var response = await _clientService.SendAsync(new GetCreatedPublicChats(null));
             if (response is Telegram.Td.Api.Chats chats)
             {
                 var result = new List<Chat>();

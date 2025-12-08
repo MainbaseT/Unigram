@@ -217,7 +217,7 @@ namespace Telegram.ViewModels.Authorization
         {
             if (ClientService.AuthorizationState is AuthorizationStateWaitPhoneNumber)
             {
-                ClientService.Send(new RequestQrCodeAuthentication());
+                ClientService.Send(new RequestQrCodeAuthentication(null));
             }
         }
 

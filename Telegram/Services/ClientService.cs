@@ -605,19 +605,21 @@ namespace Telegram.Services
                 _client.Send(new SetOption("use_pfs", new OptionValueBoolean(true)));
                 _client.Send(new SetOption("notification_group_count_max", new OptionValueInteger(25)));
                 _client.Send(new SetOption("storage_max_time_from_last_access", new OptionValueInteger(SettingsService.Current.Diagnostics.StorageMaxTimeFromLastAccess)));
-                _client.Send(new SetTdlibParameters
-                {
-                    DatabaseDirectory = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session.Id}"),
-                    UseSecretChats = true,
-                    UseMessageDatabase = useMessageDatabase,
-                    ApiId = Constants.ApiId,
-                    ApiHash = Constants.ApiHash,
-                    ApplicationVersion = _deviceInfoService.ApplicationVersion,
-                    SystemVersion = _deviceInfoService.SystemVersion,
-                    SystemLanguageCode = _deviceInfoService.SystemLanguageCode,
-                    DeviceModel = deviceModel,
-                    UseTestDc = _settings.UseTestDC
-                });
+                _client.Send(new SetTdlibParameters(
+                    useTestDc: _settings.UseTestDC,
+                    databaseDirectory: System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{_session.Id}"),
+                    filesDirectory: string.Empty,
+                    databaseEncryptionKey: null,
+                    useFileDatabase: true,
+                    useChatInfoDatabase: true,
+                    useMessageDatabase: useMessageDatabase,
+                    useSecretChats: true,
+                    apiId: Constants.ApiId,
+                    apiHash: Constants.ApiHash,
+                    systemLanguageCode: _deviceInfoService.SystemLanguageCode, 
+                    deviceModel: deviceModel,
+                    systemVersion: _deviceInfoService.SystemVersion,
+                    applicationVersion: _deviceInfoService.ApplicationVersion));
                 Send(new GetApplicationConfig(), UpdateConfig);
             });
         }

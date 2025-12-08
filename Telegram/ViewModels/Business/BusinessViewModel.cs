@@ -44,7 +44,7 @@ namespace Telegram.ViewModels.Business
 
             if (Items.Empty())
             {
-                var response = await ClientService.SendAsync(new GetBusinessFeatures());
+                var response = await ClientService.SendAsync(new GetBusinessFeatures(null));
                 if (response is BusinessFeatures features)
                 {
                     _features = features.Features.ToList();

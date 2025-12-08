@@ -140,12 +140,7 @@ namespace Telegram.ViewModels.Supergroups
         private SetChatDirectMessagesGroup _cached;
         private SetChatDirectMessagesGroup GetSettings()
         {
-            return new SetChatDirectMessagesGroup
-            {
-                ChatId = Chat.Id,
-                IsEnabled = IsEnabled,
-                PaidMessageStarCount = PaidMessageStarCount
-            };
+            return new SetChatDirectMessagesGroup(Chat.Id, IsEnabled, PaidMessageStarCount);
         }
     }
 }
