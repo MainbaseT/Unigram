@@ -21,9 +21,6 @@
 			An Assembly element with Name="*Application*" applies to all assemblies in
 			the application package. The asterisks are not wildcards.
 		-->
-		<!--<Assembly Name="*Application*" Dynamic="Required All" />-->
-		<Type Name="Telegram.ViewModels.Drawers.SupergroupStickerSetViewModel" Dynamic="Required All"/>
-
 		<Type Name="Telegram.Controls.Messages.MessageSelector">
 		  <Method Name="UpdateSelection" Dynamic="Required"/>
 		</Type>
