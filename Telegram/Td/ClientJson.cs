@@ -6,6 +6,7 @@
 //
 
 using System;
+using System.Buffers;
 using System.Buffers.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -47,14 +48,47 @@ namespace Telegram.Td.Api
             SkipValidation = true
         };
 
+        [ThreadStatic]
+        private static Utf8JsonWriter? _writer;
+
+        [ThreadStatic]
+        private static FreeBufferWriter? _buffer;
+
+        private class FreeBufferWriter : IBufferWriter<byte>
+        {
+            public void Advance(int count)
+            {
+                // Do nothing
+            }
+
+            public Memory<byte> GetMemory(int sizeHint = 0)
+            {
+                return Memory<byte>.Empty;
+            }
+
+            public Span<byte> GetSpan(int sizeHint = 0)
+            {
+                return Span<byte>.Empty;
+            }
+        }
+
         public static ReadOnlySpan<byte> ToJson(ArrayPoolBufferWriter buffer, Function obj, long requestId)
         {
-            using (var writer = new Utf8JsonWriter(buffer, _options))
+            if (_writer == null)
             {
-                writer.WriteStartObject();
-                obj.ToJson(writer);
-                writer.WriteEndObject();
+                _writer = new Utf8JsonWriter(buffer, _options);
+                _buffer = new();
             }
+            else
+            {
+                _writer.Reset(buffer);
+            }
+
+            _writer.WriteStartObject();
+            obj.ToJson(_writer);
+            _writer.WriteEndObject();
+            _writer.Flush();
+            _writer.Reset(_buffer);
 
             if (requestId != 0)
             {

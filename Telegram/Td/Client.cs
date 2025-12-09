@@ -75,13 +75,22 @@ namespace Telegram.Td
                 _handlers[requestId] = handler;
             }
 
-            using var buffer = new ArrayPoolBufferWriter();
+            if (_writer == null)
+            {
+                _writer = new ArrayPoolBufferWriter();
+            }
+            else
+            {
+                _writer.Rent();
+            }
 
-            var request = ClientJson.ToJson(buffer, function, requestId);
+            var request = ClientJson.ToJson(_writer, function, requestId);
             fixed (byte* bytes = request)
             {
                 td_send(_clientId, bytes);
             }
+
+            _writer.Reset();
         }
 
         /// <summary>
@@ -92,9 +101,16 @@ namespace Telegram.Td
         /// <exception cref="NullReferenceException">Thrown when query is null.</exception>
         public static unsafe Object Execute(Function function)
         {
-            using var buffer = new ArrayPoolBufferWriter();
+            if (_writer == null)
+            {
+                _writer = new ArrayPoolBufferWriter();
+            }
+            else
+            {
+                _writer.Rent();
+            }
 
-            var request = ClientJson.ToJson(buffer, function, 0);
+            var request = ClientJson.ToJson(_writer, function, 0);
             fixed (byte* source = request)
             {
                 var ptr = td_execute(source);
@@ -111,15 +127,23 @@ namespace Telegram.Td
                     return null;
                 }
 
-                buffer.Resize(length);
+                _writer.Resize(length);
 
-                fixed (byte* dest = buffer.Bytes)
+                fixed (byte* dest = _writer.Bytes)
                 {
-                    Buffer.MemoryCopy(ptr, dest, buffer.Bytes.Length, length);
+                    Buffer.MemoryCopy(ptr, dest, _writer.Bytes.Length, length);
                 }
 
-                var span = new ReadOnlySpan<byte>(buffer.Bytes, 0, buffer.Bytes.Length);
-                return ClientJson.FromJson(span, out _, out _);
+                var span = new ReadOnlySpan<byte>(_writer.Bytes, 0, length);
+
+                try
+                {
+                    return ClientJson.FromJson(span, out _, out _);
+                }
+                finally
+                {
+                    _writer.Reset();
+                }
             }
         }
 
@@ -153,6 +177,8 @@ namespace Telegram.Td
             }
         }
 
+        [ThreadStatic]
+        private static ArrayPoolBufferWriter _writer;
         private static byte[] _buffer = new byte[1 << 18];
 
         public static unsafe Object Receive(double timeout, out int clientId, out long requestId)
@@ -188,7 +214,7 @@ namespace Telegram.Td
                 Buffer.MemoryCopy(ptr, dest, _buffer.Length, length);
             }
 
-            var span = new ReadOnlySpan<byte>(_buffer, 0, _buffer.Length);
+            var span = new ReadOnlySpan<byte>(_buffer, 0, length);
             return ClientJson.FromJson(span, out clientId, out requestId);
         }
 

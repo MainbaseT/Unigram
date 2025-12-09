@@ -18,7 +18,7 @@ namespace Telegram.Common
     /// </summary>
     public sealed class ArrayPoolBufferWriter : IBufferWriter<byte>, IDisposable
     {
-        private const int DefaultInitialCapacity = 256;
+        private const int DefaultInitialCapacity = 16 * 1024;
         private const int MaxArrayLength = 0x7FFFFFC7; // Array.MaxLength
 
         private readonly ArrayPool<byte> _pool;
@@ -436,6 +436,24 @@ namespace Telegram.Common
             _pool.Return(_buffer);
             _buffer = null!;
             _disposed = true;
+        }
+
+        public void Rent()
+        {
+            if (_buffer != null)
+                return;
+
+            _buffer = _pool.Rent(DefaultInitialCapacity);
+        }
+
+        public void Reset()
+        {
+            if (_buffer == null)
+                return;
+
+            _pool.Return(_buffer);
+            _buffer = null!;
+            _index = 0;
         }
     }
 }
