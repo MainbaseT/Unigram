@@ -558,7 +558,7 @@ namespace Telegram.Controls.Chats
             var source = new AutocompleteCollection(collection);
 
             var result = await source.LoadMoreItemsAsync(0);
-            if (result.Count == 0 || token.IsCancellationRequested)
+            if (result.Count == 0 || token.IsCancellationRequested || !this.IsConnected())
             {
                 // Only reset if this is the active query
                 if (token == _emojiToken)
