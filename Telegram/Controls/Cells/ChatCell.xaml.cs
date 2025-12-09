@@ -830,7 +830,7 @@ namespace Telegram.Controls.Cells
             else if (_clientService.TryGetSupergroup(chat, out Supergroup supergroup))
             {
                 verification = supergroup.VerificationStatus?.BotVerificationIconCustomEmojiId;
-                Identity.SetStatus(supergroup);
+                Identity.SetStatus(_clientService, chat);
 
                 if (supergroup.IsDirectMessagesGroup)
                 {
