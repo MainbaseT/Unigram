@@ -448,7 +448,7 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteObject(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, BaseObject? obj)
+        public static void WriteObject(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, Object? obj)
         {
             if (obj == null)
             {
@@ -462,7 +462,7 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray<T>(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<T>? obj) where T : BaseObject
+        public static void WriteArray<T>(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<T>? obj) where T : Object
         {
             if (obj == null)
             {
@@ -521,7 +521,7 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteArray<T>(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<IList<T>>? obj) where T : BaseObject
+        public static void WriteArray<T>(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, IList<IList<T>>? obj) where T : Object
         {
             if (obj == null)
             {
@@ -662,22 +662,25 @@ namespace Telegram.Td.Api
             writer.WriteEndArray();
         }
 
-        public delegate T? GetObjectArrayHandler<T>(ref Utf8JsonReader reader);
+        public delegate T GetObjectArrayHandler<T>(ref Utf8JsonReader reader);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<T>? GetObjectArray<T>(this ref Utf8JsonReader reader, GetObjectArrayHandler<T> handler) where T : BaseObject
+        public static List<T> GetObjectArray<T>(this ref Utf8JsonReader reader, GetObjectArrayHandler<T> handler) where T : Object
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<T>();
 
             reader.Read();
             while (reader.TokenType is JsonTokenType.StartObject or JsonTokenType.Null)
             {
-                obj.Add(handler(ref reader));
+                if (reader.TokenType == JsonTokenType.Null)
+                {
+                    obj.Add(null);
+                }
+                else
+                {
+                    obj.Add(handler(ref reader));
+                }
+
                 reader.Read();
             }
 
@@ -685,13 +688,8 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<IList<T>>? GetObjectArrayArray<T>(this ref Utf8JsonReader reader, GetObjectArrayHandler<T> handler) where T : BaseObject
+        public static List<IList<T>> GetObjectArrayArray<T>(this ref Utf8JsonReader reader, GetObjectArrayHandler<T> handler) where T : Object
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<IList<T>>();
 
             reader.Read();
@@ -707,11 +705,6 @@ namespace Telegram.Td.Api
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<bool> GetBooleanArray(this ref Utf8JsonReader reader)
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<bool>();
 
             reader.Read();
@@ -727,11 +720,6 @@ namespace Telegram.Td.Api
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<int> GetInt32Array(this ref Utf8JsonReader reader)
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<int>();
 
             reader.Read();
@@ -747,11 +735,6 @@ namespace Telegram.Td.Api
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<long> GetInt64Array(this ref Utf8JsonReader reader)
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<long>();
 
             reader.Read();
@@ -767,11 +750,6 @@ namespace Telegram.Td.Api
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<long> GetInt64StringArray(this ref Utf8JsonReader reader)
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<long>();
 
             reader.Read();
@@ -787,11 +765,6 @@ namespace Telegram.Td.Api
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<double> GetDoubleArray(this ref Utf8JsonReader reader)
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<double>();
 
             reader.Read();
@@ -807,11 +780,6 @@ namespace Telegram.Td.Api
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<string> GetStringArray(this ref Utf8JsonReader reader)
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<string>();
 
             reader.Read();
@@ -827,11 +795,6 @@ namespace Telegram.Td.Api
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static List<byte[]> GetBase64StringArray(this ref Utf8JsonReader reader)
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
             var obj = new List<byte[]>();
 
             reader.Read();
