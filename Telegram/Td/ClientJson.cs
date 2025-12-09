@@ -66,11 +66,50 @@ namespace Telegram.Td.Api
 
         public static Object? FromJson(ReadOnlySpan<byte> jsonData, out int clientId, out long requestId)
         {
+            clientId = 0;
+            requestId = 0;
+
             var reader = new Utf8JsonReader(jsonData);
             reader.Read();
+
             if (reader.TokenType == JsonTokenType.StartObject)
             {
-                return FromJson<Object>(ref reader, out requestId, out clientId);
+                reader.Read();
+
+                Object? obj = null;
+                while (reader.TokenType == JsonTokenType.PropertyName)
+                {
+                    if (reader.ValueTextEquals("@type"u8))
+                    {
+                        reader.Read();
+                        var hash = ComputeCrc32(reader.ValueSpan);
+
+                        reader.Read();
+                        obj = DoFromJson(ref reader, hash);
+
+                        if (reader.TokenType == JsonTokenType.EndObject)
+                        {
+                            //reader.Read();
+                            return obj;
+                        }
+
+                        continue;
+                    }
+                    else if (reader.ValueTextEquals("@extra"u8))
+                    {
+                        reader.Read();
+                        requestId = reader.GetInt64();
+                    }
+                    else if (reader.ValueTextEquals("@client_id"u8))
+                    {
+                        reader.Read();
+                        clientId = reader.GetInt32();
+                    }
+
+                    reader.Read();
+                }
+
+                return obj;
             }
 
             clientId = 0;
@@ -97,54 +136,6 @@ namespace Telegram.Td.Api
 
                 reader.Read();
                 obj = handler(ref reader, hash);
-            }
-
-            return obj as T;
-        }
-
-        private static T? FromJson<T>(ref Utf8JsonReader reader, out long requestId, out int clientId) where T : Object
-        {
-            requestId = 0;
-            clientId = 0;
-
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
-            reader.Read();
-
-            Object? obj = null;
-            while (reader.TokenType == JsonTokenType.PropertyName)
-            {
-                if (reader.ValueTextEquals("@type"u8))
-                {
-                    reader.Read();
-                    var hash = ComputeCrc32(reader.ValueSpan);
-
-                    reader.Read();
-                    obj = DoFromJson(ref reader, hash);
-
-                    if (reader.TokenType == JsonTokenType.EndObject)
-                    {
-                        //reader.Read();
-                        return obj as T;
-                    }
-
-                    continue;
-                }
-                else if (reader.ValueTextEquals("@extra"u8))
-                {
-                    reader.Read();
-                    requestId = reader.GetInt64();
-                }
-                else if (reader.ValueTextEquals("@client_id"u8))
-                {
-                    reader.Read();
-                    clientId = reader.GetInt32();
-                }
-
-                reader.Read();
             }
 
             return obj as T;
