@@ -58,9 +58,11 @@ namespace Telegram.Controls.Messages
             Content = child;
         }
 
+        public bool IsTrackerEnabled { get; set; } = true;
+
         protected override void OnLoaded()
         {
-            if (!_hasInitialLoadedEventFired && RootGrid != null && (SettingsService.Current.SwipeToReply || SettingsService.Current.SwipeToShare))
+            if (!_hasInitialLoadedEventFired && RootGrid != null && IsTrackerEnabled && (SettingsService.Current.SwipeToReply || SettingsService.Current.SwipeToShare))
             {
                 _hasInitialLoadedEventFired = true;
 

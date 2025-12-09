@@ -1214,6 +1214,7 @@ namespace Telegram.Views
                 else if (content is MessageSelector checkbox)
                 {
                     // TODO: are there chances that at this point TextArea is not up to date yet?
+                    checkbox.IsTrackerEnabled = !FromPreview;
                     checkbox.PrepareForItemOverride(message,
                         _viewModel.Type is DialogType.History or DialogType.Thread or DialogType.ScheduledMessages
                         && _replyEnabled is true);
