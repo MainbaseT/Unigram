@@ -71,7 +71,7 @@ namespace Telegram.Views.Settings.Privacy
                     : new MessageOriginUser(user.Id);
 
                 var forwardInfo = new MessageForwardInfo(origin, 0, null, string.Empty);
-                var content = new MessageText(new FormattedText(Strings.PrivacyForwardsMessageLine, Array.Empty<TextEntity>()), null, null);
+                var content = new MessageText(Strings.PrivacyForwardsMessageLine.AsFormattedText(), null, null);
 
                 var message = new Message(0, new MessageSenderUser(user.Id), 0, null, null, false, false, false, false, false, false, false, false, false, DateTime.Now.ToTimestamp(), 0, forwardInfo, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null);
 

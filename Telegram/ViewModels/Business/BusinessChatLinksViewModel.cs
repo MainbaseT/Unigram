@@ -52,7 +52,7 @@ namespace Telegram.ViewModels.Business
 
         public async void Create()
         {
-            var response = await ClientService.SendAsync(new CreateBusinessChatLink(new InputBusinessChatLink(new FormattedText(string.Empty, Array.Empty<TextEntity>()), string.Empty)));
+            var response = await ClientService.SendAsync(new CreateBusinessChatLink(new InputBusinessChatLink(string.Empty.AsFormattedText(false), string.Empty)));
             if (response is BusinessChatLink chatLink)
             {
                 Items.Add(chatLink);

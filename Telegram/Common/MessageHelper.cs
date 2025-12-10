@@ -1302,7 +1302,7 @@ namespace Telegram.Common
                 {
                     if (draftText != null)
                     {
-                        navigation.NavigateToChat(chat, state: new NavigationState { { "draft", new FormattedText(draftText, Array.Empty<TextEntity>()) } });
+                        navigation.NavigateToChat(chat, state: new NavigationState { { "draft", draftText.AsFormattedText() } });
                     }
                     else if (openProfile)
                     {
@@ -1371,7 +1371,7 @@ namespace Telegram.Common
                 {
                     if (draftText != null)
                     {
-                        navigation.NavigateToChat(chat, state: new NavigationState { { "draft", new FormattedText(draftText, Array.Empty<TextEntity>()) } });
+                        navigation.NavigateToChat(chat, state: new NavigationState { { "draft", draftText.AsFormattedText() } });
                     }
                     else if (openProfile)
                     {

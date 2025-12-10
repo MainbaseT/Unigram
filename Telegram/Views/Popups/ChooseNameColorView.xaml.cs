@@ -60,7 +60,7 @@ namespace Telegram.Views.Popups
                 {
                     SiteName = Strings.AppName,
                     Title = Strings.UserColorPreviewLinkTitle,
-                    Description = new FormattedText(Strings.UserColorPreviewLinkDescription, Array.Empty<TextEntity>())
+                    Description = Strings.UserColorPreviewLinkDescription.AsFormattedText()
                 };
 
                 Message1.Mockup(clientService, Strings.UserColorPreview, sender, Strings.UserColorPreviewReply, linkPreview, false, DateTime.Now);
@@ -81,7 +81,7 @@ namespace Telegram.Views.Popups
                 {
                     SiteName = Strings.AppName,
                     Title = Strings.ChannelColorPreviewLinkTitle,
-                    Description = new FormattedText(Strings.ChannelColorPreviewLinkDescription, Array.Empty<TextEntity>())
+                    Description = Strings.ChannelColorPreviewLinkDescription.AsFormattedText()
                 };
 
                 Message1.Mockup(clientService, Strings.ChannelColorPreview, sender, Strings.ChannelColorPreviewReply, linkPreview, false, DateTime.Now);

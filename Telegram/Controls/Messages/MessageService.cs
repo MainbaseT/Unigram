@@ -961,7 +961,7 @@ namespace Telegram.Controls.Messages
             {
                 if (reactions is ChatAvailableReactionsAll || reactions is not ChatAvailableReactionsSome some)
                 {
-                    return new FormattedText(Strings.AllReactions, Array.Empty<TextEntity>());
+                    return Strings.AllReactions.AsFormattedText();
                 }
 
                 if (some.Reactions.Count > 0)
@@ -985,7 +985,7 @@ namespace Telegram.Controls.Messages
                     return new FormattedText(content.ToString(), entities);
                 }
 
-                return new FormattedText(Strings.NoReactions, Array.Empty<TextEntity>());
+                return Strings.NoReactions.AsFormattedText();
             }
 
             if (oldAllOrNone || newAllOrNone)

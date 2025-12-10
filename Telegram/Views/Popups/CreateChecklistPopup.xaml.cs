@@ -595,7 +595,7 @@ namespace Telegram.Views.Popups
         {
             Id = -1;
 
-            _text = new FormattedText(text, Array.Empty<TextEntity>());
+            _text = text.AsFormattedText();
             _isReadOnly = readOnly;
             _focusOnLoaded = focus;
         }

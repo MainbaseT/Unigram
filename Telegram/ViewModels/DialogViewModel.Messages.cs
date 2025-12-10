@@ -871,17 +871,17 @@ namespace Telegram.ViewModels
             var input = message.GetCaption();
             if (message.Content is MessageContact contact)
             {
-                input = new FormattedText(PhoneNumber.Format(contact.Contact.PhoneNumber), Array.Empty<TextEntity>());
+                input = PhoneNumber.Format(contact.Contact.PhoneNumber).AsFormattedText();
             }
             else if (message.Content is MessageAnimatedEmoji animatedEmoji)
             {
                 if (animatedEmoji.AnimatedEmoji.Sticker?.FullType is StickerFullTypeCustomEmoji customEmoji)
                 {
-                    input = new FormattedText(animatedEmoji.Emoji, new[] { new TextEntity(0, animatedEmoji.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
+                    input = ClientEx.CustomEmoji(animatedEmoji.Emoji, customEmoji.CustomEmojiId);
                 }
                 else
                 {
-                    input = new FormattedText(animatedEmoji.Emoji, Array.Empty<TextEntity>());
+                    input = animatedEmoji.Emoji.AsFormattedText();
                 }
             }
 

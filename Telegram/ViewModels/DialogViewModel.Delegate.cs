@@ -600,9 +600,9 @@ namespace Telegram.ViewModels
             }
         }
 
-        public async void SendBotCommand(string command)
+        public void SendBotCommand(string command)
         {
-            await SendMessageAsync(null, new InputMessageText(new FormattedText(command, Array.Empty<TextEntity>()), null, false), new MessageSendOptions
+            _ = SendMessageAsync(null, new InputMessageText(command.AsFormattedText(false), null, false), new MessageSendOptions
             {
                 SendingId = int.MaxValue
             });

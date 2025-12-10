@@ -6,6 +6,7 @@
 //
 
 using System;
+using Telegram.Common;
 using Telegram.Services;
 using Telegram.Td.Api;
 
@@ -20,7 +21,7 @@ namespace Telegram.ViewModels.Gallery
             : base(clientService)
         {
             _animation = animation;
-            _caption = caption ?? new FormattedText(string.Empty, Array.Empty<TextEntity>());
+            _caption = caption ?? string.Empty.AsFormattedText();
 
             File = _animation.AnimationValue;
 

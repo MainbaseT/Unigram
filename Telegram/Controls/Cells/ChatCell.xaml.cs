@@ -1500,7 +1500,7 @@ namespace Telegram.Controls.Cells
 
             if (position?.Source is ChatSourcePublicServiceAnnouncement psa && !string.IsNullOrEmpty(psa.Text))
             {
-                return new FormattedText(psa.Text.Replace('\n', ' '), Array.Empty<TextEntity>());
+                return psa.Text.Replace('\n', ' ').AsFormattedText();
             }
 
             var topMessage = chat.LastMessage;
@@ -1531,20 +1531,20 @@ namespace Telegram.Controls.Cells
                 {
                     if (secret.State is SecretChatStateReady)
                     {
-                        return new FormattedText(secret.IsOutbound ? string.Format(Strings.EncryptedChatStartedOutgoing, _clientService.GetTitle(chat)) : Strings.EncryptedChatStartedIncoming, Array.Empty<TextEntity>());
+                        return (secret.IsOutbound ? string.Format(Strings.EncryptedChatStartedOutgoing, _clientService.GetTitle(chat)) : Strings.EncryptedChatStartedIncoming).AsFormattedText();
                     }
                     else if (secret.State is SecretChatStatePending)
                     {
-                        return new FormattedText(string.Format(Strings.AwaitingEncryption, _clientService.GetTitle(chat)), Array.Empty<TextEntity>());
+                        return string.Format(Strings.AwaitingEncryption, _clientService.GetTitle(chat)).AsFormattedText();
                     }
                     else if (secret.State is SecretChatStateClosed)
                     {
-                        return new FormattedText(Strings.EncryptionRejected, Array.Empty<TextEntity>());
+                        return Strings.EncryptionRejected.AsFormattedText();
                     }
                 }
             }
 
-            return new FormattedText(string.Empty, Array.Empty<TextEntity>());
+            return string.Empty.AsFormattedText();
         }
 
         public static FormattedText UpdateBriefLabel(MessageContent content, bool outgoing, DraftMessage draft, bool forceEmoji, out MinithumbnailId thumbnail)
@@ -1558,7 +1558,7 @@ namespace Telegram.Controls.Cells
 
             static FormattedText Text(string text)
             {
-                return new FormattedText(text, Array.Empty<TextEntity>());
+                return text.AsFormattedText();
             }
 
             static FormattedText Text1(string text, FormattedText formatted, string fallback)
@@ -1665,13 +1665,10 @@ namespace Telegram.Controls.Cells
                     {
                         if (animatedEmoji.AnimatedEmoji?.Sticker?.FullType is StickerFullTypeCustomEmoji customEmoji)
                         {
-                            return new FormattedText(animatedEmoji.Emoji, new[]
-                            {
-                        new TextEntity(0, animatedEmoji.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId))
-                    });
+                            return ClientEx.CustomEmoji(animatedEmoji.Emoji, customEmoji.CustomEmojiId);
                         }
 
-                        return new FormattedText(animatedEmoji.Emoji, Array.Empty<TextEntity>());
+                        return animatedEmoji.Emoji.AsFormattedText();
                     }
 
                 case MessageGiveaway:

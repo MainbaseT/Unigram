@@ -424,7 +424,7 @@ namespace Telegram.Views.Popups
 
         public PollOptionViewModel(string text, bool quiz, bool focus, Action<PollOptionViewModel> remove)
         {
-            _text = new FormattedText(text, Array.Empty<TextEntity>());
+            _text = text.AsFormattedText();
             _isQuiz = quiz;
             _focusOnLoaded = focus;
             _remove = remove;

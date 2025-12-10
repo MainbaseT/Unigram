@@ -602,7 +602,7 @@ namespace Telegram.Views.Popups
 
         public ChooseChatsConfigurationPostText(string text)
         {
-            Text = new FormattedText(text, Array.Empty<TextEntity>());
+            Text = text.AsFormattedText();
         }
 
         public FormattedText Text { get; }

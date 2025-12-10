@@ -568,7 +568,7 @@ namespace Telegram.Controls.Cells
                 return ChatCell.UpdateBriefLabel(topMessage.Content, topMessage.IsOutgoing, topic.DraftMessage, false, out thumbnail);
             }
 
-            return new FormattedText(string.Empty, Array.Empty<TextEntity>());
+            return string.Empty.AsFormattedText();
         }
 
         private string UpdateFromLabel(Chat chat, ForumTopic topic, out bool draft)

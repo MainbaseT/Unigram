@@ -217,7 +217,7 @@ namespace Telegram.ViewModels
                 folders.Insert(index, new ChatFolderInfo
                 {
                     Id = Constants.ChatListMain,
-                    Name = new ChatFolderName(new FormattedText(Strings.FilterAllChats, Array.Empty<TextEntity>()), false),
+                    Name = new ChatFolderName(Strings.FilterAllChats.AsFormattedText(), false),
                     Icon = new ChatFolderIcon("All")
                 });
 
@@ -615,13 +615,13 @@ namespace Telegram.ViewModels
         public static ChatFolderViewModel Main => new(new ChatListMain())
         {
             ChatFolderId = Constants.ChatListMain,
-            Name = new ChatFolderName(new FormattedText(Strings.FilterAllChats, Array.Empty<TextEntity>()), false)
+            Name = new ChatFolderName(Strings.FilterAllChats.AsFormattedText(), false)
         };
 
         public static ChatFolderViewModel Archive => new(new ChatListArchive())
         {
             ChatFolderId = Constants.ChatListArchive,
-            Name = new ChatFolderName(new FormattedText(Strings.ArchivedChats, Array.Empty<TextEntity>()), false)
+            Name = new ChatFolderName(Strings.ArchivedChats.AsFormattedText(), false)
         };
 
         public bool IsNavigationItem { get; }

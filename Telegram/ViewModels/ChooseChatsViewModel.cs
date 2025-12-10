@@ -351,7 +351,7 @@ namespace Telegram.ViewModels
                 folders.Insert(index, new ChatFolderInfo
                 {
                     Id = Constants.ChatListMain,
-                    Name = new ChatFolderName(new FormattedText(Strings.FilterAllChats, Array.Empty<TextEntity>()), false),
+                    Name = new ChatFolderName(Strings.FilterAllChats.AsFormattedText(), false),
                     Icon = new ChatFolderIcon("All")
                 });
 
@@ -784,7 +784,7 @@ namespace Telegram.ViewModels
                 var response = await ClientService.SendAsync(new GetInternalLink(postLink.InternalLink, true));
                 if (response is HttpUrl httpUrl)
                 {
-                    var formatted = new FormattedText(httpUrl.Url, Array.Empty<TextEntity>());
+                    var formatted = httpUrl.Url.AsFormattedText();
 
                     foreach (var chat in chats)
                     {
@@ -797,7 +797,7 @@ namespace Telegram.ViewModels
             }
             else if (ShareLink != null)
             {
-                var formatted = new FormattedText(ShareLink.Url, Array.Empty<TextEntity>());
+                var formatted = ShareLink.Url.AsFormattedText();
 
                 foreach (var chat in chats)
                 {

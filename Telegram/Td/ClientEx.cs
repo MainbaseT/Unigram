@@ -50,7 +50,7 @@ namespace Telegram.Td
 
         public static FormattedText ParseMarkdown(string text)
         {
-            return ParseMarkdown(new FormattedText(text, Array.Empty<TextEntity>()));
+            return ParseMarkdown(new FormattedText(text, null));
         }
 
         public static FormattedText ParseMarkdown(string text, IList<TextEntity> entities)
@@ -71,7 +71,7 @@ namespace Telegram.Td
 
         public static FormattedText GetMarkdownText(string text)
         {
-            return GetMarkdownText(new FormattedText(text, Array.Empty<TextEntity>()));
+            return GetMarkdownText(new FormattedText(text, null));
         }
 
         public static FormattedText GetMarkdownText(string text, IList<TextEntity> entities)
@@ -98,7 +98,7 @@ namespace Telegram.Td
                 return entities.Entities;
             }
 
-            return Array.Empty<TextEntity>();
+            return [];
         }
 
         public static FormattedText MergeEntities(FormattedText text, IList<TextEntity> entities)
@@ -131,6 +131,11 @@ namespace Telegram.Td
             }
 
             return -1;
+        }
+
+        public static FormattedText CustomEmoji(string emoji, long customEmojiId)
+        {
+            return new FormattedText(emoji, new[] { new TextEntity(0, 2, new TextEntityTypeCustomEmoji(customEmojiId)) });
         }
 
         public static FormattedText CustomEmoji(long customEmojiId)

@@ -88,7 +88,7 @@ namespace Telegram.ViewModels.Folders
             folders.Insert(ClientService.MainChatListPosition, new ChatFolderInfo
             {
                 Id = Constants.ChatListMain,
-                Name = new ChatFolderName(new FormattedText(Strings.FilterAllChats, Array.Empty<TextEntity>()), false),
+                Name = new ChatFolderName(Strings.FilterAllChats.AsFormattedText(), false),
                 Icon = new ChatFolderIcon("All")
             });
 
@@ -194,7 +194,7 @@ namespace Telegram.ViewModels.Folders
                 folders.Insert(ClientService.MainChatListPosition, new ChatFolderInfo
                 {
                     Id = Constants.ChatListMain,
-                    Name = new ChatFolderName(new FormattedText(Strings.FilterAllChats, Array.Empty<TextEntity>()), false),
+                    Name = new ChatFolderName(Strings.FilterAllChats.AsFormattedText(), false),
                     Icon = new ChatFolderIcon("All")
                 });
 

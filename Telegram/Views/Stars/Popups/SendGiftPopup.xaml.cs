@@ -53,7 +53,7 @@ namespace Telegram.Views.Stars.Popups
 
             clientService.TryGetChatFromUser(clientService.Options.MyId, out Chat chat);
 
-            var content = new MessageGift(gift, clientService.MyId, _receiverId, string.Empty, new FormattedText(string.Empty, Array.Empty<TextEntity>()), gift.DefaultSellStarCount, 0, false, false, false, false, false, false, false, false, false, string.Empty, string.Empty);
+            var content = new MessageGift(gift, clientService.MyId, _receiverId, string.Empty, string.Empty.AsFormattedText(), gift.DefaultSellStarCount, 0, false, false, false, false, false, false, false, false, false, string.Empty, string.Empty);
             var message = new Message(0, new MessageSenderUser(clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null);
 
             var settings = clientService.Session.Resolve<ISettingsService>();
@@ -160,7 +160,7 @@ namespace Telegram.Views.Stars.Popups
 
             clientService.TryGetChatFromUser(clientService.Options.MyId, out Chat chat);
 
-            var content = new MessageGiftedPremium(_clientService.Options.MyId, userId, new FormattedText(string.Empty, Array.Empty<TextEntity>()), _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, 0, _option.Sticker);
+            var content = new MessageGiftedPremium(_clientService.Options.MyId, userId, string.Empty.AsFormattedText(), _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, 0, _option.Sticker);
             var message = new Message(0, new MessageSenderUser(clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null);
 
             var settings = clientService.Session.Resolve<ISettingsService>();

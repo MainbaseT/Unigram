@@ -1354,7 +1354,7 @@ namespace Telegram
 
         public static FormattedText ToFormattedText(this RichText text)
         {
-            return new FormattedText(text.ToPlainText(), Array.Empty<TextEntity>());
+            return text.ToPlainText().AsFormattedText();
         }
 
         public static string ToPlainText(this PageBlockCaption caption)
@@ -1986,11 +1986,8 @@ namespace Telegram
                 MessageText text => text.Text,
                 MessageAnimatedEmoji animatedEmoji => animatedEmoji.AnimatedEmoji.Sticker?.FullType switch
                 {
-                    StickerFullTypeCustomEmoji customEmoji => new FormattedText(animatedEmoji.Emoji, new[]
-                    {
-                        new TextEntity(0, animatedEmoji.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId))
-                    }),
-                    _ => new FormattedText(animatedEmoji.Emoji, Array.Empty<TextEntity>())
+                    StickerFullTypeCustomEmoji customEmoji => ClientEx.CustomEmoji(animatedEmoji.Emoji, customEmoji.CustomEmojiId),
+                    _ => animatedEmoji.Emoji.AsFormattedText()
                 },
                 MessageInvoice invoice => invoice.PaidMediaCaption,
                 MessagePaidAlbum paidAlbum => paidAlbum.Caption,
@@ -2052,10 +2049,10 @@ namespace Telegram
         {
             if (sticker.FullType is StickerFullTypeCustomEmoji customEmoji)
             {
-                return new FormattedText(sticker.Emoji, new TextEntity[] { new(0, sticker.Emoji.Length, new TextEntityTypeCustomEmoji(customEmoji.CustomEmojiId)) });
+                return ClientEx.CustomEmoji(sticker.Emoji, customEmoji.CustomEmojiId);
             }
 
-            return new FormattedText(sticker.Emoji, Array.Empty<TextEntity>());
+            return sticker.Emoji.AsFormattedText();
         }
 
         public static bool HasCaption(this Message message)

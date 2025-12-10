@@ -370,7 +370,7 @@ namespace Telegram.ViewModels
         {
             if (item.Action is ChatEventDescriptionChanged descriptionChanged)
             {
-                var text = new FormattedText(descriptionChanged.NewDescription, Array.Empty<TextEntity>());
+                var text = descriptionChanged.NewDescription.AsFormattedText();
                 var linkPreview = string.IsNullOrEmpty(descriptionChanged.OldDescription) ? null : new LinkPreview { SiteName = Strings.EventLogPreviousGroupDescription, Description = descriptionChanged.OldDescription.AsFormattedText() };
 
                 return new MessageText(text, linkPreview, null);

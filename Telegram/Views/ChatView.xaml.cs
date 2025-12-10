@@ -1857,7 +1857,7 @@ namespace Telegram.Views
 
             if (url?.Length > 0)
             {
-                clientService.Send(new GetLinkPreview(new FormattedText(url, Array.Empty<TextEntity>()), null), result);
+                clientService.Send(new GetLinkPreview(url.AsFormattedText(false), null), result);
             }
             else if (chat.Type is ChatTypeSecret)
             {
@@ -1883,11 +1883,11 @@ namespace Telegram.Views
                     return;
                 }
 
-                clientService.Send(new GetLinkPreview(new FormattedText(urls, Array.Empty<TextEntity>()), null), result);
+                clientService.Send(new GetLinkPreview(urls.AsFormattedText(false), null), result);
             }
             else
             {
-                clientService.Send(new GetLinkPreview(new FormattedText(text.Format(), Array.Empty<TextEntity>()), null), result);
+                clientService.Send(new GetLinkPreview(text.Format().AsFormattedText(false), null), result);
             }
         }
 
