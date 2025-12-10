@@ -883,90 +883,87 @@ namespace Telegram.ViewModels
             {
                 var table = update.MessageIds.ToHashSet();
 
-                BeginOnUIThread(async () =>
+                BeginOnUIThread(() =>
                 {
-                    using (await _loadMoreLock.WaitAsync())
+                    List<MessageViewModel> toBeDeleted = null;
+
+                    for (int i = 0; i < Items.Count; i++)
                     {
-                        List<MessageViewModel> toBeDeleted = null;
-
-                        for (int i = 0; i < Items.Count; i++)
+                        var message = Items[i];
+                        if (message.MediaAlbumId != 0 && message.Content is MessageAlbum album)
                         {
-                            var message = Items[i];
-                            if (message.MediaAlbumId != 0 && message.Content is MessageAlbum album)
+                            var found = false;
+                            var invalidated = true;
+
+                            for (int k = 0; k < album.Messages.Count; k++)
                             {
-                                var found = false;
-                                var invalidated = true;
-
-                                for (int k = 0; k < album.Messages.Count; k++)
+                                if (table.Contains(album.Messages[k].Id))
                                 {
-                                    if (table.Contains(album.Messages[k].Id))
+                                    album.Messages.RemoveAt(k);
+                                    k--;
+
+                                    if (album.Messages.Count > 0)
                                     {
-                                        album.Messages.RemoveAt(k);
-                                        k--;
-
-                                        if (album.Messages.Count > 0)
-                                        {
-                                            message.UpdateAlbum(album.Messages[0]);
-                                            album.Invalidate();
-                                        }
-                                        else
-                                        {
-                                            invalidated = false;
-
-                                            _groupedMessages.TryRemove(message.MediaAlbumId, out _);
-
-                                            toBeDeleted ??= new();
-                                            toBeDeleted.Add(message);
-                                        }
-
-                                        found = true;
-                                        //break;
+                                        message.UpdateAlbum(album.Messages[0]);
+                                        album.Invalidate();
                                     }
-                                }
-
-                                if (found)
-                                {
-                                    if (invalidated)
+                                    else
                                     {
-                                        Handle(new UpdateMessageContent(message.ChatId, message.Id, album));
+                                        invalidated = false;
+
+                                        _groupedMessages.TryRemove(message.MediaAlbumId, out _);
+
+                                        toBeDeleted ??= new();
+                                        toBeDeleted.Add(message);
                                     }
 
-                                    continue;
+                                    found = true;
+                                    //break;
                                 }
                             }
 
-                            if (table.Contains(message.Id))
+                            if (found)
                             {
-                                toBeDeleted ??= new();
-                                toBeDeleted.Add(message);
-                            }
-                            else if (message.ReplyTo is MessageReplyToMessage replyToMessage && table.Contains(replyToMessage.MessageId))
-                            {
-                                message.ReplyToItem = null;
-                                message.ReplyToState = MessageReplyToState.Deleted;
+                                if (invalidated)
+                                {
+                                    Handle(new UpdateMessageContent(message.ChatId, message.Id, album));
+                                }
 
-                                Handle(message, bubble => bubble.UpdateMessageReply(message), service => service.UpdateMessage(message));
-                            }
-
-                            if (i >= 0 && i == Items.Count - 1 && Items[i].Content is MessageHeaderUnread)
-                            {
-                                toBeDeleted ??= new();
-                                toBeDeleted.Add(message);
+                                continue;
                             }
                         }
 
-                        if (toBeDeleted != null)
+                        if (table.Contains(message.Id))
                         {
-                            foreach (var item in toBeDeleted)
-                            {
-                                Items.Remove(item);
-                            }
+                            toBeDeleted ??= new();
+                            toBeDeleted.Add(message);
+                        }
+                        else if (message.ReplyTo is MessageReplyToMessage replyToMessage && table.Contains(replyToMessage.MessageId))
+                        {
+                            message.ReplyToItem = null;
+                            message.ReplyToState = MessageReplyToState.Deleted;
+
+                            Handle(message, bubble => bubble.UpdateMessageReply(message), service => service.UpdateMessage(message));
                         }
 
-                        if (Items.Count > 0 && Items[^1].Content is MessageHeaderUnread)
+                        if (i >= 0 && i == Items.Count - 1 && Items[i].Content is MessageHeaderUnread)
                         {
-                            Items.RemoveAt(Items.Count - 1);
+                            toBeDeleted ??= new();
+                            toBeDeleted.Add(message);
                         }
+                    }
+
+                    if (toBeDeleted != null)
+                    {
+                        foreach (var item in toBeDeleted)
+                        {
+                            Items.Remove(item);
+                        }
+                    }
+
+                    if (Items.Count > 0 && Items[^1].Content is MessageHeaderUnread)
+                    {
+                        Items.RemoveAt(Items.Count - 1);
                     }
 
                     foreach (var id in update.MessageIds)
