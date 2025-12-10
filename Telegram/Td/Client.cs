@@ -41,7 +41,7 @@ namespace Telegram.Td
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
-        private static extern unsafe void td_send(int client_id, byte* request, long request_id);
+        private static extern unsafe void td_send(int client_id, long request_id, byte* request);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
@@ -89,7 +89,7 @@ namespace Telegram.Td
             var request = ClientJson.ToJson(_writer, function, requestId);
             fixed (byte* bytes = request)
             {
-                td_send(_clientId, bytes, requestId);
+                td_send(_clientId, requestId, bytes);
             }
 
             _writer.Reset();
