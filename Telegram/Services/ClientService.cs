@@ -397,8 +397,15 @@ namespace Telegram.Services
         private bool _cleanAfterClose;
         private bool _initializeAfterClose;
 
-        private static volatile Task _longRunningTask;
-        private static readonly object _longRunningLock = new();
+        private static readonly Thread _runThread;
+
+        static ClientService()
+        {
+            InitializeDiagnostics();
+
+            _runThread = new Thread(Client.Run);
+            _runThread.Start();
+        }
 
         public ClientService(ISession session, bool online, IDeviceInfoService deviceInfoService, ISettingsService settings, ILocaleService locale, IEventAggregator aggregator)
         {
@@ -451,15 +458,6 @@ namespace Telegram.Services
 
         private void Initialize(bool online = true)
         {
-            lock (_longRunningLock)
-            {
-                if (_longRunningTask == null)
-                {
-                    InitializeDiagnostics();
-                    _longRunningTask = Task.Factory.StartNew(Client.Run, TaskCreationOptions.LongRunning);
-                }
-            }
-
 #if TD_WINRT
             _client = new Client(this);
 #else
@@ -624,7 +622,7 @@ namespace Telegram.Services
             });
         }
 
-        private void InitializeDiagnostics()
+        private static void InitializeDiagnostics()
         {
             Client.Execute(new SetLogStream(new LogStreamFile(System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "tdlib_log.txt"), 100 * 1024 * 1024, false)));
             Client.Execute(new SetLogVerbosityLevel(SettingsService.Current.VerbosityLevel));
@@ -639,7 +637,7 @@ namespace Telegram.Services
             {
                 var level = Client.Execute(new GetLogTagVerbosityLevel(tag)) as LogVerbosityLevel;
 
-                var saved = _settings.Diagnostics.GetValueOrDefault(tag, -1);
+                var saved = SettingsService.Current.Diagnostics.GetValueOrDefault(tag, -1);
                 if (saved != level.VerbosityLevel && saved > -1)
                 {
                     Client.Execute(new SetLogTagVerbosityLevel(tag, saved));
