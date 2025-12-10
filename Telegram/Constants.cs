@@ -59,8 +59,8 @@ namespace Telegram
 
         public const float BubbleElevation = 8.0f;
 
-        public const int HistoryLimit = 30;
-        public const int HistoryOffset = -15;
+        public const int HistoryLimit = 24;
+        public const int HistoryOffset = -12;
 
         public static readonly string[] TelegramHosts = new string[]
         {
