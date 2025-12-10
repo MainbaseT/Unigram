@@ -320,9 +320,14 @@
                                 <VisualState x:Name="Disabled" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
 
-                        <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                        <Grid VerticalAlignment="Center"
+                              Grid.Column="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
@@ -351,7 +356,8 @@
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top"
                                    AutomationProperties.AccessibilityView="Raw"
-                                   Text="{TemplateBinding Glyph}" />
+                                   Text="{TemplateBinding Glyph}"
+                                   Grid.ColumnSpan="3" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
