@@ -550,7 +550,7 @@ namespace Telegram.Views.Popups
             }
             else if (item is PlaybackItemProfileAudio audio)
             {
-                _clientService.Send(new SendMessage(_clientService.Options.MyId, null, null, null, null, audio.ToInputMessage()));
+                _clientService.Send(new SendMessage(_clientService.Options.MyId, null, null, null, audio.ToInputMessage()));
             }
 
             _navigationService.ShowToast(Strings.AudioSaveToSavedMessagesSaved, ToastPopupIcon.SavedMessages);

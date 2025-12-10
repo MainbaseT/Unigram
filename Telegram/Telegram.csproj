@@ -631,6 +631,7 @@
     <Compile Include="Td\Client.cs" />
     <Compile Include="Td\ClientJson.cs" />
     <Compile Include="Td\TdDotNetApi.cs" />
+    <Compile Include="Td\Api\UpdateChatMember.cs" />
     <Compile Include="TypeContainerGenerator.cs" />
     <Compile Include="TypeCrosserGenerator.cs" />
     <Compile Include="ViewModels\Business\BusinessFeatureViewModelBase.cs" />
@@ -4293,7 +4294,8 @@
   <PropertyGroup>
     <TelegramTdPlatform Condition="'$(Platform)' == 'Win32'">x86</TelegramTdPlatform>
     <TelegramTdPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</TelegramTdPlatform>
-    <OpenSSLPlatform Condition="'$(Platform)' == 'Win32'"></OpenSSLPlatform>
+    <OpenSSLPlatform Condition="'$(Platform)' == 'Win32'">
+    </OpenSSLPlatform>
     <OpenSSLPlatform Condition="'$(Platform)' != 'Win32'">-$(Platform)</OpenSSLPlatform>
   </PropertyGroup>
   <ItemGroup>

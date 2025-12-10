@@ -3171,16 +3171,16 @@ namespace Telegram.ViewModels
             var factory = header.Editing.Media;
             if (factory is InputMessageContent input)
             {
-                var options = new MessageSendOptions(header.SuggestedPostInfo, false, false, false, false, 0, false, null, 0, 0, true);
+                var options = new MessageSendOptions(header.SuggestedPostInfo, false, false, 0, false, null, 0, 0, true);
 
-                var response = await ClientService.SendAsync(new SendMessage(editing.ChatId, editing.TopicId, null, options, null, input));
+                var response = await ClientService.SendAsync(new SendMessage(editing.ChatId, editing.TopicId, null, options, input));
                 if (response is Message preview)
                 {
                     _contentOverrides[editing.CombinedId] = preview.Content;
                     Aggregator.Publish(new UpdateMessageContent(editing.ChatId, editing.Id, preview.Content));
 
                     ComposerHeader = null;
-                    ClientService.Send(new EditMessageMedia(editing.ChatId, editing.Id, null, input));
+                    ClientService.Send(new EditMessageMedia(editing.ChatId, editing.Id, input));
                 }
             }
             else
@@ -3210,11 +3210,11 @@ namespace Telegram.ViewModels
                     }
                     else if (textContent)
                     {
-                        function = new EditMessageText(chat.Id, editing.Id, null, new InputMessageText(formattedText, linkPreview, true));
+                        function = new EditMessageText(chat.Id, editing.Id, new InputMessageText(formattedText, linkPreview, true));
                     }
                     else
                     {
-                        function = new EditMessageCaption(chat.Id, editing.Id, null, formattedText, editing.ShowCaptionAboveMedia());
+                        function = new EditMessageCaption(chat.Id, editing.Id, formattedText, editing.ShowCaptionAboveMedia());
                     }
 
                     var response = await ClientService.SendAsync(function);

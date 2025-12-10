@@ -1177,7 +1177,7 @@ namespace Telegram.Views
                     await _clientService.SendAsync(new SetMessageSenderBlockList(new MessageSenderUser(_botUser.Id), null));
                 }
 
-                await _clientService.SendAsync(new SendMessage(chat.Id, null, null, null, null, new InputMessageContact(new Contact(user.PhoneNumber, user.FirstName, user.LastName, string.Empty, user.Id))));
+                await _clientService.SendAsync(new SendMessage(chat.Id, null, null, null, new InputMessageContact(new Contact(user.PhoneNumber, user.FirstName, user.LastName, string.Empty, user.Id))));
 
                 _blockingAction = false;
                 PostEvent("phone_requested", "status", "sent");

@@ -160,7 +160,7 @@ namespace Telegram.Controls.Views
                     {
                         if (item is InputMessageContent input)
                         {
-                            _clientService.Send(new SendMessage(chat.Id, topic, null, options, null, input), Track);
+                            _clientService.Send(new SendMessage(chat.Id, topic, null, options, input), Track);
                         }
                         else if (item is List<InputMessageContent> album)
                         {

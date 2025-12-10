@@ -767,7 +767,7 @@ namespace Telegram.ViewModels
                 replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId);
             }
 
-            return new SendMessage(chatId, topicId, replyTo, messageSendOptions, null, inputMessageContent);
+            return new SendMessage(chatId, topicId, replyTo, messageSendOptions, inputMessageContent);
         }
 
         protected virtual void ContinueSendMessage(MessageSendOptions options)
@@ -823,7 +823,7 @@ namespace Telegram.ViewModels
             }
 
             var reply = GetReply(true);
-            var input = new InputMessagePoll(popup.Question, popup.Options, popup.IsAnonymous, popup.Type, 0, 0, false);
+            var input = new InputMessagePoll(popup.Question, popup.Options, popup.IsAnonymous, popup.Type);
 
             await SendMessageAsync(reply, input, options);
         }

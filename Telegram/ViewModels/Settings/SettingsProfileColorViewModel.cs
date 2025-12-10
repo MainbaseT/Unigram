@@ -332,7 +332,7 @@ namespace Telegram.ViewModels.Settings
         {
             var totalCount = 0u;
 
-            var response = await ClientService.SendAsync(new GetReceivedGifts(string.Empty, ClientService.MyId, 0, false, false, false, false, false, false, true, false, false, _nextOffset, 50));
+            var response = await ClientService.SendAsync(new GetReceivedGifts(ClientService.MyId, 0, false, false, false, false, false, false, true, false, false, _nextOffset, 50));
             if (response is ReceivedGifts gifts)
             {
                 var user = ClientService.GetUser(ClientService.Options.MyId);

@@ -937,7 +937,7 @@ namespace Telegram.ViewModels
                 }
                 else if (fullInfo.BotInfo.Commands.Any(x => string.Equals(x.Command, "privacy", StringComparison.OrdinalIgnoreCase)))
                 {
-                    ClientService.Send(new SendMessage(chat.Id, null, null, null, null, new InputMessageText("/privacy".AsFormattedText(), null, false)));
+                    ClientService.Send(new SendMessage(chat.Id, null, null, null, new InputMessageText("/privacy".AsFormattedText(), null, false)));
                     SendMessage();
                 }
                 else

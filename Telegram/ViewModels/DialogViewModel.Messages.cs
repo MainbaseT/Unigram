@@ -1346,7 +1346,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                ClientService.Send(new EditMessageChecklist(task.Message.ChatId, task.Message.Id, null, new InputChecklist(checklist.List.Title, tasks, checklist.List.OthersCanAddTasks, checklist.List.OthersCanMarkTasksAsDone)));
+                ClientService.Send(new EditMessageChecklist(task.Message.ChatId, task.Message.Id, new InputChecklist(checklist.List.Title, tasks, checklist.List.OthersCanAddTasks, checklist.List.OthersCanMarkTasksAsDone)));
             }
         }
 
@@ -1396,7 +1396,7 @@ namespace Telegram.ViewModels
 
             if (properties.CanBeEdited && !addTask)
             {
-                ClientService.Send(new EditMessageChecklist(message.ChatId, message.Id, null, new InputChecklist(popup.Title, popup.Tasks, popup.OthersCanAddTasks, popup.OthersCanMarkTasksAsDone)));
+                ClientService.Send(new EditMessageChecklist(message.ChatId, message.Id, new InputChecklist(popup.Title, popup.Tasks, popup.OthersCanAddTasks, popup.OthersCanMarkTasksAsDone)));
             }
             else
             {
@@ -2296,7 +2296,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            ClientService.Send(new StopPoll(message.ChatId, message.Id, null));
+            ClientService.Send(new StopPoll(message.ChatId, message.Id));
         }
 
         #endregion

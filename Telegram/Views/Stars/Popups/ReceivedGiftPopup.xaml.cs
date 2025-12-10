@@ -589,7 +589,7 @@ namespace Telegram.Views.Stars.Popups
             Function function;
             if (IsOwned(_clientService, _receiverId))
             {
-                function = new UpgradeGift(string.Empty, _gift.ReceivedGiftId, KeepOriginalDetails.IsChecked is true, starCount);
+                function = new UpgradeGift(_gift.ReceivedGiftId, KeepOriginalDetails.IsChecked is true, starCount);
             }
             else
             {
@@ -661,7 +661,7 @@ namespace Telegram.Views.Stars.Popups
                 var confirm = await MessagePopup.ShowAsync(XamlRoot, target: null, message, Strings.Gift2ConvertTitle, Strings.Gift2ConvertButton, Strings.Cancel);
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    var response = await _clientService.SendAsync(new SellGift(string.Empty, _gift.ReceivedGiftId));
+                    var response = await _clientService.SendAsync(new SellGift(_gift.ReceivedGiftId));
                     if (response is Ok)
                     {
                         Hide(ContentDialogResult.Secondary);

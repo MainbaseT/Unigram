@@ -665,7 +665,7 @@ namespace Telegram.ViewModels
         public void SendWithChat(Chat chat, Action<MessageSendOptions, MessageTopic> action)
         {
             _ = ClientService.PaidMessageStarCount(chat);
-            var options = new MessageSendOptions(null, SendDisableNotifications, false, false, false, 0, false, SendSchedulingState, 0, 0, false);
+            var options = new MessageSendOptions(null, SendDisableNotifications, false, 0, false, SendSchedulingState, 0, 0, false);
 
             SelectedTopics.TryGetValue(chat.Id, out MessageTopic topic);
             action(options, topic);
@@ -692,7 +692,7 @@ namespace Telegram.ViewModels
                 {
                     SendWithChat(chat, (options, topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(_caption, null, false)));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, new InputMessageText(_caption, null, false)));
                     });
                 }
             }
@@ -715,7 +715,7 @@ namespace Telegram.ViewModels
                 {
                     SendWithChat(chat, (options, topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageForwarded(shareGame.Messages[0].ChatId, shareGame.Messages[0].Id, shareGame.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, new InputMessageForwarded(shareGame.Messages[0].ChatId, shareGame.Messages[0].Id, shareGame.WithMyScore, false, 0, new MessageCopyOptions(_sendAsCopy || _removeCaptions, _removeCaptions, null, false))));
                     });
                 }
             }
@@ -742,7 +742,7 @@ namespace Telegram.ViewModels
                 {
                     SendWithChat(chat, (options, topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, new InputMessageStory(shareStory.ChatId, shareStory.StoryId)));
                     });
                 }
             }
@@ -752,7 +752,7 @@ namespace Telegram.ViewModels
                 {
                     SendWithChat(chat, (options, topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, postMessage.Content));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, postMessage.Content));
                     });
                 }
 
@@ -769,7 +769,7 @@ namespace Telegram.ViewModels
                 {
                     SendWithChat(chat, (options, topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, content), result =>
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, content), result =>
                         {
                             if (result is Message { Content: MessageDocument document })
                             {
@@ -790,7 +790,7 @@ namespace Telegram.ViewModels
                     {
                         SendWithChat(chat, (options, topic) =>
                         {
-                            ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
+                            ClientService.Send(new SendMessage(chat.Id, topic, null, options, new InputMessageText(formatted, null, false)));
                         });
                     }
                 }
@@ -803,7 +803,7 @@ namespace Telegram.ViewModels
                 {
                     SendWithChat(chat, (options, topic) =>
                     {
-                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
+                        ClientService.Send(new SendMessage(chat.Id, topic, null, options, new InputMessageText(formatted, null, false)));
                     });
                 }
 
@@ -867,7 +867,7 @@ namespace Telegram.ViewModels
                     {
                         SendWithChat(chat, (options, topic) =>
                         {
-                            ClientService.Send(new SendMessage(chat.Id, topic, null, options, null, new InputMessageText(formatted, null, false)));
+                            ClientService.Send(new SendMessage(chat.Id, topic, null, options, new InputMessageText(formatted, null, false)));
                         });
                     }
                 }
@@ -930,7 +930,7 @@ namespace Telegram.ViewModels
                 {
                     NavigationService.HidePopup(typeof(ChooseChatsPopup));
 
-                    var response = await ClientService.SendAsync(new TransferGift(string.Empty, transferGift.Gift.ReceivedGiftId, chats[0].ToMessageSender(), transferGift.Gift.TransferStarCount));
+                    var response = await ClientService.SendAsync(new TransferGift(transferGift.Gift.ReceivedGiftId, chats[0].ToMessageSender(), transferGift.Gift.TransferStarCount));
                     if (response is Ok && transferGift.Gift.Gift is SentGiftUpgraded upgraded)
                     {
                         Aggregator.Publish(new UpdateGiftIsSold(transferGift.Gift.ReceivedGiftId));
