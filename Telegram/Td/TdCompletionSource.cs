@@ -6,7 +6,9 @@
 //
 
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Telegram.Td.Api;
 
 namespace Telegram.Td
 {
@@ -19,9 +21,15 @@ namespace Telegram.Td
             _closure = closure;
         }
 
+        // TODO: refactoring
+        public Api.File OnFile(ref Utf8JsonReader reader, bool updateFile)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnResult(Object result)
         {
-            _closure(result);
+            //_closure(result);
             SetResult(result);
         }
     }

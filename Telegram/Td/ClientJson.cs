@@ -98,11 +98,8 @@ namespace Telegram.Td.Api
             return buffer.NullTerminated();
         }
 
-        public static Object? FromJson(ReadOnlySpan<byte> jsonData, out int clientId, out long requestId)
+        public static Object? FromJson(ReadOnlySpan<byte> jsonData, ClientResultHandler handler)
         {
-            clientId = 0;
-            requestId = 0;
-
             var reader = new Utf8JsonReader(jsonData);
             reader.Read();
 
@@ -110,7 +107,6 @@ namespace Telegram.Td.Api
             {
                 reader.Read();
 
-                Object? obj = null;
                 while (reader.TokenType == JsonTokenType.PropertyName)
                 {
                     if (reader.ValueTextEquals("@type"u8))
@@ -119,41 +115,19 @@ namespace Telegram.Td.Api
                         var hash = ComputeCrc32(reader.ValueSpan);
 
                         reader.Read();
-                        obj = DoFromJson(ref reader, hash);
-
-                        if (reader.TokenType == JsonTokenType.EndObject)
-                        {
-                            //reader.Read();
-                            return obj;
-                        }
-
-                        continue;
-                    }
-                    else if (reader.ValueTextEquals("@extra"u8))
-                    {
-                        reader.Read();
-                        requestId = reader.GetInt64();
-                    }
-                    else if (reader.ValueTextEquals("@client_id"u8))
-                    {
-                        reader.Read();
-                        clientId = reader.GetInt32();
+                        return DoFromJson(ref reader, handler, hash);
                     }
 
                     reader.Read();
                 }
-
-                return obj;
             }
 
-            clientId = 0;
-            requestId = 0;
             return null;
         }
 
-        private delegate T? FromHandler<T>(ref Utf8JsonReader r, uint h);
+        private delegate T? FromHandler<T>(ref Utf8JsonReader r, ClientResultHandler handler, uint h);
 
-        private static T? FromJson<T>(ref Utf8JsonReader reader, FromHandler<T> handler) where T : Object
+        private static T? FromJson<T>(ref Utf8JsonReader reader, ClientResultHandler client, FromHandler<T> handler) where T : Object
         {
             if (reader.TokenType == JsonTokenType.Null)
             {
@@ -169,15 +143,15 @@ namespace Telegram.Td.Api
                 var hash = ComputeCrc32(reader.ValueSpan);
 
                 reader.Read();
-                obj = handler(ref reader, hash);
+                obj = handler(ref reader, client, hash);
             }
 
             return obj as T;
         }
 
-        private delegate bool ToHandler<T>(ref Utf8JsonReader r, ref T o, uint h);
+        public delegate bool ParseHandler<T>(ref Utf8JsonReader r, ClientResultHandler client, T obj, uint hash);
 
-        private static T ParseObject<T>(ref Utf8JsonReader reader, T obj, ToHandler<T> handler)
+        public static T ParseObject<T>(ref Utf8JsonReader reader, T obj, ClientResultHandler client, ParseHandler<T> handler)
         {
             reader.ReadStartObject();
 
@@ -185,26 +159,9 @@ namespace Telegram.Td.Api
             {
                 var hash = ComputeCrc32(reader.ValueSpan);
 
-                if (reader.CurrentDepth == 1)
-                {
-                    var snapshot = reader;
-
-                    reader.Read();
-
-                    if (!handler(ref reader, ref obj, hash))
-                    {
-                        reader = snapshot;
-                        return obj;
-                    }
-
-                    reader.Read();
-                }
-                else
-                {
-                    reader.Read();
-                    handler(ref reader, ref obj, hash);
-                    reader.Read();
-                }
+                reader.Read();
+                handler(ref reader, client, obj, hash);
+                reader.Read();
             }
 
             return obj;
@@ -213,7 +170,7 @@ namespace Telegram.Td.Api
         #region Crc32
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint ComputeCrc32(ReadOnlySpan<byte> data)
+        public static uint ComputeCrc32(ReadOnlySpan<byte> data)
         {
             return Crc32Partial(data, 0xFFFFFFFF) ^ 0xFFFFFFFF;
         }
@@ -302,7 +259,7 @@ namespace Telegram.Td.Api
                    crc32_table[crc >> 24];
         }
 
-        public static readonly uint[] crc32_table = new uint[]
+        private static readonly uint[] crc32_table = new uint[]
         {
             0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3, 0x0edb8832,
             0x79dcb8a4, 0xe0d5e91e, 0x97d2d988, 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91, 0x1db71064, 0x6ab020f2,
@@ -335,7 +292,7 @@ namespace Telegram.Td.Api
             0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
         };
 
-        public static readonly uint[] crc32_table2 = new uint[]
+        private static readonly uint[] crc32_table2 = new uint[]
         {
             0x00000000, 0x191b3141, 0x32366282, 0x2b2d53c3, 0x646cc504, 0x7d77f445, 0x565aa786, 0x4f4196c7, 0xc8d98a08,
             0xd1c2bb49, 0xfaefe88a, 0xe3f4d9cb, 0xacb54f0c, 0xb5ae7e4d, 0x9e832d8e, 0x87981ccf, 0x4ac21251, 0x53d92310,
@@ -368,7 +325,7 @@ namespace Telegram.Td.Api
             0xb809aeb1, 0xa1129ff0, 0x8a3fcc33, 0x9324fd72
         };
 
-        public static readonly uint[] crc32_table1 = new uint[]
+        private static readonly uint[] crc32_table1 = new uint[]
         {
             0x00000000, 0x01c26a37, 0x0384d46e, 0x0246be59, 0x0709a8dc, 0x06cbc2eb, 0x048d7cb2, 0x054f1685, 0x0e1351b8,
             0x0fd13b8f, 0x0d9785d6, 0x0c55efe1, 0x091af964, 0x08d89353, 0x0a9e2d0a, 0x0b5c473d, 0x1c26a370, 0x1de4c947,
@@ -401,7 +358,7 @@ namespace Telegram.Td.Api
             0xbcde8ab4, 0xbd1ce083, 0xbf5a5eda, 0xbe9834ed
         };
 
-        public static readonly uint[] crc32_table0 = new uint[]
+        private static readonly uint[] crc32_table0 = new uint[]
         {
             0x00000000, 0xb8bc6765, 0xaa09c88b, 0x12b5afee, 0x8f629757, 0x37def032, 0x256b5fdc, 0x9dd738b9, 0xc5b428ef,
             0x7d084f8a, 0x6fbde064, 0xd7018701, 0x4ad6bfb8, 0xf26ad8dd, 0xe0df7733, 0x58631056, 0x5019579f, 0xe8a530fa,
@@ -687,10 +644,10 @@ namespace Telegram.Td.Api
             writer.WriteEndArray();
         }
 
-        public delegate T GetObjectArrayHandler<T>(ref Utf8JsonReader reader);
+        public delegate T GetObjectArrayHandler<T>(ref Utf8JsonReader reader, ClientResultHandler handler);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<T> GetObjectArray<T>(this ref Utf8JsonReader reader, GetObjectArrayHandler<T> handler) where T : Object
+        public static List<T> GetObjectArray<T>(this ref Utf8JsonReader reader, ClientResultHandler client, GetObjectArrayHandler<T> handler) where T : Object
         {
             var obj = new List<T>();
 
@@ -703,7 +660,7 @@ namespace Telegram.Td.Api
                 }
                 else
                 {
-                    obj.Add(handler(ref reader));
+                    obj.Add(handler(ref reader, client));
                 }
 
                 reader.Read();
@@ -713,14 +670,14 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static List<IList<T>> GetObjectArrayArray<T>(this ref Utf8JsonReader reader, GetObjectArrayHandler<T> handler) where T : Object
+        public static List<IList<T>> GetObjectArrayArray<T>(this ref Utf8JsonReader reader, ClientResultHandler client, GetObjectArrayHandler<T> handler) where T : Object
         {
             var obj = new List<IList<T>>();
 
             reader.Read();
             while (reader.TokenType == JsonTokenType.StartArray)
             {
-                obj.Add(reader.GetObjectArray(handler));
+                obj.Add(reader.GetObjectArray(client, handler));
                 reader.Read();
             }
 

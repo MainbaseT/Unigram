@@ -409,7 +409,7 @@ namespace Telegram.Services
             _options = new OptionsService(this);
             _aggregator = aggregator;
 
-            _processFilesDelegate = new Action<Object>(ProcessFiles);
+            _processFilesDelegate = new Action<Object>(obj => { });
 
             Initialize(online);
         }
@@ -2890,42 +2890,187 @@ namespace Telegram.Services
             }
         }
 
-        public void OnResult(Object update)
+        public File OnFile(ref System.Text.Json.Utf8JsonReader reader, bool updateFile)
         {
-            ProcessFiles(update);
-
-            switch (update)
+            if (updateFile)
             {
-                case UpdateFile updateFile:
+                reader.ReadStartObject();
+                reader.Read();
+            }
+
+            reader.ReadStartObject();
+            reader.Read();
+
+            var id = reader.GetInt32();
+            if (_files.TryGetValue(id, out File obj))
+            {
+                if (!updateFile)
+                {
+                    reader.Read();
+                    while (reader.TokenType == System.Text.Json.JsonTokenType.PropertyName)
                     {
-                        if (_preparedLogsFileIds != null && _preparedLogsFileIds.Contains(updateFile.File.Id))
+                        reader.Read();
+
+                        if (reader.TokenType == System.Text.Json.JsonTokenType.StartObject)
                         {
-                            if (updateFile.File.Remote.UploadedSize > 0)
-                            {
-                                _preparedLogsFileIds.Remove(updateFile.File.Id);
-
-                                if (_preparedLogsFileIds.Empty())
-                                {
-                                    Client.Execute(new SetLogVerbosityLevel(_preparedLogsVerbosity));
-
-                                    _preparedLogsFileIds = null;
-                                    _preparedLogsVerbosity = -1;
-                                }
-                            }
+                            reader.Skip();
                         }
 
-                        // TODO: move the message after track when figured out why WeakAction throws a NRE
-                        var token = SessionId << 16 | updateFile.File.Id;
-                        if (updateFile.File.Local.IsDownloadingCompleted)
-                        {
-                            EventAggregator.Current.Publish(updateFile.File, token | 0x01000000);
-                        }
-
-                        EventAggregator.Current.Publish(updateFile.File, token);
-                        TrackDownloadedFile(updateFile.File);
-                        return;
+                        reader.Read();
                     }
 
+                    return obj;
+                }
+            }
+            else
+            {
+                obj = new File();
+                obj.Id = id;
+                obj.Local = new();
+                obj.Remote = new();
+            }
+
+            reader.Read();
+            while (reader.TokenType == System.Text.Json.JsonTokenType.PropertyName)
+            {
+                var hash = ClientJson.ComputeCrc32(reader.ValueSpan);
+
+                reader.Read();
+                Handler(ref reader, this, obj, hash);
+                reader.Read();
+            }
+
+            if (obj.Local.IsDownloadingCompleted && !NativeUtils.FileExists(obj.Local.Path))
+            {
+                Send(new DeleteFile(obj.Id));
+            }
+
+            _files[obj.Id] = obj;
+
+            UpdateFile(obj);
+            return obj;
+
+            static bool Handler(ref System.Text.Json.Utf8JsonReader reader, ClientResultHandler handler, File obj, uint hash)
+            {
+                switch (hash)
+                {
+                    case 3208210256:
+                        obj.Id = reader.GetInt32();
+                        return true;
+                    case 4156564586:
+                        obj.Size = reader.GetInt64();
+                        return true;
+                    case 2631592555:
+                        obj.ExpectedSize = reader.GetInt64();
+                        return true;
+                    case 2346092776:
+                        obj.Local = FromJson_LocalFile(ref reader, obj, handler);
+                        return true;
+                    case 1521909682:
+                        obj.Remote = FromJson_RemoteFile(ref reader, obj, handler);
+                        return true;
+                    default: return false;
+                }
+            }
+        }
+
+        public static LocalFile FromJson_LocalFile(ref System.Text.Json.Utf8JsonReader reader, File file, ClientResultHandler handler)
+        {
+            return ClientJson.ParseObject(ref reader, file.Local, handler, Handler);
+
+            static bool Handler(ref System.Text.Json.Utf8JsonReader reader, ClientResultHandler handler, LocalFile obj, uint hash)
+            {
+                switch (hash)
+                {
+                    case 190089999:
+                        obj.Path = reader.GetString();
+                        return true;
+                    case 1241267705:
+                        obj.CanBeDownloaded = reader.GetBoolean();
+                        return true;
+                    case 3790612123:
+                        obj.CanBeDeleted = reader.GetBoolean();
+                        return true;
+                    case 2701185344:
+                        obj.IsDownloadingActive = reader.GetBoolean();
+                        return true;
+                    case 2479055526:
+                        obj.IsDownloadingCompleted = reader.GetBoolean();
+                        return true;
+                    case 2616348667:
+                        obj.DownloadOffset = reader.GetInt64();
+                        return true;
+                    case 1216427891:
+                        obj.DownloadedPrefixSize = reader.GetInt64();
+                        return true;
+                    case 2156605620:
+                        obj.DownloadedSize = reader.GetInt64();
+                        return true;
+                    default: return false;
+                }
+            }
+        }
+
+        public static RemoteFile FromJson_RemoteFile(ref System.Text.Json.Utf8JsonReader reader, File file, ClientResultHandler handler)
+        {
+            return ClientJson.ParseObject(ref reader, file.Remote, handler, Handler);
+
+            static bool Handler(ref System.Text.Json.Utf8JsonReader reader, ClientResultHandler handler, RemoteFile obj, uint hash)
+            {
+                switch (hash)
+                {
+                    case 3208210256:
+                        obj.Id = reader.GetString();
+                        return true;
+                    case 3821437763:
+                        obj.UniqueId = reader.GetString();
+                        return true;
+                    case 4088541240:
+                        obj.IsUploadingActive = reader.GetBoolean();
+                        return true;
+                    case 2871741201:
+                        obj.IsUploadingCompleted = reader.GetBoolean();
+                        return true;
+                    case 3478316327:
+                        obj.UploadedSize = reader.GetInt64();
+                        return true;
+                    default: return false;
+                }
+            }
+        }
+
+        private void UpdateFile(File file)
+        {
+            if (_preparedLogsFileIds != null && _preparedLogsFileIds.Contains(file.Id))
+            {
+                if (file.Remote.UploadedSize > 0)
+                {
+                    _preparedLogsFileIds.Remove(file.Id);
+
+                    if (_preparedLogsFileIds.Empty())
+                    {
+                        Client.Execute(new SetLogVerbosityLevel(_preparedLogsVerbosity));
+
+                        _preparedLogsFileIds = null;
+                        _preparedLogsVerbosity = -1;
+                    }
+                }
+            }
+
+            // TODO: move the message after track when figured out why WeakAction throws a NRE
+            var token = SessionId << 16 | file.Id;
+            if (file.Local.IsDownloadingCompleted)
+            {
+                EventAggregator.Current.Publish(file, token | 0x01000000);
+            }
+
+            EventAggregator.Current.Publish(file, token);
+        }
+
+        public void OnResult(Object update)
+        {
+            switch (update)
+            {
                 case UpdateChatPosition updateChatPosition:
                     {
                         if (_chats.TryGetValue(updateChatPosition.ChatId, out Chat value))

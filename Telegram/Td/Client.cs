@@ -8,6 +8,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text.Json;
 using System.Threading;
 using Telegram.Collections;
 using Telegram.Common;
@@ -20,6 +21,7 @@ namespace Telegram.Td
     public interface ClientResultHandler
     {
         void OnResult(Object result);
+        File OnFile(ref Utf8JsonReader reader, bool updateFile);
     }
 
     public class Client
@@ -37,7 +39,7 @@ namespace Telegram.Td
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
-        private static extern unsafe void td_send(int client_id, byte* request);
+        private static extern unsafe void td_send(int client_id, byte* request, long request_id);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
@@ -45,11 +47,11 @@ namespace Telegram.Td
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
-        private static extern unsafe byte* td_receive(double timeout);
+        private static extern unsafe byte* td_receive(double timeout, out int client_id, out long request_id);
 
         private static long _currentRequestId = 0;
         private static readonly ReaderWriterDictionary<long, ClientResultHandler> _handlers = new();
-        private static readonly ReaderWriterDictionary<long, ClientResultHandler> _updateHandlers = new();
+        private static readonly ReaderWriterDictionary<int, ClientResultHandler> _updateHandlers = new();
 
         private readonly int _clientId;
 
@@ -87,7 +89,7 @@ namespace Telegram.Td
             var request = ClientJson.ToJson(_writer, function, requestId);
             fixed (byte* bytes = request)
             {
-                td_send(_clientId, bytes);
+                td_send(_clientId, bytes, requestId);
             }
 
             _writer.Reset();
@@ -138,7 +140,7 @@ namespace Telegram.Td
 
                 try
                 {
-                    return ClientJson.FromJson(span, out _, out _);
+                    return ClientJson.FromJson(span, null);
                 }
                 finally
                 {
@@ -186,7 +188,7 @@ namespace Telegram.Td
             clientId = 0;
             requestId = 0;
 
-            var ptr = td_receive(timeout);
+            var ptr = td_receive(timeout, out clientId, out requestId);
             if (ptr == null)
             {
                 return null;
@@ -215,7 +217,9 @@ namespace Telegram.Td
             }
 
             var span = new ReadOnlySpan<byte>(_buffer, 0, length);
-            return ClientJson.FromJson(span, out clientId, out requestId);
+
+            _updateHandlers.TryGetValue(clientId, out ClientResultHandler handler);
+            return ClientJson.FromJson(span, handler);
         }
 
         private static readonly object _logMutex = new();

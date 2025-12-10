@@ -6,6 +6,7 @@
 //
 
 using System;
+using System.Text.Json;
 
 namespace Telegram.Td
 {
@@ -21,11 +22,17 @@ namespace Telegram.Td
             _callback = callback;
         }
 
+        // TODO: refactoring
+        public Api.File OnFile(ref Utf8JsonReader reader, bool updateFile)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnResult(Object result)
         {
             try
             {
-                _closure(result);
+                //_closure(result);
                 _callback?.Invoke(result);
             }
             catch
