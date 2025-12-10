@@ -656,17 +656,6 @@ namespace Telegram.ViewModels
             _filledIconGlyph = glyph.Item2;
         }
 
-        public ChatFolderViewModel(IClientService clientService, int id, string title, string glyph, string filledGlyph)
-        {
-            ClientService = clientService;
-            ChatFolderId = id;
-            IsNavigationItem = true;
-
-            Name = new ChatFolderName(new FormattedText(title, Array.Empty<TextEntity>()), false);
-            IconGlyph = glyph;
-            FilledIconGlyph = filledGlyph;
-        }
-
         private ChatFolderViewModel(ChatList list)
         {
             ChatList = list;
