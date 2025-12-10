@@ -754,9 +754,6 @@
                                           Content="{TemplateBinding Content}"
                                           HorizontalContentAlignment="Stretch"
                                           VerticalContentAlignment="Stretch" />
-                        <Border Background="Transparent"
-                                CornerRadius="96" />
-                        
                         <Border x:Name="LiveBadge"
                                 x:Load="False"
                                 HorizontalAlignment="Center"

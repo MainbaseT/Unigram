@@ -7,9 +7,9 @@
 
 using Microsoft.Graphics.Canvas.Geometry;
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Native;
