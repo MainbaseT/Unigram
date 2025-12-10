@@ -6,7 +6,6 @@
 //
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Common;
@@ -48,8 +47,7 @@ namespace Telegram.Controls.Chats
             }
         }
 
-        private readonly DisposableMutex _loadMoreLock = new();
-        private readonly SemaphoreSlim _loadMoreSemaphore = new(2, 2);
+        private bool _loadingSlice;
 
         private readonly DispatcherTimer _scrollTracker = new();
 
@@ -256,7 +254,10 @@ namespace Telegram.Controls.Chats
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ViewChanging();
+            if (ScrollingHost?.ScrollableHeight < ScrollingHost?.ViewportHeight)
+            {
+                ViewChanging();
+            }
         }
 
         private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
@@ -291,54 +292,47 @@ namespace Telegram.Controls.Chats
                 : PanelScrollingDirection.None);
         }
 
-        private async void ViewChanging(PanelScrollingDirection direction = PanelScrollingDirection.None)
+        public async void ViewChanging(PanelScrollingDirection direction = PanelScrollingDirection.None)
         {
             ScrollingDirection = direction;
 
-            if (ScrollingHost == null || ItemsPanelRoot is not ItemsStackPanel panel || ViewModel == null || !_loadMoreSemaphore.Wait(0))
+            if (ScrollingHost == null || ItemsPanelRoot is not ItemsStackPanel panel || ViewModel == null || IsDisconnected || _loadingSlice)
             {
                 return;
             }
 
-            using (await _loadMoreLock.WaitAsync())
+            _loadingSlice = true;
+
+            var lastSlice = ViewModel.IsSavedMessagesTab ? ViewModel.IsNewestSliceLoaded != true : ViewModel.IsOldestSliceLoaded != true;
+            var firstSlice = ViewModel.IsSavedMessagesTab ? ViewModel.IsOldestSliceLoaded != true : ViewModel.IsNewestSliceLoaded != true;
+
+            if (direction == PanelScrollingDirection.Backward
+                && panel.FirstCacheIndex == 0
+                && lastSlice)
             {
-                if (IsDisconnected)
-                {
-                    _loadMoreSemaphore.Release();
-                    return;
-                }
-
-                var lastSlice = ViewModel.IsSavedMessagesTab ? ViewModel.IsNewestSliceLoaded != true : ViewModel.IsOldestSliceLoaded != true;
-                var firstSlice = ViewModel.IsSavedMessagesTab ? ViewModel.IsOldestSliceLoaded != true : ViewModel.IsNewestSliceLoaded != true;
-
-                if (direction == PanelScrollingDirection.Backward
-                    && panel.FirstCacheIndex == 0
-                    && lastSlice)
+                Logger.Debug($"Going {direction}, loading history in the past");
+                await LoadNextSliceAsync();
+            }
+            else if (direction == PanelScrollingDirection.Forward
+                && panel.LastCacheIndex == ViewModel.Items.Count - 1)
+            {
+                await LoadPreviousSliceAsync(direction, firstSlice);
+            }
+            else if (direction == PanelScrollingDirection.None)
+            {
+                if (lastSlice && panel.FirstVisibleIndex == 0)
                 {
                     Logger.Debug($"Going {direction}, loading history in the past");
                     await LoadNextSliceAsync();
                 }
-                else if (direction == PanelScrollingDirection.Forward
-                    && panel.LastCacheIndex == ViewModel.Items.Count - 1)
+
+                if (panel.LastCacheIndex == ViewModel.Items.Count - 1)
                 {
                     await LoadPreviousSliceAsync(direction, firstSlice);
                 }
-                else if (direction == PanelScrollingDirection.None)
-                {
-                    if (lastSlice && panel.FirstVisibleIndex == 0)
-                    {
-                        Logger.Debug($"Going {direction}, loading history in the past");
-                        await LoadNextSliceAsync();
-                    }
-
-                    if (panel.LastCacheIndex == ViewModel.Items.Count - 1)
-                    {
-                        await LoadPreviousSliceAsync(direction, firstSlice);
-                    }
-                }
             }
 
-            _loadMoreSemaphore.Release();
+            _loadingSlice = false;
         }
 
         private Task LoadNextSliceAsync()

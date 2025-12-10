@@ -113,51 +113,48 @@ namespace Telegram.ViewModels
 
         public override async Task LoadEventLogSliceAsync(string query = "")
         {
-            NotifyMessageSliceLoaded();
+            NotifyInitialized();
 
-            using (await _loadMoreLock.WaitAsync())
+            var chat = _chat;
+            if (chat == null)
             {
-                var chat = _chat;
-                if (chat == null)
-                {
-                    return;
-                }
-
-                if (_loadingSlice)
-                {
-                    return;
-                }
-
-                _loadingSlice = true;
-                IsOldestSliceLoaded = null;
-                IsNewestSliceLoaded = null;
-                IsLoading = true;
-
-                System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadScheduledSliceAsync");
-
-                var response = await ClientService.SendAsync(new GetChatEventLog(chat.Id, query, 0, 50, _filters, _userIds));
-                if (response is ChatEvents events)
-                {
-                    _groupedMessages.Clear();
-
-                    if (events.Events.Count > 0)
-                    {
-                        SetScrollMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
-                        Logger.Debug("Setting scroll mode to KeepLastItemInView");
-                    }
-
-                    var replied = ProcessEvents(events);
-                    ProcessMessages(chat, replied);
-
-                    Items.RawReplaceWith(replied);
-
-                    IsOldestSliceLoaded = false;
-                    IsNewestSliceLoaded = true;
-                }
-
-                _loadingSlice = false;
-                IsLoading = false;
+                return;
             }
+
+            if (_loadingSlice)
+            {
+                return;
+            }
+
+            _loadingSlice = true;
+            IsOldestSliceLoaded = null;
+            IsNewestSliceLoaded = null;
+            IsLoading = true;
+
+            System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadScheduledSliceAsync");
+
+            var response = await ClientService.SendAsync(new GetChatEventLog(chat.Id, query, 0, 50, _filters, _userIds));
+            if (response is ChatEvents events)
+            {
+                _groupedMessages.Clear();
+
+                if (events.Events.Count > 0)
+                {
+                    SetScrollMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
+                    Logger.Debug("Setting scroll mode to KeepLastItemInView");
+                }
+
+                var replied = ProcessEvents(events);
+                ProcessMessages(chat, replied);
+
+                Items.RawReplaceWith(replied);
+
+                IsOldestSliceLoaded = false;
+                IsNewestSliceLoaded = true;
+            }
+
+            _loadingSlice = false;
+            IsLoading = false;
 
             var already = Items.LastOrDefault();
             if (already != null)
@@ -168,49 +165,46 @@ namespace Telegram.ViewModels
 
         public override async Task LoadNextSliceAsync()
         {
-            using (await _loadMoreLock.WaitAsync())
+            var chat = _chat;
+            if (chat == null)
             {
-                var chat = _chat;
-                if (chat == null)
-                {
-                    return;
-                }
-
-                if (_loadingSlice || Items.Count < 1 || IsOldestSliceLoaded == true)
-                {
-                    return;
-                }
-
-                _loadingSlice = true;
-                IsLoading = true;
-
-                System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadNextSliceAsync");
-                System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadNextSliceAsync: Begin request");
-
-                var response = await ClientService.SendAsync(new GetChatEventLog(chat.Id, string.Empty, _minEventId, 50, _filters, _userIds));
-                if (response is ChatEvents events)
-                {
-                    if (events.Events.Count > 0)
-                    {
-                        SetScrollMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
-                        Logger.Debug("Setting scroll mode to KeepLastItemInView");
-                    }
-
-                    var replied = ProcessEvents(events);
-                    ProcessMessages(chat, replied);
-
-                    Items.RawInsertRange(0, replied, false, out bool empty);
-                    IsOldestSliceLoaded = empty;
-
-                    if (empty)
-                    {
-                        //await AddHeaderAsync();
-                    }
-                }
-
-                _loadingSlice = false;
-                IsLoading = false;
+                return;
             }
+
+            if (_loadingSlice || Items.Count < 1 || IsOldestSliceLoaded == true)
+            {
+                return;
+            }
+
+            _loadingSlice = true;
+            IsLoading = true;
+
+            System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadNextSliceAsync");
+            System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadNextSliceAsync: Begin request");
+
+            var response = await ClientService.SendAsync(new GetChatEventLog(chat.Id, string.Empty, _minEventId, 50, _filters, _userIds));
+            if (response is ChatEvents events)
+            {
+                if (events.Events.Count > 0)
+                {
+                    SetScrollMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
+                    Logger.Debug("Setting scroll mode to KeepLastItemInView");
+                }
+
+                var replied = ProcessEvents(events);
+                ProcessMessages(chat, replied);
+
+                Items.RawInsertRange(0, replied, false, out bool empty);
+                IsOldestSliceLoaded = empty;
+
+                if (empty)
+                {
+                    //await AddHeaderAsync();
+                }
+            }
+
+            _loadingSlice = false;
+            IsLoading = false;
         }
 
         private Message CreateMessage(long chatId, bool isChannel, ChatEvent chatEvent, bool child = false)
