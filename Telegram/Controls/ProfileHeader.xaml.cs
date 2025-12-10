@@ -694,6 +694,8 @@ namespace Telegram.Controls
                 {
                     Photo.Source = ProfilePictureSource.Chat(ViewModel.ClientService, chat);
                 }
+
+                PhotoBorder.CornerRadius = new CornerRadius(Photo.ComputedShape == ProfilePictureShape.Superellipse ? 35 : 70);
             }
         }
 
