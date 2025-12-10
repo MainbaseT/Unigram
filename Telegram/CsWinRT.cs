@@ -12,7 +12,6 @@ global using TimeZone = Telegram.Td.Api.TimeZone;
 global using User = Telegram.Td.Api.User;
 global using VirtualKey = Windows.System.VirtualKey;
 global using VirtualKeyModifiers = Windows.System.VirtualKeyModifiers;
-global using BaseObject = Telegram.Td.Api.BaseObject;
 using System;
 #if NET9_0_OR_GREATER
 using System.Runtime.CompilerServices;
@@ -54,16 +53,6 @@ using WinRT;
 [assembly: GeneratedWinRTExposedExternalType(typeof(System.Collections.Generic.List<Telegram.Td.Api.NameColor>))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(System.Collections.Generic.List<Telegram.Td.Api.ProfileColor>))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Collections.MvxObservableCollection<Telegram.Td.Api.PremiumFeature>))]
-#endif
-
-#if TD_WINRT
-namespace Telegram.Td.Api
-{
-    public class NativeObject
-    {
-        // Stub
-    }
-}
 #endif
 
 namespace WinRT

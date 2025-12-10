@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Services;
@@ -19,24 +18,6 @@ namespace Telegram.Td
 {
     static class ClientEx
     {
-        public static void Send(this Client client, Function function, Action<Object> closure, Action<Object> handler)
-        {
-            client.Send(function, new TdHandler(closure, handler));
-        }
-
-        public static void Send(this Client client, Function function)
-        {
-            client.Send(function, null);
-        }
-
-        public static Task<Object> SendAsync(this Client client, Function function, Action<Object> closure)
-        {
-            var tsc = new TdCompletionSource(closure);
-            client.Send(function, tsc);
-
-            return tsc.Task;
-        }
-
         public static bool SearchByPrefix(string input, string query)
         {
             var result = Client.Execute(new SearchStringsByPrefix(new[] { input }, query, 1, true));

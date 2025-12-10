@@ -707,8 +707,6 @@
     </Compile>
     <Compile Include="Td\Api\UpdateUserIsContact.cs" />
     <Compile Include="Td\ClientEx.cs" />
-    <Compile Include="Td\TdCompletionSource.cs" />
-    <Compile Include="Td\TdHandler.cs" />
     <Compile Include="Td\Api\MessageAlbum.cs" />
     <Compile Include="Td\Api\MessageBigEmoji.cs" />
     <Compile Include="Td\Api\MessageChatEvent.cs" />

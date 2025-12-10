@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Native;
@@ -87,7 +86,7 @@ namespace Telegram.Services
             {
                 if (result is File file)
                 {
-                    tsc.SetResult(ProcessFile(file));
+                    tsc.SetResult(file);
                 }
                 else
                 {

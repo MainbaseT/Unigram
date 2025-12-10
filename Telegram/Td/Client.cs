@@ -21,7 +21,9 @@ namespace Telegram.Td
     public interface ClientResultHandler
     {
         void OnResult(Object result);
-        File OnFile(ref Utf8JsonReader reader, bool updateFile);
+
+        UpdateFile ParseUpdateFile(ref Utf8JsonReader reader);
+        File ParseFile(ref Utf8JsonReader reader);
     }
 
     public class Client
@@ -50,12 +52,12 @@ namespace Telegram.Td
         private static extern unsafe byte* td_receive(double timeout, out int client_id, out long request_id);
 
         private static long _currentRequestId = 0;
-        private static readonly ReaderWriterDictionary<long, ClientResultHandler> _handlers = new();
+        private static readonly ReaderWriterDictionary<long, Action<Object>> _handlers = new();
         private static readonly ReaderWriterDictionary<int, ClientResultHandler> _updateHandlers = new();
 
         private readonly int _clientId;
 
-        private Client(ClientResultHandler updateHandler)
+        public Client(ClientResultHandler updateHandler)
         {
             _clientId = td_create_client_id();
 
@@ -67,9 +69,7 @@ namespace Telegram.Td
             Send(new GetOption("version"));
         }
 
-        public static Client Create(ClientResultHandler updateHandler) => new Client(updateHandler);
-
-        public unsafe void Send(Function function, ClientResultHandler handler = null)
+        public unsafe void Send(Function function, Action<Object> handler = null)
         {
             var requestId = Interlocked.Increment(ref _currentRequestId);
             if (handler != null)
@@ -163,12 +163,14 @@ namespace Telegram.Td
                 {
                     bool isClosed = response is UpdateAuthorizationState { AuthorizationState: AuthorizationStateClosed } && request_id == 0;
 
-                    if (request_id == 0
-                        ? _updateHandlers.TryGetValue(client_id, out ClientResultHandler handler)
-                        : _handlers.TryRemove(request_id, out handler))
+                    if (request_id == 0)
                     {
-                        // TODO try/catch
-                        handler.OnResult(response);
+                        _updateHandlers.TryGetValue(client_id, out ClientResultHandler handler);
+                        handler?.OnResult(response);
+                    }
+                    else if (_handlers.TryRemove(request_id, out Action<Object> action))
+                    {
+                        action(response);
                     }
 
                     if (isClosed)

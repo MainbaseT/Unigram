@@ -304,8 +304,6 @@ namespace Telegram.Services
         private readonly ILocaleService _locale;
         private readonly IEventAggregator _aggregator;
 
-        private readonly Action<Object> _processFilesDelegate;
-
         private readonly ReaderWriterDictionary<long, MessageEffect> _effects = new();
 
         private readonly ReaderWriterDictionary<long, Chat> _chats = new(1000);
@@ -416,8 +414,6 @@ namespace Telegram.Services
             _options = new OptionsService(this);
             _aggregator = aggregator;
 
-            _processFilesDelegate = new Action<Object>(obj => { });
-
             Initialize(online);
         }
 
@@ -458,11 +454,7 @@ namespace Telegram.Services
 
         private void Initialize(bool online = true)
         {
-#if TD_WINRT
             _client = new Client(this);
-#else
-            _client = Client.Create(this);
-#endif
 
 #if MOCKUP
             ProfilePhoto ProfilePhoto(string name)
@@ -614,7 +606,7 @@ namespace Telegram.Services
                     useSecretChats: true,
                     apiId: Constants.ApiId,
                     apiHash: Constants.ApiHash,
-                    systemLanguageCode: _deviceInfoService.SystemLanguageCode, 
+                    systemLanguageCode: _deviceInfoService.SystemLanguageCode,
                     deviceModel: deviceModel,
                     systemVersion: _deviceInfoService.SystemVersion,
                     applicationVersion: _deviceInfoService.ApplicationVersion));
@@ -1059,12 +1051,15 @@ namespace Telegram.Services
 
         public void Send(Function function, Action<Object> handler = null)
         {
-            _client.Send(function, _processFilesDelegate, handler);
+            _client.Send(function, handler);
         }
 
         public Task<Object> SendAsync(Function function)
         {
-            return _client.SendAsync(function, _processFilesDelegate);
+            var tsc = new TaskCompletionSource<Object>();
+            _client.Send(function, tsc.SetResult);
+
+            return tsc.Task;
         }
 
         public async Task<Object> SendPaymentAsync(long starCount, Function function)
@@ -1151,7 +1146,7 @@ namespace Telegram.Services
             var response = await SendAsync(new DownloadFile(file.Id, priority, offset, limit, true));
             if (response is File updated)
             {
-                return ProcessFile(updated);
+                return updated;
             }
 
             return file;
@@ -2888,7 +2883,18 @@ namespace Telegram.Services
             }
         }
 
-        public File OnFile(ref System.Text.Json.Utf8JsonReader reader, bool updateFile)
+        public UpdateFile ParseUpdateFile(ref System.Text.Json.Utf8JsonReader reader)
+        {
+            ParseFile(ref reader, true);
+            return null;
+        }
+
+        public File ParseFile(ref System.Text.Json.Utf8JsonReader reader)
+        {
+            return ParseFile(ref reader, false);
+        }
+
+        private File ParseFile(ref System.Text.Json.Utf8JsonReader reader, bool updateFile)
         {
             if (updateFile)
             {
@@ -2904,19 +2910,13 @@ namespace Telegram.Services
             {
                 if (!updateFile)
                 {
-                    reader.Read();
-                    while (reader.TokenType == System.Text.Json.JsonTokenType.PropertyName)
+                    var depth = reader.CurrentDepth;
+
+                    do
                     {
                         reader.Read();
-
-                        if (reader.TokenType == System.Text.Json.JsonTokenType.StartObject)
-                        {
-                            reader.Skip();
-                        }
-
-                        reader.Read();
                     }
-
+                    while (depth <= reader.CurrentDepth);
                     return obj;
                 }
             }
@@ -2945,7 +2945,11 @@ namespace Telegram.Services
 
             _files[obj.Id] = obj;
 
-            UpdateFile(obj);
+            if (updateFile)
+            {
+                UpdateFile(obj);
+            }
+
             return obj;
 
             static bool Handler(ref System.Text.Json.Utf8JsonReader reader, ClientResultHandler handler, File obj, uint hash)
