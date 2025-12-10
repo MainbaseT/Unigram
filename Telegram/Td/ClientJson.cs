@@ -161,6 +161,12 @@ namespace Telegram.Td.Api
 
                 reader.Read();
                 handler(ref reader, client, obj, hash);
+
+                if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    reader.Skip();
+                }
+
                 reader.Read();
             }
 
