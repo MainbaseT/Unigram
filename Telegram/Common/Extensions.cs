@@ -166,9 +166,9 @@ namespace Telegram.Common
             });
         }
 
-        public static FormattedText AsFormattedText(this string str)
+        public static FormattedText AsFormattedText(this string str, bool allocate = true)
         {
-            return new FormattedText(str, Array.Empty<TextEntity>());
+            return new FormattedText(str, allocate ? Array.Empty<TextEntity>() : null);
         }
 
         public static FormattedText AsFormattedText(this string str, TextEntityType type)
