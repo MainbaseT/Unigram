@@ -735,7 +735,7 @@ namespace Telegram.Td.Api
             var obj = new List<long>();
 
             reader.Read();
-            while (reader.TokenType is JsonTokenType.Number)
+            while (reader.TokenType is JsonTokenType.Number or JsonTokenType.String)
             {
                 obj.Add(reader.GetInt64String());
                 reader.Read();
