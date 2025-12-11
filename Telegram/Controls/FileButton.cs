@@ -130,6 +130,11 @@ namespace Telegram.Controls
 
         public void SetGlyph(int fileId, MessageContentState state)
         {
+            if (IsDisconnected)
+            {
+                return;
+            }
+
             if (fileId != _fileId)
             {
                 _state = MessageContentState.None;
