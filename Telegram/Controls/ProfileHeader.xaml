@@ -580,6 +580,7 @@
                                          Content="{CustomResource ProfileBotAffiliateProgram}"
                                          Click="{x:Bind ViewModel.OpenAffiliate}"
                                          Glyph="&#xEAA6;"
+                                         IsChevronVisible="True"
                                          Visibility="Collapsed" />
             </controls:HeaderedControl>
 
@@ -588,16 +589,19 @@
                                          Content="{CustomResource ChannelSubscribers}"
                                          Click="{x:Bind ViewModel.OpenMembers}"
                                          Glyph="&#xE716;"
+                                         IsChevronVisible="True"
                                          Visibility="Collapsed" />
                 <controls:SettingsButton x:Name="Admins"
                                          Content="{CustomResource ChannelAdministrators}"
                                          Click="{x:Bind ViewModel.OpenAdmins}"
                                          Glyph="&#xE983;"
+                                         IsChevronVisible="True"
                                          Visibility="Collapsed" />
                 <controls:SettingsButton x:Name="Statistics"
                                          Click="{x:Bind ViewModel.OpenBalance}"
                                          Content="{CustomResource StarsBalance}"
                                          Glyph="&#xEA8D;"
+                                         IsChevronVisible="True"
                                          Visibility="Collapsed">
                     <controls:SettingsButton.Badge>
                         <Grid>
