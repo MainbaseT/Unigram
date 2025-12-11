@@ -1670,7 +1670,7 @@ namespace Telegram.ViewModels
                     SecondaryButtonText = Strings.Cancel,
                 };
 
-                confirm = await popup.ShowAsync();
+                confirm = await ShowPopupAsync(popup);
 
                 if (confirm != ContentDialogResult.Primary)
                 {
