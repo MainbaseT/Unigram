@@ -66,10 +66,6 @@ namespace Telegram.Views.Folders.Popups
             _task.SetResult(ViewModel.SelectedItems.Select(x => x.Id).ToList());
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         #region Recycle
 
         private void OnChoosingItemContainer(ListViewBase sender, ChoosingItemContainerEventArgs args)

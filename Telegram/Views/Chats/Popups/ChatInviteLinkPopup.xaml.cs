@@ -161,10 +161,6 @@ namespace Telegram.Views.Chats.Popups
             }
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void RequireMonthlyFee_Checked(object sender, RoutedEventArgs e)
         {
             RequireMonthlyFeeValue.Visibility = RequireMonthlyFee.IsChecked == true

@@ -402,10 +402,6 @@ namespace Telegram.Views.Settings.Popups
             }
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void PrivacyInfo_Click(object sender, TextUrlClickEventArgs e)
         {
             ShowPrivacySettings = true;

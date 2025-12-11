@@ -294,14 +294,6 @@ namespace Telegram.Views.Premium.Popups
             return null;
         }
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void Purchase_Click(object sender, RoutedEventArgs e)
         {
             Hide();

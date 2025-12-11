@@ -76,9 +76,5 @@ namespace Telegram.Views.Popups
             }
             catch { }
         }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
     }
 }

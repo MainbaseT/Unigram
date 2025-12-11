@@ -295,14 +295,6 @@ namespace Telegram.Views.Profile.Popups
             block.Blocks.Add(paragraph);
         }
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void OnOpened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
             if (_ratingLevel < 0)

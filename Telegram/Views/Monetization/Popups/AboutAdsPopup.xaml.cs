@@ -37,14 +37,6 @@ namespace Telegram.Views.Monetization.Popups
             TextBlockHelper.SetMarkdown(LongInfo, string.Format(Strings.RevenueSharingAdsInfo4Subtitle2, string.Empty));//string.Format("[{0}]({1})", Strings.RevenueSharingAdsInfo4SubtitleLearnMore.Replace("**", string.Empty), Strings.PromoteUrl)));
         }
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void OnOpened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
 

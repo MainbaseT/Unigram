@@ -5,12 +5,7 @@
                        xmlns:controls="using:Telegram.Controls"
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                       mc:Ignorable="d"
-                       Title="Self-Destruct Timer"
-                       PrimaryButtonText="OK"
-                       SecondaryButtonText="Cancel"
-                       PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-                       SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+                       mc:Ignorable="d">
 
     <Grid>
         <ComboBox x:Name="FieldSeconds"

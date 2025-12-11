@@ -9,7 +9,6 @@
                        xmlns:cells="using:Telegram.Controls.Cells"
                        xmlns:icons="using:Telegram.Assets.Icons"
                        Title="{x:Null}"
-                       TitleTemplate="{x:Null}"
                        ContentMaxHeight="8000"
                        Padding="0"
                        mc:Ignorable="d">

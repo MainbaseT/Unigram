@@ -61,10 +61,6 @@ namespace Telegram.Views.Popups
             SelectedItems = ScrollingHost.SelectedItems.Cast<LanguagePackInfo>().Select(x => x.Id).ToHashSet();
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void OnChoosingItemContainer(ListViewBase sender, ChoosingItemContainerEventArgs args)
         {
             if (args.ItemContainer == null)

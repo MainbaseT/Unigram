@@ -56,10 +56,6 @@ namespace Telegram.Views.Popups
             SelectedItem = timeZone;
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void SearchField_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(SearchField.Text))

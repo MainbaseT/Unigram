@@ -124,10 +124,6 @@ namespace Telegram.Views.Popups
             _loadingMore = false;
         }
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private async void ToLanguage_Click(Hyperlink sender, HyperlinkClickEventArgs args)
         {
             Hide();

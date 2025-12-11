@@ -75,10 +75,6 @@ namespace Telegram.Views.Business.Popups
             }
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void Online_Click(object sender, RoutedEventArgs e)
         {
             IsUntilOnline = true;

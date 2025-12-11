@@ -39,10 +39,6 @@ namespace Telegram.Views.Popups
             Value = (int)duration.TotalSeconds;
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void DaysPicker_ValueChanged(LoopingPicker sender, LoopingPickerValueChangedEventArgs args)
         {
             DaysPicker.Header = string.Format(Locale.Declension(Strings.R.Days, args.NewValue, false), string.Empty).Trim();

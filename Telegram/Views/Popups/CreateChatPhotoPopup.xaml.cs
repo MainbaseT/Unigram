@@ -80,10 +80,6 @@ namespace Telegram.Views.Popups
             _completion.SetResult(ViewModel.Send());
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender == Navigation && Navigation.SelectedIndex >= 0)

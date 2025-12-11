@@ -8,7 +8,6 @@
 using Telegram.Controls;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Premium.Popups
 {
@@ -19,14 +18,6 @@ namespace Telegram.Views.Premium.Popups
             InitializeComponent();
 
             Presenter.UpdateFeature(clientService, new[] { sticker });
-        }
-
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
         }
 
         private void Purchase_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)

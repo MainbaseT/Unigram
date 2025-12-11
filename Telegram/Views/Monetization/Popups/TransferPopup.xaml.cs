@@ -9,7 +9,6 @@ using System;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Converters;
-using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Monetization.Popups
 {
@@ -25,14 +24,6 @@ namespace Telegram.Views.Monetization.Popups
 
             PrimaryButtonText = Strings.Send;
             SecondaryButtonText = Strings.Cancel;
-        }
-
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
         }
     }
 }

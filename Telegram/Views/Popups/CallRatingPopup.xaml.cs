@@ -7,7 +7,6 @@
 
 using Telegram.Controls;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Popups
 {
@@ -20,14 +19,6 @@ namespace Telegram.Views.Popups
             Title = Strings.AppName;
             PrimaryButtonText = Strings.OK;
             SecondaryButtonText = Strings.Cancel;
-        }
-
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
         }
 
         private Visibility ConvertVisibility(int rating)

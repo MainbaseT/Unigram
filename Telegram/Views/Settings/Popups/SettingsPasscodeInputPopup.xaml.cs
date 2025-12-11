@@ -52,10 +52,6 @@ namespace Telegram.Views.Settings.Popups
             Passcode = First.Password.ToString();
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void First_Changed(object sender, RoutedEventArgs e)
         {
             if (IsSimple && First.Password.Length == 4 && First.Password.All(x => x is >= '0' and <= '9'))

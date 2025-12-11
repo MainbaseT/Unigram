@@ -42,14 +42,6 @@ namespace Telegram.Views.Popups
             set => Accent.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void TextField_ColorChanged(ColorTextBox sender, Controls.ColorChangedEventArgs args)
         {
             _color = args.NewColor;

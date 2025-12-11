@@ -11,8 +11,6 @@
                        xmlns:td="using:Telegram.Td.Api"
                        mc:Ignorable="d"
                        Title="{x:Null}"
-                       PrimaryButtonText="Button1"
-                       SecondaryButtonText="Button2"
                        PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
                        IsPrimaryButtonEnabled="{x:Bind ConvertEnabled(ViewModel.SelectedBackground, ViewModel.SelectedForeground), Mode=OneWay}"
                        Closing="OnClosing"

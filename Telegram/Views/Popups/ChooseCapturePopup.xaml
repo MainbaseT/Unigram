@@ -10,8 +10,6 @@
                        ContentMaxWidth="568"
                        ContentMaxHeight="420"
                        HorizontalContentAlignment="Stretch"
-                       PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-                       SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
                        Padding="0"
                        RequestedTheme="Dark">
 

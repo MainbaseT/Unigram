@@ -125,10 +125,6 @@ namespace Telegram.Views.Supergroups.Popups
             }
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void NameLabel_TextChanged(object sender, TextChangedEventArgs e)
         {
             UpdateTopicIcon();

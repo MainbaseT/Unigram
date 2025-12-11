@@ -50,10 +50,6 @@ namespace Telegram.Views.Popups
             args.Cancel = Shortcut == null;
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void TextField_Loaded(object sender, RoutedEventArgs e)
         {
             TextField.Focus(FocusState.Keyboard);

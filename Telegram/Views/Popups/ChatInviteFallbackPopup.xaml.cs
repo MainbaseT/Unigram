@@ -94,10 +94,6 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             IsPrimaryButtonEnabled = ScrollingHost.SelectionMode == ListViewSelectionMode.Multiple

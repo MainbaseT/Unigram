@@ -79,14 +79,6 @@ namespace Telegram.Views.Settings.Popups
 
         public bool CanAcceptSecretChats => AcceptSecretChats.IsChecked == true;
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private async void OnOpened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
             await Task.Delay(500);

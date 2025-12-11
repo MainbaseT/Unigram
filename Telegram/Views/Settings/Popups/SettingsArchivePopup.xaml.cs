@@ -75,10 +75,6 @@ namespace Telegram.Views.Settings.Popups
             }));
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void NewChats_Click(object sender, RoutedEventArgs e)
         {
             if (NewChats.IsFaux)

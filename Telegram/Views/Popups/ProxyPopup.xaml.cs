@@ -116,10 +116,6 @@ namespace Telegram.Views.Popups
             }
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-        }
-
         private void Share_Click(object sender, RoutedEventArgs e)
         {
             var builder = new List<string>();
