@@ -13,6 +13,8 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Telegram.Msix", "Telegram.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telegram.Stub", "Telegram.Stub\Telegram.Stub.csproj", "{09C1D158-F794-F5AA-A39A-2541C235364D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telegram.Generators", "Telegram.Generators\Telegram.Generators.csproj", "{B273F18C-527E-44E0-9F1C-1D6C5F932824}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -95,6 +97,18 @@ Global
 		{09C1D158-F794-F5AA-A39A-2541C235364D}.Release|x64.Build.0 = Release|x64
 		{09C1D158-F794-F5AA-A39A-2541C235364D}.Release|x86.ActiveCfg = Release|x64
 		{09C1D158-F794-F5AA-A39A-2541C235364D}.Release|x86.Build.0 = Release|x64
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Debug|x64.Build.0 = Debug|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Debug|x86.Build.0 = Debug|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Release|ARM64.Build.0 = Release|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Release|x64.ActiveCfg = Release|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Release|x64.Build.0 = Release|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Release|x86.ActiveCfg = Release|Any CPU
+		{B273F18C-527E-44E0-9F1C-1D6C5F932824}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

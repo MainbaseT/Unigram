@@ -630,7 +630,6 @@
     <Compile Include="Td\Api\UpdateTextRecognition.cs" />
     <Compile Include="Td\Client.cs" />
     <Compile Include="Td\ClientJson.cs" />
-    <Compile Include="Td\TdDotNetApi.cs" />
     <Compile Include="Td\Api\UpdateChatMember.cs" />
     <Compile Include="TypeContainerGenerator.cs" />
     <Compile Include="TypeCrosserGenerator.cs" />
@@ -4271,6 +4270,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Telegram.Generators\Telegram.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false">
+      <Project>{b273f18c-527e-44e0-9f1c-1d6c5f932824}</Project>
+      <Name>Telegram.Generators</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Telegram.Native.Calls\Telegram.Native.Calls.vcxproj">
       <Project>{fdd3c45d-4cff-4a90-8fef-16ca70ab00be}</Project>
       <Name>Telegram.Native.Calls</Name>
@@ -4297,6 +4300,7 @@
     <OpenSSLPlatform Condition="'$(Platform)' != 'Win32'">-$(Platform)</OpenSSLPlatform>
   </PropertyGroup>
   <ItemGroup>
+    <AdditionalFiles Include="$(ProjectDir)\..\Libraries\tdjson\td_api.tl" />
     <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\tdjson\$(Platform)\tdjson.dll" />
     <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\tdjson\$(Platform)\libcrypto-3$(OpenSSLPlatform).dll" />
     <ReferenceCopyLocalPaths Include="$(ProjectDir)\..\Libraries\tdjson\$(Platform)\libssl-3$(OpenSSLPlatform).dll" />
