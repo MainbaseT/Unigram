@@ -35,16 +35,6 @@ namespace Telegram.Views.Settings
             Title = Strings.Appearance;
 
             Preview.CreateInsetClip();
-
-            _valueChanged = new EventDebouncer<RangeBaseValueChangedEventArgs>(Constants.TypingTimeout,
-                handler => ScalingSlider.ValueChanged += new RangeBaseValueChangedEventHandler(handler),
-                handler => ScalingSlider.ValueChanged -= new RangeBaseValueChangedEventHandler(handler));
-            _valueChanged.Invoked += Slider_ValueChanged;
-
-            ScalingSlider.AddHandler(PointerPressedEvent, new PointerEventHandler(Slider_PointerPressed), true);
-            ScalingSlider.AddHandler(PointerReleasedEvent, new PointerEventHandler(Slider_PointerReleased), true);
-            ScalingSlider.AddHandler(PointerCanceledEvent, new PointerEventHandler(Slider_PointerCanceled), true);
-            ScalingSlider.AddHandler(PointerCaptureLostEvent, new PointerEventHandler(Slider_PointerCaptureLost), true);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -77,8 +67,6 @@ namespace Telegram.Views.Settings
                 Message1.Mockup(ViewModel.ClientService, Strings.FontSizePreviewLine1, user, Strings.FontSizePreviewReply, false, DateTime.Now.AddSeconds(-25));
                 Message2.Mockup(Strings.FontSizePreviewLine2, true, DateTime.Now);
             }
-
-            ScalingSlider.Value = ViewModel.Scaling;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -115,13 +103,6 @@ namespace Telegram.Views.Settings
             {
                 Message1.UpdateMockup(false, true, true);
                 Message2.UpdateMockup(true, true, true);
-            }
-            else if (e.PropertyName == nameof(ViewModel.UseDefaultScaling))
-            {
-                if (ViewModel.UseDefaultScaling)
-                {
-                    ScalingSlider.Value = ViewModel.Scaling;
-                }
             }
         }
 
@@ -199,40 +180,6 @@ namespace Telegram.Views.Settings
 
         #endregion
 
-        private readonly EventDebouncer<RangeBaseValueChangedEventArgs> _valueChanged;
-        private bool _scrubbing;
-
-        private void Slider_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            _scrubbing = true;
-        }
-
-        private void Slider_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            _scrubbing = false;
-            ViewModel.Scaling = (int)ScalingSlider.Value;
-        }
-
-        private void Slider_PointerCanceled(object sender, PointerRoutedEventArgs e)
-        {
-            _scrubbing = false;
-        }
-
-        private void Slider_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
-        {
-            _scrubbing = false;
-        }
-
-        private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            if (_scrubbing)
-            {
-                return;
-            }
-
-            ViewModel.Scaling = (int)e.NewValue;
-        }
-
         private bool _compact;
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -247,9 +194,6 @@ namespace Telegram.Views.Settings
 
             Grid.SetColumnSpan(TextSizeHeader, compact ? 2 : 1);
             Grid.SetColumnSpan(BubbleRadiusHeader, compact ? 2 : 1);
-
-            Grid.SetRow(ScalingSlider, compact ? 1 : 0);
-            Grid.SetColumn(ScalingSlider, compact ? 0 : 2);
 
             Grid.SetRow(FontSizeSlider, compact ? 1 : 0);
             Grid.SetColumn(FontSizeSlider, compact ? 0 : 2);

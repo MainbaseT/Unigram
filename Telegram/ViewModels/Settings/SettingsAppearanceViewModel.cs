@@ -42,12 +42,11 @@ namespace Telegram.ViewModels.Settings
 
             ChatThemes = new ObservableCollection<ChatThemeViewModel>();
 
-            var current = NativeUtils.GetScaleForCurrentView();
             var stored = settingsService.Appearance.Scaling;
 
-            if (stored == 0 || settingsService.Appearance.UseDefaultScaling)
+            if (settingsService.Appearance.UseDefaultScaling)
             {
-                stored = current;
+                stored = 0;
             }
 
             _scaling = stored;
@@ -159,26 +158,6 @@ namespace Telegram.ViewModels.Settings
             set => Set(ref _emojiSetId, value);
         }
 
-        public bool UseDefaultScaling
-        {
-            get => Settings.Appearance.UseDefaultScaling;
-            set
-            {
-                if (Settings.Appearance.UseDefaultScaling != value)
-                {
-                    Settings.Appearance.UseDefaultScaling = value;
-
-                    if (value || Settings.Appearance.Scaling == 0)
-                    {
-                        NativeUtils.OverrideScaleForCurrentView(Settings.Appearance.Scaling = _scaling = NativeUtils.GetScaleForCurrentView());
-                        RaisePropertyChanged(nameof(Scaling));
-                    }
-
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
         private int _scaling;
         public int Scaling
         {
@@ -187,8 +166,18 @@ namespace Telegram.ViewModels.Settings
             {
                 if (value >= 0 && value < _scalingIndexer.Length && _scaling != _scalingIndexer[value])
                 {
-                    NativeUtils.OverrideScaleForCurrentView(Settings.Appearance.Scaling = _scaling = _scalingIndexer[value]);
-                    UseDefaultScaling = false;
+                    var scaling = _scalingIndexer[value];
+                    if (scaling == 0)
+                    {
+                        NativeUtils.OverrideScaleForCurrentView(Settings.Appearance.Scaling = _scaling = NativeUtils.GetScaleForCurrentView());
+                        Settings.Appearance.UseDefaultScaling = true;
+                    }
+                    else
+                    {
+                        NativeUtils.OverrideScaleForCurrentView(Settings.Appearance.Scaling = _scaling = scaling);
+                        Settings.Appearance.UseDefaultScaling = false;
+                    }
+
                     RaisePropertyChanged();
                 }
             }
@@ -196,6 +185,7 @@ namespace Telegram.ViewModels.Settings
 
         private readonly int[] _scalingIndexer = new[]
         {
+            0,
             100,
             125,
             150,
@@ -203,6 +193,18 @@ namespace Telegram.ViewModels.Settings
             200,
             225,
             250
+        };
+
+        public List<SettingsOptionItem<int>> ScalingOptions { get; } = new()
+        {
+            new SettingsOptionItem<int>(0, Strings.Default),
+            new SettingsOptionItem<int>(100, "100%"),
+            new SettingsOptionItem<int>(125, "125%"),
+            new SettingsOptionItem<int>(150, "150%"),
+            new SettingsOptionItem<int>(175, "175%"),
+            new SettingsOptionItem<int>(200, "200%"),
+            new SettingsOptionItem<int>(225, "225%"),
+            new SettingsOptionItem<int>(250, "250%"),
         };
 
         private readonly Dictionary<int, int> _indexToSize = new() { { 0, 12 }, { 1, 13 }, { 2, 14 }, { 3, 15 }, { 4, 16 }, { 5, 17 }, { 6, 18 } };

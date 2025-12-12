@@ -111,36 +111,14 @@
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl>
-                    <Grid Background="{ThemeResource SettingsItemBackground}"
-                          BorderBrush="{ThemeResource SettingsItemBorderBrush}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="56" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="2*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="44" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <CheckBox IsChecked="{x:Bind ViewModel.UseDefaultScaling, Mode=TwoWay}"
-                                  Content="{CustomResource DefaultInterfaceScale}"
-                                  Style="{StaticResource SettingsCheckBoxStyle}"
-                                  Background="Transparent"
-                                  Grid.ColumnSpan="3" />
-
-                        <Slider x:Name="ScalingSlider"
-                                AutomationProperties.Name="{CustomResource InterfaceScale}"
-                                Minimum="0"
-                                Maximum="6"
-                                SmallChange="1"
-                                LargeChange="1"
-                                TickFrequency="1"
-                                TickPlacement="Outside"
-                                IsThumbToolTipEnabled="False"
-                                Margin="12,6,12,6"
-                                Grid.Column="2"
-                                Grid.ColumnSpan="3" />
-                    </Grid>
+                    <controls:SettingsButton Content="{CustomResource InterfaceScale}"
+                                             Glyph="&#xEA89;">
+                        <controls:SettingsButton.Badge>
+                            <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.ScalingOptions}"
+                                                       SelectedIndex="{x:Bind ViewModel.Scaling, Mode=TwoWay}"
+                                                       DisplayMemberPath="Text" />
+                        </controls:SettingsButton.Badge>
+                    </controls:SettingsButton>
                     <Grid Background="{ThemeResource SettingsItemBackground}"
                           BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <Grid.ColumnDefinitions>
