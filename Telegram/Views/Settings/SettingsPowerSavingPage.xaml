@@ -9,7 +9,8 @@
                   NavigationMode="Root">
 
     <Grid Background="{ThemeResource SettingsPageBackground}">
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
+        <ScrollViewer x:Name="ScrollingHost"
+                      VerticalScrollBarVisibility="Auto"
                       VerticalScrollMode="Auto">
             <controls:SettingsPanel>
                 <controls:HeaderedControl x:Name="AutoPanel"
