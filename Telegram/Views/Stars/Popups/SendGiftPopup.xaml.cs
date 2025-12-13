@@ -53,7 +53,7 @@ namespace Telegram.Views.Stars.Popups
 
             clientService.TryGetChatFromUser(clientService.Options.MyId, out Chat chat);
 
-            var content = new MessageGift(gift, clientService.MyId, _receiverId, string.Empty, string.Empty.AsFormattedText(), gift.DefaultSellStarCount, 0, false, false, false, false, false, false, false, false, false, string.Empty, string.Empty);
+            var content = new MessageGift(gift, clientService.MyId, _receiverId, string.Empty, string.Empty.AsFormattedText(), 0, gift.DefaultSellStarCount, 0, false, false, false, false, false, false, false, false, false, string.Empty, string.Empty);
             var message = new Message(0, new MessageSenderUser(clientService.Options.MyId), 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null);
 
             var settings = clientService.Session.Resolve<ISettingsService>();
@@ -202,7 +202,7 @@ namespace Telegram.Views.Stars.Popups
             MessageContent content;
             if (_gift != null)
             {
-                content = new MessageGift(_gift, _clientService.MyId, _receiverId, string.Empty, text, _gift.DefaultSellStarCount, Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0, false, false, false, false, false, false, false, false, false, string.Empty, string.Empty);
+                content = new MessageGift(_gift, _clientService.MyId, _receiverId, string.Empty, text, 0, _gift.DefaultSellStarCount, Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0, false, false, false, false, false, false, false, false, false, string.Empty, string.Empty);
 
                 PurchaseText.Text = Locale.Declension(Strings.R.Gift2Send, _gift.StarCount + (Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0)).ReplaceStar(Icons.Premium);
             }
