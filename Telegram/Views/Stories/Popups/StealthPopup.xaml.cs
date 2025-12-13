@@ -59,7 +59,7 @@ namespace Telegram.Views.Stories.Popups
             else
             {
                 Subtitle.Text = Strings.StealthModePremiumHint;
-                PurchaseCommand.Content = Strings.UnlockStealthMode;
+                PrimaryButtonText = Strings.UnlockStealthMode;
             }
 
             Closing += OnClosing;
@@ -80,7 +80,7 @@ namespace Telegram.Views.Stories.Popups
             if (_clientService.StealthMode.CooldownUntilDate == 0)
             {
                 _cooldownTimer.Stop();
-                PurchaseCommand.Content = _opening
+                PrimaryButtonText = _opening
                     ? Strings.EnableStealthModeAndOpenStory
                     : Strings.EnableStealthMode;
             }
@@ -89,7 +89,7 @@ namespace Telegram.Views.Stories.Popups
                 var untilDate = Converters.Formatter.ToLocalTime(_clientService.StealthMode.CooldownUntilDate);
                 var timeLeft = untilDate - DateTime.Now;
 
-                PurchaseCommand.Content = string.Format(Strings.AvailableIn, timeLeft.ToString("h\\:mm\\:ss"));
+                PrimaryButtonText = string.Format(Strings.AvailableIn, timeLeft.ToString("h\\:mm\\:ss"));
             }
         }
 
@@ -135,10 +135,11 @@ namespace Telegram.Views.Stories.Popups
             args.Handled = true;
         }
 
-        private void PurchaseCommand_Click(object sender, RoutedEventArgs e)
+        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             if (_clientService.StealthMode.CooldownUntilDate > 0)
             {
+                args.Cancel = true;
                 return;
             }
 
@@ -151,8 +152,6 @@ namespace Telegram.Views.Stories.Popups
             {
                 ShouldPurchase = true;
             }
-
-            Hide();
         }
     }
 }

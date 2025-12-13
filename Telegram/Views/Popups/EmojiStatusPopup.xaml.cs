@@ -61,47 +61,37 @@ namespace Telegram.Views.Popups
                 Photo.Source = ProfilePictureSource.User(clientService, self);
                 TitleText.Text = self.FullName();
             }
+
+            PrimaryButtonText = Strings.BotEmojiStatusConfirm;
         }
 
         private bool _submitted;
+        private bool _completed;
 
-        private async void Purchase_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            args.Cancel = !_completed;
+
             if (_submitted)
             {
                 return;
             }
 
             _submitted = true;
-
-            PurchaseRing.Visibility = Windows.UI.Xaml.Visibility.Visible;
-
-            var visual1 = ElementComposition.GetElementVisual(PurchaseText);
-            var visual2 = ElementComposition.GetElementVisual(PurchaseRing);
-
-            ElementCompositionPreview.SetIsTranslationEnabled(PurchaseText, true);
-            ElementCompositionPreview.SetIsTranslationEnabled(PurchaseRing, true);
-
-            var translate1 = visual1.Compositor.CreateScalarKeyFrameAnimation();
-            translate1.InsertKeyFrame(0, 0);
-            translate1.InsertKeyFrame(1, -32);
-
-            var translate2 = visual1.Compositor.CreateScalarKeyFrameAnimation();
-            translate2.InsertKeyFrame(0, 32);
-            translate2.InsertKeyFrame(1, 0);
-
-            visual1.StartAnimation("Translation.Y", translate1);
-            visual2.StartAnimation("Translation.Y", translate2);
+            IsPrimaryButtonPending = true;
 
             if (_clientService.IsPremium)
             {
                 var result = await _clientService.SendAsync(new SetEmojiStatus(new EmojiStatus(new EmojiStatusTypeCustomEmoji(_customEmojiId), _expirationDate)));
+
+                _completed = true;
                 Hide(result is Ok
                     ? ContentDialogResult.Primary
                     : ContentDialogResult.Secondary);
             }
             else
             {
+                _completed = true;
                 Hide();
                 _navigationService.ShowPromo(new PremiumSourceFeature(new PremiumFeatureEmojiStatus()));
             }

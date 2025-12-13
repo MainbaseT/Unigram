@@ -7,8 +7,10 @@
                        xmlns:controls="using:Telegram.Controls"
                        xmlns:messages="using:Telegram.Controls.Messages"
                        mc:Ignorable="d"
-                       Padding="0,0,0,24"
-                       IsDismissButtonVisible="True">
+                       Padding="0,0,0,0"
+                       IsDismissButtonVisible="True"
+                       PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+                       ButtonsLayout="Vertical">
 
     <Grid x:Name="ScrollingHost">
         <Grid.RowDefinitions>
@@ -18,7 +20,7 @@
         </Grid.RowDefinitions>
         <ScrollViewer VerticalScrollBarVisibility="Auto"
                       VerticalScrollMode="Auto">
-            <Grid>
+            <Grid Margin="0,0,0,24">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
@@ -478,25 +480,6 @@
                 </Grid>
             </Grid>
         </ScrollViewer>
-
-        <Button x:Name="PurchaseCommand"
-                Click="Purchase_Click"
-                Style="{StaticResource AccentButtonStyle}"
-                FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
-                VerticalAlignment="Bottom"
-                HorizontalAlignment="Stretch"
-                Margin="24,8,24,0"
-                Grid.Row="1">
-            <Grid>
-                <TextBlock x:Name="PurchaseText"
-                           VerticalAlignment="Center" />
-                <muxc:ProgressRing x:Name="PurchaseRing"
-                                   Visibility="Collapsed"
-                                   Foreground="#FFFFFF"
-                                   Width="20"
-                                   Height="20" />
-            </Grid>
-        </Button>
 
         <controls:MoreButton x:Name="MoreButton"
                              Click="More_ContextRequested"

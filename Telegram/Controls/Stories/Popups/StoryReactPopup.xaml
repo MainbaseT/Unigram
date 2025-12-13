@@ -58,7 +58,7 @@
 
         <StackPanel Grid.Row="1">
             <controls:PremiumSlider x:Name="StarCountSlider"
-                                    Background="{ThemeResource ControlFillColorDefaultBrush}"
+                                    Background="{ThemeResource ControlAltFillColorTertiaryBrush}"
                                     IsThumbToolTipEnabled="False"
                                     Glyph="&#xEA87;"
                                     ValueChanged="StarCountSlider_ValueChanged"

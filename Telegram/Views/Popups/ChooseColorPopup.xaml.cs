@@ -7,7 +7,6 @@
 
 using Telegram.Controls;
 using Windows.UI;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Popups
@@ -21,6 +20,9 @@ namespace Telegram.Views.Popups
             Title = Strings.ColorPickerMainColor;
             PrimaryButtonText = Strings.OK;
             SecondaryButtonText = Strings.Cancel;
+            CloseButtonText = Strings.UseSystemAccentColor;
+            CloseButtonResult = ContentDialogResult.Primary;
+            CloseButtonClick += ContentDialog_CloseButtonClick;
         }
 
         private Color _color;
@@ -38,8 +40,8 @@ namespace Telegram.Views.Popups
 
         public bool IsAccentColorVisible
         {
-            get => Accent.Visibility == Visibility.Visible;
-            set => Accent.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+            get => CloseButtonText.Length > 0;
+            set => CloseButtonText = value ? Strings.UseSystemAccentColor : string.Empty;
         }
 
         private void TextField_ColorChanged(ColorTextBox sender, Controls.ColorChangedEventArgs args)
@@ -54,10 +56,9 @@ namespace Telegram.Views.Popups
             TextField.Color = args.NewColor;
         }
 
-        private void System_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void ContentDialog_CloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             _color = default;
-            Hide(ContentDialogResult.Primary);
         }
     }
 }

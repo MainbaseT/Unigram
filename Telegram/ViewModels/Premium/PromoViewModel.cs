@@ -16,6 +16,7 @@ using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.Views.Premium.Popups;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels.Premium
@@ -132,9 +133,9 @@ namespace Telegram.ViewModels.Premium
         public async Task<bool> OpenAsync(PremiumFeature feature)
         {
             var popup = new FeaturesPopup(ClientService, Option?.PaymentOption, Features, BusinessFeatures, Limits, _animations, _stickers, feature);
-            await ShowPopupAsync(popup);
 
-            if (popup.ShouldPurchase && !ClientService.IsPremium)
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary && !ClientService.IsPremium)
             {
                 Purchase();
                 return false;

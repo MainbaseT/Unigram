@@ -107,7 +107,7 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <cells:ChatShareCell SelectionStroke="{ThemeResource ContentDialogBackground}"
+                    <cells:ChatShareCell SelectionStroke="{ThemeResource ContentDialogTopOverlaySolid}"
                                          Stroke="{ThemeResource ChatLastMessageStateBrush}"
                                          Padding="0,6" />
                 </DataTemplate>
@@ -122,7 +122,8 @@
             </ListView.Footer>
         </ListView>
 
-        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogBackground}"
-                                    ScrollingHost="{x:Bind ScrollingHost}" />
+        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogTopOverlaySolid}"
+                                    ScrollingHost="{x:Bind ScrollingHost}"
+                                    BottomInset="0" />
     </Grid>
 </controls:ContentPopup>

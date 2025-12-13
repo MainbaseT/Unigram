@@ -42,6 +42,8 @@ namespace Telegram.Views.Profile.Popups
         {
             InitializeComponent();
 
+            PrimaryButtonText = Strings.StarRatingButtonUnderstood;
+
             _currentLevelRating = rating.CurrentLevelRating;
             _nextLevelRating = Math.Max(rating.Rating, rating.NextLevelRating);
             _rating = rating.Rating;

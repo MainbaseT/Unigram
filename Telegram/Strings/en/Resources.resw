@@ -7955,7 +7955,7 @@ This setting does not affect group chats.</value>
     <value>Interactions</value>
   </data>
   <data name="InterfaceScale" xml:space="preserve">
-    <value>Interface Scale</value>
+    <value>Interface scale</value>
   </data>
   <data name="InvalidCode" xml:space="preserve">
     <value>Invalid code, please try again.</value>
@@ -8010,6 +8010,24 @@ This setting does not affect group chats.</value>
   </data>
   <data name="InviteLinks" xml:space="preserve">
     <value>Invite Links</value>
+  </data>
+  <data name="InviteRestrictedUsers_one" xml:space="preserve">
+    <value>**{0} user** restricts adding them to groups. You can send them an invite link instead.</value>
+  </data>
+  <data name="InviteRestrictedUsers_other" xml:space="preserve">
+    <value>**{0} users** restrict adding them to groups. You can send them an invite link instead.</value>
+  </data>
+  <data name="InviteRestrictedUsers2_one" xml:space="preserve">
+    <value>**{0} user** can only be invited via link, but you don&apos;t have permission to share invite links to this group.</value>
+  </data>
+  <data name="InviteRestrictedUsers2_other" xml:space="preserve">
+    <value>**{0} users** can only be invited via link, but you don&apos;t have permission to share invite links to this group.</value>
+  </data>
+  <data name="InviteRestrictedUsers2One" xml:space="preserve">
+    <value>**{0}** can only be invited via link, but you don&apos;t have permission to share invite links to this group.</value>
+  </data>
+  <data name="InviteRestrictedUsersOne" xml:space="preserve">
+    <value>**{0}** restricts adding them to groups. You can send them an invite link instead.</value>
   </data>
   <data name="InviteToChannelError" xml:space="preserve">
     <value>Sorry, you can&apos;t add this user to channels because of their privacy settings.</value>
@@ -15081,6 +15099,9 @@ However, it is currently available for purchase. **Learn more…**</value>
   </data>
   <data name="UsesLimitHint" xml:space="preserve">
     <value>Enter Custom Limit</value>
+  </data>
+  <data name="UseSystemAccentColor" xml:space="preserve">
+    <value>Use System Accent Color</value>
   </data>
   <data name="UseSystemProxySettings" xml:space="preserve">
     <value>Use System Proxy Settings</value>

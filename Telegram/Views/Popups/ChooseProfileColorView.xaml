@@ -243,7 +243,8 @@
         <Grid BorderBrush="{ThemeResource SettingsItemBorderBrush}"
               Grid.Row="2">
             <controls:SettingsButton x:Name="Badge"
-                                     Click="Badge_Click">
+                                     Click="Badge_Click"
+                                     CornerRadius="4">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />

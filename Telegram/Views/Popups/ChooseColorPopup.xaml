@@ -28,12 +28,5 @@
                               Height="240"
                               Padding="0,0"
                               Grid.Row="1" />
-
-        <HyperlinkButton x:Name="Accent"
-                         Content="Use system accent color"
-                         Click="System_Click"
-                         HorizontalAlignment="Left"
-                         Margin="-12,0,0,-12"
-                         Grid.Row="2" />
     </Grid>
 </local:ContentPopup>

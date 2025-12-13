@@ -210,7 +210,7 @@
                           Grid.Row="1">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <cells:ChatShareCell SelectionStroke="{ThemeResource ContentDialogBackground}"
+                            <cells:ChatShareCell SelectionStroke="{ThemeResource ContentDialogTopOverlaySolid}"
                                                  Stroke="{ThemeResource ChatLastMessageStateBrush}" />
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -234,8 +234,9 @@
                 </ListView>
 
                 <controls:ScrollViewerScrim x:Name="Scrim"
-                                            Background="{ThemeResource ContentDialogBackground}"
+                                            Background="{ThemeResource ContentDialogTopOverlaySolid}"
                                             ScrollingHost="{x:Bind ChatsPanel}"
+                                            BottomInset="0"
                                             Grid.Row="1" />
             </Grid>
         </Grid>

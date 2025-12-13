@@ -230,8 +230,8 @@ namespace Telegram.Views.Popups
                 SuggestedPostInfo = new InputSuggestedPostInfo(value > 0 ? new SuggestedPostPriceTon(value) : null, SuggestedPostInfo?.SendDate ?? 0);
                 Price.Text = "~" + Telegram.Converters.Formatter.FormatAmount((long)usd, "USD");
 
-                PurchaseCommand.IsEnabled = value == 0 || (value >= _clientService.Options.SuggestedPostToncoinCentCountMin && value <= _clientService.Options.SuggestedPostToncoinCentCountMax);
-                PurchaseCommand.Content = string.Format(Strings.PostSuggestionsOfferTON, (value / 100d).ToString("0.##"));
+                IsPrimaryButtonEnabled = value == 0 || (value >= _clientService.Options.SuggestedPostToncoinCentCountMin && value <= _clientService.Options.SuggestedPostToncoinCentCountMax);
+                PrimaryButtonText = string.Format(Strings.PostSuggestionsOfferTON, (value / 100d).ToString("0.##"));
             }
             else
             {
@@ -241,8 +241,8 @@ namespace Telegram.Views.Popups
                 SuggestedPostInfo = new InputSuggestedPostInfo(value > 0 ? new SuggestedPostPriceStar(value) : null, SuggestedPostInfo?.SendDate ?? 0);
                 Price.Text = "~" + Telegram.Converters.Formatter.FormatAmount((long)usd, "USD");
 
-                PurchaseCommand.IsEnabled = value == 0 || (value >= _clientService.Options.SuggestedPostStarCountMin && value <= _clientService.Options.SuggestedPostStarCountMax);
-                PurchaseCommand.Content = string.Format(Strings.PostSuggestionsOfferStars.ReplaceStar(Icons.Premium), value);
+                IsPrimaryButtonEnabled = value == 0 || (value >= _clientService.Options.SuggestedPostStarCountMin && value <= _clientService.Options.SuggestedPostStarCountMax);
+                PrimaryButtonText = string.Format(Strings.PostSuggestionsOfferStars.ReplaceStar(Icons.Premium), value);
             }
         }
 
@@ -313,11 +313,6 @@ namespace Telegram.Views.Popups
                 SuggestedPostInfo = new InputSuggestedPostInfo(SuggestedPostInfo?.Price, (int)popup.Value.ToTimestamp());
                 SendDate.Content = Telegram.Converters.Formatter.DateAt(popup.Value);
             }
-        }
-
-        private void Purchase_Click(object sender, RoutedEventArgs e)
-        {
-            Hide(ContentDialogResult.Primary);
         }
     }
 }

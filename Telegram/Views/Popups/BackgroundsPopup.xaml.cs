@@ -32,7 +32,6 @@ namespace Telegram.Views.Popups
             _task = task;
 
             Title = Strings.ChatBackground;
-            SecondaryButtonText = Strings.Cancel;
         }
 
         private void OnChoosingItemContainer(ListViewBase sender, ChoosingItemContainerEventArgs args)

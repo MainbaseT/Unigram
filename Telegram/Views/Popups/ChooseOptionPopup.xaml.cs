@@ -31,7 +31,7 @@ namespace Telegram.Views.Popups
                 radio.Content = option.Text;
                 radio.Tag = option;
                 radio.IsChecked = option.IsChecked;
-                radio.Style = BootStrapper.Current.Resources["SettingsRadioButtonStyle"] as Style;
+                //radio.Style = BootStrapper.Current.Resources["SettingsRadioButtonStyle"] as Style;
 
                 LayoutRoot.Items.Add(radio);
             }

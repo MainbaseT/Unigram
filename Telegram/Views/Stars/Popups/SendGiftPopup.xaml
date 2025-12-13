@@ -11,7 +11,9 @@
                        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
                        mc:Ignorable="d"
                        IsDismissButtonVisible="True"
-                       Padding="0,24,0,0">
+                       Padding="0,24,0,0"
+                       PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+                       ButtonsLayout="Vertical">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -29,7 +31,7 @@
                       Visibility="Collapsed"
                       Grid.Row="1">
                     <Grid x:Name="PrevLimitRoot"
-                          Background="{ThemeResource ControlFillColorDefaultBrush}"
+                          Background="{ThemeResource ControlAltFillColorTertiaryBrush}"
                           Padding="8,4">
                         <TextBlock x:Name="PrevLimit"
                                    Style="{StaticResource InfoBodyTextBlockStyle}"
@@ -182,7 +184,7 @@
                 </Grid>
 
                 <Grid x:Name="CaptionPanel"
-                      Background="{ThemeResource TextControlBackground}">
+                      Background="{ThemeResource ContentDialogBackground}">
                     <controls:CaptionTextBox x:Name="CaptionInput"
                                              TextChanged="OnTextChanged"
                                              InputScope="Chat"
@@ -269,26 +271,7 @@
         </ScrollViewer>
 
         <controls:ScrollViewerScrim ScrollingHost="{x:Bind ScrollingHost}"
-                                    Background="{ThemeResource ContentDialogBackground}"
-                                    TopInset="0" />
-
-        <Button x:Name="PurchaseCommand"
-                Click="Purchase_Click"
-                Style="{StaticResource AccentButtonStyle}"
-                FontFamily="{StaticResource EmojiThemeFontFamilyWithSymbols}"
-                VerticalAlignment="Bottom"
-                HorizontalAlignment="Stretch"
-                Margin="24,0,24,24"
-                Grid.Row="1">
-            <Grid>
-                <TextBlock x:Name="PurchaseText"
-                           VerticalAlignment="Center" />
-                <muxc:ProgressRing x:Name="PurchaseRing"
-                                   Visibility="Collapsed"
-                                   Foreground="#FFFFFF"
-                                   Width="20"
-                                   Height="20" />
-            </Grid>
-        </Button>
+                                    Background="{ThemeResource ContentDialogTopOverlaySolid}"
+                                    BottomInset="0" />
     </Grid>
 </controls:ContentPopup>

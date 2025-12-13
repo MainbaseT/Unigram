@@ -134,10 +134,8 @@ namespace Telegram.Views.Chats.Popups
             if (supergroup.Status is not ChatMemberStatusCreator and not ChatMemberStatusAdministrator || requiredLevel == 0)
             {
                 CopyRoot.Visibility = Visibility.Collapsed;
-                ScrollingHost.Padding = new Thickness(24, 0, 24, 24 + 32);
 
-                PurchaseCommand.Visibility = Visibility.Visible;
-                PurchaseCommand.Content = _channel
+                PrimaryButtonText = _channel
                     ? Strings.BoostChannel
                     : Strings.BoostGroup;
             }
@@ -168,8 +166,21 @@ namespace Telegram.Views.Chats.Popups
             MessageHelper.CopyLink(XamlRoot, _status.BoostUrl);
         }
 
-        private async void Purchase_Click(object sender, RoutedEventArgs e)
+        private bool _submitted;
+        private bool _completed;
+
+        private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            args.Cancel = !_completed;
+
+            if (_submitted)
+            {
+                return;
+            }
+
+            _submitted = true;
+            IsPrimaryButtonPending = true;
+
             var already = _slots.Slots
                 .Where(x => x.CurrentlyBoostedChatId == _chat.Id)
                 .Select(x => x.SlotId)
@@ -199,6 +210,7 @@ namespace Telegram.Views.Chats.Popups
                 else if (already.Count < _slots.Slots.Count)
                 {
                     // TODO: reassign boost slots
+                    _completed = true;
                     Hide();
 
                     await _navigationService.ShowPopupAsync(new ChatBoostReassignPopup(_clientService, _chat, _slots));
@@ -212,6 +224,7 @@ namespace Telegram.Views.Chats.Popups
                     var confirm = await MessagePopup.ShowAsync(XamlRoot, target: null, message, Strings.BoostingMoreBoostsNeeded, Strings.GiftPremium, Strings.Close);
                     if (confirm == ContentDialogResult.Primary)
                     {
+                        _completed = true;
                         Hide();
                     }
                 }
@@ -221,11 +234,15 @@ namespace Telegram.Views.Chats.Popups
                 var confirm = await MessagePopup.ShowAsync(XamlRoot, target: null, _channel ? Strings.PremiumNeededForBoosting : Strings.PremiumNeededForBoostingGroup, Strings.PremiumNeeded, Strings.CheckPhoneNumberYes, Strings.Cancel);
                 if (confirm == ContentDialogResult.Primary)
                 {
+                    _completed = true;
                     Hide();
 
                     _navigationService.ShowPromo(new PremiumSourceFeature(new PremiumFeatureChatBoost()));
                 }
             }
+
+            _submitted = false;
+            IsPrimaryButtonPending = false;
         }
     }
 }

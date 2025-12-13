@@ -7,7 +7,10 @@
                        xmlns:controls="using:Telegram.Controls"
                        mc:Ignorable="d"
                        Padding="0"
-                       IsDismissButtonVisible="True">
+                       IsDismissButtonVisible="True"
+                       PrimaryButtonText="{x:Bind ConvertPurchase(ViewModel.CanPurchase, ViewModel.IsPremium, ViewModel.Option), Mode=OneWay, FallbackValue=Empty}"
+                       PrimaryButtonStyle="{StaticResource PremiumButtonStyle}"
+                       ButtonsLayout="Vertical">
 
     <Grid>
         <ListView x:Name="ScrollingHost"
@@ -16,7 +19,7 @@
                   IsItemClickEnabled="True"
                   ContainerContentChanging="OnContainerContentChanging"
                   SelectionMode="None"
-                  Padding="12,0,12,56">
+                  Padding="12,0,12,0">
             <ListView.Header>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -165,18 +168,8 @@
             </ListView.Footer>
         </ListView>
 
-        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogBackground}"
+        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogTopOverlaySolid}"
                                     ScrollingHost="{x:Bind ScrollingHost}"
-                                    BottomInset="56" />
-
-        <Button x:Name="PurchaseCommand"
-                x:Load="{x:Bind ViewModel.CanPurchase, Mode=OneWay}"
-                Click="Purchase_Click"
-                Content="{x:Bind ConvertPurchase(ViewModel.IsPremium, ViewModel.Option), Mode=OneWay, FallbackValue=Empty}"
-                Style="{StaticResource PremiumButtonStyle}"
-                VerticalAlignment="Bottom"
-                HorizontalAlignment="Stretch"
-                Margin="24,0,24,24"
-                Grid.Row="1" />
+                                    BottomInset="0" />
     </Grid>
 </controls:ContentPopup>

@@ -37,15 +37,7 @@ namespace Telegram.Views.Business.Popups
             ScrollingHost.ItemsSource = features;
             ScrollingHost.SelectedItem = selectedFeature;
 
-            PurchaseCommand.Content = PromoPopup.GetPaymentString(clientService.IsPremium, option);
-        }
-
-        public bool ShouldPurchase { get; private set; }
-
-        private void Purchase_Click(object sender, RoutedEventArgs e)
-        {
-            ShouldPurchase = true;
-            Hide();
+            PrimaryButtonText = PromoPopup.GetPaymentString(clientService.IsPremium, option);
         }
 
         private void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)

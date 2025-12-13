@@ -3728,7 +3728,7 @@
                                         <Setter Target="PrimaryRoot.(Grid.ColumnSpan)"
                                                 Value="2" />
                                         <Setter Target="PrimaryRoot.Margin"
-                                                Value="2,0,0,0" />
+                                                Value="4,0,0,0" />
                                         <Setter Target="SecondaryButton.Visibility"
                                                 Value="Collapsed" />
                                         <Setter Target="CloseButton.Visibility"
@@ -3742,7 +3742,7 @@
                                         <Setter Target="SecondaryButton.(Grid.ColumnSpan)"
                                                 Value="2" />
                                         <Setter Target="SecondaryButton.Margin"
-                                                Value="2,0,0,0" />
+                                                Value="4,0,0,0" />
                                         <Setter Target="PrimaryRoot.Visibility"
                                                 Value="Collapsed" />
                                         <Setter Target="CloseButton.Visibility"
@@ -3772,7 +3772,7 @@
                                         <Setter Target="SecondaryButton.(Grid.ColumnSpan)"
                                                 Value="2" />
                                         <Setter Target="SecondaryButton.Margin"
-                                                Value="2,0,0,0" />
+                                                Value="4,0,0,0" />
                                         <Setter Target="CloseButton.Visibility"
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
@@ -3814,6 +3814,8 @@
                                 </VisualState>
                                 <VisualState x:Name="SecondaryVertical">
                                     <VisualState.Setters>
+                                        <Setter Target="SecondaryButton.(Grid.Column)"
+                                                Value="0" />
                                         <Setter Target="SecondaryButton.(Grid.ColumnSpan)"
                                                 Value="4" />
                                         <Setter Target="SecondaryButton.Margin"
@@ -3847,7 +3849,7 @@
                                         <Setter Target="SecondaryButton.(Grid.ColumnSpan)"
                                                 Value="2" />
                                         <Setter Target="SecondaryButton.Margin"
-                                                Value="2,0,0,0" />
+                                                Value="4,0,0,0" />
                                         <Setter Target="CloseButton.Visibility"
                                                 Value="Collapsed" />
                                     </VisualState.Setters>
@@ -3876,7 +3878,7 @@
                                 </VisualState>
 
                             </VisualStateGroup>
-                            <VisualStateGroup x:Name="DefaultButtonStates">
+                            <!--<VisualStateGroup x:Name="DefaultButtonStates">
                                 <VisualState x:Name="NoDefaultButton" />
                                 <VisualState x:Name="PrimaryAsDefaultButton">
                                     <VisualState.Setters>
@@ -3896,7 +3898,7 @@
                                                 Value="{StaticResource AccentButtonStyle}" />
                                     </VisualState.Setters>
                                 </VisualState>
-                            </VisualStateGroup>
+                            </VisualStateGroup>-->
                             <VisualStateGroup x:Name="DialogBorderStates">
                                 <VisualState x:Name="NoBorder" />
                                 <VisualState x:Name="AccentColorBorder">
@@ -3960,7 +3962,6 @@
                                     <ScaleTransform x:Name="ScaleTransform" />
                                 </Border.RenderTransform>
                                 <Grid x:Name="DialogSpace"
-                                      Padding="{ThemeResource ContentDialogPadding}"
                                       Background="{TemplateBinding SecondaryBackground}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*" />
@@ -3968,56 +3969,55 @@
                                     </Grid.RowDefinitions>
                                     <ScrollViewer x:Name="ContentScrollViewer"
                                                   Visibility="Collapsed" />
-                                    <Border Margin="{ThemeResource ContentDialogContentScrollViewerMargin}">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                            </Grid.RowDefinitions>
-                                            <ContentControl x:Name="Title"
-                                                            Margin="0,0,-24,12"
-                                                            Content="{TemplateBinding Title}"
-                                                            ContentTemplate="{TemplateBinding TitleTemplate}"
-                                                            FontSize="20"
-                                                            FontFamily="{ThemeResource ContentControlThemeFontFamily}"
-                                                            FontWeight="SemiBold"
-                                                            Foreground="{TemplateBinding Foreground}"
-                                                            HorizontalAlignment="Stretch"
-                                                            HorizontalContentAlignment="Stretch"
-                                                            VerticalAlignment="Top"
-                                                            IsTabStop="False"
-                                                            Canvas.ZIndex="1">
-                                                <ContentControl.Template>
-                                                    <ControlTemplate TargetType="ContentControl">
-                                                        <ContentPresenter Content="{TemplateBinding Content}"
-                                                                          MaxLines="1"
-                                                                          TextWrapping="NoWrap"
-                                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                                          Margin="{TemplateBinding Padding}"
-                                                                          ContentTransitions="{TemplateBinding ContentTransitions}"
-                                                                          HorizontalAlignment="Stretch"
-                                                                          VerticalAlignment="Stretch" />
-                                                    </ControlTemplate>
-                                                </ContentControl.Template>
-                                            </ContentControl>
-                                            <ContentPresenter x:Name="Content"
-                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                              Content="{TemplateBinding Content}"
-                                                              FontSize="{ThemeResource ControlContentThemeFontSize}"
-                                                              FontFamily="{ThemeResource ContentControlThemeFontFamily}"
-                                                              Margin="-24"
-                                                              Padding="{TemplateBinding Padding}"
-                                                              Foreground="{TemplateBinding Foreground}"
-                                                              Grid.Row="1"
-                                                              TextWrapping="Wrap" />
-                                        </Grid>
-                                    </Border>
+                                    <Grid Background="{ThemeResource ContentDialogTopOverlaySolid}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <ContentControl x:Name="Title"
+                                                        Margin="24,24,0,-12"
+                                                        Content="{TemplateBinding Title}"
+                                                        ContentTemplate="{TemplateBinding TitleTemplate}"
+                                                        FontSize="20"
+                                                        FontFamily="{ThemeResource ContentControlThemeFontFamily}"
+                                                        FontWeight="SemiBold"
+                                                        Foreground="{TemplateBinding Foreground}"
+                                                        HorizontalAlignment="Stretch"
+                                                        HorizontalContentAlignment="Stretch"
+                                                        VerticalAlignment="Top"
+                                                        IsTabStop="False"
+                                                        Canvas.ZIndex="1">
+                                            <ContentControl.Template>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <ContentPresenter Content="{TemplateBinding Content}"
+                                                                      MaxLines="1"
+                                                                      TextWrapping="NoWrap"
+                                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                      Margin="{TemplateBinding Padding}"
+                                                                      ContentTransitions="{TemplateBinding ContentTransitions}"
+                                                                      HorizontalAlignment="Stretch"
+                                                                      VerticalAlignment="Stretch" />
+                                                </ControlTemplate>
+                                            </ContentControl.Template>
+                                        </ContentControl>
+                                        <ContentPresenter x:Name="Content"
+                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                          Content="{TemplateBinding Content}"
+                                                          FontSize="{ThemeResource ControlContentThemeFontSize}"
+                                                          FontFamily="{ThemeResource ContentControlThemeFontFamily}"
+                                                          Padding="{TemplateBinding Padding}"
+                                                          Foreground="{TemplateBinding Foreground}"
+                                                          Grid.Row="1"
+                                                          TextWrapping="Wrap" />
+                                    </Grid>
                                     <Grid x:Name="CommandSpace"
                                           Grid.Row="1"
                                           HorizontalAlignment="Stretch"
                                           VerticalAlignment="Bottom"
                                           XYFocusKeyboardNavigation="Enabled"
-                                          Margin="{ThemeResource ContentDialogCommandSpaceMargin}">
+                                          Padding="24"
+                                          BorderBrush="{ThemeResource ContentDialogSeparatorBorderBrush}"
+                                          BorderThickness="0,1,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
                                             <ColumnDefinition Width="0.5*" />
@@ -4029,7 +4029,7 @@
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <Grid x:Name="PrimaryRoot"
-                                              Margin="0,0,2,0"
+                                              Margin="0,0,4,0"
                                               Grid.Column="0"
                                               Grid.ColumnSpan="2">
                                             <Grid.ColumnDefinitions>
@@ -4037,13 +4037,19 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <Button x:Name="PrimaryButton"
-                                                    Content="{TemplateBinding PrimaryButtonText}"
+                                                    AutomationProperties.Name="{TemplateBinding PrimaryButtonText}"
+                                                    Content="{TemplateBinding PrimaryButtonContent}"
                                                     IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}"
                                                     Style="{TemplateBinding PrimaryButtonStyle}"
                                                     FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                                     ElementSoundMode="FocusOnly"
                                                     HorizontalAlignment="Stretch"
                                                     VerticalAlignment="Stretch" />
+                                            <muxc:ProgressRing x:Name="PrimaryButtonPending"
+                                                               Visibility="Collapsed"
+                                                               Foreground="#FFFFFF"
+                                                               Width="20"
+                                                               Height="20" />
 
                                             <Button x:Name="PrimarySplitButton"
                                                     Grid.Column="1"
@@ -4077,7 +4083,7 @@
                                                 ElementSoundMode="FocusOnly"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Stretch"
-                                                Margin="2,0,0,0"
+                                                Margin="4,0,0,0"
                                                 Grid.Column="2"
                                                 Grid.ColumnSpan="2" />
                                         <Button x:Name="CloseButton"
@@ -4098,7 +4104,6 @@
                                                        AutomationProperties.Name="{CustomResource Close}"
                                                        HorizontalAlignment="Right"
                                                        VerticalAlignment="Top"
-                                                       Margin="0,-24,-24,0"
                                                        Glyph="&#xE711;"
                                                        CornerRadius="20" />
                                 </Grid>

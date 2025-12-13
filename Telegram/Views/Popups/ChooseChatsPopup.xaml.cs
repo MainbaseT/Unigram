@@ -1140,8 +1140,6 @@ namespace Telegram.Views.Popups
             if (ViewModel.IsCommentEnabled)
             {
                 CommentPanel.Visibility = Visibility.Visible;
-                Scrim.BottomInset = 0;
-
                 PrimaryButtonText = string.Empty;
                 SecondaryButtonText = string.Empty;
                 IsDismissButtonVisible = ViewModel.Configuration is not ChooseChatsConfigurationShareOperation;
@@ -1149,13 +1147,18 @@ namespace Telegram.Views.Popups
             else
             {
                 CommentPanel.Visibility = Visibility.Collapsed;
-                Scrim.BottomInset = 32;
-
-                PrimaryButtonText = ViewModel.SelectionMode != ListViewSelectionMode.None
-                    ? ViewModel.PrimaryButtonText
-                    : string.Empty;
-                SecondaryButtonText = Strings.Cancel;
-                IsDismissButtonVisible = false;
+                if (ViewModel.SelectionMode == ListViewSelectionMode.None)
+                {
+                    PrimaryButtonText = string.Empty;
+                    SecondaryButtonText = string.Empty;
+                    IsDismissButtonVisible = true;
+                }
+                else
+                {
+                    PrimaryButtonText = ViewModel.PrimaryButtonText;
+                    SecondaryButtonText = Strings.Cancel;
+                    IsDismissButtonVisible = false;
+                }
             }
 
             if (ViewModel.Configuration is ChooseChatsConfigurationShareOperation

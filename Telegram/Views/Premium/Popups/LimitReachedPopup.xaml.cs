@@ -166,6 +166,7 @@ namespace Telegram.Views.Premium.Popups
 
                     PurchaseIcon.Source = animatedValue;
                     PurchaseLabel.Text = Strings.IncreaseLimit;
+                    PrimaryButtonText = Strings.IncreaseLimit;
                 }
                 else
                 {
@@ -174,9 +175,10 @@ namespace Telegram.Views.Premium.Popups
                     LimitHeader.Visibility = Visibility.Collapsed;
                     LimitPanel.Visibility = Visibility.Collapsed;
 
-                    PurchaseCommand.Style = BootStrapper.Current.Resources["AccentButtonStyle"] as Style;
+                    PrimaryButtonStyle = BootStrapper.Current.Resources["AccentButtonStyle"] as Style;
                     PurchaseIcon.Visibility = Visibility.Collapsed;
                     PurchaseLabel.Text = Strings.OK;
+                    PrimaryButtonText = Strings.OK;
                 }
 
                 if (type is PremiumLimitTypeCreatedPublicChatCount)
@@ -294,7 +296,7 @@ namespace Telegram.Views.Premium.Popups
             return null;
         }
 
-        private void Purchase_Click(object sender, RoutedEventArgs e)
+        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             Hide();
 
@@ -462,20 +464,20 @@ namespace Telegram.Views.Premium.Popups
         {
             if (ScrollingHost.SelectedItems.Count > 0)
             {
-                PurchaseCommand.Visibility = Visibility.Collapsed;
-                ActionCommand.Visibility = Visibility.Visible;
-
-                ActionCommand.Content = Locale.Declension(Strings.R.LeaveCommunities, ScrollingHost.SelectedItems.Count);
+                PrimaryButtonText = string.Empty;
+                SecondaryButtonText = Locale.Declension(Strings.R.LeaveCommunities, ScrollingHost.SelectedItems.Count);
             }
             else
             {
-                PurchaseCommand.Visibility = Visibility.Visible;
-                ActionCommand.Visibility = Visibility.Collapsed;
+                PrimaryButtonText = PurchaseLabel.Text;
+                SecondaryButtonText = string.Empty;
             }
         }
 
-        private async void Action_Click(object sender, RoutedEventArgs e)
+        private async void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            var deferral = args.GetDeferral();
+
             string title = Locale.Declension(Strings.R.LeaveCommunities, ScrollingHost.SelectedItems.Count);
             string message;
 
@@ -498,8 +500,12 @@ namespace Telegram.Views.Premium.Popups
             var confirm = await _navigationService.ShowPopupAsync(message, title, Strings.VoipGroupLeave, Strings.Cancel, destructive: true);
             if (confirm != ContentDialogResult.Primary)
             {
+                args.Cancel = true;
+                deferral.Complete();
                 return;
             }
+
+            deferral.Complete();
 
             foreach (var item in ScrollingHost.SelectedItems)
             {
@@ -510,8 +516,6 @@ namespace Telegram.Views.Premium.Popups
 
                 _clientService.Send(new LeaveChat(chat.Id));
             }
-
-            Hide();
         }
     }
 }

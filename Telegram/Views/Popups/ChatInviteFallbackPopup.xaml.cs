@@ -27,6 +27,7 @@ namespace Telegram.Views.Popups
             InitializeComponent();
 
             var chat = clientService.GetChat(chatId);
+            var channel = chat.Type is ChatTypeSupergroup { IsChannel: true };
             var users = clientService.GetUsers(members.Select(x => x.UserId)).ToList();
 
             ScrollingHost.ItemsSource = users;
@@ -40,8 +41,8 @@ namespace Telegram.Views.Popups
             {
                 Title = Strings.ChannelInviteViaLink;
                 message = users.Count == 1
-                    ? string.Format(Strings.InviteChannelRestrictedUsersOne, users[0].FullName())
-                    : Locale.Declension(Strings.R.InviteChannelRestrictedUsers, users.Count);
+                    ? string.Format(channel ? Strings.InviteChannelRestrictedUsersOne : Strings.InviteRestrictedUsersOne, users[0].FullName())
+                    : Locale.Declension(channel ? Strings.R.InviteChannelRestrictedUsers : Strings.R.InviteRestrictedUsers, users.Count);
 
                 PrimaryButtonText = Strings.SendInviteLink;
                 SecondaryButtonText = Strings.ActionSkip;
@@ -53,8 +54,8 @@ namespace Telegram.Views.Popups
             {
                 Title = Strings.ChannelInviteViaLinkRestricted;
                 message = users.Count == 1
-                    ? string.Format(Strings.InviteChannelRestrictedUsers2One, users[0].FullName())
-                    : Locale.Declension(Strings.R.InviteChannelRestrictedUsers2, users.Count);
+                    ? string.Format(channel ? Strings.InviteChannelRestrictedUsers2One : Strings.InviteRestrictedUsers2One, users[0].FullName())
+                    : Locale.Declension(channel ? Strings.R.InviteChannelRestrictedUsers2 : Strings.R.InviteRestrictedUsers2, users.Count);
 
                 PrimaryButtonText = Strings.Close;
                 SecondaryButtonText = string.Empty;

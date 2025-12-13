@@ -308,7 +308,7 @@
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         <Grid x:Name="CaptionPanel"
-              Background="{ThemeResource TextControlBackground}"
+              Background="{ThemeResource ContentDialogBackground}"
               Grid.Row="{x:Bind ConvertCaptionRow(ShowCaptionAboveMedia), Mode=OneWay}">
             <FlyoutBase.AttachedFlyout>
                 <Flyout x:Name="EmojiFlyout"

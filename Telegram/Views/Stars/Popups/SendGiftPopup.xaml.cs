@@ -129,7 +129,7 @@ namespace Telegram.Views.Stars.Popups
                 NextLimit.Text = NextLimitBelow.Text = Locale.Declension(Strings.R.Gift2AvailabilityLeft, gift.OverallLimits.RemainingCount);
             }
 
-            PurchaseText.Text = Locale.Declension(Strings.R.Gift2Send, gift.StarCount).ReplaceStar(Icons.Premium);
+            PrimaryButtonText = Locale.Declension(Strings.R.Gift2Send, gift.StarCount).ReplaceStar(Icons.Premium);
 
             InitializeGiftsForResale();
         }
@@ -192,7 +192,7 @@ namespace Telegram.Views.Stars.Popups
                 CaptionInfo.Text = string.Format(Strings.Gift2MessagePremiumInfo, user.FirstName);
             }
 
-            PurchaseText.Text = string.Format(Strings.Gift2SendPremium, Formatter.FormatAmount(option.Amount, option.Currency));
+            PrimaryButtonText = string.Format(Strings.Gift2SendPremium, Formatter.FormatAmount(option.Amount, option.Currency));
         }
 
         private void OnTextChanged(object sender, RoutedEventArgs e)
@@ -204,13 +204,13 @@ namespace Telegram.Views.Stars.Popups
             {
                 content = new MessageGift(_gift, _clientService.MyId, _receiverId, string.Empty, text, 0, _gift.DefaultSellStarCount, Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0, false, false, false, false, false, false, false, false, false, string.Empty, string.Empty);
 
-                PurchaseText.Text = Locale.Declension(Strings.R.Gift2Send, _gift.StarCount + (Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0)).ReplaceStar(Icons.Premium);
+                PrimaryButtonText = Locale.Declension(Strings.R.Gift2Send, _gift.StarCount + (Upgradeable.IsChecked is true ? _gift.UpgradeStarCount : 0)).ReplaceStar(Icons.Premium);
             }
             else if (_option != null && _receiverId is MessageSenderUser user)
             {
                 content = new MessageGiftedPremium(_clientService.Options.MyId, user.UserId, text, _option.Currency, _option.Amount, string.Empty, 0, _option.MonthCount, 0, _option.Sticker);
 
-                PurchaseText.Text = string.Format(Strings.Gift2SendPremium, Formatter.FormatAmount(_option.Amount, _option.Currency));
+                PrimaryButtonText = string.Format(Strings.Gift2SendPremium, Formatter.FormatAmount(_option.Amount, _option.Currency));
             }
             else
             {
@@ -250,40 +250,24 @@ namespace Telegram.Views.Stars.Popups
         }
 
         private bool _submitted;
+        private bool _completed;
 
-        private async void Purchase_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            args.Cancel = !_completed;
+
             if (_submitted)
             {
                 return;
             }
 
             _submitted = true;
-
-            PurchaseRing.Visibility = Windows.UI.Xaml.Visibility.Visible;
-
-            var visual1 = ElementComposition.GetElementVisual(PurchaseText);
-            var visual2 = ElementComposition.GetElementVisual(PurchaseRing);
-
-            ElementCompositionPreview.SetIsTranslationEnabled(PurchaseText, true);
-            ElementCompositionPreview.SetIsTranslationEnabled(PurchaseRing, true);
-
-            var translate1 = visual1.Compositor.CreateScalarKeyFrameAnimation();
-            translate1.InsertKeyFrame(0, 0);
-            translate1.InsertKeyFrame(1, -32);
-
-            var translate2 = visual1.Compositor.CreateScalarKeyFrameAnimation();
-            translate2.InsertKeyFrame(0, 32);
-            translate2.InsertKeyFrame(1, 0);
-
-            visual1.StartAnimation("Translation.Y", translate1);
-            visual2.StartAnimation("Translation.Y", translate2);
-
-            //await Task.Delay(2000);
+            IsPrimaryButtonPending = true;
 
             var result = await SubmitAsync();
             if (result != PayResult.Failed)
             {
+                _completed = true;
                 Hide(result == PayResult.Succeeded
                     ? ContentDialogResult.Primary
                     : ContentDialogResult.Secondary);
@@ -297,15 +281,7 @@ namespace Telegram.Views.Stars.Popups
             }
 
             _submitted = false;
-
-            translate1.InsertKeyFrame(0, 32);
-            translate1.InsertKeyFrame(1, 0);
-
-            translate2.InsertKeyFrame(0, 0);
-            translate2.InsertKeyFrame(1, -32);
-
-            visual1.StartAnimation("Translation.Y", translate1);
-            visual2.StartAnimation("Translation.Y", translate2);
+            IsPrimaryButtonPending = false;
 
             //Hide();
             //ViewModel.Submit();

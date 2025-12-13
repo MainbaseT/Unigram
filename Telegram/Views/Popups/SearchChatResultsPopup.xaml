@@ -6,7 +6,8 @@
                        xmlns:controls="using:Telegram.Controls"
                        xmlns:cells="using:Telegram.Controls.Cells"
                        mc:Ignorable="d"
-                       Padding="0,24,0,0">
+                       Padding="0,24,0,0"
+                       IsDismissButtonVisible="True">
 
     <Grid>
         <ListView x:Name="ScrollingHost"
@@ -32,7 +33,8 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogBackground}"
-                                    ScrollingHost="{x:Bind ScrollingHost}" />
+        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogTopOverlaySolid}"
+                                    ScrollingHost="{x:Bind ScrollingHost}"
+                                    BottomInset="0" />
     </Grid>
 </controls:ContentPopup>

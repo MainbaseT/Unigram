@@ -165,7 +165,7 @@
         </ScrollViewer>
 
         <controls:ScrollViewerScrim ScrollingHost="{x:Bind ScrollingHost}"
-                                    Background="{ThemeResource ContentDialogBackground}" />
+                                    Background="{ThemeResource ContentDialogTopOverlaySolid}" />
 
         <Button x:Name="LearnCommand"
                 Content="{CustomResource GotIt}"

@@ -7,7 +7,9 @@
                        xmlns:controls="using:Telegram.Controls"
                        mc:Ignorable="d"
                        Padding="24,0,24,24"
-                       IsDismissButtonVisible="True">
+                       IsDismissButtonVisible="True"
+                       PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+                       ButtonsLayout="Vertical">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -72,23 +74,5 @@
             </Grid>
 
         </Grid>
-
-        <Button x:Name="PurchaseCommand"
-                Click="Purchase_Click"
-                Style="{StaticResource AccentButtonStyle}"
-                VerticalAlignment="Bottom"
-                HorizontalAlignment="Stretch"
-                Grid.Row="1">
-            <Grid>
-                <TextBlock x:Name="PurchaseText"
-                           Text="{CustomResource BotEmojiStatusConfirm}"
-                           VerticalAlignment="Center" />
-                <muxc:ProgressRing x:Name="PurchaseRing"
-                                   Visibility="Collapsed"
-                                   Foreground="#FFFFFF"
-                                   Width="20"
-                                   Height="20" />
-            </Grid>
-        </Button>
     </Grid>
 </controls:ContentPopup>

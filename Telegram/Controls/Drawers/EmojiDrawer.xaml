@@ -242,7 +242,7 @@
                     <Grid x:Name="Toolbar3"
                           Margin="0,0,4,0">
                         <Border x:Name="ToolbarPill"
-                                Background="{ThemeResource ControlFillColorDefaultBrush}"
+                                Background="{ThemeResource ControlAltFillColorTertiaryBrush}"
                                 CornerRadius="4"
                                 Height="32" />
                         <GridView x:Name="Toolbar"

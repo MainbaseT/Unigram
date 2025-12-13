@@ -24,7 +24,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 
 namespace Telegram.Views.Stars.Popups
@@ -165,16 +164,16 @@ namespace Telegram.Views.Stars.Popups
                     {
                         TextBlockHelper.SetMarkdown(Subtitle, Strings.Gift2InfoInFreeUpgrade);
 
-                        PurchaseText.Text = Strings.Gift2UpgradeButtonFree;
+                        PrimaryButtonText = Strings.Gift2UpgradeButtonFree;
                     }
                     else
                     {
-                        PurchaseText.Text = Strings.Gift2UpgradeButtonGift;
+                        PrimaryButtonText = Strings.Gift2UpgradeButtonGift;
                     }
                 }
                 else
                 {
-                    PurchaseText.Text = Strings.OK;
+                    PrimaryButtonText = Strings.OK;
                 }
 
                 Info.Visibility = Visibility.Visible;
@@ -187,11 +186,11 @@ namespace Telegram.Views.Stars.Popups
 
                 if (string.IsNullOrEmpty(receivedGift.PrepaidUpgradeHash))
                 {
-                    PurchaseText.Text = Strings.OK;
+                    PrimaryButtonText = Strings.OK;
                 }
                 else
                 {
-                    PurchaseText.Text = Strings.Gift2GiftAnUpgrade;
+                    PrimaryButtonText = Strings.Gift2GiftAnUpgrade;
                 }
 
                 if (receivedGift.CanBeUpgraded)
@@ -446,7 +445,7 @@ namespace Telegram.Views.Stars.Popups
                     }
                 }
 
-                PurchaseText.Text = Strings.OK;
+                PrimaryButtonText = Strings.OK;
             }
             else
             {
@@ -457,11 +456,11 @@ namespace Telegram.Views.Stars.Popups
                     ResaleStarCountRoot.Visibility = Visibility.Visible;
                     ResaleStarCount.Text = gift.ResaleParameters.StarCount.ToString("N0");
 
-                    PurchaseText.Text = Locale.Declension(Strings.R.ResellGiftBuy, gift.ResaleParameters.StarCount).ReplaceStar(Icons.Premium);
+                    PrimaryButtonText = Locale.Declension(Strings.R.ResellGiftBuy, gift.ResaleParameters.StarCount).ReplaceStar(Icons.Premium);
                 }
                 else
                 {
-                    PurchaseText.Text = Strings.OK;
+                    PrimaryButtonText = Strings.OK;
                 }
             }
         }
@@ -502,10 +501,10 @@ namespace Telegram.Views.Stars.Popups
             Availability.Visibility = Visibility.Visible;
             Availability.Content = gift.RemainingText();
 
-            PurchaseText.Text = Strings.OK;
+            PrimaryButtonText = Strings.OK;
         }
 
-        private void Purchase_Click(object sender, RoutedEventArgs e)
+        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             if (_submitted)
             {
@@ -555,6 +554,7 @@ namespace Telegram.Views.Stars.Popups
         }
 
         private bool _submitted;
+        private bool _completed;
 
         private async void Upgrade2()
         {
@@ -563,26 +563,7 @@ namespace Telegram.Views.Stars.Popups
                 return;
             }
 
-            PurchaseRing.Visibility = Windows.UI.Xaml.Visibility.Visible;
-
-            var visual1 = ElementComposition.GetElementVisual(PurchaseText);
-            var visual2 = ElementComposition.GetElementVisual(PurchaseRing);
-
-            ElementCompositionPreview.SetIsTranslationEnabled(PurchaseText, true);
-            ElementCompositionPreview.SetIsTranslationEnabled(PurchaseRing, true);
-
-            var translate1 = visual1.Compositor.CreateScalarKeyFrameAnimation();
-            translate1.InsertKeyFrame(0, 0);
-            translate1.InsertKeyFrame(1, -32);
-
-            var translate2 = visual1.Compositor.CreateScalarKeyFrameAnimation();
-            translate2.InsertKeyFrame(0, 32);
-            translate2.InsertKeyFrame(1, 0);
-
-            visual1.StartAnimation("Translation.Y", translate1);
-            visual2.StartAnimation("Translation.Y", translate2);
-
-            //await Task.Delay(2000);
+            IsPrimaryButtonPending = true;
 
             var starCount = _gift.PrepaidUpgradeStarCount > 0 || _gift.IsUpgradeSeparate ? 0 : regular.Gift.UpgradeStarCount;
 
@@ -635,15 +616,7 @@ namespace Telegram.Views.Stars.Popups
             }
 
             _submitted = false;
-
-            translate1.InsertKeyFrame(0, 32);
-            translate1.InsertKeyFrame(1, 0);
-
-            translate2.InsertKeyFrame(0, 0);
-            translate2.InsertKeyFrame(1, -32);
-
-            visual1.StartAnimation("Translation.Y", translate1);
-            visual2.StartAnimation("Translation.Y", translate2);
+            IsPrimaryButtonPending = false;
 
             //Hide();
             //ViewModel.Submit();
@@ -765,7 +738,7 @@ namespace Telegram.Views.Stars.Popups
 
                 if (_gift.Gift is SentGiftRegular regular)
                 {
-                    PurchaseText.Text = _gift.PrepaidUpgradeHash.Length > 0
+                    PrimaryButtonText = _gift.PrepaidUpgradeHash.Length > 0
                         ? string.Format(Strings.Gift2PrepayUpgradeButton.ReplaceStar(Icons.Premium), regular.Gift.UpgradeStarCount)
                         : _gift.PrepaidUpgradeStarCount > 0
                         ? Strings.Gift2UpgradeButtonFree

@@ -7,7 +7,9 @@
                        mc:Ignorable="d"
                        Opened="OnOpened"
                        Padding="24,24,24,0"
-                       IsDismissButtonVisible="True">
+                       IsDismissButtonVisible="True"
+                       ButtonsLayout="Vertical"
+                       SecondaryButtonStyle="{StaticResource PremiumButtonStyle}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -41,15 +43,17 @@
                        TextAlignment="Center"
                        TextTrimming="CharacterEllipsis"
                        Style="{StaticResource BodyTextBlockStyle}"
+                       Margin="0,0,0,24"
                        Grid.Column="1"
                        Grid.Row="2" />
 
             <Button x:Name="ChangeCommand"
                     Click="Change_Click"
+                    Visibility="Collapsed"
                     Style="{StaticResource AccentButtonStyle}"
                     VerticalAlignment="Bottom"
                     HorizontalAlignment="Stretch"
-                    Margin="0,24,0,24"
+                    Margin="0,0,0,24"
                     Grid.Row="1" />
         </StackPanel>
 
@@ -86,16 +90,9 @@
                        TextAlignment="Center"
                        TextTrimming="CharacterEllipsis"
                        Style="{StaticResource BodyTextBlockStyle}"
+                       Margin="0,0,0,24"
                        Grid.Column="1"
                        Grid.Row="2" />
-
-            <Button x:Name="PurchaseCommand"
-                    Click="Purchase_Click"
-                    Style="{StaticResource PremiumButtonStyle}"
-                    VerticalAlignment="Bottom"
-                    HorizontalAlignment="Stretch"
-                    Margin="0,24,0,24"
-                    Grid.Row="1" />
         </StackPanel>
     </Grid>
 </controls:ContentPopup>

@@ -7,7 +7,8 @@
                        xmlns:controls="using:Telegram.Controls"
                        mc:Ignorable="d"
                        Padding="24,12,24,24"
-                       IsDismissButtonVisible="True">
+                       IsDismissButtonVisible="True"
+                       ButtonsLayout="Vertical">
 
     <StackPanel>
         <controls:TopNavView x:Name="Navigation"
@@ -137,14 +138,7 @@
                              BorderBrush="{ThemeResource TextControlBorderBrush}" />
 
         <TextBlock x:Name="SendDateFooter"
-                   Margin="0,8,0,24"
+                   Margin="0,8,0,0"
                    Style="{StaticResource InfoCaptionTextBlockStyle}" />
-
-        <Button x:Name="PurchaseCommand"
-                Click="Purchase_Click"
-                Content="{CustomResource PostSuggestionsOfferForFree}"
-                Style="{StaticResource AccentButtonStyle}"
-                FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
-                HorizontalAlignment="Stretch" />
     </StackPanel>
 </controls:ContentPopup>

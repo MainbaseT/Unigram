@@ -13100,4 +13100,14 @@
     <string name="NotificationsDeleteAllExceptionTitle">Delete all exceptions</string>
     <string name="NotificationsDeleteAllExceptionAlert">Are you sure you want to delete all exceptions?</string>
     <string name="TopicClosedByAdmin">The topic is closed</string>
+
+    <string name="InviteRestrictedUsersOne">**{0}** restricts adding them to groups. You can send them an invite link instead.</string>
+    <string name="InviteRestrictedUsers_one">**{0} user** restricts adding them to groups. You can send them an invite link instead.</string>
+    <string name="InviteRestrictedUsers_other">**{0} users** restrict adding them to groups. You can send them an invite link instead.</string>
+    <string name="InviteRestrictedUsers2One">**{0}** can only be invited via link, but you don\'t have permission to share invite links to this group.</string>
+    <string name="InviteRestrictedUsers2_one">**{0} user** can only be invited via link, but you don\'t have permission to share invite links to this group.</string>
+    <string name="InviteRestrictedUsers2_other">**{0} users** can only be invited via link, but you don\'t have permission to share invite links to this group.</string>
+
+    <string name="UseSystemAccentColor">Use System Accent Color</string>
+
 </resources>

@@ -64,7 +64,7 @@
         </Grid>
 
         <controls:RecentUserHeads x:Name="Participants"
-                                  BorderBrush="{ThemeResource ContentDialogBackground}"
+                                  BorderBrush="{ThemeResource ContentDialogTopOverlaySolid}"
                                   ItemSize="48"
                                   ItemOverlap="16"
                                   RecentUserHeadChanged="Participants_RecentUserHeadChanged"

@@ -12,8 +12,9 @@
                        SecondaryButtonText="Cancel"
                        PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
                        SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
-                       Padding="0,8,0,24">
-
+                       ContentMinWidth="300"
+                       Padding="0,0,0,0">
+    
     <controls:ContentPopup.Resources>
         <windows11:Style x:Key="DefaultCalendarViewDayItemStyle"
                          TargetType="CalendarViewDayItem">
@@ -56,7 +57,7 @@
             </Setter>
         </windows11:Style>
 
-        <windows10:Style x:Key="DefaultCalendarViewDayItemStyle"
+        <windows10:Style x:Key="DefaultCalendarViewDayItemStyle2"
                          TargetType="CalendarViewDayItem">
             <Setter Property="MinWidth"
                     Value="40" />
@@ -92,6 +93,7 @@
                   CalendarViewDayItemStyle="{StaticResource DefaultCalendarViewDayItemStyle}"
                   CalendarViewDayItemChanging="OnCalendarViewDayItemChanging"
                   HorizontalAlignment="Center"
-                  VerticalAlignment="Top" />
+                  VerticalAlignment="Top"
+                  BorderThickness="0" />
 
 </controls:ContentPopup>

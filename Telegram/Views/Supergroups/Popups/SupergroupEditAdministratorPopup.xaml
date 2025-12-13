@@ -29,7 +29,8 @@
                                                MinHeight="32">
                         <controls:SettingsExpander.Header>
                             <CheckBox x:Name="CanManageMessages"
-                                      IsChecked="{x:Bind ViewModel.CanManageMessages, Mode=TwoWay}">
+                                      IsChecked="{x:Bind ViewModel.CanManageMessages, Mode=TwoWay}"
+                                      Margin="-12,-11,0,-12">
                                 <TextBlock>
                                         <Run Text="{CustomResource ChannelManageMessages}" />
                                         <Run Text="{x:Bind ConvertCanSendCount(ViewModel.CanManageMessagesCount), Mode=OneWay}"
@@ -58,7 +59,8 @@
                                                MinHeight="32">
                         <controls:SettingsExpander.Header>
                             <CheckBox x:Name="CanManageStories"
-                                      IsChecked="{x:Bind ViewModel.CanManageStories, Mode=TwoWay}">
+                                      IsChecked="{x:Bind ViewModel.CanManageStories, Mode=TwoWay}"
+                                      Margin="-12,-11,0,-12">
                                 <TextBlock>
                                         <Run Text="{CustomResource ChannelManageStories}" />
                                         <Run Text="{x:Bind ConvertCanSendCount(ViewModel.CanManageStoriesCount), Mode=OneWay}"

@@ -103,7 +103,8 @@
         </ScrollViewer>
 
         <controls:ScrollViewerScrim ScrollingHost="{x:Bind ScrollingHost}"
-                                    Background="{ThemeResource ContentDialogBackground}" />
+                                    Background="{ThemeResource ContentDialogTopOverlaySolid}"
+                                    BottomInset="0" />
 
         <controls:MoreButton x:Name="MoreButton"
                              Click="More_ContextRequested"

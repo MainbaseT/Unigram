@@ -32,10 +32,9 @@ namespace Telegram.Views.Premium.Popups
                 Title.Text = Strings.PremiumLastSeenHeader1;
                 TextBlockHelper.SetMarkdown(Subtitle, string.Format(premium ? Strings.PremiumLastSeenText1Locked : Strings.PremiumLastSeenText1, user.FirstName));
 
-                ChangeCommand.Content = Strings.PremiumLastSeenButton1;
-
                 if (premium || !premiumAvailable)
                 {
+                    PrimaryButtonText = Strings.PremiumLastSeenButton1;
                     return;
                 }
 
@@ -44,7 +43,10 @@ namespace Telegram.Views.Premium.Popups
                 SubscribeTitle.Text = Strings.PremiumLastSeenHeader2;
                 TextBlockHelper.SetMarkdown(SubscribeSubtitle, string.Format(Strings.PremiumLastSeenText2, user.FirstName));
 
-                PurchaseCommand.Content = Strings.PremiumLastSeenButton2;
+                ChangeCommand.Visibility = Visibility.Visible;
+                ChangeCommand.Content = Strings.PremiumLastSeenButton1;
+
+                SecondaryButtonText = Strings.PremiumLastSeenButton2;
             }
             else
             {
@@ -53,10 +55,9 @@ namespace Telegram.Views.Premium.Popups
                 Title.Text = Strings.PremiumReadHeader1;
                 TextBlockHelper.SetMarkdown(Subtitle, string.Format(premium ? Strings.PremiumReadText1Locked : Strings.PremiumReadText1, user.FirstName));
 
-                ChangeCommand.Content = Strings.PremiumReadButton1;
-
                 if (premium || !premiumAvailable)
                 {
+                    PrimaryButtonText = Strings.PremiumReadButton1;
                     return;
                 }
 
@@ -65,7 +66,10 @@ namespace Telegram.Views.Premium.Popups
                 SubscribeTitle.Text = Strings.PremiumReadHeader2;
                 TextBlockHelper.SetMarkdown(SubscribeSubtitle, string.Format(Strings.PremiumReadText2, user.FirstName));
 
-                PurchaseCommand.Content = Strings.PremiumReadButton2;
+                ChangeCommand.Visibility = Visibility.Visible;
+                ChangeCommand.Content = Strings.PremiumReadButton1;
+
+                SecondaryButtonText = Strings.PremiumReadButton2;
             }
         }
 
@@ -77,11 +81,6 @@ namespace Telegram.Views.Premium.Popups
         private void Change_Click(object sender, RoutedEventArgs e)
         {
             Hide(ContentDialogResult.Primary);
-        }
-
-        private void Purchase_Click(object sender, RoutedEventArgs e)
-        {
-            Hide(ContentDialogResult.Secondary);
         }
     }
 }

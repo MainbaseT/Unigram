@@ -80,7 +80,7 @@
                     </Grid>
                 </Grid>
 
-                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                <Grid Background="{ThemeResource ContentDialogBackground}"
                       Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -151,7 +151,7 @@
             </Grid>
         </ScrollViewer>
 
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+        <Grid Background="{ThemeResource ContentDialogBackground}"
               Grid.Row="1">
             <Button Click="Share_Click"
                     Content="{CustomResource ShareQrCode}"

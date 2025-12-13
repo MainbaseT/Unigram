@@ -532,8 +532,13 @@ namespace Telegram.Views.Premium.Popups
             return premium ? Strings.TelegramPremiumSubscribedSubtitle : Strings.TelegramPremiumSubtitle;
         }
 
-        public string ConvertPurchase(bool premium, PremiumStatePaymentOption option)
+        public string ConvertPurchase(bool canPurchase, bool premium, PremiumStatePaymentOption option)
         {
+            if (!canPurchase)
+            {
+                return string.Empty;
+            }
+
             if (_giftCode != null)
             {
                 return Strings.GiftPremiumActivateForFree;

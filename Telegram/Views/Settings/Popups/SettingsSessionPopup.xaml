@@ -41,6 +41,7 @@
                        Style="{StaticResource PopupTextBlockStyle}"
                        TextAlignment="Center"
                        TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap"
                        Margin="12,12,12,0" />
 
             <TextBlock x:Name="Subtitle"

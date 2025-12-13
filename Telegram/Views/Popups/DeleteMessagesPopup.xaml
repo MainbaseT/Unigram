@@ -63,7 +63,7 @@
                                            MinHeight="32"
                                            Margin="0,0,-16,0">
                     <controls:SettingsExpander.Header>
-                        <Grid Margin="0,0,-12,0">
+                        <Grid Margin="-12,-11,0,-12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
@@ -99,7 +99,7 @@
                                            MinHeight="32"
                                            Margin="0,0,-16,0">
                     <controls:SettingsExpander.Header>
-                        <Grid Margin="0,0,-12,0">
+                        <Grid Margin="-12,-11,0,-12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
@@ -135,7 +135,7 @@
                                            MinHeight="32"
                                            Margin="0,0,-16,0">
                     <controls:SettingsExpander.Header>
-                        <Grid Margin="0,0,-12,0">
+                        <Grid Margin="-12,-11,0,-12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
@@ -180,7 +180,8 @@
                                                Margin="0,0,-16,0">
                         <controls:SettingsExpander.Header>
                             <CheckBox x:Name="CanSendMediaMessages"
-                                      IsChecked="{x:Bind ViewModel.CanSendMediaMessages, Mode=TwoWay}">
+                                      IsChecked="{x:Bind ViewModel.CanSendMediaMessages, Mode=TwoWay}"
+                                      Margin="-12,-11,0,-12">
                                 <TextBlock>
                                 <Run Text="{CustomResource UserRestrictionsSendMedia}" />
                                 <Run Text="{x:Bind ConvertCanSendCount(ViewModel.CanSendCount), Mode=OneWay}"

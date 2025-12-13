@@ -132,7 +132,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogBackground}"
+        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogTopOverlaySolid}"
                                     ScrollingHost="{x:Bind ScrollingHost}" />
 
         <Button x:Name="PurchaseCommand"

@@ -34,7 +34,7 @@
             </ListView.ItemContainerTransitions>
         </ListView>
 
-        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogBackground}"
+        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogTopOverlaySolid}"
                                     ScrollingHost="{x:Bind ScrollingHost}"
                                     BottomInset="56" />
 
