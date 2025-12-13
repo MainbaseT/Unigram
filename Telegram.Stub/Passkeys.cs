@@ -369,11 +369,11 @@ namespace Telegram.Stub
         [DllImport("webauthn.dll", EntryPoint = "WebAuthNFreeCredentialAttestation")]
         private static extern void WebAuthNFreeCredentialAttestation(IntPtr rawCredentialAttestation);
 
-        public static RegisterResult? MakeCredential(IntPtr hWnd, RegisterData data)
+        public static object? MakeCredential(IntPtr hWnd, RegisterData data)
         {
             if (!IsSupported())
             {
-                return null;
+                return Marshal.GetExceptionForHR(-2147467263);
             }
 
             GCHandle userIdHandle = GCHandle.Alloc(data.User.Id, GCHandleType.Pinned);
@@ -486,7 +486,7 @@ namespace Telegram.Stub
                 return result;
             }
 
-            return null;
+            return Marshal.GetExceptionForHR(hr);
         }
 
         private const uint WEBAUTHN_CREDENTIAL_CURRENT_VERSION = 1;
@@ -573,11 +573,11 @@ namespace Telegram.Stub
         [DllImport("webauthn.dll")]
         internal static extern void WebAuthNFreeAssertion(IntPtr pWebAuthNAssertion);
 
-        public static LoginResult? GetAssertion(IntPtr hWnd, LoginData data)
+        public static object? GetAssertion(IntPtr hWnd, LoginData data)
         {
             if (!IsSupported())
             {
-                return null;
+                return Marshal.GetExceptionForHR(-2147467263);
             }
 
             var clientDataJson = SerializeClientDataGet(data.Challenge);
@@ -678,7 +678,7 @@ namespace Telegram.Stub
                 return result;
             }
 
-            return null;
+            return Marshal.GetExceptionForHR(hr);
         }
 
         // TODO: Currently unused due to Windows full screen modal on the first WebAuthN API call

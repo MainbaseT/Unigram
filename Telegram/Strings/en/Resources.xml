@@ -13071,11 +13071,33 @@
     <string name="PrivacyMusicInfo3">You can add users or entire groups that will not see your music.</string>
     <string name="PrivacyGiftsTypeFromChannels">From Channels</string>
 
+    <string name="Passkey">Passkeys</string>
+    <string name="PasskeyDeleteTitle">Delete Passkey</string>
+    <string name="PasskeyDeleteText">Once deleted, this passkey can\'t be used to log in.\n\nDon\'t forget to remove it from your password manager too.</string>
+    <string name="PasskeyTopInfo">Manage your passkey, stored safely in the cloud service you choose.</string>
+    <string name="PasskeyCreatedOn">Created {0}</string>
+    <string name="PasskeyLastUsedOn">Last used {0}</string>
+    <string name="PasskeyAdd">Add Passkey</string>
+    <string name="PasskeyInfo">Your passkey is stored securely in your password manager. **Learn more &gt;**</string>
+    <string name="PasskeyFeatureTitle">Protect your account</string>
+    <string name="PasskeyFeatureSubtitle">Log in safely and keep your account secure.</string>
+    <string name="PasskeyFeature1Title">Create a Passkey</string>
+    <string name="PasskeyFeature1Subtitle">Make a passkey to sign in easily and safely.</string>
+    <string name="PasskeyFeature2Title">Log in with face recognition</string>
+    <string name="PasskeyFeature2Subtitle">Use your face, fingerprint or screen lock to sign in.</string>
+    <string name="PasskeyFeature3Title">Store Passkey securely</string>
+    <string name="PasskeyFeature3Subtitle">Your passkey is stored safely in the cloud service you choose.</string>
+    <string name="PasskeyFeatureButton">Create Passkey</string>
+    <string name="PasskeyAddedTitle">Passkey Added!</string>
+    <string name="PasskeyAddedText">You can now login into your account with {0}.</string>
+    <string name="PasskeyUnknown">Passkey</string>
+    <string name="PasskeyPopupTitle">&#128273;  Protect your account</string>
+    <string name="PasskeyPopupText">Log in with your face, fingerprint or screen lock</string>
+    <string name="PasskeyNotSupportedText">Passkeys are not supported on your current version of Windows. To use this feature, please update your operating system to a more recent version.</string>
+
     <string name="ManageTopicsPermission">Manage Topics</string>
     <string name="NotificationsDeleteAllException">Delete All Exceptions</string>
     <string name="NotificationsDeleteAllExceptionTitle">Delete all exceptions</string>
     <string name="NotificationsDeleteAllExceptionAlert">Are you sure you want to delete all exceptions?</string>
     <string name="TopicClosedByAdmin">The topic is closed</string>
-
-    <string name="InterfaceScale">Interface Scale</string>
 </resources>

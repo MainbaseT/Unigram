@@ -1251,7 +1251,7 @@ namespace Telegram.Views
             }
             else if (command is ShortcutCommand.Quit)
             {
-                await NotifyIcon.ExitAsync();
+                await BridgeApplicationContext.ExitAsync();
                 await BootStrapper.ConsolidateAsync();
             }
             else if (command is ShortcutCommand.Close)

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Telegram.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Td.Api;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Background;
@@ -20,7 +21,7 @@ using Windows.UI.Xaml;
 
 namespace Telegram.Common
 {
-    public partial class NotifyIcon
+    public partial class BridgeApplicationContext
     {
         private static AppServiceConnection _connection;
         private static BackgroundTaskDeferral _deferral;
@@ -116,6 +117,60 @@ namespace Telegram.Common
                     await MessagePopup.ShowAsync(null as XamlRoot, message);
                 }
             }
+        }
+
+        public static async Task<bool> IsPasskeySupported()
+        {
+            await ConnectAsync();
+
+            var response = await SendMessageAsync("IsPasskeySupported", timeout: 5000);
+            if (response?.Status == AppServiceResponseStatus.Success)
+            {
+                if (response.Message.TryGet("Result", out bool result))
+                {
+                    return result;
+                }
+            }
+
+            return false;
+        }
+
+        public static async Task<Object> AddPasskeyAsync(IClientService clientService)
+        {
+            await ConnectAsync();
+
+            var response = await clientService.SendAsync(new GetPasskeyParameters());
+            if (response is not Text parameters)
+            {
+                return response;
+            }
+
+            var message = new ValueSet
+            {
+                { "MakeCredential", parameters.TextValue },
+                { "WindowId", WindowContext.Current.Handle }
+            };
+
+            var payload = await SendMessageAsync(message, timeout: 0);
+            if (payload?.Status == AppServiceResponseStatus.Success)
+            {
+                if (payload.Message.TryGet("Result", out int result))
+                {
+                    if (result >= 0
+                        && payload.Message.TryGet("ClientData", out string clientData)
+                        && payload.Message.TryGet("AttestationObject", out byte[] attestationObject))
+                    {
+                        return await clientService.SendAsync(new AddPasskey(clientData, attestationObject));
+                    }
+                    else
+                    {
+                        payload.Message.TryGet("Message", out string text);
+                        return new Error(result, text ?? string.Empty);
+                    }
+                }
+            }
+
+            return new Error(400, "Unknown error");
         }
 
         public static void LoopbackExempt(bool enabled)

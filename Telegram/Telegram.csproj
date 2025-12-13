@@ -516,7 +516,7 @@
     <Compile Include="Collections\FlatteningCollection.cs" />
     <Compile Include="Collections\Handlers\ChatDiffHandler.cs" />
     <Compile Include="Common\ListViewExtensions.cs" />
-    <Compile Include="Common\NotifyIcon.cs" />
+    <Compile Include="Common\BridgeApplicationContext.cs" />
     <Compile Include="Controls\ActiveStoriesSegments.cs" />
     <Compile Include="Controls\AnimatedImage.cs" />
     <Compile Include="Controls\BadgeControl.cs" />
@@ -1079,6 +1079,7 @@
     <Compile Include="ViewModels\Settings\Privacy\SettingsPrivacyShowBioViewModel.cs" />
     <Compile Include="ViewModels\Settings\Privacy\SettingsPrivacyNewChatViewModel.cs" />
     <Compile Include="ViewModels\Settings\Privacy\SettingsPrivacyAutosaveGiftsViewModel.cs" />
+    <Compile Include="ViewModels\Settings\SettingsPasskeysViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingsPowerSavingViewModel.cs" />
     <Compile Include="ViewModels\Stars\PayViewModel.cs" />
     <Compile Include="ViewModels\Stars\StarsViewModel.cs" />
@@ -1402,8 +1403,14 @@
     <Compile Include="Views\Profile\ProfileSavedChatsTabPage.xaml.cs">
       <DependentUpon>ProfileSavedChatsTabPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Settings\Passkey\SettingsPasskeysIntroPopup.xaml.cs">
+      <DependentUpon>SettingsPasskeysIntroPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Settings\Privacy\SettingsPrivacyShowProfileAudioPage.xaml.cs">
       <DependentUpon>SettingsPrivacyShowProfileAudioPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings\SettingsPasskeysPage.xaml.cs">
+      <DependentUpon>SettingsPasskeysPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings\SettingsProfileColorNameTabPage.xaml.cs">
       <DependentUpon>SettingsProfileColorNameTabPage.xaml</DependentUpon>
@@ -2260,6 +2267,7 @@
     <Content Include="Assets\Animations\TextRecognitionDownload.tgs" />
     <Content Include="Assets\Animations\Birthdate.tgs" />
     <Content Include="Assets\Animations\ProfileColor.tgs" />
+    <Content Include="Assets\Animations\Passkey.tgs" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -3518,7 +3526,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Settings\Passkey\SettingsPasskeysIntroPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Settings\Privacy\SettingsPrivacyShowProfileAudioPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Settings\SettingsPasskeysPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

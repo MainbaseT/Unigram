@@ -105,7 +105,7 @@ namespace Telegram.Services
                     Logger.Info($"Dispatching for version {update.Version}");
 
                     // Terminate notify icon to make the update process smoother
-                    _ = NotifyIcon.ExitAsync();
+                    _ = BridgeApplicationContext.ExitAsync();
 
                     // If package manager fails, we fall back on App Installer
                     await navigation.Dispatcher.DispatchAsync(async () =>

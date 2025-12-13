@@ -104,7 +104,7 @@ namespace Telegram
 
             if (args.TaskInstance.TriggerDetails is AppServiceTriggerDetails appService && string.Equals(appService.CallerPackageFamilyName, Package.Current.Id.FamilyName))
             {
-                NotifyIcon.Connect(appService.AppServiceConnection, args.TaskInstance);
+                BridgeApplicationContext.Connect(appService.AppServiceConnection, args.TaskInstance);
             }
             else
             {
@@ -270,11 +270,11 @@ namespace Telegram
 
             if (SettingsService.Current.IsTrayVisible)
             {
-                await NotifyIcon.LaunchAsync();
+                await BridgeApplicationContext.LaunchAsync();
             }
             else if (Constants.RELEASE && startKind == StartKind.Launch)
             {
-                await NotifyIcon.AddLoopbackExemptionAsync();
+                await BridgeApplicationContext.AddLoopbackExemptionAsync();
             }
 
             Windows.ApplicationModel.Core.CoreApplication.EnablePrelaunch(true);
@@ -414,6 +414,7 @@ namespace Telegram
                 SettingsNotificationsExceptionsPage => session.Resolve<SettingsNotificationsExceptionsViewModel>(),
                 SettingsPasscodePage => session.Resolve<SettingsPasscodeViewModel>(),
                 SettingsPasswordPage => session.Resolve<SettingsPasswordViewModel>(),
+                SettingsPasskeysPage => session.Resolve<SettingsPasskeysViewModel>(),
                 SettingsPrivacyAndSecurityPage => session.Resolve<SettingsPrivacyAndSecurityViewModel>(),
                 SettingsProxyPage => session.Resolve<SettingsProxyViewModel>(),
                 SettingsProxyPopup => session.Resolve<SettingsProxyViewModel>(),

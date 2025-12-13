@@ -288,21 +288,27 @@ namespace Telegram.Stub
                 if (data != null)
                 {
                     var result = Passkeys.MakeCredential(hWnd, data);
-                    if (result != null)
+                    if (result is Passkeys.RegisterResult register)
                     {
-                        response.Add("Result", true);
-                        response.Add("CredentialId", Base64Url.EncodeToString(result.CredentialId));
-                        response.Add("ClientData", result.ClientDataJson);
-                        response.Add("AttestationObject", result.AttestationObject);
+                        response.Add("Result", 0);
+                        response.Add("ClientData", register.ClientDataJson);
+                        response.Add("AttestationObject", register.AttestationObject);
+                    }
+                    else if (result is Exception exception)
+                    {
+                        response.Add("Result", exception.HResult);
+                        response.Add("Message", exception.Message);
                     }
                     else
                     {
-                        response.Add("Result", false);
+                        response.Add("Result", -1);
+                        response.Add("Message", "Unknown error");
                     }
                 }
                 else
                 {
-                    response.Add("Result", false);
+                    response.Add("Result", -1);
+                    response.Add("Message", "Failed to deserialize parameters");
                 }
             }
 
@@ -324,23 +330,30 @@ namespace Telegram.Stub
                 if (data != null)
                 {
                     var result = Passkeys.GetAssertion(hWnd, data);
-                    if (result != null)
+                    if (result is Passkeys.LoginResult login)
                     {
-                        response.Add("Result", true);
-                        response.Add("CredentialId", Base64Url.EncodeToString(result.CredentialId));
-                        response.Add("ClientData", result.ClientDataJson);
-                        response.Add("AuthenticatorData", result.AuthenticatorData);
-                        response.Add("Signature", result.Signature);
-                        response.Add("UserHandle", Base64Url.EncodeToString(result.UserHandle));
+                        response.Add("Result", 0);
+                        response.Add("CredentialId", Base64Url.EncodeToString(login.CredentialId));
+                        response.Add("ClientData", login.ClientDataJson);
+                        response.Add("AuthenticatorData", login.AuthenticatorData);
+                        response.Add("Signature", login.Signature);
+                        response.Add("UserHandle", Base64Url.EncodeToString(login.UserHandle));
+                    }
+                    else if (result is Exception exception)
+                    {
+                        response.Add("Result", exception.HResult);
+                        response.Add("Message", exception.Message);
                     }
                     else
                     {
-                        response.Add("Result", false);
+                        response.Add("Result", -1);
+                        response.Add("Message", "Unknown error");
                     }
                 }
                 else
                 {
-                    response.Add("Result", false);
+                    response.Add("Result", -1);
+                    response.Add("Message", "Failed to deserialize parameters");
                 }
             }
 

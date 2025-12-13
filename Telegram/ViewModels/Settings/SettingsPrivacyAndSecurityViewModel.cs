@@ -131,6 +131,14 @@ namespace Telegram.ViewModels.Settings
                 }
             });
 
+            ClientService.Send(new GetAddedPasskeys(), result =>
+            {
+                if (result is Passkeys passkeys)
+                {
+                    BeginOnUIThread(() => HasPasskeys = passkeys.PasskeysValue.Count > 0);
+                }
+            });
+
             ClientService.Send(new GetDefaultMessageAutoDeleteTime(), result =>
             {
                 if (result is MessageAutoDeleteTime messageTtl)
@@ -215,6 +223,13 @@ namespace Telegram.ViewModels.Settings
         {
             get => _blockedUsers;
             set => Set(ref _blockedUsers, value);
+        }
+
+        private bool _hasPasskeys;
+        public bool HasPasskeys
+        {
+            get => _hasPasskeys;
+            set => Set(ref _hasPasskeys, value);
         }
 
         private bool _hasPassword;
@@ -343,6 +358,39 @@ namespace Telegram.ViewModels.Settings
         public void Passcode()
         {
             NavigationService.NavigateToPasscode();
+        }
+
+        public async void Passkeys()
+        {
+            if (HasPasskeys)
+            {
+                NavigationService.Navigate(typeof(SettingsPasskeysPage));
+            }
+            else
+            {
+                var supported = await BridgeApplicationContext.IsPasskeySupported();
+                if (!supported)
+                {
+                    ShowPopup(Strings.PasskeyNotSupportedText, Strings.AppName, Strings.OK);
+                    return;
+                }
+
+                var confirm = await ShowPopupAsync(new SettingsPasskeysIntroPopup());
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    var response = await BridgeApplicationContext.AddPasskeyAsync(ClientService);
+                    if (response is Passkey passkey)
+                    {
+                        HasPasskeys = true;
+                        NavigationService.Navigate(typeof(SettingsPasskeysPage));
+                        ShowToast(string.Format("**{0}**\n{1}", Strings.PasskeyAddedTitle, string.Format(Strings.PasskeyAddedText, passkey.Name)));
+                    }
+                    else if (response is Error { Code: not -2147023673 } error)
+                    {
+                        ShowToast(error);
+                    }
+                }
+            }
         }
 
         public async void Password()

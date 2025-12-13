@@ -604,6 +604,8 @@ namespace Telegram.Common
                 case InternalLinkTypeGiftCollection giftCollection:
                     NavigateToUsername(clientService, navigation, giftCollection.GiftOwnerUsername);
                     break;
+                case InternalLinkTypeLoginEmailSettings:
+                    break;
                 case InternalLinkTypePasswordSettings:
                     navigation.NavigateToPassword();
                     break;

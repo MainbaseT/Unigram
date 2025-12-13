@@ -7955,7 +7955,7 @@ This setting does not affect group chats.</value>
     <value>Interactions</value>
   </data>
   <data name="InterfaceScale" xml:space="preserve">
-    <value>Interface scale</value>
+    <value>Interface Scale</value>
   </data>
   <data name="InvalidCode" xml:space="preserve">
     <value>Invalid code, please try again.</value>
@@ -9942,6 +9942,77 @@ messages from multiple devices.</value>
   </data>
   <data name="PasscodePIN" xml:space="preserve">
     <value>PIN</value>
+  </data>
+  <data name="Passkey" xml:space="preserve">
+    <value>Passkeys</value>
+  </data>
+  <data name="PasskeyAdd" xml:space="preserve">
+    <value>Add Passkey</value>
+  </data>
+  <data name="PasskeyAddedText" xml:space="preserve">
+    <value>You can now login into your account with {0}.</value>
+  </data>
+  <data name="PasskeyAddedTitle" xml:space="preserve">
+    <value>Passkey Added!</value>
+  </data>
+  <data name="PasskeyCreatedOn" xml:space="preserve">
+    <value>Created {0}</value>
+  </data>
+  <data name="PasskeyDeleteText" xml:space="preserve">
+    <value>Once deleted, this passkey can&apos;t be used to log in.
+
+Don&apos;t forget to remove it from your password manager too.</value>
+  </data>
+  <data name="PasskeyDeleteTitle" xml:space="preserve">
+    <value>Delete Passkey</value>
+  </data>
+  <data name="PasskeyFeature1Subtitle" xml:space="preserve">
+    <value>Make a passkey to sign in easily and safely.</value>
+  </data>
+  <data name="PasskeyFeature1Title" xml:space="preserve">
+    <value>Create a Passkey</value>
+  </data>
+  <data name="PasskeyFeature2Subtitle" xml:space="preserve">
+    <value>Use your face, fingerprint or screen lock to sign in.</value>
+  </data>
+  <data name="PasskeyFeature2Title" xml:space="preserve">
+    <value>Log in with face recognition</value>
+  </data>
+  <data name="PasskeyFeature3Subtitle" xml:space="preserve">
+    <value>Your passkey is stored safely in the cloud service you choose.</value>
+  </data>
+  <data name="PasskeyFeature3Title" xml:space="preserve">
+    <value>Store Passkey securely</value>
+  </data>
+  <data name="PasskeyFeatureButton" xml:space="preserve">
+    <value>Create Passkey</value>
+  </data>
+  <data name="PasskeyFeatureSubtitle" xml:space="preserve">
+    <value>Log in safely and keep your account secure.</value>
+  </data>
+  <data name="PasskeyFeatureTitle" xml:space="preserve">
+    <value>Protect your account</value>
+  </data>
+  <data name="PasskeyInfo" xml:space="preserve">
+    <value>Your passkey is stored securely in your password manager. **Learn more &gt;**</value>
+  </data>
+  <data name="PasskeyLastUsedOn" xml:space="preserve">
+    <value>Last used {0}</value>
+  </data>
+  <data name="PasskeyNotSupportedText" xml:space="preserve">
+    <value>Passkeys are not supported on your current version of Windows. To use this feature, please update your operating system to a more recent version.</value>
+  </data>
+  <data name="PasskeyPopupText" xml:space="preserve">
+    <value>Log in with your face, fingerprint or screen lock</value>
+  </data>
+  <data name="PasskeyPopupTitle" xml:space="preserve">
+    <value>🔑  Protect your account</value>
+  </data>
+  <data name="PasskeyTopInfo" xml:space="preserve">
+    <value>Manage your passkey, stored safely in the cloud service you choose.</value>
+  </data>
+  <data name="PasskeyUnknown" xml:space="preserve">
+    <value>Passkey</value>
   </data>
   <data name="PassportDiscard" xml:space="preserve">
     <value>Discard</value>

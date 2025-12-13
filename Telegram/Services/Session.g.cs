@@ -653,6 +653,11 @@ namespace Telegram.Services
                         _clientService,
                         _settingsService,
                         _eventAggregator);
+                case "Telegram.ViewModels.Settings.SettingsPasskeysViewModel":
+                    return (T)(object)new Telegram.ViewModels.Settings.SettingsPasskeysViewModel(
+                        _clientService,
+                        _settingsService,
+                        _eventAggregator);
                 case "Telegram.ViewModels.Settings.SettingsPasscodeViewModel":
                     return (T)(object)new Telegram.ViewModels.Settings.SettingsPasscodeViewModel(
                         _clientService,

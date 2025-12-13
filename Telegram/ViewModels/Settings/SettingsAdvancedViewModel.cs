@@ -195,11 +195,11 @@ namespace Telegram.ViewModels.Settings
 
             if (value)
             {
-                await NotifyIcon.LaunchAsync();
+                await BridgeApplicationContext.LaunchAsync();
             }
             else
             {
-                await NotifyIcon.ExitAsync();
+                await BridgeApplicationContext.ExitAsync();
             }
         }
     }

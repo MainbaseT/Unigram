@@ -27,9 +27,15 @@
                                              Click="{x:Bind ViewModel.Passcode}"
                                              IsChevronVisible="True" />
 
+                    <controls:SettingsButton Content="{CustomResource Passkey}"
+                                             Badge="{x:Bind ConvertOnOff(ViewModel.HasPasskeys), Mode=OneWay}"
+                                             Glyph="&#xE192;"
+                                             Click="{x:Bind ViewModel.Passkeys}"
+                                             IsChevronVisible="True" />
+
                     <controls:SettingsButton Content="{CustomResource TwoStepVerification}"
                                              Badge="{x:Bind ConvertOnOff(ViewModel.HasPassword), Mode=OneWay}"
-                                             Glyph="&#xE192;"
+                                             Glyph="&#xE9F9;"
                                              Click="{x:Bind ViewModel.Password}"
                                              IsChevronVisible="True" />
 

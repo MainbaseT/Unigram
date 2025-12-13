@@ -167,6 +167,7 @@ namespace Telegram
                 typeof(SettingsProfileColorViewModel),
                 typeof(SupergroupProfileColorViewModel),
                 typeof(SettingsPasswordViewModel),
+                typeof(SettingsPasskeysViewModel),
                 typeof(SettingsPasscodeViewModel),
                 typeof(SettingsStickersViewModel),
                 typeof(SettingsLanguageViewModel),
