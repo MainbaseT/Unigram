@@ -155,9 +155,11 @@ namespace Telegram.Services
                 UseSystemProxy = true;
                 await UpdateSystemProxy();
             }
-
-            UseSystemProxy = false;
-            await _clientService.SendAsync(new EnableProxy(proxyId));
+            else
+            {
+                UseSystemProxy = false;
+                await _clientService.SendAsync(new EnableProxy(proxyId));
+            }
         }
 
         private async Task<Proxy> UpdateSystemProxy()
