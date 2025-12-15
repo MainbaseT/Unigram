@@ -184,7 +184,7 @@ namespace Telegram.Views.Profile
             }
             else if (args.ItemContainer.ContentTemplateRoot is ChatCell cell && args.Item is Message message)
             {
-                cell.UpdateMessage(ViewModel.ClientService, message);
+                cell.UpdateMessage(ViewModel.ClientService, message, false);
                 args.Handled = true;
             }
         }

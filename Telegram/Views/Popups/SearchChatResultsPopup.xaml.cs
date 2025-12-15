@@ -34,8 +34,6 @@ namespace Telegram.Views.Popups
             }
 
             ScrollingHost.ItemsSource = results;
-
-            SecondaryButtonText = Strings.Close;
         }
 
         public Message SelectedItem { get; private set; }
@@ -68,7 +66,7 @@ namespace Telegram.Views.Popups
                     return;
                 }
 
-                content.UpdateMessage(_collection.ClientService, message);
+                content.UpdateMessage(_collection.ClientService, message, true);
             }
 
             args.Handled = true;

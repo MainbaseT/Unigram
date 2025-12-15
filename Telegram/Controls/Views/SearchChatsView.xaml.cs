@@ -276,7 +276,7 @@ namespace Telegram.Controls.Views
                         return;
                     }
 
-                    content.UpdateMessage(ViewModel.ClientService, message);
+                    content.UpdateMessage(ViewModel.ClientService, message, false);
                 }
             }
 

@@ -61,6 +61,7 @@ namespace Telegram.Controls.Cells
         private StoryList _storyList;
 
         private Message _message;
+        private bool _showAsSender;
 
         private SavedMessagesTopic _savedMessagesTopic;
 
@@ -194,7 +195,7 @@ namespace Telegram.Controls.Cells
             }
             else if (_message != null)
             {
-                UpdateMessage(_clientService, _message);
+                UpdateMessage(_clientService, _message, _showAsSender);
             }
             else if (_savedMessagesTopic != null)
             {
@@ -296,10 +297,11 @@ namespace Telegram.Controls.Cells
             }
         }
 
-        public void UpdateMessage(IClientService clientService, Message message)
+        public void UpdateMessage(IClientService clientService, Message message, bool showAsSender)
         {
             _clientService = clientService;
             _message = message;
+            _showAsSender = showAsSender;
 
             if (!_templateApplied)
             {
@@ -312,17 +314,34 @@ namespace Telegram.Controls.Cells
                 return;
             }
 
-            UpdateChatTitle(chat);
-            UpdateChatPhoto(chat);
-            UpdateChatEmojiStatus(chat);
-            UpdateChatNotificationSettings(chat);
+            if (showAsSender)
+            {
+                TitleLabel.Text = _clientService.GetTitle(message.SenderId);
+                Photo.Source = ProfilePictureSource.MessageSender(_clientService, message.SenderId);
+                MutedIcon.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                UpdateChatTitle(chat);
+                UpdateChatPhoto(chat);
+                UpdateChatEmojiStatus(chat);
+                UpdateChatNotificationSettings(chat);
+            }
 
             PinnedIcon.Visibility = Visibility.Collapsed;
             UnreadBadge.Visibility = Visibility.Collapsed;
             UnreadMentionsBadge.Visibility = Visibility.Collapsed;
             BotOpen.Visibility = Visibility.Collapsed;
 
-            FromLabel.Text = UpdateFromLabel(clientService, chat, message);
+            if (showAsSender)
+            {
+                FromLabel.Text = string.Empty;
+            }
+            else
+            {
+                FromLabel.Text = UpdateFromLabel(clientService, chat, message);
+            }
+
             _dateLabel = Formatter.DateExtended(message.Date);
             _stateLabel = UpdateStateIcon(chat.LastReadOutboxMessageId, chat, null, message, message.SendingState);
 
