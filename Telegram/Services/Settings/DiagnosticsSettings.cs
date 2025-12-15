@@ -142,13 +142,6 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _disablePackageManager, "DisablePackageManager", value);
         }
 
-        private bool? _useAVCodec;
-        public bool UseAVCodec
-        {
-            get => _useAVCodec ??= GetValueOrDefault("UseAVCodec", ApiInfo.IsPackagedRelease);
-            set => AddOrUpdateValue(ref _useAVCodec, "UseAVCodec", value);
-        }
-
         private bool? _forumTabsDebug;
         public bool ForumTabsDebug
         {
@@ -194,7 +187,7 @@ namespace Telegram.Services.Settings
         private bool? _connectedAnimationsDebug;
         public bool ConnectedAnimationsDebug
         {
-            get => _connectedAnimationsDebug ??= GetValueOrDefault("ConnectedAnimationsDebug", ApiInfo.IsPackagedRelease);
+            get => _connectedAnimationsDebug ??= GetValueOrDefault("ConnectedAnimationsDebug", true);
             set => AddOrUpdateValue(ref _connectedAnimationsDebug, "ConnectedAnimationsDebug", value);
         }
 

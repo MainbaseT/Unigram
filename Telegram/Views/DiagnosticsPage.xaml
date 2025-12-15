@@ -62,10 +62,6 @@
                               Content="{CustomResource ConnectWithIPv6}"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
-                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.UseAVCodec, Mode=TwoWay}"
-                              Content="Use AVCodec"
-                              Style="{StaticResource SettingsCheckBoxStyle}" />
-
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.ForumTabsDebug, Mode=TwoWay}"
                               Content="Forum Tabs Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
