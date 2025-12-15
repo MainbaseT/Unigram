@@ -38,7 +38,7 @@
 #include <d2d1effecthelpers.h>
 #include <vector>
 #include <fstream>
-#include <queue>
+#include <unordered_map>
 
 #include "FrameReceivedEventArgs.h"
 #include "../Telegram.Native/Helpers/COMHelper.h"
@@ -262,12 +262,18 @@ private:
     struct RenderCommand
     {
         std::function<void()> execute;
+        uint64_t source_id;
 
         RenderCommand() = default;
-        RenderCommand(std::function<void()>&& f) : execute(std::move(f)) {} // explicit?
+        RenderCommand(std::function<void()>&& f, uint64_t id)
+            : execute(std::move(f)), source_id(id)
+        {
+        }
     };
 
-    std::queue<RenderCommand> m_commands;
+    std::unordered_map<uint64_t, RenderCommand> m_pending_commands;
+    std::vector<uint64_t> m_render_order;
+
     std::mutex m_mutex;
     std::condition_variable m_cv;
     std::atomic<bool> m_running{ false };
@@ -291,18 +297,24 @@ private:
 
                 // Wait for commands with timeout to check m_running flag
                 self->m_cv.wait_for(lock, std::chrono::milliseconds(10),
-                    [&] { return !self->m_commands.empty() || !self->m_running.load(std::memory_order_acquire); });
+                    [&] { return !self->m_pending_commands.empty() || !self->m_running.load(std::memory_order_acquire); });
 
                 if (!self->m_running.load(std::memory_order_acquire))
                 {
                     break;
                 }
 
-                while (!self->m_commands.empty())
+                for (uint64_t source_id : self->m_render_order)
                 {
-                    batch.push_back(std::move(self->m_commands.front()));
-                    self->m_commands.pop();
+                    auto it = self->m_pending_commands.find(source_id);
+                    if (it != self->m_pending_commands.end())
+                    {
+                        batch.push_back(std::move(it->second));
+                        self->m_pending_commands.erase(it);
+                    }
                 }
+
+                self->m_render_order.clear();
             }
 
             for (auto& cmd : batch)
@@ -349,11 +361,21 @@ public:
     }
 
     template<typename F>
-    void enqueue(F&& func)
+    void enqueue(F&& func, uint64_t source_id)
     {
         {
             std::lock_guard<std::mutex> lock(m_mutex);
-            m_commands.emplace(std::forward<F>(func));
+
+            auto it = m_pending_commands.find(source_id);
+            if (it != m_pending_commands.end())
+            {
+                it->second = RenderCommand(std::forward<F>(func), source_id);
+            }
+            else
+            {
+                m_pending_commands.emplace(source_id, RenderCommand(std::forward<F>(func), source_id));
+                m_render_order.push_back(source_id);
+            }
         }
         m_cv.notify_one();
     }
@@ -488,6 +510,10 @@ struct VoipVideoOutput : public std::enable_shared_from_this<VoipVideoOutput>, r
 
     winrt::event_token m_renderingDeviceReplaced;
 
+private:
+    static inline std::atomic<uint64_t> s_nextInstanceId{ 1 };
+    const uint64_t m_instanceId;
+
 public:
     void ReleaseShader()
     {
@@ -533,6 +559,7 @@ public:
     VoipVideoOutput(CompositionGraphicsDevice const& device, SpriteVisual const& visual, bool mirrored, bool uniformToFill)
         : m_compositionDevice(device)
         , m_queue(RenderQueueManager::instance().get_queue(device))
+        , m_instanceId(s_nextInstanceId.fetch_add(1, std::memory_order_relaxed))
     {
         m_frameReceivedArgs = winrt::make_self<winrt::Telegram::Native::Calls::implementation::FrameReceivedEventArgs>(0, 0);
         m_mirrored = mirrored;
@@ -806,7 +833,7 @@ public:
             {
                 strong->RenderFrame(frame);
             }
-            });
+            }, m_instanceId);
     }
 };
 
